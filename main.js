@@ -18,13 +18,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 단일 번호 세트 생성
     function generateSingleSet(includeBonus) {
-        const count = includeBonus ? 7 : 6;
+        const mainCount = includeBonus ? 5 : 6;
         const numbers = new Set();
-        while (numbers.size < count) {
+        
+        // 메인 번호 생성
+        while (numbers.size < mainCount) {
             const randomNumber = Math.floor(Math.random() * 45) + 1;
             numbers.add(randomNumber);
         }
-        return Array.from(numbers).sort((a, b) => a - b);
+        const mainNumbers = Array.from(numbers).sort((a, b) => a - b);
+        
+        let bonusNumber = null;
+        if (includeBonus) {
+            while (true) {
+                const randomBonus = Math.floor(Math.random() * 45) + 1;
+                if (!numbers.has(randomBonus)) {
+                    bonusNumber = randomBonus;
+                    break;
+                }
+            }
+        }
+        
+        return { main: mainNumbers, bonus: bonusNumber };
     }
 
     // 5개의 번호 세트를 생성하고 화면에 표시
@@ -34,8 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (let i = 0; i < 5; i++) {
             const includeBonus = bonusCheckbox.checked;
-            const numberSet = generateSingleSet(includeBonus);
-            allNumberSets.push(numberSet);
+            const { main, bonus } = generateSingleSet(includeBonus);
+            
+            // 복사용 데이터 저장
+            const fullSetString = bonus !== null ? `${main.join(', ')} + ${bonus}` : main.join(', ');
+            allNumberSets.push(fullSetString);
 
             const setBox = document.createElement('div');
             setBox.className = 'result-set-box';
@@ -47,15 +65,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const numberCirclesContainer = document.createElement('div');
             numberCirclesContainer.className = 'number-circles-container';
 
-            numberSet.forEach((number, index) => {
-                const isBonus = includeBonus && index === numberSet.length - 1;
+            // 메인 번호 표시
+            main.forEach(number => {
                 const circle = document.createElement('div');
                 circle.className = 'number-circle';
                 circle.textContent = number;
-                // 보너스 번호는 항상 녹색으로 표시
-                circle.style.backgroundColor = isBonus ? '#10B981' : getNumberColor(number);
+                circle.style.backgroundColor = getNumberColor(number);
                 numberCirclesContainer.appendChild(circle);
             });
+
+            // 보너스 번호 표시 (있을 경우)
+            if (bonus !== null) {
+                const plusSign = document.createElement('span');
+                plusSign.textContent = '+';
+                plusSign.style.color = '#A9B2D3';
+                plusSign.style.fontWeight = 'bold';
+                plusSign.style.margin = '0 4px';
+                numberCirclesContainer.appendChild(plusSign);
+
+                const bonusCircle = document.createElement('div');
+                bonusCircle.className = 'number-circle';
+                bonusCircle.textContent = bonus;
+                bonusCircle.style.backgroundColor = '#10B981'; // 보너스는 녹색 고정
+                numberCirclesContainer.appendChild(bonusCircle);
+            }
             
             setBox.appendChild(label);
             setBox.appendChild(numberCirclesContainer);
@@ -75,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('먼저 번호를 추천받아 주세요.');
             return;
         }
-        const numbersString = allNumberSets.map(set => set.join(', ')).join('\n');
+        const numbersString = allNumberSets.join('\n');
         navigator.clipboard.writeText(numbersString).then(() => {
             alert('5세트의 번호가 클립보드에 복사되었습니다.');
         }).catch(err => {
