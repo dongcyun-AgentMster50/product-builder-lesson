@@ -1,16 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotto Number Generator</title>
-    <link rel="stylesheet" href="style.css">
+    <title>로또 번호 추천기</title>
+    <link rel="stylesheet" href="style.css?v=1.1"> 
 </head>
 <body>
     <div class="container">
-        <h1>Lotto Number Generator</h1>
-        <div id="numbers" class="numbers-container"></div>
-        <button id="generate">Generate Numbers</button>
+        <div class="header">
+            <img src="https://i.imgur.com/8v2z3of.png" alt="dice icon" class="dice-icon">
+            <h2>로또 번호 추천기</h2>
+        </div>
+        <p class="description">버튼을 누르면 1~45 사이에서 중복 없이 6개 번호를 뽑아줘요.</p>
+        
+        <div class="main-actions">
+            <button id="generate-btn">번호 추천 받기</button>
+            <button id="copy-btn">복사</button>
+        </div>
+        
+        <div class="bonus-option">
+            <input type="checkbox" id="bonus-checkbox">
+            <label for="bonus-checkbox">보너스 번호(1개)도 뽑기</label>
+        </div>
+        
+        <div class="results-container">
+            <div id="numbers-display" class="numbers-display">
+                <!-- 번호가 여기에 표시됩니다 -->
+            </div>
+            <p id="timestamp" class="timestamp"></p>
+        </div>
     </div>
     <script src="main.js"></script>
 </body>

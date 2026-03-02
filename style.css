@@ -1,56 +1,155 @@
+/* General Body Styles */
 body {
-    font-family: sans-serif;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #1A1C29;
+    color: #E6E8FA;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f0f0;
-    margin: 0;
+    padding: 20px 0; /* Add some padding for scrolling */
 }
 
+/* Main Container */
 .container {
-    text-align: center;
-    background-color: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background-color: #2D3047;
+    border-radius: 12px;
+    padding: 24px;
+    width: 420px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-h1 {
-    margin-bottom: 1.5rem;
-}
-
-.numbers-container {
+/* Header Section */
+.header {
     display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 1.5rem;
-}
-
-.number {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #4CAF50;
-    color: white;
-    display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: 1.2rem;
-    font-weight: bold;
+    gap: 8px;
 }
 
-button {
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
+.dice-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.description {
+    font-size: 0.9rem;
+    color: #A9B2D3;
+    margin: 8px 0 24px;
+}
+
+/* Main Action Buttons */
+.main-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+#generate-btn {
+    flex-grow: 1;
+    background: linear-gradient(90deg, #3B82F6, #22D3EE);
     color: white;
-    background-color: #007BFF;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+#generate-btn:hover {
+    opacity: 0.9;
+}
+
+#copy-btn {
+    background-color: #4A4E69;
+    color: #E6E8FA;
+    border: 1px solid #5A5E7D;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #0056b3;
+#copy-btn:hover {
+    background-color: #5A5E7D;
+}
+
+/* Bonus Number Option */
+.bonus-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+#bonus-checkbox {
+    accent-color: #3B82F6;
+}
+
+.bonus-option label {
+    font-size: 0.9rem;
+    color: #A9B2D3;
+}
+
+/* Results Display */
+.results-container {
+    background-color: #1F2133;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
+
+.numbers-display {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* 각 세트 박스 사이의 간격 */
+    margin-bottom: 16px;
+}
+
+.result-set-box {
+    background-color: #2D3047;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.set-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #A9B2D3;
+    width: 60px; /* 라벨 너비 고정 */
+}
+
+.number-circles-container {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-around;
+}
+
+.number-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1F2133;
+}
+
+.timestamp {
+    font-size: 0.8rem;
+    color: #A9B2D3;
+    margin: 0;
 }
