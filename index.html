@@ -3,39 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로또 번호 추천기</title>
-    <link rel="stylesheet" href="style.css?v=1.3"> 
+    <title>Scenario Self Generation Agent</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="top-bar">
-            <div class="header">
-                <img src="https://i.imgur.com/8v2z3of.png" alt="dice icon" class="dice-icon">
-                <h2>로또 번호 추천기</h2>
+    <div class="shell">
+        <header class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">Interactive Scenario Builder</p>
+                <h1>Scenario Self Generation Agent</h1>
+                <p class="hero-text">
+                    질문에 순서대로 답하면 사용자에게 더 매력적으로 다가가는 앱 시나리오를 단계적으로 완성합니다.
+                </p>
             </div>
-            <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false">
-                화이트 모드
-            </button>
-        </div>
-        <p class="description">버튼을 누르면 1~45 사이에서 중복 없이 번호를 뽑아줘요.</p>
-        
-        <div class="main-actions">
-            <button id="generate-btn">번호 추천 받기</button>
-            <button id="copy-btn">복사</button>
-        </div>
-        
-        <div class="bonus-option">
-            <input type="checkbox" id="bonus-checkbox">
-            <label for="bonus-checkbox">5개 번호만 뽑기</label>
-        </div>
-        
-        <div class="results-container">
-            <div id="numbers-display" class="numbers-display">
-                <!-- 번호가 여기에 표시됩니다 -->
+            <div class="hero-panel">
+                <p class="panel-label">Flow</p>
+                <ul class="source-list">
+                    <li>접근 확인 후 질문이 순서대로 열립니다.</li>
+                    <li>각 답변 직후 방향을 넓혀주는 인사이트가 제공됩니다.</li>
+                    <li>완료 후 역할별 활용안과 보고서 다운로드가 가능합니다.</li>
+                </ul>
             </div>
-            <p id="timestamp" class="timestamp"></p>
-        </div>
+        </header>
+
+        <main class="workspace">
+            <section class="control-panel">
+                <section id="access-screen" class="access-screen">
+                    <div class="section-head">
+                        <p class="step">Access</p>
+                        <h2>시작하기</h2>
+                    </div>
+                    <div class="access-card">
+                        <label for="access-code">접근 코드를 입력해 주세요</label>
+                        <input type="password" id="access-code" placeholder="접근 코드 입력">
+                        <p class="helper">현재 화면은 입력 UI만 제공하며 실제 검증은 서버 연동 후 활성화됩니다.</p>
+                        <button type="button" id="unlock-btn" class="generate-btn">Enter Agent</button>
+                    </div>
+                </section>
+
+                <section id="guide-screen" class="guide-screen hidden">
+                    <div class="section-head">
+                        <p class="step">Guide</p>
+                        <h2>사용 방법을 아시나요?</h2>
+                    </div>
+                    <div class="guide-card">
+                        <div class="guide-actions">
+                            <button type="button" id="guide-yes-btn" class="secondary-btn">Yes</button>
+                            <button type="button" id="guide-no-btn" class="secondary-btn">No</button>
+                            <button type="button" id="guide-continue-btn" class="generate-btn hidden">시작</button>
+                        </div>
+                        <div id="guide-copy" class="guide-copy hidden"></div>
+                    </div>
+                </section>
+
+                <section id="wizard-screen" class="wizard-screen hidden">
+                    <div class="section-head">
+                        <p class="step">Step Flow</p>
+                        <h2>Scenario Setup</h2>
+                    </div>
+
+                    <div id="wizard-progress" class="wizard-progress"></div>
+
+                    <form id="scenario-form" class="form-grid" onsubmit="return false;">
+                        <section class="wizard-step active" data-step="1">
+                            <div class="field">
+                                <label for="role">Q1. 어떤 관점에서 시나리오를 만들고 싶나요?</label>
+                                <select id="role" name="role"></select>
+                                <p id="role-brief" class="helper"></p>
+                            </div>
+                        </section>
+
+                        <section class="wizard-step" data-step="2">
+                            <div class="field split-field">
+                                <label for="country">Q2. 어느 국가를 대상으로 하나요?</label>
+                                <select id="country" name="country"></select>
+                                <input type="text" id="city" name="city" placeholder="도시 / 주 / 지역 입력">
+                                <p class="helper">지역에 따라 추천 기기와 활용 방식이 달라집니다.</p>
+                            </div>
+                        </section>
+
+                        <section class="wizard-step" data-step="3">
+                            <div class="field">
+                                <label for="segment">Q3. 어떤 타겟 세그먼트와 상황을 떠올리고 있나요?</label>
+                                <select id="segment" name="segment"></select>
+                                <input type="text" id="segment-custom" name="segment-custom" placeholder="직접 정의하고 싶다면 입력">
+                                <textarea id="purpose" name="purpose" rows="4" placeholder="예: 맞벌이 가정이 퇴근 후 아이와 함께 집에 들어왔을 때 더 빠르고 편안하게 저녁 시간을 시작하고 싶다"></textarea>
+                                <p class="helper">연령, 생활 패턴, 계절, 집 안의 문제 상황까지 함께 적으면 더 설득력 있는 시나리오가 나옵니다.</p>
+                            </div>
+                        </section>
+
+                        <section class="wizard-step" data-step="4">
+                            <div class="field">
+                                <label>Q4. 어떤 기기들을 반영할까요?</label>
+                                <div id="device-grid" class="device-grid"></div>
+                                <p class="helper">복수 선택으로 구성하고, 핵심 기기 조합을 기준으로 시나리오를 만듭니다.</p>
+                            </div>
+                        </section>
+
+                        <div id="step-insight" class="insight-card">
+                            답변을 마칠 때마다 다음 단계를 더 흥미롭게 만드는 힌트가 여기에 표시됩니다.
+                        </div>
+
+                        <div class="wizard-actions">
+                            <button type="button" id="prev-btn" class="secondary-btn">이전</button>
+                            <button type="button" id="next-btn" class="secondary-btn">다음</button>
+                            <button type="button" id="generate-btn" class="generate-btn hidden">Scenario Build</button>
+                        </div>
+                    </form>
+                </section>
+            </section>
+        </main>
+
+        <section class="result-frame">
+            <div class="section-head report-head">
+                <div>
+                    <p class="step">Output</p>
+                    <h2>Scenario Output</h2>
+                </div>
+                <div id="export-actions" class="export-actions"></div>
+            </div>
+
+            <div id="result">
+                <p class="placeholder">
+                    접근 확인 후 네 가지 질문을 순서대로 완료하면 상세 시나리오와 역할별 활용안을 확인할 수 있습니다.
+                </p>
+            </div>
+        </section>
     </div>
-    <script src="main.js?v=1.3"></script>
+
+    <script src="main.js"></script>
 </body>
 </html>

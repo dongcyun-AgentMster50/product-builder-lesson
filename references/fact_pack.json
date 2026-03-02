@@ -1,0 +1,38 @@
+
+[
+  {
+    "serviceName": "Pet Care",
+    "description": "반려동물을 위한 돌봄 서비스",
+    "keyFeatures": ["실시간 모니터링", "자동 급식", "놀이 활동 제공"],
+    "devices": ["스마트 카메라", "자동 급식기", "로봇 장난감"],
+    "privacyPolicy": "수집된 영상은 암호화되어 저장되며, 사용자 동의 없이는 절대 외부에 공개되지 않습니다."
+  },
+  {
+    "serviceName": "Family Care",
+    "description": "가족 구성원의 안전과 건강을 관리하는 서비스",
+    "keyFeatures": ["활동 감지 알림", "복약 시간 알림", "위급 상황 호출"],
+    "devices": ["동작 감지 센서", "스마트워치", "스마트 스피커"],
+    "privacyPolicy": "개인의 건강 및 위치 정보는 민감 정보로 분류되어 최고 수준의 보안으로 관리됩니다."
+  },
+  {
+    "serviceName": "Energy Save",
+    "description": "가정의 에너지 사용량을 최적화하는 서비스",
+    "keyFeatures": ["에너지 사용량 모니터링", "AI 기반 절전 모드", "누진세 구간 알림"],
+    "devices": ["스마트 미터기", "스마트 플러그", "AI 에어컨/세탁기"],
+    "privacyPolicy": "에너지 사용 패턴 정보는 서비스 최적화 외 다른 목적으로 사용되지 않습니다."
+  },
+  {
+    "serviceName": "Home Fitness",
+    "description": "집에서 즐기는 맞춤형 운동 프로그램",
+    "keyFeatures": ["유명 트레이너 코칭", "자세 교정", "운동량 자동 기록"],
+    "devices": ["TV", "스마트워치", "스마트 체중계"],
+    "privacyPolicy": "개인의 신체 정보 및 운동 기록은 본인의 동의 하에만 트레이닝 추천에 활용됩니다."
+  },
+  {
+    "serviceName": "Smart Cooking",
+    "description": "요리 과정을 자동화하고 레시피를 추천하는 서비스",
+    "keyFeatures": ["레시피 추천 및 전송", "오븐 자동 예열", "식재료 관리"],
+    "devices": ["스마트 오븐", "비스포크 냉장고", "스마트 인덕션"],
+    "privacyPolicy": "사용자의 식단 정보는 레시피 추천 및 식료품 관리 기능에만 국한하여 사용됩니다."
+  }
+]

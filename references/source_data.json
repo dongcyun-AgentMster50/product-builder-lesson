@@ -1,0 +1,48 @@
+
+{
+  "countries": [
+    {
+      "countryCode": "KR",
+      "countryName": "대한민국",
+      "samsungShopUrl": "https://www.samsung.com/sec/",
+      "availableProducts": [
+        {"category": "TV", "modelName": "Neo QLED 8K"},
+        {"category": "냉장고", "modelName": "비스포크 냉장고 4도어"},
+        {"category": "세탁기", "modelName": "비스포크 그랑데 AI"},
+        {"category": "로봇청소기", "modelName": "비스포크 제트 봇 AI"}
+      ]
+    },
+    {
+      "countryCode": "US",
+      "countryName": "미국",
+      "samsungShopUrl": "https://www.samsung.com/us/",
+      "availableProducts": [
+        {"category": "TV", "modelName": "The Frame"},
+        {"category": "냉장고", "modelName": "Bespoke 4-Door Flex"},
+        {"category": "건조기", "modelName": "Smart Top Load Dryer"},
+        {"category": "에어컨", "modelName": "WindFree 2.0"}
+      ]
+    },
+    {
+      "countryCode": "GB",
+      "countryName": "영국",
+      "samsungShopUrl": "https://www.samsung.com/uk/",
+      "availableProducts": [
+        {"category": "TV", "modelName": "The Sero"},
+        {"category": "세탁기", "modelName": "QuickDrive"},
+        {"category": "오븐", "modelName": "Dual Cook Flex"}
+      ]
+    },
+    {
+      "countryCode": "DE",
+      "countryName": "독일",
+      "samsungShopUrl": "https://www.samsung.com/de/",
+      "availableProducts": [
+        {"category": "TV", "modelName": "QLED 4K"},
+        {"category": "냉장고", "modelName": "Family Hub"},
+        {"category": "에어컨", "modelName": "Wind-Free Avant"},
+        {"category": "세탁기", "modelName": "AddWash"}
+      ]
+    }
+  ]
+}

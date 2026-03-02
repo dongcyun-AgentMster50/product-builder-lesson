@@ -1,0 +1,40 @@
+
+{
+  "deviceCategories": [
+    {"categoryName": "TV", "description": "스마트 TV 및 관련 디스플레이"},
+    {"categoryName": "냉장고", "description": "비스포크 등 스마트 냉장고"},
+    {"categoryName": "세탁기/건조기", "description": "AI 기능이 포함된 세탁 및 건조 가전"},
+    {"categoryName": "에어컨", "description": "무풍에어컨 등 스마트 공조 시스템"},
+    {"categoryName": "스피커", "description": "Bixby/Google Assistant 등 AI 스피커"},
+    {"categoryName": "조명", "description": "스마트 전구 및 조명 시스템"},
+    {"categoryName": "센서", "description": "동작, 온도, 습도 등 각종 센서"},
+    {"categoryName": "로봇청소기", "description": "자동 충전 및 매핑 기능의 로봇청소기"}
+  ],
+  "lifestyleTags": [
+    {
+      "tagName": "AOD (Always on Display)",
+      "description": "언제나 필요한 정보를 표시하고 싶은 니즈",
+      "relatedDevices": ["TV", "냉장고"]
+    },
+    {
+      "tagName": "입문 (Entry)",
+      "description": "스마트홈을 처음 시작하는 사용자",
+      "relatedDevices": ["스피커", "조명", "스마트 플러그"]
+    },
+    {
+      "tagName": "반려동물 케어",
+      "description": "집에 혼자 있는 반려동물을 돌보는 시나리오",
+      "relatedDevices": ["로봇청소기", "스마트 카메라", "자동 급식기"]
+    },
+    {
+      "tagName": "시니어 케어",
+      "description": "부모님 또는 시니어의 안전과 건강을 돌보는 시나리오",
+      "relatedDevices": ["센서", "스마트워치", "TV"]
+    },
+    {
+      "tagName": "에너지 절약",
+      "description": "효율적인 에너지 사용으로 관리비를 절약하는 니즈",
+      "relatedDevices": ["에어컨", "세탁기/건조기", "스마트 플러그"]
+    }
+  ]
+}
