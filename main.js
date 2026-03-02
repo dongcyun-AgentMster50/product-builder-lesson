@@ -4,8 +4,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const bonusCheckbox = document.getElementById('bonus-checkbox');
     const numbersDisplay = document.getElementById('numbers-display');
     const timestampElem = document.getElementById('timestamp');
+    const themeToggle = document.getElementById('theme-toggle');
+    const THEME_STORAGE_KEY = 'lotto-theme';
 
     let allNumberSets = []; // 모든 번호 세트를 저장할 배열
+
+    function applyTheme(theme) {
+        const nextTheme = theme === 'light' ? 'light' : 'dark';
+        document.body.dataset.theme = nextTheme;
+        themeToggle.textContent = nextTheme === 'dark' ? '화이트 모드' : '다크 모드';
+        themeToggle.setAttribute('aria-pressed', String(nextTheme === 'light'));
+    }
+
+    function initializeTheme() {
+        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+        applyTheme(savedTheme || 'dark');
+    }
 
     // 번호에 따른 색상 반환
     function getNumberColor(number) {
@@ -77,10 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // 보너스 번호 표시 (있을 경우)
             if (bonus !== null) {
                 const plusSign = document.createElement('span');
+                plusSign.className = 'bonus-separator';
                 plusSign.textContent = '+';
-                plusSign.style.color = '#A9B2D3';
-                plusSign.style.fontWeight = 'bold';
-                plusSign.style.margin = '0 4px';
                 numberCirclesContainer.appendChild(plusSign);
 
                 const bonusCircle = document.createElement('div');
@@ -120,6 +132,12 @@ document.addEventListener('DOMContentLoaded', () => {
     generateBtn.addEventListener('click', generateAndDisplaySets);
     copyBtn.addEventListener('click', copyToClipboard);
     bonusCheckbox.addEventListener('change', generateAndDisplaySets);
+    themeToggle.addEventListener('click', () => {
+        const nextTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+        localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    });
 
+    initializeTheme();
     generateAndDisplaySets(); // 초기 로드 시 번호 생성
 });
