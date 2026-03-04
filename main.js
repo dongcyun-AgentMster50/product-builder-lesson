@@ -26,16 +26,159 @@ const ROLE_LENSES = [
     }
 ];
 
-const SEGMENTS = [
-    "신혼/새집 입주 가구",
-    "맞벌이 육아 가구",
-    "펫 케어 중심 가구",
-    "시니어 동거/돌봄 가구",
-    "에너지 절감 관심층",
-    "웰니스/홈 피트니스 관심층",
-    "프리미엄 홈 경험 추구층",
-    "스마트홈 입문층",
-    "직접 입력"
+const PERSONA_CATEGORY_GROUPS = [
+    {
+        id: "household",
+        title: "가구 구성",
+        options: [
+            { id: "dual_income", label: "맞벌이 부부" },
+            { id: "single_parent", label: "한부모 가구" },
+            { id: "senior_couple", label: "노년 부부" },
+            { id: "newlywed", label: "신혼부부" },
+            { id: "solo_wife", label: "여성 1인 가구" },
+            { id: "solo_husband", label: "남성 1인 가구" },
+            { id: "shared_home", label: "룸메이트/셰어하우스" }
+        ]
+    },
+    {
+        id: "life_stage",
+        title: "생활 단계",
+        options: [
+            { id: "with_baby", label: "영유아 자녀 가구" },
+            { id: "with_kids", label: "초등 자녀 가구" },
+            { id: "with_teens", label: "청소년 자녀 가구" },
+            { id: "caregiver", label: "돌봄 책임 가구" },
+            { id: "empty_nester", label: "자녀 독립 후 부부 가구" }
+        ]
+    },
+    {
+        id: "living_pattern",
+        title: "생활 패턴",
+        options: [
+            { id: "remote_worker", label: "재택근무 중심" },
+            { id: "commuter", label: "장거리 출퇴근" },
+            { id: "night_shift", label: "야간 생활/교대근무" },
+            { id: "frequent_travel", label: "출장·외출이 잦은 생활" },
+            { id: "weekend_host", label: "주말 홈파티·손님 맞이" }
+        ]
+    },
+    {
+        id: "pet_care",
+        title: "펫 케어",
+        options: [
+            { id: "dog_owner", label: "강아지와 함께 사는 가구" },
+            { id: "cat_owner", label: "고양이와 함께 사는 가구" },
+            { id: "senior_pet", label: "노령 반려동물과 함께 사는 가구" },
+            { id: "multi_pet", label: "반려동물 다두 가구" }
+        ]
+    }
+];
+
+const DEVICE_CATEGORY_GROUPS = [
+    {
+        id: "air-fresh",
+        title: "쾌적한 공기 관리",
+        options: [
+            { id: "air-conditioner", label: "에어컨", normalized: "에어컨" },
+            { id: "air-purifier", label: "공기청정기", normalized: "에어컨" },
+            { id: "ventilation", label: "환기 시스템", normalized: "에어컨" },
+            { id: "dehumidifier", label: "제습기", normalized: "에어컨" },
+            { id: "air-monitor", label: "에어 모니터링", normalized: "센서" },
+            { id: "fan", label: "팬/서큘레이터", normalized: "에어컨" }
+        ]
+    },
+    {
+        id: "lights-control",
+        title: "간편한 조명 제어",
+        options: [
+            { id: "lighting", label: "조명", normalized: "조명" },
+            { id: "mood-light", label: "무드 조명", normalized: "조명" },
+            { id: "smart-switch", label: "버튼/스위치", normalized: "센서" },
+            { id: "curtain", label: "커튼/블라인드", normalized: "센서" },
+            { id: "sleep-light", label: "기상·수면 조명", normalized: "조명" }
+        ]
+    },
+    {
+        id: "chores-help",
+        title: "가사 보조",
+        options: [
+            { id: "robot-vacuum", label: "로봇청소기", normalized: "로봇청소기" },
+            { id: "vacuum", label: "청소기", normalized: "로봇청소기" },
+            { id: "washer", label: "세탁기", normalized: "세탁기" },
+            { id: "dryer", label: "건조기", normalized: "건조기" },
+            { id: "washer-dryer", label: "세탁기/건조기", normalized: "세탁기/건조기" },
+            { id: "dishwasher", label: "식기세척기", normalized: "세탁기/건조기" }
+        ]
+    },
+    {
+        id: "home-safe",
+        title: "홈 시큐리티",
+        options: [
+            { id: "camera", label: "카메라/CCTV", normalized: "센서" },
+            { id: "door-lock", label: "도어락", normalized: "센서" },
+            { id: "doorbell", label: "비디오 도어벨", normalized: "센서" },
+            { id: "open-sensor", label: "문열림 센서", normalized: "센서" },
+            { id: "leak-smoke", label: "누수/연기 감지기", normalized: "센서" },
+            { id: "hub", label: "SmartThings Hub", normalized: "센서" }
+        ]
+    },
+    {
+        id: "sleep-well",
+        title: "숙면 환경",
+        options: [
+            { id: "sleep-sensor", label: "수면 센서", normalized: "센서" },
+            { id: "bedside-light", label: "침실 조명", normalized: "조명" },
+            { id: "bedroom-aircon", label: "침실 에어컨", normalized: "에어컨" },
+            { id: "air-purifier-bed", label: "침실 공기청정기", normalized: "에어컨" },
+            { id: "wearable-sleep", label: "웨어러블", normalized: "센서" }
+        ]
+    },
+    {
+        id: "enhanced-mood",
+        title: "무드 & 엔터테인먼트",
+        options: [
+            { id: "tv-premium", label: "TV", normalized: "TV" },
+            { id: "projector", label: "프로젝터", normalized: "TV" },
+            { id: "monitor", label: "모니터", normalized: "TV" },
+            { id: "speaker", label: "스피커", normalized: "스피커" },
+            { id: "soundbar", label: "사운드바", normalized: "스피커" },
+            { id: "gaming-console", label: "게임 콘솔", normalized: "TV" }
+        ]
+    },
+    {
+        id: "care-scenarios",
+        title: "시니어·키즈·펫 케어",
+        options: [
+            { id: "pet-feeder", label: "펫 피더", normalized: "센서" },
+            { id: "care-camera", label: "실내 카메라", normalized: "센서" },
+            { id: "activity-sensor", label: "활동 감지 센서", normalized: "센서" },
+            { id: "fall-sensor", label: "낙상 감지 센서", normalized: "센서" },
+            { id: "care-button", label: "긴급 호출 버튼", normalized: "센서" },
+            { id: "wearable-care", label: "케어 웨어러블", normalized: "센서" }
+        ]
+    },
+    {
+        id: "save-energy",
+        title: "에너지 절약",
+        options: [
+            { id: "smart-plug", label: "스마트 플러그", normalized: "센서" },
+            { id: "energy-monitor", label: "에너지 모니터", normalized: "센서" },
+            { id: "smart-meter", label: "전력 사용량 모니터", normalized: "센서" },
+            { id: "hub-energy", label: "에너지 자동화 허브", normalized: "센서" },
+            { id: "eco-aircon", label: "AI 절약모드 에어컨", normalized: "에어컨" }
+        ]
+    },
+    {
+        id: "food-home",
+        title: "주방 & 푸드 케어",
+        options: [
+            { id: "refrigerator", label: "냉장고", normalized: "냉장고" },
+            { id: "kimchi-fridge", label: "김치냉장고", normalized: "냉장고" },
+            { id: "oven", label: "오븐", normalized: "오븐" },
+            { id: "microwave", label: "전자레인지", normalized: "오븐" },
+            { id: "cooktop", label: "인덕션/쿡탑", normalized: "오븐" }
+        ]
+    }
 ];
 
 const STEP_INSIGHTS = {
@@ -202,7 +345,19 @@ const UI_TEXT = {
         enterAgent: "Enter Agent",
         accessRequired: "접근 코드를 입력해 주세요.",
         accessPlaceholder: "접근 코드 입력",
-        accessHelper: "현재 화면은 입력 UI만 제공하며 실제 검증은 서버 연동 후 활성화됩니다.",
+        accessHelper: "접근 코드는 서버에서 확인되며, 승인되면 바로 다음 단계로 이어집니다.",
+        accessVerifying: "접근 코드를 확인하고 있습니다.",
+        accessInvalid: "유효하지 않은 접근 코드입니다.",
+        accessInvalidRemaining: "유효하지 않은 접근 코드입니다. 남은 시도 {count}회.",
+        accessLocked: "실패 횟수가 많아 잠시 잠겼습니다. 잠시 후 다시 시도해 주세요.",
+        accessLockedWithTime: "실패 횟수가 많아 잠시 잠겼습니다. {time} 후에 다시 시도해 주세요.",
+        accessLockedNewWindow: "3회 연속 실패로 이 창은 잠겼습니다. {time} 후 다시 시도하거나 새 창에서 다시 시작해 주세요.",
+        accessUnavailable: "접근 코드 검증 서버에 연결할 수 없습니다.",
+        accessGranted: "접근이 확인되었습니다. 가이드를 여는 중입니다.",
+        accessShow: "보기",
+        accessHide: "숨기기",
+        logout: "로그아웃",
+        loggedOut: "세션이 종료되었습니다. 다시 접근 코드를 입력해 주세요.",
         guideTitle: "사용 방법을 아시나요?",
         guideQuick: "Quick Guide",
         guideLine1: "질문은 한 번에 하나씩 열립니다.",
@@ -229,12 +384,12 @@ const UI_TEXT = {
         output: "Scenario Output",
         roleQuestion: "Q1. 어떤 관점에서 시나리오를 만들고 싶나요?",
         countryQuestion: "Q2. 어느 국가를 대상으로 하나요?",
-        personaQuestion: "Q3. 어떤 타겟 세그먼트와 상황을 떠올리고 있나요?",
+        personaQuestion: "Q3. 어떤 타겟 세그먼트와 생활 맥락을 떠올리고 있나요?",
         deviceQuestion: "Q4. 어떤 기기를 중심으로 구성할까요?",
         purposePlaceholder: "예: 맞벌이 가정이 퇴근 후 아이와 함께 집에 들어왔을 때 더 빠르고 편안하게 저녁 시간을 시작하고 싶다",
-        countryHelper: "지역에 따라 추천 기기와 활용 방식이 달라집니다.",
-        personaHelper: "타겟 세그먼트와 함께 생활 패턴, 계절, 집 안의 문제 상황까지 적으면 더 설득력 있는 시나리오가 나옵니다.",
-        deviceHelper: "기기 카테고리를 중심으로 고르면 활용 폭을 더 넓힐 수 있습니다.",
+        countryHelper: "국가와 지역을 고르면 어떤 생활 장면이 더 설득력 있게 읽히는지 바로 좁혀집니다.",
+        personaHelper: "가구 유형과 생활 맥락을 함께 고르면 타겟이 더 선명해지고, 시나리오 톤도 달라집니다.",
+        deviceHelper: "상위 카테고리를 먼저 고르고 필요한 기기만 남기면 실제 사용 장면이 훨씬 빠르게 잡힙니다.",
         roleMissing: "Q1에서 담당 업무 관점을 먼저 선택해 주세요.",
         countryMissing: "Q2에서 국가를 선택해 주세요.",
         personaMissing: "Q3에서 타겟 세그먼트와 상황 설명을 함께 입력해 주세요.",
@@ -269,7 +424,19 @@ const UI_TEXT = {
         enterAgent: "Enter Agent",
         accessRequired: "Please enter the access code.",
         accessPlaceholder: "Enter access code",
-        accessHelper: "This screen currently provides input UI only. Real verification will be enabled after server integration.",
+        accessHelper: "The access code is verified on the server and creates a session on success.",
+        accessVerifying: "Verifying your access code.",
+        accessInvalid: "Invalid access code.",
+        accessInvalidRemaining: "Invalid access code. {count} attempts remaining.",
+        accessLocked: "Too many failed attempts. Try again later.",
+        accessLockedWithTime: "Too many failed attempts. Try again in {time}.",
+        accessLockedNewWindow: "This tab is locked after 3 failed attempts. Try again in {time}, or start again in a new tab.",
+        accessUnavailable: "The access verification server is unavailable.",
+        accessGranted: "Access confirmed. Opening the guide.",
+        accessShow: "Show",
+        accessHide: "Hide",
+        logout: "Logout",
+        loggedOut: "Your session has been signed out. Enter the access code again.",
         guideTitle: "Do you know how to use this agent?",
         guideQuick: "Quick Guide",
         guideLine1: "Questions appear one at a time.",
@@ -299,9 +466,9 @@ const UI_TEXT = {
         personaQuestion: "Q3. Which target segment and situation do you have in mind?",
         deviceQuestion: "Q4. Which device should anchor the scenario?",
         purposePlaceholder: "Example: A dual-income family wants to start the evening faster and more comfortably right after arriving home with their child.",
-        countryHelper: "Recommended devices and story angles can shift by market context.",
-        personaHelper: "Add the target segment, lifestyle, season, and pain points at home to make the scenario more persuasive.",
-        deviceHelper: "Choosing a device category keeps the scenario more flexible and expandable.",
+        countryHelper: "Pick the market and region first to narrow which life moment will feel most convincing.",
+        personaHelper: "Combine household type and living context to make the target sharper and the scenario tone more specific.",
+        deviceHelper: "Start with a top category, then trim the device list to the exact mix you want to frame.",
         roleMissing: "Please choose the work lens first in Q1.",
         countryMissing: "Please choose the country in Q2.",
         personaMissing: "Please choose the target segment and describe the situation in Q3.",
@@ -336,7 +503,19 @@ const UI_TEXT = {
         enterAgent: "Agent Starten",
         accessRequired: "Bitte geben Sie den Zugangscode ein.",
         accessPlaceholder: "Zugangscode eingeben",
-        accessHelper: "Dieser Bildschirm zeigt derzeit nur die Eingabeoberfläche. Die echte Prüfung wird nach der Server-Integration aktiviert.",
+        accessHelper: "Der Zugangscode wird serverseitig geprüft und erzeugt bei Erfolg eine Sitzung.",
+        accessVerifying: "Der Zugangscode wird geprüft.",
+        accessInvalid: "Der Zugangscode ist ungültig.",
+        accessInvalidRemaining: "Der Zugangscode ist ungültig. Verbleibende Versuche: {count}.",
+        accessLocked: "Zu viele Fehlversuche. Bitte versuchen Sie es später erneut.",
+        accessLockedWithTime: "Zu viele Fehlversuche. Bitte versuchen Sie es in {time} erneut.",
+        accessLockedNewWindow: "Dieser Tab ist nach 3 Fehlversuchen gesperrt. Versuchen Sie es in {time} erneut oder starten Sie in einem neuen Tab.",
+        accessUnavailable: "Der Verifizierungsserver ist nicht erreichbar.",
+        accessGranted: "Zugang bestätigt. Die Anleitung wird geöffnet.",
+        accessShow: "Anzeigen",
+        accessHide: "Ausblenden",
+        logout: "Abmelden",
+        loggedOut: "Ihre Sitzung wurde beendet. Bitte geben Sie den Zugangscode erneut ein.",
         guideTitle: "Kennen Sie die Nutzung dieses Agents?",
         guideQuick: "Kurzanleitung",
         guideLine1: "Die Fragen erscheinen nacheinander.",
@@ -366,9 +545,9 @@ const UI_TEXT = {
         personaQuestion: "Q3. Welchen Nutzertyp und welche Situation haben Sie im Kopf?",
         deviceQuestion: "Q4. Welches Gerät soll im Zentrum stehen?",
         purposePlaceholder: "Beispiel: Eine Doppelverdiener-Familie möchte den Abend nach der Rückkehr mit ihrem Kind schneller und angenehmer beginnen.",
-        countryHelper: "Empfohlene Geräte und Story-Ansätze können je nach Markt variieren.",
-        personaHelper: "Ergänzen Sie Alter, Lebensstil, Saison und Probleme zu Hause, damit das Szenario überzeugender wird.",
-        deviceHelper: "Eine Geräte-Kategorie hält das Szenario flexibler und leichter erweiterbar.",
+        countryHelper: "Wählen Sie zuerst Markt und Region, damit klarer wird, welcher Alltagsmoment am stärksten wirkt.",
+        personaHelper: "Kombinieren Sie Haushaltstyp und Lebenskontext, damit Zielgruppe und Szenarioton präziser werden.",
+        deviceHelper: "Starten Sie mit einer Oberkategorie und grenzen Sie dann die konkrete Gerätekombination ein.",
         roleMissing: "Bitte wählen Sie zuerst in Q1 die fachliche Perspektive aus.",
         countryMissing: "Bitte wählen Sie in Q2 das Land aus.",
         personaMissing: "Bitte wählen Sie in Q3 den Nutzertyp und beschreiben Sie die Situation.",
@@ -805,15 +984,20 @@ const UI_TEXT = {
 
 const ACCESS_API = {
     verifyEndpoint: "/api/access/verify",
-    sessionEndpoint: "/api/access/session"
+    sessionEndpoint: "/api/access/session",
+    logoutEndpoint: "/api/access/logout"
 };
+const ACCESS_CLIENT_SESSION_KEY = "scenario-access-client-session-id";
 
 const resultDiv = document.getElementById("result");
 const accessScreen = document.getElementById("access-screen");
 const guideScreen = document.getElementById("guide-screen");
 const wizardScreen = document.getElementById("wizard-screen");
 const accessCodeInput = document.getElementById("access-code");
+const accessStatus = document.getElementById("access-status");
+const accessToggleBtn = document.getElementById("access-toggle-btn");
 const unlockBtn = document.getElementById("unlock-btn");
+const logoutBtn = document.getElementById("logout-btn");
 const guideYesBtn = document.getElementById("guide-yes-btn");
 const guideNoBtn = document.getElementById("guide-no-btn");
 const guideContinueBtn = document.getElementById("guide-continue-btn");
@@ -823,10 +1007,12 @@ const roleBrief = document.getElementById("role-brief");
 const purposeInput = document.getElementById("purpose");
 const countrySelect = document.getElementById("country");
 const cityInput = document.getElementById("city");
-const segmentSelect = document.getElementById("segment");
+const personaGroups = document.getElementById("persona-groups");
 const segmentCustomInput = document.getElementById("segment-custom");
 const deviceGrid = document.getElementById("device-grid");
+const deviceCustomInput = document.getElementById("device-custom");
 const exportActions = document.getElementById("export-actions");
+const wizardLogoutBtn = document.getElementById("wizard-logout-btn");
 const prevBtn = document.getElementById("prev-btn");
 const nextBtn = document.getElementById("next-btn");
 const generateBtn = document.getElementById("generate-btn");
@@ -835,17 +1021,26 @@ const stepInsight = document.getElementById("step-insight");
 let factPack = [];
 let exploreMatrix = {};
 let sourceData = {};
+let countryTrends = {};
+let citySignals = {};
 let latestPayload = null;
 let activeLensTab = "overview";
 let currentStep = 1;
 let currentLocale = "ko";
 let marketOptions = [];
+let isUnlocking = false;
+let isAccessCodeVisible = false;
+let isAccessLocked = false;
+let accessLockoutEndsAt = 0;
+let accessLockoutTimerId = null;
+let accessClientSessionId = "";
 
 document.addEventListener("DOMContentLoaded", () => {
+    accessClientSessionId = ensureAccessClientSessionId();
     hydrateStaticUi();
+    if (enforceServerOrigin()) return;
     loadReferenceData();
     bindEvents();
-    checkExistingSession();
 });
 
 function bindEvents() {
@@ -853,6 +1048,14 @@ function bindEvents() {
     accessCodeInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") handleUnlock();
     });
+    accessCodeInput.addEventListener("input", () => {
+        if (["accessRequired", "accessInvalid", "accessLocked", "accessUnavailable"].includes(accessStatus.dataset.key)) {
+            clearAccessStatus();
+        }
+    });
+    accessToggleBtn.addEventListener("click", toggleAccessCodeVisibility);
+    logoutBtn.addEventListener("click", handleLogout);
+    wizardLogoutBtn.addEventListener("click", handleLogout);
     guideYesBtn.addEventListener("click", openWizard);
     guideNoBtn.addEventListener("click", showGuideCopy);
     guideContinueBtn.addEventListener("click", openWizard);
@@ -870,8 +1073,8 @@ function bindEvents() {
         updateStatePreview();
         updateStepInsight();
     });
-    segmentSelect.addEventListener("change", updateSegmentVisibility);
-    segmentSelect.addEventListener("change", () => {
+    personaGroups.addEventListener("change", (event) => {
+        handleChecklistChange(event, personaGroups);
         updateStatePreview();
         updateStepInsight();
     });
@@ -883,10 +1086,36 @@ function bindEvents() {
         updateStatePreview();
         updateStepInsight();
     });
-    deviceGrid.addEventListener("change", () => {
+    deviceGrid.addEventListener("change", (event) => {
+        handleChecklistChange(event, deviceGrid);
         updateStatePreview();
         updateStepInsight();
     });
+    deviceCustomInput.addEventListener("input", () => {
+        updateStatePreview();
+        updateStepInsight();
+    });
+}
+
+function enforceServerOrigin() {
+    if (window.location.protocol !== "file:") return false;
+
+    accessCodeInput.disabled = true;
+    unlockBtn.disabled = true;
+    setAccessStatus(
+        "error",
+        "accessUnavailable",
+        "This page must be opened from http://127.0.0.1:8000/index.html, not from a file:// URL."
+    );
+    resultDiv.innerHTML = '<p class="error">로컬 파일이 아니라 서버 주소 `http://127.0.0.1:8000/index.html` 로 열어야 합니다.</p>';
+    return true;
+}
+
+function toggleAccessCodeVisibility() {
+    isAccessCodeVisible = !isAccessCodeVisible;
+    accessCodeInput.type = isAccessCodeVisible ? "text" : "password";
+    accessToggleBtn.textContent = t(isAccessCodeVisible ? "accessHide" : "accessShow");
+    accessToggleBtn.setAttribute("aria-pressed", isAccessCodeVisible ? "true" : "false");
 }
 
 function hydrateStaticUi() {
@@ -903,15 +1132,19 @@ function hydrateStaticUi() {
 
 async function loadReferenceData() {
     try {
-        const [factPackRes, exploreMatrixRes, sourceDataRes] = await Promise.all([
+        const [factPackRes, exploreMatrixRes, sourceDataRes, countryTrendsRes, citySignalsRes] = await Promise.all([
             fetch("references/fact_pack.json"),
             fetch("references/explore_matrix.json"),
-            fetch("references/source_data.json")
+            fetch("references/source_data.json"),
+            fetch("references/country_trends.json"),
+            fetch("references/city_signals.json")
         ]);
 
         factPack = await factPackRes.json();
         exploreMatrix = await exploreMatrixRes.json();
         sourceData = await sourceDataRes.json();
+        countryTrends = await countryTrendsRes.json();
+        citySignals = await citySignalsRes.json();
 
         populateInputs();
         updateLocaleFromCountry();
@@ -923,13 +1156,82 @@ async function loadReferenceData() {
     }
 }
 
+function renderChecklistGroups(groups, selectedIds = [], kind) {
+    const selected = new Set(selectedIds);
+    return groups.map((group) => {
+        const allSelected = group.options.every((option) => selected.has(option.id));
+        return `
+            <section class="tree-group" data-group-id="${group.id}">
+                <label class="tree-parent">
+                    <input type="checkbox" data-kind="${kind}" data-node-type="parent" data-group-id="${group.id}" ${allSelected ? "checked" : ""}>
+                    <span class="tree-parent-title">${escapeHtml(group.title)}</span>
+                </label>
+                <div class="tree-children">
+                    ${group.options.map((option) => `
+                        <label class="tree-child">
+                            <input
+                                type="checkbox"
+                                value="${option.id}"
+                                data-kind="${kind}"
+                                data-node-type="child"
+                                data-group-id="${group.id}"
+                                data-label="${escapeHtml(option.label)}"
+                                ${option.normalized ? `data-normalized="${escapeHtml(option.normalized)}"` : ""}
+                                ${selected.has(option.id) ? "checked" : ""}
+                            >
+                            <span>${escapeHtml(option.label)}</span>
+                        </label>
+                    `).join("")}
+                </div>
+            </section>
+        `;
+    }).join("");
+}
+
+function handleChecklistChange(event, container) {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) return;
+
+    const groupId = target.dataset.groupId;
+    if (!groupId) return;
+
+    const group = container.querySelector(`.tree-group[data-group-id="${groupId}"]`);
+    if (!group) return;
+
+    const parent = group.querySelector('input[data-node-type="parent"]');
+    const children = [...group.querySelectorAll('input[data-node-type="child"]')];
+
+    if (target.dataset.nodeType === "parent") {
+        children.forEach((child) => {
+            child.checked = target.checked;
+        });
+    }
+
+    syncChecklistParent(group, parent, children);
+}
+
+function syncChecklistParent(group, parent = null, children = null) {
+    const resolvedParent = parent || group.querySelector('input[data-node-type="parent"]');
+    const resolvedChildren = children || [...group.querySelectorAll('input[data-node-type="child"]')];
+    if (!resolvedParent || resolvedChildren.length === 0) return;
+
+    const checkedCount = resolvedChildren.filter((child) => child.checked).length;
+    resolvedParent.checked = checkedCount === resolvedChildren.length;
+    resolvedParent.indeterminate = checkedCount > 0 && checkedCount < resolvedChildren.length;
+}
+
+function syncAllChecklistParents(container) {
+    container.querySelectorAll(".tree-group").forEach((group) => syncChecklistParent(group));
+}
+
 function populateInputs(preserved = {}) {
     const previousRole = preserved.role || roleSelect.value;
     const previousCountry = preserved.country || countrySelect.value;
     const previousCity = preserved.city || cityInput.value;
-    const previousSegment = preserved.segment || segmentSelect.value;
+    const previousPersonaSelections = preserved.personaSelections || getSelectedPersonaOptionIds();
     const previousSegmentCustom = preserved.segmentCustom || segmentCustomInput.value;
-    const previousDevices = preserved.devices || getSelectedDevices();
+    const previousDeviceSelections = preserved.deviceSelections || getSelectedDeviceOptionIds();
+    const previousDeviceCustom = preserved.deviceCustom || deviceCustomInput.value;
 
     roleSelect.innerHTML = ROLE_LENSES.map((role) => (
         `<option value="${role.id}">${getRoleTitle(role.id)} (${getRoleFocus(role.id)})</option>`
@@ -938,37 +1240,49 @@ function populateInputs(preserved = {}) {
     countrySelect.innerHTML = marketOptions.map((market) => (
         `<option value="${market.siteCode}">${market.label}</option>`
     )).join("");
-    segmentSelect.innerHTML = SEGMENTS.map((segment) => (
-        `<option value="${segment}">${segment}</option>`
-    )).join("");
-    deviceGrid.innerHTML = exploreMatrix.deviceCategories.map((device) => `
-        <label class="device-option">
-            <input type="checkbox" value="${device.categoryName}">
-            <span>${getCategoryName(device.categoryName)}</span>
-        </label>
-    `).join("");
+    personaGroups.innerHTML = renderChecklistGroups(PERSONA_CATEGORY_GROUPS, previousPersonaSelections, "persona");
+    deviceGrid.innerHTML = renderChecklistGroups(DEVICE_CATEGORY_GROUPS, previousDeviceSelections, "device");
 
     if (previousRole) roleSelect.value = previousRole;
     if (previousCountry && marketOptions.some((market) => market.siteCode === previousCountry)) countrySelect.value = previousCountry;
     if (previousCity) cityInput.value = previousCity;
-    if (previousSegment) segmentSelect.value = previousSegment;
     if (previousSegmentCustom) segmentCustomInput.value = previousSegmentCustom;
-    deviceGrid.querySelectorAll('input[type="checkbox"]').forEach((input) => {
-        input.checked = previousDevices.includes(input.value);
-    });
-    updateSegmentVisibility();
+    if (previousDeviceCustom) deviceCustomInput.value = previousDeviceCustom;
+    syncAllChecklistParents(personaGroups);
+    syncAllChecklistParents(deviceGrid);
 }
 
 async function handleUnlock() {
-    if (!accessCodeInput.value.trim()) {
-        resultDiv.innerHTML = `<p class="error">${t("accessRequired")}</p>`;
+    if (isUnlocking) return;
+
+    const code = accessCodeInput.value.trim();
+    if (!code) {
+        setAccessStatus("error", "accessRequired");
         return;
     }
 
-    const verified = await verifyAccessCode(accessCodeInput.value.trim());
-    if (!verified) {
-        resultDiv.innerHTML = `<p class="placeholder">${t("unlockedPlaceholder")}</p>`;
+    setUnlockBusy(true);
+    setAccessStatus("pending", "accessVerifying");
+
+    const verification = await verifyAccessCode(code);
+    accessCodeInput.value = "";
+    setUnlockBusy(false);
+
+    if (!verification.ok) {
+        const key = verification.reason === "locked"
+            ? "accessLocked"
+            : verification.reason === "invalid"
+                ? "accessInvalid"
+                : "accessUnavailable";
+        if (verification.reason === "locked") {
+            startAccessLockout(verification.retryAfterSeconds);
+        } else {
+            setAccessStatus("error", key, formatInvalidAccessMessage(verification.remainingAttempts, verification.message));
+        }
+        return;
     }
+
+    setAccessStatus("success", "accessGranted");
     showGuideScreen();
 }
 
@@ -978,99 +1292,310 @@ async function verifyAccessCode(code) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
-            body: JSON.stringify({ accessCode: code })
+            body: JSON.stringify({
+                accessCode: code,
+                clientSessionId: accessClientSessionId
+            })
         });
 
-        if (!response.ok) throw new Error("verify endpoint not active");
-        const payload = await response.json();
-        return Boolean(payload?.ok && payload?.session?.authenticated);
+        const payload = await response.json().catch(() => null);
+
+        if (response.ok) {
+            return {
+                ok: Boolean(payload?.ok && payload?.session?.authenticated)
+            };
+        }
+
+        if (response.status === 401) {
+            return {
+                ok: false,
+                reason: "invalid",
+                message: payload?.error?.message || t("accessInvalid"),
+                remainingAttempts: Number(payload?.remainingAttempts ?? 0)
+            };
+        }
+
+        if (response.status === 429) {
+            return {
+                ok: false,
+                reason: "locked",
+                message: payload?.error?.message || t("accessLocked"),
+                retryAfterSeconds: Number(payload?.retryAfterSeconds || 0)
+            };
+        }
+
+        return {
+            ok: false,
+            reason: "unavailable",
+            message: payload?.error?.message || t("accessUnavailable")
+        };
     } catch {
-        // Server integration is intentionally deferred. The UI proceeds in placeholder mode.
-        return false;
+        return {
+            ok: false,
+            reason: "unavailable",
+            message: t("accessUnavailable")
+        };
     }
 }
 
 function openWizard() {
+    setGuideChoice("yes");
     guideScreen.classList.add("hidden");
     wizardScreen.classList.remove("hidden");
     resultDiv.innerHTML = `<p class="placeholder">${t("startAfterGuide")}</p>`;
 }
 
 function showGuideCopy() {
+    setGuideChoice("no");
     guideCopy.innerHTML = buildGuideMarkup();
     guideCopy.classList.remove("hidden");
     guideContinueBtn.classList.remove("hidden");
 }
 
+function setGuideChoice(choice) {
+    guideYesBtn.classList.toggle("active", choice === "yes");
+    guideNoBtn.classList.toggle("active", choice === "no");
+}
+
 function buildGuideMarkup() {
     if (currentLocale === "ko") {
         return `
-            <strong>[ Scenario Agent Quick Guide ]</strong>
-            <p class="subhead">입력 4개만 주세요 (Q1~Q4)</p>
-            <ul>
-                <li>Q1 담당업무: 리테일/닷컴 캠페인/브랜드 마케팅</li>
-                <li>Q2 국가·지역: 국가 + 도시/주</li>
-                <li>Q3 타겟 고객: 연령·가구·시즌/상황</li>
-                <li>Q4 기기·환경: 보유 기기 + 제약</li>
-            </ul>
-            <p class="subhead">진행 방식</p>
-            <ul>
-                <li>질문은 한 번에 하나씩, 답하면 다음으로 넘어갑니다</li>
-                <li>부족하면 확인 질문 1~2개만 최소로 추가합니다</li>
-                <li>불확실한 내용은 ‘확인 필요(Assumption)’로 분리해 제공합니다</li>
-            </ul>
-            <p class="subhead">결과물</p>
-            <ul>
-                <li>최종 출력은 01~09 고정 섹션으로 정리됩니다</li>
-                <li>고객 경험 중심 + 프리미엄 삼성 톤으로 완성됩니다</li>
-            </ul>
-            <p>가이드를 모두 확인하셨다면 '시작'으로 넘어가 주세요.</p>
+            <div class="guide-hero">
+                <span class="guide-kicker">Scenario Guide</span>
+                <h3>4단계 입력만으로<br>완성도 높은 시나리오를 만듭니다</h3>
+                <p class="guide-lead">핵심만 빠르게 선택하고, 필요한 정보만 더해 바로 검토할 수 있는 결과로 정리합니다.</p>
+            </div>
+            <div class="guide-grid">
+                <section class="guide-panel">
+                    <p class="guide-index">01 Inputs</p>
+                    <h4>먼저 기준이 되는 4가지를 정합니다</h4>
+                    <div class="guide-stack">
+                        <div class="guide-item"><strong>Q1 담당업무</strong><span>리테일, 닷컴 캠페인, 브랜드 마케팅 중 관점을 고릅니다.</span></div>
+                        <div class="guide-item"><strong>Q2 국가·지역</strong><span>대상 국가와 도시 또는 주를 함께 정합니다.</span></div>
+                        <div class="guide-item"><strong>Q3 타겟 고객</strong><span>가구 특성, 시즌, 생활 맥락을 짧게 적습니다.</span></div>
+                        <div class="guide-item"><strong>Q4 기기·환경</strong><span>핵심 기기 조합과 실제 제약 조건을 선택합니다.</span></div>
+                    </div>
+                </section>
+                <section class="guide-panel">
+                    <p class="guide-index">02 Flow</p>
+                    <h4>입력은 간결하게, 결과는 더 선명하게</h4>
+                    <div class="guide-stack">
+                        <div class="guide-item"><strong>Step by step</strong><span>질문은 한 번에 하나씩 열려 흐름이 명확합니다.</span></div>
+                        <div class="guide-item"><strong>Lean follow-up</strong><span>필요할 때만 추가 확인 포인트를 최소로 더합니다.</span></div>
+                        <div class="guide-item"><strong>Clear output</strong><span>불확실한 내용은 assumption으로 분리해 결과의 완성도를 유지합니다.</span></div>
+                    </div>
+                </section>
+            </div>
+            <div class="guide-footer">
+                <p class="guide-note">가이드를 확인했다면 아래 Start로 바로 Q1부터 시작하세요. 짧은 입력만으로도 검토와 공유에 바로 쓸 수 있는 결과를 만듭니다.</p>
+            </div>
         `;
     }
 
     return `
-        <strong>[ Scenario Agent Quick Guide ]</strong>
-        <p class="subhead">Please provide only four inputs (Q1-Q4)</p>
-        <ul>
-            <li>Q1 Work Lens: Retail / Dotcom Campaign / Brand Marketing</li>
-            <li>Q2 Country & Region: country + city/state</li>
-            <li>Q3 Target Customer: age / household / season or situation</li>
-            <li>Q4 Devices & Environment: owned devices + constraints</li>
-        </ul>
-        <p class="subhead">How It Works</p>
-        <ul>
-            <li>Questions appear one at a time, and each answer moves to the next step</li>
-            <li>If needed, only one or two short follow-up checks are added</li>
-            <li>Uncertain points are separated clearly as Assumptions</li>
-        </ul>
-        <p class="subhead">Output</p>
-        <ul>
-            <li>The final result is organized into fixed sections 01-09</li>
-            <li>The output is shaped around customer experience with a premium Samsung tone</li>
-        </ul>
-        <p>If you are ready, press Start.</p>
+        <div class="guide-hero">
+            <span class="guide-kicker">Scenario Guide</span>
+            <h3>Build a usable scenario<br>from four guided inputs</h3>
+            <p class="guide-lead">Pick the essentials first. The agent turns them into a sharper, review-ready scenario.</p>
+        </div>
+        <div class="guide-grid">
+            <section class="guide-panel">
+                <p class="guide-index">01 Inputs</p>
+                <h4>What you set first</h4>
+                <div class="guide-stack">
+                    <div class="guide-item"><strong>Q1 Work Lens</strong><span>Retail, Dotcom Campaign, or Brand Marketing</span></div>
+                    <div class="guide-item"><strong>Q2 Country & Region</strong><span>Target market plus city, state, or region</span></div>
+                    <div class="guide-item"><strong>Q3 Target Customer</strong><span>Household type, season, and real-life context</span></div>
+                    <div class="guide-item"><strong>Q4 Devices & Environment</strong><span>Core device mix and practical constraints</span></div>
+                </div>
+            </section>
+            <section class="guide-panel">
+                <p class="guide-index">02 Flow</p>
+                <h4>Simple input, clearer output</h4>
+                <div class="guide-stack">
+                    <div class="guide-item"><strong>Step by step</strong><span>One question opens at a time.</span></div>
+                    <div class="guide-item"><strong>Lean follow-up</strong><span>Extra checks appear only when needed.</span></div>
+                    <div class="guide-item"><strong>Clear output</strong><span>Assumptions stay separated for faster review.</span></div>
+                </div>
+            </section>
+        </div>
+        <div class="guide-footer">
+            <p class="guide-note">If this is clear, press Start below and move into Q1. Keep the input short and the output ready to review.</p>
+        </div>
     `;
 }
 
-async function checkExistingSession() {
+function showGuideScreen() {
+    clearAccessLockout();
+    clearAccessStatus();
+    setGuideChoice("");
+    accessScreen.classList.add("hidden");
+    guideScreen.classList.remove("hidden");
+    logoutBtn.classList.remove("hidden");
+}
+
+async function handleLogout() {
+    logoutBtn.disabled = true;
+    wizardLogoutBtn.disabled = true;
+
     try {
-        const response = await fetch(ACCESS_API.sessionEndpoint, {
-            method: "GET",
+        await fetch(ACCESS_API.logoutEndpoint, {
+            method: "POST",
             credentials: "include"
         });
-        if (!response.ok) return;
-        const payload = await response.json();
-        if (payload?.ok && payload?.session?.authenticated) {
-            showGuideScreen();
-        }
     } catch {
-        // Session endpoint is optional until backend is connected.
+        // Even if the network call fails, reset local UI back to the locked state.
+    } finally {
+        resetToAccessScreen();
+        logoutBtn.disabled = false;
+        wizardLogoutBtn.disabled = false;
     }
 }
 
-function showGuideScreen() {
-    accessScreen.classList.add("hidden");
-    guideScreen.classList.remove("hidden");
+function setAccessStatus(variant, key, message = "") {
+    accessStatus.className = `access-status ${variant}`;
+    accessStatus.dataset.key = key;
+    accessStatus.textContent = message || t(key);
+}
+
+function clearAccessStatus() {
+    accessStatus.className = "access-status hidden";
+    accessStatus.dataset.key = "";
+    accessStatus.textContent = "";
+}
+
+function setUnlockBusy(isBusy) {
+    isUnlocking = isBusy;
+    syncAccessControlState();
+}
+
+function resetToAccessScreen() {
+    clearAccessLockout();
+    guideScreen.classList.add("hidden");
+    wizardScreen.classList.add("hidden");
+    guideCopy.classList.add("hidden");
+    guideContinueBtn.classList.add("hidden");
+    setGuideChoice("");
+    accessScreen.classList.remove("hidden");
+    logoutBtn.classList.add("hidden");
+    guideCopy.innerHTML = "";
+    currentStep = 1;
+    latestPayload = null;
+    roleSelect.selectedIndex = 0;
+    if (marketOptions[0]) countrySelect.value = marketOptions[0].siteCode;
+    cityInput.value = "";
+    personaGroups.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+        input.checked = false;
+    });
+    segmentCustomInput.value = "";
+    purposeInput.value = "";
+    deviceGrid.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+        input.checked = false;
+    });
+    deviceCustomInput.value = "";
+    syncAllChecklistParents(personaGroups);
+    syncAllChecklistParents(deviceGrid);
+    updateLocaleFromCountry();
+    updateRoleBrief();
+    syncWizardUi();
+    updateStatePreview();
+    accessCodeInput.value = "";
+    setUnlockBusy(false);
+    clearAccessStatus();
+    setAccessStatus("success", "loggedOut");
+    resultDiv.innerHTML = `<p class="placeholder">${t("outputPlaceholder")}</p>`;
+}
+
+function formatLockoutMessage(retryAfterSeconds, fallbackMessage = "") {
+    const seconds = Number(retryAfterSeconds || 0);
+    if (!seconds) return fallbackMessage || t("accessLocked");
+
+    return t("accessLockedNewWindow").replace("{time}", formatDuration(seconds));
+}
+
+function formatDuration(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    if (minutes <= 0) {
+        return currentLocale === "ko"
+            ? `${seconds}초`
+            : currentLocale === "de"
+                ? `${seconds} Sek.`
+                : `${seconds}s`;
+    }
+
+    return currentLocale === "ko"
+        ? `${minutes}분 ${seconds}초`
+        : currentLocale === "de"
+            ? `${minutes} Min. ${seconds} Sek.`
+            : `${minutes}m ${seconds}s`;
+}
+
+function formatInvalidAccessMessage(remainingAttempts, fallbackMessage = "") {
+    const remaining = Number(remainingAttempts);
+    if (Number.isFinite(remaining) && remaining > 0) {
+        return t("accessInvalidRemaining").replace("{count}", String(remaining));
+    }
+
+    return fallbackMessage || t("accessInvalid");
+}
+
+function ensureAccessClientSessionId() {
+    try {
+        const existing = window.sessionStorage.getItem(ACCESS_CLIENT_SESSION_KEY);
+        if (existing) return existing;
+
+        const next = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        window.sessionStorage.setItem(ACCESS_CLIENT_SESSION_KEY, next);
+        return next;
+    } catch {
+        return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    }
+}
+
+function startAccessLockout(retryAfterSeconds) {
+    const seconds = Number(retryAfterSeconds || 0);
+    if (!seconds) {
+        setAccessStatus("error", "accessLocked");
+        return;
+    }
+
+    clearAccessLockout();
+    isAccessLocked = true;
+    accessLockoutEndsAt = Date.now() + seconds * 1000;
+    syncAccessControlState();
+    updateAccessLockoutStatus();
+    accessLockoutTimerId = window.setInterval(updateAccessLockoutStatus, 1000);
+}
+
+function clearAccessLockout() {
+    isAccessLocked = false;
+    accessLockoutEndsAt = 0;
+    if (accessLockoutTimerId) {
+        window.clearInterval(accessLockoutTimerId);
+        accessLockoutTimerId = null;
+    }
+    syncAccessControlState();
+}
+
+function updateAccessLockoutStatus() {
+    const remainingSeconds = Math.max(0, Math.ceil((accessLockoutEndsAt - Date.now()) / 1000));
+
+    if (!remainingSeconds) {
+        clearAccessLockout();
+        clearAccessStatus();
+        return;
+    }
+
+    setAccessStatus("error", "accessLockedWithTime", formatLockoutMessage(remainingSeconds));
+}
+
+function syncAccessControlState() {
+    const isDisabled = isUnlocking || isAccessLocked;
+    unlockBtn.disabled = isDisabled;
+    accessCodeInput.disabled = isDisabled;
+    accessToggleBtn.disabled = isDisabled;
 }
 
 function renderWizardProgress() {
@@ -1084,14 +1609,107 @@ function renderWizardProgress() {
 
 function updateStepInsight() {
     const insight = getStepInsight();
-    stepInsight.innerHTML = `<strong>${escapeHtml(insight.title)}</strong><p>${escapeHtml(insight.body)}</p>`;
+    stepInsight.innerHTML = buildInsightMarkup(insight);
+    updateQuestionHelpers();
+    stepInsight.classList.remove("insight-refresh");
+    void stepInsight.offsetWidth;
+    stepInsight.classList.add("insight-refresh");
 }
 
 function getStepInsight() {
+    if (currentStep === 1) return buildStep1Insight();
     if (currentStep === 2) return buildStep2Insight();
     if (currentStep === 3) return buildStep3Insight();
     if (currentStep === 4) return buildStep4Insight();
     return STEP_INSIGHTS[currentStep];
+}
+
+function buildInsightMarkup(insight) {
+    const badge = insight.badge ? `<span class="insight-badge">${escapeHtml(insight.badge)}</span>` : "";
+    const summary = insight.summary ? `<p class="insight-summary">${escapeHtml(insight.summary)}</p>` : "";
+    const body = insight.body ? `<p class="insight-body">${escapeHtml(insight.body)}</p>` : "";
+    const spotlight = insight.spotlight ? `<p class="insight-spotlight">${escapeHtml(insight.spotlight)}</p>` : "";
+    const chips = Array.isArray(insight.chips) && insight.chips.length
+        ? `<div class="insight-chips">${insight.chips.map((chip) => `<span class="insight-chip">${escapeHtml(chip)}</span>`).join("")}</div>`
+        : "";
+    const rows = Array.isArray(insight.rows) && insight.rows.length
+        ? insight.rows.map((row) => `
+            <div class="insight-row">
+                <span class="insight-label">${escapeHtml(row.label)}</span>
+                <p>${escapeHtml(row.value)}</p>
+            </div>
+        `).join("")
+        : [
+            insight.action ? {
+                label: currentLocale === "ko" ? "다음 액션" : currentLocale === "de" ? "Nächster Schritt" : "Next move",
+                value: insight.action
+            } : null,
+            insight.signal ? {
+                label: currentLocale === "ko" ? "현재 신호" : currentLocale === "de" ? "Aktuelles Signal" : "Current signal",
+                value: insight.signal
+            } : null
+        ].filter(Boolean).map((row) => `
+            <div class="insight-row">
+                <span class="insight-label">${escapeHtml(row.label)}</span>
+                <p>${escapeHtml(row.value)}</p>
+            </div>
+        `).join("");
+
+    return `
+        <div class="insight-head">
+            ${badge}
+            <strong>${escapeHtml(insight.title)}</strong>
+        </div>
+        ${summary}
+        ${body}
+        ${spotlight}
+        ${chips}
+        <div class="insight-grid">${rows}</div>
+    `;
+}
+
+function buildStep1Insight() {
+    const role = ROLE_LENSES.find((item) => item.id === roleSelect.value);
+    if (!role) return STEP_INSIGHTS[1];
+
+    return {
+        badge: currentLocale === "ko" ? "Q1 Lens" : currentLocale === "de" ? "Q1 Perspektive" : "Q1 Lens",
+        title: currentLocale === "ko" ? `${getRoleTitle(role.id)} 관점에서는 이런 흐름이 유리합니다` : currentLocale === "de" ? `Aus der Perspektive ${getRoleTitle(role.id)} wirkt dieser Aufbau stärker` : `${getRoleTitle(role.id)} is likely to respond better to this flow`,
+        summary: currentLocale === "ko"
+            ? `${getRoleFocus(role.id)} 기준으로 결과물의 구조를 먼저 정렬했습니다.`
+            : currentLocale === "de"
+                ? `Die Ergebnisstruktur wurde zuerst an ${getRoleFocus(role.id)} ausgerichtet.`
+                : `The output structure is now aligned to ${getRoleFocus(role.id)} first.`,
+        body: currentLocale === "ko"
+            ? `${getRoleFocus(role.id)} 관점에서는 기능 소개보다 ${getRoleBrief(role.id).replace(".", "")} 흐름이 더 설득력 있습니다. 다음 단계에서는 이 관점에 맞는 지역과 타겟을 잡아보면 됩니다.`
+            : currentLocale === "de"
+                ? `Aus Sicht von ${getRoleFocus(role.id)} ist dieser Aufbau meist überzeugender: ${getRoleBrief(role.id)} Als Nächstes lohnt es sich, Markt und Zielgruppe passend dazu einzugrenzen.`
+                : `From a ${getRoleFocus(role.id)} perspective, this path is usually stronger: ${getRoleBrief(role.id)} Next, narrow the market and audience to match that lens.`,
+        spotlight: currentLocale === "ko"
+            ? `${getRoleTitle(role.id)}는 결과물의 첫 문장과 정보 밀도를 결정합니다.`
+            : currentLocale === "de"
+                ? `${getRoleTitle(role.id)} bestimmt den ersten Satz und die Informationsdichte des Ergebnisses.`
+                : `${getRoleTitle(role.id)} will shape the first line and information density of the output.`,
+        chips: [getRoleTitle(role.id), getRoleFocus(role.id)],
+        rows: [
+            {
+                label: currentLocale === "ko" ? "강하게 가야 할 포인트" : currentLocale === "de" ? "Stärker betonen" : "Lean into",
+                value: currentLocale === "ko"
+                    ? getRoleBrief(role.id)
+                    : currentLocale === "de"
+                        ? getRoleBrief(role.id)
+                        : getRoleBrief(role.id)
+            },
+            {
+                label: currentLocale === "ko" ? "다음에 정할 것" : currentLocale === "de" ? "Als Nächstes festlegen" : "Next decision",
+                value: currentLocale === "ko"
+                    ? "Q2에서 국가와 도시를 구체화해 이 관점이 가장 잘 먹히는 장면을 좁혀보세요."
+                    : currentLocale === "de"
+                        ? "Präzisieren Sie in Q2 Land und Region, damit der stärkste Nutzungsmoment klarer wird."
+                        : "Use Q2 to narrow the country and city so the strongest usage moment becomes clearer."
+            }
+        ]
+    };
 }
 
 function buildStep2Insight() {
@@ -1104,14 +1722,83 @@ function buildStep2Insight() {
 
     const country = resolveCountry(selectedMarket);
     const regional = getRegionalSignals(country.countryCode, city, { missionBucket: "Discover" });
+    const trend = getCountryTrend(country.countryCode);
+    const citySignal = getCitySignal(country.countryCode, city);
     const marketLabel = city ? `${getCountryName(country.countryCode)} ${city}` : getCountryName(country.countryCode);
     const direction = inferRegionalDirection(country.countryCode);
+    const trendLine = trend?.headline || trend?.signal || trend?.implication || regional.implication;
+    const citySpotlight = citySignal?.cityDisplay
+        ? (currentLocale === "ko"
+            ? `${citySignal.cityDisplay} 입력으로 도시 맥락이 추가되었습니다.`
+            : currentLocale === "de"
+                ? `Für ${citySignal.cityDisplay} wurde jetzt ein zusätzlicher Stadtkontext ergänzt.`
+                : `A city-layer read for ${citySignal.cityDisplay} has now been added.`)
+        : (currentLocale === "ko"
+            ? "도시를 입력하면 지역성과 기후, 생활 리듬까지 더 좁혀서 해석합니다."
+            : currentLocale === "de"
+                ? "Wenn Sie eine Stadt ergänzen, werden Region, Klima und Lebensrhythmus zusätzlich eingegrenzt."
+                : "Add a city to narrow the read further through local context, climate, and daily rhythm.");
+    const rows = [
+        {
+            label: currentLocale === "ko" ? "최근 국가 트렌드" : currentLocale === "de" ? "Aktueller Markttreiber" : "Recent country trend",
+            value: trendLine
+        },
+        {
+            label: currentLocale === "ko" ? "시장 해석" : currentLocale === "de" ? "Marktlesart" : "Market read",
+            value: regional.observation
+        },
+        {
+            label: currentLocale === "ko" ? "왜 이 장면이 먹히는지" : currentLocale === "de" ? "Warum dieser Moment wirkt" : "Why this lands",
+            value: regional.insight
+        }
+    ];
+
+    if (citySignal) {
+        rows.push(
+            {
+                label: currentLocale === "ko" ? "도시 일반 특성" : currentLocale === "de" ? "Stadtprofil" : "City profile",
+                value: citySignal.region
+            },
+            {
+                label: currentLocale === "ko" ? "기후 / 주거 맥락" : currentLocale === "de" ? "Klima / Wohnen" : "Climate / housing",
+                value: `${citySignal.climate} / ${citySignal.housing}`
+            },
+            {
+                label: currentLocale === "ko" ? "다수의 행동 스타일" : currentLocale === "de" ? "Typischer Verhaltensstil" : "Common behavior style",
+                value: citySignal.behavior
+            },
+            {
+                label: currentLocale === "ko" ? "시나리오 시사점" : currentLocale === "de" ? "Szenario-Folge" : "Scenario implication",
+                value: citySignal.implication
+            }
+        );
+    } else {
+        rows.push({
+            label: currentLocale === "ko" ? "다음에 붙일 요소" : currentLocale === "de" ? "Nächstes Element" : "Next input to add",
+            value: currentLocale === "ko"
+                ? "도시를 입력하면 일반적 지역성, 기후, 생활 행동 스타일을 더 구체적으로 붙일 수 있습니다."
+                : currentLocale === "de"
+                    ? "Wenn Sie eine Stadt ergänzen, können regionale Eigenheiten, Klima und Verhaltensmuster konkreter ergänzt werden."
+                    : "If you add a city, the card can extend into local traits, climate, and common behavior patterns."
+        });
+    }
 
     return {
-        title: currentLocale === "ko" ? "이 지역에서는 이런 장면이 더 잘 먹힙니다" : "This region responds better to this kind of moment",
+        badge: currentLocale === "ko" ? "Q2 Region" : currentLocale === "de" ? "Q2 Region" : "Q2 Region",
+        title: currentLocale === "ko" ? `${marketLabel}에서는 이런 장면이 더 빨리 읽힙니다` : currentLocale === "de" ? `In ${marketLabel} wird dieser Moment schneller verstanden` : `${marketLabel} is more likely to respond to this kind of moment`,
+        summary: currentLocale === "ko"
+            ? `${marketLabel} 맥락에서 반응 가능성이 높은 장면을 추리는 단계입니다.`
+            : currentLocale === "de"
+                ? `Hier wird der wahrscheinlich stärkste Nutzungsmoment für ${marketLabel} eingegrenzt.`
+                : `This is narrowing the usage moment most likely to land in ${marketLabel}.`,
         body: currentLocale === "ko"
-            ? `${marketLabel}은 ${regional.observation} 성격이 강합니다. 그래서 ${regional.insight.toLowerCase()} 흐름이 유리하고, 시나리오는 ${direction} 쪽으로 잡는 편이 좋습니다.`
-            : `${marketLabel} shows a context shaped by ${regional.observation}. This makes ${regional.insight.toLowerCase()} more compelling, so the scenario should lean toward ${direction}.`
+            ? `${regional.observation} 성격이 강해서 ${regional.insight.toLowerCase()} 포인트가 더 잘 작동합니다. ${city ? `${city}까지 지정한 만큼` : "이제"} 시나리오는 ${direction} 쪽으로 더 날카롭게 밀어도 됩니다.`
+            : currentLocale === "de"
+                ? `Der Kontext ist stark von ${regional.observation} geprägt. Dadurch wirkt ${regional.insight.toLowerCase()} besser, und das Szenario kann stärker in Richtung ${direction} aufgebaut werden.`
+                : `This context is shaped by ${regional.observation}, so ${regional.insight.toLowerCase()} is more likely to land. The scenario can now lean more clearly toward ${direction}.`,
+        spotlight: citySpotlight,
+        chips: [marketLabel, direction, ...(citySignal ? [citySignal.cityDisplay] : [])],
+        rows
     };
 }
 
@@ -1128,12 +1815,49 @@ function buildStep3Insight() {
     const place = city ? `${city} 생활권` : "이 타겟";
     const featureText = traits.slice(0, 2).join(", ");
     const direction = inferScenarioDirection(traits, purpose);
+    const personaCount = getSelectedPersonaLabels().length;
+    const selectedLabels = getSelectedPersonaLabels();
+    const primaryPersona = selectedLabels[0] || (currentLocale === "ko" ? "타겟 탐색 중" : currentLocale === "de" ? "Zielgruppe in Arbeit" : "Audience forming");
 
     return {
-        title: currentLocale === "ko" ? "이 타겟은 이렇게 읽히고 있습니다" : "This target is being interpreted like this",
+        badge: currentLocale === "ko" ? "Q3 Audience" : currentLocale === "de" ? "Q3 Zielgruppe" : "Q3 Audience",
+        title: currentLocale === "ko" ? `지금 타겟 해석은 ${personaCount || 1}개 축으로 모이고 있습니다` : currentLocale === "de" ? `Die Zielgruppe verdichtet sich jetzt über ${personaCount || 1} Achsen` : `The target is now clustering around ${personaCount || 1} signal layers`,
+        summary: currentLocale === "ko"
+            ? "타겟 조합이 결과 문장의 톤과 문제 정의를 직접 바꾸기 시작했습니다."
+            : currentLocale === "de"
+                ? "Die Zielgruppen-Kombination verändert jetzt direkt Ton und Problemdefinition des Ergebnisses."
+                : "The audience mix is now directly changing the tone and problem definition of the output.",
         body: currentLocale === "ko"
-            ? `${place}의 ${selectedSegment || "사용자"}는 ${featureText} 특징이 강하게 보입니다. 그래서 시나리오는 ${direction} 쪽으로 끌고 가는 편이 좋습니다.`
-            : `The ${selectedSegment || "target"} in ${place} shows strong signals of ${featureText}. The scenario should therefore lean toward ${direction}.`
+            ? `${place}의 ${selectedSegment || "사용자"}는 ${featureText} 특징이 강하게 보입니다. ${purpose ? "입력한 상황 설명까지 붙어서" : "여기에 상황 설명까지 더하면"} 시나리오는 ${direction} 쪽으로 훨씬 선명해집니다.`
+            : currentLocale === "de"
+                ? `Für ${selectedSegment || "die Zielgruppe"} in ${place} zeigen sich vor allem ${featureText}. ${purpose ? "Mit Ihrer Situationsbeschreibung" : "Mit einer ergänzten Situationsbeschreibung"} kann das Szenario noch klarer in Richtung ${direction} geführt werden.`
+                : `The ${selectedSegment || "target"} in ${place} is showing strong signals of ${featureText}. ${purpose ? "With the context you already added," : "If you add one more concrete context line,"} the scenario can lean much more clearly toward ${direction}.`,
+        spotlight: currentLocale === "ko"
+            ? purpose ? "이 단계부터는 같은 시장이어도 누구를 위해 쓰는지에 따라 결과 톤이 크게 달라집니다." : "아직은 타겟 뼈대만 잡힌 상태입니다. 상황 한 줄이 들어오면 카드 성격이 훨씬 달라집니다."
+            : currentLocale === "de"
+                ? purpose ? "Ab hier verändert sich der Ergebniston stark je nachdem, für wen die Geschichte geschrieben wird." : "Aktuell steht vor allem das Zielgruppen-Grundgerüst. Eine konkrete Situation verändert den Charakter der Karte deutlich."
+                : purpose ? "From here, the output tone changes sharply depending on who the scenario is for." : "Right now the audience skeleton is there, but one concrete context line will change the card character a lot.",
+        chips: selectedLabels.slice(0, 4).length ? selectedLabels.slice(0, 4) : [primaryPersona],
+        rows: [
+            {
+                label: currentLocale === "ko" ? "핵심 타겟 축" : currentLocale === "de" ? "Zielgruppenachse" : "Audience axis",
+                value: primaryPersona
+            },
+            {
+                label: currentLocale === "ko" ? "지금 읽히는 특징" : currentLocale === "de" ? "Aktuelle Lesart" : "Current read",
+                value: featureText || (currentLocale === "ko" ? "핵심 신호 수집 중" : currentLocale === "de" ? "Signale werden gesammelt" : "signals gathering")
+            },
+            {
+                label: currentLocale === "ko" ? "서사 방향" : currentLocale === "de" ? "Erzählrichtung" : "Narrative direction",
+                value: direction
+            },
+            {
+                label: currentLocale === "ko" ? "지금 필요한 입력" : currentLocale === "de" ? "Jetzt fehlt noch" : "Missing input",
+                value: purpose
+                    ? (currentLocale === "ko" ? "Q4에서 기기 조합을 줄이거나 넓혀 이 타겟에 맞는 첫 장면을 고정해 보세요." : currentLocale === "de" ? "Fixieren Sie in Q4 den ersten Moment über die passende Gerätekombination." : "Use Q4 to lock the first scene with the right device mix.")
+                    : (currentLocale === "ko" ? "집에 들어오는 순간, 반복되는 불편, 계절 변수 중 하나만 적어보세요." : currentLocale === "de" ? "Ergänzen Sie Heimkehr, wiederkehrende Reibung oder einen saisonalen Auslöser." : "Add arrival home, recurring friction, or a seasonal trigger.")
+            }
+        ]
     };
 }
 
@@ -1147,18 +1871,186 @@ function inferRegionalDirection(countryCode) {
     return directions[countryCode] || (currentLocale === "ko" ? "지역 생활 맥락에 맞는 직관적 사용 장면" : "an intuitive usage moment fitted to the local context");
 }
 
+function getLocalizedContent(record) {
+    if (!record || typeof record !== "object") return null;
+    return record[currentLocale] || record.en || record.ko || record.de || null;
+}
+
+function normalizeCityValue(value) {
+    return String(value || "")
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9가-힣]+/g, " ")
+        .trim();
+}
+
+function getCountryTrend(countryCode) {
+    const entry = countryTrends?.[countryCode];
+    return getLocalizedContent(entry);
+}
+
+function getCitySignal(countryCode, city) {
+    const normalizedCity = normalizeCityValue(city);
+    if (!normalizedCity) return null;
+
+    const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
+    const matchedEntry = cityEntries.find((entry) => (
+        entry.countryCode === countryCode
+        && Array.isArray(entry.aliases)
+        && entry.aliases.some((alias) => normalizeCityValue(alias) === normalizedCity)
+    ));
+
+    if (matchedEntry) {
+        const content = getLocalizedContent(matchedEntry.content);
+        return content ? { cityDisplay: matchedEntry.displayName || city, ...content } : null;
+    }
+
+    const fallback = citySignals?.fallbacks?.[countryCode];
+    const fallbackContent = getLocalizedContent(fallback);
+    return fallbackContent ? { cityDisplay: city, ...fallbackContent } : null;
+}
+
 function buildStep4Insight() {
-    const devices = getSelectedDevices().map((device) => getCategoryName(device));
-    if (devices.length === 0) return STEP_INSIGHTS[4];
+    const devices = getSelectedDeviceLabels();
+    const normalizedDevices = getSelectedDevices().map((device) => getCategoryName(device));
+    if (devices.length === 0 && normalizedDevices.length === 0) return STEP_INSIGHTS[4];
 
     const comboText = devices.slice(0, 3).join(", ");
-    const firstScene = inferFirstUseScene(devices);
+    const firstScene = inferFirstUseScene(normalizedDevices);
+    const deviceCount = devices.length;
+    const mixRead = deviceCount >= 4
+        ? (currentLocale === "ko" ? "확장형 멀티디바이스 조합" : currentLocale === "de" ? "erweiterte Multi-Device-Kombination" : "expanded multi-device mix")
+        : deviceCount === 3
+            ? (currentLocale === "ko" ? "균형 잡힌 핵심 조합" : currentLocale === "de" ? "ausgewogene Kernkombination" : "balanced core mix")
+            : deviceCount === 2
+                ? (currentLocale === "ko" ? "명확한 2기기 페어링" : currentLocale === "de" ? "klare Zwei-Geräte-Kombination" : "clear two-device pairing")
+                : (currentLocale === "ko" ? "단일 앵커 기기 중심" : currentLocale === "de" ? "einzelnes Ankergerät" : "single anchor device");
     return {
-        title: currentLocale === "ko" ? "기기 조합으로 첫 실행 장면이 더 선명해집니다" : "The device mix sharpens the first-use moment",
+        badge: currentLocale === "ko" ? "Q4 Devices" : currentLocale === "de" ? "Q4 Geräte" : "Q4 Devices",
+        title: currentLocale === "ko" ? `${deviceCount}개 기기 조합으로 첫 장면이 구체화되고 있습니다` : currentLocale === "de" ? `Mit ${deviceCount} Geräten wird der erste Moment konkreter` : `The first-use moment is becoming more concrete with ${deviceCount} devices`,
+        summary: currentLocale === "ko"
+            ? "이 단계에서는 기능 나열보다 어떤 생활 컷으로 시작할지가 거의 결정됩니다."
+            : currentLocale === "de"
+                ? "In diesem Schritt entscheidet sich fast schon, mit welchem Alltagsmoment das Szenario startet."
+                : "At this stage, the opening life moment is becoming more defined than the feature list itself.",
         body: currentLocale === "ko"
-            ? `${comboText} 조합이면 단일 기능 설명보다 연결된 생활 장면으로 설계하는 편이 좋습니다. 예를 들면 ${firstScene} 같은 첫 실행 장면으로 시작하고, 그 뒤에 반복 사용 루틴을 붙이는 구성이 좋습니다.`
-            : `With ${comboText}, it is better to frame a connected life moment rather than a single feature story. Start with a first-use moment such as ${firstScene}, then connect it to a repeat-use routine.`
+            ? `${comboText} 조합이면 단일 기능 설명보다 연결된 생활 장면으로 설계하는 편이 좋습니다. 지금은 ${firstScene} 같은 시작 컷이 자연스럽고, 여기서 한 번 더 줄이거나 보태면 결과 톤도 바로 달라집니다.`
+            : currentLocale === "de"
+                ? `Mit ${comboText} wirkt ein verbundener Alltagsmoment stärker als eine isolierte Funktionsbeschreibung. Ein Einstieg wie ${firstScene} passt jetzt gut, und schon ein Gerät mehr oder weniger verändert den Ton des Ergebnisses deutlich.`
+                : `With ${comboText}, a connected life moment is stronger than a single-feature explanation. A starting scene like ${firstScene} fits well here, and even one device more or less will noticeably change the output tone.`,
+        spotlight: currentLocale === "ko"
+            ? "기기 수와 조합 방식에 따라 결과는 기능 소개형, 루틴 제안형, 통합 장면형으로 완전히 달라집니다."
+            : currentLocale === "de"
+                ? "Geräteanzahl und Kombinationsart verändern das Ergebnis deutlich: Funktionsfokus, Routinenvorschlag oder integrierte Szene."
+                : "The number and type of devices change the output a lot: feature-led, routine-led, or fully integrated scene-led.",
+        chips: devices.slice(0, 5),
+        rows: [
+            {
+                label: currentLocale === "ko" ? "조합 성격" : currentLocale === "de" ? "Mix-Typ" : "Mix profile",
+                value: mixRead
+            },
+            {
+                label: currentLocale === "ko" ? "추천 시작 장면" : currentLocale === "de" ? "Empfohlener Startmoment" : "Best opening scene",
+                value: firstScene.replace(/^"|"$/g, "")
+            },
+            {
+                label: currentLocale === "ko" ? "메시지 톤 변화" : currentLocale === "de" ? "Tonverschiebung" : "Tone shift",
+                value: currentLocale === "ko"
+                    ? deviceCount >= 4 ? "통합 시나리오형으로 읽힙니다." : deviceCount >= 2 ? "연결된 생활 장면형으로 읽힙니다." : "핵심 기기 가치 제안형으로 읽힙니다."
+                    : currentLocale === "de"
+                        ? deviceCount >= 4 ? "Es liest sich wie ein integriertes Szenario." : deviceCount >= 2 ? "Es liest sich wie ein verbundener Alltagsmoment." : "Es liest sich wie ein fokussiertes Geräte-Nutzenversprechen."
+                        : deviceCount >= 4 ? "This reads like an integrated scenario." : deviceCount >= 2 ? "This reads like a connected life moment." : "This reads like a focused anchor-device value story."
+            },
+            {
+                label: currentLocale === "ko" ? "빌드 전 마지막 체크" : currentLocale === "de" ? "Letzter Check vor dem Build" : "Final check before build",
+                value: currentLocale === "ko"
+                    ? "이 조합이 맞으면 Scenario Build로 넘어가고, 아니면 기기 1개만 더 줄여 메시지를 또렷하게 만들어 보세요."
+                    : currentLocale === "de"
+                        ? "Wenn die Mischung passt, gehen Sie zu Scenario Build. Falls nicht, nehmen Sie ein Gerät heraus und schärfen Sie die Botschaft."
+                        : "If this mix feels right, move to Scenario Build. If not, remove one device to sharpen the message."
+            }
+        ]
     };
+}
+
+function updateQuestionHelpers() {
+    const stepPanels = document.querySelectorAll(".wizard-step");
+    const countryHelper = stepPanels[1]?.querySelector(".helper");
+    const segmentHelper = stepPanels[2]?.querySelector(".helper");
+    const deviceHelper = stepPanels[3]?.querySelector(".helper");
+
+    if (countryHelper) countryHelper.textContent = buildCountryHelperText();
+    if (segmentHelper) segmentHelper.textContent = buildPersonaHelperText();
+    if (deviceHelper) deviceHelper.textContent = buildDeviceHelperText();
+}
+
+function buildCountryHelperText() {
+    const selectedMarket = marketOptions.find((market) => market.siteCode === countrySelect.value);
+    const city = cityInput.value.trim();
+    if (!selectedMarket) return t("countryHelper");
+
+    const country = resolveCountry(selectedMarket);
+    const label = getCountryName(country.countryCode);
+    const location = city ? `${label} ${city}` : label;
+    const direction = inferRegionalDirection(country.countryCode);
+    const trend = getCountryTrend(country.countryCode);
+    const citySignal = getCitySignal(country.countryCode, city);
+
+    if (currentLocale === "ko") {
+        if (citySignal) {
+            return `${location} 기준으로는 ${trend?.headline || direction} 흐름이 유리하고, ${citySignal.climate}와 ${citySignal.behavior} 맥락까지 반영해 장면을 더 구체화합니다.`;
+        }
+        return `${location} 기준으로는 ${trend?.headline || direction} 흐름이 유리합니다. 도시나 주를 더 구체화하면 지역성, 기후, 생활 리듬까지 추가로 읽힙니다.`;
+    }
+    if (currentLocale === "de") {
+        if (citySignal) {
+            return `Für ${location} wirkt eher ${trend?.headline || direction}. Zusätzlich werden ${citySignal.climate} und ${citySignal.behavior} in die Lesart einbezogen.`;
+        }
+        return `Für ${location} wirkt eher ${trend?.headline || direction}. Wenn Sie Stadt oder Region ergänzen, kommen lokale Eigenheiten, Klima und Lebensrhythmus dazu.`;
+    }
+    if (citySignal) {
+        return `For ${location}, ${trend?.headline || direction} is more likely to resonate. The read now also folds in ${citySignal.climate} and ${citySignal.behavior}.`;
+    }
+    return `For ${location}, ${trend?.headline || direction} is more likely to resonate. Add a city or region and the card will extend into local traits, climate, and daily behavior.`;
+}
+
+function buildPersonaHelperText() {
+    const personas = getSelectedPersonaLabels();
+    const purpose = purposeInput.value.trim();
+    if (!personas.length && !purpose) return t("personaHelper");
+
+    const sample = personas.slice(0, 2).join(", ");
+    if (currentLocale === "ko") {
+        if (personas.length && !purpose) {
+            return `${sample}${personas.length > 2 ? " 외" : ""} 조합은 좋습니다. 이제 집에 들어오는 순간이나 반복되는 불편 1가지만 적으면 타겟 해석이 훨씬 선명해집니다.`;
+        }
+        return `${sample || "현재 타겟"} 기준으로 맥락이 잡히고 있습니다. 지금 입력한 상황 설명이 결과 톤과 메시지 우선순위를 직접 바꾸게 됩니다.`;
+    }
+    if (currentLocale === "de") {
+        if (personas.length && !purpose) {
+            return `Die Kombination ${sample}${personas.length > 2 ? " und weitere" : ""} ist gut. Ergänzen Sie jetzt nur noch einen konkreten Moment oder ein wiederkehrendes Problem.`;
+        }
+        return `Für ${sample || "diese Zielgruppe"} entsteht bereits ein klarerer Kontext. Ihre Situationsbeschreibung beeinflusst jetzt direkt Ton und Prioritäten des Ergebnisses.`;
+    }
+    if (personas.length && !purpose) {
+        return `${sample}${personas.length > 2 ? " and more" : ""} is a strong start. Add one concrete life moment or recurring friction point and the target read will sharpen quickly.`;
+    }
+    return `The context around ${sample || "this audience"} is taking shape. The situation you describe here will directly change the tone and priority of the final scenario.`;
+}
+
+function buildDeviceHelperText() {
+    const devices = getSelectedDeviceLabels();
+    if (!devices.length) return t("deviceHelper");
+
+    const sample = devices.slice(0, 3).join(", ");
+    if (currentLocale === "ko") {
+        return `${sample}${devices.length > 3 ? " 외" : ""} 조합으로 읽히고 있습니다. 상위를 먼저 체크한 뒤 필요 없는 기기만 빼면 시나리오의 밀도가 자연스럽게 정리됩니다.`;
+    }
+    if (currentLocale === "de") {
+        return `Aktuell ist die Kombination ${sample}${devices.length > 3 ? " und weitere" : ""} gewählt. Aktivieren Sie zuerst die Oberkategorie und entfernen Sie dann nur die irrelevanten Geräte.`;
+    }
+    return `The current mix is reading as ${sample}${devices.length > 3 ? " and more" : ""}. Start broad with the parent category, then remove only the devices that do not belong in the scene.`;
 }
 
 function inferFirstUseScene(devices) {
@@ -1288,6 +2180,7 @@ function generateScenario() {
     const city = cityInput.value.trim();
     const selectedSegment = getSelectedSegment();
     const selectedDevices = getSelectedDevices();
+    const selectedDeviceLabels = getSelectedDeviceLabels();
 
     if (!role || !purpose || !country || !selectedSegment || selectedDevices.length === 0) {
         resultDiv.innerHTML = `<p class="error">${t("allMissing")}</p>`;
@@ -1342,7 +2235,7 @@ function generateScenario() {
             market: selectedMarket?.label || "",
             city,
             segment: selectedSegment,
-            devices: selectedDevices.map((device) => getCategoryName(device))
+            devices: selectedDeviceLabels.length > 0 ? selectedDeviceLabels : selectedDevices.map((device) => getCategoryName(device))
         }
     };
 
@@ -1557,38 +2450,99 @@ function buildNarrative(country, city, selectedSegment, intent, deviceDecision, 
 
 function getRegionalSignals(countryCode, city, intent) {
     const cityNote = city ? ` (${city})` : "";
-    const signals = {
-        KR: {
-            observation: `도시형 주거와 빠른 일상 리듬이 공존하는 시장${cityNote}`,
-            insight: "짧은 시간 안에 집안 상태를 정리하고 다음 행동으로 넘어가려는 니즈가 큼",
-            implication: "첫 실행 허들을 낮춘 자동화 추천이 반복 사용으로 이어질 가능성이 높음"
+    const localeSignals = {
+        ko: {
+            KR: {
+                observation: `도시형 주거와 빠른 일상 리듬이 공존하는 시장${cityNote}`,
+                insight: "짧은 시간 안에 집안 상태를 정리하고 다음 행동으로 넘어가려는 니즈가 큼",
+                implication: "첫 실행 허들을 낮춘 자동화 추천이 반복 사용으로 이어질 가능성이 높음"
+            },
+            US: {
+                observation: `넓은 주거 공간과 개별화된 루틴이 강한 시장${cityNote}`,
+                insight: "기기 단품보다 생활 장면 중심의 연결 제안이 체감 가치를 더 빨리 전달함",
+                implication: "앱은 복수 기기 연결의 편익을 한 번의 사용 장면으로 압축해 보여줘야 함"
+            },
+            GB: {
+                observation: `공간 효율성과 실용적 구매 판단이 중요한 시장${cityNote}`,
+                insight: "설정 복잡도를 낮추고 에너지·시간 절감 메시지를 명확히 할수록 설득력이 높아짐",
+                implication: "루틴 저장과 재사용 가치가 분명한 흐름이 유리함"
+            },
+            DE: {
+                observation: `효율, 안정성, 지속가능성에 대한 관심이 높은 시장${cityNote}`,
+                insight: "신뢰 가능한 자동화와 일상 효율 개선이 함께 제시될 때 수용성이 높아짐",
+                implication: "가치 제안은 편의뿐 아니라 통제감과 예측 가능성을 함께 말해야 함"
+            }
         },
-        US: {
-            observation: `넓은 주거 공간과 개별화된 루틴이 강한 시장${cityNote}`,
-            insight: "기기 단품보다 생활 장면 중심의 연결 제안이 체감 가치를 더 빨리 전달함",
-            implication: "앱은 복수 기기 연결의 편익을 한 번의 사용 장면으로 압축해 보여줘야 함"
+        en: {
+            KR: {
+                observation: `a market where compact urban homes and fast daily rhythms coexist${cityNote}`,
+                insight: "users strongly value flows that quickly reset the home state and move them to the next action",
+                implication: "automation recommendations with low first-run friction are more likely to turn into repeat usage"
+            },
+            US: {
+                observation: `a market shaped by larger living spaces and highly individualized routines${cityNote}`,
+                insight: "connected life moments land faster than single-device feature stories",
+                implication: "the app should compress multi-device value into one clearly understood usage scene"
+            },
+            GB: {
+                observation: `a market where space efficiency and practical purchase logic matter${cityNote}`,
+                insight: "persuasion improves when setup complexity is reduced and energy or time savings are made explicit",
+                implication: "flows that make routine-saving and reuse value obvious are more effective"
+            },
+            DE: {
+                observation: `a market with strong interest in efficiency, stability, and sustainability${cityNote}`,
+                insight: "acceptance rises when trusted automation is paired with visible everyday efficiency gains",
+                implication: "the value story should speak not only to convenience but also to control and predictability"
+            }
         },
-        GB: {
-            observation: `공간 효율성과 실용적 구매 판단이 중요한 시장${cityNote}`,
-            insight: "설정 복잡도를 낮추고 에너지·시간 절감 메시지를 명확히 할수록 설득력이 높아짐",
-            implication: "루틴 저장과 재사용 가치가 분명한 흐름이 유리함"
-        },
-        DE: {
-            observation: `효율, 안정성, 지속가능성에 대한 관심이 높은 시장${cityNote}`,
-            insight: "신뢰 가능한 자동화와 일상 효율 개선이 함께 제시될 때 수용성이 높아짐",
-            implication: "가치 제안은 편의뿐 아니라 통제감과 예측 가능성을 함께 말해야 함"
+        de: {
+            KR: {
+                observation: `ein Markt, in dem kompakte urbane Wohnformen und schnelle Tagesrhythmen zusammenkommen${cityNote}`,
+                insight: "Nutzer reagieren stark auf Abläufe, die den Zuhause-Zustand schnell ordnen und direkt zur nächsten Handlung führen",
+                implication: "Automationsvorschläge mit niedriger Einstiegshürde werden eher zu wiederholter Nutzung"
+            },
+            US: {
+                observation: `ein Markt, der von größeren Wohnflächen und stark individualisierten Routinen geprägt ist${cityNote}`,
+                insight: "vernetzte Alltagsszenen vermitteln den Wert schneller als isolierte Gerätefunktionen",
+                implication: "die App sollte den Mehrwert mehrerer Geräte in eine klar verständliche Nutzungsszene verdichten"
+            },
+            GB: {
+                observation: `ein Markt, in dem Raumeffizienz und pragmatische Kaufentscheidungen wichtig sind${cityNote}`,
+                insight: "die Überzeugungskraft steigt, wenn die Einrichtung einfacher wird und Energie- oder Zeitersparnis klar sichtbar ist",
+                implication: "Abläufe mit klar erkennbarem Wert für gespeicherte und wiederverwendbare Routinen sind wirksamer"
+            },
+            DE: {
+                observation: `ein Markt mit hohem Interesse an Effizienz, Stabilität und Nachhaltigkeit${cityNote}`,
+                insight: "die Akzeptanz steigt, wenn vertrauenswürdige Automatisierung mit spürbarer Alltagseffizienz verbunden wird",
+                implication: "das Nutzenversprechen sollte nicht nur Bequemlichkeit, sondern auch Kontrolle und Vorhersehbarkeit betonen"
+            }
         }
     };
-    const fallback = {
-        observation: `${getCountryName(countryCode)} 시장의 일상 리듬과 생활 환경을 고려한 일반적 사용 맥락${cityNote}`,
-        insight: `${intent.missionBucket} 가치가 명확할수록 사용자는 기능보다 결과 중심으로 반응함`,
-        implication: "앱은 복잡한 설명보다 한 번에 이해되는 추천 장면을 먼저 제시해야 함"
+    const fallbackByLocale = {
+        ko: {
+            observation: `${getCountryName(countryCode)} 시장의 일상 리듬과 생활 환경을 고려한 일반적 사용 맥락${cityNote}`,
+            insight: `${intent.missionBucket} 가치가 명확할수록 사용자는 기능보다 결과 중심으로 반응함`,
+            implication: "앱은 복잡한 설명보다 한 번에 이해되는 추천 장면을 먼저 제시해야 함"
+        },
+        en: {
+            observation: `a general usage context shaped by the daily rhythm and living environment of ${getCountryName(countryCode)}${cityNote}`,
+            insight: `users respond more to outcome-led framing when the ${intent.missionBucket} value is explicit`,
+            implication: "the app should surface an immediately understandable recommended scene before detailed explanation"
+        },
+        de: {
+            observation: `ein allgemeiner Nutzungskontext, der vom Alltagsrhythmus und Wohnumfeld in ${getCountryName(countryCode)} geprägt ist${cityNote}`,
+            insight: `Nutzer reagieren stärker auf ergebnisorientierte Botschaften, wenn der ${intent.missionBucket}-Wert klar ist`,
+            implication: "die App sollte zuerst eine sofort verständliche Empfehlungsszene zeigen und erst danach Details erklären"
+        }
     };
-    return signals[countryCode] || fallback;
+    const localizedSignals = localeSignals[currentLocale] || localeSignals.en;
+    const localizedFallback = fallbackByLocale[currentLocale] || fallbackByLocale.en;
+    return localizedSignals[countryCode] || localizedFallback;
 }
 
 function buildAutomationSkeleton(country, intent, deviceDecision, services) {
     const primary = services[0];
+    const primaryLabel = getServiceLabel(primary);
     const signalDevices = (deviceDecision.selectedDevices || [deviceDecision.final.category]).map((device) => getCategoryName(device));
     const marketName = getCountryName(country.countryCode);
     return {
@@ -2456,9 +3410,10 @@ function updateLocaleFromCountry() {
         role: roleSelect.value,
         country: countrySelect.value,
         city: cityInput.value,
-        segment: segmentSelect.value,
+        personaSelections: getSelectedPersonaOptionIds(),
         segmentCustom: segmentCustomInput.value,
-        devices: getSelectedDevices()
+        deviceSelections: getSelectedDeviceOptionIds(),
+        deviceCustom: deviceCustomInput.value
     };
     currentLocale = COUNTRY_LOCALES[countrySelect.value] || "en";
     document.documentElement.lang = currentLocale;
@@ -2475,22 +3430,36 @@ function updateLocaleFromCountry() {
 
 function applyLocale() {
     const stepPanels = document.querySelectorAll(".wizard-step");
-    const countryHelper = stepPanels[1]?.querySelector(".helper");
-    const segmentHelper = stepPanels[2]?.querySelector(".helper");
     const deviceLabel = stepPanels[3]?.querySelector("label");
-    const deviceHelper = stepPanels[3]?.querySelector(".helper");
+    const heroChips = document.querySelectorAll(".hero-chip");
+    const heroMetricLabels = document.querySelectorAll(".hero-metric span");
 
     document.querySelector(".eyebrow").textContent = currentLocale === "ko" ? "Interactive Scenario Builder" : currentLocale === "de" ? "Interaktiver Szenario-Builder" : "Interactive Scenario Builder";
     document.querySelector(".hero-text").textContent = currentLocale === "ko"
-        ? "질문에 순서대로 답하면 사용자에게 더 매력적으로 다가가는 앱 시나리오를 단계적으로 완성합니다."
+        ? "핵심 입력만 선택하면 메시지부터 활용안까지 완성도 높은 시나리오로 정리됩니다."
         : currentLocale === "de"
             ? "Beantworten Sie die Fragen der Reihe nach und bauen Sie schrittweise ein App-Szenario auf, das für Nutzer attraktiver wirkt."
             : "Answer the questions in sequence and build an app scenario step by step that feels more compelling to users.";
+    if (heroChips[0]) heroChips[0].textContent = currentLocale === "ko" ? "맥락 중심 설계" : currentLocale === "de" ? "Kontext zuerst" : "Context-first flow";
+    if (heroChips[1]) heroChips[1].textContent = currentLocale === "ko" ? "4단계 guided flow" : currentLocale === "de" ? "4 Schritte" : "4 guided inputs";
+    if (heroChips[2]) heroChips[2].textContent = currentLocale === "ko" ? "바로 검토 가능한 결과" : currentLocale === "de" ? "Direkt prüfbare Ergebnisse" : "Review-ready output";
+    if (heroMetricLabels[0]) heroMetricLabels[0].textContent = currentLocale === "ko" ? "접근 확인 후 시작 가이드" : currentLocale === "de" ? "Zugang und Guide" : "Access and guide check";
+    if (heroMetricLabels[1]) heroMetricLabels[1].textContent = currentLocale === "ko" ? "질문에 따라 단계별 입력" : currentLocale === "de" ? "Schrittweise Eingabe" : "Step-by-step scenario setup";
+    if (heroMetricLabels[2]) heroMetricLabels[2].textContent = currentLocale === "ko" ? "결과 확인과 바로 내보내기" : currentLocale === "de" ? "Output und Export" : "Immediate output and export";
     document.querySelector("#access-screen h2").textContent = currentLocale === "ko" ? "시작하기" : currentLocale === "de" ? "Loslegen" : "Get Started";
     document.querySelector("label[for='access-code']").textContent = t("accessRequired").replace(".", "");
     accessCodeInput.placeholder = t("accessPlaceholder");
     document.querySelector("#access-screen .helper").textContent = t("accessHelper");
+    accessToggleBtn.textContent = t(isAccessCodeVisible ? "accessHide" : "accessShow");
+    accessToggleBtn.setAttribute("aria-pressed", isAccessCodeVisible ? "true" : "false");
     unlockBtn.textContent = t("enterAgent");
+    logoutBtn.textContent = t("logout");
+    wizardLogoutBtn.textContent = t("logout");
+    if (accessStatus.dataset.key) {
+        accessStatus.textContent = accessStatus.dataset.key === "accessLockedWithTime" && accessLockoutEndsAt > Date.now()
+            ? formatLockoutMessage(Math.ceil((accessLockoutEndsAt - Date.now()) / 1000))
+            : t(accessStatus.dataset.key);
+    }
     document.querySelector("#guide-screen h2").textContent = t("guideTitle");
     guideYesBtn.textContent = currentLocale === "ko" ? "Yes" : currentLocale === "de" ? "Ja" : "Yes";
     guideNoBtn.textContent = currentLocale === "ko" ? "No" : currentLocale === "de" ? "Nein" : "No";
@@ -2500,13 +3469,13 @@ function applyLocale() {
     }
     document.querySelector("label[for='role']").textContent = t("roleQuestion");
     document.querySelector("label[for='country']").textContent = t("countryQuestion");
-    document.querySelector("label[for='segment']").textContent = t("personaQuestion");
+    document.getElementById("segment-label").textContent = t("personaQuestion");
     if (deviceLabel) deviceLabel.textContent = t("deviceQuestion");
     purposeInput.placeholder = t("purposePlaceholder");
+    segmentCustomInput.placeholder = currentLocale === "ko" ? "추가 대상이나 세부 조건을 직접 입력" : currentLocale === "de" ? "Zusätzliche Zielgruppe oder Details eingeben" : "Add any extra target detail";
+    deviceCustomInput.placeholder = currentLocale === "ko" ? "추가 기기나 세부 모델을 직접 입력" : currentLocale === "de" ? "Zusätzliche Geräte oder Modelle eingeben" : "Add any extra device or model";
     cityInput.placeholder = currentLocale === "ko" ? "도시 / 주 / 지역 입력" : currentLocale === "de" ? "Stadt / Bundesland / Region" : "City / State / Region";
-    if (countryHelper) countryHelper.textContent = t("countryHelper");
-    if (segmentHelper) segmentHelper.textContent = t("personaHelper");
-    if (deviceHelper) deviceHelper.textContent = t("deviceHelper");
+    updateQuestionHelpers();
     prevBtn.textContent = t("prev");
     nextBtn.textContent = t("next");
     generateBtn.textContent = t("build");
@@ -2672,19 +3641,48 @@ function getRoleBrief(id) {
     return map[id]?.[currentLocale] || map[id]?.en || map[id]?.ko || id;
 }
 
-function updateSegmentVisibility() {
-    segmentCustomInput.classList.toggle("hidden", segmentSelect.value !== "직접 입력");
-}
-
 function getSelectedSegment() {
-    if (segmentSelect.value === "직접 입력") {
-        return segmentCustomInput.value.trim();
-    }
-    return segmentSelect.value || "";
+    return [...getSelectedPersonaLabels(), ...getCustomEntries(segmentCustomInput.value)].join(" / ");
 }
 
 function getSelectedDevices() {
-    return [...deviceGrid.querySelectorAll('input[type="checkbox"]:checked')].map((input) => input.value);
+    const normalized = new Set(
+        [...deviceGrid.querySelectorAll('input[data-node-type="child"]:checked')]
+            .map((input) => input.dataset.normalized || input.value)
+            .filter(Boolean)
+    );
+    getCustomEntries(deviceCustomInput.value).forEach((entry) => normalized.add(entry));
+    return [...normalized];
+}
+
+function getSelectedPersonaOptionIds() {
+    return [...personaGroups.querySelectorAll('input[data-node-type="child"]:checked')].map((input) => input.value);
+}
+
+function getSelectedDeviceOptionIds() {
+    return [...deviceGrid.querySelectorAll('input[data-node-type="child"]:checked')].map((input) => input.value);
+}
+
+function getSelectedPersonaLabels() {
+    return [...personaGroups.querySelectorAll('input[data-node-type="child"]:checked')]
+        .map((input) => input.dataset.label || input.value)
+        .filter(Boolean);
+}
+
+function getSelectedDeviceLabels() {
+    return [
+        ...[...deviceGrid.querySelectorAll('input[data-node-type="child"]:checked')]
+            .map((input) => input.dataset.label || input.value)
+            .filter(Boolean),
+        ...getCustomEntries(deviceCustomInput.value)
+    ];
+}
+
+function getCustomEntries(value) {
+    return String(value || "")
+        .split(/[,\n/]|·/)
+        .map((item) => item.trim())
+        .filter(Boolean);
 }
 
 function localizeSentence(key, value = "") {

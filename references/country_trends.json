@@ -1,0 +1,83 @@
+{
+  "KR": {
+    "ko": {
+      "headline": "AI 가전과 연결 경험을 일상 장면으로 묶는 흐름이 강해지고 있습니다.",
+      "signal": "고객은 단일 기기 제어보다 연결된 루틴과 에너지·케어 체감을 더 빠르게 기대합니다.",
+      "implication": "Q2 이후에는 빠른 저녁 전환, 공기 관리, 생활 리듬 정리 같은 장면형 제안이 유리합니다."
+    },
+    "en": {
+      "headline": "The market is leaning toward connected AI-home moments rather than isolated device control.",
+      "signal": "Customers are responding faster to routines and visible care or energy value than to single-device features alone.",
+      "implication": "After Q2, scenario ideas framed around evening reset, air care, or daily rhythm management are more likely to land."
+    },
+    "de": {
+      "headline": "Der Markt bewegt sich stärker zu vernetzten AI-Home-Momenten statt zu isolierter Gerätesteuerung.",
+      "signal": "Nutzer reagieren schneller auf Routinen und sichtbar spürbaren Care- oder Energie-Nutzen als auf einzelne Gerätefunktionen.",
+      "implication": "Nach Q2 wirken Szenen rund um Abendübergang, Luftpflege oder Alltagsrhythmus meist stärker."
+    },
+    "sources": [
+      "https://news.samsung.com/global/ifa-2025-how-are-european-consumers-using-smart-home-technology"
+    ]
+  },
+  "US": {
+    "ko": {
+      "headline": "복수 기기 연결을 한 번의 생활 장면으로 압축해 보여주는 흐름이 더 강해지고 있습니다.",
+      "signal": "미국 스마트홈 시장은 확장 중이며, 단품 기능보다 체감 가치가 바로 보이는 통합 경험이 더 설득력 있습니다.",
+      "implication": "Q2 이후에는 집 도착, 외출, 가족 케어처럼 명확한 순간 중심의 시나리오가 유리합니다."
+    },
+    "en": {
+      "headline": "The stronger direction is to compress multi-device value into one clearly felt life moment.",
+      "signal": "The U.S. smart home market is still expanding, and integrated experiences often persuade faster than isolated feature lists.",
+      "implication": "After Q2, scenarios framed around arrival home, away mode, or family care tend to work better."
+    },
+    "de": {
+      "headline": "Die stärkere Richtung ist, den Mehrwert mehrerer Geräte in einen klar spürbaren Alltagsmoment zu verdichten.",
+      "signal": "Der US-Smart-Home-Markt wächst weiter, und integrierte Erlebnisse überzeugen oft schneller als isolierte Funktionslisten.",
+      "implication": "Nach Q2 wirken Szenarien rund um Heimkehr, Abwesenheit oder Familien-Care meist besser."
+    },
+    "sources": [
+      "https://www.statista.com/outlook/cmo/smart-home/united-states",
+      "https://news.samsung.com/global/ifa-2025-how-are-european-consumers-using-smart-home-technology"
+    ]
+  },
+  "GB": {
+    "ko": {
+      "headline": "설정 피로를 줄이고 절감 효과를 분명히 보여주는 실용형 제안이 더 강해지고 있습니다.",
+      "signal": "영국에서는 루틴 저장, 에너지 효율, 반복 사용 가치가 또렷할수록 수용성이 높습니다.",
+      "implication": "Q2 이후에는 시간 절약, 난방·전력 관리, 반복 가능한 루틴 중심의 시나리오가 유리합니다."
+    },
+    "en": {
+      "headline": "Practical framing that reduces setup friction and makes savings visible is getting stronger.",
+      "signal": "In the UK, saved routines, energy efficiency, and repeat-use value tend to raise acceptance faster.",
+      "implication": "After Q2, scenarios centered on time savings, heating or power management, and reusable routines are more likely to work."
+    },
+    "de": {
+      "headline": "Pragmatische Botschaften, die Einrichtungsaufwand senken und Einsparungen sichtbar machen, werden stärker.",
+      "signal": "Im Vereinigten Königreich erhöhen gespeicherte Routinen, Energieeffizienz und Wiederverwendungswert oft schneller die Akzeptanz.",
+      "implication": "Nach Q2 wirken Szenarien rund um Zeitersparnis, Heiz- oder Strommanagement und wiederverwendbare Routinen meist besser."
+    },
+    "sources": [
+      "https://news.samsung.com/global/ifa-2025-how-are-european-consumers-using-smart-home-technology"
+    ]
+  },
+  "DE": {
+    "ko": {
+      "headline": "효율성과 신뢰를 함께 보여주는 자동화 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "독일에서는 예측 가능성, 통제감, 에너지 효율이 함께 제시될 때 스마트홈 수용성이 높아집니다.",
+      "implication": "Q2 이후에는 안정적 루틴, 절감, 홈 컨트롤을 함께 묶는 시나리오가 유리합니다."
+    },
+    "en": {
+      "headline": "Automation that combines efficiency with trust is becoming more persuasive.",
+      "signal": "In Germany, smart home value lands better when predictability, control, and energy efficiency are shown together.",
+      "implication": "After Q2, scenarios that combine stable routines, savings, and home control tend to be stronger."
+    },
+    "de": {
+      "headline": "Automatisierung, die Effizienz und Vertrauen zusammen zeigt, wird überzeugender.",
+      "signal": "In Deutschland wirkt Smart-Home-Nutzen stärker, wenn Vorhersehbarkeit, Kontrolle und Energieeffizienz gemeinsam sichtbar werden.",
+      "implication": "Nach Q2 sind Szenarien stärker, die stabile Routinen, Einsparung und Home Control zusammenführen."
+    },
+    "sources": [
+      "https://news.samsung.com/global/ifa-2025-how-are-european-consumers-using-smart-home-technology"
+    ]
+  }
+}

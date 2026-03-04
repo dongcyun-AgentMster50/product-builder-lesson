@@ -1,0 +1,238 @@
+{
+  "fallbacks": {
+    "US": {
+      "ko": {
+        "region": "대도시와 교외가 함께 섞인 생활권으로 읽힙니다.",
+        "climate": "계절 편차와 냉난방 수요가 생활 리듬에 직접 영향을 줍니다.",
+        "housing": "독립 주거와 넓은 실내 동선이 복수 기기 조합과 잘 맞습니다.",
+        "behavior": "차량 이동, 가족 단위 일정, 집 안 구역별 사용이 뚜렷한 편입니다.",
+        "implication": "도착 전 준비, 외출 중 원격 확인, 구역별 자동화 장면이 자연스럽습니다."
+      },
+      "en": {
+        "region": "This reads as a metro-plus-suburban living context.",
+        "climate": "Seasonal swings and heating or cooling demand directly shape the daily rhythm.",
+        "housing": "Detached or larger-plan housing tends to fit multi-device combinations well.",
+        "behavior": "Car-based movement, family scheduling, and zone-based in-home use are common.",
+        "implication": "Pre-arrival setup, away-from-home check-ins, and room-by-room automation fit naturally."
+      },
+      "de": {
+        "region": "Dies liest sich als Stadt- plus Vorort-Kontext.",
+        "climate": "Saisonale Schwankungen und Heiz- oder Kühlbedarf prägen den Tagesrhythmus direkt.",
+        "housing": "Freistehende oder großzügigere Grundrisse passen oft gut zu Multi-Device-Kombinationen.",
+        "behavior": "Autobasierte Wege, Familienplanung und zonenbezogene Nutzung zu Hause sind typisch.",
+        "implication": "Vorbereitungen vor der Heimkehr, Remote-Checks unterwegs und raumbezogene Automationen passen gut."
+      }
+    },
+    "GB": {
+      "ko": {
+        "region": "고밀도 도심과 실용 중심 주거 맥락으로 읽힙니다.",
+        "climate": "서늘하고 습한 기후가 조명·난방·실내 쾌적성 관리와 연결됩니다.",
+        "housing": "공간 효율이 중요해 작은 변화도 체감 가치로 이어지는 편입니다.",
+        "behavior": "출퇴근과 집 안 체류 시간을 분리해 루틴 효율을 중시하는 경향이 있습니다.",
+        "implication": "난방, 조명, 에너지 절감, 반복 루틴 저장을 중심으로 시나리오를 잡는 편이 좋습니다."
+      },
+      "en": {
+        "region": "This reads as a dense and practicality-led urban context.",
+        "climate": "Cooler, damp weather connects naturally to lighting, heating, and comfort management.",
+        "housing": "Space efficiency matters, so even small convenience gains can feel meaningful.",
+        "behavior": "People often separate commute time from time at home and value routine efficiency.",
+        "implication": "Heating, lighting, energy savings, and saved routines are natural anchors here."
+      },
+      "de": {
+        "region": "Dies liest sich als dichter, pragmatisch geprägter Stadtkontext.",
+        "climate": "Kühleres, feuchtes Wetter verbindet sich natürlich mit Licht-, Heiz- und Komfortmanagement.",
+        "housing": "Raumeffizienz ist wichtig, daher wirken selbst kleine Komfortgewinne oft deutlich.",
+        "behavior": "Pendeln und Zeit zu Hause werden klar getrennt, Routinen-Effizienz ist wichtig.",
+        "implication": "Heizung, Licht, Energieeinsparung und gespeicherte Routinen sind hier starke Anker."
+      }
+    },
+    "DE": {
+      "ko": {
+        "region": "안정성과 효율을 중시하는 도시 생활권으로 읽힙니다.",
+        "climate": "난방 시즌과 계절 대비가 주거 편의성과 에너지 관리에 큰 영향을 줍니다.",
+        "housing": "정돈된 실내 운영과 예측 가능한 루틴 가치가 크게 작동합니다.",
+        "behavior": "계획적 사용, 절감 인식, 신뢰 가능한 자동화에 대한 기대가 높은 편입니다.",
+        "implication": "에너지 절감, 예측 가능한 루틴, 제어 가능성이 보이는 시나리오가 적합합니다."
+      },
+      "en": {
+        "region": "This reads as an urban context that values stability and efficiency.",
+        "climate": "Heating season and clear seasonal contrast strongly shape comfort and energy management.",
+        "housing": "Orderly in-home operation and predictable routines tend to carry strong value.",
+        "behavior": "Planned use, savings awareness, and trusted automation matter more than novelty.",
+        "implication": "Scenarios around energy savings, predictable routines, and visible control fit well."
+      },
+      "de": {
+        "region": "Dies liest sich als städtischer Kontext mit starkem Fokus auf Stabilität und Effizienz.",
+        "climate": "Heizperiode und klare Jahreszeiten prägen Komfort- und Energiemanagement stark.",
+        "housing": "Geordnete Abläufe zu Hause und vorhersagbare Routinen haben hohen Wert.",
+        "behavior": "Geplante Nutzung, Sparbewusstsein und vertrauenswürdige Automatisierung zählen mehr als Neuheit.",
+        "implication": "Szenarien rund um Energieeinsparung, vorhersagbare Routinen und sichtbare Kontrolle passen gut."
+      }
+    },
+    "KR": {
+      "ko": {
+        "region": "도시 밀도와 빠른 일상 리듬이 강한 생활권으로 읽힙니다.",
+        "climate": "사계절 편차와 미세먼지, 냉난방 수요가 실내 관리 경험에 직접 연결됩니다.",
+        "housing": "아파트 중심 주거에서 공기·조명·생활 루틴 제어 체감이 빠른 편입니다.",
+        "behavior": "퇴근 후 짧은 시간 안에 집안 상태를 정리하려는 경향이 강합니다.",
+        "implication": "빠른 집 도착 전환, 공기 관리, 취침 전 루틴 시나리오가 자연스럽습니다."
+      },
+      "en": {
+        "region": "This reads as a dense urban context with a fast daily rhythm.",
+        "climate": "Seasonal contrast, air-quality sensitivity, and heating or cooling demand directly shape indoor-management value.",
+        "housing": "In apartment-led housing, air, lighting, and routine control tend to feel useful quickly.",
+        "behavior": "There is strong demand to reset the home state quickly after work or school.",
+        "implication": "Fast arrival-home transitions, air care, and pre-sleep routines fit naturally."
+      },
+      "de": {
+        "region": "Dies liest sich als dichter urbaner Kontext mit schnellem Tagesrhythmus.",
+        "climate": "Jahreszeiten, Luftqualitäts-Sensibilität und Heiz- oder Kühlbedarf prägen den Wert des Indoor-Managements direkt.",
+        "housing": "In wohnungsgeprägten Grundrissen werden Luft-, Licht- und Routinensteuerung oft schnell als nützlich erlebt.",
+        "behavior": "Es gibt eine starke Nachfrage, den Zuhause-Zustand nach Arbeit oder Schule schnell zu ordnen.",
+        "implication": "Schnelle Heimkehr-Übergänge, Luftpflege und Schlafenszeit-Routinen passen hier gut."
+      }
+    }
+  },
+  "cities": [
+    {
+      "countryCode": "US",
+      "displayName": "New York",
+      "aliases": ["new york", "new york city", "nyc"],
+      "content": {
+        "ko": {
+          "region": "초고밀도 대도시로 이동 시간과 생활 속도가 모두 빠른 편입니다.",
+          "climate": "사계절이 뚜렷하고 여름 습도, 겨울 난방 수요가 모두 존재합니다.",
+          "housing": "아파트와 콘도 중심 주거가 많아 실내 동선과 공간 활용이 중요합니다.",
+          "behavior": "출퇴근과 외출이 길고, 집에 머무는 시간에는 즉시 체감되는 편의성을 선호합니다.",
+          "implication": "도착 직후 집안 상태가 정리되는 장면, 공기·조명·보안의 빠른 전환 장면이 잘 맞습니다."
+        },
+        "en": {
+          "region": "A high-density metro where movement time and everyday pace are both fast.",
+          "climate": "There is clear seasonality, with humid summers and real winter heating demand.",
+          "housing": "Apartment and condo living is common, so indoor flow and space use matter.",
+          "behavior": "Commute and time away from home can be long, and convenience needs to feel immediate once people return.",
+          "implication": "Arrival-home reset scenes and fast transitions across air, lighting, and security fit well."
+        },
+        "de": {
+          "region": "Eine hochverdichtete Metropole mit schnellem Alltagstempo und langen Wegen.",
+          "climate": "Klare Jahreszeiten mit feuchten Sommern und realem Heizbedarf im Winter.",
+          "housing": "Wohnungen und Condos sind häufig, daher zählen Innenraumfluss und Flächennutzung.",
+          "behavior": "Pendeln und Abwesenheit sind oft lang; bei der Heimkehr muss Komfort sofort spürbar sein.",
+          "implication": "Szenen rund um Heimkehr-Reset sowie schnelle Wechsel bei Luft, Licht und Sicherheit passen gut."
+        }
+      }
+    },
+    {
+      "countryCode": "US",
+      "displayName": "San Francisco",
+      "aliases": ["san francisco", "sf", "bay area"],
+      "content": {
+        "ko": {
+          "region": "기술 친화적이고 생활 패턴이 개인화된 해안 도시권으로 읽힙니다.",
+          "climate": "연중 온화하지만 미세한 온도 변화와 해안성 습도가 체감에 영향을 줍니다.",
+          "housing": "주거 공간이 상대적으로 작고 층간·룸 단위 활용이 중요합니다.",
+          "behavior": "초기 설정 피로는 싫어하지만, 잘 설계된 자동화에는 수용성이 높은 편입니다.",
+          "implication": "가볍게 시작하는 자동화, 공간별 제어, 원격 확인형 시나리오가 잘 맞습니다."
+        },
+        "en": {
+          "region": "This reads as a tech-friendly coastal metro with highly individualized routines.",
+          "climate": "Weather is mild overall, but microclimate shifts and coastal dampness still affect comfort.",
+          "housing": "Living space can be tighter, making room-by-room or floor-by-floor control more relevant.",
+          "behavior": "People dislike setup friction but are open to well-designed automation once it proves value.",
+          "implication": "Low-friction automation, zone-based control, and remote-check scenarios work well here."
+        },
+        "de": {
+          "region": "Dies liest sich als technikaffine Küstenmetropole mit stark individualisierten Routinen.",
+          "climate": "Das Klima ist insgesamt mild, doch Mikroklima-Wechsel und Küstenfeuchte beeinflussen den Komfort.",
+          "housing": "Wohnraum ist oft knapper, daher sind raum- oder etagenbezogene Steuerungen relevanter.",
+          "behavior": "Einrichtungsaufwand wird ungern akzeptiert, gute Automatisierung aber nach klarem Nutzen schnell angenommen.",
+          "implication": "Niedrigschwellige Automationen, zonenbezogene Steuerung und Remote-Check-Szenarien passen gut."
+        }
+      }
+    },
+    {
+      "countryCode": "GB",
+      "displayName": "London",
+      "aliases": ["london"],
+      "content": {
+        "ko": {
+          "region": "고밀도 글로벌 도시로 이동량과 생활 리듬 전환이 빠른 편입니다.",
+          "climate": "서늘하고 습한 날씨가 잦아 조명, 난방, 쾌적성 관리가 생활성 가치로 이어집니다.",
+          "housing": "공간 효율이 중요한 도심형 주거가 많습니다.",
+          "behavior": "출퇴근 후 짧은 시간 안에 집안 컨디션을 정리하고 싶어하는 경향이 있습니다.",
+          "implication": "조명·난방·절감 루틴을 짧고 명확한 장면으로 보여주는 편이 효과적입니다."
+        },
+        "en": {
+          "region": "A dense global city where movement volume and routine shifts are fast.",
+          "climate": "Cooler and damp conditions make lighting, heating, and comfort management feel relevant.",
+          "housing": "Urban homes often make space efficiency a practical concern.",
+          "behavior": "People often want the home to settle quickly after commuting back.",
+          "implication": "Short, clear scenes around lighting, heating, and savings routines tend to work well."
+        },
+        "de": {
+          "region": "Eine dichte globale Stadt mit hohem Bewegungsvolumen und schnellen Routinenwechseln.",
+          "climate": "Kühleres, feuchtes Wetter macht Licht-, Heiz- und Komfortmanagement besonders relevant.",
+          "housing": "Städtische Wohnungen machen Raumeffizienz oft zu einem praktischen Thema.",
+          "behavior": "Nach dem Pendeln soll sich das Zuhause oft schnell ordnen und beruhigen.",
+          "implication": "Kurze, klare Szenen rund um Licht, Heizung und Sparroutinen funktionieren hier gut."
+        }
+      }
+    },
+    {
+      "countryCode": "DE",
+      "displayName": "Berlin",
+      "aliases": ["berlin"],
+      "content": {
+        "ko": {
+          "region": "대도시이지만 생활 효율과 자기 주도적 루틴을 중시하는 도시권으로 읽힙니다.",
+          "climate": "겨울 난방과 계절 대비가 분명해 실내 제어 체감이 큽니다.",
+          "housing": "아파트형 주거와 정돈된 생활 운영이 시나리오 설계에 중요합니다.",
+          "behavior": "즉흥성보다 계획적 사용, 절감, 제어 가능성을 더 높게 평가하는 편입니다.",
+          "implication": "예측 가능한 루틴, 절감 가시성, 단계별 제어형 시나리오가 적합합니다."
+        },
+        "en": {
+          "region": "This reads as a major city that still values efficiency and self-directed routines.",
+          "climate": "Winter heating and seasonal contrast make indoor control benefits tangible.",
+          "housing": "Apartment living and orderly home operation matter in scenario framing.",
+          "behavior": "Planned use, savings, and visible control often matter more than novelty.",
+          "implication": "Predictable routines, visible savings, and staged-control scenarios fit well."
+        },
+        "de": {
+          "region": "Dies liest sich als Großstadt, in der Effizienz und selbstbestimmte Routinen wichtig bleiben.",
+          "climate": "Heizperiode und Jahreszeitenkontrast machen den Nutzen von Innenraumsteuerung deutlich spürbar.",
+          "housing": "Wohnungsleben und geordnete Abläufe zu Hause sind für die Szenariologik wichtig.",
+          "behavior": "Geplante Nutzung, Einsparung und sichtbare Kontrolle zählen oft mehr als Neuheit.",
+          "implication": "Vorhersagbare Routinen, sichtbare Einsparung und stufenweise Steuerung passen gut."
+        }
+      }
+    },
+    {
+      "countryCode": "KR",
+      "displayName": "Seoul",
+      "aliases": ["seoul", "서울"],
+      "content": {
+        "ko": {
+          "region": "초고밀도 도시권으로 빠른 일상 전환과 주거 효율이 중요합니다.",
+          "climate": "사계절 편차와 미세먼지 이슈가 공기 관리와 냉난방 체감에 직접 연결됩니다.",
+          "housing": "아파트 중심 주거에서 실내 상태를 빠르게 바꾸는 자동화 수요가 큽니다.",
+          "behavior": "퇴근 후 짧은 시간 안에 공기, 조명, 가전 상태를 빠르게 정리하고 싶어합니다.",
+          "implication": "집 도착 직후 쾌적성 회복, 취침 전 정리 루틴, 빠른 케어 장면이 잘 맞습니다."
+        },
+        "en": {
+          "region": "A very dense metro where fast routine shifts and home efficiency matter a lot.",
+          "climate": "Seasonal contrast and air-quality sensitivity directly connect to air care and heating or cooling value.",
+          "housing": "Apartment living creates strong demand for automation that can reset the home state quickly.",
+          "behavior": "People often want air, lighting, and appliance status to settle quickly after arriving home.",
+          "implication": "Fast comfort recovery, pre-sleep reset routines, and quick care scenes fit naturally."
+        },
+        "de": {
+          "region": "Eine sehr dichte Metropole, in der schnelle Routinenwechsel und Wohneffizienz stark zählen.",
+          "climate": "Jahreszeitenkontrast und Luftqualitäts-Sensibilität verbinden sich direkt mit Luftpflege sowie Heiz- oder Kühlwert.",
+          "housing": "Wohnungsgeprägte Grundrisse schaffen starke Nachfrage nach Automationen, die den Zuhause-Zustand schnell ordnen.",
+          "behavior": "Luft, Licht und Gerätestatus sollen sich nach der Heimkehr oft schnell stabilisieren.",
+          "implication": "Schnelle Komfort-Erholung, Schlafenszeit-Reset-Routinen und kurze Care-Szenen passen gut."
+        }
+      }
+    }
+  ]
+}

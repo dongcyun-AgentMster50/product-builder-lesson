@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scenario Self Generation Agent</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20260304-0750">
 </head>
 <body>
     <div class="shell">
@@ -13,16 +13,30 @@
                 <p class="eyebrow">Interactive Scenario Builder</p>
                 <h1>Scenario Self Generation Agent</h1>
                 <p class="hero-text">
-                    질문에 순서대로 답하면 사용자에게 더 매력적으로 다가가는 앱 시나리오를 단계적으로 완성합니다.
+                    핵심 입력만 선택하면 메시지부터 활용안까지 완성도 높은 시나리오로 정리됩니다.
                 </p>
+                <div class="hero-chips">
+                    <span class="hero-chip">맥락 중심 설계</span>
+                    <span class="hero-chip">4단계 guided flow</span>
+                    <span class="hero-chip">바로 검토 가능한 결과</span>
+                </div>
             </div>
             <div class="hero-panel">
                 <p class="panel-label">Flow</p>
-                <ul class="source-list">
-                    <li>접근 확인 후 질문이 순서대로 열립니다.</li>
-                    <li>각 답변 직후 방향을 넓혀주는 인사이트가 제공됩니다.</li>
-                    <li>완료 후 역할별 활용안과 보고서 다운로드가 가능합니다.</li>
-                </ul>
+                <div class="hero-metrics">
+                    <div class="hero-metric">
+                        <strong>01</strong>
+                        <span>접근 확인 후 시작 가이드</span>
+                    </div>
+                    <div class="hero-metric">
+                        <strong>02</strong>
+                        <span>질문에 따라 단계별 입력</span>
+                    </div>
+                    <div class="hero-metric">
+                        <strong>03</strong>
+                        <span>결과 확인과 바로 내보내기</span>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -35,8 +49,12 @@
                     </div>
                     <div class="access-card">
                         <label for="access-code">접근 코드를 입력해 주세요</label>
-                        <input type="password" id="access-code" placeholder="접근 코드 입력">
-                        <p class="helper">현재 화면은 입력 UI만 제공하며 실제 검증은 서버 연동 후 활성화됩니다.</p>
+                        <div class="access-input-row">
+                            <input type="password" id="access-code" placeholder="접근 코드 입력">
+                            <button type="button" id="access-toggle-btn" class="secondary-btn access-toggle-btn">보기</button>
+                        </div>
+                        <p class="helper">접근 코드는 서버에서 확인되며, 승인되면 바로 다음 단계로 이어집니다.</p>
+                        <p id="access-status" class="access-status hidden" aria-live="polite"></p>
                         <button type="button" id="unlock-btn" class="generate-btn">Enter Agent</button>
                     </div>
                 </section>
@@ -48,11 +66,12 @@
                     </div>
                     <div class="guide-card">
                         <div class="guide-actions">
-                            <button type="button" id="guide-yes-btn" class="secondary-btn">Yes</button>
-                            <button type="button" id="guide-no-btn" class="secondary-btn">No</button>
-                            <button type="button" id="guide-continue-btn" class="generate-btn hidden">시작</button>
+                            <button type="button" id="guide-yes-btn" class="secondary-btn guide-choice-btn">Yes</button>
+                            <button type="button" id="guide-no-btn" class="secondary-btn guide-choice-btn">No</button>
+                            <button type="button" id="logout-btn" class="secondary-btn hidden">Logout</button>
                         </div>
                         <div id="guide-copy" class="guide-copy hidden"></div>
+                        <button type="button" id="guide-continue-btn" class="generate-btn guide-continue-btn hidden">시작</button>
                     </div>
                 </section>
 
@@ -84,11 +103,11 @@
 
                         <section class="wizard-step" data-step="3">
                             <div class="field">
-                                <label for="segment">Q3. 어떤 타겟 세그먼트와 상황을 떠올리고 있나요?</label>
-                                <select id="segment" name="segment"></select>
-                                <input type="text" id="segment-custom" name="segment-custom" placeholder="직접 정의하고 싶다면 입력">
+                                <label id="segment-label" for="segment-custom">Q3. 어떤 타겟 세그먼트와 생활 맥락을 떠올리고 있나요?</label>
+                                <div id="persona-groups" class="tree-groups persona-groups"></div>
+                                <input type="text" id="segment-custom" name="segment-custom" placeholder="추가 대상이나 세부 조건을 직접 입력">
                                 <textarea id="purpose" name="purpose" rows="4" placeholder="예: 맞벌이 가정이 퇴근 후 아이와 함께 집에 들어왔을 때 더 빠르고 편안하게 저녁 시간을 시작하고 싶다"></textarea>
-                                <p class="helper">연령, 생활 패턴, 계절, 집 안의 문제 상황까지 함께 적으면 더 설득력 있는 시나리오가 나옵니다.</p>
+                                <p class="helper">상위 카테고리를 체크하면 하위 항목이 함께 선택됩니다. 필요 없는 항목은 개별 해제하고, 추가 조건은 아래에 직접 입력해 주세요.</p>
                             </div>
                         </section>
 
@@ -96,7 +115,8 @@
                             <div class="field">
                                 <label>Q4. 어떤 기기들을 반영할까요?</label>
                                 <div id="device-grid" class="device-grid"></div>
-                                <p class="helper">복수 선택으로 구성하고, 핵심 기기 조합을 기준으로 시나리오를 만듭니다.</p>
+                                <input type="text" id="device-custom" name="device-custom" placeholder="추가 기기나 세부 모델을 직접 입력">
+                                <p class="helper">Explore Contents v2.0 흐름에 맞춰 상위 카테고리와 세부 기기를 함께 고를 수 있습니다. 상위 체크 후 필요 없는 기기만 해제해도 됩니다.</p>
                             </div>
                         </section>
 
@@ -105,6 +125,7 @@
                         </div>
 
                         <div class="wizard-actions">
+                            <button type="button" id="wizard-logout-btn" class="secondary-btn">Logout</button>
                             <button type="button" id="prev-btn" class="secondary-btn">이전</button>
                             <button type="button" id="next-btn" class="secondary-btn">다음</button>
                             <button type="button" id="generate-btn" class="generate-btn hidden">Scenario Build</button>
@@ -131,6 +152,6 @@
         </section>
     </div>
 
-    <script src="main.js"></script>
+    <script src="main.js?v=20260304-0750"></script>
 </body>
 </html>

@@ -1,0 +1,10 @@
+{
+  "accessCodes": [
+    {
+      "code": "demo-access",
+      "enabled": true,
+      "expiresAt": null,
+      "note": "Default demo code"
+    }
+  ]
+}
