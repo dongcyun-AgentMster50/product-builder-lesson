@@ -1294,25 +1294,26 @@ function generateScenario() {
         return;
     }
 
-    const intent = analyzeIntent(purpose, selectedSegment, selectedDevices[0]);
+    const intent = analyzeIntent(purpose, selectedSegment, selectedDevices);
     const services = findRelevantServices(intent);
     const deviceDecision = resolveDevice(country, selectedDevices[0], services, selectedDevices);
+    const exploreGrounding = buildExploreGrounding(country, city, selectedSegment, intent, deviceDecision, services);
     const narrative = buildNarrative(country, city, selectedSegment, intent, deviceDecision, services);
     const automation = buildAutomationSkeleton(country, intent, deviceDecision, services);
-    const facts = buildFacts(country, city, selectedSegment, deviceDecision, services);
-    const lensOutputs = buildRoleLensOutputs(role, narrative, country, deviceDecision, services, selectedSegment, intent);
+    const facts = buildFacts(country, city, selectedSegment, deviceDecision, services, exploreGrounding);
+    const lensOutputs = buildRoleLensOutputs(role, narrative, country, deviceDecision, services, selectedSegment, intent, exploreGrounding);
     const metrics = buildSuccessMetrics(role, intent, deviceDecision);
-    const segmentData = buildTargetSegment(country, city, selectedSegment, intent);
+    const segmentData = buildTargetSegment(country, city, selectedSegment, intent, exploreGrounding);
     const setupGuide = buildSetupGuide(deviceDecision, services, role);
-    const marketability = buildMarketability(country, intent, deviceDecision, services, role, selectedSegment);
+    const marketability = buildMarketability(country, intent, deviceDecision, services, role, selectedSegment, exploreGrounding);
     const gateReport = runChecks(country, intent, deviceDecision, automation);
     const referenceLinks = buildReferenceLinks(intent, services);
-    const summaryBullets = buildSummaryBullets(country, city, selectedSegment, intent, deviceDecision, services);
-    const caseStrategies = buildCaseStrategies(country, city, selectedSegment, intent, deviceDecision, services);
-    const marketingMessages = buildMarketingMessages(role, selectedSegment, intent, services);
-    const benefits = buildBenefits(intent, services);
-    const segmentAnalysis = buildSegmentAnalysis(country, city, selectedSegment, intent);
-    const campaignTiming = buildCampaignTiming(intent);
+    const summaryBullets = buildSummaryBullets(country, city, selectedSegment, intent, deviceDecision, services, exploreGrounding);
+    const detailedScenario = buildDetailedScenario(country, city, selectedSegment, intent, deviceDecision, services);
+    const marketingMessages = buildMarketingMessages(role, selectedSegment, intent, services, exploreGrounding);
+    const benefits = buildBenefits(intent, services, exploreGrounding);
+    const segmentAnalysis = buildSegmentAnalysis(country, city, selectedSegment, intent, exploreGrounding);
+    const campaignTiming = buildCampaignTiming(intent, exploreGrounding);
     const deviceGuide = buildDeviceGuide(country, deviceDecision, services);
 
     latestPayload = {
@@ -1327,9 +1328,10 @@ function generateScenario() {
         setupGuide,
         marketability,
         gateReport,
+        exploreGrounding,
         referenceLinks,
         summaryBullets,
-        caseStrategies,
+        detailedScenario,
         marketingMessages,
         benefits,
         segmentAnalysis,
@@ -1348,9 +1350,59 @@ function generateScenario() {
     renderScenario(latestPayload);
 }
 
-function analyzeIntent(purpose, selectedSegment, selectedDevice) {
+function buildExploreGrounding(country, city, selectedSegment, intent, deviceDecision, services) {
+    const regional = getRegionalSignals(country.countryCode, city, intent);
+    const serviceLabels = services.slice(0, 3).map((service) => getServiceLabel(service));
+    const primaryValue = intent.missionBucket === "Save"
+        ? (currentLocale === "ko" ? "절감과 통제감" : "savings and control")
+        : intent.missionBucket === "Care"
+            ? (currentLocale === "ko" ? "안심과 돌봄 여유" : "reassurance and care ease")
+            : intent.missionBucket === "Secure"
+                ? (currentLocale === "ko" ? "즉각적인 안심과 빠른 대응" : "immediate reassurance and faster response")
+                : intent.missionBucket === "Play"
+                    ? (currentLocale === "ko" ? "생활 리듬 회복과 즐거운 실행감" : "rhythm recovery and enjoyable action")
+                    : (currentLocale === "ko" ? "생활 부담 완화" : "lighter daily burden");
+    const emotionalJob = intent.missionBucket === "Save"
+        ? (currentLocale === "ko" ? "요금이 새고 있다는 불안 없이 집을 비우는 것" : "leaving home without worrying about wasted cost")
+        : intent.missionBucket === "Care"
+            ? (currentLocale === "ko" ? "부재 중에도 돌봄 공백이 없다고 느끼는 것" : "feeling there is no care gap while away")
+            : intent.missionBucket === "Secure"
+                ? (currentLocale === "ko" ? "계속 확인하지 않아도 집이 안전하다고 느끼는 것" : "feeling the home is safe without constant checking")
+                : (currentLocale === "ko" ? "번거로운 설정 없이 바로 체감 가치를 얻는 것" : "getting immediate value without friction");
+    const functionalJob = currentLocale === "ko"
+        ? `"${intent.purpose}" 상황에서 반복 확인과 수동 조작을 줄이는 것`
+        : `reducing repeated checking and manual control in moments like "${intent.purpose}"`;
+    const coreMessage = currentLocale === "ko"
+        ? `${selectedSegment}에게 필요한 것은 더 많은 기능이 아니라, ${intent.purpose} 같은 순간을 더 가볍게 넘기게 해주는 ${primaryValue}입니다.`
+        : `What the ${selectedSegment} segment needs is not more features, but ${primaryValue} that makes moments like "${intent.purpose}" feel lighter.`;
+    const proofLine = currentLocale === "ko"
+        ? `${serviceLabels.join(", ")}가 ${regional.implication}을 실제 장면으로 연결합니다.`
+        : `${serviceLabels.join(", ")} connect ${regional.implication} into an actual use moment.`;
+
+    return {
+        primaryValue,
+        emotionalJob,
+        functionalJob,
+        coreMessage,
+        proofLine,
+        observation: regional.observation,
+        insight: regional.insight,
+        implication: regional.implication,
+        exploreTagSummary: (intent.lifestyleTags || []).join(", "),
+        messageAngle: intent.missionBucket === "Save"
+            ? (currentLocale === "ko" ? "절감되는 금액보다 먼저 줄어드는 신경 씀" : "less mental overhead before lower bills")
+            : intent.missionBucket === "Care"
+                ? (currentLocale === "ko" ? "계속 확인하지 않아도 되는 안심" : "reassurance without constant checking")
+                : intent.missionBucket === "Secure"
+                    ? (currentLocale === "ko" ? "필요한 순간에만 즉시 개입하는 보안감" : "security that surfaces only when needed")
+                    : (currentLocale === "ko" ? "생활을 더 매끄럽게 이어주는 연결감" : "connected flows that make life smoother")
+    };
+}
+
+function analyzeIntent(purpose, selectedSegment, selectedDevices = []) {
     const tags = new Set();
     const text = `${purpose} ${selectedSegment}`.toLowerCase();
+    const normalizedDevices = selectedDevices.map((device) => getCategoryName(device).toLowerCase());
 
     exploreMatrix.lifestyleTags.forEach((tag) => {
         const needle = tag.tagName.toLowerCase().replace(/\s+/g, "");
@@ -1360,26 +1412,64 @@ function analyzeIntent(purpose, selectedSegment, selectedDevice) {
     if (text.includes("반려") || text.includes("펫")) tags.add("반려동물 케어");
     if (text.includes("부모") || text.includes("시니어") || text.includes("가족")) tags.add("시니어 케어");
     if (text.includes("에너지") || text.includes("절약") || text.includes("비용")) tags.add("에너지 절약");
-    if (selectedDevice === "TV") tags.add("AOD (Always on Display)");
+    if (selectedDevices.includes("TV")) tags.add("AOD (Always on Display)");
     if (tags.size === 0) tags.add("입문 (Entry)");
 
-    return { missionBucket: inferMissionBucket(purpose), purpose, lifestyleTags: [...tags] };
+    return {
+        missionBucket: inferMissionBucket(purpose),
+        purpose,
+        selectedSegment,
+        selectedDevices,
+        selectedDeviceNames: normalizedDevices,
+        lifestyleTags: [...tags],
+        rawText: `${purpose} ${selectedSegment} ${normalizedDevices.join(" ")}`
+    };
 }
 
 function findRelevantServices(intent) {
+    const missionMap = {
+        Save: ["Save", "Control", "Ease", "Comfort"],
+        Care: ["Care", "Secure", "Ease", "Routine"],
+        Secure: ["Secure", "Alert", "Care", "Location"],
+        Play: ["Play", "Health", "Routine", "Ease"],
+        Discover: ["Ease", "Routine", "Comfort", "Care"]
+    };
+    const desiredValues = missionMap[intent.missionBucket] || missionMap.Discover;
+    const text = intent.rawText.toLowerCase();
+
     return factPack
         .map((service) => {
             let score = 0;
-            const haystack = `${service.serviceName} ${service.description} ${service.keyFeatures.join(" ")}`.toLowerCase();
-            if (intent.missionBucket === "Save" && haystack.includes("에너지")) score += 3;
-            if (intent.missionBucket === "Care" && (haystack.includes("가족") || haystack.includes("반려"))) score += 3;
-            if (intent.missionBucket === "Play" && (haystack.includes("운동") || haystack.includes("요리"))) score += 3;
-            if (intent.lifestyleTags.some((tag) => haystack.includes(tag.toLowerCase()))) score += 2;
+            const haystack = [
+                service.serviceName,
+                service.description,
+                ...(service.keyFeatures || []),
+                ...(service.triggerKeywords || []),
+                ...(service.signalKeywords || []),
+                ...(service.valueTags || []),
+                ...(service.requiredCategories || [])
+            ].join(" ").toLowerCase();
+
+            if ((service.valueTags || []).some((tag) => desiredValues.includes(tag))) score += 4;
+            if ((service.triggerKeywords || []).some((keyword) => text.includes(keyword.toLowerCase()))) score += 6;
+            if ((service.signalKeywords || []).some((keyword) => text.includes(keyword.toLowerCase()))) score += 3;
+            if ((intent.lifestyleTags || []).some((tag) => haystack.includes(tag.toLowerCase()))) score += 3;
+            if ((service.requiredCategories || []).some((category) => intent.selectedDevices.includes(category))) score += 5;
+            if ((service.requiredCategories || []).some((category) => category === "세탁기/건조기" && intent.selectedDevices.some((device) => ["세탁기", "건조기", "세탁기/건조기"].includes(device)))) score += 4;
+            if (intent.missionBucket === "Save" && /energy|절약|요금/.test(haystack)) score += 4;
+            if (intent.missionBucket === "Care" && /care|반려|가족|health|find/.test(haystack)) score += 4;
+            if (intent.missionBucket === "Secure" && /monitoring|secure|find|보안|카메라/.test(haystack)) score += 4;
+            if (intent.missionBucket === "Play" && /fitness|cooking|play|운동|요리/.test(haystack)) score += 4;
+            score += Math.max(0, 4 - Number(service.tier || 3));
             return { service, score };
         })
         .sort((a, b) => b.score - a.score)
-        .slice(0, 2)
+        .slice(0, 3)
         .map((item) => item.service);
+}
+
+function getServiceLabel(service) {
+    return service?.appCardLabel || service?.serviceName || "";
 }
 
 function resolveDevice(country, selectedDevice, services, selectedDevices = []) {
@@ -1412,6 +1502,8 @@ function resolveDevice(country, selectedDevice, services, selectedDevices = []) 
 function buildNarrative(country, city, selectedSegment, intent, deviceDecision, services) {
     const primary = services[0];
     const secondary = services[1] || services[0];
+    const primaryLabel = getServiceLabel(primary);
+    const secondaryLabel = getServiceLabel(secondary);
     const locationLabel = city ? `${getCountryName(country.countryCode)} / ${city}` : getCountryName(country.countryCode);
     const deviceList = (deviceDecision.selectedDevices || [deviceDecision.final.category]).map((device) => getCategoryName(device)).join(", ");
     if (currentLocale === "ko") {
@@ -1420,14 +1512,14 @@ function buildNarrative(country, city, selectedSegment, intent, deviceDecision, 
             `${selectedSegment} 사용자에게는 복잡한 제어보다 바로 체감되는 변화가 더 중요합니다.`,
             `${deviceList} 조합은 첫 진입 순간부터 생활 맥락과 맞닿은 가치 제안을 만들기 좋습니다.`,
             `앱 첫 화면은 사용자의 현재 상황을 한 문장으로 요약하고, 가장 가까운 추천 루틴을 카드로 제시합니다.`,
-            `첫 카드에는 ${primary.serviceName}가 배치되고, ${primary.keyFeatures[0]}가 왜 지금 유용한지 바로 설명됩니다.`,
+            `첫 카드에는 ${primaryLabel}가 배치되고, ${primary.keyFeatures[0]}가 왜 지금 유용한지 바로 설명됩니다.`,
             `사용자는 긴 설정 없이 추천 카드를 열어 자신에게 맞는 시작 옵션만 고릅니다.`,
             `${deviceDecision.final.modelName}는 이 순간의 중심 기기로 배치되어 사용자의 행동 부담을 줄입니다.`,
             `앱은 ${intent.lifestyleTags.join(", ")}와 연결되는 맥락을 짧은 카피와 시각 신호로 전달합니다.`,
             `추천 화면에서는 "지금 바로 실행"과 "내 루틴으로 저장" 두 가지 선택지만 남겨 의사결정을 단순화합니다.`,
             `실행이 시작되면 ${primary.keyFeatures[1] || primary.keyFeatures[0]}가 이어지며 첫 성공 경험을 분명하게 만듭니다.`,
             `사용자는 설정을 공부한 느낌이 아니라, 내 상황을 이해받았다는 인상을 받게 됩니다.`,
-            `상황이 한 번 맞아떨어지면 ${secondary.serviceName}가 다음 단계 가치로 자연스럽게 연결됩니다.`,
+            `상황이 한 번 맞아떨어지면 ${secondaryLabel}가 다음 단계 가치로 자연스럽게 연결됩니다.`,
             `이 연결은 단발성 체험을 넘어 반복 사용의 이유를 만들고, 앱 체류 이유를 분명하게 합니다.`,
             `"${intent.purpose}" 과정에서 생기는 반복 확인과 조작 부담은 작은 자동화의 축적으로 완화됩니다.`,
             `중요한 점은 기술을 많이 보여주는 것이 아니라, 사용자가 덜 신경 써도 된다는 안심을 주는 것입니다.`,
@@ -1444,14 +1536,14 @@ function buildNarrative(country, city, selectedSegment, intent, deviceDecision, 
         `For the ${selectedSegment} segment, immediate value matters more than feature depth.`,
         `The combination of ${deviceList} makes the first benefit easier to feel with fewer decisions.`,
         `The app home opens with one clear scenario card instead of a dense control dashboard.`,
-        `${primary.serviceName} appears first, framed around why ${primary.keyFeatures[0]} matters right now.`,
+        `${primaryLabel} appears first, framed around why ${primary.keyFeatures[0]} matters right now.`,
         `The user selects a lightweight starting option rather than building a routine from scratch.`,
         `${deviceDecision.final.modelName} becomes the anchor device that turns intent into action quickly.`,
         `Short copy and visual cues connect the recommendation to ${intent.lifestyleTags.join(", ")}.`,
         `The interface keeps only two choices: run now or save as my routine.`,
         `Once triggered, ${primary.keyFeatures[1] || primary.keyFeatures[0]} reinforces the first success moment.`,
         `The experience feels less like setup and more like being understood.`,
-        `${secondary.serviceName} then extends the value into the next daily moment.`,
+        `${secondaryLabel} then extends the value into the next daily moment.`,
         `That progression gives the user a reason to come back, not just to try once.`,
         `Pressure points tied to repeated checking and manual control begin to feel lighter.`,
         `The goal is not to showcase more technology, but to reduce the need for constant attention.`,
@@ -1514,8 +1606,8 @@ function buildAutomationSkeleton(country, intent, deviceDecision, services) {
                 ? `${intent.missionBucket} 관련 목적어 감지`
                 : `${intent.missionBucket} intent detected in the user request`,
             currentLocale === "ko"
-                ? `${primary.serviceName} 활용 가능 여부`
-                : `${primary.serviceName} availability in the selected journey`
+                ? `${primaryLabel} 활용 가능 여부`
+                : `${primaryLabel} availability in the selected journey`
         ],
         recommendationLogic: [
             currentLocale === "ko"
@@ -1530,8 +1622,8 @@ function buildAutomationSkeleton(country, intent, deviceDecision, services) {
         ],
         actions: [
             currentLocale === "ko"
-                ? `${primary.serviceName} 기반 추천 카드 노출`
-                : `Show a recommendation card powered by ${primary.serviceName}`,
+                ? `${primaryLabel} 기반 추천 카드 노출`
+                : `Show a recommendation card powered by ${primaryLabel}`,
             currentLocale === "ko"
                 ? `${deviceDecision.final.modelName} 중심 실행 흐름 안내`
                 : `Guide the execution flow around ${deviceDecision.final.modelName}`,
@@ -1548,23 +1640,24 @@ function buildAutomationSkeleton(country, intent, deviceDecision, services) {
     };
 }
 
-function buildFacts(country, city, selectedSegment, deviceDecision, services) {
-    const regional = getRegionalSignals(country.countryCode, city, { missionBucket: "Discover" });
+function buildFacts(country, city, selectedSegment, deviceDecision, services, exploreGrounding) {
     return {
         facts: [
             localizeSentence("factsCountry", city ? `${getCountryName(country.countryCode)} / ${city}` : getCountryName(country.countryCode)),
             localizeSentence("factsDevice", `${(deviceDecision.selectedDevices || [deviceDecision.final.category]).map((device) => getCategoryName(device)).join(", ")} / ${deviceDecision.final.modelName}`),
-            localizeSentence("factsService", services[0].serviceName),
-            localizeSentence("factsNote", `${selectedSegment} / ${deviceDecision.note}`)
+            localizeSentence("factsService", getServiceLabel(services[0])),
+            localizeSentence("factsNote", `${selectedSegment} / ${deviceDecision.note}`),
+            currentLocale === "ko" ? `Explore 태그 근거: ${exploreGrounding.exploreTagSummary}` : `Explore tag grounding: ${exploreGrounding.exploreTagSummary}`
         ],
         assumptions: [
             deviceDecision.fallbackApplied ? localizeSentence("assumptionFallback") : localizeSentence("assumptionExact"),
-            localizeSentence("assumptionGeneral")
+            localizeSentence("assumptionGeneral"),
+            currentLocale === "ko" ? `가정: ${exploreGrounding.functionalJob}이 이 타겟의 반복 문제로 작동합니다.` : `Assumption: ${exploreGrounding.functionalJob} is a repeated problem for this segment.`
         ],
         dependencies: [
             currentLocale === "ko"
-                ? `${services[0].serviceName}가 해당 시장 앱 플로우에서 노출 가능해야 합니다.`
-                : `${services[0].serviceName} should be available in the market app flow.`,
+                ? `${getServiceLabel(services[0])}가 해당 시장 앱 플로우에서 노출 가능해야 합니다.`
+                : `${getServiceLabel(services[0])} should be available in the market app flow.`,
             currentLocale === "ko"
                 ? `${deviceDecision.final.modelName} 또는 유사 카테고리의 가용성이 유지되어야 합니다.`
                 : `Availability of ${deviceDecision.final.modelName} or an equivalent category should be maintained.`,
@@ -1572,14 +1665,14 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services) {
                 ? `현지 카피와 CTA는 선택 시장 언어 기준으로 조정되어야 합니다.`
                 : "Local copy and CTA should be adapted to the selected market language."
         ],
-        observation: regional.observation,
-        insight: regional.insight,
-        implication: regional.implication,
+        observation: exploreGrounding.observation,
+        insight: exploreGrounding.insight,
+        implication: exploreGrounding.implication,
         sourceUrls: [country.samsungShopUrl]
     };
 }
 
-function buildRoleLensOutputs(selectedRole, narrative, country, deviceDecision, services, selectedSegment, intent) {
+function buildRoleLensOutputs(selectedRole, narrative, country, deviceDecision, services, selectedSegment, intent, exploreGrounding) {
     const primary = services[0];
     const marketName = getCountryName(country.countryCode);
     const outputs = {
@@ -1592,18 +1685,18 @@ function buildRoleLensOutputs(selectedRole, narrative, country, deviceDecision, 
                 localizeRoleText("retailBullet2", primary.keyFeatures[0]),
                 localizeRoleText("retailBullet3"),
                 currentLocale === "ko"
-                    ? `${selectedSegment} 고객에게는 "${intent.purpose}"를 바로 데모 문장으로 사용합니다.`
-                    : `Use "${intent.purpose}" as the live demo line for the ${selectedSegment} segment.`
+                ? `${selectedSegment} 고객에게는 "${intent.purpose}"를 바로 데모 문장으로 사용합니다.`
+                : `Use "${intent.purpose}" as the live demo line for the ${selectedSegment} segment.`
             ],
             copy: narrative[7],
             asset: currentLocale === "ko" ? "매장 데모 스크립트 + 상담 카드" : "Store demo script + consultation card",
             message: currentLocale === "ko"
-                ? `${deviceDecision.final.modelName}가 ${marketName} 매장에서 어떤 생활 문제를 줄여주는지 한 문장으로 설명합니다.`
-                : `Explain in one sentence which daily-life problem ${deviceDecision.final.modelName} solves in ${marketName} stores.`,
+                ? `${deviceDecision.final.modelName}가 ${marketName} 매장에서 어떤 생활 문제를 줄여주는지, 그리고 왜 지금 필요한지를 한 문장으로 설명합니다.`
+                : `Explain in one sentence which daily-life problem ${deviceDecision.final.modelName} solves in ${marketName} stores and why it matters now.`,
             cta: currentLocale === "ko" ? "지금 바로 체험해 보세요" : "Try this experience now",
             kpi: currentLocale === "ko" ? "상담 전환율 / 데모 후 관심도" : "Consultation conversion / post-demo interest",
             objective: currentLocale === "ko" ? "매장에서 30초 안에 고객이 '왜 필요한지' 이해하게 만드는 것" : "Make shoppers understand 'why it matters' within 30 seconds in-store.",
-            headline: currentLocale === "ko" ? "복잡한 스마트홈 설명이 아니라 내 생활을 가볍게 만드는 한 장면으로 말합니다." : "Lead with one life-improving moment, not a complex smart-home explanation.",
+            headline: currentLocale === "ko" ? `${exploreGrounding.primaryValue}이 바로 읽히는 한 장면으로 설명합니다.` : `Lead with one moment that makes ${exploreGrounding.primaryValue} immediately legible.`,
             proofPoints: [
                 currentLocale === "ko" ? `${deviceDecision.final.modelName} 중심 데모로 시작해 이해 허들을 낮춥니다.` : `Start with a demo anchored on ${deviceDecision.final.modelName} to lower comprehension friction.`,
                 currentLocale === "ko" ? `${primary.keyFeatures[0]}를 생활 문제 해결 언어로 번역합니다.` : `Translate ${primary.keyFeatures[0]} into problem-solving language.`,
@@ -1630,12 +1723,12 @@ function buildRoleLensOutputs(selectedRole, narrative, country, deviceDecision, 
             copy: localizeRoleText("dotcomCopy", deviceDecision.final.modelName),
             asset: currentLocale === "ko" ? "PDP 히어로 배너 + FAQ + 추천 카드" : "PDP hero banner + FAQ + recommendation card",
             message: currentLocale === "ko"
-                ? `사용 장면, 핵심 가치, CTA가 한 화면 안에서 바로 이어지게 구성합니다.`
-                : "Keep the use moment, core value, and CTA in one continuous page flow.",
+                ? `사용 장면, 핵심 가치, CTA가 ${exploreGrounding.coreMessage}에 맞춰 한 화면 안에서 이어지게 구성합니다.`
+                : `Keep the use moment, core value, and CTA aligned to ${exploreGrounding.coreMessage} within one continuous page flow.`,
             cta: currentLocale === "ko" ? "내 상황에 맞는 추천 보기" : "See recommendations for my situation",
             kpi: currentLocale === "ko" ? "PDP 체류시간 / CTA 클릭률 / 장바구니 진입" : "PDP dwell time / CTA CTR / add-to-cart rate",
             objective: currentLocale === "ko" ? "랜딩에서 장바구니 진입까지 메시지 이탈 없이 연결하는 것" : "Connect landing to add-to-cart without message drop-off.",
-            headline: currentLocale === "ko" ? "상품 스펙보다 먼저 '내 상황에서 어떤 변화가 생기는가'를 보여줍니다." : "Show 'what changes in my situation' before product specs.",
+            headline: currentLocale === "ko" ? `"내 상황에서 무엇이 가벼워지는가"를 먼저 보여줍니다.` : `Show "what gets lighter in my situation" before product specs.`,
             proofPoints: [
                 currentLocale === "ko" ? "히어로 영역에서 상황-가치-CTA를 한 번에 제시" : "Present situation, value, and CTA together in the hero area",
                 currentLocale === "ko" ? "FAQ와 카드 섹션에서 같은 메시지를 반복 강화" : "Reinforce the same message through FAQ and cards",
@@ -1662,12 +1755,12 @@ function buildRoleLensOutputs(selectedRole, narrative, country, deviceDecision, 
             copy: localizeRoleText("brandCopy"),
             asset: currentLocale === "ko" ? "30초 영상 + 소셜 카피 + KV" : "30-second film + social copy + key visual",
             message: currentLocale === "ko"
-                ? `기능 설명보다 배려받는 느낌과 생활 리듬 회복을 중심으로 캠페인을 설계합니다.`
-                : "Build the campaign around feeling cared for and restoring daily rhythm, not feature lists.",
+                ? `${exploreGrounding.messageAngle}을 중심으로 캠페인을 설계합니다.`
+                : `Build the campaign around ${exploreGrounding.messageAngle}, not feature lists.`,
             cta: currentLocale === "ko" ? "우리 집 루틴을 더 가볍게" : "Make your home routine feel lighter",
             kpi: currentLocale === "ko" ? "영상 완주율 / 브랜드 선호도 / 공유 의향" : "Video completion / brand preference / sharing intent",
             objective: currentLocale === "ko" ? "기술이 아니라 배려받는 감정을 브랜드 자산으로 만드는 것" : "Turn the feeling of being cared for into a brand asset.",
-            headline: currentLocale === "ko" ? "기능은 배경으로 두고, 사용자의 생활 리듬이 가벼워지는 장면을 전면에 둡니다." : "Keep features in the background and foreground the lighter daily rhythm.",
+            headline: currentLocale === "ko" ? "기능은 배경으로 두고, 사용자의 생활 리듬이 실제로 가벼워지는 장면을 전면에 둡니다." : "Keep features in the background and foreground the moment daily rhythm actually gets lighter.",
             proofPoints: [
                 currentLocale === "ko" ? "30초 안에 문제-전환-안도감의 흐름이 보여야 함" : "Show the arc of problem, transition, and relief within 30 seconds",
                 currentLocale === "ko" ? "현지 시장 정서에 맞는 감정 언어로 조정" : "Adjust the emotional language to the local market context",
@@ -1706,7 +1799,7 @@ function buildSuccessMetrics(selectedRole, intent, deviceDecision) {
     return bank[selectedRole.id] || [`${intent.missionBucket} 경험 강화 -> 반복 사용 증가`];
 }
 
-function buildTargetSegment(country, city, selectedSegment, intent) {
+function buildTargetSegment(country, city, selectedSegment, intent, exploreGrounding) {
     return [
         localizeSentence("segment1", city ? `${getCountryName(country.countryCode)} / ${city}` : getCountryName(country.countryCode)),
         localizeSentence("segment2", `${selectedSegment} / ${intent.missionBucket}`),
@@ -1718,15 +1811,15 @@ function buildTargetSegment(country, city, selectedSegment, intent) {
             ? "가처분 소득 프록시: 연결형 가전과 앱 사용에 추가 비용과 편익을 모두 검토할 가능성이 높은 중간 이상 구매력 가구"
             : "Disposable-income proxy: mid-to-upper purchasing-power households likely to weigh both the added cost and value of connected appliances",
         currentLocale === "ko"
-            ? "대표성 근거: 시간 절감, 에너지 절약, 돌봄 효율 같은 명확한 결과를 중시하는 라이프스타일 세그먼트"
-            : "Representative rationale: a lifestyle segment that actively values clear outcomes such as time savings, energy savings, or care efficiency"
+            ? `대표성 근거: ${exploreGrounding.primaryValue}처럼 결과가 분명한 제안을 선호하는 라이프스타일 세그먼트`
+            : `Representative rationale: a lifestyle segment that prefers offers with clear outcomes such as ${exploreGrounding.primaryValue}`
     ];
 }
 
 function buildSetupGuide(deviceDecision, services, selectedRole) {
     return [
         localizeSentence("guide1", deviceDecision.final.modelName),
-        localizeSentence("guide2", services[0].serviceName),
+        localizeSentence("guide2", getServiceLabel(services[0])),
         localizeSentence("guide3"),
         localizeSentence("guide4"),
         currentLocale === "ko"
@@ -1735,12 +1828,18 @@ function buildSetupGuide(deviceDecision, services, selectedRole) {
     ];
 }
 
-function buildMarketability(country, intent, deviceDecision, services, selectedRole, selectedSegment) {
+function buildMarketability(country, intent, deviceDecision, services, selectedRole, selectedSegment, exploreGrounding) {
     const go = intent.lifestyleTags.length > 0 && Boolean(deviceDecision.final);
     return {
         verdict: go ? "Go" : "No-Go",
-        rationale: go ? localizeSentence("marketGo", `${getCountryName(country.countryCode)} / ${intent.missionBucket}`) : localizeSentence("marketNoGo"),
-        competitorView: localizeSentence("marketComparison"),
+        rationale: go
+            ? (currentLocale === "ko"
+                ? `${getCountryName(country.countryCode)}에서 ${selectedSegment}의 "${intent.purpose}" 상황은 ${exploreGrounding.primaryValue} 가치가 명확하게 읽히는 장면이라 Go 판단이 가능합니다.`
+                : `In ${getCountryName(country.countryCode)}, the "${intent.purpose}" moment for the ${selectedSegment} segment makes ${exploreGrounding.primaryValue} legible enough for a Go decision.`)
+            : localizeSentence("marketNoGo"),
+        competitorView: currentLocale === "ko"
+            ? `차별점은 기능 수가 아니라 ${exploreGrounding.functionalJob}을 한 번의 연결 경험으로 줄여준다는 점입니다.`
+            : `The differentiation is not feature count but reducing ${exploreGrounding.functionalJob} into one connected experience.`,
         risk: services[0].privacyPolicy,
         alternatives: currentLocale === "ko"
             ? [
@@ -1755,7 +1854,7 @@ function buildMarketability(country, intent, deviceDecision, services, selectedR
             ],
         nextActions: [
             currentLocale === "ko"
-                ? `${selectedSegment} 기준으로 첫 배포용 한 문장 메시지를 확정합니다.`
+                ? `${selectedSegment} 기준으로 "${exploreGrounding.coreMessage}"를 압축한 첫 배포용 한 문장 메시지를 확정합니다.`
                 : `Lock a one-line launch message for the ${selectedSegment} segment.`,
             currentLocale === "ko"
                 ? `${getRoleTitle(selectedRole.id)} 채널에서 먼저 검증할 핵심 CTA를 1개 정합니다.`
@@ -1790,9 +1889,9 @@ function buildTitle(role, intent, selectedSegment, deviceDecision) {
 
 function buildSummary(country, selectedSegment, intent, deviceDecision, services) {
     if (currentLocale === "ko") {
-        return `${getCountryName(country.countryCode)}에서 ${selectedSegment}에게 ${deviceDecision.final.modelName}와 ${services[0].serviceName}를 중심으로 ${intent.missionBucket} 가치를 전달하는 앱 시나리오입니다.`;
+        return `${getCountryName(country.countryCode)}에서 ${selectedSegment}에게 ${deviceDecision.final.modelName}와 ${getServiceLabel(services[0])}를 중심으로 ${intent.missionBucket} 가치를 전달하는 앱 시나리오입니다.`;
     }
-    return `An app scenario for the ${selectedSegment} segment in ${getCountryName(country.countryCode)}, centered on ${deviceDecision.final.modelName} and ${services[0].serviceName}, designed to deliver ${intent.missionBucket} value.`;
+    return `An app scenario for the ${selectedSegment} segment in ${getCountryName(country.countryCode)}, centered on ${deviceDecision.final.modelName} and ${getServiceLabel(services[0])}, designed to deliver ${intent.missionBucket} value.`;
 }
 
 function buildReferenceLinks(intent, services) {
@@ -1803,126 +1902,201 @@ function buildReferenceLinks(intent, services) {
     if (refs.length === 0) refs.push("seamlessly-save-energy");
     return refs.slice(0, 3).map((id, index) => ({
         id,
-        title: services[index]?.serviceName || (index === 0 ? "Primary Service Anchor" : `Reference ${index + 1}`),
+        title: getServiceLabel(services[index]) || (index === 0 ? "Primary Service Anchor" : `Reference ${index + 1}`),
         url: `references/explore_matrix.json#${id}`
     }));
 }
 
-function buildSummaryBullets(country, city, selectedSegment, intent, deviceDecision, services) {
+function buildSummaryBullets(country, city, selectedSegment, intent, deviceDecision, services, exploreGrounding) {
     const location = city ? `${getCountryName(country.countryCode)} ${city}` : getCountryName(country.countryCode);
     const secondary = services[1] || services[0];
     return [
         currentLocale === "ko" ? `누가: ${location}의 ${selectedSegment}` : `Who: ${selectedSegment} in ${location}`,
         currentLocale === "ko" ? `언제: ${intent.purpose} 같은 상황이 반복되는 일상 구간` : `When: during recurring moments like "${intent.purpose}"`,
-        currentLocale === "ko" ? `무엇으로: ${services[0].serviceName}${secondary.serviceName !== services[0].serviceName ? ` + ${secondary.serviceName}` : ""}` : `With: ${services[0].serviceName}${secondary.serviceName !== services[0].serviceName ? ` + ${secondary.serviceName}` : ""}`,
-        currentLocale === "ko" ? `어떻게: ${deviceDecision.final.modelName} 중심의 추천 카드와 반복 루틴으로 연결` : `How: through recommendation cards and repeat routines anchored on ${deviceDecision.final.modelName}`,
-        currentLocale === "ko" ? `결과: 시간 부담↓, 확인 스트레스↓, 체감 가치↑` : "Result: less time burden, less checking stress, stronger felt value",
-        currentLocale === "ko" ? `캠페인 메시지: ${selectedSegment}의 생활을 더 가볍게 만드는 ${intent.missionBucket} 경험` : `Campaign message: a ${intent.missionBucket} experience that makes daily life lighter for ${selectedSegment}`
+        currentLocale === "ko" ? `무엇으로: ${getServiceLabel(services[0])}${secondary.serviceName !== services[0].serviceName ? ` + ${getServiceLabel(secondary)}` : ""}` : `With: ${getServiceLabel(services[0])}${secondary.serviceName !== services[0].serviceName ? ` + ${getServiceLabel(secondary)}` : ""}`,
+        currentLocale === "ko" ? `어떻게: ${deviceDecision.final.modelName} 중심의 추천 카드와 반복 루틴으로 ${exploreGrounding.functionalJob}을 줄임` : `How: reduce ${exploreGrounding.functionalJob} through recommendation cards and repeat routines anchored on ${deviceDecision.final.modelName}`,
+        currentLocale === "ko" ? `결과: ${exploreGrounding.primaryValue}을 더 빠르게 체감` : `Result: make ${exploreGrounding.primaryValue} felt faster`,
+        currentLocale === "ko" ? `캠페인 메시지: ${exploreGrounding.coreMessage}` : `Campaign message: ${exploreGrounding.coreMessage}`
     ];
 }
 
-function buildCaseStrategies(country, city, selectedSegment, intent, deviceDecision, services) {
-    const primary = services[0];
-    const secondary = services[1] || services[0];
-    const location = city ? `${getCountryName(country.countryCode)} ${city}` : getCountryName(country.countryCode);
-    return [
-        {
-            title: currentLocale === "ko" ? "케이스 A. 돌봄/안심 니즈가 커질 때" : "Case A. When care and reassurance needs rise",
-            situation: currentLocale === "ko" ? `${location}의 ${selectedSegment}에게는 가족 안부와 생활 리듬 확인 부담이 쉽게 누적됩니다.` : `For the ${selectedSegment} segment in ${location}, the burden of checking on family and home rhythm builds up quickly.`,
-            solution: currentLocale === "ko" ? `${primary.serviceName} 중심으로 필요한 순간에만 알림과 확인을 주고, 불필요한 연락 스트레스를 줄입니다.` : `Use ${primary.serviceName} to surface alerts only when needed and reduce unnecessary contact stress.`,
-            value: currentLocale === "ko" ? "불안을 키우는 반복 확인 대신, 조용한 안심과 관리 여유를 제공합니다." : "Replace repetitive checking with quiet reassurance and more room to manage daily life.",
-            logic: [
-                `IF ${intent.purpose} 관련 신호 감지 THEN ${primary.serviceName} 추천 카드 노출`,
-                `IF 사용자가 확인 완료 THEN "${currentLocale === "ko" ? "내 루틴으로 저장" : "Save as my routine"}" 제안`
-            ],
-            ladder: [
-                currentLocale === "ko" ? "초기: 알림/추천 카드 1개만 먼저 사용" : "Start: use one alert or recommendation card first",
-                currentLocale === "ko" ? "정착: 반복되는 상황을 루틴으로 저장" : "Adopt: save recurring situations as routines",
-                currentLocale === "ko" ? "확장: 가족/기기 연결 범위를 넓혀 요약 관리" : "Expand: connect more family members or devices for summarized management"
-            ]
+function buildDetailedScenario(country, city, selectedSegment, intent, deviceDecision, services) {
+    const countryName = getCountryName(country.countryCode);
+    const serviceNames = [...new Set(services.slice(0, 3).map((service) => service.serviceName))];
+    const isPetContext = /pet|dog|cat|puppy|kitten|반려|강아지|고양이/i.test(`${selectedSegment} ${intent.purpose} ${serviceNames.join(" ")}`);
+    const appliedServices = [...new Set(services.slice(0, 3).map((service) => service.appCardLabel || service.serviceName))];
+    const serviceStories = services.slice(0, 3).map((service) => {
+        const story = buildServiceStory(service, intent, selectedSegment, isPetContext);
+        return { title: story.title, paragraphs: [story.pain, story.solution, story.benefit] };
+    });
+
+    return {
+        targetCustomer: currentLocale === "ko"
+            ? buildTargetCustomerLine(countryName, selectedSegment, intent.purpose)
+            : buildTargetCustomerLine(countryName, selectedSegment, intent.purpose),
+        appliedServices: appliedServices.join(" / "),
+        appliedServiceList: appliedServices,
+        cases: serviceStories
+    };
+}
+
+function buildTargetCustomerLine(countryName, selectedSegment, purpose) {
+    const tokens = `${selectedSegment} / ${purpose}`
+        .split(/[\/,|]|·/)
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .filter((item, index, array) => array.indexOf(item) === index)
+        .slice(0, 5);
+    return [countryName, ...tokens].join(" / ");
+}
+
+function buildServiceStory(service, intent, selectedSegment, isPetContext) {
+    const name = service.serviceName;
+    const cardLabel = service.appCardLabel || name;
+    const firstFeature = service.keyFeatures?.[0] || name;
+    const secondFeature = service.keyFeatures?.[1] || firstFeature;
+    const primaryDevice = getCategoryName(service.requiredCategories?.[0] || intent.selectedDevices?.[0] || "");
+
+    const stories = {
+        "Pet Care": {
+            title: isPetContext ? "[Care] 야근이 길어져 강아지가 불안할까 걱정될 때" : "[Care] 외출 시간이 길어져 반려동물 케어가 걱정될 때",
+            pain: isPetContext ? "잦은 야근으로 혼자 집에 있는 강아지가 줄곧 신경 쓰였던 사용자." : "집을 비우는 시간 동안 반려동물이 불안해할까 계속 마음이 쓰였던 사용자.",
+            solution: `SmartThings에서 외출 루틴을 생성하면 ${cardLabel}를 통해 조명 밝기, 실내 분위기, 반려동물이 익숙해하는 소리나 기기 환경을 자동으로 맞출 수 있습니다.`,
+            benefit: "버튼 한 번으로, 또는 외출을 감지하면 자동으로 펫을 위한 환경으로 전환되어 손쉬운 케어가 가능하고 보호자의 불안도 줄어듭니다."
         },
-        {
-            title: currentLocale === "ko" ? "케이스 B. 생활비와 에너지 부담이 커질 때" : "Case B. When energy and cost pressure rises",
-            situation: currentLocale === "ko" ? `특히 ${location}에서는 계절 변화와 생활 패턴에 따라 에너지 사용량이 쉽게 튈 수 있습니다.` : `In ${location}, seasonal shifts and daily patterns can make energy use spike quickly.`,
-            solution: currentLocale === "ko" ? `${secondary.serviceName} 또는 절감형 자동화로 목표 사용량 이전에 선제 제어를 제안합니다.` : `Use ${secondary.serviceName} or a savings-oriented automation to intervene before the target usage level is exceeded.`,
-            value: currentLocale === "ko" ? "청구서 이후 후회가 아니라, 초과 전에 멈추는 통제감을 만듭니다." : "Create a feeling of control before overages happen, not regret after the bill arrives.",
-            logic: [
-                `IF ${intent.missionBucket} threshold reaches 80% THEN energy-saving action ON`,
-                `IF user is away THEN standby devices and ambient controls shift to low-power mode`
-            ],
-            ladder: [
-                currentLocale === "ko" ? "초기: 상위 소비 기기 1개만 확인" : "Start: identify one high-consumption device",
-                currentLocale === "ko" ? "정착: 절감 모드와 목표치 알림을 연결" : "Adopt: connect saving mode with threshold alerts",
-                currentLocale === "ko" ? "확장: 반복 가사/생활 루틴을 저부하 시간대로 분산" : "Expand: distribute repeat routines into lower-load time windows"
-            ]
+        "Family Care": {
+            title: "[Care] 가족이나 부모님의 일상이 무사한지 확인하고 싶을 때",
+            pain: "바쁜 하루 중에도 가족의 안부를 계속 떠올리게 되어 자주 연락하거나 반복 확인하게 되는 사용자.",
+            solution: `${cardLabel}는 ${firstFeature}와 ${secondFeature}를 바탕으로 생활 패턴을 확인하고, 필요할 때만 안심 체크인이나 알림을 전달할 수 있습니다.`,
+            benefit: "매번 먼저 연락하거나 확인하지 않아도 필요한 순간만 파악할 수 있어 돌봄의 부담은 줄고 안심은 더 선명해집니다."
         },
-        {
-            title: currentLocale === "ko" ? "케이스 C. 주말과 저녁 시간을 지키고 싶을 때" : "Case C. When the goal is to protect evenings and weekends",
-            situation: currentLocale === "ko" ? `${selectedSegment}에게는 시간 절약이 곧 삶의 질 개선으로 연결됩니다.` : `For the ${selectedSegment} segment, time saved directly translates to better quality of life.`,
-            solution: currentLocale === "ko" ? `${deviceDecision.final.modelName}를 중심으로 첫 실행 성공 경험을 만들고, 이후 자주 쓰는 흐름만 남겨 의사결정을 줄입니다.` : `Anchor the first success moment on ${deviceDecision.final.modelName}, then preserve only the most useful repeat flows.`,
-            value: currentLocale === "ko" ? "집안일 조율 스트레스와 반복 선택 피로를 줄여 실제 여가 시간을 회복합니다." : "Reduce coordination stress and repeated decision fatigue to recover real leisure time.",
-            logic: [
-                `IF user chooses run-now THEN execute the simplified scenario flow`,
-                `IF flow is reused multiple times THEN surface a faster shortcut on the home screen`
-            ],
-            ladder: [
-                currentLocale === "ko" ? "초기: 한 번 성공시키기" : "Start: make one flow succeed once",
-                currentLocale === "ko" ? "정착: 같은 장면을 반복 실행" : "Adopt: repeat the same moment easily",
-                currentLocale === "ko" ? "확장: 다른 기기 조합으로 생활 전반에 적용" : "Expand: apply it across more device combinations"
-            ]
+        "SmartThings Energy": {
+            title: "[Energy] 전기요금과 대기전력이 신경 쓰일 때",
+            pain: "밖에 있는 동안 전기 요금이 걱정되어 외출 전 기기를 하나씩 꺼야 했던 사용자.",
+            solution: `${cardLabel}로 피크 시간대에는 사용이나 충전을 제한하고, 일간 및 월별 사용량을 모니터링해 불필요한 전력 소비를 줄일 수 있습니다.`,
+            benefit: "외출 중 대기전력과 불필요한 사용을 줄여 비용 부담을 덜고, 절감 효과를 앱에서 눈으로 확인할 수 있습니다."
+        },
+        "Samsung Health": {
+            title: "[Health] 컨디션과 생활 리듬을 더 안정적으로 맞추고 싶을 때",
+            pain: `${selectedSegment} 사용자는 바쁜 일정이 이어질수록 수면과 활동 리듬이 쉽게 무너지고 회복 타이밍도 놓치기 쉽습니다.`,
+            solution: `${cardLabel}는 ${firstFeature}를 기반으로 조명, 스피커, ${primaryDevice || "TV"} 같은 연결 기기를 현재 컨디션에 맞는 루틴으로 이어줍니다.`,
+            benefit: "건강 데이터를 따로 해석하지 않아도 집 안 환경이 생활 리듬 회복을 돕기 때문에 하루를 더 안정적으로 운영할 수 있습니다."
+        },
+        "Samsung Find": {
+            title: "[Secure] 외출과 귀가 흐름을 더 안심하고 연결하고 싶을 때",
+            pain: "집을 나서거나 돌아오는 순간마다 위치와 상태를 따로 확인해야 해 루틴이 자주 끊기는 사용자.",
+            solution: `${cardLabel}는 ${firstFeature}를 활용해 도착과 이탈을 감지하고, 그 신호를 SmartThings 자동화와 연결해 조명이나 홈 상태를 바로 전환할 수 있습니다.`,
+            benefit: "분실이나 위치 확인에만 머무르지 않고 생활 자동화까지 자연스럽게 연결되어 외출과 귀가 루틴이 훨씬 가벼워집니다."
+        },
+        "Home Monitoring": {
+            title: "[Secure] 잦은 부재로 댁내 보안이 불안할 때",
+            pain: "바쁜 일상 속에서 매번 스마트폰으로 집안을 모니터링하는 것은 번거롭고 어렵습니다.",
+            solution: `${cardLabel}과 연동된 카메라 및 센서는 수상한 소리와 움직임을 상시 감지하고, 이상 활동이 있으면 자동 녹화와 실시간 알림을 보냅니다.`,
+            benefit: "계속 신경 쓰고 있지 않아도 되니 안심할 수 있고, 이상 상황은 실시간으로 알려주니 빠른 대처로 더 큰 위험을 막을 수 있습니다."
+        },
+        "Home Care": {
+            title: "[Ease] 집안일 관리와 기기 케어를 놓치고 싶지 않을 때",
+            pain: "청소와 소모품 교체, 기기 관리 시점을 자꾸 놓쳐 집안일이 한꺼번에 몰리는 사용자.",
+            solution: `${cardLabel}는 ${firstFeature}와 관리 리마인더를 기반으로 필요한 시점에만 청소나 유지관리 액션을 제안합니다.`,
+            benefit: "해야 할 일을 모두 기억하지 않아도 앱이 우선순위를 정리해 주기 때문에 집 관리 스트레스가 눈에 띄게 줄어듭니다."
+        },
+        "Air Care": {
+            title: "[Comfort] 집 안 공기와 쾌적함을 자동으로 맞추고 싶을 때",
+            pain: "환기나 냉난방을 그때그때 수동으로 조절해야 해서 실내 환경이 들쭉날쭉했던 사용자.",
+            solution: `${cardLabel}는 ${firstFeature}와 재실 상태를 바탕으로 에어컨이나 관련 기기를 조정해 집 안 컨디션을 자동으로 맞춥니다.`,
+            benefit: "쾌적함과 절감 사이를 일일이 조절하지 않아도 되어 집에 머무는 시간의 만족도가 높아집니다."
+        },
+        "Clothing Care": {
+            title: "[Ease] 야근 후에도 세탁과 의류 관리를 놓치고 싶지 않을 때",
+            pain: "늦게 귀가하는 날이 많아 세탁과 건조 상태를 제때 확인하지 못하고 번거로움이 쌓였던 사용자.",
+            solution: `${cardLabel}는 ${firstFeature}와 완료 알림을 통해 세탁/건조 흐름을 앱에서 이어서 관리할 수 있게 돕습니다.`,
+            benefit: "집에 도착해서야 상태를 확인하는 번거로움이 줄고, 세탁 루틴을 더 매끄럽게 이어갈 수 있습니다."
+        },
+        "Smart Cooking": {
+            title: "[Ease] 저녁 준비를 더 가볍게 시작하고 싶을 때",
+            pain: "퇴근 후 요리를 시작할 때마다 레시피 확인, 예열, 재료 정리까지 한꺼번에 신경 써야 했던 사용자.",
+            solution: `${cardLabel}는 ${firstFeature}와 ${secondFeature}를 연결해 조리 준비 단계를 줄이고 주방 기기 제어를 더 빠르게 시작하게 돕습니다.`,
+            benefit: "식사 준비의 진입 장벽이 낮아져 바쁜 평일 저녁에도 요리를 덜 부담스럽게 이어갈 수 있습니다."
+        },
+        "Home Fitness": {
+            title: "[Health] 집에서도 운동 루틴을 꾸준히 이어가고 싶을 때",
+            pain: "운동을 시작하려고 해도 준비 과정이 번거로워 쉽게 미루게 되는 사용자.",
+            solution: `${cardLabel}는 ${firstFeature}를 중심으로 TV나 스피커 같은 기기와 연결해 운동 시작 장면을 더 간단하게 만들어 줍니다.`,
+            benefit: "운동을 결심한 순간 바로 실행할 수 있어 루틴 유지가 쉬워지고, 집에서도 꾸준한 자기관리가 가능해집니다."
         }
-    ];
+    };
+
+    return stories[name] || {
+        title: `[${service.valueTags?.[0] || "Life"}] ${name}가 필요한 순간`,
+        pain: `${selectedSegment} 사용자는 ${intent.purpose} 같은 상황에서 반복 확인과 수동 조작의 부담을 자주 느낍니다.`,
+        solution: `${cardLabel}는 ${firstFeature}와 ${secondFeature}를 바탕으로 연결 기기를 더 간단한 루틴으로 묶어 줍니다.`,
+        benefit: "필요한 장면을 더 적은 조작으로 실행할 수 있어 일상이 훨씬 가벼워집니다."
+    };
 }
 
-function buildMarketingMessages(role, selectedSegment, intent, services) {
+function buildMarketingMessages(role, selectedSegment, intent, services, exploreGrounding) {
     const valueWords = intent.missionBucket === "Care"
-        ? ["안심", "배려", "가족"]
+        ? ["안심", "배려", "생활"]
         : intent.missionBucket === "Save"
-            ? ["절감", "통제", "효율"]
+            ? ["절감", "통제", "생활"]
             : ["편안함", "리듬", "생활"];
     return {
         kr: [
-            `${selectedSegment}의 하루를 더 가볍게, ${valueWords[0]}은 더 분명하게.`,
-            `${valueWords[2]}을 챙기는 집은 ${valueWords[1]}도 똑똑하게 챙깁니다.`,
-            `${services[0].serviceName}로 시작해 생활 전체를 더 매끄럽게 연결하세요.`
+            `${selectedSegment}의 하루를 더 가볍게, ${exploreGrounding.primaryValue}은 더 분명하게.`,
+            `${exploreGrounding.messageAngle}이 필요한 순간에 ${valueWords[1]}가 아니라 실제 변화가 느껴지게 합니다.`,
+            `${getServiceLabel(services[0])}는 기능 설명보다 ${exploreGrounding.coreMessage}를 먼저 전달해야 합니다.`
         ],
         en: [
-            `Make daily life lighter for the ${selectedSegment} segment, with clearer ${valueWords[0]}.`,
-            `A home that cares for ${valueWords[2]} also manages ${valueWords[1]} more intelligently.`,
-            `Start with ${services[0].serviceName} and connect the rest of daily life more smoothly.`
+            `Make daily life lighter for the ${selectedSegment} segment, with clearer ${exploreGrounding.primaryValue}.`,
+            `Lead with ${exploreGrounding.messageAngle} so the user feels a real shift, not just more control.`,
+            `${getServiceLabel(services[0])} should deliver ${exploreGrounding.coreMessage} before feature detail.`
         ],
         roleTone: getRoleTitle(role.id)
     };
 }
 
-function buildBenefits(intent, services) {
+function buildBenefits(intent, services, exploreGrounding) {
     return [
-        currentLocale === "ko" ? `시간 절약: ${services[0].serviceName} 기반 자동화로 반복 확인과 조작을 줄입니다.` : `Time saving: reduce repeated checking and control through ${services[0].serviceName}-based automation.`,
-        currentLocale === "ko" ? `비용/에너지 관리: ${intent.missionBucket === "Save" ? "절감 포인트를 사전에 포착" : "생활비 부담을 더 일찍 인지"}합니다.` : `Cost and energy control: catch savings opportunities earlier.`,
-        currentLocale === "ko" ? "안심과 여유: 필요한 순간에만 개입하는 경험으로 심리적 부담을 낮춥니다." : "Reassurance and ease: lower emotional burden by intervening only when needed."
+        currentLocale === "ko" ? `기능적 가치: ${exploreGrounding.functionalJob}을 줄여 반복 확인과 수동 조작을 덜어줍니다.` : `Functional value: reduce ${exploreGrounding.functionalJob} and lighten repeated checking.`,
+        currentLocale === "ko" ? `감정적 가치: ${exploreGrounding.emotionalJob}이 가능해져 심리적 부담이 낮아집니다.` : `Emotional value: enable ${exploreGrounding.emotionalJob} and lower emotional burden.`,
+        currentLocale === "ko" ? `체감 가치: ${exploreGrounding.primaryValue}이 한 번의 사용 장면에서도 바로 읽히도록 설계됩니다.` : `Felt value: make ${exploreGrounding.primaryValue} legible from the first use moment.`
     ];
 }
 
-function buildSegmentAnalysis(country, city, selectedSegment, intent) {
+function buildSegmentAnalysis(country, city, selectedSegment, intent, exploreGrounding) {
     return {
         core: currentLocale === "ko" ? `${selectedSegment} / ${city ? `${city}, ` : ""}${getCountryName(country.countryCode)} 생활권` : `${selectedSegment} / ${city || getCountryName(country.countryCode)}`,
         behaviors: [
-            currentLocale === "ko" ? "평일에는 확인과 조율을 줄여주는 요약형 UX에 반응할 가능성이 큽니다." : "Likely to respond well to summarized UX that reduces checking and coordination during weekdays.",
-            currentLocale === "ko" ? "시간 절약, 절감 효과, 가족 안심처럼 결과가 선명한 메시지에 반응합니다." : "Responds to messages where outcomes are clear: time saved, spending reduced, and family reassurance."
+            currentLocale === "ko" ? `${exploreGrounding.functionalJob}을 줄여주는 요약형 UX에 반응할 가능성이 큽니다.` : `Likely to respond well to UX that reduces ${exploreGrounding.functionalJob}.`,
+            currentLocale === "ko" ? `${exploreGrounding.primaryValue}처럼 결과가 선명한 메시지에 더 크게 반응합니다.` : `Responds more strongly to messages where outcomes like ${exploreGrounding.primaryValue} are clear.`
         ],
-        assumption: currentLocale === "ko" ? "가정: 모든 기기를 보유하지 않아도 Entry 수준의 앱 기반 자동화로 동일 가치 흐름을 시작할 수 있습니다." : "Assumption: even without every device, the same value flow can start with entry-level app-based automation."
+        assumption: currentLocale === "ko" ? `가정: 모든 기기를 보유하지 않아도 Entry 수준의 앱 기반 자동화로 ${exploreGrounding.primaryValue} 경험을 먼저 시작할 수 있습니다.` : `Assumption: even without every device, an entry-level app automation can start the ${exploreGrounding.primaryValue} experience.`
     };
 }
 
-function buildCampaignTiming(intent) {
-    const common = [
-        currentLocale === "ko" ? "여름 피크 전후: 냉방/에너지 부담이 커질 때 Save 메시지가 강해집니다." : "Before and during summer peaks: Save messaging becomes stronger as cooling pressure rises.",
-        currentLocale === "ko" ? "가족 이동이 많은 시기: 케어와 안심 메시지가 더 선명해집니다." : "Periods of heavier family movement: care and reassurance messaging becomes more relevant.",
-        currentLocale === "ko" ? "루틴이 바뀌는 시기: 학기 시작, 이사, 계절 전환 시점에 진입 장벽이 낮아집니다." : "Routine-shift periods: school starts, moves, and season changes lower the barrier to adoption."
+function buildCampaignTiming(intent, exploreGrounding) {
+    const byMission = {
+        Save: [
+            currentLocale === "ko" ? `냉난방 부담이 커지는 시즌: ${exploreGrounding.primaryValue} 메시지가 가장 선명해집니다.` : `High heating or cooling seasons: ${exploreGrounding.primaryValue} becomes most legible.`,
+            currentLocale === "ko" ? "월간 요금이 체감되는 시점: 에너지 리포트와 루틴 메시지의 설득력이 높아집니다." : "When bills become visible: energy reports and routine messaging gain traction.",
+            currentLocale === "ko" ? "이사 또는 새 기기 설치 직후: 절감 루틴을 시작하기 가장 좋은 타이밍입니다." : "Right after moving or adding devices: a strong moment to start savings routines."
+        ],
+        Care: [
+            currentLocale === "ko" ? `야근이나 외출이 잦아지는 시기: ${exploreGrounding.emotionalJob} 메시지가 더 크게 작동합니다.` : `When overtime and time away rise: ${exploreGrounding.emotionalJob} becomes more resonant.`,
+            currentLocale === "ko" ? "돌봄 부담이 커지는 생활 전환기: 케어와 안심 메시지의 필요성이 높아집니다." : "During care-heavy life transitions: care and reassurance messaging gains relevance.",
+            currentLocale === "ko" ? "앱 첫 진입 직후: 한 번의 안심 경험을 빠르게 보여주기 좋습니다." : "Right after first app entry: a good moment to demonstrate reassurance quickly."
+        ],
+        Secure: [
+            currentLocale === "ko" ? "장기간 부재나 여행 준비 시점: 보안과 실시간 대응 메시지가 강하게 읽힙니다." : "Before travel or longer absence: security and real-time response messages land strongly.",
+            currentLocale === "ko" ? "혼자 사는 생활 패턴이 정착된 시점: 상시 모니터링 부담 완화 메시지가 설득력 있습니다." : "Once solo-living routines settle: reducing monitoring burden becomes persuasive.",
+            currentLocale === "ko" ? "센서/카메라 설치 직후: 보호 체감 가치를 가장 직접적으로 보여줄 수 있습니다." : "Right after adding sensors or cameras: the protective value is easiest to demonstrate."
+        ]
+    };
+    return byMission[intent.missionBucket] || [
+        currentLocale === "ko" ? `루틴이 바뀌는 시기: ${exploreGrounding.primaryValue} 메시지가 새롭게 읽힙니다.` : `When routines change: ${exploreGrounding.primaryValue} can be freshly understood.`,
+        currentLocale === "ko" ? "신규 기기 추가 직후: 연결 가치가 가장 직관적으로 체감됩니다." : "Right after adding a device: connected value feels most intuitive.",
+        currentLocale === "ko" ? "반복 사용이 생기기 시작하는 시점: 메시지를 습관화 가치로 확장하기 좋습니다." : "Once repeat use begins: a good time to extend the message into habit value."
     ];
-    if (intent.missionBucket === "Save") return common;
-    if (intent.missionBucket === "Care") return common.reverse();
-    return common;
 }
 
 function buildDeviceGuide(country, deviceDecision, services) {
@@ -1935,7 +2109,7 @@ function buildDeviceGuide(country, deviceDecision, services) {
         steps: [
             currentLocale === "ko" ? "1단계: SmartThings 앱 설치 및 계정 로그인" : "Step 1: Install SmartThings and sign in",
             currentLocale === "ko" ? "2단계: 집(Home) 생성 후 핵심 기기 1대 먼저 연결" : "Step 2: Create the home and connect one core device first",
-            currentLocale === "ko" ? `3단계: ${services[0].serviceName} 또는 추천 자동화 카드 활성화` : `Step 3: Activate ${services[0].serviceName} or the recommended automation card`,
+            currentLocale === "ko" ? `3단계: ${getServiceLabel(services[0])} 또는 추천 자동화 카드 활성화` : `Step 3: Activate ${getServiceLabel(services[0])} or the recommended automation card`,
             currentLocale === "ko" ? "4단계: 알림/절감/케어 중 가장 필요한 흐름 1개만 먼저 성공" : "Step 4: Make one needed flow succeed first",
             currentLocale === "ko" ? "5단계: 자주 쓰는 장면을 저장해 반복 사용" : "Step 5: Save the most-used moment for repeat use",
             currentLocale === "ko" ? "6단계: 추가 기기/가족 구성원으로 확장" : "Step 6: Expand to more devices or family members"
@@ -1986,19 +2160,22 @@ function renderOverview(payload) {
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">02</p>
-                <h4>${currentLocale === "ko" ? "케이스별 경험 전략 (Case-based Experience)" : "Case-based Experience"}</h4>
-                ${payload.caseStrategies.map((item) => `
+                <h4>${currentLocale === "ko" ? "상세 시나리오" : "Detailed Scenario"}</h4>
+                <div class="scenario-header">
+                    <p class="scenario-meta-label">Target Customer</p>
+                    <p class="scenario-meta-value">${escapeHtml(payload.detailedScenario.targetCustomer)}</p>
+                </div>
+                <div class="scenario-services">
+                    ${payload.detailedScenario.appliedServiceList.map((service) => `<span class="service-pill">${escapeHtml(service)}</span>`).join("")}
+                </div>
+                <div class="scenario-case-grid">
+                ${payload.detailedScenario.cases.map((item) => `
                     <div class="case-block">
                         <h5>${escapeHtml(item.title)}</h5>
-                        <p><strong>${currentLocale === "ko" ? "상황" : "Situation"}:</strong> ${escapeHtml(item.situation)}</p>
-                        <p><strong>${currentLocale === "ko" ? "솔루션" : "Solution"}:</strong> ${escapeHtml(item.solution)}</p>
-                        <p><strong>${currentLocale === "ko" ? "체감 가치" : "User Value"}:</strong> ${escapeHtml(item.value)}</p>
-                        <p class="subhead">${currentLocale === "ko" ? "자동화 핵심 로직" : "Automation Logic"}</p>
-                        <ul>${item.logic.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>
-                        <p class="subhead">${currentLocale === "ko" ? "채택 사다리" : "Adoption Ladder"}</p>
-                        <ul>${item.ladder.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>
+                        ${item.paragraphs.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}
                     </div>
                 `).join("")}
+                </div>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">03</p>
@@ -2128,7 +2305,7 @@ function getOutputTitles() {
     if (currentLocale === "ko") {
         return {
             summary: "CX 시나리오 제목 및 Summary",
-            scenario: "상세 시나리오 (드라마 형식)",
+            scenario: "상세 시나리오 (스토리텔링 구조)",
             automation: "Automation Logic Digest (JSON Skeleton)",
             facts: "지역 특성 및 데이터 근거",
             lenses: "마케팅 메시지 (Role-Lens)",
@@ -2140,7 +2317,7 @@ function getOutputTitles() {
     }
     return {
         summary: "CX Scenario Title & Summary",
-        scenario: "Detailed Scenario (Drama Format)",
+        scenario: "Detailed Scenario (Storytelling Format)",
         automation: "Automation Logic Digest (JSON Skeleton)",
         facts: "Regional Context & Data Grounds",
         lenses: "Marketing Messages (Role-Lens)",
@@ -2182,16 +2359,18 @@ function buildMarkdownReport(payload) {
         "### Explore 근거",
         ...payload.referenceLinks.map((item) => `- ${item.id} / ${item.title} / ${item.url}`),
         "",
-        "## 02. 케이스별 경험 전략 (Case-based Experience)",
-        ...payload.caseStrategies.flatMap((item) => [
+        "## 02. 상세 시나리오",
+        "---------------------------------------------------------------------------------------------------------------------------",
+        `- Target Customer : ${payload.detailedScenario.targetCustomer}`,
+        "---------------------------------------------------------------------------------------------------------------------------",
+        "",
+        payload.detailedScenario.appliedServices,
+        "",
+        ...payload.detailedScenario.cases.flatMap((item) => [
             `### ${item.title}`,
-            `- 상황: ${item.situation}`,
-            `- 솔루션: ${item.solution}`,
-            `- 체감 가치: ${item.value}`,
-            "- 자동화 핵심 로직:",
-            ...item.logic.map((line) => `  - ${line}`),
-            "- 채택 사다리:",
-            ...item.ladder.map((line) => `  - ${line}`)
+            "",
+            ...item.paragraphs,
+            ""
         ]),
         "",
         "## 03. 지역 맞춤 인사이트 (Local Insight: O-I-Imp)",

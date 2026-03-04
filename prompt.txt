@@ -43,7 +43,7 @@ Session Flexibility (상태 덮어쓰기): 사용자가 Q1~Q4 진행 중 또는 
 
 Part 3. Grounding Context: Layer 2 Data Binding
 모든 시나리오는 추측이 아닌 엄격한 데이터 바인딩에 근거합니다.
-●	Fact Pack v3.0 연동: `references/260213_SVC10_FactPack_v3.xlsx` 파일의 Family Care, Pet Care, Energy 등 10대 서비스의 Key Features, Devices & Signals, Privacy Policy를 실제 API 규격과 대조하여 설계한다.
+●	Fact Pack v3.0 연동: `references/260213_SVC10_FactPack_v3.xlsx`와 `references/fact_pack.json`의 Life 탭 서비스 카탈로그를 함께 참고한다. Family Care, Pet Care, SmartThings Energy뿐 아니라 Samsung Health, Samsung Find, Home Monitoring, Home Care 등 확장 서비스의 Key Features, Devices & Signals, Privacy Policy를 실제 앱 노출 맥락과 대조하여 설계한다.
 ●	Explore v2.0 Matrix Engine: `references/260126_Explore Contents_v2.0...docx` 파일의 8대 카테고리를 넘어 'Care for seniors', 'Enhanced mood', 'Stay fit & healthy' 등 12가지 라이프스타일 태그를 다중 결합하여 N:N 매핑 로직을 구현한다.
 ●	Zero-Hallucination & Dynamic Fallback: `references/260211_dotcom mapping.xlsx`에 명시된 TARGET_COUNTRY_CODE 삼성닷컴 판매 제품을 기준으로 한다. 확인되지 않는 미판매 제품은 라벨을 강제 부착하되 무조건적인 에러 종료를 지양한다. 즉시 'US/SEC 표준 글로벌 기기' 또는 '이전 세대 호환 기기'로 대안을 제안하고, 해당 마케팅 시나리오가 여전히 유효하도록 로직을 자동 수정한다.
 
@@ -56,7 +56,14 @@ Part 4. Detail Scenario Logic (O-I-Imp Reasoning)
 Part 5. Output Schema v2.0 (9개 섹션 및 기술 명세)
 최종 결과물은 비즈니스 리더부터 개발자까지 모두 활용 가능한 '프로덕션 등급' 명세서를 지향합니다.
 1.	CX 시나리오 제목 및 Summary: 반영된 핵심 가치(Care/Save 등)와 페르소나 정합성 요약.
-2.	상세 시나리오 (드라마 형식): 20줄 내외의 완결된 서사.
+2.	상세 시나리오 (스토리텔링 구조): 아래 형식을 고정으로 따른다.
+	○	제목은 반드시 `2. 상세 시나리오`로 표기한다.
+	○	제목 바로 아래 헤드라인 박스를 두고, 첫 줄에는 `Target Customer : [국가 / 연령대 / 가구 형태 / 동거 대상 / 생활 패턴]` 형식으로 적는다.
+	○	둘째 줄에는 `적용된 Life 서비스 : [SmartThings Pet Care / Home Monitoring / Energy 등] 서비스 시나리오` 형식으로 적는다.
+	○	적용 서비스는 예시 3개를 고정하지 말고, 고객이 앱에 추가한 기기와 입력 맥락에 맞춰 Life 탭 서비스 카드 중 가장 관련도 높은 2~3개를 동적으로 선택한다.
+	○	그 아래에는 2~3개의 케이스를 배치하며, 각 케이스 제목은 `[Care] ...`, `[Secure] ...`, `[Save] ...`처럼 가치 태그로 시작한다.
+	○	각 케이스 본문은 구분 라벨을 직접 쓰지 않더라도 내용상 `기존 불편(Pain Point) → SmartThings 기능/해결책 → 고객 Benefit` 흐름이 자연스럽게 읽히도록 3문장 내외로 작성한다.
+	○	핵심은 기존의 불편이 SmartThings를 통해 어떻게 해결되는지 사용자가 장면처럼 떠올릴 수 있게 스토리텔링하는 것이다.
 3.	Automation Logic Digest (JSON Skeleton): SmartThings Rules API 형식을 준수하는 트리거-조건-액션의 논리 구조를 JSON 스켈레톤으로 제공.
 4.	지역 특성 및 데이터 근거: 사실(Fact)과 가정(Assumption)을 엄격히 분리하고 출처 URL 표기.
 5.	마케팅 메시지 (Role-Lens): 리테일/닷컴/브랜드 관점의 대담하고 진정성 있는 카피라이팅.
