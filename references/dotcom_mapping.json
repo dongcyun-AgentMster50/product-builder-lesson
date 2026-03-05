@@ -1,0 +1,1197 @@
+{
+  "version": "2026-03-05",
+  "source": "references/260211_dotcom mapping.xlsx",
+  "count": 170,
+  "markets": [
+    {
+      "country": "USA",
+      "siteCode": "US",
+      "language": "English",
+      "url": "www.samsung.com/us",
+      "fullUrl": "https://www.samsung.com/us"
+    },
+    {
+      "country": "Canada",
+      "siteCode": "CA",
+      "language": "English",
+      "url": "www.samsung.com/ca",
+      "fullUrl": "https://www.samsung.com/ca"
+    },
+    {
+      "country": "Canada",
+      "siteCode": "CA_FR",
+      "language": "French",
+      "url": "www.samsung.com/ca_fr",
+      "fullUrl": "https://www.samsung.com/ca_fr"
+    },
+    {
+      "country": "Germany",
+      "siteCode": "DE",
+      "language": "German",
+      "url": "www.samsung.com/de",
+      "fullUrl": "https://www.samsung.com/de"
+    },
+    {
+      "country": "UK",
+      "siteCode": "UK",
+      "language": "English",
+      "url": "www.samsung.com/uk",
+      "fullUrl": "https://www.samsung.com/uk"
+    },
+    {
+      "country": "Ireland",
+      "siteCode": "IE",
+      "language": "English",
+      "url": "www.samsung.com/ie",
+      "fullUrl": "https://www.samsung.com/ie"
+    },
+    {
+      "country": "France",
+      "siteCode": "FR",
+      "language": "French",
+      "url": "www.samsung.com/fr",
+      "fullUrl": "https://www.samsung.com/fr"
+    },
+    {
+      "country": "Italy",
+      "siteCode": "IT",
+      "language": "Italian",
+      "url": "www.samsung.com/it",
+      "fullUrl": "https://www.samsung.com/it"
+    },
+    {
+      "country": "Spain",
+      "siteCode": "ES",
+      "language": "Spanish",
+      "url": "www.samsung.com/es",
+      "fullUrl": "https://www.samsung.com/es"
+    },
+    {
+      "country": "Portugal",
+      "siteCode": "PT",
+      "language": "Portuguese",
+      "url": "www.samsung.com/pt",
+      "fullUrl": "https://www.samsung.com/pt"
+    },
+    {
+      "country": "Netherlands",
+      "siteCode": "NL",
+      "language": "Dutch",
+      "url": "www.samsung.com/nl",
+      "fullUrl": "https://www.samsung.com/nl"
+    },
+    {
+      "country": "Belgium",
+      "siteCode": "BE",
+      "language": "Dutch",
+      "url": "www.samsung.com/be",
+      "fullUrl": "https://www.samsung.com/be"
+    },
+    {
+      "country": "Belgium",
+      "siteCode": "BE_FR",
+      "language": "French",
+      "url": "www.samsung.com/be_fr",
+      "fullUrl": "https://www.samsung.com/be_fr"
+    },
+    {
+      "country": "Luxembourg",
+      "siteCode": "BE_FR",
+      "language": "French",
+      "url": "www.samsung.com/be_fr",
+      "fullUrl": "https://www.samsung.com/be_fr"
+    },
+    {
+      "country": "Netherlands",
+      "siteCode": "NL",
+      "language": "Dutch",
+      "url": "www.samsung.com/nl",
+      "fullUrl": "https://www.samsung.com/nl"
+    },
+    {
+      "country": "Ireland",
+      "siteCode": "IE",
+      "language": "English",
+      "url": "www.samsung.com/ie",
+      "fullUrl": "https://www.samsung.com/ie"
+    },
+    {
+      "country": "Sweden",
+      "siteCode": "SE",
+      "language": "Swedish",
+      "url": "www.samsung.com/se",
+      "fullUrl": "https://www.samsung.com/se"
+    },
+    {
+      "country": "Denmark",
+      "siteCode": "DK",
+      "language": "Danish",
+      "url": "www.samsung.com/dk",
+      "fullUrl": "https://www.samsung.com/dk"
+    },
+    {
+      "country": "Finland",
+      "siteCode": "FI",
+      "language": "Finnish",
+      "url": "www.samsung.com/fi",
+      "fullUrl": "https://www.samsung.com/fi"
+    },
+    {
+      "country": "Norway",
+      "siteCode": "NO",
+      "language": "Norwegian",
+      "url": "www.samsung.com/no",
+      "fullUrl": "https://www.samsung.com/no"
+    },
+    {
+      "country": "Poland",
+      "siteCode": "PL",
+      "language": "Polish",
+      "url": "www.samsung.com/pl",
+      "fullUrl": "https://www.samsung.com/pl"
+    },
+    {
+      "country": "Hungary",
+      "siteCode": "HU",
+      "language": "Hungarian",
+      "url": "www.samsung.com/hu",
+      "fullUrl": "https://www.samsung.com/hu"
+    },
+    {
+      "country": "Austria",
+      "siteCode": "AT",
+      "language": "German",
+      "url": "www.samsung.com/at",
+      "fullUrl": "https://www.samsung.com/at"
+    },
+    {
+      "country": "Switzerland",
+      "siteCode": "CH",
+      "language": "German",
+      "url": "www.samsung.com/ch",
+      "fullUrl": "https://www.samsung.com/ch"
+    },
+    {
+      "country": "Switzerland",
+      "siteCode": "CH_FR",
+      "language": "French",
+      "url": "www.samsung.com/ch_fr",
+      "fullUrl": "https://www.samsung.com/ch_fr"
+    },
+    {
+      "country": "Romania",
+      "siteCode": "RO",
+      "language": "Romanian",
+      "url": "www.samsung.com/ro",
+      "fullUrl": "https://www.samsung.com/ro"
+    },
+    {
+      "country": "Bulgaria",
+      "siteCode": "BG",
+      "language": "Bulgarian",
+      "url": "www.samsung.com/bg",
+      "fullUrl": "https://www.samsung.com/bg"
+    },
+    {
+      "country": "Czech",
+      "siteCode": "CZ",
+      "language": "Czech",
+      "url": "www.samsung.com/cz",
+      "fullUrl": "https://www.samsung.com/cz"
+    },
+    {
+      "country": "Slovakia",
+      "siteCode": "SK",
+      "language": "Slovakian",
+      "url": "www.samsung.com/sk",
+      "fullUrl": "https://www.samsung.com/sk"
+    },
+    {
+      "country": "Serbia",
+      "siteCode": "RS",
+      "language": "Serbian",
+      "url": "www.samsung.com/rs",
+      "fullUrl": "https://www.samsung.com/rs"
+    },
+    {
+      "country": "Croatia",
+      "siteCode": "HR",
+      "language": "Croatian",
+      "url": "www.samsung.com/hr",
+      "fullUrl": "https://www.samsung.com/hr"
+    },
+    {
+      "country": "Slovenia",
+      "siteCode": "SI",
+      "language": "Slovenian",
+      "url": "www.samsung.com/si",
+      "fullUrl": "https://www.samsung.com/si"
+    },
+    {
+      "country": "Albania",
+      "siteCode": "RS",
+      "language": "Serbian",
+      "url": "www.samsung.com/rs",
+      "fullUrl": "https://www.samsung.com/rs"
+    },
+    {
+      "country": "Bosnia",
+      "siteCode": "RS",
+      "language": "Serbian",
+      "url": "www.samsung.com/rs",
+      "fullUrl": "https://www.samsung.com/rs"
+    },
+    {
+      "country": "Montenegro",
+      "siteCode": "RS",
+      "language": "Serbian",
+      "url": "www.samsung.com/rs",
+      "fullUrl": "https://www.samsung.com/rs"
+    },
+    {
+      "country": "Kosovo",
+      "siteCode": "RS",
+      "language": "Serbian",
+      "url": "www.samsung.com/rs",
+      "fullUrl": "https://www.samsung.com/rs"
+    },
+    {
+      "country": "Macedonia",
+      "siteCode": "MK",
+      "language": "Macedonian",
+      "url": "www.samsung.com/mk",
+      "fullUrl": "https://www.samsung.com/mk"
+    },
+    {
+      "country": "Estonia",
+      "siteCode": "EE",
+      "language": "Estonian",
+      "url": "www.samsung.com/ee",
+      "fullUrl": "https://www.samsung.com/ee"
+    },
+    {
+      "country": "Latvia",
+      "siteCode": "LV",
+      "language": "Latvian",
+      "url": "www.samsung.com/lv",
+      "fullUrl": "https://www.samsung.com/lv"
+    },
+    {
+      "country": "Lithuania",
+      "siteCode": "LT",
+      "language": "Lithuanian",
+      "url": "www.samsung.com/lt",
+      "fullUrl": "https://www.samsung.com/lt"
+    },
+    {
+      "country": "Greece",
+      "siteCode": "GR",
+      "language": "Greek",
+      "url": "www.samsung.com/gr",
+      "fullUrl": "https://www.samsung.com/gr"
+    },
+    {
+      "country": "Cyprus",
+      "siteCode": "GR",
+      "language": "Greek",
+      "url": "www.samsung.com/gr",
+      "fullUrl": "https://www.samsung.com/gr"
+    },
+    {
+      "country": "Ukraine",
+      "siteCode": "UA",
+      "language": "Ukrainian",
+      "url": "www.samsung.com/ua",
+      "fullUrl": "https://www.samsung.com/ua"
+    },
+    {
+      "country": "Brazil",
+      "siteCode": "BR",
+      "language": "Portuguese",
+      "url": "www.samsung.com/br",
+      "fullUrl": "https://www.samsung.com/br"
+    },
+    {
+      "country": "Mexico",
+      "siteCode": "MX",
+      "language": "Spanish",
+      "url": "www.samsung.com/mx",
+      "fullUrl": "https://www.samsung.com/mx"
+    },
+    {
+      "country": "Panama",
+      "siteCode": "LATIN",
+      "language": "Spanish",
+      "url": "www.samsung.com/latin",
+      "fullUrl": "https://www.samsung.com/latin"
+    },
+    {
+      "country": "Panama",
+      "siteCode": "LATIN_EN",
+      "language": "English",
+      "url": "www.samsung.com/latin_en",
+      "fullUrl": "https://www.samsung.com/latin_en"
+    },
+    {
+      "country": "Costa Rica",
+      "siteCode": "LATIN",
+      "language": "Spanish",
+      "url": "www.samsung.com/latin",
+      "fullUrl": "https://www.samsung.com/latin"
+    },
+    {
+      "country": "Dominica Rep.",
+      "siteCode": "LATIN",
+      "language": "Spanish",
+      "url": "www.samsung.com/latin",
+      "fullUrl": "https://www.samsung.com/latin"
+    },
+    {
+      "country": "Guatemala",
+      "siteCode": "LATIN",
+      "language": "Spanish",
+      "url": "www.samsung.com/latin",
+      "fullUrl": "https://www.samsung.com/latin"
+    },
+    {
+      "country": "Ecuador",
+      "siteCode": "LATIN",
+      "language": "Spanish",
+      "url": "www.samsung.com/latin",
+      "fullUrl": "https://www.samsung.com/latin"
+    },
+    {
+      "country": "Honduras",
+      "siteCode": "LATIN_EN",
+      "language": "English",
+      "url": "www.samsung.com/latin_en",
+      "fullUrl": "https://www.samsung.com/latin_en"
+    },
+    {
+      "country": "Nicaragua",
+      "siteCode": "LATIN",
+      "language": "Spanish",
+      "url": "www.samsung.com/latin",
+      "fullUrl": "https://www.samsung.com/latin"
+    },
+    {
+      "country": "El Salvador",
+      "siteCode": "LATIN",
+      "language": "Spanish",
+      "url": "www.samsung.com/latin",
+      "fullUrl": "https://www.samsung.com/latin"
+    },
+    {
+      "country": "Bahamas",
+      "siteCode": "LATIN",
+      "language": "Spanish",
+      "url": "www.samsung.com/latin",
+      "fullUrl": "https://www.samsung.com/latin"
+    },
+    {
+      "country": "Jamaica",
+      "siteCode": "LATIN",
+      "language": "Spanish",
+      "url": "www.samsung.com/latin",
+      "fullUrl": "https://www.samsung.com/latin"
+    },
+    {
+      "country": "Puerto Rico",
+      "siteCode": "LATIN",
+      "language": "Spanish",
+      "url": "www.samsung.com/latin",
+      "fullUrl": "https://www.samsung.com/latin"
+    },
+    {
+      "country": "Trinidad & Tobago",
+      "siteCode": "LATIN",
+      "language": "Spanish",
+      "url": "www.samsung.com/latin",
+      "fullUrl": "https://www.samsung.com/latin"
+    },
+    {
+      "country": "Paraguay",
+      "siteCode": "PY",
+      "language": "Spanish",
+      "url": "www.samsung.com/py",
+      "fullUrl": "https://www.samsung.com/py"
+    },
+    {
+      "country": "Uruguay",
+      "siteCode": "UY",
+      "language": "Spanish",
+      "url": "www.samsung.com/uy",
+      "fullUrl": "https://www.samsung.com/uy"
+    },
+    {
+      "country": "Colombia",
+      "siteCode": "CO",
+      "language": "Spanish",
+      "url": "www.samsung.com/co",
+      "fullUrl": "https://www.samsung.com/co"
+    },
+    {
+      "country": "Chile",
+      "siteCode": "CL",
+      "language": "Spanish",
+      "url": "www.samsung.com/cl",
+      "fullUrl": "https://www.samsung.com/cl"
+    },
+    {
+      "country": "Bolivia",
+      "siteCode": "BO",
+      "language": "Spanish",
+      "url": "www.samsung.com/bo",
+      "fullUrl": "https://www.samsung.com/bo"
+    },
+    {
+      "country": "Peru",
+      "siteCode": "PE",
+      "language": "Spanish",
+      "url": "www.samsung.com/pe",
+      "fullUrl": "https://www.samsung.com/pe"
+    },
+    {
+      "country": "Argentina",
+      "siteCode": "AR",
+      "language": "Spanish",
+      "url": "www.samsung.com/ar",
+      "fullUrl": "https://www.samsung.com/ar"
+    },
+    {
+      "country": "Australia",
+      "siteCode": "AU",
+      "language": "English",
+      "url": "www.samsung.com/au",
+      "fullUrl": "https://www.samsung.com/au"
+    },
+    {
+      "country": "New Zealand",
+      "siteCode": "NZ",
+      "language": "English",
+      "url": "www.samsung.com/nz",
+      "fullUrl": "https://www.samsung.com/nz"
+    },
+    {
+      "country": "Thailand",
+      "siteCode": "TH",
+      "language": "Thai",
+      "url": "www.samsung.com/th",
+      "fullUrl": "https://www.samsung.com/th"
+    },
+    {
+      "country": "Myanmar",
+      "siteCode": "MM",
+      "language": "Burmese",
+      "url": "www.samsung.com/mm",
+      "fullUrl": "https://www.samsung.com/mm"
+    },
+    {
+      "country": "Cambodia",
+      "siteCode": "MM",
+      "language": "Burmese",
+      "url": "www.samsung.com/mm",
+      "fullUrl": "https://www.samsung.com/mm"
+    },
+    {
+      "country": "Laos",
+      "siteCode": "MM",
+      "language": "Burmese",
+      "url": "www.samsung.com/mm",
+      "fullUrl": "https://www.samsung.com/mm"
+    },
+    {
+      "country": "Malaysia",
+      "siteCode": "MY",
+      "language": "English",
+      "url": "www.samsung.com/my",
+      "fullUrl": "https://www.samsung.com/my"
+    },
+    {
+      "country": "Singapore",
+      "siteCode": "SG",
+      "language": "English",
+      "url": "www.samsung.com/sg",
+      "fullUrl": "https://www.samsung.com/sg"
+    },
+    {
+      "country": "Philippines",
+      "siteCode": "PH",
+      "language": "English",
+      "url": "www.samsung.com/ph",
+      "fullUrl": "https://www.samsung.com/ph"
+    },
+    {
+      "country": "Vietnam",
+      "siteCode": "VN",
+      "language": "Vietnamese",
+      "url": "www.samsung.com/vn",
+      "fullUrl": "https://www.samsung.com/vn"
+    },
+    {
+      "country": "UAE",
+      "siteCode": "AE",
+      "language": "English",
+      "url": "www.samsung.com/ae",
+      "fullUrl": "https://www.samsung.com/ae"
+    },
+    {
+      "country": "UAE",
+      "siteCode": "AE_AR",
+      "language": "Arabic",
+      "url": "www.samsung.com/ae_ar",
+      "fullUrl": "https://www.samsung.com/ae_ar"
+    },
+    {
+      "country": "Kuwait",
+      "siteCode": "AE",
+      "language": "English",
+      "url": "www.samsung.com/ae",
+      "fullUrl": "https://www.samsung.com/ae"
+    },
+    {
+      "country": "Bahrain",
+      "siteCode": "AE",
+      "language": "English",
+      "url": "www.samsung.com/ae",
+      "fullUrl": "https://www.samsung.com/ae"
+    },
+    {
+      "country": "Oman",
+      "siteCode": "AE",
+      "language": "English",
+      "url": "www.samsung.com/ae",
+      "fullUrl": "https://www.samsung.com/ae"
+    },
+    {
+      "country": "Qatar",
+      "siteCode": "AE",
+      "language": "English",
+      "url": "www.samsung.com/ae",
+      "fullUrl": "https://www.samsung.com/ae"
+    },
+    {
+      "country": "Yemen",
+      "siteCode": "AE",
+      "language": "English",
+      "url": "www.samsung.com/ae",
+      "fullUrl": "https://www.samsung.com/ae"
+    },
+    {
+      "country": "Turkey",
+      "siteCode": "TR",
+      "language": "Turkish",
+      "url": "www.samsung.com/tr",
+      "fullUrl": "https://www.samsung.com/tr"
+    },
+    {
+      "country": "Levant",
+      "siteCode": "LEVANT",
+      "language": "English",
+      "url": "www.samsung.com/levant",
+      "fullUrl": "https://www.samsung.com/levant"
+    },
+    {
+      "country": "Jordan",
+      "siteCode": "LEVANT_AR",
+      "language": "Arabic",
+      "url": "www.samsung.com/levant_ar",
+      "fullUrl": "https://www.samsung.com/levant_ar"
+    },
+    {
+      "country": "Lebanon",
+      "siteCode": "LB",
+      "language": "Arabic",
+      "url": "www.samsung.com/lb",
+      "fullUrl": "https://www.samsung.com/lb"
+    },
+    {
+      "country": "Syria",
+      "siteCode": "LB",
+      "language": "Arabic",
+      "url": "www.samsung.com/lb",
+      "fullUrl": "https://www.samsung.com/lb"
+    },
+    {
+      "country": "Iraq",
+      "siteCode": "IQ_AR",
+      "language": "Arabic",
+      "url": "www.samsung.com/iq_ar",
+      "fullUrl": "https://www.samsung.com/iq_ar"
+    },
+    {
+      "country": "Iraq",
+      "siteCode": "IQ_KU",
+      "language": "Kurdish",
+      "url": "www.samsung.com/iq_ku",
+      "fullUrl": "https://www.samsung.com/iq_ku"
+    },
+    {
+      "country": "Saudi Arabia",
+      "siteCode": "SA",
+      "language": "English",
+      "url": "www.samsung.com/sa",
+      "fullUrl": "https://www.samsung.com/sa"
+    },
+    {
+      "country": "Saudi Arabia",
+      "siteCode": "SA_EN",
+      "language": "Arabic",
+      "url": "www.samsung.com/sa_en",
+      "fullUrl": "https://www.samsung.com/sa_en"
+    },
+    {
+      "country": "Morocco",
+      "siteCode": "N_AFRICA",
+      "language": "French",
+      "url": "www.samsung.com/n_africa",
+      "fullUrl": "https://www.samsung.com/n_africa"
+    },
+    {
+      "country": "Tunisia",
+      "siteCode": "N_AFRICA",
+      "language": "French",
+      "url": "www.samsung.com/n_africa",
+      "fullUrl": "https://www.samsung.com/n_africa"
+    },
+    {
+      "country": "Libya",
+      "siteCode": "N_AFRICA",
+      "language": "French",
+      "url": "www.samsung.com/n_africa",
+      "fullUrl": "https://www.samsung.com/n_africa"
+    },
+    {
+      "country": "Algeria",
+      "siteCode": "N_AFRICA",
+      "language": "French",
+      "url": "www.samsung.com/n_africa",
+      "fullUrl": "https://www.samsung.com/n_africa"
+    },
+    {
+      "country": "Israel",
+      "siteCode": "IL",
+      "language": "Hebrew",
+      "url": "www.samsung.com/il",
+      "fullUrl": "https://www.samsung.com/il"
+    },
+    {
+      "country": "Pakistan",
+      "siteCode": "PK",
+      "language": "English",
+      "url": "www.samsung.com/pk",
+      "fullUrl": "https://www.samsung.com/pk"
+    },
+    {
+      "country": "Afghanistan",
+      "siteCode": "PK",
+      "language": "English",
+      "url": "www.samsung.com/pk",
+      "fullUrl": "https://www.samsung.com/pk"
+    },
+    {
+      "country": "India",
+      "siteCode": "IN",
+      "language": "English",
+      "url": "www.samsung.com/in",
+      "fullUrl": "https://www.samsung.com/in"
+    },
+    {
+      "country": "Bangladesh",
+      "siteCode": "BD",
+      "language": "Bengali",
+      "url": "www.samsung.com/bd",
+      "fullUrl": "https://www.samsung.com/bd"
+    },
+    {
+      "country": "Sri Lanka",
+      "siteCode": "BD",
+      "language": "Bengali",
+      "url": "www.samsung.com/bd",
+      "fullUrl": "https://www.samsung.com/bd"
+    },
+    {
+      "country": "Nepal",
+      "siteCode": "BD",
+      "language": "Bengali",
+      "url": "www.samsung.com/bd",
+      "fullUrl": "https://www.samsung.com/bd"
+    },
+    {
+      "country": "Russia",
+      "siteCode": "RU",
+      "language": "Russian",
+      "url": "www.samsung.com/ru",
+      "fullUrl": "https://www.samsung.com/ru"
+    },
+    {
+      "country": "Armenia",
+      "siteCode": "RU",
+      "language": "Russian",
+      "url": "www.samsung.com/ru",
+      "fullUrl": "https://www.samsung.com/ru"
+    },
+    {
+      "country": "Georgia",
+      "siteCode": "RU",
+      "language": "Russian",
+      "url": "www.samsung.com/ru",
+      "fullUrl": "https://www.samsung.com/ru"
+    },
+    {
+      "country": "Azerbaijan",
+      "siteCode": "AZ",
+      "language": "Azerbaijani",
+      "url": "www.samsung.com/az",
+      "fullUrl": "https://www.samsung.com/az"
+    },
+    {
+      "country": "Kazakhstan",
+      "siteCode": "KZ_RU",
+      "language": "Russian",
+      "url": "www.samsung.com/kz_ru",
+      "fullUrl": "https://www.samsung.com/kz_ru"
+    },
+    {
+      "country": "Kazakhstan",
+      "siteCode": "KZ_KZ",
+      "language": "Kazakh",
+      "url": "www.samsung.com/kz_kz",
+      "fullUrl": "https://www.samsung.com/kz_kz"
+    },
+    {
+      "country": "Kyrgyzstan",
+      "siteCode": "KZ_KZ",
+      "language": "Kazakh",
+      "url": "www.samsung.com/kz_kz",
+      "fullUrl": "https://www.samsung.com/kz_kz"
+    },
+    {
+      "country": "Tajikistan",
+      "siteCode": "KZ_KZ",
+      "language": "Kazakh",
+      "url": "www.samsung.com/kz_kz",
+      "fullUrl": "https://www.samsung.com/kz_kz"
+    },
+    {
+      "country": "Uzbekistan",
+      "siteCode": "UZ_UZ",
+      "language": "Uzbek",
+      "url": "www.samsung.com/uz_uz",
+      "fullUrl": "https://www.samsung.com/uz_uz"
+    },
+    {
+      "country": "Uzbekistan",
+      "siteCode": "UZ_RU",
+      "language": "Russian",
+      "url": "www.samsung.com/uz_ru",
+      "fullUrl": "https://www.samsung.com/uz_ru"
+    },
+    {
+      "country": "Mongolia",
+      "siteCode": "MN",
+      "language": "Mongolian",
+      "url": "www.samsung.com/mn",
+      "fullUrl": "https://www.samsung.com/mn"
+    },
+    {
+      "country": "China",
+      "siteCode": "CN",
+      "language": "Insea Simpli",
+      "url": "www.samsung.com/cn",
+      "fullUrl": "https://www.samsung.com/cn"
+    },
+    {
+      "country": "Hong Kong",
+      "siteCode": "HK",
+      "language": "Insea Traditi",
+      "url": "www.samsung.com/hk",
+      "fullUrl": "https://www.samsung.com/hk"
+    },
+    {
+      "country": "Hong Kong",
+      "siteCode": "HK_EN",
+      "language": "English",
+      "url": "www.samsung.com/hk_en",
+      "fullUrl": "https://www.samsung.com/hk_en"
+    },
+    {
+      "country": "Taiwan",
+      "siteCode": "TW",
+      "language": "Insea Traditi",
+      "url": "www.samsung.com/tw",
+      "fullUrl": "https://www.samsung.com/tw"
+    },
+    {
+      "country": "South Africa",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Africa",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Africa",
+      "siteCode": "AFRICA_PT",
+      "language": "Portuguese",
+      "url": "www.samsung.com/africa_pt",
+      "fullUrl": "https://www.samsung.com/africa_pt"
+    },
+    {
+      "country": "Botswana",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Namibia",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Kingdom of Lesotho",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Kingdom of Eswatini",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Mauritius",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Zambia",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Zimbabwe",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Mozambique",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Malawi",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Angola",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Madagascar",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Reunion",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "The Union of Comoros",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Kenya",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Tanzania",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Uganda",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Rwanda",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "South Sudan",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "DR Congo",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Ethiopia",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Somalia",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Djibouti",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Seychelles",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Burundi",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Eritrea",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Sudan",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Nigeria",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Togo",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Benin",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Chad",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Ghana",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Côte d'Ivoire",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Cameroon",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Liberia",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Sierra Leone",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Central African Republic",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Congo",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Equatorial Guinea",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Sao Tome and Principe",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Senegal",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Gabon",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Burkina Faso",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Niger",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Guinea",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Mali",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Mauritania",
+      "siteCode": "AFRICA_FR",
+      "language": "French",
+      "url": "www.samsung.com/africa_fr",
+      "fullUrl": "https://www.samsung.com/africa_fr"
+    },
+    {
+      "country": "Gambia",
+      "siteCode": "AFRICA_EN",
+      "language": "English",
+      "url": "www.samsung.com/africa_en",
+      "fullUrl": "https://www.samsung.com/africa_en"
+    },
+    {
+      "country": "Cape Verde",
+      "siteCode": "AFRICA_PT",
+      "language": "Portuguese",
+      "url": "www.samsung.com/africa_pt",
+      "fullUrl": "https://www.samsung.com/africa_pt"
+    },
+    {
+      "country": "Korea",
+      "siteCode": "SEC",
+      "language": "Korean",
+      "url": "www.samsung.com/sec",
+      "fullUrl": "https://www.samsung.com/sec"
+    },
+    {
+      "country": "Japan",
+      "siteCode": "JP",
+      "language": "Japanese",
+      "url": "www.samsung.com/jp",
+      "fullUrl": "https://www.samsung.com/jp"
+    }
+  ]
+}

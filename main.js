@@ -1133,13 +1133,12 @@ function hydrateStaticUi() {
 
 async function loadReferenceData() {
     try {
-        const [factPackRes, exploreMatrixRes, sourceDataRes, countryTrendsRes, citySignalsRes, dotcomMappingRes] = await Promise.all([
+        const [factPackRes, exploreMatrixRes, sourceDataRes, countryTrendsRes, citySignalsRes] = await Promise.all([
             fetch("references/fact_pack.json"),
             fetch("references/explore_matrix.json"),
             fetch("references/source_data.json"),
             fetch("references/country_trends.json"),
-            fetch("references/city_signals.json"),
-            fetch("references/dotcom_mapping.json")
+            fetch("references/city_signals.json")
         ]);
 
         factPack = await factPackRes.json();
@@ -1147,7 +1146,18 @@ async function loadReferenceData() {
         sourceData = await sourceDataRes.json();
         countryTrends = await countryTrendsRes.json();
         citySignals = await citySignalsRes.json();
-        dotcomMapping = await dotcomMappingRes.json();
+
+        // Optional reference: keep app usable even if this file is missing in a deployment.
+        try {
+            const dotcomMappingRes = await fetch("references/dotcom_mapping.json");
+            if (dotcomMappingRes.ok) {
+                dotcomMapping = await dotcomMappingRes.json();
+            } else {
+                dotcomMapping = { markets: [] };
+            }
+        } catch {
+            dotcomMapping = { markets: [] };
+        }
 
         populateInputs();
         updateLocaleFromCountry();
