@@ -582,7 +582,7 @@ const UI_TEXT = {
         enterAgent: "Entrer dans l'agent",
         accessRequired: "Veuillez saisir le code d'accès.",
         accessPlaceholder: "Saisir le code d'accès",
-        accessHelper: "Cet écran fournit actuellement uniquement l'interface de saisie. La vérification réelle sera activée après l'intégration serveur.",
+        accessHelper: "Le code d'accès est vérifié sur le serveur et ouvre immédiatement l'étape suivante après validation.",
         guideTitle: "Savez-vous comment utiliser cet agent ?",
         guideQuick: "Guide Rapide",
         guideLine1: "Les questions apparaissent une par une.",
@@ -649,7 +649,7 @@ const UI_TEXT = {
         enterAgent: "Entrar al agente",
         accessRequired: "Por favor, introduce el código de acceso.",
         accessPlaceholder: "Introducir código de acceso",
-        accessHelper: "Esta pantalla solo ofrece la interfaz de entrada por ahora. La verificación real se activará después de la integración con el servidor.",
+        accessHelper: "El código de acceso se verifica en el servidor y te lleva al siguiente paso en cuanto se aprueba.",
         guideTitle: "¿Sabes cómo usar este agente?",
         guideQuick: "Guía Rápida",
         guideLine1: "Las preguntas aparecen una por una.",
@@ -716,7 +716,7 @@ const UI_TEXT = {
         enterAgent: "Entrar no agente",
         accessRequired: "Insira o código de acesso.",
         accessPlaceholder: "Inserir código de acesso",
-        accessHelper: "Esta tela atualmente oferece apenas a interface de entrada. A verificação real será ativada após a integração com o servidor.",
+        accessHelper: "O código de acesso é verificado no servidor e, quando aprovado, você segue direto para a próxima etapa.",
         guideTitle: "Você sabe como usar este agente?",
         guideQuick: "Guia Rápido",
         guideLine1: "As perguntas aparecem uma de cada vez.",
@@ -783,7 +783,7 @@ const UI_TEXT = {
         enterAgent: "Entra nell'agente",
         accessRequired: "Inserisci il codice di accesso.",
         accessPlaceholder: "Inserisci codice di accesso",
-        accessHelper: "Questa schermata fornisce attualmente solo l'interfaccia di input. La verifica reale sarà attivata dopo l'integrazione server.",
+        accessHelper: "Il codice di accesso viene verificato sul server e, quando approvato, passa subito allo step successivo.",
         guideTitle: "Sai come usare questo agente?",
         guideQuick: "Guida Rapida",
         guideLine1: "Le domande appaiono una alla volta.",
@@ -850,7 +850,7 @@ const UI_TEXT = {
         enterAgent: "Agent openen",
         accessRequired: "Voer de toegangscode in.",
         accessPlaceholder: "Toegangscode invoeren",
-        accessHelper: "Dit scherm biedt momenteel alleen de invoerinterface. Echte verificatie wordt geactiveerd na serverintegratie.",
+        accessHelper: "De toegangscode wordt op de server gecontroleerd en gaat na goedkeuring direct door naar de volgende stap.",
         guideTitle: "Weet je hoe je deze agent gebruikt?",
         guideQuick: "Snelle gids",
         guideLine1: "De vragen verschijnen één voor één.",
@@ -917,7 +917,7 @@ const UI_TEXT = {
         enterAgent: "دخول الوكيل",
         accessRequired: "يرجى إدخال رمز الوصول.",
         accessPlaceholder: "أدخل رمز الوصول",
-        accessHelper: "تعرض هذه الشاشة واجهة الإدخال فقط حالياً. سيتم تفعيل التحقق الفعلي بعد ربط الخادم.",
+        accessHelper: "يتم التحقق من رمز الوصول على الخادم، وعند اعتماده تنتقل مباشرة إلى الخطوة التالية.",
         guideTitle: "هل تعرف كيفية استخدام هذا الوكيل؟",
         guideQuick: "دليل سريع",
         guideLine1: "تظهر الأسئلة واحداً تلو الآخر.",
@@ -1023,6 +1023,7 @@ let exploreMatrix = {};
 let sourceData = {};
 let countryTrends = {};
 let citySignals = {};
+let dotcomMapping = { markets: [] };
 let latestPayload = null;
 let activeLensTab = "overview";
 let currentStep = 1;
@@ -1132,12 +1133,13 @@ function hydrateStaticUi() {
 
 async function loadReferenceData() {
     try {
-        const [factPackRes, exploreMatrixRes, sourceDataRes, countryTrendsRes, citySignalsRes] = await Promise.all([
+        const [factPackRes, exploreMatrixRes, sourceDataRes, countryTrendsRes, citySignalsRes, dotcomMappingRes] = await Promise.all([
             fetch("references/fact_pack.json"),
             fetch("references/explore_matrix.json"),
             fetch("references/source_data.json"),
             fetch("references/country_trends.json"),
-            fetch("references/city_signals.json")
+            fetch("references/city_signals.json"),
+            fetch("references/dotcom_mapping.json")
         ]);
 
         factPack = await factPackRes.json();
@@ -1145,6 +1147,7 @@ async function loadReferenceData() {
         sourceData = await sourceDataRes.json();
         countryTrends = await countryTrendsRes.json();
         citySignals = await citySignalsRes.json();
+        dotcomMapping = await dotcomMappingRes.json();
 
         populateInputs();
         updateLocaleFromCountry();
@@ -1154,6 +1157,32 @@ async function loadReferenceData() {
         resultDiv.innerHTML = `<p class="error">데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>`;
         console.error(error);
     }
+}
+
+function getDotcomMarketInfo(selectedMarket) {
+    if (!selectedMarket) return null;
+
+    const fromJson = (dotcomMapping?.markets || []).find((entry) => entry.siteCode === selectedMarket.siteCode);
+    if (fromJson) {
+        return {
+            siteCode: selectedMarket.siteCode,
+            country: fromJson.country,
+            language: fromJson.language,
+            url: fromJson.url,
+            fullUrl: fromJson.fullUrl || (fromJson.url.startsWith("http") ? fromJson.url : `https://${fromJson.url}`)
+        };
+    }
+
+    const fallback = DOTCOM_MARKETS.find((entry) => entry[1] === selectedMarket.siteCode);
+    if (!fallback) return null;
+    const url = fallback[3];
+    return {
+        siteCode: selectedMarket.siteCode,
+        country: fallback[0],
+        language: fallback[2],
+        url,
+        fullUrl: url.startsWith("http") ? url : `https://${url}`
+    };
 }
 
 function renderChecklistGroups(groups, selectedIds = [], kind) {
@@ -1342,7 +1371,11 @@ function openWizard() {
     setGuideChoice("yes");
     guideScreen.classList.add("hidden");
     wizardScreen.classList.remove("hidden");
-    resultDiv.innerHTML = `<p class="placeholder">${t("startAfterGuide")}</p>`;
+    currentStep = 1;
+    syncWizardUi();
+    renderOutputPreview();
+    roleSelect.focus();
+    wizardScreen.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function showGuideCopy() {
@@ -1350,6 +1383,7 @@ function showGuideCopy() {
     guideCopy.innerHTML = buildGuideMarkup();
     guideCopy.classList.remove("hidden");
     guideContinueBtn.classList.remove("hidden");
+    guideCopy.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function setGuideChoice(choice) {
@@ -1503,7 +1537,7 @@ function resetToAccessScreen() {
     setUnlockBusy(false);
     clearAccessStatus();
     setAccessStatus("success", "loggedOut");
-    resultDiv.innerHTML = `<p class="placeholder">${t("outputPlaceholder")}</p>`;
+    renderOutputPreview();
 }
 
 function formatLockoutMessage(retryAfterSeconds, fallbackMessage = "") {
@@ -1608,6 +1642,13 @@ function renderWizardProgress() {
 }
 
 function updateStepInsight() {
+    if (currentStep === 1) {
+        stepInsight.classList.add("hidden");
+        updateQuestionHelpers();
+        return;
+    }
+
+    stepInsight.classList.remove("hidden");
     const insight = getStepInsight();
     stepInsight.innerHTML = buildInsightMarkup(insight);
     updateQuestionHelpers();
@@ -2154,7 +2195,288 @@ function validateCurrentStep() {
 
 function updateRoleBrief() {
     const role = ROLE_LENSES.find((item) => item.id === roleSelect.value);
-    roleBrief.textContent = role ? getRoleBrief(role.id) : "";
+    if (!role) {
+        roleBrief.innerHTML = "";
+        return;
+    }
+
+    const guide = getRoleOptionGuide(role.id);
+    const cards = (guide.whatYouGet || []).slice(0, 5).map((item) => (
+        typeof item === "string" ? { title: item, meaning: "", example: "" } : item
+    ));
+    roleBrief.innerHTML = `
+        <section class="role-brief-card">
+            <header class="role-brief-head">
+                <span class="role-brief-kicker">${escapeHtml(getRoleTitle(role.id))}</span>
+                <p>${escapeHtml(getRoleBrief(role.id))}</p>
+            </header>
+            <article class="role-brief-block role-brief-fit">
+                <h4>${currentLocale === "ko" ? "이 역할이 맞는 업무" : "Who this role fits"}</h4>
+                <ul>${(guide.fitFor || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+            </article>
+            <div class="role-brief-block">
+                <h4>${currentLocale === "ko" ? "선택하면 받는 마케팅 정보 (What You Get)" : "What You Get"}</h4>
+                <div class="role-brief-items">
+                    ${cards.map((card, index) => `
+                        <article class="role-brief-item">
+                            <p class="role-brief-item-index">${String(index + 1).padStart(2, "0")}</p>
+                            <h5>${escapeHtml(card.title || "")}</h5>
+                            <p class="role-brief-meaning">${escapeHtml(card.meaning || "")}</p>
+                            <p class="role-brief-example">${escapeHtml(card.example || "")}</p>
+                        </article>
+                    `).join("")}
+                </div>
+            </div>
+            <article class="role-brief-block role-brief-fallback">
+                <h4>${currentLocale === "ko" ? "직무가 정확히 안 맞을 때" : "If your role is not an exact match"}</h4>
+                <p>${escapeHtml(guide.fallback || "")}</p>
+            </article>
+        </section>
+    `;
+}
+
+function getRoleOptionGuide(id) {
+    const guides = {
+        retail: {
+            fitFor: currentLocale === "ko"
+                ? [
+                    "오프라인 매장 상담/시연 스크립트를 만드는 업무",
+                    "매장 직원 교육, 세일즈 토크, 데모 흐름이 필요한 업무",
+                    "상담 전환율을 높이는 현장 메시지가 필요한 업무"
+                ]
+                : [
+                    "Teams creating in-store consultation and demo scripts",
+                    "Teams running store staff enablement and sales talk flow",
+                    "Teams improving consultation conversion on site"
+                ],
+            whatYouGet: currentLocale === "ko"
+                ? [
+                    {
+                        title: "매장 첫 10초 한 문장",
+                        meaning: "고객이 바로 이해하도록 첫 문장을 고정합니다.",
+                        example: "예시: 집에 들어오자마자 자동으로 편안한 저녁 준비가 시작됩니다."
+                    },
+                    {
+                        title: "30초 데모 흐름",
+                        meaning: "문제 -> 해결 장면 순서로 빠르게 보여주는 구조입니다.",
+                        example: "예시: 퇴근 후 집 도착 -> 추천 카드 -> 원탭 실행"
+                    },
+                    {
+                        title: "추천 기기 조합",
+                        meaning: "입문형과 확장형 제안을 나눠서 상담합니다.",
+                        example: "예시: Entry 1대 / Core 2대 조합"
+                    },
+                    {
+                        title: "설정 체크 순서",
+                        meaning: "세팅 실패를 줄이는 최소 체크리스트입니다.",
+                        example: "예시: 계정 로그인 -> 홈 생성 -> 기기 연결 -> 자동화 저장"
+                    },
+                    {
+                        title: "호환성 사전 점검",
+                        meaning: "현장에서 자주 터지는 이슈를 먼저 확인합니다.",
+                        example: "예시: Wi-Fi 대역, 앱 버전, 계정 지역"
+                    }
+                ]
+                : [
+                    {
+                        title: "First 10-second one-liner",
+                        meaning: "A fixed opening line that customers understand immediately.",
+                        example: "Example: Start your evening routine automatically as soon as you get home."
+                    },
+                    {
+                        title: "30-second demo flow",
+                        meaning: "Show problem -> solved moment in a clear sequence.",
+                        example: "Example: Arrival trigger -> recommendation card -> one-tap run"
+                    },
+                    {
+                        title: "Recommended device mix",
+                        meaning: "Split proposals into entry and expansion bundles.",
+                        example: "Example: Entry 1-device / Core 2-device set"
+                    },
+                    {
+                        title: "Setup checklist order",
+                        meaning: "A minimum checklist to reduce setup failure.",
+                        example: "Example: Sign in -> create home -> connect device -> save automation"
+                    },
+                    {
+                        title: "Compatibility pre-check",
+                        meaning: "Quick checks for common in-store setup issues.",
+                        example: "Example: Wi-Fi band, app version, account region"
+                    }
+                ],
+            fallback: currentLocale === "ko"
+                ? "직무가 애매하면 retail을 고르면 됩니다. 고객과의 첫 대화 문장, 데모 흐름, 추천 조합처럼 현장에서 바로 쓸 출력이 생성됩니다."
+                : "If unclear, start with retail. You will get first-line talk tracks, demo flow, and ready-to-use recommendation mixes.",
+            emphasized: currentLocale === "ko"
+                ? ["현장 설명 흐름", "SmartThings 세팅", "호환성/실패 사례"]
+                : ["Store explanation flow", "SmartThings setup", "Compatibility and failure cases"],
+            deemphasized: currentLocale === "ko"
+                ? ["업셀 연결 타이밍", "매장 적용용 메시지 톤", "현장 FAQ 핵심 질문"]
+                : ["Upsell timing cues", "Store-ready message tone", "Core in-store FAQ prompts"]
+        },
+        dotcom: {
+            fitFor: currentLocale === "ko"
+                ? [
+                    "PDP/랜딩/배너/FAQ 등 웹 전환 구조를 다루는 업무",
+                    "장바구니 진입, 클릭률, 체류시간 등 전환 KPI를 다루는 업무",
+                    "국가별 eStore 제품 노출/번들 구성을 관리하는 업무"
+                ]
+                : [
+                    "Teams owning PDP, landing, banner, and FAQ conversion flow",
+                    "Teams optimizing CTR, dwell time, and add-to-cart KPIs",
+                    "Teams managing regional eStore product and bundle mapping"
+                ],
+            whatYouGet: currentLocale === "ko"
+                ? [
+                    {
+                        title: "랜딩 첫 화면 메시지",
+                        meaning: "첫 화면에서 어떤 가치부터 보여줄지 정합니다.",
+                        example: "예시: '우리 집 저녁 루틴을 1탭으로 시작'"
+                    },
+                    {
+                        title: "지역 eStore 도메인/제품 맵",
+                        meaning: "국가별 연결 URL과 주력 제품 기준입니다.",
+                        example: "예시: 국가 도메인 + 가용 제품 라인업"
+                    },
+                    {
+                        title: "번들 구조 (Entry/Core/Premium)",
+                        meaning: "가격-가치 단계별 추천을 구성합니다.",
+                        example: "예시: Entry(기본) -> Core(주력) -> Premium(확장)"
+                    },
+                    {
+                        title: "필수 vs 선택 기기",
+                        meaning: "최소 구매 구성과 추가 구성을 분리합니다.",
+                        example: "예시: 필수 1~2개 + 선택 확장 1개"
+                    },
+                    {
+                        title: "Benefit -> Product 매핑",
+                        meaning: "혜택 문장을 어떤 제품과 연결할지 정리합니다.",
+                        example: "예시: '시간 절약' -> A제품 / '안심' -> B제품"
+                    }
+                ]
+                : [
+                    {
+                        title: "First-screen landing message",
+                        meaning: "Defines which value appears first above the fold.",
+                        example: "Example: Start your evening routine with one tap."
+                    },
+                    {
+                        title: "Regional eStore domain/product map",
+                        meaning: "Country URL and product baseline for execution.",
+                        example: "Example: Market domain + available product lineup"
+                    },
+                    {
+                        title: "Bundle ladder (Entry/Core/Premium)",
+                        meaning: "A step-up recommendation model by value and price.",
+                        example: "Example: Entry -> Core -> Premium"
+                    },
+                    {
+                        title: "Required vs optional devices",
+                        meaning: "Separates minimum setup from expansion options.",
+                        example: "Example: 1-2 required + 1 optional expansion"
+                    },
+                    {
+                        title: "Benefit -> Product mapping",
+                        meaning: "Links each user benefit to concrete products.",
+                        example: "Example: Time-saving -> Product A / Reassurance -> Product B"
+                    }
+                ],
+            fallback: currentLocale === "ko"
+                ? "직무가 애매하지만 온라인 전환이 목표라면 dotcom을 고르세요. 메시지-CTA-상품 매핑까지 웹 실행형 결과를 받을 수 있습니다."
+                : "If unclear but online conversion is your goal, choose dotcom. You will get message-CTA-product mapping ready for web execution.",
+            emphasized: currentLocale === "ko"
+                ? ["전환률/객단가 관점", "지역 상품 매트릭스", "번들 구성"]
+                : ["Conversion/AOV perspective", "Regional product matrix", "Bundle composition"],
+            deemphasized: currentLocale === "ko"
+                ? ["PDP 문장 길이 가이드", "FAQ 재배치 포인트", "CTA 우선순위 검증 항목"]
+                : ["PDP copy-length guide", "FAQ reorder points", "CTA priority checks"]
+        },
+        brand: {
+            fitFor: currentLocale === "ko"
+                ? [
+                    "캠페인 메인 메시지/카피 톤을 기획하는 업무",
+                    "글로벌 메시지와 로컬 메시지 체계를 운영하는 업무",
+                    "시즌/이벤트 중심 통합 캠페인을 기획하는 업무"
+                ]
+                : [
+                    "Teams crafting campaign-level message and copy tone",
+                    "Teams operating global and local message frameworks",
+                    "Teams planning season and event-led integrated campaigns"
+                ],
+            whatYouGet: currentLocale === "ko"
+                ? [
+                    {
+                        title: "브랜드 핵심 한 문장",
+                        meaning: "브랜드 톤을 유지한 대표 문장입니다.",
+                        example: "예시: 우리 집 루틴을 더 가볍게."
+                    },
+                    {
+                        title: "단문/장문 메시지 세트",
+                        meaning: "짧은 광고 문장과 긴 설명 문장을 함께 제공합니다.",
+                        example: "예시: 8~12자 단문 + 상세 설명 2~3문장"
+                    },
+                    {
+                        title: "글로벌 vs 로컬 메시지 분리",
+                        meaning: "공통 메시지와 국가별 변주를 구분합니다.",
+                        example: "예시: Global '편안함' / Local '퇴근 직후 루틴'"
+                    },
+                    {
+                        title: "시즌/이벤트 캠페인 흐름",
+                        meaning: "런칭-프로모션-리마인드 순서로 운영합니다.",
+                        example: "예시: 성수기 전 런칭 -> 시즌 프로모션 -> 리마인드"
+                    },
+                    {
+                        title: "콘텐츠 톤 가이드",
+                        meaning: "영상/소셜/배너에서 같은 말투를 유지합니다.",
+                        example: "예시: 따뜻하고 간결한 톤으로 전 채널 통일"
+                    }
+                ]
+                : [
+                    {
+                        title: "Core brand one-liner",
+                        meaning: "A signature line that keeps the brand tone.",
+                        example: "Example: Make your home routine feel lighter."
+                    },
+                    {
+                        title: "Short/long message set",
+                        meaning: "A short ad line and a longer narrative line together.",
+                        example: "Example: 8-12 word short line + 2-3 sentence long copy"
+                    },
+                    {
+                        title: "Global vs local split",
+                        meaning: "Separates universal message from market adaptation.",
+                        example: "Example: Global 'ease' / Local 'after-work routine'"
+                    },
+                    {
+                        title: "Season/event campaign flow",
+                        meaning: "Operate in launch -> promotion -> reminder phases.",
+                        example: "Example: Pre-season launch -> seasonal push -> reminder"
+                    },
+                    {
+                        title: "Content tone guide",
+                        meaning: "Keeps one voice across video, social, and banners.",
+                        example: "Example: Warm and concise tone in all channels"
+                    }
+                ],
+            fallback: currentLocale === "ko"
+                ? "직무가 애매하지만 캠페인 톤과 브랜드 메시지가 중요하면 brand를 선택하세요. 감정 중심 카피와 글로벌/로컬 분리 구조를 바로 확인할 수 있습니다."
+                : "If unclear but brand tone matters most, choose brand. You will get emotion-led copy and a global/local message split.",
+            emphasized: currentLocale === "ko"
+                ? ["문화 맥락 스토리텔링", "메시지 일관성", "브랜드 의미 강화"]
+                : ["Culture-context storytelling", "Message consistency", "Brand meaning reinforcement"],
+            deemphasized: currentLocale === "ko"
+                ? ["캠페인 문장 톤 가이드", "로컬 카피 변주 기준", "시즌/이벤트 연결 키워드"]
+                : ["Campaign tone guide", "Local copy variation rules", "Season/event linkage keywords"]
+        }
+    };
+
+    return guides[id] || {
+        fitFor: [getRoleBrief(id)],
+        whatYouGet: [getRoleBrief(id)],
+        emphasized: [getRoleFocus(id)],
+        deemphasized: [],
+        fallback: currentLocale === "ko" ? "가장 가까운 역할을 먼저 고른 뒤 결과를 비교해 조정하세요." : "Pick the closest role first, then compare outputs and adjust."
+    };
 }
 
 function updateStatePreview() {
@@ -2194,7 +2516,7 @@ function generateScenario() {
     const narrative = buildNarrative(country, city, selectedSegment, intent, deviceDecision, services);
     const automation = buildAutomationSkeleton(country, intent, deviceDecision, services);
     const facts = buildFacts(country, city, selectedSegment, deviceDecision, services, exploreGrounding);
-    const lensOutputs = buildRoleLensOutputs(role, narrative, country, deviceDecision, services, selectedSegment, intent, exploreGrounding);
+    const lensOutputs = buildRoleLensOutputs(role, narrative, country, selectedMarket, deviceDecision, services, selectedSegment, intent, exploreGrounding);
     const metrics = buildSuccessMetrics(role, intent, deviceDecision);
     const segmentData = buildTargetSegment(country, city, selectedSegment, intent, exploreGrounding);
     const setupGuide = buildSetupGuide(deviceDecision, services, role);
@@ -2626,9 +2948,272 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
     };
 }
 
-function buildRoleLensOutputs(selectedRole, narrative, country, deviceDecision, services, selectedSegment, intent, exploreGrounding) {
+function buildRoleDetailSections(roleId, country, selectedMarket, deviceDecision, services, selectedSegment, intent, exploreGrounding) {
+    const primary = services[0];
+    const selectedCategories = [...new Set((deviceDecision.selectedDevices || [deviceDecision.final.category]).map((item) => getCategoryName(item)))];
+    const availableProducts = Array.isArray(country.availableProducts) ? country.availableProducts : [];
+    const catalogReady = availableProducts.length > 0;
+    const stockNote = currentLocale === "ko" ? "재고확인필요" : "Stock check required";
+    const productLine = (product) => `${product.modelName} (${getCategoryName(product.category)}) - ${stockNote}`;
+    const productByCategory = new Map(availableProducts.map((product) => [getCategoryName(product.category), product]));
+    const anchored = selectedCategories.map((category) => productByCategory.get(category)).filter(Boolean);
+    const orderedProducts = [...new Map([...anchored, ...availableProducts].map((item) => [item.modelName, item])).values()];
+    const entryBundle = orderedProducts.slice(0, 1);
+    const coreBundle = orderedProducts.slice(0, Math.min(2, orderedProducts.length));
+    const premiumBundle = orderedProducts.slice(0, Math.min(4, orderedProducts.length));
+    const optionalCategories = [...new Set(orderedProducts.map((item) => getCategoryName(item.category)).filter((category) => !selectedCategories.includes(category)))];
+    const marketInfo = getDotcomMarketInfo(selectedMarket);
+
+    if (roleId === "retail") {
+        return [
+            {
+                title: currentLocale === "ko" ? "30초 / 1분 세일즈 토크" : "30s / 1m Sales Talk",
+                items: [
+                    currentLocale === "ko"
+                        ? `30초: "${deviceDecision.final.modelName} 하나로 ${intent.missionBucket} 가치가 바로 체감됩니다. 먼저 ${primary.keyFeatures[0]}부터 보여드릴게요."`
+                        : `30s: "${deviceDecision.final.modelName} makes ${intent.missionBucket} value immediate. Let me show ${primary.keyFeatures[0]} first."`,
+                    currentLocale === "ko"
+                        ? `1분: ${selectedSegment} 고객 기준으로 ${intent.purpose} 상황을 재현하고, 핵심 기능 1개 + 확장 기기 1개까지 연결합니다.`
+                        : `1m: Recreate the ${intent.purpose} moment for ${selectedSegment}, then connect one core feature and one upsell device.`
+                ]
+            },
+            {
+                title: currentLocale === "ko" ? "추천 기기 조합 (입문형 / 업셀용)" : "Recommended Device Mix (Entry / Upsell)",
+                items: [
+                    currentLocale === "ko"
+                        ? `입문형: ${entryBundle.length ? entryBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
+                        : `Entry: ${entryBundle.length ? entryBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`,
+                    currentLocale === "ko"
+                        ? `업셀용: ${coreBundle.length ? coreBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
+                        : `Upsell: ${coreBundle.length ? coreBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
+                ]
+            },
+            {
+                title: currentLocale === "ko" ? "SmartThings 단계별 세팅" : "SmartThings Setup Steps",
+                items: [
+                    currentLocale === "ko" ? "1) Samsung Account 로그인 2) Home 생성 3) 기준 기기 1대 연결" : "1) Sign in with Samsung Account 2) Create Home 3) Connect one anchor device",
+                    currentLocale === "ko" ? "4) 자동화 1개 생성 5) 알림/위젯 설정 6) 추가 기기 확장" : "4) Build one automation 5) Set alerts/widgets 6) Expand with additional devices"
+                ]
+            },
+            {
+                title: currentLocale === "ko" ? "호환성 체크 & 실패 사례" : "Compatibility Checks & Common Failures",
+                items: [
+                    currentLocale === "ko" ? "체크: 동일 Wi-Fi 대역, 최신 앱 버전, 지역 계정 일치 여부 확인" : "Check: same Wi-Fi band, latest app version, and matching regional account",
+                    currentLocale === "ko" ? "실패 사례: 기기 연결 전 계정 권한 미승인, 허브/센서 페어링 순서 오류" : "Failure cases: missing account permission before onboarding, incorrect hub/sensor pairing order"
+                ]
+            }
+        ];
+    }
+
+    if (roleId === "dotcom") {
+        const requiredText = selectedCategories.length ? selectedCategories.join(", ") : getCategoryName(deviceDecision.final.category);
+        const optionalText = optionalCategories.length ? optionalCategories.join(", ") : (currentLocale === "ko" ? "추가 선택 기기 없음" : "No additional optional devices");
+        const benefitToProduct = (entryBundle.length ? entryBundle : [{ modelName: deviceDecision.final.modelName, category: deviceDecision.final.category }]).map((product) => (
+            currentLocale === "ko"
+                ? `${exploreGrounding.primaryValue} -> ${product.modelName} (${getCategoryName(product.category)})`
+                : `${exploreGrounding.primaryValue} -> ${product.modelName} (${getCategoryName(product.category)})`
+        ));
+        return [
+            {
+                title: currentLocale === "ko" ? "지역 eStore / 지원 기기 매트릭스" : "Regional eStore / Supported Device Matrix",
+                items: [
+                    currentLocale === "ko"
+                        ? `도메인: ${marketInfo?.fullUrl || country.samsungShopUrl || `https://www.samsung.com/${(selectedMarket?.siteCode || country.countryCode || "").toLowerCase()}`}`
+                        : `Domain: ${marketInfo?.fullUrl || country.samsungShopUrl || `https://www.samsung.com/${(selectedMarket?.siteCode || country.countryCode || "").toLowerCase()}`}`,
+                    ...(orderedProducts.slice(0, 4).map((product) => `- ${productLine(product)}`)),
+                    ...(catalogReady ? [] : [currentLocale === "ko" ? "- 지역 판매 SKU 데이터 미확보: 재고확인필요" : "- Regional SKU list unavailable: stock check required"])
+                ]
+            },
+            {
+                title: currentLocale === "ko" ? "제품 번들 추천 (Entry / Core / Premium)" : "Bundle Recommendation (Entry / Core / Premium)",
+                items: [
+                    currentLocale === "ko"
+                        ? `Entry: ${entryBundle.length ? entryBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
+                        : `Entry: ${entryBundle.length ? entryBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`,
+                    currentLocale === "ko"
+                        ? `Core: ${coreBundle.length ? coreBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
+                        : `Core: ${coreBundle.length ? coreBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`,
+                    currentLocale === "ko"
+                        ? `Premium: ${premiumBundle.length ? premiumBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
+                        : `Premium: ${premiumBundle.length ? premiumBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
+                ]
+            },
+            {
+                title: currentLocale === "ko" ? "필수 vs 선택 기기 구분" : "Required vs Optional Devices",
+                items: [
+                    currentLocale === "ko" ? `필수: ${requiredText}` : `Required: ${requiredText}`,
+                    currentLocale === "ko" ? `선택: ${optionalText}` : `Optional: ${optionalText}`
+                ]
+            },
+            {
+                title: currentLocale === "ko" ? "PDP / 랜딩 Benefit -> Product 매핑" : "PDP / Landing Benefit -> Product Mapping",
+                items: benefitToProduct
+            }
+        ];
+    }
+
+    return [
+        {
+            title: currentLocale === "ko" ? "브랜드 메시지 (단문 / 장문)" : "Brand Message (Short / Long)",
+            items: [
+                currentLocale === "ko"
+                    ? `단문: ${exploreGrounding.primaryValue}을 생활의 기본 리듬으로 만듭니다.`
+                    : `Short: Turn ${exploreGrounding.primaryValue} into an everyday rhythm.`,
+                currentLocale === "ko"
+                    ? `장문: ${selectedSegment}의 "${intent.purpose}" 상황에서 시작해, 기술 설명보다 사용자가 느끼는 안도감과 여유를 브랜드 경험으로 연결합니다.`
+                    : `Long: Start from "${intent.purpose}" for ${selectedSegment}, and turn emotional relief into a branded experience beyond feature talk.`
+            ]
+        },
+        {
+            title: currentLocale === "ko" ? "지역·문화 맥락 스토리텔링" : "Regional & Cultural Storytelling",
+            items: [
+                currentLocale === "ko"
+                    ? `${getCountryName(country.countryCode)} 생활 리듬에서 반복되는 불편을 첫 장면으로 배치하고, 현지 언어 톤으로 카피를 조정합니다.`
+                    : `Open with recurring friction in the daily rhythm of ${getCountryName(country.countryCode)} and tune copy to local language tone.`,
+                currentLocale === "ko"
+                    ? "현지 가족/주거 패턴에 맞는 장면을 1차 노출 소재로 고정합니다."
+                    : "Lock one local household/living-context scene as the primary exposure asset."
+            ]
+        },
+        {
+            title: currentLocale === "ko" ? "캠페인·시즌·이벤트 연계" : "Campaign / Season / Event Linkage",
+            items: [
+                currentLocale === "ko"
+                    ? `시즌: ${intent.missionBucket} 니즈가 커지는 시점에 맞춰 메시지 강도를 조정합니다.`
+                    : `Seasonality: adjust message intensity when ${intent.missionBucket} demand rises.`,
+                currentLocale === "ko"
+                    ? "이벤트: 런칭/프로모션/리마인드 3단계로 소재를 분리 운영합니다."
+                    : "Events: split assets into launch, promotion, and reminder phases."
+            ]
+        },
+        {
+            title: currentLocale === "ko" ? "글로벌 vs 로컬 메시지 구분" : "Global vs Local Message Logic",
+            items: [
+                currentLocale === "ko" ? `글로벌: ${exploreGrounding.primaryValue} 중심의 일관된 가치 문장` : `Global: one consistent value line around ${exploreGrounding.primaryValue}`,
+                currentLocale === "ko" ? "로컬: 시장별 생활 맥락/언어/시즌에 맞춘 사례 문장" : "Local: market-specific lines tuned by context, language, and season"
+            ]
+        }
+    ];
+}
+
+function buildWhatYouGet(roleId, context) {
+    const isKo = currentLocale === "ko";
+    const {
+        marketName,
+        selectedSegment,
+        intent,
+        deviceDecision,
+        roleDetails,
+        exploreGrounding
+    } = context;
+
+    const detailPick = (sectionIndex, itemIndex) => roleDetails?.[sectionIndex]?.items?.[itemIndex] || "";
+
+    if (roleId === "retail") {
+        return [
+            {
+                title: isKo ? "고객에게 바로 읽히는 한 문장" : "One line customers understand immediately",
+                meaning: isKo ? "매장에서 첫 10초에 전달할 핵심 세일즈 문장입니다." : "The core sales sentence to use in the first 10 seconds in store.",
+                example: isKo
+                    ? `예시: "${deviceDecision.final.modelName} 하나로 ${intent.missionBucket}를 바로 체감할 수 있습니다."`
+                    : `Example: "${deviceDecision.final.modelName} gives immediate ${intent.missionBucket} value."`
+            },
+            {
+                title: isKo ? "30초 데모 흐름" : "30-second demo flow",
+                meaning: isKo ? "기능 설명이 아니라 생활 문제 -> 해결 장면 순서로 보여주는 구조입니다." : "A show flow built as problem -> solved moment, not a feature dump.",
+                example: isKo ? `예시: ${detailPick(0, 1)}` : `Example: ${detailPick(0, 1)}`
+            },
+            {
+                title: isKo ? "추천 기기 조합" : "Recommended device mix",
+                meaning: isKo ? "입문형/확장형으로 나눠 바로 제안할 수 있는 판매 조합입니다." : "A ready-to-sell mix split into entry and expansion options.",
+                example: isKo ? `예시: ${detailPick(1, 0)}` : `Example: ${detailPick(1, 0)}`
+            },
+            {
+                title: isKo ? "현장 세팅 체크 순서" : "On-site setup checklist order",
+                meaning: isKo ? "설치/연결 단계에서 실패를 줄이기 위한 최소 체크 순서입니다." : "A minimal check order that lowers setup failure risk.",
+                example: isKo ? `예시: ${detailPick(2, 0)}` : `Example: ${detailPick(2, 0)}`
+            },
+            {
+                title: isKo ? "실패 리스크 사전 확인" : "Pre-check for failure risks",
+                meaning: isKo ? "상담 중 자주 발생하는 호환/계정 이슈를 먼저 점검하는 항목입니다." : "Quick checks for frequent compatibility/account issues during consultation.",
+                example: isKo ? `예시: ${detailPick(3, 0)}` : `Example: ${detailPick(3, 0)}`
+            }
+        ];
+    }
+
+    if (roleId === "dotcom") {
+        return [
+            {
+                title: isKo ? "랜딩 첫 화면 메시지" : "First-screen landing message",
+                meaning: isKo ? "PDP 상단에서 어떤 상황 가치부터 보여줄지 정한 문구입니다." : "The line that defines which situational value appears first on PDP.",
+                example: isKo
+                    ? `예시: ${selectedSegment}에게 "${intent.missionBucket}" 가치를 첫 화면에서 먼저 제시`
+                    : `Example: Lead with "${intent.missionBucket}" value for ${selectedSegment} on first screen`
+            },
+            {
+                title: isKo ? "지역 eStore 기준 도메인/제품 맵" : "Region eStore domain and product map",
+                meaning: isKo ? "해당 국가에서 실제 연결할 URL과 주력 제품 기준입니다." : "The market URL and product anchor map for the selected country.",
+                example: isKo ? `예시: ${detailPick(0, 0)}` : `Example: ${detailPick(0, 0)}`
+            },
+            {
+                title: isKo ? "번들 제안 구조 (Entry/Core/Premium)" : "Bundle ladder (Entry/Core/Premium)",
+                meaning: isKo ? "가격/가치 단계별로 추천을 나눠 장바구니 진입을 쉽게 만드는 구조입니다." : "A pricing-value ladder that makes add-to-cart easier.",
+                example: isKo ? `예시: ${detailPick(1, 1)}` : `Example: ${detailPick(1, 1)}`
+            },
+            {
+                title: isKo ? "필수 vs 선택 기기 기준" : "Required vs optional device logic",
+                meaning: isKo ? "최소 구매 구성과 확장 구성을 분리해 혼선을 줄이는 기준입니다." : "A clear split between minimum and expansion device sets.",
+                example: isKo ? `예시: ${detailPick(2, 0)}` : `Example: ${detailPick(2, 0)}`
+            },
+            {
+                title: isKo ? "Benefit -> Product 매핑" : "Benefit -> Product mapping",
+                meaning: isKo ? "사용자 혜택 문장을 어떤 제품과 연결할지 정리한 맵입니다." : "A map that ties user benefits to concrete products.",
+                example: isKo ? `예시: ${detailPick(3, 0)}` : `Example: ${detailPick(3, 0)}`
+            }
+        ];
+    }
+
+    return [
+        {
+            title: isKo ? "캠페인 핵심 한 줄" : "Core campaign one-liner",
+            meaning: isKo ? "브랜드 톤을 유지하면서도 시장에서 바로 이해되는 핵심 문장입니다." : "A core line that keeps brand tone and stays easy to grasp.",
+            example: isKo
+                ? `예시: ${exploreGrounding.primaryValue}을 생활의 기본 리듬으로 만듭니다.`
+                : `Example: Turn ${exploreGrounding.primaryValue} into an everyday rhythm.`
+        },
+        {
+            title: isKo ? "감정 중심 스토리 장면" : "Emotion-first story moment",
+            meaning: isKo ? "기능 대신 사용자가 느끼는 변화 장면을 메인으로 두는 구성입니다." : "A story structure that prioritizes felt change over features.",
+            example: isKo ? `예시: "${intent.purpose}" 장면에서 안도감이 생기는 순간을 메인 컷으로 사용` : `Example: Use the relief moment in "${intent.purpose}" as the key scene`
+        },
+        {
+            title: isKo ? "로컬 문화/언어 적용 포인트" : "Local culture and language adaptation",
+            meaning: isKo ? "시장별 생활 리듬과 정서에 맞게 카피 톤을 조정하는 기준입니다." : "Guidance for tuning copy tone to local rhythm and emotion.",
+            example: isKo ? `예시: ${marketName} 생활 맥락에 맞는 감정 언어로 메시지 현지화` : `Example: Localize emotional tone to daily context in ${marketName}`
+        },
+        {
+            title: isKo ? "캠페인 에셋 패키지" : "Campaign asset package",
+            meaning: isKo ? "메인 영상, 소셜 카피, KV를 하나의 정서로 묶어 운영하는 구성입니다." : "A package that keeps film, social copy, and KV in one emotion.",
+            example: isKo
+                ? `예시: 30초 영상 + 소셜 카피 + KV를 "${selectedSegment}" 타겟 톤으로 통일`
+                : `Example: Keep 30s film + social copy + KV aligned for ${selectedSegment}`
+        },
+        {
+            title: isKo ? "시즌/이벤트 운영 타이밍" : "Season/event operating timing",
+            meaning: isKo ? "언제 메시지 강도를 올리고 소재를 분리할지 정한 실행 기준입니다." : "Execution timing for when to intensify and split campaign assets.",
+            example: isKo ? `예시: ${intent.missionBucket} 니즈가 커지는 시즌에 런칭 -> 프로모션 -> 리마인드 운영` : `Example: Run launch -> promo -> reminder as ${intent.missionBucket} demand peaks`
+        }
+    ];
+}
+
+function buildRoleLensOutputs(selectedRole, narrative, country, selectedMarket, deviceDecision, services, selectedSegment, intent, exploreGrounding) {
     const primary = services[0];
     const marketName = getCountryName(country.countryCode);
+    const detailsByRole = {
+        retail: buildRoleDetailSections("retail", country, selectedMarket, deviceDecision, services, selectedSegment, intent, exploreGrounding),
+        dotcom: buildRoleDetailSections("dotcom", country, selectedMarket, deviceDecision, services, selectedSegment, intent, exploreGrounding),
+        brand: buildRoleDetailSections("brand", country, selectedMarket, deviceDecision, services, selectedSegment, intent, exploreGrounding)
+    };
     const outputs = {
         retail: {
             id: "retail",
@@ -2660,7 +3245,15 @@ function buildRoleLensOutputs(selectedRole, narrative, country, deviceDecision, 
                 currentLocale === "ko" ? "데모 시작 문장을 한 줄로 통일" : "Standardize the opening demo line in one sentence",
                 currentLocale === "ko" ? "첫 질문은 기능이 아니라 생활 문제로 시작" : "Open with the daily problem, not the feature",
                 currentLocale === "ko" ? "체험 후 바로 다음 추천 기기 연결" : "Connect the next recommended device immediately after the demo"
-            ]
+            ],
+            roleDetailSections: detailsByRole.retail,
+            whatYouGet: buildWhatYouGet("retail", {
+                marketName,
+                selectedSegment,
+                intent,
+                deviceDecision,
+                roleDetails: detailsByRole.retail
+            })
         },
         dotcom: {
             id: "dotcom",
@@ -2692,7 +3285,15 @@ function buildRoleLensOutputs(selectedRole, narrative, country, deviceDecision, 
                 currentLocale === "ko" ? "PDP 첫 화면 문구를 2문장 이내로 압축" : "Keep the first PDP message within two sentences",
                 currentLocale === "ko" ? "추천 CTA는 한 종류만 우선 검증" : "Validate one priority recommendation CTA first",
                 currentLocale === "ko" ? "FAQ는 사용 상황 중심 질문으로 재정렬" : "Reorder FAQ around real-use questions"
-            ]
+            ],
+            roleDetailSections: detailsByRole.dotcom,
+            whatYouGet: buildWhatYouGet("dotcom", {
+                marketName,
+                selectedSegment,
+                intent,
+                deviceDecision,
+                roleDetails: detailsByRole.dotcom
+            })
         },
         brand: {
             id: "brand",
@@ -2724,7 +3325,16 @@ function buildRoleLensOutputs(selectedRole, narrative, country, deviceDecision, 
                 currentLocale === "ko" ? "캠페인 메인 카피를 기능명 없이 작성" : "Write the core campaign line without feature jargon",
                 currentLocale === "ko" ? "영상 KV와 소셜 카피의 정서를 일치" : "Align the emotional tone of film KV and social copy",
                 currentLocale === "ko" ? "공유를 부르는 한 문장 후킹 포인트 설계" : "Design a one-line hook that encourages sharing"
-            ]
+            ],
+            roleDetailSections: detailsByRole.brand,
+            whatYouGet: buildWhatYouGet("brand", {
+                marketName,
+                selectedSegment,
+                intent,
+                deviceDecision,
+                roleDetails: detailsByRole.brand,
+                exploreGrounding
+            })
         }
     };
 
@@ -2994,6 +3604,55 @@ function buildMarketingMessages(role, selectedSegment, intent, services, explore
         : intent.missionBucket === "Save"
             ? ["절감", "통제", "생활"]
             : ["편안함", "리듬", "생활"];
+
+    if (role.id === "brand") {
+        return {
+            kr: [
+                `[단문] ${selectedSegment}의 일상을 더 가볍게, ${exploreGrounding.primaryValue}은 더 또렷하게.`,
+                `[장문] "${intent.purpose}" 순간에 기술 설명보다 감정적 안도감을 먼저 전달해 브랜드 의미를 강화합니다.`,
+                `[구분 논리] Global: ${exploreGrounding.coreMessage} / Local: 지역 생활 맥락과 언어 톤에 맞춘 사례 문장`
+            ],
+            en: [
+                `[Short] Make daily life lighter for ${selectedSegment}, with clearer ${exploreGrounding.primaryValue}.`,
+                `[Long] In the "${intent.purpose}" moment, lead with emotional relief before feature explanation to build brand meaning.`,
+                `[Logic] Global: ${exploreGrounding.coreMessage} / Local: examples tuned to local daily context and language tone`
+            ],
+            roleTone: getRoleTitle(role.id)
+        };
+    }
+
+    if (role.id === "dotcom") {
+        return {
+            kr: [
+                `Benefit first: ${exploreGrounding.primaryValue}`,
+                `PDP 전개: 문제 장면 -> 핵심 가치 -> 추천 제품 -> CTA`,
+                `${getServiceLabel(services[0])}는 기능 나열보다 전환 흐름 중심 카피로 구성합니다.`
+            ],
+            en: [
+                `Benefit first: ${exploreGrounding.primaryValue}`,
+                `PDP flow: pain moment -> core value -> recommended product -> CTA`,
+                `Position ${getServiceLabel(services[0])} with conversion-led copy over feature lists.`
+            ],
+            roleTone: getRoleTitle(role.id)
+        };
+    }
+
+    if (role.id === "retail") {
+        return {
+            kr: [
+                `30초 오프닝: "${exploreGrounding.coreMessage}"`,
+                `1분 전개: 문제 확인 -> 데모 1회 -> 세팅 안내 -> 업셀 제안`,
+                `매장 설명은 브랜드 서사보다 즉시 체감되는 효용 중심으로 유지합니다.`
+            ],
+            en: [
+                `30s opening: "${exploreGrounding.coreMessage}"`,
+                `1m flow: identify pain -> run one demo -> guide setup -> propose upsell`,
+                `Keep in-store messaging focused on immediate utility over long brand storytelling.`
+            ],
+            roleTone: getRoleTitle(role.id)
+        };
+    }
+
     return {
         kr: [
             `${selectedSegment}의 하루를 더 가볍게, ${exploreGrounding.primaryValue}은 더 분명하게.`,
@@ -3085,7 +3744,7 @@ function renderScenario(payload) {
             </section>
             ${payload.lensOutputs.map((lens) => `
                 <section id="tab-panel-${lens.id}" class="tab-panel ${activeLensTab === lens.id ? "active" : ""}">
-                    ${renderLensPanel(lens, payload)}
+                    ${renderLensPanel(lens)}
                 </section>
             `).join("")}
         </article>
@@ -3097,6 +3756,77 @@ function renderScenario(payload) {
             renderScenario(payload);
         });
     });
+}
+
+function renderOutputPreview() {
+    const title = currentLocale === "ko"
+        ? "사용자가 Q1~Q4를 모두 완료하면 아래 형식으로 출력됩니다."
+        : "After Q1 to Q4 are completed, the output will follow this format.";
+    const subtitle = currentLocale === "ko"
+        ? "아래 01~03은 예시 고정 안내입니다. 실제 생성 시 입력한 내용으로 대체됩니다."
+        : "The fixed 01~03 blocks below are examples and will be replaced by your generated content.";
+    const samples = currentLocale === "ko"
+        ? [
+            {
+                title: "01) 시나리오 제목 및 요약",
+                lines: [
+                    "예시: 맞벌이 가구의 저녁 루틴을 더 빠르게 시작하는 SmartThings 시나리오",
+                    "요약: 퇴근 직후 반복되는 준비 시간을 줄이고, 핵심 기기 조합으로 체감 가치를 먼저 전달합니다."
+                ]
+            },
+            {
+                title: "02) 상세 시나리오 구조",
+                lines: [
+                    "예시: 상황 인지 -> 추천 카드 노출 -> 1회 자동화 실행 -> 반복 루틴 저장",
+                    "포함: 타겟 고객 맥락, 핵심 행동 흐름, 역할별 활용 포인트"
+                ]
+            },
+            {
+                title: "03) 지역/직무 맞춤 출력",
+                lines: [
+                    "예시: 국가별 가용 기기, 직무별 메시지, 실행 체크리스트",
+                    "안내: 닷컴 번들은 지역 eStore 기준이며 SKU/재고는 최종 확인이 필요합니다."
+                ]
+            }
+        ]
+        : [
+            {
+                title: "01) Scenario Title & Summary",
+                lines: [
+                    "Example: A SmartThings evening routine scenario for dual-income households.",
+                    "Summary: Reduce repeated setup time after work and highlight value through a focused device mix."
+                ]
+            },
+            {
+                title: "02) Detailed Scenario Structure",
+                lines: [
+                    "Example: Context trigger -> recommendation card -> one-tap automation -> routine save.",
+                    "Includes: target context, core action flow, and role-specific activation points."
+                ]
+            },
+            {
+                title: "03) Region & Role-Tailored Output",
+                lines: [
+                    "Example: country-ready devices, role-specific messages, execution checklist.",
+                    "Note: dotcom bundles follow regional eStore mapping, and SKU/stock require final confirmation."
+                ]
+            }
+        ];
+
+    resultDiv.innerHTML = `
+        <section class="placeholder-preview">
+            <div class="placeholder-intro">
+                <p class="placeholder-title">${escapeHtml(title)}</p>
+                <p class="placeholder-subtitle">${escapeHtml(subtitle)}</p>
+            </div>
+            ${samples.map((sample) => `
+                <article class="placeholder-card">
+                    <h4>${escapeHtml(sample.title)}</h4>
+                    <ul>${sample.lines.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>
+                </article>
+            `).join("")}
+        </section>
+    `;
 }
 
 function renderOverview(payload) {
@@ -3215,42 +3945,40 @@ function renderOverview(payload) {
     `;
 }
 
-function renderLensPanel(lens, payload) {
+function renderRoleDetailSections(lens) {
+    const sections = lens.roleDetailSections || [];
+    if (!sections.length) return "";
+
     return `
-        <section class="output-block hero-result">
+        <section class="output-grid">
+            ${sections.map((section) => `
+                <div class="output-block">
+                    <h4>${escapeHtml(section.title)}</h4>
+                    <ul>${(section.items || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                </div>
+            `).join("")}
+        </section>
+    `;
+}
+
+function renderLensPanel(lens) {
+    const cards = (lens.whatYouGet || []).slice(0, 5);
+    return `
+        <section class="output-block hero-result what-you-get-wrap">
             <p class="block-index">${t("roleLens")}</p>
             <h3>${escapeHtml(lens.title)}</h3>
-            <p>${escapeHtml(lens.subtitle)}</p>
-            <p><strong>${currentLocale === "ko" ? "목표" : "Objective"}:</strong> ${escapeHtml(lens.objective || "")}</p>
-            <p><strong>${currentLocale === "ko" ? "핵심 헤드라인" : "Headline"}:</strong> ${escapeHtml(lens.headline || "")}</p>
-            <p>${escapeHtml(lens.message || "")}</p>
-            <p class="quote">${escapeHtml(lens.copy)}</p>
-        </section>
-        <section class="output-grid">
-            <div class="output-block">
-                <h4>${t("executionPoints")}</h4>
-                <ul>${lens.bullets.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+            <p class="what-you-get-subtitle">${escapeHtml(lens.subtitle)}</p>
+            <h4>${currentLocale === "ko" ? "What you get" : "What you get"}</h4>
+            <div class="what-you-get-grid">
+                ${cards.map((card, index) => `
+                    <article class="what-you-get-item">
+                        <p class="what-you-get-index">${String(index + 1).padStart(2, "0")}</p>
+                        <h5>${escapeHtml(card.title || "")}</h5>
+                        <p class="what-you-get-meaning">${escapeHtml(card.meaning || "")}</p>
+                        <p class="what-you-get-example">${escapeHtml(card.example || "")}</p>
+                    </article>
+                `).join("")}
             </div>
-            <div class="output-block">
-                <h4>${currentLocale === "ko" ? "활용 패키지" : "Activation Pack"}</h4>
-                <p><strong>Asset:</strong> ${escapeHtml(lens.asset || "")}</p>
-                <p><strong>CTA:</strong> ${escapeHtml(lens.cta || "")}</p>
-                <p><strong>KPI:</strong> ${escapeHtml(lens.kpi || "")}</p>
-            </div>
-        </section>
-        <section class="output-grid">
-            <div class="output-block">
-                <h4>${currentLocale === "ko" ? "핵심 근거 포인트" : "Proof Points"}</h4>
-                <ul>${(lens.proofPoints || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-            </div>
-            <div class="output-block">
-                <h4>${currentLocale === "ko" ? "실행 체크리스트" : "Execution Checklist"}</h4>
-                <ul>${(lens.executionChecklist || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-            </div>
-        </section>
-        <section class="output-block">
-            <h4>${t("summary")}</h4>
-            <p>${escapeHtml(payload.summary)}</p>
         </section>
     `;
 }
@@ -3379,6 +4107,10 @@ function buildMarkdownReport(payload) {
             `- KPI: ${lens.kpi || ""}`,
             ...((lens.proofPoints || []).map((item) => `- Proof: ${item}`)),
             ...((lens.executionChecklist || []).map((item) => `- Checklist: ${item}`)),
+            ...((lens.roleDetailSections || []).flatMap((section) => [
+                `- ${section.title}`,
+                ...((section.items || []).map((item) => `  - ${item}`))
+            ])),
             `- Copy: ${lens.copy}`
         ])
     ].join("\n");
@@ -3479,17 +4211,26 @@ function applyLocale() {
     prevBtn.textContent = t("prev");
     nextBtn.textContent = t("next");
     generateBtn.textContent = t("build");
-    if (!latestPayload) resultDiv.innerHTML = `<p class="placeholder">${t("outputPlaceholder")}</p>`;
+    if (!latestPayload) renderOutputPreview();
     document.querySelector(".report-head h2").textContent = t("output");
     renderExportActions();
 }
 
 function renderExportActions() {
+    const labels = {
+        markdown: { title: t("downloadMarkdown"), desc: currentLocale === "ko" ? "문서 리뷰용" : "Review doc" },
+        json: { title: t("downloadJson"), desc: currentLocale === "ko" ? "데이터 연동용" : "Data handoff" },
+        html: { title: t("printPdf"), desc: currentLocale === "ko" ? "회의 공유용" : "Share / Print" },
+        copy: { title: t("copySummary"), desc: currentLocale === "ko" ? "메신저 공유용" : "Quick share" }
+    };
     exportActions.innerHTML = `
-        <button type="button" class="action-btn" data-export="markdown">${t("downloadMarkdown")}</button>
-        <button type="button" class="action-btn" data-export="json">${t("downloadJson")}</button>
-        <button type="button" class="action-btn" data-export="html">${t("printPdf")}</button>
-        <button type="button" class="action-btn" data-export="copy">${t("copySummary")}</button>
+        ${["markdown", "json", "html", "copy"].map((type, index) => `
+            <button type="button" class="action-btn export-tile" data-export="${type}">
+                <span class="export-tile-index">${String(index + 1).padStart(2, "0")}</span>
+                <strong>${escapeHtml(labels[type].title)}</strong>
+                <span>${escapeHtml(labels[type].desc)}</span>
+            </button>
+        `).join("")}
     `;
     exportActions.querySelectorAll(".action-btn").forEach((button) => {
         button.addEventListener("click", () => handleExport(button.dataset.export));
@@ -3588,11 +4329,12 @@ function resolveCountry(selectedMarket) {
     if (!selectedMarket) return null;
     const matched = sourceData.countries.find((item) => item.countryCode === selectedMarket.baseCode);
     if (matched) return matched;
+    const marketInfo = getDotcomMarketInfo(selectedMarket);
     return {
         countryCode: selectedMarket.baseCode,
         countryName: selectedMarket.countryName,
-        samsungShopUrl: `https://${DOTCOM_MARKETS.find((item) => item[1] === selectedMarket.siteCode)?.[3] || ""}`,
-        availableProducts: sourceData.countries[0]?.availableProducts || []
+        samsungShopUrl: marketInfo?.fullUrl || "",
+        availableProducts: []
     };
 }
 

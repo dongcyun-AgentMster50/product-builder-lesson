@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scenario Self Generation Agent</title>
-    <link rel="stylesheet" href="style.css?v=20260304-0750">
+    <link rel="stylesheet" href="style.css?v=20260305-0130">
 </head>
 <body>
     <div class="shell">
@@ -68,7 +68,10 @@
                         <div class="guide-actions">
                             <button type="button" id="guide-yes-btn" class="secondary-btn guide-choice-btn">Yes</button>
                             <button type="button" id="guide-no-btn" class="secondary-btn guide-choice-btn">No</button>
+                        </div>
+                        <div class="guide-session-row">
                             <button type="button" id="logout-btn" class="secondary-btn hidden">Logout</button>
+                            <p class="guide-session-note">Logout은 현재 인증 세션을 종료하고, 접근 코드 입력 화면으로 돌아갑니다.</p>
                         </div>
                         <div id="guide-copy" class="guide-copy hidden"></div>
                         <button type="button" id="guide-continue-btn" class="generate-btn guide-continue-btn hidden">시작</button>
@@ -88,7 +91,7 @@
                             <div class="field">
                                 <label for="role">Q1. 어떤 관점에서 시나리오를 만들고 싶나요?</label>
                                 <select id="role" name="role"></select>
-                                <p id="role-brief" class="helper"></p>
+                                <div id="role-brief" class="role-brief-panel"></div>
                             </div>
                         </section>
 
@@ -152,6 +155,6 @@
         </section>
     </div>
 
-    <script src="main.js?v=20260304-0750"></script>
+    <script src="main.js?v=20260305-0130"></script>
 </body>
 </html>

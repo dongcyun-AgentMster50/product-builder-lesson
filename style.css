@@ -320,6 +320,136 @@ textarea {
     line-height: 1.6;
 }
 
+.role-brief-panel {
+    margin-top: 12px;
+}
+
+.role-brief-card {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 51, 102, 0.12);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(242, 247, 255, 0.9));
+}
+
+.role-brief-head {
+    display: grid;
+    gap: 6px;
+}
+
+.role-brief-kicker {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 26px;
+    align-items: center;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #fff;
+    background: linear-gradient(135deg, #003366, #2b6ccf);
+}
+
+.role-brief-head p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+    font-size: 0.92rem;
+}
+
+.role-brief-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.role-brief-block {
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 51, 102, 0.1);
+    background: #fff;
+}
+
+.role-brief-block h4 {
+    margin: 0 0 8px;
+    font-size: 0.86rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+}
+
+.role-brief-block ul {
+    margin: 0;
+    padding-left: 18px;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.role-brief-dual {
+    display: grid;
+    gap: 10px;
+}
+
+.role-brief-fit ul {
+    margin: 0;
+    padding-left: 18px;
+    line-height: 1.55;
+    font-size: 0.88rem;
+}
+
+.role-brief-fallback p {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+.role-brief-items {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.role-brief-item {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 51, 102, 0.1);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 249, 255, 0.95));
+}
+
+.role-brief-item-index {
+    margin: 0 0 4px;
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.role-brief-item h5 {
+    margin: 0;
+    font-size: 0.94rem;
+    line-height: 1.4;
+}
+
+.role-brief-meaning {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.role-brief-example {
+    margin: 6px 0 0;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: rgba(33, 137, 255, 0.08);
+    color: var(--accent-strong);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
 .tree-groups {
     display: grid;
     gap: 14px;
@@ -627,6 +757,23 @@ textarea {
     align-items: center;
 }
 
+.guide-session-row {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 51, 102, 0.12);
+    background: rgba(248, 251, 255, 0.82);
+}
+
+.guide-session-note {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.84rem;
+    line-height: 1.55;
+}
+
 .guide-choice-btn {
     min-width: 108px;
     border-color: rgba(0, 51, 102, 0.14);
@@ -780,11 +927,17 @@ textarea {
 }
 
 .wizard-actions,
-.export-actions,
 .tabs {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+}
+
+.export-actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    width: min(760px, 100%);
 }
 
 .generate-btn,
@@ -890,6 +1043,89 @@ pre {
     background: rgba(248, 250, 252, 0.82);
 }
 
+.placeholder-preview {
+    display: grid;
+    gap: 12px;
+}
+
+.placeholder-intro {
+    padding: 18px 20px;
+    border-radius: 16px;
+    border: 1px dashed rgba(0, 51, 102, 0.24);
+    background: linear-gradient(135deg, rgba(227, 243, 255, 0.7), rgba(245, 249, 255, 0.84));
+}
+
+.placeholder-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--accent-strong);
+}
+
+.placeholder-subtitle {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.placeholder-card {
+    padding: 16px 18px;
+    border: 1px solid rgba(0, 51, 102, 0.12);
+    border-radius: 16px;
+    background: #ffffff;
+}
+
+.placeholder-card h4 {
+    margin: 0 0 8px;
+    color: var(--accent-strong);
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.placeholder-card ul {
+    margin: 0;
+    padding-left: 18px;
+    line-height: 1.65;
+    color: var(--ink);
+}
+
+.export-tile {
+    border-radius: 14px;
+    text-align: left;
+    padding: 12px 12px;
+    display: grid;
+    gap: 2px;
+    align-content: start;
+    min-height: 84px;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(240, 247, 255, 0.92));
+    border: 1px solid rgba(0, 51, 102, 0.14);
+}
+
+.export-tile strong {
+    font-size: 0.93rem;
+    line-height: 1.25;
+    color: var(--ink);
+}
+
+.export-tile span {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.25;
+}
+
+.export-tile-index {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--accent-strong);
+}
+
+.export-tile:hover {
+    border-color: rgba(0, 0, 255, 0.28);
+    background: linear-gradient(160deg, rgba(235, 246, 255, 0.98), rgba(226, 239, 255, 0.98));
+}
+
 .placeholder.compact {
     padding: 16px;
 }
@@ -991,6 +1227,59 @@ pre {
     border-top: 1px solid var(--line);
     color: var(--accent-strong);
     font-weight: 700;
+}
+
+.what-you-get-wrap {
+    display: grid;
+    gap: 14px;
+}
+
+.what-you-get-subtitle {
+    margin: 0;
+    color: var(--muted);
+}
+
+.what-you-get-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.what-you-get-item {
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 51, 102, 0.12);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 249, 255, 0.92));
+}
+
+.what-you-get-index {
+    margin: 0 0 4px;
+    color: var(--accent-strong);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.what-you-get-item h5 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.what-you-get-meaning {
+    margin: 8px 0 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--muted);
+}
+
+.what-you-get-example {
+    margin: 8px 0 0;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(33, 137, 255, 0.08);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--accent-strong);
 }
 
 .scenario-header {
@@ -1129,6 +1418,8 @@ pre {
 @media (max-width: 1040px) {
     .hero,
     .output-grid,
+    .what-you-get-grid,
+    .role-brief-items,
     .guide-grid,
     .lens-grid,
     .lens-output-grid,
@@ -1145,6 +1436,15 @@ pre {
     }
 
     .insight-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .export-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .role-brief-grid {
         grid-template-columns: 1fr;
     }
 }
@@ -1176,6 +1476,10 @@ pre {
     .output-toolbar {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .export-actions {
+        grid-template-columns: 1fr;
     }
 
     .guide-hero,
