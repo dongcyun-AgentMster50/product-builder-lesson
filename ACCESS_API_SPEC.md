@@ -98,3 +98,21 @@ Failure example:
 4. Frontend sends `POST /api/access/verify`.
 5. On success, the server sets the session cookie and the app opens the guide step.
 6. The app then continues into the Q1 to Q4 flow.
+
+## Cloudflare Pages Functions Setup
+
+Use the following secrets in Cloudflare Pages (`Settings -> Environment variables`).
+
+- `ACCESS_HMAC_SECRET` (secret text, required)
+- `ACCESS_CODE_HASHES` (comma-separated HMAC-SHA256 hashes, required)
+- `SESSION_TTL_MS` (optional, default: `28800000`)
+- `MAX_FAILED_ATTEMPTS` (optional, default: `3`)
+- `LOCK_WINDOW_MS` (optional, default: `60000`)
+
+Generate access-code hashes locally:
+
+```bash
+ACCESS_HMAC_SECRET="your-secret" node scripts/generate-access-hash.mjs "demo-access"
+```
+
+Then copy the output into `ACCESS_CODE_HASHES`.
