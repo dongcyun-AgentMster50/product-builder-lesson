@@ -392,7 +392,7 @@ const UI_TEXT = {
         deviceHelper: "상위 카테고리를 먼저 고르고 필요한 기기만 남기면 실제 사용 장면이 훨씬 빠르게 잡힙니다.",
         roleMissing: "Q1에서 담당 업무 관점을 먼저 선택해 주세요.",
         countryMissing: "Q2에서 국가를 선택해 주세요.",
-        personaMissing: "Q3에서 타겟 세그먼트와 상황 설명을 함께 입력해 주세요.",
+        personaMissing: "Q3에서 타겟 세그먼트를 선택하거나 상황 설명을 입력해 주세요.",
         allMissing: "네 가지 질문을 모두 완료한 뒤 다시 시도해 주세요.",
         downloadFirst: "먼저 시나리오를 생성해 주세요.",
         summaryState: "Input Summary",
@@ -471,7 +471,7 @@ const UI_TEXT = {
         deviceHelper: "Start with a top category, then trim the device list to the exact mix you want to frame.",
         roleMissing: "Please choose the work lens first in Q1.",
         countryMissing: "Please choose the country in Q2.",
-        personaMissing: "Please choose the target segment and describe the situation in Q3.",
+        personaMissing: "In Q3, choose the target segment or describe the situation.",
         allMissing: "Please complete all four questions before generating the scenario.",
         downloadFirst: "Please generate a scenario first.",
         summaryState: "Input Summary",
@@ -550,7 +550,7 @@ const UI_TEXT = {
         deviceHelper: "Starten Sie mit einer Oberkategorie und grenzen Sie dann die konkrete Gerätekombination ein.",
         roleMissing: "Bitte wählen Sie zuerst in Q1 die fachliche Perspektive aus.",
         countryMissing: "Bitte wählen Sie in Q2 das Land aus.",
-        personaMissing: "Bitte wählen Sie in Q3 den Nutzertyp und beschreiben Sie die Situation.",
+        personaMissing: "Wählen Sie in Q3 den Nutzertyp oder beschreiben Sie die Situation.",
         allMissing: "Bitte beantworten Sie zuerst alle vier Fragen.",
         downloadFirst: "Bitte erzeugen Sie zuerst ein Szenario.",
         summaryState: "Eingabeübersicht",
@@ -617,7 +617,7 @@ const UI_TEXT = {
         deviceHelper: "Choisir une catégorie d'appareil rend le scénario plus flexible et évolutif.",
         roleMissing: "Veuillez d'abord choisir l'angle professionnel dans la Q1.",
         countryMissing: "Veuillez choisir le pays dans la Q2.",
-        personaMissing: "Veuillez sélectionner le type d'utilisateur et décrire la situation dans la Q3.",
+        personaMissing: "Dans la Q3, sélectionnez le type d'utilisateur ou décrivez la situation.",
         allMissing: "Veuillez compléter les quatre questions avant de générer le scénario.",
         downloadFirst: "Veuillez d'abord générer un scénario.",
         summaryState: "Résumé des entrées",
@@ -684,7 +684,7 @@ const UI_TEXT = {
         deviceHelper: "Elegir una categoría de dispositivo hace que el escenario sea más flexible y ampliable.",
         roleMissing: "Primero elige la perspectiva profesional en la Q1.",
         countryMissing: "Elige el país en la Q2.",
-        personaMissing: "Selecciona el tipo de usuario y describe la situación en la Q3.",
+        personaMissing: "En la Q3, selecciona el tipo de usuario o describe la situación.",
         allMissing: "Completa las cuatro preguntas antes de generar el escenario.",
         downloadFirst: "Primero genera un escenario.",
         summaryState: "Resumen de entrada",
@@ -751,7 +751,7 @@ const UI_TEXT = {
         deviceHelper: "Escolher uma categoria de dispositivo mantém o cenário mais flexível e expansível.",
         roleMissing: "Primeiro escolha a perspectiva profissional na Q1.",
         countryMissing: "Escolha o país na Q2.",
-        personaMissing: "Selecione o tipo de usuário e descreva a situação na Q3.",
+        personaMissing: "Na Q3, selecione o tipo de usuário ou descreva a situação.",
         allMissing: "Conclua as quatro perguntas antes de gerar o cenário.",
         downloadFirst: "Gere um cenário primeiro.",
         summaryState: "Resumo da entrada",
@@ -818,7 +818,7 @@ const UI_TEXT = {
         deviceHelper: "Scegliere una categoria di dispositivo rende lo scenario più flessibile ed estendibile.",
         roleMissing: "Per prima cosa scegli la prospettiva professionale nella Q1.",
         countryMissing: "Scegli il paese nella Q2.",
-        personaMissing: "Seleziona il tipo di utente e descrivi la situazione nella Q3.",
+        personaMissing: "Nella Q3, seleziona il tipo di utente o descrivi la situazione.",
         allMissing: "Completa tutte e quattro le domande prima di generare lo scenario.",
         downloadFirst: "Genera prima uno scenario.",
         summaryState: "Riepilogo input",
@@ -885,7 +885,7 @@ const UI_TEXT = {
         deviceHelper: "Een apparaatcategorie kiezen houdt het scenario flexibeler en beter uitbreidbaar.",
         roleMissing: "Kies eerst het professionele perspectief in Q1.",
         countryMissing: "Kies het land in Q2.",
-        personaMissing: "Selecteer het gebruikerstype en beschrijf de situatie in Q3.",
+        personaMissing: "Kies in Q3 het gebruikerstype of beschrijf de situatie.",
         allMissing: "Voltooi eerst alle vier de vragen.",
         downloadFirst: "Genereer eerst een scenario.",
         summaryState: "Invoeroverzicht",
@@ -952,7 +952,7 @@ const UI_TEXT = {
         deviceHelper: "اختيار فئة جهاز يجعل السيناريو أكثر مرونة وقابلية للتوسع.",
         roleMissing: "يرجى اختيار المنظور المهني أولاً في Q1.",
         countryMissing: "يرجى اختيار الدولة في Q2.",
-        personaMissing: "يرجى اختيار نوع المستخدم ووصف الموقف في Q3.",
+        personaMissing: "في Q3، يرجى اختيار نوع المستخدم أو وصف الموقف.",
         allMissing: "يرجى إكمال الأسئلة الأربعة قبل إنشاء السيناريو.",
         downloadFirst: "يرجى إنشاء سيناريو أولاً.",
         summaryState: "ملخص الإدخال",
@@ -987,6 +987,8 @@ const ACCESS_API = {
     sessionEndpoint: "/api/access/session",
     logoutEndpoint: "/api/access/logout"
 };
+const REGION_INSIGHT_API = "/api/region-insight";
+const REGION_INSIGHT_CLIENT_TIMEOUT_MS = 12500;
 const ACCESS_CLIENT_SESSION_KEY = "scenario-access-client-session-id";
 
 const resultDiv = document.getElementById("result");
@@ -1035,6 +1037,7 @@ let isAccessLocked = false;
 let accessLockoutEndsAt = 0;
 let accessLockoutTimerId = null;
 let accessClientSessionId = "";
+let latestStep2InsightRequest = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
     accessClientSessionId = ensureAccessClientSessionId();
@@ -1658,6 +1661,11 @@ function updateStepInsight() {
         return;
     }
 
+    if (currentStep === 2) {
+        renderStep2Insight();
+        return;
+    }
+
     stepInsight.classList.remove("hidden");
     const insight = getStepInsight();
     stepInsight.innerHTML = buildInsightMarkup(insight);
@@ -1705,6 +1713,31 @@ function buildInsightMarkup(insight) {
                 <p>${escapeHtml(row.value)}</p>
             </div>
         `).join("");
+    const sections = Array.isArray(insight.sections) && insight.sections.length
+        ? `<div class="insight-sections">${insight.sections.map((section) => {
+            const text = section.text ? `<p>${escapeHtml(section.text)}</p>` : "";
+            const items = Array.isArray(section.items) && section.items.length
+                ? `<ul>${section.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+                : "";
+            return `
+                <section class="insight-section">
+                    <h4>${escapeHtml(section.title || "")}</h4>
+                    ${text}
+                    ${items}
+                </section>
+            `;
+        }).join("")}</div>`
+        : "";
+    const evidence = Array.isArray(insight.evidence) && insight.evidence.length
+        ? `<div class="insight-evidence">${insight.evidence.map((item) => `
+            <span class="insight-evidence-chip" title="${escapeHtml(item.snippet || "")}">
+                ${escapeHtml(`${item.source_domain} · ${item.collected_at_utc || ""} · ${item.confidence || ""}`)}
+            </span>
+        `).join("")}</div>`
+        : "";
+    const action = insight.retry
+        ? `<button type="button" id="region-insight-retry" class="secondary-btn insight-retry-btn">${escapeHtml(insight.retryLabel || "Retry")}</button>`
+        : "";
 
     return `
         <div class="insight-head">
@@ -1715,7 +1748,10 @@ function buildInsightMarkup(insight) {
         ${body}
         ${spotlight}
         ${chips}
+        ${sections}
         <div class="insight-grid">${rows}</div>
+        ${evidence}
+        ${action}
     `;
 }
 
@@ -1764,93 +1800,178 @@ function buildStep1Insight() {
 }
 
 function buildStep2Insight() {
-    const selectedMarket = marketOptions.find((market) => market.siteCode === countrySelect.value);
-    const city = cityInput.value.trim();
+    return {
+        badge: currentLocale === "ko" ? "Q2 Region" : "Q2 Region",
+        title: currentLocale === "ko" ? "지역 인사이트를 준비하고 있습니다" : "Preparing live regional insight",
+        summary: currentLocale === "ko"
+            ? "국가와 도시를 기반으로 실시간 외부 데이터를 수집하는 중입니다."
+            : "Collecting live external signals based on the selected country and city.",
+        body: currentLocale === "ko"
+            ? "잠시만 기다려 주세요. 시장/도시 신호를 결합해 카드가 곧 갱신됩니다."
+            : "Please wait. The card will update after market and local signals are aggregated."
+    };
+}
 
+async function renderStep2Insight(forceRefresh = false) {
+    stepInsight.classList.remove("hidden");
+    const selectedMarket = marketOptions.find((market) => market.siteCode === countrySelect.value);
     if (!selectedMarket) {
-        return STEP_INSIGHTS[2];
+        stepInsight.innerHTML = buildInsightMarkup(STEP_INSIGHTS[2]);
+        return;
     }
 
+    const requestId = ++latestStep2InsightRequest;
+    stepInsight.innerHTML = buildInsightMarkup(buildStep2Insight());
+    updateQuestionHelpers();
+
     const country = resolveCountry(selectedMarket);
-    const regional = getRegionalSignals(country.countryCode, city, { missionBucket: "Discover" });
-    const trend = getCountryTrend(country.countryCode);
-    const citySignal = getCitySignal(country.countryCode, city);
-    const marketLabel = city ? `${getCountryName(country.countryCode)} ${city}` : getCountryName(country.countryCode);
-    const direction = inferRegionalDirection(country.countryCode);
-    const trendLine = trend?.headline || trend?.signal || trend?.implication || regional.implication;
-    const citySpotlight = citySignal?.cityDisplay
-        ? (currentLocale === "ko"
-            ? `${citySignal.cityDisplay} 입력으로 도시 맥락이 추가되었습니다.`
-            : currentLocale === "de"
-                ? `Für ${citySignal.cityDisplay} wurde jetzt ein zusätzlicher Stadtkontext ergänzt.`
-                : `A city-layer read for ${citySignal.cityDisplay} has now been added.`)
-        : (currentLocale === "ko"
-            ? "도시를 입력하면 지역성과 기후, 생활 리듬까지 더 좁혀서 해석합니다."
-            : currentLocale === "de"
-                ? "Wenn Sie eine Stadt ergänzen, werden Region, Klima und Lebensrhythmus zusätzlich eingegrenzt."
-                : "Add a city to narrow the read further through local context, climate, and daily rhythm.");
-    const rows = [
+    const city = cityInput.value.trim();
+    const insight = await fetchLiveStep2Insight(country.countryCode, city, forceRefresh);
+    if (requestId !== latestStep2InsightRequest || currentStep !== 2) return;
+
+    stepInsight.innerHTML = buildInsightMarkup(insight);
+    const retryBtn = document.getElementById("region-insight-retry");
+    if (retryBtn) {
+        retryBtn.addEventListener("click", () => {
+            renderStep2Insight(true);
+        });
+    }
+
+    stepInsight.classList.remove("insight-refresh");
+    void stepInsight.offsetWidth;
+    stepInsight.classList.add("insight-refresh");
+}
+
+async function fetchLiveStep2Insight(countryCode, city, forceRefresh = false) {
+    const params = new URLSearchParams({
+        country: countryCode,
+        city,
+        locale: currentLocale
+    });
+    if (forceRefresh) {
+        params.set("force", "1");
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), REGION_INSIGHT_CLIENT_TIMEOUT_MS);
+
+    try {
+        const response = await fetch(`${REGION_INSIGHT_API}?${params.toString()}`, {
+            method: "GET",
+            credentials: "include",
+            signal: controller.signal
+        });
+        const payload = await response.json().catch(() => null);
+        if (!response.ok || !payload?.ok || !payload?.data) {
+            const message = payload?.error?.message || (currentLocale === "ko"
+                ? "실시간 지역 인사이트를 불러오지 못했습니다."
+                : "Failed to load live regional insight.");
+            return buildStep2ErrorInsight(message);
+        }
+        return mapLiveStep2Insight(payload.data, countryCode, city);
+    } catch {
+        const timeoutMessage = currentLocale === "ko"
+            ? "실시간 지역 인사이트 요청이 시간 제한(12초)을 초과했습니다."
+            : "Live regional insight timed out after 12 seconds.";
+        return buildStep2ErrorInsight(timeoutMessage);
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+function mapLiveStep2Insight(data, countryCode, city) {
+    const marketLabel = city ? `${getCountryName(countryCode)} ${city}` : getCountryName(countryCode);
+    const macro = data.macro || {};
+    const local = data.local || null;
+    const evidence = Array.isArray(data.evidence) ? data.evidence.slice(0, 4) : [];
+    const sections = [
         {
-            label: currentLocale === "ko" ? "최근 국가 트렌드" : currentLocale === "de" ? "Aktueller Markttreiber" : "Recent country trend",
-            value: trendLine
-        },
-        {
-            label: currentLocale === "ko" ? "시장 해석" : currentLocale === "de" ? "Marktlesart" : "Market read",
-            value: regional.observation
-        },
-        {
-            label: currentLocale === "ko" ? "왜 이 장면이 먹히는지" : currentLocale === "de" ? "Warum dieser Moment wirkt" : "Why this lands",
-            value: regional.insight
+            title: currentLocale === "ko" ? "주요 공략 포인트" : "Primary attack points",
+            items: [
+                ...toList(macro.market_traits),
+                ...toList(macro.core_needs)
+            ]
         }
     ];
 
-    if (citySignal) {
-        rows.push(
+    if (local) {
+        sections.push(
             {
-                label: currentLocale === "ko" ? "도시 일반 특성" : currentLocale === "de" ? "Stadtprofil" : "City profile",
-                value: citySignal.region
+                title: currentLocale === "ko" ? "데이터 기반 핵심 인사이트" : "Data-backed core insights",
+                items: [
+                    `${local.archetype || ""} · ${local.demographic || ""}`.trim(),
+                    local.lifestyle || ""
+                ].filter(Boolean)
             },
             {
-                label: currentLocale === "ko" ? "기후 / 주거 맥락" : currentLocale === "de" ? "Klima / Wohnen" : "Climate / housing",
-                value: `${citySignal.climate} / ${citySignal.housing}`
-            },
-            {
-                label: currentLocale === "ko" ? "다수의 행동 스타일" : currentLocale === "de" ? "Typischer Verhaltensstil" : "Common behavior style",
-                value: citySignal.behavior
-            },
-            {
-                label: currentLocale === "ko" ? "시나리오 시사점" : currentLocale === "de" ? "Szenario-Folge" : "Scenario implication",
-                value: citySignal.implication
+                title: currentLocale === "ko" ? "지역화 액션 아이템" : "Localization action items",
+                items: toList(local.action_items)
             }
         );
     } else {
-        rows.push({
-            label: currentLocale === "ko" ? "다음에 붙일 요소" : currentLocale === "de" ? "Nächstes Element" : "Next input to add",
-            value: currentLocale === "ko"
-                ? "도시를 입력하면 일반적 지역성, 기후, 생활 행동 스타일을 더 구체적으로 붙일 수 있습니다."
-                : currentLocale === "de"
-                    ? "Wenn Sie eine Stadt ergänzen, können regionale Eigenheiten, Klima und Verhaltensmuster konkreter ergänzt werden."
-                    : "If you add a city, the card can extend into local traits, climate, and common behavior patterns."
+        sections.push({
+            title: currentLocale === "ko" ? "다음 단계 제안" : "Next-step recommendation",
+            text: macro.next_step_prompt || (currentLocale === "ko"
+                ? "도시를 입력하면 타겟 페르소나를 더 날카롭게 좁혀 인사이트를 확장할 수 있습니다."
+                : "Add a city to sharpen persona assumptions and expand local insight.")
         });
     }
 
     return {
-        badge: currentLocale === "ko" ? "Q2 Region" : currentLocale === "de" ? "Q2 Region" : "Q2 Region",
-        title: currentLocale === "ko" ? `${marketLabel}에서는 이런 장면이 더 빨리 읽힙니다` : currentLocale === "de" ? `In ${marketLabel} wird dieser Moment schneller verstanden` : `${marketLabel} is more likely to respond to this kind of moment`,
+        badge: currentLocale === "ko" ? "Q2 Live Region" : "Q2 Live Region",
+        title: macro.title || (currentLocale === "ko"
+            ? `${marketLabel} 시장 인사이트`
+            : `${marketLabel} market insight`),
         summary: currentLocale === "ko"
-            ? `${marketLabel} 맥락에서 반응 가능성이 높은 장면을 추리는 단계입니다.`
-            : currentLocale === "de"
-                ? `Hier wird der wahrscheinlich stärkste Nutzungsmoment für ${marketLabel} eingegrenzt.`
-                : `This is narrowing the usage moment most likely to land in ${marketLabel}.`,
-        body: currentLocale === "ko"
-            ? `${regional.observation} 성격이 강해서 ${regional.insight.toLowerCase()} 포인트가 더 잘 작동합니다. ${city ? `${city}까지 지정한 만큼` : "이제"} 시나리오는 ${direction} 쪽으로 더 날카롭게 밀어도 됩니다.`
-            : currentLocale === "de"
-                ? `Der Kontext ist stark von ${regional.observation} geprägt. Dadurch wirkt ${regional.insight.toLowerCase()} besser, und das Szenario kann stärker in Richtung ${direction} aufgebaut werden.`
-                : `This context is shaped by ${regional.observation}, so ${regional.insight.toLowerCase()} is more likely to land. The scenario can now lean more clearly toward ${direction}.`,
-        spotlight: citySpotlight,
-        chips: [marketLabel, direction, ...(citySignal ? [citySignal.cityDisplay] : [])],
-        rows
+            ? "국가 거시 신호와 도시 로컬 신호를 실시간으로 결합한 분석 결과입니다."
+            : "This combines country-level macro and city-level local signals in real time.",
+        body: toList(macro.opportunity_factors)[0] || "",
+        spotlight: local?.confidence_note || (currentLocale === "ko"
+            ? "도시를 입력하면 일반 리포트가 로컬 맞춤 분석 리포트로 확장됩니다."
+            : "Adding a city upgrades this from a generic report to a localized analysis."),
+        chips: [
+            marketLabel,
+            data.meta?.cache_hit ? "cache-hit" : "live",
+            ...(local?.archetype ? [local.archetype] : [])
+        ],
+        sections,
+        rows: [
+            {
+                label: currentLocale === "ko" ? "수집 시각(UTC)" : "Collected at (UTC)",
+                value: data.meta?.generated_at_utc || "-"
+            },
+            {
+                label: currentLocale === "ko" ? "응답 지연" : "Latency",
+                value: `${Number(data.meta?.latency_ms || 0)} ms`
+            },
+            {
+                label: currentLocale === "ko" ? "근거 수" : "Evidence count",
+                value: String(evidence.length)
+            },
+            {
+                label: currentLocale === "ko" ? "캐시 여부" : "Cache",
+                value: data.meta?.cache_hit ? "hit" : "miss"
+            }
+        ],
+        evidence
     };
+}
+
+function buildStep2ErrorInsight(message) {
+    return {
+        badge: currentLocale === "ko" ? "Q2 Live Error" : "Q2 Live Error",
+        title: currentLocale === "ko" ? "실시간 지역 인사이트를 불러오지 못했습니다" : "Failed to load live regional insight",
+        summary: message,
+        body: currentLocale === "ko"
+            ? "네트워크 또는 외부 소스 상태를 확인한 뒤 다시 시도해 주세요."
+            : "Check network or upstream source status, then retry.",
+        retry: true,
+        retryLabel: currentLocale === "ko" ? "다시 시도" : "Retry now"
+    };
+}
+
+function toList(value) {
+    return Array.isArray(value) ? value.filter(Boolean) : [];
 }
 
 function buildStep3Insight() {
@@ -2192,7 +2313,7 @@ function validateCurrentStep() {
         resultDiv.innerHTML = `<p class="error">${t("countryMissing")}</p>`;
         return false;
     }
-    if (currentStep === 3 && (!getSelectedSegment() || !purposeInput.value.trim())) {
+    if (currentStep === 3 && (!getSelectedSegment() && !purposeInput.value.trim())) {
         resultDiv.innerHTML = `<p class="error">${t("personaMissing")}</p>`;
         return false;
     }

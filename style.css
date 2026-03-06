@@ -723,6 +723,60 @@ textarea {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.insight-sections {
+    display: grid;
+    gap: 10px;
+}
+
+.insight-section {
+    display: grid;
+    gap: 8px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(0, 51, 102, 0.12);
+}
+
+.insight-section h4 {
+    margin: 0;
+    color: var(--accent-strong);
+    font-size: 0.95rem;
+}
+
+.insight-section p {
+    margin: 0;
+}
+
+.insight-section ul {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 4px;
+}
+
+.insight-evidence {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.insight-evidence-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: rgba(0, 51, 102, 0.08);
+    border: 1px solid rgba(0, 51, 102, 0.18);
+    color: var(--accent-strong);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.insight-retry-btn {
+    justify-self: start;
+}
+
 .insight-row {
     display: grid;
     gap: 8px;
