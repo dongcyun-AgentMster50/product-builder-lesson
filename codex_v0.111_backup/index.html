@@ -10,15 +10,15 @@
     <div class="shell">
         <header class="hero">
             <div class="hero-copy">
-                <p class="eyebrow">Your Strategic Co-pilot for Growth</p>
+                <p class="eyebrow">Interactive Scenario Builder</p>
                 <h1>Scenario Self Generation Agent</h1>
                 <p class="hero-text">
-                    핵심 입력만 선택하면, 단순한 시나리오를 넘어 당신의 관점에 맞는 전략적인 결과물을 생성합니다.
+                    핵심 입력만 선택하면 메시지부터 활용안까지 완성도 높은 시나리오로 정리됩니다.
                 </p>
                 <div class="hero-chips">
-                    <span class="hero-chip">전략적 페르소나 기반</span>
-                    <span class="hero-chip">대화형 시나리오 구성</span>
-                    <span class="hero-chip">즉시 활용가능한 결과물</span>
+                    <span class="hero-chip">맥락 중심 설계</span>
+                    <span class="hero-chip">4단계 guided flow</span>
+                    <span class="hero-chip">바로 검토 가능한 결과</span>
                 </div>
             </div>
             <div class="hero-panel">
@@ -26,15 +26,15 @@
                 <div class="hero-metrics">
                     <div class="hero-metric">
                         <strong>01</strong>
-                        <span>관점 선택 및 목표 정의</span>
+                        <span>접근 확인 후 시작 가이드</span>
                     </div>
                     <div class="hero-metric">
                         <strong>02</strong>
-                        <span>대화하며 상세 조건 구체화</span>
+                        <span>질문에 따라 단계별 입력</span>
                     </div>
                     <div class="hero-metric">
                         <strong>03</strong>
-                        <span>결과 확인 및 전략적 활용</span>
+                        <span>결과 확인과 바로 내보내기</span>
                     </div>
                 </div>
             </div>
@@ -89,25 +89,9 @@
                     <form id="scenario-form" class="form-grid" onsubmit="return false;">
                         <section class="wizard-step active" data-step="1">
                             <div class="field">
-                                <label>Q1. 어떤 관점에서 시나리오를 만들고 싶나요?</label>
-                                <div id="role-selection" class="role-selection-container">
-                                    <div class="role-card" data-role="Retailer">
-                                        <h3>Retailer</h3>
-                                        <p class="role-mantra">"Make it Real, Make it Easy"</p>
-                                        <p class="role-desc">매장 직원이 고객의 "그래서 이게 나한테 뭐가 좋은데?" 라는 질문에 답하고, 기술을 즉각적인 가치로 전환하여 판매를 마무리하도록 돕습니다.</p>
-                                    </div>
-                                    <div class="role-card" data-role="Dotcom">
-                                        <h3>Dotcom</h3>
-                                        <p class="role-mantra">"Guide the Journey, Prove the ROI"</p>
-                                        <p class="role-desc">웹사이트 방문자를 충성 고객으로 전환하는 데이터 기반의 온라인 여정을 설계하고, 모든 단계의 성과를 측정하고 증명하는 데 집중합니다.</p>
-                                    </div>
-                                    <div class="role-card" data-role="Brand">
-                                        <h3>Brand</h3>
-                                        <p class="role-mantra">"Build the Love, Tell the Story"</p>
-                                        <p class="role-desc">제품 기능이 아닌, 브랜드의 철학과 스토리를 통해 고객과 감성적 유대를 형성하고, 삼성의 '팬'으로 만드는 큰 그림을 그립니다.</p>
-                                    </div>
-                                </div>
-                                <input type="hidden" id="role" name="role">
+                                <label for="role">Q1. 어떤 관점에서 시나리오를 만들고 싶나요?</label>
+                                <select id="role" name="role"></select>
+                                <div id="role-brief" class="role-brief-panel"></div>
                             </div>
                         </section>
 
@@ -165,7 +149,7 @@
 
             <div id="result">
                 <p class="placeholder">
-                    당신의 관점을 선택하고, 이어지는 질문에 답하면 이 곳에 맞춤형 시나리오가 생성됩니다.
+                    접근 확인 후 네 가지 질문을 순서대로 완료하면 상세 시나리오와 역할별 활용안을 확인할 수 있습니다.
                 </p>
             </div>
         </section>
