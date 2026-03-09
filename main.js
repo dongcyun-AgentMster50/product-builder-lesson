@@ -2361,10 +2361,26 @@ function syncWizardUi() {
     updateStepInsight();
 }
 
+function alignWizardStepViewport() {
+    const activeStep = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
+    if (!activeStep) return;
+
+    const focusTarget = activeStep.querySelector(
+        ".role-card.selected, .role-card, select, input[type='text'], textarea, input[type='checkbox']"
+    );
+    focusTarget?.focus({ preventScroll: true });
+    activeStep.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function moveStep(delta) {
     if (delta > 0 && !validateCurrentStep()) return;
-    currentStep = Math.min(4, Math.max(1, currentStep + delta));
+    const nextStep = Math.min(4, Math.max(1, currentStep + delta));
+    if (nextStep === currentStep) return;
+    currentStep = nextStep;
     syncWizardUi();
+    window.requestAnimationFrame(() => {
+        alignWizardStepViewport();
+    });
 }
 
 function validateCurrentStep() {
