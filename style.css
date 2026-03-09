@@ -247,6 +247,10 @@ body {
     grid-column: 1 / -1;
 }
 
+.split-field #city-custom {
+    grid-column: 1 / -1;
+}
+
 .field.full {
     grid-column: 1 / -1;
 }
@@ -689,6 +693,28 @@ textarea {
     color: var(--text);
 }
 
+.insight-loading {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    width: fit-content;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(0, 51, 102, 0.08);
+    color: var(--accent-strong);
+    font-weight: 700;
+    font-size: 0.84rem;
+}
+
+.insight-loading-dots::after {
+    content: "";
+    display: inline-block;
+    width: 1.4em;
+    text-align: left;
+    animation: loadingDots 1.15s steps(4, end) infinite;
+}
+
 .insight-spotlight {
     margin: 0;
     padding: 14px 16px;
@@ -723,9 +749,172 @@ textarea {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.insight-media-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.insight-media-card {
+    position: relative;
+    min-height: 220px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 51, 102, 0.2);
+    background: #0b1c30;
+}
+
+.insight-media-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.insight-media-top-right {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin: 0;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: rgba(9, 30, 56, 0.78);
+    color: #f8fbff;
+    font-size: 0.78rem;
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    z-index: 3;
+}
+
+.insight-media-caption {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    margin: 0;
+    padding: 5px 9px;
+    border-radius: 10px;
+    background: rgba(9, 30, 56, 0.84);
+    color: #f8fbff;
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.25;
+    z-index: 3;
+}
+
+.insight-media-card.is-map .insight-map-focus {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 56%;
+    aspect-ratio: 1 / 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 3px dashed rgba(18, 32, 56, 0.95);
+    background: transparent;
+    box-shadow: 0 0 0 2px rgba(248, 252, 255, 0.85) inset;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.insight-media-overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 12px 14px;
+    background: linear-gradient(180deg, rgba(7, 19, 34, 0), rgba(7, 19, 34, 0.88) 52%, rgba(7, 19, 34, 0.95));
+    color: #f8fbff;
+}
+
+.insight-media-title {
+    margin: 0;
+    font-size: 0.96rem;
+    font-weight: 800;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+}
+
+.insight-media-meta {
+    margin: 6px 0 0;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: rgba(248, 251, 255, 0.9);
+}
+
 .insight-sections {
     display: grid;
     gap: 10px;
+}
+
+.insight-content-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+    align-items: start;
+}
+
+.insight-text-content {
+    display: grid;
+    gap: 10px;
+}
+
+.insight-image-gallery {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+}
+
+.insight-media-card.insight-media-card-gallery {
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 10px 26px rgba(8, 20, 35, 0.2);
+}
+
+.insight-media-card.insight-media-card-gallery img {
+    object-fit: cover;
+    object-position: center;
+}
+
+.insight-sections-adaptive {
+    display: grid;
+    gap: 10px;
+}
+
+.insight-adaptive-row {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 0.8fr);
+    align-items: stretch;
+}
+
+.insight-adaptive-left {
+    display: grid;
+    gap: 10px;
+}
+
+.insight-image-gallery-adaptive {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 10px;
+    align-content: stretch;
+    height: 100%;
+}
+
+.insight-media-card.insight-media-card-adaptive {
+    min-height: 0;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 10px 24px rgba(8, 20, 35, 0.2);
+}
+
+.insight-media-card.insight-media-card-adaptive.is-landscape {
+    aspect-ratio: 16 / 9;
+}
+
+.insight-media-card.insight-media-card-adaptive.is-portrait {
+    aspect-ratio: 4 / 3;
 }
 
 .insight-section {
@@ -802,6 +991,14 @@ textarea {
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+@keyframes loadingDots {
+    0% { content: ""; }
+    25% { content: "."; }
+    50% { content: ".."; }
+    75% { content: "..."; }
+    100% { content: ""; }
 }
 
 .guide-actions {
@@ -1306,6 +1503,43 @@ pre {
     line-height: 1.7;
 }
 
+.post-output-prompt {
+    display: grid;
+    gap: 12px;
+}
+
+.post-output-helper {
+    margin: 0;
+    color: var(--muted);
+}
+
+.post-output-input-row {
+    display: grid;
+    gap: 10px;
+}
+
+#post-output-input {
+    width: 100%;
+    resize: vertical;
+    min-height: 90px;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 51, 102, 0.2);
+    padding: 12px 14px;
+    font: inherit;
+    line-height: 1.5;
+    background: rgba(255, 255, 255, 0.96);
+}
+
+.post-output-answer {
+    white-space: pre-wrap;
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 51, 102, 0.12);
+    background: rgba(248, 251, 255, 0.9);
+    color: var(--text);
+}
+
 .subhead {
     margin: 12px 0 6px;
     font-family: "SamsungOne", "Segoe UI", Arial, Helvetica, sans-serif;
@@ -1541,6 +1775,40 @@ pre {
         grid-template-columns: 1fr;
     }
 
+    .insight-media-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .insight-content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .insight-adaptive-row {
+        grid-template-columns: 1fr;
+    }
+
+    .insight-image-gallery {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .insight-image-gallery-adaptive {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        height: auto;
+    }
+
+    .insight-media-card.insight-media-card-gallery {
+        width: 100%;
+        max-width: none;
+        aspect-ratio: 4 / 3;
+        min-height: 0;
+    }
+
+    .insight-media-card.insight-media-card-adaptive.is-landscape,
+    .insight-media-card.insight-media-card-adaptive.is-portrait {
+        aspect-ratio: 4 / 3;
+    }
+
     .export-actions {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         width: 100%;
@@ -1570,6 +1838,14 @@ pre {
 
     .chip-row,
     .wizard-progress {
+        grid-template-columns: 1fr;
+    }
+
+    .insight-image-gallery {
+        grid-template-columns: 1fr;
+    }
+
+    .insight-image-gallery-adaptive {
         grid-template-columns: 1fr;
     }
 

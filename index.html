@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scenario Self Generation Agent</title>
-    <link rel="stylesheet" href="style.css?v=20260305-0130">
+    <link rel="stylesheet" href="style.css?v=20260309-0912">
 </head>
 <body>
     <div class="shell">
@@ -115,7 +115,8 @@
                             <div class="field split-field">
                                 <label for="country">Q2. 어느 국가를 대상으로 하나요?</label>
                                 <select id="country" name="country"></select>
-                                <input type="text" id="city" name="city" placeholder="도시 / 주 / 지역 입력">
+                                <select id="city" name="city"></select>
+                                <input type="text" id="city-custom" name="city-custom" class="hidden" placeholder="직접 도시 입력">
                                 <p class="helper">지역에 따라 추천 기기와 활용 방식이 달라집니다.</p>
                             </div>
                         </section>
@@ -171,6 +172,6 @@
         </section>
     </div>
 
-    <script src="main.js?v=20260305-0130"></script>
+    <script src="main.js?v=20260309-0912"></script>
 </body>
 </html>

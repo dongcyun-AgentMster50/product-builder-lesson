@@ -5,6 +5,8 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 
+loadLocalEnv(path.join(__dirname, ".env"));
+
 const HOST = process.env.HOST || "127.0.0.1";
 const PORT = Number(process.env.PORT || 8000);
 const ROOT_DIR = __dirname;
@@ -32,6 +34,29 @@ const MIME_TYPES = {
 const sessions = new Map();
 const attemptsByClient = new Map();
 const regionInsightCache = new Map();
+
+function loadLocalEnv(filePath) {
+    try {
+        if (!fs.existsSync(filePath)) return;
+        const raw = fs.readFileSync(filePath, "utf8");
+        const lines = raw.split(/\r?\n/);
+        for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith("#")) continue;
+            const idx = trimmed.indexOf("=");
+            if (idx <= 0) continue;
+            const key = trimmed.slice(0, idx).trim();
+            let value = trimmed.slice(idx + 1).trim();
+            if (!key || Object.prototype.hasOwnProperty.call(process.env, key)) continue;
+            if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+                value = value.slice(1, -1);
+            }
+            process.env[key] = value;
+        }
+    } catch {
+        // Ignore .env load errors and continue with current environment.
+    }
+}
 
 const server = http.createServer(async (req, res) => {
     try {
@@ -204,6 +229,7 @@ async function handleRegionInsight(req, res, requestUrl) {
             macro: liveInsight.macro,
             local: liveInsight.local,
             evidence: liveInsight.evidence,
+            visual: liveInsight.visual,
             meta: {
                 query_country: country,
                 query_city: city,
@@ -569,6 +595,25 @@ async function fetchJsonWithTimeout(url, options = {}) {
     }, REGION_INSIGHT_TIMEOUT_MS);
 }
 
+async function fetchBinaryWithTimeout(url, options = {}) {
+    return withTimeout(async () => {
+        if (typeof fetch !== "function") {
+            throw Object.assign(new Error("Global fetch is not available in this runtime."), { code: "REGION_INSIGHT_FETCH_UNAVAILABLE" });
+        }
+
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            throw Object.assign(new Error(`Upstream request failed: ${response.status}`), { code: "REGION_INSIGHT_UPSTREAM_ERROR" });
+        }
+
+        const buffer = Buffer.from(await response.arrayBuffer());
+        return {
+            contentType: response.headers.get("content-type") || "image/jpeg",
+            dataUrl: `data:${response.headers.get("content-type") || "image/jpeg"};base64,${buffer.toString("base64")}`
+        };
+    }, REGION_INSIGHT_TIMEOUT_MS);
+}
+
 async function buildLiveRegionInsight({ country, city, locale, role }) {
     const cityQuery = city || country;
     const geocode = await fetchOpenMeteoGeocode(cityQuery, country);
@@ -577,7 +622,8 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
 
     const sources = [
         fetchWorldBankCountrySignals(country),
-        fetchWorldBankUrbanSignals(country)
+        fetchWorldBankUrbanSignals(country),
+        fetchCountryProfile(country)
     ];
     if (lat && lon) {
         sources.push(fetchOpenMeteoSignals(lat, lon));
@@ -596,6 +642,7 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
     const worldBankUrban = fulfilled.find((item) => item.type === "worldbank_urban");
     const climate = fulfilled.find((item) => item.type === "openmeteo");
     const citySignal = fulfilled.find((item) => item.type === "nominatim_city");
+    const countryProfile = fulfilled.find((item) => item.type === "country_profile");
 
     const macro = buildMacroInsight({ country, city, locale, worldBankMarket, worldBankUrban, climate });
     const local = city
@@ -608,7 +655,8 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
         role_lens: buildRoleLensInsight({ role, locale, country, city }),
         macro,
         local,
-        evidence
+        evidence,
+        visual: buildVisualInsight({ country, city, geocode, countryProfile, landmark: null })
     };
 }
 
@@ -794,6 +842,454 @@ async function fetchNominatimCitySignals(city, country) {
         displayName: top?.display_name || city,
         source: "nominatim.openstreetmap.org"
     };
+}
+
+async function fetchCountryProfile(country) {
+    const url = `https://restcountries.com/v3.1/alpha/${encodeURIComponent(country)}?fields=cca2,cca3,population,area,borders,latlng`;
+    const payload = await fetchJsonWithTimeout(url);
+    const item = Array.isArray(payload) ? payload[0] : payload;
+    return {
+        type: "country_profile",
+        countryCode: item?.cca2 || country,
+        countryCode3: item?.cca3 || "",
+        population: Number(item?.population || 0),
+        areaKm2: Number(item?.area || 0),
+        borders: Array.isArray(item?.borders) ? item.borders : [],
+        latlng: Array.isArray(item?.latlng) ? item.latlng : [],
+        source: "restcountries.com"
+    };
+}
+
+async function fetchCityImages(city, country) {
+    const unsplashKey = String(process.env.UNSPLASH_API_KEY || process.env.UNSPLASH_ACCESS_KEY || "").trim();
+    if (unsplashKey) {
+        try {
+            const cards = await fetchUnsplashCityImages(city, unsplashKey);
+            if (cards.length) {
+                return {
+                    type: "city_landmark",
+                    imageUrl: cards[0]?.imageUrl || "",
+                    imageDataUrl: cards[0]?.imageDataUrl || cards[0]?.imageUrl || "",
+                    imageUrls: cards.map((item) => item.imageUrl || ""),
+                    imageDataUrls: cards.map((item) => item.imageDataUrl || item.imageUrl || ""),
+                    cards,
+                    source: "api.unsplash.com"
+                };
+            }
+        } catch {
+            // Fall back to wiki-based source.
+        }
+    }
+    return fetchCityLandmarkImageFromWiki(city, country);
+}
+
+async function fetchUnsplashCityImages(city, accessKey) {
+    const smartQueries = [
+        { kind: "landmark", query: `${city} landmark` },
+        { kind: "culture", query: `${city} street art` },
+        { kind: "daily", query: `${city} cable car community` }
+    ];
+    const requests = smartQueries.map((item) => (
+        searchUnsplashImage({ query: item.query, accessKey }).then((image) => image ? {
+            kind: item.kind,
+            title: image.title,
+            imageUrl: image.imageUrl,
+            imageDataUrl: image.imageUrl,
+            width: image.width,
+            height: image.height
+        } : null)
+    ));
+    const settled = await Promise.allSettled(requests);
+    const seen = new Set();
+    const cards = [];
+    for (const entry of settled) {
+        if (entry.status !== "fulfilled" || !entry.value) continue;
+        const key = String(entry.value.imageUrl || "");
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        cards.push(entry.value);
+    }
+    return cards.slice(0, 3);
+}
+
+async function searchUnsplashImage({ query, accessKey }) {
+    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=8&orientation=landscape&content_filter=high`;
+    const payload = await fetchJsonWithTimeout(url, {
+        headers: {
+            Authorization: `Client-ID ${accessKey}`,
+            "Accept-Version": "v1",
+            "User-Agent": "scenario-self-generation-agent/1.0 (+local)"
+        }
+    });
+    const results = Array.isArray(payload?.results) ? payload.results : [];
+    const picked = results.find((item) => {
+        const desc = `${item?.alt_description || ""} ${item?.description || ""}`.toLowerCase();
+        return !desc.includes("logo") && !desc.includes("icon") && !desc.includes("text");
+    }) || results[0];
+    if (!picked) return null;
+    const title = String(picked.alt_description || picked.description || query).trim();
+    return {
+        title,
+        imageUrl: picked?.urls?.regular || picked?.urls?.small || "",
+        width: Number(picked?.width || 0),
+        height: Number(picked?.height || 0)
+    };
+}
+
+async function fetchCityLandmarkImageFromWiki(city, country) {
+    const landmark = await findBestWikiImage({
+        city,
+        queries: [
+            `${city} landmark`,
+            `${city} skyline`,
+            `${city} architecture`,
+            `${city} famous buildings`,
+            `${city} downtown`,
+            `${city}, ${country}`
+        ],
+        scorer: scoreLandmarkCandidate
+    });
+    const culture = await findBestWikiImage({
+        city,
+        queries: [
+            `${city} festival`,
+            `${city} cultural event`,
+            `${city} street fair`,
+            `${city} parade`,
+            `${city} culture`
+        ],
+        scorer: scoreCultureCandidate
+    });
+
+    const fallbackImage = buildFallbackPhotoDataUrl(city);
+    const cards = [];
+    if (landmark?.imageDataUrl) {
+        cards.push({
+            kind: "landmark",
+            title: landmark.title || `${city} landmark`,
+            imageUrl: landmark.imageUrl || "",
+            imageDataUrl: landmark.imageDataUrl,
+            width: Number(landmark.width || 0),
+            height: Number(landmark.height || 0)
+        });
+    } else {
+        cards.push({
+            kind: "landmark",
+            title: `${city} landmark`,
+            imageUrl: "",
+            imageDataUrl: fallbackImage,
+            width: 960,
+            height: 540
+        });
+    }
+    if (culture?.imageDataUrl) {
+        cards.push({
+            kind: "culture",
+            title: culture.title || `${city} cultural event`,
+            imageUrl: culture.imageUrl || "",
+            imageDataUrl: culture.imageDataUrl,
+            width: Number(culture.width || 0),
+            height: Number(culture.height || 0)
+        });
+    }
+
+    return {
+        type: "city_landmark",
+        imageUrl: landmark?.imageUrl || "",
+        imageDataUrl: cards[0]?.imageDataUrl || fallbackImage,
+        imageUrls: cards.map((item) => item.imageUrl || ""),
+        imageDataUrls: cards.map((item) => item.imageDataUrl),
+        cards,
+        source: "en.wikipedia.org"
+    };
+}
+
+function scoreLandmarkCandidate({ city, title, imageUrl }) {
+    const cityText = String(city || "").toLowerCase();
+    const titleText = String(title || "").toLowerCase();
+    const urlText = String(imageUrl || "").toLowerCase();
+
+    if (!urlText) return -100;
+    if (urlText.includes(".svg")) return -100;
+
+    const strongReject = [
+        "logo", "wordmark", "seal", "flag", "coat_of_arms", "icon", "emblem",
+        "map", "locator", "diagram", "chart", "insignia", "organization",
+        "conservancy", "department", "list_of", "history_of", "demographics_of"
+    ];
+    for (const token of strongReject) {
+        if (titleText.includes(token) || urlText.includes(token)) return -80;
+    }
+
+    let score = 0;
+    const strongPositive = [
+        "tower", "building", "bridge", "cathedral", "palace", "museum", "opera",
+        "skyscraper", "monument", "memorial", "gate", "plaza", "square", "castle",
+        "skyline", "downtown", "cityscape", "park"
+    ];
+    for (const token of strongPositive) {
+        if (titleText.includes(token) || urlText.includes(token)) score += 4;
+    }
+
+    if (cityText && (titleText.includes(cityText) || urlText.includes(cityText))) score += 2;
+    if (urlText.includes(".jpg") || urlText.includes(".jpeg") || urlText.includes(".png")) score += 1;
+    if (titleText.includes("landmark")) score += 2;
+
+    return score;
+}
+
+function scoreCultureCandidate({ city, title, imageUrl }) {
+    const cityText = String(city || "").toLowerCase();
+    const titleText = String(title || "").toLowerCase();
+    const urlText = String(imageUrl || "").toLowerCase();
+
+    if (!urlText) return -100;
+    if (urlText.includes(".svg")) return -100;
+
+    const strongReject = [
+        "logo", "wordmark", "seal", "flag", "coat_of_arms", "icon", "emblem",
+        "map", "locator", "diagram", "chart", "insignia", "list_of", "timeline",
+        "department", "organization", "demographics_of"
+    ];
+    for (const token of strongReject) {
+        if (titleText.includes(token) || urlText.includes(token)) return -80;
+    }
+
+    let score = 0;
+    const positive = [
+        "festival", "parade", "carnival", "fair", "street", "market", "culture",
+        "cultural", "music", "arts", "celebration", "night", "food", "event"
+    ];
+    for (const token of positive) {
+        if (titleText.includes(token) || urlText.includes(token)) score += 4;
+    }
+    if (cityText && (titleText.includes(cityText) || urlText.includes(cityText))) score += 2;
+    if (urlText.includes(".jpg") || urlText.includes(".jpeg") || urlText.includes(".png")) score += 1;
+
+    return score;
+}
+
+async function findBestWikiImage({ city, queries, scorer }) {
+    let bestCandidate = null;
+    const queryList = Array.isArray(queries) ? queries : [];
+    for (const query of queryList) {
+        try {
+            const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&srlimit=10&format=json`;
+            const searchPayload = await fetchJsonWithTimeout(searchUrl, {
+                headers: {
+                    "User-Agent": "scenario-self-generation-agent/1.0 (+local)"
+                }
+            });
+            const titles = [query];
+            const searchItems = Array.isArray(searchPayload?.query?.search) ? searchPayload.query.search : [];
+            for (const item of searchItems) {
+                const title = String(item?.title || "").trim();
+                if (title) titles.push(title);
+                if (titles.length >= 12) break;
+            }
+            const uniqueTitles = [...new Set(titles)].slice(0, 12);
+            if (!uniqueTitles.length) continue;
+
+            const pageUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=pageimages&piprop=thumbnail&pithumbsize=1400&redirects=1&format=json&titles=${encodeURIComponent(uniqueTitles.join("|"))}`;
+            const payload = await fetchJsonWithTimeout(pageUrl, {
+                headers: {
+                    "User-Agent": "scenario-self-generation-agent/1.0 (+local)"
+                }
+            });
+            const pages = payload?.query?.pages ? Object.values(payload.query.pages) : [];
+            const scored = pages
+                .map((page) => {
+                    const imageUrl = String(page?.thumbnail?.source || "").trim();
+                    const title = String(page?.title || "").trim();
+                    const width = Number(page?.thumbnail?.width || 0);
+                    const height = Number(page?.thumbnail?.height || 0);
+                    if (!imageUrl) return null;
+                    const score = scorer({ city, title, imageUrl });
+                    return { imageUrl, title, width, height, score };
+                })
+                .filter(Boolean)
+                .sort((a, b) => b.score - a.score);
+
+            const top = scored.find((item) => item.score > 0);
+            if (top && (!bestCandidate || top.score > bestCandidate.score)) {
+                bestCandidate = top;
+            }
+        } catch {
+            // try next query
+        }
+    }
+
+    if (!bestCandidate?.imageUrl) return null;
+    try {
+        const image = await fetchBinaryWithTimeout(bestCandidate.imageUrl, {
+            headers: {
+                "User-Agent": "scenario-self-generation-agent/1.0 (+local)"
+            }
+        });
+        return {
+            imageUrl: bestCandidate.imageUrl,
+            imageDataUrl: image.dataUrl,
+            title: bestCandidate.title,
+            width: bestCandidate.width,
+            height: bestCandidate.height,
+            score: bestCandidate.score
+        };
+    } catch {
+        return null;
+    }
+}
+
+async function fetchStaticMapImage(lat, lon) {
+    const mapUrl = `https://tile.openstreetmap.org/`;
+    try {
+        const mapDataUrl = await fetchOsmTileMapDataUrl(lat, lon, 11);
+        return {
+            type: "static_map",
+            imageUrl: mapUrl,
+            imageDataUrl: mapDataUrl,
+            source: "staticmap.openstreetmap.de"
+        };
+    } catch {
+        return {
+            type: "static_map",
+            imageUrl: mapUrl,
+            imageDataUrl: buildFallbackMapDataUrl(),
+            source: "staticmap.openstreetmap.de"
+        };
+    }
+}
+
+async function fetchOsmTileMapDataUrl(lat, lon, zoom = 4) {
+    const cols = 4;
+    const rows = 3;
+    const tileSize = 256;
+    const worldSize = 2 ** zoom;
+    const { x, y } = lonLatToTile(lon, lat, zoom);
+    const originX = Math.floor(x - cols / 2);
+    const originY = Math.floor(y - rows / 2);
+
+    const fetches = [];
+    for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < cols; col += 1) {
+            const rawX = originX + col;
+            const rawY = originY + row;
+            const tx = wrapTileX(rawX, worldSize);
+            const ty = Math.max(0, Math.min(worldSize - 1, rawY));
+            const url = `https://tile.openstreetmap.org/${zoom}/${tx}/${ty}.png`;
+            fetches.push(fetchBinaryWithTimeout(url, {
+                headers: {
+                    "User-Agent": "scenario-self-generation-agent/1.0 (+local)"
+                }
+            }).then((tile) => ({
+                row,
+                col,
+                dataUrl: tile.dataUrl
+            })));
+        }
+    }
+
+    const tiles = await Promise.all(fetches);
+    const width = cols * tileSize;
+    const height = rows * tileSize;
+    const tileImages = tiles.map((tile) => (
+        `<image href="${tile.dataUrl}" x="${tile.col * tileSize}" y="${tile.row * tileSize}" width="${tileSize}" height="${tileSize}" />`
+    )).join("");
+
+    const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+            ${tileImages}
+        </svg>
+    `.trim();
+
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function lonLatToTile(lon, lat, zoom) {
+    const latRad = (lat * Math.PI) / 180;
+    const n = 2 ** zoom;
+    const x = (lon + 180) / 360 * n;
+    const y = (1 - Math.log(Math.tan(latRad) + (1 / Math.cos(latRad))) / Math.PI) / 2 * n;
+    return { x, y };
+}
+
+function wrapTileX(x, worldSize) {
+    const wrapped = x % worldSize;
+    return wrapped < 0 ? wrapped + worldSize : wrapped;
+}
+
+function buildVisualInsight({ country, city, geocode, countryProfile, landmark }) {
+    const cityName = city || country;
+    const lat = Number(geocode?.latitude || countryProfile?.latlng?.[0] || 0);
+    const lon = Number(geocode?.longitude || countryProfile?.latlng?.[1] || 0);
+    const countryAreaKm2 = Number(countryProfile?.areaKm2 || 0);
+    const countryPopulation = Number(countryProfile?.population || 0);
+    const cityPopulation = Number(geocode?.population || 0);
+    const cityPopulationSharePct = countryPopulation > 0 && cityPopulation > 0
+        ? (cityPopulation / countryPopulation) * 100
+        : 0;
+    const landmarkImages = Array.isArray(landmark?.imageDataUrls) && landmark.imageDataUrls.length
+        ? landmark.imageDataUrls.slice(0, 1)
+        : [landmark?.imageDataUrl || landmark?.imageUrl || buildFallbackPhotoDataUrl(cityName)];
+
+    return {
+        city: cityName,
+        country,
+        landmark_image_url: landmark?.imageDataUrl || landmark?.imageUrl || buildFallbackPhotoDataUrl(cityName),
+        landmark_image_urls: landmarkImages,
+        image_cards: Array.isArray(landmark?.cards) ? landmark.cards : [],
+        map_image_url: "",
+        country_area_km2: countryAreaKm2,
+        country_population: countryPopulation,
+        city_population: cityPopulation,
+        city_population_share_pct: cityPopulationSharePct,
+        neighbor_codes: Array.isArray(countryProfile?.borders) ? countryProfile.borders : []
+    };
+}
+
+function buildFallbackPhotoDataUrl(cityName) {
+    const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+            <defs>
+                <linearGradient id="pbg" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#214a70"/>
+                    <stop offset="100%" stop-color="#4f87b7"/>
+                </linearGradient>
+            </defs>
+            <rect width="960" height="540" fill="url(#pbg)"/>
+            <circle cx="780" cy="120" r="58" fill="rgba(255,255,255,0.22)"/>
+            <rect x="0" y="452" width="960" height="88" fill="rgba(7,22,38,0.56)"/>
+            <text x="40" y="500" fill="#f5f9ff" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="700">${escapeSvg(cityName)}</text>
+        </svg>
+    `.trim();
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function buildFallbackMapDataUrl() {
+    const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+            <defs>
+                <linearGradient id="mbg" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#e8f1fb"/>
+                    <stop offset="100%" stop-color="#d3e6fb"/>
+                </linearGradient>
+            </defs>
+            <rect width="960" height="540" fill="url(#mbg)"/>
+            <path d="M150,120 L790,120 L860,260 L730,410 L220,440 L100,300 Z" fill="#bdd5ef" stroke="#5a7fa8" stroke-width="3"/>
+            <path d="M300,210 L670,205 L735,285 L655,360 L325,368 L255,296 Z" fill="#5c9bd3" stroke="#2f6ea6" stroke-width="3"/>
+            <circle cx="500" cy="285" r="12" fill="#d73a3a"/>
+            <circle cx="500" cy="285" r="23" fill="none" stroke="rgba(215,58,58,0.35)" stroke-width="7"/>
+        </svg>
+    `.trim();
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function escapeSvg(value) {
+    return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&apos;");
 }
 
 function buildMacroInsight({ country, city, locale, worldBankMarket, worldBankUrban, climate }) {

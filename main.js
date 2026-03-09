@@ -28,6 +28,16 @@ const ROLE_LENSES = [
 
 const PERSONA_CATEGORY_GROUPS = [
     {
+        id: "generation",
+        title: "세대/연령대",
+        options: [
+            { id: "gen_z", label: "Z세대 (18-24)" },
+            { id: "millennial", label: "밀레니얼 (25-39)" },
+            { id: "gen_x", label: "X세대 (40-54)" },
+            { id: "boomer", label: "베이비붐/시니어 (55+)" }
+        ]
+    },
+    {
         id: "household",
         title: "가구 구성",
         options: [
@@ -44,11 +54,33 @@ const PERSONA_CATEGORY_GROUPS = [
         id: "life_stage",
         title: "생활 단계",
         options: [
+            { id: "student_early", label: "대학생/사회초년" },
             { id: "with_baby", label: "영유아 자녀 가구" },
             { id: "with_kids", label: "초등 자녀 가구" },
             { id: "with_teens", label: "청소년 자녀 가구" },
             { id: "caregiver", label: "돌봄 책임 가구" },
-            { id: "empty_nester", label: "자녀 독립 후 부부 가구" }
+            { id: "empty_nester", label: "자녀 독립 후 부부 가구" },
+            { id: "retired_stage", label: "은퇴/세컨드 라이프" }
+        ]
+    },
+    {
+        id: "pet_care",
+        title: "펫 케어",
+        options: [
+            { id: "dog_owner", label: "강아지와 함께 사는 가구" },
+            { id: "cat_owner", label: "고양이와 함께 사는 가구" },
+            { id: "senior_pet", label: "노령 반려동물과 함께 사는 가구" },
+            { id: "multi_pet", label: "반려동물 다두 가구" }
+        ]
+    },
+    {
+        id: "housing_context",
+        title: "주거 맥락",
+        options: [
+            { id: "apt_highrise", label: "아파트/고층 주거" },
+            { id: "small_studio", label: "원룸/소형 주거" },
+            { id: "suburban_house", label: "단독/타운하우스" },
+            { id: "rental_home", label: "임대 거주" }
         ]
     },
     {
@@ -61,18 +93,142 @@ const PERSONA_CATEGORY_GROUPS = [
             { id: "frequent_travel", label: "출장·외출이 잦은 생활" },
             { id: "weekend_host", label: "주말 홈파티·손님 맞이" }
         ]
-    },
-    {
-        id: "pet_care",
-        title: "펫 케어",
-        options: [
-            { id: "dog_owner", label: "강아지와 함께 사는 가구" },
-            { id: "cat_owner", label: "고양이와 함께 사는 가구" },
-            { id: "senior_pet", label: "노령 반려동물과 함께 사는 가구" },
-            { id: "multi_pet", label: "반려동물 다두 가구" }
-        ]
     }
 ];
+
+const PERSONA_GROUP_TITLE_EN = {
+    generation: "Generation / Age",
+    household: "Household Type",
+    pet_care: "Pet Care",
+    housing_context: "Housing Context",
+    life_stage: "Life Stage",
+    living_pattern: "Living Pattern"
+};
+
+const PERSONA_OPTION_LABEL_EN = {
+    gen_z: "Gen Z (18-24)",
+    millennial: "Millennial (25-39)",
+    gen_x: "Gen X (40-54)",
+    boomer: "Boomer / Senior (55+)",
+    dual_income: "Dual-income couple",
+    single_parent: "Single-parent household",
+    senior_couple: "Senior couple",
+    newlywed: "Newlywed couple",
+    solo_wife: "Single woman household",
+    solo_husband: "Single man household",
+    shared_home: "Roommate / Shared home",
+    dog_owner: "Dog owner household",
+    cat_owner: "Cat owner household",
+    senior_pet: "Senior pet household",
+    multi_pet: "Multi-pet household",
+    apt_highrise: "Apartment / High-rise living",
+    small_studio: "Studio / Small home",
+    suburban_house: "Detached / Townhouse",
+    rental_home: "Rental home",
+    student_early: "Student / Early career",
+    with_baby: "Household with infant/toddler",
+    with_kids: "Household with elementary-age kids",
+    with_teens: "Household with teenagers",
+    caregiver: "Caregiver household",
+    empty_nester: "Empty nester couple",
+    retired_stage: "Retired / Second-life stage",
+    remote_worker: "Remote-work focused",
+    commuter: "Long-distance commuter",
+    night_shift: "Night shift / rotating schedule",
+    frequent_travel: "Frequent travel / away often",
+    weekend_host: "Weekend host / home gatherings"
+};
+
+function getLocalizedPersonaGroups(locale) {
+    if (locale === "ko") return PERSONA_CATEGORY_GROUPS;
+
+    return PERSONA_CATEGORY_GROUPS.map((group) => ({
+        ...group,
+        title: PERSONA_GROUP_TITLE_EN[group.id] || group.title,
+        options: group.options.map((option) => ({
+            ...option,
+            label: PERSONA_OPTION_LABEL_EN[option.id] || option.label
+        }))
+    }));
+}
+
+const DEVICE_GROUP_TITLE_EN = {
+    "air-fresh": "Air Comfort",
+    "lights-control": "Lighting Control",
+    "chores-help": "Home Chores",
+    "home-safe": "Home Security",
+    "sleep-well": "Sleep Environment",
+    "enhanced-mood": "Mood & Entertainment",
+    "care-scenarios": "Senior/Kids/Pet Care",
+    "save-energy": "Energy Saving",
+    "food-home": "Kitchen & Food Care"
+};
+
+const DEVICE_OPTION_LABEL_EN = {
+    "air-conditioner": "Air conditioner",
+    "air-purifier": "Air purifier",
+    ventilation: "Ventilation system",
+    dehumidifier: "Dehumidifier",
+    "air-monitor": "Air monitor",
+    fan: "Fan / Circulator",
+    lighting: "Lighting",
+    "mood-light": "Mood lighting",
+    "smart-switch": "Button / Switch",
+    curtain: "Curtain / Blinds",
+    "sleep-light": "Wake/Sleep light",
+    "robot-vacuum": "Robot vacuum",
+    vacuum: "Vacuum cleaner",
+    washer: "Washer",
+    dryer: "Dryer",
+    "washer-dryer": "Washer/Dryer",
+    dishwasher: "Dishwasher",
+    camera: "Camera / CCTV",
+    "door-lock": "Door lock",
+    doorbell: "Video doorbell",
+    "open-sensor": "Door-open sensor",
+    "leak-smoke": "Leak/Smoke detector",
+    hub: "SmartThings Hub",
+    "sleep-sensor": "Sleep sensor",
+    "bedside-light": "Bedroom light",
+    "bedroom-aircon": "Bedroom air conditioner",
+    "air-purifier-bed": "Bedroom air purifier",
+    "wearable-sleep": "Wearable",
+    "tv-premium": "TV",
+    projector: "Projector",
+    monitor: "Monitor",
+    speaker: "Speaker",
+    soundbar: "Soundbar",
+    "gaming-console": "Gaming console",
+    "pet-feeder": "Pet feeder",
+    "care-camera": "Indoor camera",
+    "activity-sensor": "Activity sensor",
+    "fall-sensor": "Fall detection sensor",
+    "care-button": "Emergency call button",
+    "wearable-care": "Care wearable",
+    "smart-plug": "Smart plug",
+    "energy-monitor": "Energy monitor",
+    "smart-meter": "Power usage monitor",
+    "hub-energy": "Energy automation hub",
+    "eco-aircon": "AI energy-saving air conditioner",
+    refrigerator: "Refrigerator",
+    "kimchi-fridge": "Kimchi refrigerator",
+    oven: "Oven",
+    microwave: "Microwave",
+    cooktop: "Induction / Cooktop"
+};
+
+function getLocalizedDeviceGroups(locale) {
+    if (locale === "ko") return DEVICE_CATEGORY_GROUPS;
+
+    return DEVICE_CATEGORY_GROUPS.map((group) => ({
+        ...group,
+        title: DEVICE_GROUP_TITLE_EN[group.id] || group.title,
+        options: group.options.map((option) => ({
+            ...option,
+            label: DEVICE_OPTION_LABEL_EN[option.id] || option.label
+        }))
+    }));
+}
 
 const DEVICE_CATEGORY_GROUPS = [
     {
@@ -1010,7 +1166,8 @@ const roleSelectionContainer = document.getElementById("role-selection");
 const roleCards = [...document.querySelectorAll(".role-card")];
 const purposeInput = document.getElementById("purpose");
 const countrySelect = document.getElementById("country");
-const cityInput = document.getElementById("city");
+const citySelect = document.getElementById("city");
+const cityCustomInput = document.getElementById("city-custom");
 const personaGroups = document.getElementById("persona-groups");
 const segmentCustomInput = document.getElementById("segment-custom");
 const deviceGrid = document.getElementById("device-grid");
@@ -1021,6 +1178,8 @@ const prevBtn = document.getElementById("prev-btn");
 const nextBtn = document.getElementById("next-btn");
 const generateBtn = document.getElementById("generate-btn");
 const stepInsight = document.getElementById("step-insight");
+const CITY_CUSTOM_VALUE = "__custom__";
+const LOCAL_BYPASS_ACCESS_CODE = "demo-access";
 
 let factPack = [];
 let exploreMatrix = {};
@@ -1031,7 +1190,7 @@ let dotcomMapping = { markets: [] };
 let latestPayload = null;
 let activeLensTab = "overview";
 let currentStep = 1;
-let currentLocale = "ko";
+let currentLocale = "en";
 let marketOptions = [];
 let isUnlocking = false;
 let isAccessCodeVisible = false;
@@ -1040,13 +1199,18 @@ let accessLockoutEndsAt = 0;
 let accessLockoutTimerId = null;
 let accessClientSessionId = "";
 let latestStep2InsightRequest = 0;
+let bypassSessionReady = false;
+let bypassSessionPromise = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     accessClientSessionId = ensureAccessClientSessionId();
     hydrateStaticUi();
     if (enforceServerOrigin()) return;
-    loadReferenceData();
     bindEvents();
+    if (shouldBypassAccessForLocal()) {
+        openWizard();
+    }
+    loadReferenceData();
 });
 
 function bindEvents() {
@@ -1072,7 +1236,15 @@ function bindEvents() {
     roleSelectionContainer?.addEventListener("keydown", handleRoleCardKeydown);
     countrySelect.addEventListener("change", updateStatePreview);
     countrySelect.addEventListener("change", updateLocaleFromCountry);
-    cityInput.addEventListener("input", () => {
+    citySelect.addEventListener("change", () => {
+        toggleCityCustomInput();
+        updateStatePreview();
+        updateStepInsight();
+        if (citySelect.value === CITY_CUSTOM_VALUE) {
+            cityCustomInput.focus();
+        }
+    });
+    cityCustomInput.addEventListener("input", () => {
         updateStatePreview();
         updateStepInsight();
     });
@@ -1098,6 +1270,58 @@ function bindEvents() {
         updateStatePreview();
         updateStepInsight();
     });
+}
+
+function shouldBypassAccessForLocal() {
+    const params = new URLSearchParams(window.location.search);
+    const override = params.get("skipAccess");
+    if (override === "1") return true;
+    if (override === "0") return false;
+    const host = window.location.hostname || "";
+    if (host === "127.0.0.1" || host === "localhost" || host.endsWith(".local")) return true;
+
+    const ipv4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+    if (!ipv4) return false;
+    const a = Number(ipv4[1]);
+    const b = Number(ipv4[2]);
+
+    if (a === 10) return true;
+    if (a === 127) return true;
+    if (a === 192 && b === 168) return true;
+    if (a === 172 && b >= 16 && b <= 31) return true;
+    return false;
+}
+
+async function ensureBypassSession(force = false) {
+    if (!shouldBypassAccessForLocal()) return true;
+    if (bypassSessionReady && !force) return true;
+    if (bypassSessionPromise && !force) return bypassSessionPromise;
+
+    bypassSessionPromise = (async () => {
+        try {
+            const sessionRes = await fetch(ACCESS_API.sessionEndpoint, {
+                method: "GET",
+                credentials: "include"
+            });
+            const sessionPayload = await sessionRes.json().catch(() => null);
+            if (sessionRes.ok && sessionPayload?.session?.authenticated) {
+                bypassSessionReady = true;
+                return true;
+            }
+        } catch {
+            // Continue to verification fallback.
+        }
+
+        const verification = await verifyAccessCode(LOCAL_BYPASS_ACCESS_CODE);
+        bypassSessionReady = Boolean(verification?.ok);
+        return bypassSessionReady;
+    })();
+
+    try {
+        return await bypassSessionPromise;
+    } finally {
+        bypassSessionPromise = null;
+    }
 }
 
 function enforceServerOrigin() {
@@ -1265,6 +1489,81 @@ function syncAllChecklistParents(container) {
     container.querySelectorAll(".tree-group").forEach((group) => syncChecklistParent(group));
 }
 
+function getAvailableCitiesByCountry(countryCode) {
+    if (!countryCode) return [];
+    const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
+    const seen = new Set();
+    const names = [];
+
+    cityEntries.forEach((entry) => {
+        if (entry.countryCode !== countryCode || !entry.displayName) return;
+        const normalized = normalizeCityValue(entry.displayName);
+        if (!normalized || seen.has(normalized)) return;
+        seen.add(normalized);
+        names.push(entry.displayName);
+    });
+
+    return names.sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
+}
+
+function getCityValue() {
+    if (citySelect.value === CITY_CUSTOM_VALUE) {
+        return cityCustomInput.value.trim();
+    }
+    return citySelect.value.trim();
+}
+
+function toggleCityCustomInput() {
+    const useCustom = citySelect.value === CITY_CUSTOM_VALUE;
+    cityCustomInput.classList.toggle("hidden", !useCustom);
+    cityCustomInput.disabled = !useCustom;
+}
+
+function setCityValue(city) {
+    const normalized = normalizeCityValue(city);
+    if (!normalized) {
+        citySelect.value = "";
+        cityCustomInput.value = "";
+        toggleCityCustomInput();
+        return;
+    }
+
+    const matchedOption = [...citySelect.options].find((option) => (
+        option.value !== CITY_CUSTOM_VALUE && normalizeCityValue(option.value) === normalized
+    ));
+
+    if (matchedOption) {
+        citySelect.value = matchedOption.value;
+        cityCustomInput.value = "";
+    } else {
+        citySelect.value = CITY_CUSTOM_VALUE;
+        cityCustomInput.value = city;
+    }
+    toggleCityCustomInput();
+}
+
+function populateCityOptions(countryCode, preservedCity = "") {
+    const cities = getAvailableCitiesByCountry(countryCode);
+    const defaultLabel = currentLocale === "ko"
+        ? "도시 선택 (옵션)"
+        : currentLocale === "de"
+            ? "Stadt auswählen (optional)"
+            : "Select city (optional)";
+    const customLabel = currentLocale === "ko"
+        ? "목록에 없음 (직접 입력)"
+        : currentLocale === "de"
+            ? "Nicht gelistet (manuell eingeben)"
+            : "Not listed (type manually)";
+
+    citySelect.innerHTML = [
+        `<option value="">${escapeHtml(defaultLabel)}</option>`,
+        ...cities.map((city) => `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`),
+        `<option value="${CITY_CUSTOM_VALUE}">${escapeHtml(customLabel)}</option>`
+    ].join("");
+
+    setCityValue(preservedCity);
+}
+
 function normalizeRoleId(value) {
     const normalized = String(value || "").trim().toLowerCase();
     if (normalized === "retailer") return "retail";
@@ -1318,7 +1617,7 @@ function handleRoleCardKeydown(event) {
 function populateInputs(preserved = {}) {
     const previousRole = normalizeRoleId(preserved.role || roleSelect.value);
     const previousCountry = preserved.country || countrySelect.value;
-    const previousCity = preserved.city || cityInput.value;
+    const previousCity = preserved.city || getCityValue();
     const previousPersonaSelections = preserved.personaSelections || getSelectedPersonaOptionIds();
     const previousSegmentCustom = preserved.segmentCustom || segmentCustomInput.value;
     const previousDeviceSelections = preserved.deviceSelections || getSelectedDeviceOptionIds();
@@ -1328,16 +1627,20 @@ function populateInputs(preserved = {}) {
     countrySelect.innerHTML = marketOptions.map((market) => (
         `<option value="${market.siteCode}">${market.label}</option>`
     )).join("");
-    personaGroups.innerHTML = renderChecklistGroups(PERSONA_CATEGORY_GROUPS, previousPersonaSelections, "persona");
-    deviceGrid.innerHTML = renderChecklistGroups(DEVICE_CATEGORY_GROUPS, previousDeviceSelections, "device");
+    personaGroups.innerHTML = renderChecklistGroups(getLocalizedPersonaGroups(currentLocale), previousPersonaSelections, "persona");
+    deviceGrid.innerHTML = renderChecklistGroups(getLocalizedDeviceGroups(currentLocale), previousDeviceSelections, "device");
 
     if (previousRole) {
         setRoleSelection(previousRole);
     } else {
         clearRoleSelection();
     }
-    if (previousCountry && marketOptions.some((market) => market.siteCode === previousCountry)) countrySelect.value = previousCountry;
-    if (previousCity) cityInput.value = previousCity;
+    if (previousCountry && marketOptions.some((market) => market.siteCode === previousCountry)) {
+        countrySelect.value = previousCountry;
+    }
+    const selectedMarket = marketOptions.find((market) => market.siteCode === countrySelect.value);
+    const selectedCountryCode = resolveCountry(selectedMarket)?.countryCode || "";
+    populateCityOptions(selectedCountryCode, previousCity);
     if (previousSegmentCustom) segmentCustomInput.value = previousSegmentCustom;
     if (previousDeviceCustom) deviceCustomInput.value = previousDeviceCustom;
     syncAllChecklistParents(personaGroups);
@@ -1432,6 +1735,7 @@ async function verifyAccessCode(code) {
 
 function openWizard() {
     setGuideChoice("yes");
+    accessScreen.classList.add("hidden");
     guideScreen.classList.add("hidden");
     wizardScreen.classList.remove("hidden");
     currentStep = 1;
@@ -1582,7 +1886,8 @@ function resetToAccessScreen() {
     latestPayload = null;
     clearRoleSelection();
     if (marketOptions[0]) countrySelect.value = marketOptions[0].siteCode;
-    cityInput.value = "";
+    const defaultCountryCode = resolveCountry(marketOptions[0])?.countryCode || "";
+    populateCityOptions(defaultCountryCode, "");
     personaGroups.querySelectorAll('input[type="checkbox"]').forEach((input) => {
         input.checked = false;
     });
@@ -1740,6 +2045,9 @@ function buildInsightMarkup(insight) {
     const summary = insight.summary ? `<p class="insight-summary">${escapeHtml(insight.summary)}</p>` : "";
     const body = insight.body ? `<p class="insight-body">${escapeHtml(insight.body)}</p>` : "";
     const spotlight = insight.spotlight ? `<p class="insight-spotlight">${escapeHtml(insight.spotlight)}</p>` : "";
+    const loading = insight.loading
+        ? `<p class="insight-loading" role="status" aria-live="polite">${escapeHtml(insight.loadingLabel || "Loading")}<span class="insight-loading-dots" aria-hidden="true"></span></p>`
+        : "";
     const chips = Array.isArray(insight.chips) && insight.chips.length
         ? `<div class="insight-chips">${insight.chips.map((chip) => `<span class="insight-chip">${escapeHtml(chip)}</span>`).join("")}</div>`
         : "";
@@ -1765,21 +2073,19 @@ function buildInsightMarkup(insight) {
                 <p>${escapeHtml(row.value)}</p>
             </div>
         `).join("");
-    const sections = Array.isArray(insight.sections) && insight.sections.length
-        ? `<div class="insight-sections">${insight.sections.map((section) => {
-            const text = section.text ? `<p>${escapeHtml(section.text)}</p>` : "";
-            const items = Array.isArray(section.items) && section.items.length
-                ? `<ul>${section.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
-                : "";
-            return `
-                <section class="insight-section">
-                    <h4>${escapeHtml(section.title || "")}</h4>
-                    ${text}
-                    ${items}
-                </section>
-            `;
-        }).join("")}</div>`
-        : "";
+    const renderSection = (section) => {
+        const text = section.text ? `<p>${escapeHtml(section.text)}</p>` : "";
+        const items = Array.isArray(section.items) && section.items.length
+            ? `<ul>${section.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+            : "";
+        return `
+            <section class="insight-section">
+                <h4>${escapeHtml(section.title || "")}</h4>
+                ${text}
+                ${items}
+            </section>
+        `;
+    };
     const evidence = Array.isArray(insight.evidence) && insight.evidence.length
         ? `<div class="insight-evidence">${insight.evidence.map((item) => `
             <span class="insight-evidence-chip" title="${escapeHtml(item.snippet || "")}">
@@ -1790,18 +2096,78 @@ function buildInsightMarkup(insight) {
     const action = insight.retry
         ? `<button type="button" id="region-insight-retry" class="secondary-btn insight-retry-btn">${escapeHtml(insight.retryLabel || "Retry")}</button>`
         : "";
+    const mediaItems = Array.isArray(insight.media) ? insight.media : [];
+    const renderMediaCard = (item, extraClass = "") => `
+        <article class="insight-media-card ${item.kind === "map" ? "is-map" : ""} ${extraClass}">
+            <img
+                src="${escapeHtml(item.imageUrl || "")}"
+                data-fallback-src="${escapeHtml(item.fallbackUrl || "")}"
+                alt="${escapeHtml(item.alt || "Insight image")}"
+                loading="lazy"
+                decoding="async"
+                referrerpolicy="no-referrer"
+                onerror="if(this.dataset.fallbackSrc&&this.src!==this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc}else{this.classList.add('image-broken')}"
+            >
+            ${item.kind === "map" ? '<div class="insight-map-focus" aria-hidden="true"></div>' : ""}
+            ${item.topRightText ? `<p class="insight-media-top-right">${escapeHtml(item.topRightText)}</p>` : ""}
+            ${item.caption ? `<p class="insight-media-caption">${escapeHtml(item.caption)}</p>` : ""}
+        </article>
+    `;
+    const sectionMarkup = Array.isArray(insight.sections) && insight.sections.length
+        ? `<div class="insight-sections">${insight.sections.map((section) => renderSection(section)).join("")}</div>`
+        : "";
+    const isQ2Insight = String(insight.badge || "").toLowerCase().includes("q2");
+    const useStep2AdaptiveLayout = isQ2Insight && mediaItems.length > 0 && Array.isArray(insight.sections) && insight.sections.length >= 3;
+    const useStep2GalleryLayout = isQ2Insight && mediaItems.length > 0 && !!sectionMarkup && !useStep2AdaptiveLayout;
+    const media = mediaItems.length && !useStep2GalleryLayout
+        ? `<div class="insight-media-grid">${mediaItems.map((item) => renderMediaCard(item)).join("")}</div>`
+        : "";
+    const contentBlock = useStep2GalleryLayout
+        ? `
+            <div class="insight-content-grid">
+                <div class="insight-text-content">
+                    ${sectionMarkup}
+                    <div class="insight-grid">${rows}</div>
+                </div>
+                <div class="insight-image-gallery">
+                    ${mediaItems.map((item) => renderMediaCard(item, "insight-media-card-gallery")).join("")}
+                </div>
+            </div>
+        `
+        : (useStep2AdaptiveLayout
+            ? `
+                <div class="insight-sections insight-sections-adaptive">
+                    ${renderSection(insight.sections[0])}
+                    <div class="insight-adaptive-row">
+                        <div class="insight-adaptive-left">
+                            ${renderSection(insight.sections[1])}
+                            ${renderSection(insight.sections[2])}
+                        </div>
+                        <div class="insight-image-gallery insight-image-gallery-adaptive">
+                            ${mediaItems.slice(0, 3).map((item, index) => renderMediaCard(item, `insight-media-card-adaptive insight-media-card-adaptive-${index + 1} ${item.orientation === "portrait" ? "is-portrait" : "is-landscape"}`)).join("")}
+                        </div>
+                    </div>
+                    ${insight.sections.slice(3).map((section) => renderSection(section)).join("")}
+                </div>
+                <div class="insight-grid">${rows}</div>
+            `
+            : `
+                ${sectionMarkup}
+                <div class="insight-grid">${rows}</div>
+            `);
 
     return `
         <div class="insight-head">
             ${badge}
             <strong>${escapeHtml(insight.title)}</strong>
         </div>
+        ${useStep2AdaptiveLayout ? "" : media}
         ${summary}
         ${body}
+        ${loading}
         ${spotlight}
         ${chips}
-        ${sections}
-        <div class="insight-grid">${rows}</div>
+        ${contentBlock}
         ${evidence}
         ${action}
     `;
@@ -1860,7 +2226,22 @@ function buildStep2Insight() {
             : "Collecting live external signals based on the selected country and city.",
         body: currentLocale === "ko"
             ? "잠시만 기다려 주세요. 시장/도시 신호를 결합해 카드가 곧 갱신됩니다."
-            : "Please wait. The card will update after market and local signals are aggregated."
+            : "Please wait. The card will update after market and local signals are aggregated.",
+        loading: true,
+        loadingLabel: currentLocale === "ko" ? "데이터 로딩 중" : "Loading data"
+    };
+}
+
+function buildStep2CitySelectGuide(countryCode) {
+    const countryName = getCountryName(countryCode);
+    return {
+        badge: currentLocale === "ko" ? "Q2 City" : "Q2 City",
+        title: currentLocale === "ko"
+            ? `${countryName} 도시를 선택해 주세요`
+            : `Select a city in ${countryName}`,
+        summary: currentLocale === "ko"
+            ? "도시를 선택하면 해당 국가+도시 기준의 역할별 실무 인사이트가 바로 표시됩니다."
+            : "Choose a city to load role-specific execution insight for that country and city."
     };
 }
 
@@ -1877,7 +2258,11 @@ async function renderStep2Insight(forceRefresh = false) {
     updateQuestionHelpers();
 
     const country = resolveCountry(selectedMarket);
-    const city = cityInput.value.trim();
+    const city = getCityValue();
+    if (!city) {
+        stepInsight.innerHTML = buildInsightMarkup(buildStep2CitySelectGuide(country.countryCode));
+        return;
+    }
     const role = normalizeRoleId(roleSelect.value);
     const insight = await fetchLiveStep2Insight(country.countryCode, city, role, forceRefresh);
     if (requestId !== latestStep2InsightRequest || currentStep !== 2) return;
@@ -1904,20 +2289,30 @@ async function fetchLiveStep2Insight(countryCode, city, role, forceRefresh = fal
     if (role) {
         params.set("role", role);
     }
-    if (forceRefresh) {
-        params.set("force", "1");
-    }
+    // Always bypass cached region insight so new visual blocks render immediately.
+    params.set("force", "1");
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REGION_INSIGHT_CLIENT_TIMEOUT_MS);
 
     try {
-        const response = await fetch(`${REGION_INSIGHT_API}?${params.toString()}`, {
+        await ensureBypassSession();
+
+        const requestInsight = async () => fetch(`${REGION_INSIGHT_API}?${params.toString()}`, {
             method: "GET",
             credentials: "include",
             signal: controller.signal
         });
-        const payload = await response.json().catch(() => null);
+        let response = await requestInsight();
+        let payload = await response.json().catch(() => null);
+
+        if (response.status === 401 && shouldBypassAccessForLocal()) {
+            const ready = await ensureBypassSession(true);
+            if (ready) {
+                response = await requestInsight();
+                payload = await response.json().catch(() => null);
+            }
+        }
         if (!response.ok || !payload?.ok || !payload?.data) {
             const message = payload?.error?.message || (currentLocale === "ko"
                 ? "실시간 지역 인사이트를 불러오지 못했습니다."
@@ -1947,12 +2342,14 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const mustKnow = toList(roleLens.must_know).slice(0, 3);
     const executionPoints = toList(roleLens.execution_points).slice(0, 3);
     const roleMetric = roleLens.primary_metric || "";
-    const countrySignal = toList(macro.market_traits).filter((item) => !/n\/a/i.test(String(item))).slice(0, 2);
-    const localSignal = local
-        ? [local.demographic, local.lifestyle].filter(Boolean).slice(0, 2)
-        : [];
+    const cityCx = inferCityCxProfile(countryCode, city, macro, local);
 
     const sections = [];
+    sections.push({
+        title: currentLocale === "ko" ? `${city} 고객경험 핵심 맥락` : `${city} customer-experience context`,
+        items: cityCx
+    });
+
     if (mustKnow.length) {
         sections.push({
             title: currentLocale === "ko"
@@ -1965,19 +2362,6 @@ function mapLiveStep2Insight(data, countryCode, city) {
         sections.push({
             title: currentLocale === "ko" ? "바로 실행할 포인트" : "Execution points to use now",
             items: executionPoints
-        });
-    }
-    if (countrySignal.length || localSignal.length) {
-        sections.push({
-            title: currentLocale === "ko" ? "시장 신호 요약" : "Market signal snapshot",
-            items: [...countrySignal, ...localSignal].slice(0, 3)
-        });
-    } else {
-        sections.push({
-            title: currentLocale === "ko" ? "다음 단계 (정밀도 올리기)" : "Next step (increase precision)",
-            text: macro.next_step_prompt || (currentLocale === "ko"
-                ? "도시를 입력하면 실무 적용 포인트를 더 구체화할 수 있습니다."
-                : "Add a city to make the recommendations more actionable.")
         });
     }
 
@@ -2000,24 +2384,139 @@ function mapLiveStep2Insight(data, countryCode, city) {
         title: currentLocale === "ko"
             ? `${roleTitle} 관점의 ${marketLabel} 실무 인사이트`
             : `${marketLabel} insight for ${roleTitle}`,
-        summary: currentLocale === "ko"
-            ? "해당 직무가 실제로 의사결정할 때 필요한 정보만 추려서 보여줍니다."
-            : "This card only surfaces what this role needs to decide and execute.",
-        body: roleLens.why_this_matters || toList(macro.opportunity_factors)[0] || (currentLocale === "ko"
-            ? "국가와 도시 신호를 결합해 메시지 우선순위를 정리했습니다."
-            : "Country and city signals were combined to prioritize the message."),
-        spotlight: currentLocale === "ko"
-            ? `${roleTitle}에게 중요한 것은 기능 설명보다 "바로 실행할 메시지와 KPI"입니다.`
-            : `For ${roleTitle}, execution-ready messaging and KPI matter more than feature description.`,
         chips: [
-            marketLabel,
+            city || marketLabel,
             roleTitle,
             ...(local?.archetype ? [local.archetype] : [])
         ],
         sections,
         rows,
+        media: [],
         evidence
     };
+}
+
+function buildStep2MediaCards(visual, countryCode, city) {
+    if (!visual || typeof visual !== "object") return [];
+
+    const countryName = getCountryName(countryCode);
+    const imageCards = Array.isArray(visual.image_cards) ? visual.image_cards : [];
+    const fallbackUrl = buildLandmarkFallbackImage(city, countryName);
+    const cards = imageCards.map((item) => {
+        const width = Number(item?.width || 0);
+        const height = Number(item?.height || 0);
+        const orientation = width > 0 && height > 0 && width >= height ? "landscape" : "portrait";
+        return {
+            imageUrl: item?.imageDataUrl || item?.imageUrl || fallbackUrl,
+            alt: item?.title || `${city} image`,
+            fallbackUrl,
+            caption: item?.title || `${city} image`,
+            orientation,
+            kind: item?.kind || "landmark"
+        };
+    });
+
+    if (!cards.length) {
+        cards.push({
+            imageUrl: fallbackUrl,
+            alt: `${city} landmark`,
+            fallbackUrl,
+            caption: `${city} landmark`,
+            orientation: "landscape",
+            kind: "landmark"
+        });
+    }
+
+    const preferredOrder = ["landmark", "culture", "daily"];
+    cards.sort((a, b) => preferredOrder.indexOf(a.kind) - preferredOrder.indexOf(b.kind));
+    return cards.slice(0, 3);
+}
+
+function buildLandmarkFallbackImage(city, countryName) {
+    const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+            <defs>
+                <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#12355b"/>
+                    <stop offset="100%" stop-color="#2a6f97"/>
+                </linearGradient>
+            </defs>
+            <rect width="960" height="540" fill="url(#bg)"/>
+            <circle cx="780" cy="120" r="62" fill="rgba(255,255,255,0.22)"/>
+            <rect x="80" y="280" width="60" height="220" fill="rgba(8,20,35,0.62)"/>
+            <rect x="150" y="240" width="82" height="260" fill="rgba(8,20,35,0.68)"/>
+            <rect x="246" y="188" width="96" height="312" fill="rgba(8,20,35,0.74)"/>
+            <rect x="354" y="214" width="82" height="286" fill="rgba(8,20,35,0.66)"/>
+            <rect x="446" y="154" width="102" height="346" fill="rgba(8,20,35,0.78)"/>
+            <rect x="562" y="224" width="88" height="276" fill="rgba(8,20,35,0.65)"/>
+            <rect x="662" y="252" width="76" height="248" fill="rgba(8,20,35,0.6)"/>
+            <rect x="0" y="500" width="960" height="40" fill="rgba(0,0,0,0.28)"/>
+            <text x="36" y="80" fill="#f3f8ff" font-family="Segoe UI, Arial, sans-serif" font-size="38" font-weight="700">${escapeHtml(city)}</text>
+            <text x="36" y="116" fill="#d7e9ff" font-family="Segoe UI, Arial, sans-serif" font-size="21">${escapeHtml(countryName)} • Landmark image unavailable</text>
+        </svg>
+    `.trim();
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function buildMapFallbackImage({ countryName, city, areaText, countryPopText, cityPopText, cityShareText, neighborsText }) {
+    const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+            <defs>
+                <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#eff6ff"/>
+                    <stop offset="100%" stop-color="#d9ecff"/>
+                </linearGradient>
+            </defs>
+            <rect width="960" height="540" fill="url(#bg2)"/>
+            <path d="M140,110 L780,110 L860,250 L730,420 L210,450 L90,300 Z" fill="#bfd8f7" stroke="#5b84b1" stroke-width="3"/>
+            <path d="M280,190 L680,180 L744,268 L652,364 L322,374 L250,282 Z" fill="#4f97d7" stroke="#2f6ea6" stroke-width="3"/>
+            <circle cx="500" cy="278" r="13" fill="#e33e3e"/>
+            <circle cx="500" cy="278" r="23" fill="none" stroke="rgba(227,62,62,0.34)" stroke-width="7"/>
+            <rect x="26" y="26" width="908" height="150" rx="12" fill="rgba(0,39,77,0.84)"/>
+            <text x="54" y="72" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">${escapeHtml(countryName)} / ${escapeHtml(city)}</text>
+            <text x="54" y="108" fill="#deecff" font-family="Segoe UI, Arial, sans-serif" font-size="20">Area ${escapeHtml(areaText)} • Country pop ${escapeHtml(countryPopText)} • City pop ${escapeHtml(cityPopText)} (${escapeHtml(cityShareText)})</text>
+            <text x="54" y="138" fill="#deecff" font-family="Segoe UI, Arial, sans-serif" font-size="18">Neighbors: ${escapeHtml(neighborsText)}</text>
+        </svg>
+    `.trim();
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function inferCityCxProfile(countryCode, city, macro, local) {
+    const marketTraits = toList(macro.market_traits);
+    const climateLine = String(marketTraits[2] || local?.lifestyle || "").trim();
+    const urbanLine = String(local?.demographic || marketTraits[0] || "").trim();
+    const isMetro = String(local?.archetype || "").toLowerCase().includes("metro");
+
+    if (currentLocale === "ko") {
+        return [
+            `기후/계절: ${climateLine || `${city}는 계절 요인에 따라 냉난방·실내쾌적 니즈가 크게 달라질 수 있습니다.`}`,
+            `생활 패턴: ${urbanLine || `${city}는 출퇴근 이후 즉시 편의(빠른 집 상태 전환)에 반응할 가능성이 높습니다.`}`,
+            `주기적 이벤트: 출근 재개 시기·명절/휴가 시즌·연말 쇼핑 시즌에 체험형 메시지 반응이 커질 가능성이 큽니다.`,
+            `기술 인프라: ${isMetro ? "앱/커넥티드 서비스 수용도가 높은 도시형 환경으로 가정" : "생활권별 디지털 편차를 고려한 단계형 온보딩 필요"}입니다.`,
+            `교육/디지털 성숙도(추정): 기능 설명보다 비교·근거·리뷰형 정보에 반응할 가능성이 높습니다.`,
+            `에너지 사용 패턴(추정): 계절성 냉난방 부담이 체감되는 시점에 절감 메시지와 자동화 루틴 제안의 설득력이 높아집니다.`
+        ];
+    }
+
+    if (currentLocale === "de") {
+        return [
+            `Klima/Saisonalität: ${climateLine || `${city} zeigt je nach Saison wechselnde Bedürfnisse bei Heizen, Kühlen und Komfort.`}`,
+            `Lebensrhythmus: ${urbanLine || `${city} reagiert voraussichtlich stark auf unmittelbare Convenience nach dem Heimkommen.`}`,
+            "Wiederkehrende Events: Pendelspitzen, Ferienphasen und Jahresend-Saisons erhöhen die Wirkung erlebbarer Botschaften.",
+            `Technische Infrastruktur: ${isMetro ? "metro-typische hohe App- und Connected-Adoption wahrscheinlich" : "stufenweises Onboarding wegen digitaler Unterschiede empfohlen"}.`,
+            "Bildung/Digitalreife (abgeleitet): Vergleich, Nachweis und Reviews wirken meist stärker als reine Feature-Claims.",
+            "Energienutzungsmuster (abgeleitet): In Phasen spürbarer Heiz-/Kühlkosten sind Savings- und Automationsbotschaften besonders wirksam."
+        ];
+    }
+
+    return [
+        `Climate and seasonality: ${climateLine || `${city} is likely to show strong seasonal swings in heating, cooling, and comfort needs.`}`,
+        `Daily behavior: ${urbanLine || `${city} is likely to react well to immediate convenience right after commute and return-home moments.`}`,
+        "Recurring events: commute peaks, holiday windows, and year-end shopping periods are likely to amplify experience-led messaging.",
+        `Tech infrastructure: ${isMetro ? "metro profile suggests high app and connected-service readiness" : "plan phased onboarding to absorb digital-readiness gaps"}.`,
+        "Education and digital maturity (inferred): users are likely to respond better to comparison, proof, and review-style guidance than feature-only claims.",
+        "Energy-use pattern (inferred): savings and automation narratives tend to convert better when seasonal heating or cooling costs become visible."
+    ];
 }
 
 function buildStep2ErrorInsight(message) {
@@ -2040,7 +2539,7 @@ function toList(value) {
 function buildStep3Insight() {
     const selectedSegment = getSelectedSegment();
     const purpose = purposeInput.value.trim();
-    const city = cityInput.value.trim();
+    const city = getCityValue();
 
     if (!selectedSegment && !purpose) {
         return STEP_INSIGHTS[3];
@@ -2221,33 +2720,13 @@ function updateQuestionHelpers() {
 }
 
 function buildCountryHelperText() {
-    const selectedMarket = marketOptions.find((market) => market.siteCode === countrySelect.value);
-    const city = cityInput.value.trim();
-    if (!selectedMarket) return t("countryHelper");
-
-    const country = resolveCountry(selectedMarket);
-    const label = getCountryName(country.countryCode);
-    const location = city ? `${label} ${city}` : label;
-    const direction = inferRegionalDirection(country.countryCode);
-    const trend = getCountryTrend(country.countryCode);
-    const citySignal = getCitySignal(country.countryCode, city);
-
     if (currentLocale === "ko") {
-        if (citySignal) {
-            return `${location} 기준으로는 ${trend?.headline || direction} 흐름이 유리하고, ${citySignal.climate}와 ${citySignal.behavior} 맥락까지 반영해 장면을 더 구체화합니다.`;
-        }
-        return `${location} 기준으로는 ${trend?.headline || direction} 흐름이 유리합니다. 도시나 주를 더 구체화하면 지역성, 기후, 생활 리듬까지 추가로 읽힙니다.`;
+        return "국가와 도시를 선택하면 아래 카드에 역할별 실행 인사이트가 바로 표시됩니다.";
     }
     if (currentLocale === "de") {
-        if (citySignal) {
-            return `Für ${location} wirkt eher ${trend?.headline || direction}. Zusätzlich werden ${citySignal.climate} und ${citySignal.behavior} in die Lesart einbezogen.`;
-        }
-        return `Für ${location} wirkt eher ${trend?.headline || direction}. Wenn Sie Stadt oder Region ergänzen, kommen lokale Eigenheiten, Klima und Lebensrhythmus dazu.`;
+        return "Wählen Sie Land und Stadt, dann erscheint unten sofort die rollenbezogene Ausführungs-Insight.";
     }
-    if (citySignal) {
-        return `For ${location}, ${trend?.headline || direction} is more likely to resonate. The read now also folds in ${citySignal.climate} and ${citySignal.behavior}.`;
-    }
-    return `For ${location}, ${trend?.headline || direction} is more likely to resonate. Add a city or region and the card will extend into local traits, climate, and daily behavior.`;
+    return "Select country and city to load role-specific execution insight below.";
 }
 
 function buildPersonaHelperText() {
@@ -2710,7 +3189,7 @@ function generateScenario() {
     const rawPurpose = purposeInput.value.trim();
     const selectedMarket = marketOptions.find((market) => market.siteCode === countrySelect.value);
     const country = resolveCountry(selectedMarket);
-    const city = cityInput.value.trim();
+    const city = getCityValue();
     const rawSelectedSegment = getSelectedSegment();
     const purpose = rawPurpose || buildFallbackPurpose(rawSelectedSegment);
     const selectedSegment = rawSelectedSegment || buildFallbackSegment(rawPurpose);
@@ -2765,6 +3244,14 @@ function generateScenario() {
         segmentAnalysis,
         campaignTiming,
         deviceGuide,
+        scenarioMeta: {
+            purpose: intent.purpose,
+            missionBucket: intent.missionBucket,
+            selectedSegment,
+            roleId: role.id,
+            countryName: getCountryName(country.countryCode),
+            city: city || ""
+        },
         state: {
             role: getRoleTitle(role.id),
             market: selectedMarket?.label || "",
@@ -3621,6 +4108,8 @@ function buildSetupGuide(deviceDecision, services, selectedRole) {
 
 function buildMarketability(country, intent, deviceDecision, services, selectedRole, selectedSegment, exploreGrounding) {
     const go = intent.lifestyleTags.length > 0 && Boolean(deviceDecision.final);
+    const rawRisk = String(services?.[0]?.privacyPolicy || "").trim();
+    const hasHangul = /[가-힣]/.test(rawRisk);
     return {
         verdict: go ? "Go" : "No-Go",
         rationale: go
@@ -3631,7 +4120,11 @@ function buildMarketability(country, intent, deviceDecision, services, selectedR
         competitorView: currentLocale === "ko"
             ? `차별점은 기능 수가 아니라 ${exploreGrounding.functionalJob}을 한 번의 연결 경험으로 줄여준다는 점입니다.`
             : `The differentiation is not feature count but reducing ${exploreGrounding.functionalJob} into one connected experience.`,
-        risk: services[0].privacyPolicy,
+        risk: currentLocale === "ko"
+            ? rawRisk
+            : (hasHangul
+                ? "Energy and behavior signals should be used only for clearly explained utility, automation, and report purposes."
+                : (rawRisk || "Data usage must stay purpose-limited, transparent, and easy to control.")),
         alternatives: currentLocale === "ko"
             ? [
                 "대안 1: 수동 제어 중심의 일반 가전 사용 경험",
@@ -3748,7 +4241,7 @@ function buildServiceStory(service, intent, selectedSegment, isPetContext) {
     const secondFeature = service.keyFeatures?.[1] || firstFeature;
     const primaryDevice = getCategoryName(service.requiredCategories?.[0] || intent.selectedDevices?.[0] || "");
 
-    const stories = {
+    const storiesKo = {
         "Pet Care": {
             title: isPetContext ? "[Care] 야근이 길어져 강아지가 불안할까 걱정될 때" : "[Care] 외출 시간이 길어져 반려동물 케어가 걱정될 때",
             pain: isPetContext ? "잦은 야근으로 혼자 집에 있는 강아지가 줄곧 신경 쓰였던 사용자." : "집을 비우는 시간 동안 반려동물이 불안해할까 계속 마음이 쓰였던 사용자.",
@@ -3817,29 +4310,113 @@ function buildServiceStory(service, intent, selectedSegment, isPetContext) {
         }
     };
 
+    const storiesEn = {
+        "Pet Care": {
+            title: isPetContext ? "[Care] When you worry your dog may feel anxious during overtime" : "[Care] When you worry about pet care during long hours away",
+            pain: isPetContext ? "Frequent overtime made users worry about their dog staying home alone." : "Users kept worrying that pets might feel anxious while the home is empty.",
+            solution: `By creating an away routine in SmartThings, ${cardLabel} can automatically tune lighting, indoor atmosphere, and familiar device context for pets.`,
+            benefit: "With one tap, or automatically when away is detected, the home shifts into a pet-care mode and reduces caregiver anxiety."
+        },
+        "Family Care": {
+            title: "[Care] When you want to make sure family members are okay",
+            pain: "Even during busy days, users repeatedly checked in and felt ongoing concern about family wellbeing.",
+            solution: `${cardLabel} uses ${firstFeature} and ${secondFeature} to monitor routine signals and trigger reassurance check-ins only when needed.`,
+            benefit: "You no longer need constant manual check-ins, and can focus on the moments that actually need attention."
+        },
+        "SmartThings Energy": {
+            title: "[Energy] When utility bills and standby power are a concern",
+            pain: "Users had to manually turn off devices before leaving home because they worried about energy costs.",
+            solution: `With ${cardLabel}, you can limit usage or charging during peak periods and monitor daily/monthly usage to reduce waste.`,
+            benefit: "It lowers cost pressure by reducing standby and unnecessary usage, and savings become visible in the app."
+        },
+        "Samsung Health": {
+            title: "[Health] When you want a more stable daily rhythm",
+            pain: `${selectedSegment} users often lose sleep/activity rhythm during busy periods and miss recovery timing.`,
+            solution: `${cardLabel} uses ${firstFeature} to connect lights, speakers, and devices like ${primaryDevice || "TV"} into condition-aware routines.`,
+            benefit: "Without manually interpreting health data, home context supports recovery and makes daily operations steadier."
+        },
+        "Samsung Find": {
+            title: "[Secure] When you want smoother and safer out/in-home transitions",
+            pain: "Users had to repeatedly check location and home status when leaving and returning, breaking daily flow.",
+            solution: `${cardLabel} uses ${firstFeature} to detect arrival/departure and trigger SmartThings automations like lighting and home-state shifts.`,
+            benefit: "It goes beyond location checks and naturally links into home automation, making transition routines lighter."
+        },
+        "Home Monitoring": {
+            title: "[Secure] When frequent absence makes home security uncertain",
+            pain: "Constant manual monitoring through the phone felt burdensome in a busy routine.",
+            solution: `${cardLabel} with connected cameras/sensors detects suspicious sound or movement and sends real-time alerts with auto-recording.`,
+            benefit: "You can stay reassured without constant attention and respond quickly when risk signals appear."
+        },
+        "Home Care": {
+            title: "[Ease] When you don't want to miss home chores and device care timing",
+            pain: "Users often missed cleaning, consumable replacement, and maintenance timing, then tasks piled up at once.",
+            solution: `${cardLabel} uses ${firstFeature} and care reminders to suggest maintenance actions only when timing is right.`,
+            benefit: "The app prioritizes what to do next, reducing home-management stress without keeping everything in mind."
+        },
+        "Air Care": {
+            title: "[Comfort] When you want indoor comfort to adjust automatically",
+            pain: "Users had to control ventilation or cooling/heating manually each time, causing uneven indoor comfort.",
+            solution: `${cardLabel} uses ${firstFeature} and occupancy status to adjust AC and related devices automatically.`,
+            benefit: "You no longer need constant trade-offs between comfort and savings, improving time-at-home satisfaction."
+        },
+        "Clothing Care": {
+            title: "[Ease] When you don't want to lose laundry flow after late workdays",
+            pain: "Late returns made it hard to check wash/dry status on time, causing repeated inconvenience.",
+            solution: `${cardLabel} uses ${firstFeature} and completion alerts so users can continue laundry flow from the app.`,
+            benefit: "It removes status-check friction at arrival time and keeps laundry routines smoother."
+        },
+        "Smart Cooking": {
+            title: "[Ease] When you want to start dinner prep with less effort",
+            pain: "After work, users had to handle recipes, preheating, and ingredient prep all at once.",
+            solution: `${cardLabel} connects ${firstFeature} and ${secondFeature} to reduce prep steps and start kitchen control faster.`,
+            benefit: "Lower setup friction makes weekday dinner prep easier to sustain."
+        },
+        "Home Fitness": {
+            title: "[Health] When you want to keep exercise routines at home",
+            pain: "Users postponed exercise because preparation felt cumbersome.",
+            solution: `${cardLabel} centers on ${firstFeature} and links devices like TV/speakers to simplify exercise start moments.`,
+            benefit: "You can act right at decision time, making routine consistency easier at home."
+        }
+    };
+
+    const stories = currentLocale === "ko" ? storiesKo : storiesEn;
     return stories[name] || {
-        title: `[${service.valueTags?.[0] || "Life"}] ${name}가 필요한 순간`,
-        pain: `${selectedSegment} 사용자는 ${intent.purpose} 같은 상황에서 반복 확인과 수동 조작의 부담을 자주 느낍니다.`,
-        solution: `${cardLabel}는 ${firstFeature}와 ${secondFeature}를 바탕으로 연결 기기를 더 간단한 루틴으로 묶어 줍니다.`,
-        benefit: "필요한 장면을 더 적은 조작으로 실행할 수 있어 일상이 훨씬 가벼워집니다."
+        title: currentLocale === "ko" ? `[${service.valueTags?.[0] || "Life"}] ${name}가 필요한 순간` : `[${service.valueTags?.[0] || "Life"}] When ${name} is needed`,
+        pain: currentLocale === "ko"
+            ? `${selectedSegment} 사용자는 ${intent.purpose} 같은 상황에서 반복 확인과 수동 조작의 부담을 자주 느낍니다.`
+            : `${selectedSegment} users often feel burdened by repeated checking and manual control in moments like "${intent.purpose}".`,
+        solution: currentLocale === "ko"
+            ? `${cardLabel}는 ${firstFeature}와 ${secondFeature}를 바탕으로 연결 기기를 더 간단한 루틴으로 묶어 줍니다.`
+            : `${cardLabel} uses ${firstFeature} and ${secondFeature} to connect devices into a simpler routine flow.`,
+        benefit: currentLocale === "ko"
+            ? "필요한 장면을 더 적은 조작으로 실행할 수 있어 일상이 훨씬 가벼워집니다."
+            : "The same moment can be executed with fewer actions, making daily routines noticeably lighter."
     };
 }
 
 function buildMarketingMessages(role, selectedSegment, intent, services, exploreGrounding) {
-    const valueWords = intent.missionBucket === "Care"
-        ? ["안심", "배려", "생활"]
-        : intent.missionBucket === "Save"
-            ? ["절감", "통제", "생활"]
-            : ["편안함", "리듬", "생활"];
+    const valueWords = currentLocale === "ko"
+        ? (intent.missionBucket === "Care"
+            ? ["안심", "배려", "생활"]
+            : intent.missionBucket === "Save"
+                ? ["절감", "통제", "생활"]
+                : ["편안함", "리듬", "생활"])
+        : (intent.missionBucket === "Care"
+            ? ["reassurance", "care", "daily life"]
+            : intent.missionBucket === "Save"
+                ? ["savings", "control", "daily life"]
+                : ["comfort", "rhythm", "daily life"]);
 
     if (role.id === "brand") {
         return {
             kr: [
+                "브랜드 아이덴티티 앵커: 사람 중심의 배려, 절제된 프리미엄 톤, 연결된 일상 효용",
                 `[단문] ${selectedSegment}의 일상을 더 가볍게, ${exploreGrounding.primaryValue}은 더 또렷하게.`,
                 `[장문] "${intent.purpose}" 순간에 기술 설명보다 감정적 안도감을 먼저 전달해 브랜드 의미를 강화합니다.`,
                 `[구분 논리] Global: ${exploreGrounding.coreMessage} / Local: 지역 생활 맥락과 언어 톤에 맞춘 사례 문장`
             ],
             en: [
+                "Brand identity anchor: human-first care, restrained premium tone, connected daily utility.",
                 `[Short] Make daily life lighter for ${selectedSegment}, with clearer ${exploreGrounding.primaryValue}.`,
                 `[Long] In the "${intent.purpose}" moment, lead with emotional relief before feature explanation to build brand meaning.`,
                 `[Logic] Global: ${exploreGrounding.coreMessage} / Local: examples tuned to local daily context and language tone`
@@ -3851,11 +4428,13 @@ function buildMarketingMessages(role, selectedSegment, intent, services, explore
     if (role.id === "dotcom") {
         return {
             kr: [
+                "브랜드 아이덴티티 앵커: 신뢰 가능한 정보 구조, 명확한 효용 증명, 부담 없는 전환 흐름",
                 `Benefit first: ${exploreGrounding.primaryValue}`,
                 `PDP 전개: 문제 장면 -> 핵심 가치 -> 추천 제품 -> CTA`,
                 `${getServiceLabel(services[0])}는 기능 나열보다 전환 흐름 중심 카피로 구성합니다.`
             ],
             en: [
+                "Brand identity anchor: trustworthy information architecture, clear utility proof, low-friction conversion flow.",
                 `Benefit first: ${exploreGrounding.primaryValue}`,
                 `PDP flow: pain moment -> core value -> recommended product -> CTA`,
                 `Position ${getServiceLabel(services[0])} with conversion-led copy over feature lists.`
@@ -3867,11 +4446,13 @@ function buildMarketingMessages(role, selectedSegment, intent, services, explore
     if (role.id === "retail") {
         return {
             kr: [
+                "브랜드 아이덴티티 앵커: 친절한 전문성, 즉시 체감 효용, 매장 대화의 신뢰감",
                 `30초 오프닝: "${exploreGrounding.coreMessage}"`,
                 `1분 전개: 문제 확인 -> 데모 1회 -> 세팅 안내 -> 업셀 제안`,
                 `매장 설명은 브랜드 서사보다 즉시 체감되는 효용 중심으로 유지합니다.`
             ],
             en: [
+                "Brand identity anchor: warm expertise, immediate felt utility, confidence in store conversations.",
                 `30s opening: "${exploreGrounding.coreMessage}"`,
                 `1m flow: identify pain -> run one demo -> guide setup -> propose upsell`,
                 `Keep in-store messaging focused on immediate utility over long brand storytelling.`
@@ -3983,6 +4564,8 @@ function renderScenario(payload) {
             renderScenario(payload);
         });
     });
+
+    bindPostOutputPrompt(payload);
 }
 
 function renderOutputPreview() {
@@ -4056,18 +4639,57 @@ function renderOutputPreview() {
     `;
 }
 
+function buildParentStory(payload) {
+    const who = payload.state?.segment || payload.scenarioMeta?.selectedSegment || "";
+    const where = [payload.scenarioMeta?.countryName, payload.scenarioMeta?.city].filter(Boolean).join(" / ");
+    const need = payload.scenarioMeta?.purpose || payload.exploreGrounding?.functionalJob || "";
+    return currentLocale === "ko"
+        ? `${where}의 ${who}는 "${need}" 같은 반복 순간에서 부담을 줄이고, 즉시 체감되는 효용을 원합니다.`
+        : `${who} in ${where} seeks immediate, felt utility in recurring moments like "${need}".`;
+}
+
+function buildReflectedValues(payload) {
+    const mission = String(payload.scenarioMeta?.missionBucket || "").toLowerCase();
+    const primary = String(payload.exploreGrounding?.primaryValue || "").toLowerCase();
+    const values = [
+        { key: "care", ko: "돌봄/안심", en: "Care/Reassurance", hit: mission === "care" || primary.includes("reassurance") || primary.includes("care") },
+        { key: "save", ko: "절감/통제", en: "Savings/Control", hit: mission === "save" || primary.includes("saving") || primary.includes("control") },
+        { key: "ease", ko: "편의/효율", en: "Convenience/Efficiency", hit: mission === "discover" || mission === "play" || primary.includes("lighter") || primary.includes("comfort") },
+        { key: "secure", ko: "신뢰/보안", en: "Trust/Security", hit: mission === "secure" || primary.includes("security") || primary.includes("response") }
+    ];
+    return values.map((item) => `${item.hit ? "✓" : "·"} ${currentLocale === "ko" ? item.ko : item.en}`);
+}
+
+function buildSixLineSummary(payload) {
+    const lines = [
+        payload.summaryBullets?.[0] || "",
+        payload.summaryBullets?.[1] || "",
+        payload.summaryBullets?.[2] || "",
+        payload.summaryBullets?.[3] || "",
+        payload.exploreGrounding?.proofLine || "",
+        payload.marketability?.rationale || ""
+    ].filter(Boolean).slice(0, 6);
+    while (lines.length < 6) {
+        lines.push(currentLocale === "ko" ? "실행 전제와 채널별 메시지를 함께 점검합니다." : "Validate assumptions together with channel-specific messaging.");
+    }
+    return lines.slice(0, 6);
+}
+
 function renderOverview(payload) {
+    const marketingLines = currentLocale === "ko" ? payload.marketingMessages.kr : payload.marketingMessages.en;
     return `
         <div class="output-stack">
             <section class="output-block hero-result numbered-output">
                 <p class="block-index">01</p>
-                <h4>${currentLocale === "ko" ? "시나리오 제목 및 요약 (Title & Summary)" : "Title & Summary"}</h4>
+                <h4>${currentLocale === "ko" ? "CX 시나리오 제목 및 Summary" : "CX Scenario Title & Summary"}</h4>
                 <h3>${escapeHtml(payload.title)}</h3>
                 <p>${escapeHtml(payload.summary)}</p>
-                <p class="subhead">${currentLocale === "ko" ? "Explore 근거" : "Explore References"}</p>
-                <ul>${payload.referenceLinks.map((item) => `<li>${escapeHtml(item.id)} / ${escapeHtml(item.title)} / ${escapeHtml(item.url)}</li>`).join("")}</ul>
-                <p class="subhead">${currentLocale === "ko" ? "핵심 요약" : "Key Summary"}</p>
-                <ul>${payload.summaryBullets.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                <p class="subhead">${currentLocale === "ko" ? "1) Parent Story" : "1) Parent Story"}</p>
+                <p>${escapeHtml(buildParentStory(payload))}</p>
+                <p class="subhead">${currentLocale === "ko" ? "2) 4대 가치 반영" : "2) Reflected Four Values"}</p>
+                <ul>${buildReflectedValues(payload).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                <p class="subhead">${currentLocale === "ko" ? "3) 핵심 요약 (6줄)" : "3) Executive Summary (6 lines)"}</p>
+                <ul>${buildSixLineSummary(payload).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">02</p>
@@ -4090,51 +4712,55 @@ function renderOverview(payload) {
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">03</p>
-                <h4>${currentLocale === "ko" ? "지역 맞춤 인사이트 (Local Insight: O-I-Imp)" : "Local Insight: O-I-Imp"}</h4>
-                <p class="subhead">${currentLocale === "ko" ? "Observation" : "Observation"}</p>
-                <p>${escapeHtml(payload.facts.observation)}</p>
-                <p class="subhead">${currentLocale === "ko" ? "Insight" : "Insight"}</p>
-                <p>${escapeHtml(payload.facts.insight)}</p>
-                <p class="subhead">${currentLocale === "ko" ? "Implication" : "Implication"}</p>
-                <p>${escapeHtml(payload.facts.implication)}</p>
+                <h4>${currentLocale === "ko" ? "지역 특성 및 인사이트 추론 과정" : "Regional Traits & Insight Reasoning"}</h4>
+                <p class="subhead">${currentLocale === "ko" ? "Observation -> Insight -> Implication" : "Observation -> Insight -> Implication"}</p>
+                <ul>
+                    <li>${escapeHtml(payload.facts.observation)}</li>
+                    <li>${escapeHtml(payload.facts.insight)}</li>
+                    <li>${escapeHtml(payload.facts.implication)}</li>
+                </ul>
+                <p class="subhead">${currentLocale === "ko" ? "추론 근거" : "Reasoning Trail"}</p>
+                <ul>
+                    <li>${escapeHtml(payload.segmentAnalysis.assumption)}</li>
+                    <li>${escapeHtml(payload.marketability.rationale)}</li>
+                    <li>${escapeHtml(payload.exploreGrounding.proofLine || "")}</li>
+                </ul>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">04</p>
-                <h4>${currentLocale === "ko" ? "맞춤 마케팅 메시지 (한/영)" : "Marketing Messages (KR/EN)"}</h4>
-                <p class="subhead">KR</p>
-                <ul>${payload.marketingMessages.kr.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-                <p class="subhead">EN</p>
-                <ul>${payload.marketingMessages.en.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                <h4>${currentLocale === "ko" ? "마케팅 메시지 (브랜드 아이덴티티 반영)" : "Marketing Message (Brand-Identity Applied)"}</h4>
+                <ul>${marketingLines.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">05</p>
-                <h4>${currentLocale === "ko" ? "주요 고객 혜택 (Outcome 중심 3가지)" : "Key Customer Benefits"}</h4>
+                <h4>${currentLocale === "ko" ? "고객 베네핏" : "Customer Benefits"}</h4>
                 <ul>${payload.benefits.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                <p>${escapeHtml(currentLocale === "ko" ? `핵심 체감가치: ${payload.exploreGrounding.primaryValue}` : `Primary felt value: ${payload.exploreGrounding.primaryValue}`)}</p>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">06</p>
-                <h4>${currentLocale === "ko" ? "타겟 세그먼트 분석" : "Target Segment Analysis"}</h4>
-                <p><strong>${currentLocale === "ko" ? "핵심 세그먼트" : "Core Segment"}:</strong> ${escapeHtml(payload.segmentAnalysis.core)}</p>
+                <h4>${currentLocale === "ko" ? "타겟 고객 설명" : "Target Customer Description"}</h4>
+                <p><strong>${currentLocale === "ko" ? "핵심 타겟" : "Core target"}:</strong> ${escapeHtml(payload.segmentAnalysis.core)}</p>
+                <p><strong>${currentLocale === "ko" ? "상황 맥락" : "Context"}:</strong> ${escapeHtml(payload.scenarioMeta?.purpose || "")}</p>
                 <p class="subhead">${currentLocale === "ko" ? "행동 특징" : "Behavior Signals"}</p>
                 <ul>${payload.segmentAnalysis.behaviors.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-                <p><strong>${currentLocale === "ko" ? "가정" : "Assumption"}:</strong> ${escapeHtml(payload.segmentAnalysis.assumption)}</p>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">07</p>
-                <h4>${currentLocale === "ko" ? "가장 효과적인 캠페인 시기" : "Best Campaign Timing"}</h4>
+                <h4>${currentLocale === "ko" ? "적용 시기" : "Application Timing"}</h4>
                 <ul>${payload.campaignTiming.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">08</p>
-                <h4>${currentLocale === "ko" ? "가용 기기 및 설정 가이드" : "Available Devices & Setup Guide"}</h4>
-                <p class="subhead">${currentLocale === "ko" ? "가용 기기" : "Available Device Context"}</p>
+                <h4>${currentLocale === "ko" ? "지역 적용 가능 기기 및 설정 방법" : "Region-Applicable Devices & Setup Method"}</h4>
+                <p class="subhead">${currentLocale === "ko" ? "적용 가능 기기" : "Applicable device context"}</p>
                 <ul>${payload.deviceGuide.available.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-                <p class="subhead">${currentLocale === "ko" ? "1~6단계 설정 가이드" : "Step-by-step Setup Guide"}</p>
+                <p class="subhead">${currentLocale === "ko" ? "설정 방법" : "Setup method"}</p>
                 <ul>${payload.deviceGuide.steps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">09</p>
-                <h4>${currentLocale === "ko" ? "시장성 및 리스크 평가" : "Marketability & Risk"}</h4>
+                <h4>${currentLocale === "ko" ? "시나리오 시장성 평가" : "Scenario Marketability Evaluation"}</h4>
                 <table class="result-table">
                     <thead>
                         <tr>
@@ -4168,8 +4794,86 @@ function renderOverview(payload) {
                 <p class="subhead">${currentLocale === "ko" ? "대안 구도" : "Alternative Set"}</p>
                 <ul>${payload.marketability.alternatives.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
+            ${renderPostOutputPrompt(payload)}
         </div>
     `;
+}
+
+function renderPostOutputPrompt(payload) {
+    const title = currentLocale === "ko"
+        ? "10. 후속 프롬프트 (ChatGPT Subscriber Mode)"
+        : currentLocale === "de"
+            ? "10. Folge-Prompt (ChatGPT Subscriber Mode)"
+            : "10. Follow-up Prompt (ChatGPT Subscriber Mode)";
+    const placeholder = currentLocale === "ko"
+        ? "예: 이 시나리오를 Dotcom용 3문장 CTA로 바꿔줘"
+        : "Example: Rewrite this scenario into three Dotcom CTAs";
+    const button = currentLocale === "ko" ? "질문하기" : "Ask";
+    const helper = currentLocale === "ko"
+        ? "생성된 01~09 결과를 기반으로 후속 요청을 입력하면 즉시 답변합니다."
+        : "Ask a follow-up request and get an instant answer grounded in outputs 01~09.";
+    const initial = currentLocale === "ko"
+        ? `현재 컨텍스트: ${payload.title}`
+        : `Current context: ${payload.title}`;
+
+    return `
+        <section class="output-block numbered-output post-output-prompt">
+            <p class="block-index">10</p>
+            <h4>${escapeHtml(title)}</h4>
+            <p class="post-output-helper">${escapeHtml(helper)}</p>
+            <div class="post-output-input-row">
+                <textarea id="post-output-input" rows="3" placeholder="${escapeHtml(placeholder)}"></textarea>
+                <button type="button" id="post-output-ask-btn" class="generate-btn">${escapeHtml(button)}</button>
+            </div>
+            <div id="post-output-answer" class="post-output-answer" aria-live="polite">${escapeHtml(initial)}</div>
+        </section>
+    `;
+}
+
+function bindPostOutputPrompt(payload) {
+    const askBtn = document.getElementById("post-output-ask-btn");
+    const input = document.getElementById("post-output-input");
+    const answer = document.getElementById("post-output-answer");
+    if (!askBtn || !input || !answer) return;
+
+    const ask = () => {
+        const question = String(input.value || "").trim();
+        if (!question) return;
+        answer.textContent = buildPostOutputAnswer(question, payload);
+    };
+
+    askBtn.addEventListener("click", ask);
+    input.addEventListener("keydown", (event) => {
+        if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+            ask();
+        }
+    });
+}
+
+function buildPostOutputAnswer(question, payload) {
+    const q = String(question || "").toLowerCase();
+    const isKo = currentLocale === "ko";
+    const messages = isKo ? payload.marketingMessages.kr : payload.marketingMessages.en;
+
+    if (/요약|summary|tl;dr/.test(q)) {
+        return isKo
+            ? `요약: ${payload.summary} 핵심은 ${payload.summaryBullets.slice(0, 2).join(" / ")} 입니다.`
+            : `Summary: ${payload.summary} Core points: ${payload.summaryBullets.slice(0, 2).join(" / ")}.`;
+    }
+    if (/카피|문구|message|copy|cta/.test(q)) {
+        return isKo
+            ? `권장 메시지:\n1) ${messages[0] || ""}\n2) ${messages[1] || ""}\n3) ${messages[2] || ""}`
+            : `Recommended messages:\n1) ${messages[0] || ""}\n2) ${messages[1] || ""}\n3) ${messages[2] || ""}`;
+    }
+    if (/리스크|risk|privacy|trust/.test(q)) {
+        return isKo
+            ? `리스크 요약: ${payload.marketability.risk}\n대응: ${(payload.marketability.nextActions || []).join(" / ")}`
+            : `Risk summary: ${payload.marketability.risk}\nActions: ${(payload.marketability.nextActions || []).join(" / ")}`;
+    }
+
+    return isKo
+        ? `요청 반영 제안: "${question}"\n- 타겟: ${payload.detailedScenario.targetCustomer}\n- KPI: ${payload.marketability.verdict}\n- 다음 실행: ${(payload.marketability.nextActions || []).slice(0, 2).join(" / ")}`
+        : `Suggestion for "${question}"\n- Target: ${payload.detailedScenario.targetCustomer}\n- KPI decision: ${payload.marketability.verdict}\n- Next actions: ${(payload.marketability.nextActions || []).slice(0, 2).join(" / ")}`;
 }
 
 function renderRoleDetailSections(lens) {
@@ -4258,15 +4962,21 @@ async function copySummary() {
 }
 
 function buildMarkdownReport(payload) {
+    const marketingLines = currentLocale === "ko" ? payload.marketingMessages.kr : payload.marketingMessages.en;
     return [
         `# ${payload.title}`,
         "",
-        "## 01. 시나리오 제목 및 요약 (Title & Summary)",
+        currentLocale === "ko" ? "## 01. CX 시나리오 제목 및 Summary" : "## 01. CX Scenario Title & Summary",
         payload.summary,
-        ...payload.summaryBullets.map((item) => `- ${item}`),
         "",
-        "### Explore 근거",
-        ...payload.referenceLinks.map((item) => `- ${item.id} / ${item.title} / ${item.url}`),
+        "### 1) Parent Story",
+        buildParentStory(payload),
+        "",
+        currentLocale === "ko" ? "### 2) 4대 가치 반영" : "### 2) Reflected Four Values",
+        ...buildReflectedValues(payload).map((item) => `- ${item}`),
+        "",
+        currentLocale === "ko" ? "### 3) 핵심 요약 (6줄)" : "### 3) Executive Summary (6 lines)",
+        ...buildSixLineSummary(payload).map((item) => `- ${item}`),
         "",
         "## 02. 상세 시나리오",
         "---------------------------------------------------------------------------------------------------------------------------",
@@ -4282,45 +4992,47 @@ function buildMarkdownReport(payload) {
             ""
         ]),
         "",
-        "## 03. 지역 맞춤 인사이트 (Local Insight: O-I-Imp)",
-        "### Observation",
-        payload.facts.observation,
+        currentLocale === "ko" ? "## 03. 지역 특성 및 인사이트 추론 과정" : "## 03. Regional Traits & Insight Reasoning",
+        "### Observation -> Insight -> Implication",
+        `- ${payload.facts.observation}`,
+        `- ${payload.facts.insight}`,
+        `- ${payload.facts.implication}`,
         "",
-        "### Insight",
-        payload.facts.insight,
+        currentLocale === "ko" ? "### 추론 근거" : "### Reasoning Trail",
+        `- ${payload.segmentAnalysis.assumption}`,
+        `- ${payload.marketability.rationale}`,
+        `- ${payload.exploreGrounding.proofLine || ""}`,
         "",
-        "### Implication",
-        payload.facts.implication,
+        currentLocale === "ko"
+            ? "## 04. 마케팅 메시지 (브랜드 아이덴티티 반영)"
+            : currentLocale === "de"
+                ? "## 04. Marketing-Botschaften (Brand-Identity Applied)"
+                : "## 04. Marketing Message (Brand-Identity Applied)",
+        ...marketingLines.map((item) => `- ${item}`),
         "",
-        "## 04. 맞춤 마케팅 메시지 (KR/EN)",
-        "### KR",
-        ...payload.marketingMessages.kr.map((item) => `- ${item}`),
-        "",
-        "### EN",
-        ...payload.marketingMessages.en.map((item) => `- ${item}`),
-        "",
-        "## 05. 주요 고객 혜택",
+        currentLocale === "ko" ? "## 05. 고객 베네핏" : "## 05. Customer Benefits",
         ...payload.benefits.map((item) => `- ${item}`),
+        `- ${currentLocale === "ko" ? `핵심 체감가치: ${payload.exploreGrounding.primaryValue}` : `Primary felt value: ${payload.exploreGrounding.primaryValue}`}`,
         "",
-        "## 06. 타겟 세그먼트 분석",
-        `- 핵심 세그먼트: ${payload.segmentAnalysis.core}`,
+        currentLocale === "ko" ? "## 06. 타겟 고객 설명" : "## 06. Target Customer Description",
+        `- ${currentLocale === "ko" ? "핵심 타겟" : "Core target"}: ${payload.segmentAnalysis.core}`,
+        `- ${currentLocale === "ko" ? "상황 맥락" : "Context"}: ${payload.scenarioMeta?.purpose || ""}`,
         ...payload.segmentAnalysis.behaviors.map((item) => `- ${item}`),
-        `- 가정: ${payload.segmentAnalysis.assumption}`,
         "",
-        "## 07. 가장 효과적인 캠페인 시기",
+        currentLocale === "ko" ? "## 07. 적용 시기" : "## 07. Application Timing",
         ...payload.campaignTiming.map((item) => `- ${item}`),
         "",
-        "## 08. 가용 기기 및 설정 가이드",
+        currentLocale === "ko" ? "## 08. 지역 적용 가능 기기 및 설정 방법" : "## 08. Region-Applicable Devices & Setup Method",
         ...payload.deviceGuide.available.map((item) => `- ${item}`),
         ...payload.deviceGuide.steps.map((item) => `- ${item}`),
         "",
-        "## 09. 시장성 및 리스크 평가",
+        currentLocale === "ko" ? "## 09. 시나리오 시장성 평가" : "## 09. Scenario Marketability Evaluation",
         `- Market Fit: ${payload.marketability.verdict}`,
-        `- 근거: ${payload.marketability.rationale}`,
-        `- 경쟁/대안: ${payload.marketability.competitorView}`,
-        `- 리스크: ${payload.marketability.risk}`,
-        ...payload.marketability.alternatives.map((item) => `- 대안: ${item}`),
-        ...payload.marketability.nextActions.map((item) => `- 대응 전략: ${item}`),
+        `- ${currentLocale === "ko" ? "근거" : "Rationale"}: ${payload.marketability.rationale}`,
+        `- ${currentLocale === "ko" ? "경쟁/대안" : "Competitive Alternative"}: ${payload.marketability.competitorView}`,
+        `- ${currentLocale === "ko" ? "리스크" : "Risk"}: ${payload.marketability.risk}`,
+        ...payload.marketability.alternatives.map((item) => `- ${currentLocale === "ko" ? "대안" : "Alternative"}: ${item}`),
+        ...payload.marketability.nextActions.map((item) => `- ${currentLocale === "ko" ? "대응 전략" : "Action"}: ${item}`),
         "",
         "## Role-Lens Packages",
         ...payload.lensOutputs.flatMap((lens) => [
@@ -4368,13 +5080,13 @@ function updateLocaleFromCountry() {
     const preserved = {
         role: roleSelect.value,
         country: countrySelect.value,
-        city: cityInput.value,
+        city: getCityValue(),
         personaSelections: getSelectedPersonaOptionIds(),
         segmentCustom: segmentCustomInput.value,
         deviceSelections: getSelectedDeviceOptionIds(),
         deviceCustom: deviceCustomInput.value
     };
-    currentLocale = COUNTRY_LOCALES[countrySelect.value] || "en";
+    currentLocale = "en";
     document.documentElement.lang = currentLocale;
     document.documentElement.dir = currentLocale === "ar" ? "rtl" : "ltr";
     populateInputs(preserved);
@@ -4385,6 +5097,73 @@ function updateLocaleFromCountry() {
     renderWizardProgress();
     updateStepInsight();
     applyLocale();
+}
+
+function getRoleCardLocaleCopy(roleId) {
+    const locale = currentLocale === "ko" ? "ko" : currentLocale === "de" ? "de" : "en";
+    const copy = {
+        retail: {
+            title: { ko: "Retailer", en: "Retailer", de: "Retail" },
+            mantra: {
+                ko: "\"Make it Real, Make it Easy\"",
+                en: "\"Make it Real, Make it Easy\"",
+                de: "\"Make it Real, Make it Easy\""
+            },
+            desc: {
+                ko: "매장 직원이 고객의 \"그래서 이게 나한테 뭐가 좋은데?\"라는 질문에 답하고, 기술을 즉각적인 가치로 전환해 판매를 마무리하도록 돕습니다.",
+                en: "Help store staff answer \"What does this do for me?\" and turn technology into immediate customer value at closing.",
+                de: "Hilft dem Store-Team, die Frage \"Was bringt mir das konkret?\" zu beantworten und Technik in sofort erlebbaren Nutzen zu übersetzen."
+            }
+        },
+        dotcom: {
+            title: { ko: "Dotcom", en: "Dotcom", de: "Dotcom" },
+            mantra: {
+                ko: "\"Guide the Journey, Prove the ROI\"",
+                en: "\"Guide the Journey, Prove the ROI\"",
+                de: "\"Guide the Journey, Prove the ROI\""
+            },
+            desc: {
+                ko: "웹사이트 방문자를 충성 고객으로 전환하는 데이터 기반 온라인 여정을 설계하고, 각 단계 성과를 측정하고 증명하는 데 집중합니다.",
+                en: "Design a data-driven online journey that turns visitors into loyal customers and prove impact at each conversion stage.",
+                de: "Entwirft eine datenbasierte Online-Journey, die Besuchende zu loyalen Kunden macht, und belegt die Wirkung je Funnel-Stufe."
+            }
+        },
+        brand: {
+            title: { ko: "Brand", en: "Brand", de: "Brand" },
+            mantra: {
+                ko: "\"Build the Love, Tell the Story\"",
+                en: "\"Build the Love, Tell the Story\"",
+                de: "\"Build the Love, Tell the Story\""
+            },
+            desc: {
+                ko: "제품 기능보다 브랜드 철학과 스토리로 감성적 유대를 만들고, 사용자를 브랜드 팬으로 전환하는 큰 그림을 설계합니다.",
+                en: "Build emotional connection through brand philosophy and story, not feature lists, and grow long-term brand love.",
+                de: "Baut emotionale Bindung über Markenphilosophie und Story statt Feature-Listen auf und stärkt langfristige Markenpräferenz."
+            }
+        }
+    }[roleId];
+
+    if (!copy) return null;
+    return {
+        title: copy.title[locale] || copy.title.en,
+        mantra: copy.mantra[locale] || copy.mantra.en,
+        desc: copy.desc[locale] || copy.desc.en
+    };
+}
+
+function syncRoleCardLocale() {
+    roleCards.forEach((card) => {
+        const roleId = normalizeRoleId(card.dataset.role);
+        const copy = getRoleCardLocaleCopy(roleId);
+        if (!copy) return;
+
+        const title = card.querySelector("h3");
+        const mantra = card.querySelector(".role-mantra");
+        const desc = card.querySelector(".role-desc");
+        if (title) title.textContent = copy.title;
+        if (mantra) mantra.textContent = copy.mantra;
+        if (desc) desc.textContent = copy.desc;
+    });
 }
 
 function applyLocale() {
@@ -4428,13 +5207,14 @@ function applyLocale() {
     }
     const roleQuestionLabel = document.querySelector('.wizard-step[data-step="1"] .field > label');
     if (roleQuestionLabel) roleQuestionLabel.textContent = t("roleQuestion");
+    syncRoleCardLocale();
     document.querySelector("label[for='country']").textContent = t("countryQuestion");
     document.getElementById("segment-label").textContent = t("personaQuestion");
     if (deviceLabel) deviceLabel.textContent = t("deviceQuestion");
     purposeInput.placeholder = t("purposePlaceholder");
     segmentCustomInput.placeholder = currentLocale === "ko" ? "추가 대상이나 세부 조건을 직접 입력" : currentLocale === "de" ? "Zusätzliche Zielgruppe oder Details eingeben" : "Add any extra target detail";
     deviceCustomInput.placeholder = currentLocale === "ko" ? "추가 기기나 세부 모델을 직접 입력" : currentLocale === "de" ? "Zusätzliche Geräte oder Modelle eingeben" : "Add any extra device or model";
-    cityInput.placeholder = currentLocale === "ko" ? "도시 / 주 / 지역 입력" : currentLocale === "de" ? "Stadt / Bundesland / Region" : "City / State / Region";
+    cityCustomInput.placeholder = currentLocale === "ko" ? "도시 / 주 / 지역 직접 입력" : currentLocale === "de" ? "Stadt / Bundesland / Region manuell" : "Type city / state / region";
     updateQuestionHelpers();
     prevBtn.textContent = t("prev");
     nextBtn.textContent = t("next");

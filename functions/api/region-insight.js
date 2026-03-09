@@ -167,11 +167,13 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
 
     const tasks = [
         withTimeout((signal) => fetchWorldBank(country, "NY.GDP.PCAP.CD", signal), TIMEOUT_MS),
-        withTimeout((signal) => fetchWorldBank(country, "SP.URB.TOTL.IN.ZS", signal), TIMEOUT_MS)
+        withTimeout((signal) => fetchWorldBank(country, "SP.URB.TOTL.IN.ZS", signal), TIMEOUT_MS),
+        withTimeout((signal) => fetchCountryProfile(country, signal), TIMEOUT_MS)
     ];
 
     if (lat && lon) tasks.push(withTimeout((signal) => fetchOpenMeteo(lat, lon, signal), TIMEOUT_MS));
     if (city) tasks.push(withTimeout((signal) => fetchNominatim(city, country, signal), TIMEOUT_MS));
+    if (city) tasks.push(withTimeout((signal) => fetchCityLandmarkImage(city, country, signal), TIMEOUT_MS));
 
     const settled = await Promise.allSettled(tasks);
     const values = settled.filter((entry) => entry.status === "fulfilled").map((entry) => entry.value);
@@ -183,13 +185,16 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
     const urban = values.find((value) => value.type === "urban");
     const climate = values.find((value) => value.type === "climate");
     const place = values.find((value) => value.type === "place");
+    const countryProfile = values.find((value) => value.type === "country_profile");
+    const landmark = values.find((value) => value.type === "city_landmark");
 
     return {
         role,
         role_lens: buildRoleLens(locale, role, country, city),
         macro: buildMacro(locale, country, city, gdp, urban, climate),
         local: city ? buildLocal(locale, city, place, urban, climate) : null,
-        evidence: buildEvidence(locale, gdp, urban, climate, place)
+        evidence: buildEvidence(locale, gdp, urban, climate, place),
+        visual: buildVisualInsight({ country, city, geocode, countryProfile, landmark })
     };
 }
 
@@ -361,6 +366,94 @@ async function fetchNominatim(city, country, signal) {
         type_name: top?.type || "unknown",
         source_domain: "nominatim.openstreetmap.org"
     };
+}
+
+async function fetchCountryProfile(country, signal) {
+    const payload = await fetchJson(
+        `https://restcountries.com/v3.1/alpha/${encodeURIComponent(country)}?fields=cca2,cca3,population,area,borders,latlng`,
+        { signal }
+    );
+    const item = Array.isArray(payload) ? payload[0] : payload;
+    return {
+        type: "country_profile",
+        country_code: item?.cca2 || country,
+        country_code3: item?.cca3 || "",
+        population: Number(item?.population || 0),
+        area_km2: Number(item?.area || 0),
+        borders: Array.isArray(item?.borders) ? item.borders : [],
+        latlng: Array.isArray(item?.latlng) ? item.latlng : [],
+        source_domain: "restcountries.com"
+    };
+}
+
+async function fetchCityLandmarkImage(city, country, signal) {
+    const candidates = [`${city}`, `${city}, ${country}`];
+    for (const candidate of candidates) {
+        try {
+            const payload = await fetchJson(
+                `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(candidate)}`,
+                {
+                    signal,
+                    headers: {
+                        "User-Agent": "scenario-self-generation-agent/1.0 (+cloudflare-pages)"
+                    }
+                }
+            );
+            const imageUrl = payload?.thumbnail?.source || payload?.originalimage?.source || "";
+            if (imageUrl) {
+                return {
+                    type: "city_landmark",
+                    image_url: imageUrl,
+                    source_domain: "en.wikipedia.org"
+                };
+            }
+        } catch {
+            // Keep trying candidates.
+        }
+    }
+
+    return {
+        type: "city_landmark",
+        image_url: `https://source.unsplash.com/960x540/?${encodeURIComponent(`${city} skyline landmark`)}`,
+        source_domain: "source.unsplash.com"
+    };
+}
+
+function buildVisualInsight({ country, city, geocode, countryProfile, landmark }) {
+    const cityName = city || country;
+    const lat = Number(geocode?.latitude || countryProfile?.latlng?.[0] || 0);
+    const lon = Number(geocode?.longitude || countryProfile?.latlng?.[1] || 0);
+    const areaKm2 = Number(countryProfile?.area_km2 || 0);
+    const countryPopulation = Number(countryProfile?.population || 0);
+    const cityPopulation = Number(geocode?.population || 0);
+    const cityPopulationSharePct = countryPopulation > 0 && cityPopulation > 0
+        ? (cityPopulation / countryPopulation) * 100
+        : 0;
+    const zoom = resolveRegionalMapZoom(areaKm2);
+    const mapImageUrl = lat && lon
+        ? `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lon}&zoom=${zoom}&size=960x540&maptype=mapnik&markers=${lat},${lon},red-pushpin`
+        : "";
+
+    return {
+        city: cityName,
+        country,
+        landmark_image_url: landmark?.image_url || "",
+        map_image_url: mapImageUrl,
+        country_area_km2: areaKm2,
+        country_population: countryPopulation,
+        city_population: cityPopulation,
+        city_population_share_pct: cityPopulationSharePct,
+        neighbor_codes: Array.isArray(countryProfile?.borders) ? countryProfile.borders : []
+    };
+}
+
+function resolveRegionalMapZoom(areaKm2) {
+    if (!Number.isFinite(areaKm2) || areaKm2 <= 0) return 4;
+    if (areaKm2 >= 7000000) return 3;
+    if (areaKm2 >= 2000000) return 4;
+    if (areaKm2 >= 700000) return 5;
+    if (areaKm2 >= 200000) return 6;
+    return 7;
 }
 
 function buildMacro(locale, country, city, gdp, urban, climate) {
