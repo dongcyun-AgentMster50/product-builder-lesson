@@ -162,6 +162,7 @@ async function handleRegionInsight(req, res, requestUrl) {
     const country = normalizeCountryParam(requestUrl.searchParams.get("country"));
     const city = String(requestUrl.searchParams.get("city") || "").trim();
     const locale = normalizeLocaleParam(requestUrl.searchParams.get("locale"));
+    const role = normalizeRoleParam(requestUrl.searchParams.get("role"));
     const forceRefresh = requestUrl.searchParams.get("force") === "1";
 
     if (!country) {
@@ -175,7 +176,7 @@ async function handleRegionInsight(req, res, requestUrl) {
         return;
     }
 
-    const cacheKey = `${country}|${city.toLowerCase()}|${locale}`;
+    const cacheKey = `${country}|${city.toLowerCase()}|${locale}|${role}`;
     const now = Date.now();
     const cached = regionInsightCache.get(cacheKey);
     if (!forceRefresh && cached && cached.expiresAt > now) {
@@ -196,14 +197,17 @@ async function handleRegionInsight(req, res, requestUrl) {
     const startedAt = Date.now();
 
     try {
-        const liveInsight = await buildLiveRegionInsight({ country, city, locale });
+        const liveInsight = await buildLiveRegionInsight({ country, city, locale, role });
         const payload = {
+            role: liveInsight.role,
+            role_lens: liveInsight.role_lens,
             macro: liveInsight.macro,
             local: liveInsight.local,
             evidence: liveInsight.evidence,
             meta: {
                 query_country: country,
                 query_city: city,
+                query_role: role,
                 latency_ms: Date.now() - startedAt,
                 cache_hit: false,
                 generated_at_utc: new Date().toISOString()
@@ -226,6 +230,7 @@ async function handleRegionInsight(req, res, requestUrl) {
             meta: {
                 query_country: country,
                 query_city: city,
+                query_role: role,
                 latency_ms: Date.now() - startedAt,
                 generated_at_utc: new Date().toISOString()
             }
@@ -525,6 +530,12 @@ function normalizeLocaleParam(value) {
     return "en";
 }
 
+function normalizeRoleParam(value) {
+    const normalized = String(value || "").trim().toLowerCase();
+    if (normalized === "retail" || normalized === "dotcom" || normalized === "brand") return normalized;
+    return "retail";
+}
+
 function withTimeout(promiseFactory, timeoutMs) {
     return new Promise((resolve, reject) => {
         const timer = setTimeout(() => {
@@ -558,7 +569,7 @@ async function fetchJsonWithTimeout(url, options = {}) {
     }, REGION_INSIGHT_TIMEOUT_MS);
 }
 
-async function buildLiveRegionInsight({ country, city, locale }) {
+async function buildLiveRegionInsight({ country, city, locale, role }) {
     const cityQuery = city || country;
     const geocode = await fetchOpenMeteoGeocode(cityQuery, country);
     const lat = Number(geocode?.latitude || 0);
@@ -592,7 +603,125 @@ async function buildLiveRegionInsight({ country, city, locale }) {
         : null;
     const evidence = buildEvidence({ locale, worldBankMarket, worldBankUrban, climate, citySignal });
 
-    return { macro, local, evidence };
+    return {
+        role,
+        role_lens: buildRoleLensInsight({ role, locale, country, city }),
+        macro,
+        local,
+        evidence
+    };
+}
+
+function buildRoleLensInsight({ role, locale, country, city }) {
+    const marketLabel = city ? `${country} ${city}` : country;
+    const isKo = locale === "ko";
+    const isDe = locale === "de";
+
+    if (role === "dotcom") {
+        return {
+            why_this_matters: isKo
+                ? `${marketLabel}에서는 유입 키워드와 랜딩 전환 장벽을 먼저 정리할수록 캠페인 효율이 올라갑니다.`
+                : isDe
+                    ? `In ${marketLabel} steigen Ergebnisse, wenn Suchintent und Conversion-Hürden zuerst geklärt werden.`
+                    : `In ${marketLabel}, results improve when search intent and conversion friction are clarified first.`,
+            must_know: isKo
+                ? [
+                    "검색/광고 유입 사용자가 기대하는 문제 해결 문장을 헤드라인에 반영",
+                    "PDP 이탈 구간을 1~2개 핵심 장벽으로 단순화",
+                    "시간 절약·비용 절감 근거를 첫 스크롤 내 배치"
+                ]
+                : [
+                    "Reflect problem-first search intent in the first headline.",
+                    "Reduce PDP drop-off friction to one or two obvious blockers.",
+                    "Place time/cost payoff proof above the first scroll."
+                ],
+            execution_points: isKo
+                ? [
+                    "광고 메시지와 랜딩 H1 약속을 동일하게 맞춤",
+                    "CTA 직전에 설치 난이도와 체감 시간 안내",
+                    "Q3 타겟별 A/B 헤드라인 2안 작성"
+                ]
+                : [
+                    "Align ad promise and landing H1 as one message.",
+                    "Add setup effort and payoff time before CTA.",
+                    "Prepare two A/B headlines per Q3 segment."
+                ],
+            primary_metric: isKo ? "CTR -> PDP 전환율 -> 구매 전환율" : "CTR -> PDP conversion -> purchase conversion",
+            next_step: isKo
+                ? "Q3에 타겟 1개와 유입 상황 1개를 고정하고, 검증할 KPI를 하나만 지정하세요."
+                : "In Q3, lock one target and one entry context, then pick one KPI to validate."
+        };
+    }
+
+    if (role === "brand") {
+        return {
+            why_this_matters: isKo
+                ? `${marketLabel}에서는 기능 나열보다 문화 맥락에 맞는 스토리 각도가 브랜드 선호를 더 빠르게 만듭니다.`
+                : isDe
+                    ? `In ${marketLabel} wirkt ein kulturpassender Story-Winkel stärker als reine Feature-Auflistung.`
+                    : `In ${marketLabel}, culture-fit storytelling builds brand preference faster than feature lists.`,
+            must_know: isKo
+                ? [
+                    "시장 맥락에서 공감되는 생활 장면(가족/웰빙/시간가치) 정의",
+                    "브랜드가 해결하는 감정적 긴장을 한 문장으로 명시",
+                    "글로벌 메시지와 로컬 표현의 역할 분리"
+                ]
+                : [
+                    "Define one culturally resonant life scene first.",
+                    "Name the emotional tension the brand resolves in one line.",
+                    "Separate global message backbone from local expression."
+                ],
+            execution_points: isKo
+                ? [
+                    "캠페인 첫 문장을 기능이 아닌 사람의 변화로 시작",
+                    "영상/소셜/배너에 동일 감정 키워드 유지",
+                    "Q3 타겟용 3컷 스토리보드(문제-전환-해결) 작성"
+                ]
+                : [
+                    "Open campaign copy with human change, not specs.",
+                    "Keep one emotional keyword across video/social/banner.",
+                    "Draft a 3-cut storyboard (problem-shift-resolution) for Q3 segment."
+                ],
+            primary_metric: isKo ? "브랜드 선호도 + 메시지 회상률" : "Brand preference + message recall",
+            next_step: isKo
+                ? "Q3에 타겟과 감정 키워드를 함께 고정하고, 스토리 톤을 한 줄로 정의하세요."
+                : "In Q3, lock target and emotional keyword, then define tone in one line."
+        };
+    }
+
+    return {
+        why_this_matters: isKo
+            ? `${marketLabel}에서는 매장 대화에 바로 쓰는 설명 구조가 판매 전환에 가장 직접적으로 연결됩니다.`
+            : isDe
+                ? `In ${marketLabel} wirkt eine sofort nutzbare In-Store-Erklärung am direktesten auf den Abschluss.`
+                : `In ${marketLabel}, an in-store explanation flow staff can use immediately is most conversion-critical.`,
+        must_know: isKo
+            ? [
+                "매장에서 가장 먼저 나오는 질문(가격/설치/호환) 우선 정리",
+                "기능보다 고객 일상의 변화 포인트를 먼저 제시",
+                "첫 시연 30초 내 체감 포인트 제시"
+            ]
+            : [
+                "Prioritize first in-store objections: price, setup, compatibility.",
+                "Lead with daily-life payoff before feature detail.",
+                "Show one felt benefit within the first 30 seconds."
+            ],
+        execution_points: isKo
+            ? [
+                "직원용 1문장 오프너 + 2문장 클로징 스크립트 작성",
+                "시연 순서를 문제-체감-증거 3단계로 고정",
+                "Q3 타겟에 맞춘 FAQ 반박 문장 3개 준비"
+            ]
+            : [
+                "Write a 1-line opener and 2-line closer for store staff.",
+                "Fix demo order as problem -> felt payoff -> proof.",
+                "Prepare three objection-handling lines for the Q3 target."
+            ],
+        primary_metric: isKo ? "상담 전환율 + 시연 완료율" : "Consultation conversion + demo completion",
+        next_step: isKo
+            ? "Q3에 타겟 고객 1명과 매장 상황 1개를 고정하고 시연 문장을 작성하세요."
+            : "In Q3, lock one shopper type and one store context, then draft the demo line."
+    };
 }
 
 async function fetchWorldBankCountrySignals(country) {

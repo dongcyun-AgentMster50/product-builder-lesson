@@ -1878,7 +1878,8 @@ async function renderStep2Insight(forceRefresh = false) {
 
     const country = resolveCountry(selectedMarket);
     const city = cityInput.value.trim();
-    const insight = await fetchLiveStep2Insight(country.countryCode, city, forceRefresh);
+    const role = normalizeRoleId(roleSelect.value);
+    const insight = await fetchLiveStep2Insight(country.countryCode, city, role, forceRefresh);
     if (requestId !== latestStep2InsightRequest || currentStep !== 2) return;
 
     stepInsight.innerHTML = buildInsightMarkup(insight);
@@ -1894,12 +1895,15 @@ async function renderStep2Insight(forceRefresh = false) {
     stepInsight.classList.add("insight-refresh");
 }
 
-async function fetchLiveStep2Insight(countryCode, city, forceRefresh = false) {
+async function fetchLiveStep2Insight(countryCode, city, role, forceRefresh = false) {
     const params = new URLSearchParams({
         country: countryCode,
         city,
         locale: currentLocale
     });
+    if (role) {
+        params.set("role", role);
+    }
     if (forceRefresh) {
         params.set("force", "1");
     }
@@ -1932,84 +1936,86 @@ async function fetchLiveStep2Insight(countryCode, city, forceRefresh = false) {
 }
 
 function mapLiveStep2Insight(data, countryCode, city) {
+    const selectedRoleId = normalizeRoleId(data.role || roleSelect.value);
+    const roleLens = data.role_lens || {};
+    const roleTitle = selectedRoleId ? getRoleTitle(selectedRoleId) : (currentLocale === "ko" ? "마케터" : "Marketer");
     const marketLabel = city ? `${getCountryName(countryCode)} ${city}` : getCountryName(countryCode);
     const macro = data.macro || {};
     const local = data.local || null;
-    const evidence = Array.isArray(data.evidence) ? data.evidence.slice(0, 4) : [];
+    const evidence = [];
     const countryName = getCountryName(countryCode);
-    const cleanMarketTraits = toList(macro.market_traits)
-        .filter((item) => !/n\/a/i.test(String(item)))
-        .slice(0, 3);
-    const citySpecificInsights = local
-        ? [
-            local.demographic,
-            local.lifestyle,
-            ...toList(local.action_items)
-        ].filter(Boolean).slice(0, 4)
+    const mustKnow = toList(roleLens.must_know).slice(0, 3);
+    const executionPoints = toList(roleLens.execution_points).slice(0, 3);
+    const roleMetric = roleLens.primary_metric || "";
+    const countrySignal = toList(macro.market_traits).filter((item) => !/n\/a/i.test(String(item))).slice(0, 2);
+    const localSignal = local
+        ? [local.demographic, local.lifestyle].filter(Boolean).slice(0, 2)
         : [];
 
-    const sections = [
-        {
-            title: currentLocale === "ko" ? `${countryName} 공통 시장 배경` : `${countryName} common market background`,
-            items: [
-                ...(cleanMarketTraits.length ? cleanMarketTraits : [
-                    currentLocale === "ko" ? "도시 생활 비중이 높아, 집 안 루틴 자동화 니즈가 큽니다." : "Urban living share is high, so routine automation demand is strong.",
-                    currentLocale === "ko" ? "시간을 아껴주는 제안이 실제 구매 동기로 이어지기 쉽습니다." : "Time-saving value is more likely to become purchase intent.",
-                    currentLocale === "ko" ? "계절/주거 환경에 맞춘 장면형 메시지가 효과적입니다." : "Scene-based messaging tied to season and housing context works better."
-                ])
-            ]
-        }
-    ];
-
-    if (local) {
-        sections.push(
-            {
-                title: currentLocale === "ko" ? `${city} 시나리오 인사이트 (도시/지역 특성)` : `${city} scenario insights (local traits)`,
-                items: citySpecificInsights.length ? citySpecificInsights : [
-                    currentLocale === "ko" ? `${city}의 생활 리듬에 맞춘 장면형 메시지가 유리합니다.` : `A scene-led message tuned to ${city}'s daily rhythm is stronger.`,
-                    currentLocale === "ko" ? "타겟의 이동 동선(출근/귀가) 기준으로 자동화 트리거를 설계하세요." : "Design automation triggers around commute and return-home flow.",
-                    currentLocale === "ko" ? "주거 형태에 따라 시작 루틴을 1~2개로 단순화해 제안하세요." : "Keep starter routines to 1-2 by housing type.",
-                    currentLocale === "ko" ? "Q3에서 타겟과 상황을 한 줄로 고정하면 메시지가 선명해집니다." : "Lock target + context in Q3 for sharper messaging."
-                ]
-            }
-        );
+    const sections = [];
+    if (mustKnow.length) {
+        sections.push({
+            title: currentLocale === "ko"
+                ? `${roleTitle}가 ${countryName}${city ? ` ${city}` : ""}에서 먼저 알아야 할 것`
+                : `What ${roleTitle} should know first in ${countryName}${city ? ` ${city}` : ""}`,
+            items: mustKnow
+        });
+    }
+    if (executionPoints.length) {
+        sections.push({
+            title: currentLocale === "ko" ? "바로 실행할 포인트" : "Execution points to use now",
+            items: executionPoints
+        });
+    }
+    if (countrySignal.length || localSignal.length) {
+        sections.push({
+            title: currentLocale === "ko" ? "시장 신호 요약" : "Market signal snapshot",
+            items: [...countrySignal, ...localSignal].slice(0, 3)
+        });
     } else {
         sections.push({
             title: currentLocale === "ko" ? "다음 단계 (정밀도 올리기)" : "Next step (increase precision)",
             text: macro.next_step_prompt || (currentLocale === "ko"
-                ? "도시를 입력하면 타겟 페르소나를 더 날카롭게 좁혀 인사이트를 확장할 수 있습니다."
-                : "Add a city to sharpen persona assumptions and expand local insight.")
+                ? "도시를 입력하면 실무 적용 포인트를 더 구체화할 수 있습니다."
+                : "Add a city to make the recommendations more actionable.")
         });
     }
+
+    const rows = [
+        {
+            label: currentLocale === "ko" ? "이번 역할의 핵심 KPI" : "Primary KPI for this role",
+            value: roleMetric || (currentLocale === "ko" ? "Q3에서 목표 KPI를 한 줄로 고정해 주세요." : "Lock one KPI line in Q3.")
+        }
+    ];
+
+    rows.push({
+        label: currentLocale === "ko" ? "Q3에서 바로 넣을 문장" : "Line to lock in Q3",
+        value: roleLens.next_step || (currentLocale === "ko"
+            ? "타겟(누가) + 상황(언제/어디서) + 목표 KPI를 한 줄로 고정해 주세요."
+            : "Lock target (who) + context (when/where) + one KPI in one line.")
+    });
 
     return {
         badge: currentLocale === "ko" ? "Q2 Live Region" : "Q2 Live Region",
         title: currentLocale === "ko"
-            ? `${marketLabel} 시장 인사이트`
-            : `${marketLabel} market insight`,
+            ? `${roleTitle} 관점의 ${marketLabel} 실무 인사이트`
+            : `${marketLabel} insight for ${roleTitle}`,
         summary: currentLocale === "ko"
-            ? "시나리오 작성에 바로 쓰는 배경·타겟 특성·실행 포인트 중심으로 정리했습니다."
-            : "Structured for scenario writing: background, audience traits, and execution points.",
-        body: toList(macro.opportunity_factors)[0] || (currentLocale === "ko"
-            ? "국가 데이터와 지역 특성을 함께 보면 어떤 메시지가 먹히는지 더 명확해집니다."
-            : "Combining country data and local traits clarifies which message is more likely to land."),
+            ? "해당 직무가 실제로 의사결정할 때 필요한 정보만 추려서 보여줍니다."
+            : "This card only surfaces what this role needs to decide and execute.",
+        body: roleLens.why_this_matters || toList(macro.opportunity_factors)[0] || (currentLocale === "ko"
+            ? "국가와 도시 신호를 결합해 메시지 우선순위를 정리했습니다."
+            : "Country and city signals were combined to prioritize the message."),
         spotlight: currentLocale === "ko"
-            ? "도시를 구체화할수록 시나리오가 일반 제안에서 지역 맞춤 제안으로 바뀝니다."
-            : "The more specific the city input, the more localized and actionable the scenario becomes.",
+            ? `${roleTitle}에게 중요한 것은 기능 설명보다 "바로 실행할 메시지와 KPI"입니다.`
+            : `For ${roleTitle}, execution-ready messaging and KPI matter more than feature description.`,
         chips: [
             marketLabel,
-            currentLocale === "ko" ? "실시간 인사이트" : "Live insight",
+            roleTitle,
             ...(local?.archetype ? [local.archetype] : [])
         ],
         sections,
-        rows: [
-            {
-                label: currentLocale === "ko" ? "다음 입력에서 할 일" : "What to do next",
-                value: currentLocale === "ko"
-                    ? "Q3에서 타겟(누가) + 상황(언제/어디서)을 한 줄로 고정해 주세요."
-                    : "In Q3, lock target (who) + context (when/where) in one line."
-            }
-        ],
+        rows,
         evidence
     };
 }
