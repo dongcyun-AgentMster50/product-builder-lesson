@@ -1006,6 +1006,8 @@ const guideContinueBtn = document.getElementById("guide-continue-btn");
 const guideCopy = document.getElementById("guide-copy");
 const roleSelect = document.getElementById("role");
 const roleBrief = document.getElementById("role-brief");
+const roleSelectionContainer = document.getElementById("role-selection");
+const roleCards = [...document.querySelectorAll(".role-card")];
 const purposeInput = document.getElementById("purpose");
 const countrySelect = document.getElementById("country");
 const cityInput = document.getElementById("city");
@@ -1066,11 +1068,8 @@ function bindEvents() {
     prevBtn.addEventListener("click", () => moveStep(-1));
     nextBtn.addEventListener("click", () => moveStep(1));
     generateBtn.addEventListener("click", generateScenario);
-    roleSelect.addEventListener("change", () => {
-        updateRoleBrief();
-        updateStatePreview();
-        updateStepInsight();
-    });
+    roleSelectionContainer?.addEventListener("click", handleRoleCardClick);
+    roleSelectionContainer?.addEventListener("keydown", handleRoleCardKeydown);
     countrySelect.addEventListener("change", updateStatePreview);
     countrySelect.addEventListener("change", updateLocaleFromCountry);
     cityInput.addEventListener("input", () => {
@@ -1266,8 +1265,58 @@ function syncAllChecklistParents(container) {
     container.querySelectorAll(".tree-group").forEach((group) => syncChecklistParent(group));
 }
 
+function normalizeRoleId(value) {
+    const normalized = String(value || "").trim().toLowerCase();
+    if (normalized === "retailer") return "retail";
+    if (normalized === "dotcom") return "dotcom";
+    if (normalized === "brand") return "brand";
+    return normalized;
+}
+
+function clearRoleSelection() {
+    roleSelect.value = "";
+    roleCards.forEach((card) => {
+        card.classList.remove("selected");
+        card.setAttribute("aria-pressed", "false");
+    });
+}
+
+function setRoleSelection(roleId, options = {}) {
+    const normalizedRoleId = normalizeRoleId(roleId);
+    const validRoleId = ROLE_LENSES.some((item) => item.id === normalizedRoleId) ? normalizedRoleId : "";
+    roleSelect.value = validRoleId;
+
+    roleCards.forEach((card) => {
+        const isSelected = normalizeRoleId(card.dataset.role) === validRoleId;
+        card.classList.toggle("selected", isSelected);
+        card.setAttribute("aria-pressed", isSelected ? "true" : "false");
+    });
+
+    updateRoleBrief();
+    updateStatePreview();
+    updateStepInsight();
+
+    if (options.autoAdvance && validRoleId && currentStep === 1) {
+        moveStep(1);
+    }
+}
+
+function handleRoleCardClick(event) {
+    const targetCard = event.target.closest(".role-card");
+    if (!targetCard) return;
+    setRoleSelection(targetCard.dataset.role, { autoAdvance: true });
+}
+
+function handleRoleCardKeydown(event) {
+    const targetCard = event.target.closest(".role-card");
+    if (!targetCard) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    setRoleSelection(targetCard.dataset.role, { autoAdvance: true });
+}
+
 function populateInputs(preserved = {}) {
-    const previousRole = preserved.role || roleSelect.value;
+    const previousRole = normalizeRoleId(preserved.role || roleSelect.value);
     const previousCountry = preserved.country || countrySelect.value;
     const previousCity = preserved.city || cityInput.value;
     const previousPersonaSelections = preserved.personaSelections || getSelectedPersonaOptionIds();
@@ -1275,9 +1324,6 @@ function populateInputs(preserved = {}) {
     const previousDeviceSelections = preserved.deviceSelections || getSelectedDeviceOptionIds();
     const previousDeviceCustom = preserved.deviceCustom || deviceCustomInput.value;
 
-    roleSelect.innerHTML = ROLE_LENSES.map((role) => (
-        `<option value="${role.id}">${getRoleTitle(role.id)} (${getRoleFocus(role.id)})</option>`
-    )).join("");
     marketOptions = buildMarketOptions();
     countrySelect.innerHTML = marketOptions.map((market) => (
         `<option value="${market.siteCode}">${market.label}</option>`
@@ -1285,7 +1331,11 @@ function populateInputs(preserved = {}) {
     personaGroups.innerHTML = renderChecklistGroups(PERSONA_CATEGORY_GROUPS, previousPersonaSelections, "persona");
     deviceGrid.innerHTML = renderChecklistGroups(DEVICE_CATEGORY_GROUPS, previousDeviceSelections, "device");
 
-    if (previousRole) roleSelect.value = previousRole;
+    if (previousRole) {
+        setRoleSelection(previousRole);
+    } else {
+        clearRoleSelection();
+    }
     if (previousCountry && marketOptions.some((market) => market.siteCode === previousCountry)) countrySelect.value = previousCountry;
     if (previousCity) cityInput.value = previousCity;
     if (previousSegmentCustom) segmentCustomInput.value = previousSegmentCustom;
@@ -1387,7 +1437,9 @@ function openWizard() {
     currentStep = 1;
     syncWizardUi();
     renderOutputPreview();
-    roleSelect.focus();
+    const selectedCard = roleSelectionContainer?.querySelector(".role-card.selected");
+    const focusTarget = selectedCard || roleCards[0];
+    focusTarget?.focus();
     wizardScreen.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -1528,7 +1580,7 @@ function resetToAccessScreen() {
     guideCopy.innerHTML = "";
     currentStep = 1;
     latestPayload = null;
-    roleSelect.selectedIndex = 0;
+    clearRoleSelection();
     if (marketOptions[0]) countrySelect.value = marketOptions[0].siteCode;
     cityInput.value = "";
     personaGroups.querySelectorAll('input[type="checkbox"]').forEach((input) => {
@@ -2330,6 +2382,7 @@ function validateCurrentStep() {
 }
 
 function updateRoleBrief() {
+    if (!roleBrief) return;
     const role = ROLE_LENSES.find((item) => item.id === roleSelect.value);
     if (!role) {
         roleBrief.innerHTML = "";
