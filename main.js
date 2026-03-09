@@ -4404,7 +4404,8 @@ function applyLocale() {
     if (!guideCopy.classList.contains("hidden")) {
         guideCopy.innerHTML = buildGuideMarkup();
     }
-    document.querySelector("label[for='role']").textContent = t("roleQuestion");
+    const roleQuestionLabel = document.querySelector('.wizard-step[data-step="1"] .field > label');
+    if (roleQuestionLabel) roleQuestionLabel.textContent = t("roleQuestion");
     document.querySelector("label[for='country']").textContent = t("countryQuestion");
     document.getElementById("segment-label").textContent = t("personaQuestion");
     if (deviceLabel) deviceLabel.textContent = t("deviceQuestion");
