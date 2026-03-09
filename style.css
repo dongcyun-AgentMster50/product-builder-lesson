@@ -1503,6 +1503,18 @@ pre {
     line-height: 1.7;
 }
 
+.json-block {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 51, 102, 0.14);
+    background: rgba(246, 249, 255, 0.92);
+    color: #10233e;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    overflow: auto;
+}
+
 .post-output-prompt {
     display: grid;
     gap: 12px;

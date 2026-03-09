@@ -4110,12 +4110,14 @@ function buildMarketability(country, intent, deviceDecision, services, selectedR
     const go = intent.lifestyleTags.length > 0 && Boolean(deviceDecision.final);
     const rawRisk = String(services?.[0]?.privacyPolicy || "").trim();
     const hasHangul = /[가-힣]/.test(rawRisk);
+    const conciseSegment = compactDescriptor(selectedSegment, 4) || (currentLocale === "ko" ? "상황 기반 타겟" : "context-led target");
+    const concisePurpose = compactPurpose(intent.purpose);
     return {
         verdict: go ? "Go" : "No-Go",
         rationale: go
             ? (currentLocale === "ko"
-                ? `${getCountryName(country.countryCode)}에서 ${selectedSegment}의 "${intent.purpose}" 상황은 ${exploreGrounding.primaryValue} 가치가 명확하게 읽히는 장면이라 Go 판단이 가능합니다.`
-                : `In ${getCountryName(country.countryCode)}, the "${intent.purpose}" moment for the ${selectedSegment} segment makes ${exploreGrounding.primaryValue} legible enough for a Go decision.`)
+                ? `${getCountryName(country.countryCode)}에서 ${conciseSegment}의 "${concisePurpose}" 상황은 ${exploreGrounding.primaryValue} 가치가 명확하게 읽히는 장면이라 Go 판단이 가능합니다.`
+                : `In ${getCountryName(country.countryCode)}, the "${concisePurpose}" moment for the ${conciseSegment} segment makes ${exploreGrounding.primaryValue} legible enough for a Go decision.`)
             : localizeSentence("marketNoGo"),
         competitorView: currentLocale === "ko"
             ? `차별점은 기능 수가 아니라 ${exploreGrounding.functionalJob}을 한 번의 연결 경험으로 줄여준다는 점입니다.`
@@ -4138,8 +4140,8 @@ function buildMarketability(country, intent, deviceDecision, services, selectedR
             ],
         nextActions: [
             currentLocale === "ko"
-                ? `${selectedSegment} 기준으로 "${exploreGrounding.coreMessage}"를 압축한 첫 배포용 한 문장 메시지를 확정합니다.`
-                : `Lock a one-line launch message for the ${selectedSegment} segment.`,
+                ? `${conciseSegment} 기준으로 "${concisePurpose}" 맥락의 첫 배포용 한 문장 메시지를 확정합니다.`
+                : `Lock a one-line launch message for the ${conciseSegment} segment.`,
             currentLocale === "ko"
                 ? `${getRoleTitle(selectedRole.id)} 채널에서 먼저 검증할 핵심 CTA를 1개 정합니다.`
                 : `Choose one priority CTA to validate first in the ${getRoleTitle(selectedRole.id)} channel.`,
@@ -4165,17 +4167,20 @@ function runChecks(country, intent, deviceDecision, automation) {
 }
 
 function buildTitle(role, intent, selectedSegment, deviceDecision) {
+    const conciseSegment = compactDescriptor(selectedSegment, 4) || (currentLocale === "ko" ? "상황 기반 타겟" : "context-led target");
     if (currentLocale === "ko") {
-        return `${getRoleTitle(role.id)} 관점의 ${selectedSegment} 대상 ${getCategoryName(deviceDecision.final.category)} 기반 ${intent.missionBucket} 시나리오`;
+        return `${getRoleTitle(role.id)} 관점의 ${conciseSegment} 대상 ${getCategoryName(deviceDecision.final.category)} 기반 ${intent.missionBucket} 시나리오`;
     }
-    return `${getRoleTitle(role.id)} | ${intent.missionBucket} scenario for ${selectedSegment} built around ${getCategoryName(deviceDecision.final.category)}`;
+    return `${getRoleTitle(role.id)} | ${intent.missionBucket} scenario for ${conciseSegment} built around ${getCategoryName(deviceDecision.final.category)}`;
 }
 
 function buildSummary(country, selectedSegment, intent, deviceDecision, services) {
+    const conciseSegment = compactDescriptor(selectedSegment, 4) || (currentLocale === "ko" ? "상황 기반 타겟" : "context-led target");
+    const regionTag = currentLocale === "ko" ? "지역 특성 반영" : "region-reflective";
     if (currentLocale === "ko") {
-        return `${getCountryName(country.countryCode)}에서 ${selectedSegment}에게 ${deviceDecision.final.modelName}와 ${getServiceLabel(services[0])}를 중심으로 ${intent.missionBucket} 가치를 전달하는 앱 시나리오입니다.`;
+        return `${getCountryName(country.countryCode)}에서 ${conciseSegment}에게 ${deviceDecision.final.modelName}와 ${getServiceLabel(services[0])}를 중심으로 ${intent.missionBucket} 가치를 전달하는 ${regionTag} 앱 시나리오입니다.`;
     }
-    return `An app scenario for the ${selectedSegment} segment in ${getCountryName(country.countryCode)}, centered on ${deviceDecision.final.modelName} and ${getServiceLabel(services[0])}, designed to deliver ${intent.missionBucket} value.`;
+    return `A ${regionTag} app scenario for the ${conciseSegment} segment in ${getCountryName(country.countryCode)}, centered on ${deviceDecision.final.modelName} and ${getServiceLabel(services[0])}, designed to deliver ${intent.missionBucket} value.`;
 }
 
 function buildReferenceLinks(intent, services) {
@@ -4194,13 +4199,16 @@ function buildReferenceLinks(intent, services) {
 function buildSummaryBullets(country, city, selectedSegment, intent, deviceDecision, services, exploreGrounding) {
     const location = city ? `${getCountryName(country.countryCode)} ${city}` : getCountryName(country.countryCode);
     const secondary = services[1] || services[0];
+    const conciseSegment = compactDescriptor(selectedSegment, 4);
+    const concisePurpose = compactPurpose(intent.purpose);
+    const withServices = `${getServiceLabel(services[0])}${secondary.serviceName !== services[0].serviceName ? ` + ${getServiceLabel(secondary)}` : ""}`;
     return [
-        currentLocale === "ko" ? `누가: ${location}의 ${selectedSegment}` : `Who: ${selectedSegment} in ${location}`,
-        currentLocale === "ko" ? `언제: ${intent.purpose} 같은 상황이 반복되는 일상 구간` : `When: during recurring moments like "${intent.purpose}"`,
-        currentLocale === "ko" ? `무엇으로: ${getServiceLabel(services[0])}${secondary.serviceName !== services[0].serviceName ? ` + ${getServiceLabel(secondary)}` : ""}` : `With: ${getServiceLabel(services[0])}${secondary.serviceName !== services[0].serviceName ? ` + ${getServiceLabel(secondary)}` : ""}`,
-        currentLocale === "ko" ? `어떻게: ${deviceDecision.final.modelName} 중심의 추천 카드와 반복 루틴으로 ${exploreGrounding.functionalJob}을 줄임` : `How: reduce ${exploreGrounding.functionalJob} through recommendation cards and repeat routines anchored on ${deviceDecision.final.modelName}`,
+        currentLocale === "ko" ? `누가: ${location}의 ${conciseSegment}` : `Who: ${conciseSegment} in ${location}`,
+        currentLocale === "ko" ? `언제: ${concisePurpose} 같은 상황이 반복되는 일상 구간` : `When: during recurring moments like "${concisePurpose}"`,
+        currentLocale === "ko" ? `무엇으로: ${withServices}` : `With: ${withServices}`,
+        currentLocale === "ko" ? `어떻게: ${deviceDecision.final.modelName} 중심의 추천 카드와 반복 루틴으로 반복 확인/수동 조작을 줄임` : `How: reduce repeated checking and manual control via recommendation cards and repeat routines anchored on ${deviceDecision.final.modelName}`,
         currentLocale === "ko" ? `결과: ${exploreGrounding.primaryValue}을 더 빠르게 체감` : `Result: make ${exploreGrounding.primaryValue} felt faster`,
-        currentLocale === "ko" ? `캠페인 메시지: ${exploreGrounding.coreMessage}` : `Campaign message: ${exploreGrounding.coreMessage}`
+        currentLocale === "ko" ? `캠페인 메시지: 기능 나열보다 ${concisePurpose} 순간의 생활 부담 완화를 강조` : `Campaign message: lead with lighter daily burden in ${concisePurpose} moments, not feature count`
     ];
 }
 
@@ -4640,12 +4648,35 @@ function renderOutputPreview() {
 }
 
 function buildParentStory(payload) {
-    const who = payload.state?.segment || payload.scenarioMeta?.selectedSegment || "";
+    const who = compactDescriptor(payload.state?.segment || payload.scenarioMeta?.selectedSegment || "", 4);
     const where = [payload.scenarioMeta?.countryName, payload.scenarioMeta?.city].filter(Boolean).join(" / ");
-    const need = payload.scenarioMeta?.purpose || payload.exploreGrounding?.functionalJob || "";
+    const need = compactPurpose(payload.scenarioMeta?.purpose || payload.exploreGrounding?.functionalJob || "");
     return currentLocale === "ko"
         ? `${where}의 ${who}는 "${need}" 같은 반복 순간에서 부담을 줄이고, 즉시 체감되는 효용을 원합니다.`
         : `${who} in ${where} seeks immediate, felt utility in recurring moments like "${need}".`;
+}
+
+function compactDescriptor(text, maxItems = 4) {
+    const cleaned = String(text || "")
+        .replace(/Reduce recurring friction in everyday moments for/gi, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    const tokens = cleaned
+        .split(/[\/,|]|·/)
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .filter((item, idx, arr) => arr.indexOf(item) === idx);
+    if (!tokens.length) return cleaned;
+    return tokens.slice(0, maxItems).join(" / ");
+}
+
+function compactPurpose(text) {
+    const raw = String(text || "").trim();
+    if (!raw) return currentLocale === "ko" ? "반복되는 일상 불편을 줄이고 싶을 때" : "reducing recurring daily friction";
+    if (/^reduce recurring friction in everyday moments for/i.test(raw)) {
+        return currentLocale === "ko" ? "반복되는 일상 불편을 줄이는 순간" : "reducing recurring daily friction moments";
+    }
+    return raw.length > 140 ? `${raw.slice(0, 137)}...` : raw;
 }
 
 function buildReflectedValues(payload) {
@@ -4677,6 +4708,7 @@ function buildSixLineSummary(payload) {
 
 function renderOverview(payload) {
     const marketingLines = currentLocale === "ko" ? payload.marketingMessages.kr : payload.marketingMessages.en;
+    const automationJson = JSON.stringify(payload.automation, null, 2);
     return `
         <div class="output-stack">
             <section class="output-block hero-result numbered-output">
@@ -4712,51 +4744,43 @@ function renderOverview(payload) {
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">03</p>
-                <h4>${currentLocale === "ko" ? "지역 특성 및 인사이트 추론 과정" : "Regional Traits & Insight Reasoning"}</h4>
-                <p class="subhead">${currentLocale === "ko" ? "Observation -> Insight -> Implication" : "Observation -> Insight -> Implication"}</p>
-                <ul>
-                    <li>${escapeHtml(payload.facts.observation)}</li>
-                    <li>${escapeHtml(payload.facts.insight)}</li>
-                    <li>${escapeHtml(payload.facts.implication)}</li>
-                </ul>
-                <p class="subhead">${currentLocale === "ko" ? "추론 근거" : "Reasoning Trail"}</p>
-                <ul>
-                    <li>${escapeHtml(payload.segmentAnalysis.assumption)}</li>
-                    <li>${escapeHtml(payload.marketability.rationale)}</li>
-                    <li>${escapeHtml(payload.exploreGrounding.proofLine || "")}</li>
-                </ul>
+                <h4>Automation Logic Digest (JSON Skeleton)</h4>
+                <pre class="json-block">${escapeHtml(automationJson)}</pre>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">04</p>
-                <h4>${currentLocale === "ko" ? "마케팅 메시지 (브랜드 아이덴티티 반영)" : "Marketing Message (Brand-Identity Applied)"}</h4>
-                <ul>${marketingLines.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                <h4>${currentLocale === "ko" ? "지역 특성 및 데이터 근거" : "Regional Traits & Data Grounds"}</h4>
+                <p class="subhead">${currentLocale === "ko" ? "Fact (확인)" : "Fact (Confirmed)"}</p>
+                <ul>${(payload.facts.confirmed || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                <p class="subhead">${currentLocale === "ko" ? "Assumption (가정)" : "Assumption"}</p>
+                <ul>${(payload.facts.assumptions || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                <p class="subhead">${currentLocale === "ko" ? "근거 URL" : "Source URLs"}</p>
+                <ul>${(payload.facts.sourceUrls || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">05</p>
-                <h4>${currentLocale === "ko" ? "고객 베네핏" : "Customer Benefits"}</h4>
-                <ul>${payload.benefits.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-                <p>${escapeHtml(currentLocale === "ko" ? `핵심 체감가치: ${payload.exploreGrounding.primaryValue}` : `Primary felt value: ${payload.exploreGrounding.primaryValue}`)}</p>
+                <h4>${currentLocale === "ko" ? "마케팅 메시지 (Role-Lens)" : "Marketing Messages (Role-Lens)"}</h4>
+                <ul>${marketingLines.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">06</p>
-                <h4>${currentLocale === "ko" ? "타겟 고객 설명" : "Target Customer Description"}</h4>
-                <p><strong>${currentLocale === "ko" ? "핵심 타겟" : "Core target"}:</strong> ${escapeHtml(payload.segmentAnalysis.core)}</p>
-                <p><strong>${currentLocale === "ko" ? "상황 맥락" : "Context"}:</strong> ${escapeHtml(payload.scenarioMeta?.purpose || "")}</p>
-                <p class="subhead">${currentLocale === "ko" ? "행동 특징" : "Behavior Signals"}</p>
-                <ul>${payload.segmentAnalysis.behaviors.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                <h4>Success Metrics (Cause & Effect)</h4>
+                <ul>${(payload.metrics || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">07</p>
-                <h4>${currentLocale === "ko" ? "적용 시기" : "Application Timing"}</h4>
-                <ul>${payload.campaignTiming.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                <h4>${currentLocale === "ko" ? "타겟 세그먼트 데이터" : "Target Segment Data"}</h4>
+                <ul>${(payload.segmentData || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">08</p>
-                <h4>${currentLocale === "ko" ? "지역 적용 가능 기기 및 설정 방법" : "Region-Applicable Devices & Setup Method"}</h4>
-                <p class="subhead">${currentLocale === "ko" ? "적용 가능 기기" : "Applicable device context"}</p>
+                <h4>${currentLocale === "ko" ? "지역 가용 기기 및 설정 가이드" : "Regional Available Devices & Setup Guide"}</h4>
+                <p class="subhead">${currentLocale === "ko" ? "적용 가능 기기" : "Applicable Device Context"}</p>
                 <ul>${payload.deviceGuide.available.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-                <p class="subhead">${currentLocale === "ko" ? "설정 방법" : "Setup method"}</p>
+                <p class="subhead">${currentLocale === "ko" ? "설정/적용 단계" : "Setup / Adoption Ladder"}</p>
                 <ul>${payload.deviceGuide.steps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                <p class="subhead">${currentLocale === "ko" ? "실행 체크포인트" : "Execution Checkpoints"}</p>
+                <ul>${(payload.setupGuide || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
             <section class="output-block numbered-output">
                 <p class="block-index">09</p>
@@ -4963,6 +4987,7 @@ async function copySummary() {
 
 function buildMarkdownReport(payload) {
     const marketingLines = currentLocale === "ko" ? payload.marketingMessages.kr : payload.marketingMessages.en;
+    const automationJson = JSON.stringify(payload.automation, null, 2);
     return [
         `# ${payload.title}`,
         "",
@@ -4978,10 +5003,10 @@ function buildMarkdownReport(payload) {
         currentLocale === "ko" ? "### 3) 핵심 요약 (6줄)" : "### 3) Executive Summary (6 lines)",
         ...buildSixLineSummary(payload).map((item) => `- ${item}`),
         "",
-        "## 02. 상세 시나리오",
-        "---------------------------------------------------------------------------------------------------------------------------",
+        currentLocale === "ko" ? "## 02. 상세 시나리오" : "## 02. Detailed Scenario",
+        "----",
         `- Target Customer : ${payload.detailedScenario.targetCustomer}`,
-        "---------------------------------------------------------------------------------------------------------------------------",
+        "----",
         "",
         payload.detailedScenario.appliedServices,
         "",
@@ -4992,66 +5017,52 @@ function buildMarkdownReport(payload) {
             ""
         ]),
         "",
-        currentLocale === "ko" ? "## 03. 지역 특성 및 인사이트 추론 과정" : "## 03. Regional Traits & Insight Reasoning",
-        "### Observation -> Insight -> Implication",
-        `- ${payload.facts.observation}`,
-        `- ${payload.facts.insight}`,
-        `- ${payload.facts.implication}`,
+        "## 03. Automation Logic Digest (JSON Skeleton)",
+        "```json",
+        automationJson,
+        "```",
         "",
-        currentLocale === "ko" ? "### 추론 근거" : "### Reasoning Trail",
-        `- ${payload.segmentAnalysis.assumption}`,
-        `- ${payload.marketability.rationale}`,
-        `- ${payload.exploreGrounding.proofLine || ""}`,
+        currentLocale === "ko" ? "## 04. 지역 특성 및 데이터 근거" : "## 04. Regional Traits & Data Grounds",
+        currentLocale === "ko" ? "### Fact (확인)" : "### Fact (Confirmed)",
+        ...(payload.facts.confirmed || []).map((item) => `- ${item}`),
+        "",
+        currentLocale === "ko" ? "### Assumption (가정)" : "### Assumption",
+        ...(payload.facts.assumptions || []).map((item) => `- ${item}`),
+        "",
+        currentLocale === "ko" ? "### 근거 URL" : "### Source URLs",
+        ...(payload.facts.sourceUrls || []).map((item) => `- ${item}`),
         "",
         currentLocale === "ko"
-            ? "## 04. 마케팅 메시지 (브랜드 아이덴티티 반영)"
+            ? "## 05. 마케팅 메시지 (브랜드 아이덴티티 반영)"
             : currentLocale === "de"
-                ? "## 04. Marketing-Botschaften (Brand-Identity Applied)"
-                : "## 04. Marketing Message (Brand-Identity Applied)",
+                ? "## 05. Marketing-Botschaften (Brand-Identity Applied)"
+                : "## 05. Marketing Message (Brand-Identity Applied)",
         ...marketingLines.map((item) => `- ${item}`),
         "",
-        currentLocale === "ko" ? "## 05. 고객 베네핏" : "## 05. Customer Benefits",
-        ...payload.benefits.map((item) => `- ${item}`),
-        `- ${currentLocale === "ko" ? `핵심 체감가치: ${payload.exploreGrounding.primaryValue}` : `Primary felt value: ${payload.exploreGrounding.primaryValue}`}`,
+        currentLocale === "ko" ? "## 06. 성공 지표 (Cause & Effect)" : "## 06. Success Metrics (Cause & Effect)",
+        ...(payload.metrics || []).map((item) => `- ${item}`),
         "",
-        currentLocale === "ko" ? "## 06. 타겟 고객 설명" : "## 06. Target Customer Description",
-        `- ${currentLocale === "ko" ? "핵심 타겟" : "Core target"}: ${payload.segmentAnalysis.core}`,
-        `- ${currentLocale === "ko" ? "상황 맥락" : "Context"}: ${payload.scenarioMeta?.purpose || ""}`,
-        ...payload.segmentAnalysis.behaviors.map((item) => `- ${item}`),
+        currentLocale === "ko" ? "## 07. 타겟 세그먼트 데이터" : "## 07. Target Segment Data",
+        ...(payload.segmentData || []).map((item) => `- ${item}`),
         "",
-        currentLocale === "ko" ? "## 07. 적용 시기" : "## 07. Application Timing",
-        ...payload.campaignTiming.map((item) => `- ${item}`),
-        "",
-        currentLocale === "ko" ? "## 08. 지역 적용 가능 기기 및 설정 방법" : "## 08. Region-Applicable Devices & Setup Method",
+        currentLocale === "ko" ? "## 08. 지역 가용 기기 및 설정 가이드" : "## 08. Regional Available Devices & Setup Guide",
+        currentLocale === "ko" ? "### 적용 가능 기기" : "### Applicable Device Context",
         ...payload.deviceGuide.available.map((item) => `- ${item}`),
+        "",
+        currentLocale === "ko" ? "### 설정/적용 단계" : "### Setup / Adoption Ladder",
         ...payload.deviceGuide.steps.map((item) => `- ${item}`),
         "",
-        currentLocale === "ko" ? "## 09. 시나리오 시장성 평가" : "## 09. Scenario Marketability Evaluation",
-        `- Market Fit: ${payload.marketability.verdict}`,
-        `- ${currentLocale === "ko" ? "근거" : "Rationale"}: ${payload.marketability.rationale}`,
-        `- ${currentLocale === "ko" ? "경쟁/대안" : "Competitive Alternative"}: ${payload.marketability.competitorView}`,
-        `- ${currentLocale === "ko" ? "리스크" : "Risk"}: ${payload.marketability.risk}`,
-        ...payload.marketability.alternatives.map((item) => `- ${currentLocale === "ko" ? "대안" : "Alternative"}: ${item}`),
-        ...payload.marketability.nextActions.map((item) => `- ${currentLocale === "ko" ? "대응 전략" : "Action"}: ${item}`),
+        currentLocale === "ko" ? "### 실행 체크포인트" : "### Execution Checkpoints",
+        ...(payload.setupGuide || []).map((item) => `- ${item}`),
         "",
-        "## Role-Lens Packages",
-        ...payload.lensOutputs.flatMap((lens) => [
-            `### ${lens.title}`,
-            `- Subtitle: ${lens.subtitle}`,
-            `- Objective: ${lens.objective || ""}`,
-            `- Headline: ${lens.headline || ""}`,
-            `- Message: ${lens.message || ""}`,
-            `- Asset: ${lens.asset || ""}`,
-            `- CTA: ${lens.cta || ""}`,
-            `- KPI: ${lens.kpi || ""}`,
-            ...((lens.proofPoints || []).map((item) => `- Proof: ${item}`)),
-            ...((lens.executionChecklist || []).map((item) => `- Checklist: ${item}`)),
-            ...((lens.roleDetailSections || []).flatMap((section) => [
-                `- ${section.title}`,
-                ...((section.items || []).map((item) => `  - ${item}`))
-            ])),
-            `- Copy: ${lens.copy}`
-        ])
+        currentLocale === "ko" ? "## 09. 시나리오 시장성 평가" : "## 09. Scenario Marketability Evaluation",
+        "| Item | Assessment | Rationale | Action |",
+        "| --- | --- | --- | --- |",
+        `| Market Fit | ${payload.marketability.verdict} | ${payload.marketability.rationale} | ${(payload.marketability.nextActions?.[0] || "")} |`,
+        `| Competitive Alternative | Medium | ${payload.marketability.competitorView} | ${(payload.marketability.nextActions?.[1] || "")} |`,
+        `| Risk: Privacy / Trust | Medium | ${payload.marketability.risk} | ${(payload.marketability.nextActions?.[2] || "")} |`,
+        "",
+        ...(payload.marketability.alternatives || []).map((item) => `- ${currentLocale === "ko" ? "대안" : "Alternative"}: ${item}`)
     ].join("\n");
 }
 
