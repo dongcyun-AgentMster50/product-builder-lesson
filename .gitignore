@@ -1,0 +1,18 @@
+# Environment variables — never commit secrets
+.env
+.env.local
+.env.*.local
+
+# Backup directories
+backups/
+codex.v0.111_backup02/
+
+# Screen captures
+screen capture/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/

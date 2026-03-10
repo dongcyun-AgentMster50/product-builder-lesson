@@ -84,6 +84,16 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        if (pathname === "/api/generate" && req.method === "POST") {
+            await handleGenerate(req, res);
+            return;
+        }
+
+        if (pathname === "/api/refine" && req.method === "POST") {
+            await handleRefine(req, res);
+            return;
+        }
+
         if (req.method !== "GET" && req.method !== "HEAD") {
             sendJson(res, 405, {
                 ok: false,
@@ -263,6 +273,258 @@ async function handleRegionInsight(req, res, requestUrl) {
         });
     }
 }
+
+// ─── Claude / Anthropic streaming helpers ────────────────────────────────────
+
+const https = require("https");
+
+const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
+const ANTHROPIC_MODEL   = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
+const SYSTEM_PROMPT_PATH = path.join(ROOT_DIR, "prompt.txt");
+
+/** Stream Anthropic API response directly to an SSE-enabled HTTP response. */
+function callAnthropicStream({ systemPrompt, messages, res, onDone, onError }) {
+    const apiKey = process.env.ANTHROPIC_API_KEY || "";
+    if (!apiKey) {
+        onError(new Error("ANTHROPIC_API_KEY is not configured."));
+        return;
+    }
+
+    const body = JSON.stringify({
+        model: ANTHROPIC_MODEL,
+        max_tokens: 8000,
+        stream: true,
+        system: systemPrompt,
+        messages
+    });
+
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey,
+            "anthropic-version": "2023-06-01",
+            "Content-Length": Buffer.byteLength(body)
+        }
+    };
+
+    const req = https.request(ANTHROPIC_API_URL, options, (apiRes) => {
+        if (apiRes.statusCode !== 200) {
+            let errBody = "";
+            apiRes.on("data", (chunk) => { errBody += chunk; });
+            apiRes.on("end", () => {
+                try {
+                    const parsed = JSON.parse(errBody);
+                    onError(new Error(parsed?.error?.message || `Anthropic API error ${apiRes.statusCode}`));
+                } catch {
+                    onError(new Error(`Anthropic API error ${apiRes.statusCode}`));
+                }
+            });
+            return;
+        }
+
+        let buffer = "";
+        apiRes.on("data", (chunk) => {
+            buffer += chunk.toString();
+            const lines = buffer.split("\n");
+            buffer = lines.pop(); // keep incomplete last line
+
+            for (const line of lines) {
+                if (!line.startsWith("data: ")) continue;
+                const data = line.slice(6).trim();
+                if (data === "[DONE]") continue;
+                try {
+                    const event = JSON.parse(data);
+                    if (event.type === "content_block_delta" && event.delta?.type === "text_delta") {
+                        const text = event.delta.text;
+                        res.write(`data: ${JSON.stringify({ type: "chunk", text })}\n\n`);
+                    }
+                    if (event.type === "message_stop") {
+                        res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+                        onDone();
+                    }
+                } catch {
+                    // skip malformed event lines
+                }
+            }
+        });
+
+        apiRes.on("end", () => {
+            if (buffer.startsWith("data: ")) {
+                const data = buffer.slice(6).trim();
+                if (data && data !== "[DONE]") {
+                    try {
+                        const event = JSON.parse(data);
+                        if (event.type === "content_block_delta" && event.delta?.type === "text_delta") {
+                            res.write(`data: ${JSON.stringify({ type: "chunk", text: event.delta.text })}\n\n`);
+                        }
+                    } catch { /* ignore */ }
+                }
+            }
+            res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+            onDone();
+        });
+
+        apiRes.on("error", onError);
+    });
+
+    req.on("error", onError);
+    req.write(body);
+    req.end();
+}
+
+function sendSseHeaders(res) {
+    res.writeHead(200, {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "X-Accel-Buffering": "no"
+    });
+}
+
+async function handleGenerate(req, res) {
+    const authState = requireAuthenticatedSession(req, res);
+    if (!authState.ok) return;
+
+    let body;
+    try {
+        body = await readJsonBody(req);
+    } catch {
+        sendJson(res, 400, { ok: false, error: { code: "BAD_REQUEST", message: "Invalid JSON body." } });
+        return;
+    }
+
+    let systemPrompt;
+    try {
+        systemPrompt = fs.readFileSync(SYSTEM_PROMPT_PATH, "utf8");
+    } catch {
+        sendJson(res, 500, { ok: false, error: { code: "PROMPT_NOT_FOUND", message: "System prompt file not found." } });
+        return;
+    }
+
+    const role       = String(body?.role || "").trim();
+    const country    = String(body?.country || "").trim();
+    const city       = String(body?.city || "").trim();
+    const segment    = String(body?.segment || "").trim();
+    const purpose    = String(body?.purpose || "").trim();
+    const devices    = Array.isArray(body?.devices) ? body.devices.join(", ") : String(body?.devices || "");
+    const groups     = Array.isArray(body?.deviceGroups) ? body.deviceGroups.join(", ") : String(body?.deviceGroups || "");
+    const tags       = Array.isArray(body?.intentTags) ? body.intentTags.join(", ") : String(body?.intentTags || "");
+    const mission    = String(body?.missionBucket || "").trim();
+    const locale     = String(body?.locale || "ko").trim();
+    const regionCtx  = body?.regionInsight ? JSON.stringify(body.regionInsight, null, 2) : null;
+
+    const userMessage = [
+        `## Input State`,
+        `- Q1. Role: ${role}`,
+        `- Q2. Country: ${country}${city ? ` / City: ${city}` : ""}`,
+        `- Q3. Target Segment: ${segment || "(not specified)"}`,
+        `- Q3. Purpose: ${purpose || "(not specified)"}`,
+        `- Q4. Devices: ${devices || "(none)"}`,
+        `- Q4. Device Categories: ${groups || "(none)"}`,
+        `- Explore Tags (intent): ${tags || "(none)"}`,
+        `- Mission Bucket: ${mission || "Discover"}`,
+        `- Output Language: ${locale === "ko" ? "Korean-primary (English for Section 01-IV Storyboard and Section 04 marketing hooks)" : "English-primary"}`,
+        regionCtx ? `\n## Live Regional Data\n\`\`\`json\n${regionCtx}\n\`\`\`` : "",
+        `\n## Task`,
+        `Generate a Samsung SmartThings CX scenario following the 11-section output schema from Part 5 of the system prompt.`,
+        `Output sections (01) through (09) in full. Then end with the refinement prompt:`,
+        `"어떤 부분을 수정하거나 더 자세히 보고 싶으신가요? (Which section to refine, or request section 10-11?)"`,
+    ].filter(Boolean).join("\n");
+
+    sendSseHeaders(res);
+    res.write(`data: ${JSON.stringify({ type: "start" })}\n\n`);
+
+    let done = false;
+    callAnthropicStream({
+        systemPrompt,
+        messages: [{ role: "user", content: userMessage }],
+        res,
+        onDone: () => { if (!done) { done = true; res.end(); } },
+        onError: (err) => {
+            console.error("Anthropic generate error:", err.message);
+            if (!done) {
+                done = true;
+                try {
+                    res.write(`data: ${JSON.stringify({ type: "error", message: err.message })}\n\n`);
+                } catch { /* ignore if already closed */ }
+                res.end();
+            }
+        }
+    });
+}
+
+async function handleRefine(req, res) {
+    const authState = requireAuthenticatedSession(req, res);
+    if (!authState.ok) return;
+
+    let body;
+    try {
+        body = await readJsonBody(req);
+    } catch {
+        sendJson(res, 400, { ok: false, error: { code: "BAD_REQUEST", message: "Invalid JSON body." } });
+        return;
+    }
+
+    let systemPrompt;
+    try {
+        systemPrompt = fs.readFileSync(SYSTEM_PROMPT_PATH, "utf8");
+    } catch {
+        sendJson(res, 500, { ok: false, error: { code: "PROMPT_NOT_FOUND", message: "System prompt file not found." } });
+        return;
+    }
+
+    const previousOutput    = String(body?.previousOutput || "").trim();
+    const refinementRequest = String(body?.refinementRequest || "").trim();
+    const context           = body?.context || {};
+
+    if (!refinementRequest) {
+        sendJson(res, 400, { ok: false, error: { code: "MISSING_REQUEST", message: "refinementRequest is required." } });
+        return;
+    }
+
+    const assistantMessage = previousOutput
+        ? { role: "assistant", content: previousOutput }
+        : null;
+
+    const userMessage = [
+        assistantMessage ? null : `## Context\n${JSON.stringify(context, null, 2)}`,
+        `## Refinement Request`,
+        refinementRequest,
+        `\n(Respond only to the specific request above. Update or expand the relevant section only. Re-run the Section 11 Reflection Check if structural changes are made.)`
+    ].filter(Boolean).join("\n");
+
+    const messages = assistantMessage
+        ? [
+            { role: "user", content: `Generate initial scenario for: ${JSON.stringify(context)}` },
+            assistantMessage,
+            { role: "user", content: userMessage }
+          ]
+        : [{ role: "user", content: userMessage }];
+
+    sendSseHeaders(res);
+    res.write(`data: ${JSON.stringify({ type: "start" })}\n\n`);
+
+    let done = false;
+    callAnthropicStream({
+        systemPrompt,
+        messages,
+        res,
+        onDone: () => { if (!done) { done = true; res.end(); } },
+        onError: (err) => {
+            console.error("Anthropic refine error:", err.message);
+            if (!done) {
+                done = true;
+                try {
+                    res.write(`data: ${JSON.stringify({ type: "error", message: err.message })}\n\n`);
+                } catch { /* ignore */ }
+                res.end();
+            }
+        }
+    });
+}
+
+// ─── Session helpers ──────────────────────────────────────────────────────────
 
 function handleSession(req, res) {
     const cookies = parseCookies(req.headers.cookie || "");

@@ -1191,6 +1191,9 @@ let latestPayload = null;
 let activeLensTab = "overview";
 let currentStep = 1;
 let currentLocale = "en";
+let aiOutputText = "";
+let aiGenerating = false;
+let aiScenarioContext = null;
 let marketOptions = [];
 let isUnlocking = false;
 let isAccessCodeVisible = false;
@@ -3283,7 +3286,345 @@ function generateScenario() {
     };
 
     activeLensTab = "overview";
-    renderScenario(latestPayload);
+
+    // Try Claude API streaming first; fall back to local render if unavailable
+    aiScenarioContext = {
+        role: getRoleTitle(role.id),
+        roleId: role.id,
+        country: getCountryName(country.countryCode),
+        city: city || "",
+        segment: selectedSegment,
+        purpose,
+        devices: selectedDeviceLabels.length > 0 ? selectedDeviceLabels : selectedDevices.map((device) => getCategoryName(device)),
+        deviceGroups: selectedDeviceGroups,
+        intentTags: [...(intent.tags || [])],
+        missionBucket: intent.missionBucket,
+        locale: currentLocale
+    };
+    streamGenerateScenario(aiScenarioContext);
+}
+
+async function streamGenerateScenario(context) {
+    if (aiGenerating) return;
+    aiGenerating = true;
+    aiOutputText = "";
+
+    // Show streaming UI
+    resultDiv.innerHTML = buildStreamingUI(context);
+    scrollToResult();
+
+    // Fetch live region insight for grounding (best-effort)
+    let regionInsight = null;
+    try {
+        const insightController = new AbortController();
+        const insightTimer = setTimeout(() => insightController.abort(), REGION_INSIGHT_CLIENT_TIMEOUT_MS);
+        const insightUrl = `${REGION_INSIGHT_API}?country=${encodeURIComponent(context.country)}&city=${encodeURIComponent(context.city || "")}&locale=${encodeURIComponent(context.locale)}&role=${encodeURIComponent(context.roleId)}`;
+        const insightRes = await fetch(insightUrl, { credentials: "include", signal: insightController.signal });
+        clearTimeout(insightTimer);
+        if (insightRes.ok) {
+            const insightJson = await insightRes.json();
+            if (insightJson.ok) regionInsight = insightJson.data;
+        }
+    } catch { /* region insight is optional */ }
+
+    const bodyPayload = { ...context, regionInsight };
+
+    let response;
+    try {
+        response = await fetch("/api/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(bodyPayload)
+        });
+    } catch (err) {
+        aiGenerating = false;
+        console.warn("API unavailable, falling back to local generation.", err.message);
+        renderScenario(latestPayload);
+        return;
+    }
+
+    if (!response.ok) {
+        aiGenerating = false;
+        const errData = await response.json().catch(() => ({}));
+        if (response.status === 401) {
+            resultDiv.innerHTML = `<p class="error">${currentLocale === "ko" ? "세션이 만료됐습니다. 다시 로그인해 주세요." : "Session expired. Please log in again."}</p>`;
+        } else {
+            const msg = errData?.error?.message || `Server error ${response.status}`;
+            resultDiv.innerHTML = `<p class="error">${msg}</p>`;
+        }
+        return;
+    }
+
+    const streamOutput = resultDiv.querySelector(".ai-stream-output");
+    const statusEl = resultDiv.querySelector(".ai-stream-status");
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    const processStream = async () => {
+        while (true) {
+            let done, value;
+            try {
+                ({ done, value } = await reader.read());
+            } catch {
+                break;
+            }
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop();
+
+            for (const line of lines) {
+                if (!line.startsWith("data: ")) continue;
+                const data = line.slice(6).trim();
+                let event;
+                try { event = JSON.parse(data); } catch { continue; }
+
+                if (event.type === "chunk") {
+                    aiOutputText += event.text;
+                    if (streamOutput) {
+                        streamOutput.textContent = aiOutputText;
+                        streamOutput.scrollTop = streamOutput.scrollHeight;
+                    }
+                } else if (event.type === "done") {
+                    break;
+                } else if (event.type === "error") {
+                    aiGenerating = false;
+                    resultDiv.innerHTML = `<p class="error">AI 오류: ${escapeHtml(event.message || "Unknown error")}</p>`;
+                    return;
+                }
+            }
+        }
+
+        aiGenerating = false;
+        renderAIResult(aiOutputText, context);
+    };
+
+    processStream().catch((err) => {
+        aiGenerating = false;
+        console.error("Stream processing error:", err);
+        resultDiv.innerHTML = `<p class="error">${currentLocale === "ko" ? "스트리밍 처리 중 오류가 발생했습니다." : "Error during streaming."}</p>`;
+    });
+}
+
+function buildStreamingUI(context) {
+    const label = currentLocale === "ko"
+        ? `AI가 시나리오를 생성 중입니다... (${context.country}${context.city ? " / " + context.city : ""} · ${context.missionBucket})`
+        : `Generating scenario... (${context.country}${context.city ? " / " + context.city : ""} · ${context.missionBucket})`;
+    return `
+        <article class="scenario-output ai-streaming">
+            <div class="ai-stream-header">
+                <span class="ai-stream-spinner" aria-hidden="true"></span>
+                <span class="ai-stream-status">${escapeHtml(label)}</span>
+            </div>
+            <pre class="ai-stream-output" aria-live="polite" aria-label="AI generating scenario"></pre>
+        </article>
+    `;
+}
+
+function renderAIResult(markdown, context) {
+    const html = markdownToHtml(markdown);
+    resultDiv.innerHTML = `
+        <article class="scenario-output ai-result">
+            <div class="ai-result-meta">
+                <span class="ai-result-badge">AI Generated</span>
+                <span class="ai-result-context">${escapeHtml(context.country)}${context.city ? " / " + escapeHtml(context.city) : ""} · ${escapeHtml(context.missionBucket)} · ${escapeHtml(context.role)}</span>
+                <button type="button" class="tab-btn ai-copy-btn" id="ai-copy-btn">${currentLocale === "ko" ? "복사" : "Copy"}</button>
+            </div>
+            <div class="ai-result-body">${html}</div>
+            ${buildRefinementUI()}
+        </article>
+    `;
+
+    const copyBtn = resultDiv.querySelector("#ai-copy-btn");
+    if (copyBtn) {
+        copyBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(markdown).then(() => {
+                copyBtn.textContent = currentLocale === "ko" ? "복사됨!" : "Copied!";
+                setTimeout(() => { copyBtn.textContent = currentLocale === "ko" ? "복사" : "Copy"; }, 2000);
+            }).catch(() => {});
+        });
+    }
+
+    bindRefinementPrompt(markdown, context);
+    scrollToResult();
+}
+
+function buildRefinementUI() {
+    const title = currentLocale === "ko" ? "후속 요청 / 섹션 수정" : "Refine / Follow-up";
+    const placeholder = currentLocale === "ko"
+        ? "예) 독일 시장 데이터로 교체해줘 / 섹션 08 기기 목록 업데이트 / 섹션 10~11 출력해줘"
+        : "e.g. Switch to Germany market / Update Section 08 devices / Output sections 10-11";
+    const btn = currentLocale === "ko" ? "요청 전송" : "Send";
+    const initial = currentLocale === "ko"
+        ? "어떤 부분을 수정하거나 더 자세히 보고 싶으신가요? (섹션 번호 또는 자유 요청)"
+        : "Which section to refine, or request sections 10–11?";
+    return `
+        <section class="output-block numbered-output post-output-prompt">
+            <p class="block-index">+</p>
+            <h4>${escapeHtml(title)}</h4>
+            <div class="post-output-input-row">
+                <textarea id="refine-input" rows="3" placeholder="${escapeHtml(placeholder)}"></textarea>
+                <button type="button" id="refine-ask-btn" class="generate-btn">${escapeHtml(btn)}</button>
+            </div>
+            <div id="refine-answer" class="post-output-answer ai-refine-answer" aria-live="polite">${escapeHtml(initial)}</div>
+        </section>
+    `;
+}
+
+function bindRefinementPrompt(previousOutput, context) {
+    const askBtn = resultDiv.querySelector("#refine-ask-btn");
+    const input  = resultDiv.querySelector("#refine-input");
+    const answer = resultDiv.querySelector("#refine-answer");
+    if (!askBtn || !input || !answer) return;
+
+    const ask = async () => {
+        const request = String(input.value || "").trim();
+        if (!request || aiGenerating) return;
+
+        aiGenerating = true;
+        askBtn.disabled = true;
+        answer.textContent = currentLocale === "ko" ? "AI가 처리 중입니다..." : "AI is processing...";
+
+        let response;
+        try {
+            response = await fetch("/api/refine", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ previousOutput, refinementRequest: request, context })
+            });
+        } catch (err) {
+            aiGenerating = false;
+            askBtn.disabled = false;
+            answer.textContent = currentLocale === "ko" ? "서버에 연결할 수 없습니다." : "Cannot reach server.";
+            return;
+        }
+
+        if (!response.ok) {
+            aiGenerating = false;
+            askBtn.disabled = false;
+            answer.textContent = currentLocale === "ko" ? `오류: ${response.status}` : `Error: ${response.status}`;
+            return;
+        }
+
+        answer.textContent = "";
+        let refineText = "";
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        try {
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop();
+
+                for (const line of lines) {
+                    if (!line.startsWith("data: ")) continue;
+                    let event;
+                    try { event = JSON.parse(line.slice(6)); } catch { continue; }
+                    if (event.type === "chunk") {
+                        refineText += event.text;
+                        answer.textContent = refineText;
+                        answer.scrollTop = answer.scrollHeight;
+                    } else if (event.type === "done") {
+                        break;
+                    } else if (event.type === "error") {
+                        answer.textContent = `Error: ${event.message}`;
+                        break;
+                    }
+                }
+            }
+        } catch (err) {
+            answer.textContent = currentLocale === "ko" ? "스트리밍 처리 중 오류." : "Streaming error.";
+        }
+
+        aiGenerating = false;
+        askBtn.disabled = false;
+        input.value = "";
+    };
+
+    askBtn.addEventListener("click", ask);
+    input.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === "Enter") ask();
+    });
+}
+
+/** Simple markdown→HTML converter for Claude's scenario output. */
+function markdownToHtml(md) {
+    if (!md) return "";
+
+    // Protect fenced code blocks with placeholders before any escaping
+    const codeBlocks = [];
+    let src = md.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) => {
+        const idx = codeBlocks.length;
+        codeBlocks.push(escapeHtml(code));
+        return `\x00CODE${idx}\x00`;
+    });
+
+    let html = escapeHtml(src);
+
+    // Restore code blocks as <pre><code>
+    html = html.replace(/\x00CODE(\d+)\x00/g, (_, i) => `<pre><code>${codeBlocks[Number(i)]}</code></pre>`);
+
+    // Inline code
+    html = html.replace(/`([^`\n]+)`/g, (_, c) => `<code>${escapeHtml(c)}</code>`);
+    // H1-H4
+    html = html.replace(/^#### (.+)$/gm, "<h4>$1</h4>");
+    html = html.replace(/^### (.+)$/gm, "<h3>$1</h3>");
+    html = html.replace(/^## (.+)$/gm, "<h2>$1</h2>");
+    html = html.replace(/^# (.+)$/gm, "<h1>$1</h1>");
+    // Bold + italic
+    html = html.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
+    html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/\*([^*\n]+?)\*/g, "<em>$1</em>");
+    // HR
+    html = html.replace(/^---+$/gm, "<hr>");
+    // Tables — detect | rows
+    html = html.replace(/((?:^\|.+\|\n?)+)/gm, (tableBlock) => {
+        const rows = tableBlock.trim().split("\n");
+        let out = "<table><tbody>";
+        let headerDone = false;
+        for (const row of rows) {
+            if (/^\|[-| :]+\|$/.test(row.trim())) { headerDone = true; continue; }
+            const cells = row.split("|").slice(1, -1).map((c) => c.trim());
+            const tag = !headerDone ? "th" : "td";
+            out += `<tr>${cells.map((c) => `<${tag}>${c}</${tag}>`).join("")}</tr>`;
+            if (!headerDone) headerDone = true;
+        }
+        return out + "</tbody></table>";
+    });
+    // Unordered lists
+    html = html.replace(/((?:^[•\-] .+\n?)+)/gm, (block) => {
+        const items = block.trim().split("\n").map((l) => `<li>${l.replace(/^[•\-] /, "")}</li>`).join("");
+        return `<ul>${items}</ul>`;
+    });
+    // Ordered lists
+    html = html.replace(/((?:^\d+\. .+\n?)+)/gm, (block) => {
+        const items = block.trim().split("\n").map((l) => `<li>${l.replace(/^\d+\. /, "")}</li>`).join("");
+        return `<ol>${items}</ol>`;
+    });
+    // Paragraphs — blank lines → paragraph breaks (don't affect block elements)
+    html = html.replace(/\n{2,}/g, "\n\n");
+    const parts = html.split(/\n{2,}/);
+    html = parts.map((part) => {
+        const trimmed = part.trim();
+        if (!trimmed) return "";
+        if (/^<(?:h[1-4]|hr|pre|ul|ol|table)/.test(trimmed)) return trimmed;
+        return `<p>${trimmed.replace(/\n/g, "<br>")}</p>`;
+    }).filter(Boolean).join("\n");
+
+    return html;
+}
+
+function scrollToResult() {
+    resultDiv?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function buildStoryboardWebtoon(intent, services, deviceDecision) {
