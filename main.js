@@ -3519,17 +3519,17 @@ function buildExploreGrounding(country, city, selectedSegment, intent, deviceDec
     };
 }
 
-// Maps device category group IDs to Explore scenario tags
+// Maps device category group IDs to Explore scenario tags (v2.0 12-keyword system)
 const DEVICE_GROUP_EXPLORE_TAGS = {
-    "air-fresh":      ["Air fresh"],
-    "lights-control": ["Control lights"],
+    "air-fresh":      ["Air fresh", "Keep the air fresh"],
+    "lights-control": ["Control lights", "Easily control your lights"],
     "chores-help":    ["Help with chores"],
     "home-safe":      ["Keep your home safe"],
-    "sleep-well":     ["Sleep well"],
-    "enhanced-mood":  ["Enhanced mood"],
-    "care-scenarios": ["Care for pet", "반려동물 케어", "Care for seniors"],
+    "sleep-well":     ["Sleep well", "Stay fit & healthy"],
+    "enhanced-mood":  ["Enhanced mood", "Stay fit & healthy"],
+    "care-scenarios": ["Care for pet", "반려동물 케어", "Care for seniors", "Care for kids", "시니어 케어"],
     "save-energy":    ["Save energy", "에너지 절약"],
-    "food-home":      ["Help with chores"]
+    "food-home":      ["Help with chores", "Smart cooking"]
 };
 
 function analyzeIntent(purpose, selectedSegment, selectedDevices = [], selectedDeviceGroups = []) {
@@ -4898,112 +4898,398 @@ function buildSixLineSummary(payload) {
     return lines.slice(0, 6);
 }
 
+// Explore Contents v2.0 기반 20개 시나리오 (12대 키워드 전체 커버)
 const EXPLORE_SCENARIOS = [
+    // ── SAVE ENERGY ──────────────────────────────────────────────
     {
         id: "save-energy-tips",
         title: "Tips for saving energy at home",
-        tags: ["Save energy", "Keep your home safe", "에너지 절약"],
+        tags: ["Save energy", "에너지 절약", "Keep your home safe"],
         devices: ["에어컨", "세탁기", "건조기", "스마트 플러그"],
+        missionBucket: "Save",
         content: {
             ko: {
-                pain: "전기요금 누진세와 대기전력 낭비가 걱정되지만 매번 기기를 끄기 번거로운 상황.",
-                solution: "AI Energy Mode를 통해 가전의 에너지 소비를 최적화하고, 외출 시 자동으로 미사용 기기를 차단합니다.",
-                benefit: "불필요한 에너지 낭비를 줄여 비용을 절감하고 탄소 발자국을 낮추는 친환경 생활이 가능해집니다."
+                pain: "전기요금 누진세와 대기전력 낭비가 걱정되지만, 외출할 때마다 기기를 하나씩 끄는 것이 번거롭고 자꾸 놓칩니다.",
+                solution: "SmartThings AI Energy Mode를 켜면 월간 목표 요금에 맞춰 가전의 에너지 소비를 자동 최적화합니다. 집을 비웠을 때 켜진 기기를 감지해 '모두 끄기' 한 번으로 전력을 차단할 수 있습니다.",
+                benefit: "불필요한 에너지 낭비를 줄여 전기요금을 절감하고, 스마트 플러그로 대기전력까지 차단해 친환경 생활이 가능해집니다."
             },
             en: {
-                pain: "Worrying about high electricity bills and standby power but finding it tedious to turn off every device manually.",
-                solution: "AI Energy Mode optimizes appliance energy consumption and automatically cuts off unused devices when you leave.",
-                benefit: "Reduces energy waste, lowers utility costs, and enables an eco-friendly lifestyle."
+                pain: "Worrying about electricity bill surcharges and standby power waste, but finding it tedious to turn off every device before leaving home.",
+                solution: "SmartThings AI Energy Mode automatically optimizes appliance energy use against your monthly goal. When away, it detects devices left on and lets you cut them all with one tap.",
+                benefit: "Reduces energy waste and electricity costs, with smart plugs cutting standby power for a genuinely eco-friendly lifestyle."
             }
         }
     },
     {
-        id: "purrfect-pet-care",
-        title: "Purrfect pet care",
-        tags: ["Care for pet", "Keep home safe", "Help with chores", "반려동물 케어"],
-        devices: ["로봇청소기", "홈 카메라", "에어컨", "TV"],
-        content: {
-            ko: {
-                pain: "야근이나 외출로 반려동물이 집에 혼자 있어 불안하고 환경이 걱정되는 상황.",
-                solution: "원격으로 펫 카메라를 통해 상태를 확인하고, 로봇청소기로 주변을 살피며 에어컨으로 쾌적한 온도를 유지합니다.",
-                benefit: "멀리 있어도 반려동물의 안심을 확인하고 돌봄의 공백을 채워 보호자의 불안을 해소합니다."
-            },
-            en: {
-                pain: "Feeling anxious about a pet staying home alone during long work hours or outings.",
-                solution: "Check on your pet via remote cameras, patrol with a robot vacuum, and maintain a comfortable temperature with the AC.",
-                benefit: "Ensures your pet's wellbeing and fills the care gap, giving you peace of mind while away."
-            }
-        }
-    },
-    {
-        id: "family-care-apart",
-        title: "Be worry-free even when apart",
-        tags: ["Care for seniors", "Family care", "시니어 케어"],
-        devices: ["센서", "냉장고", "TV", "스마트워치"],
-        content: {
-            ko: {
-                pain: "멀리 사시는 부모님의 안부가 걱정되지만 매번 전화하기는 부담스럽거나 어려운 상황.",
-                solution: "가전 사용 패턴(냉장고 문 열림, TV 시청 등)을 분석하여 비정상적인 비활동 상태가 감지되면 알림을 보냅니다.",
-                benefit: "사생활을 침해하지 않으면서도 부모님의 안전을 상시 확인하고 응급 상황에 빠르게 대처할 수 있습니다."
-            },
-            en: {
-                pain: "Worrying about elderly parents living far away but finding it difficult to call them constantly.",
-                solution: "Analyzes appliance usage patterns (fridge door, TV use) and sends alerts if unusual inactivity is detected.",
-                benefit: "Maintains safety checks without intruding on privacy, enabling fast responses to emergencies."
-            }
-        }
-    },
-    {
-        id: "seamless-save-energy",
+        id: "seamlessly-save-energy",
         title: "Seamlessly save energy",
-        tags: ["Save energy", "Control lights", "에너지 절약"],
-        devices: ["냉장고", "에어컨", "세탁기", "건조기"],
+        tags: ["Save energy", "에너지 절약", "Control lights", "Easily control your lights"],
+        devices: ["냉장고", "에어컨", "세탁기", "건조기", "조명"],
+        missionBucket: "Save",
         content: {
             ko: {
-                pain: "사용자가 인지하지 못하는 사이 새어나가는 전력과 복잡한 절전 설정의 번거로움.",
-                solution: "가전제품이 스스로 에너지 사용량을 모니터링하고 피크 시간대를 피해 최적의 절전 알고리즘으로 작동합니다.",
+                pain: "사용자가 인지하지 못하는 사이 새어나가는 전력과 복잡한 절전 설정의 번거로움이 쌓입니다.",
+                solution: "가전제품이 스스로 에너지 사용량을 모니터링하고 피크 시간대를 피해 AI 절약 알고리즘으로 작동합니다. 세탁기는 물 온도를 낮추고, TV는 주변 조도에 맞춰 밝기를 자동 조절합니다.",
                 benefit: "별도의 신경을 쓰지 않아도 매달 고지서에서 실질적인 비용 절감 효과를 체감하게 됩니다."
             },
             en: {
-                pain: "Wasted energy that users don't notice and the complexity of manual power-saving settings.",
-                solution: "Appliances monitor their own usage and run optimal power-saving algorithms, avoiding peak hours.",
-                benefit: "Delivers tangible cost savings on monthly bills without requiring constant user attention."
+                pain: "Wasted energy that goes unnoticed, and the complexity of manually managing power-saving settings across multiple devices.",
+                solution: "Appliances monitor their own energy use and run optimal AI saving algorithms, avoiding peak hours. The washer lowers water temperature, the TV auto-adjusts brightness to ambient light.",
+                benefit: "Delivers tangible cost savings on monthly bills without requiring constant attention from users."
             }
         }
     },
     {
-        id: "ultimate-gaming",
-        title: "The ultimate gaming environment",
-        tags: ["Enhanced mood", "Air fresh", "Control lights"],
-        devices: ["TV", "조명", "에어컨", "모니터"],
+        id: "eco-friendly-laundry",
+        title: "Eco-friendly laundry",
+        tags: ["Save energy", "에너지 절약", "Help with chores"],
+        devices: ["세탁기", "건조기", "세탁기/건조기"],
+        missionBucket: "Save",
         content: {
             ko: {
-                pain: "게임 몰입을 위해 조명, 온도, 블라인드 등을 일일이 조절해야 하는 번거로움.",
-                solution: "게임 실행과 동시에 조명이 게임 화면과 동기화되고, 무풍 에어컨이 쾌적한 온도를 유지하며 블라인드가 내려갑니다.",
-                benefit: "단 한 번의 트리거로 완벽한 게이밍 룸이 완성되어 몰입도와 즐거움을 극대화합니다."
+                pain: "매일 달라지는 세탁물 종류와 양에 맞춰 최적 코스를 고르는 것이 번거롭고, 옷감 손상이나 에너지 낭비가 걱정됩니다.",
+                solution: "AI가 세탁물의 종류, 무게, 오염도를 자동으로 확인해 세탁부터 건조까지 맞춤 코스를 설정합니다. 세제도 무게에 맞춰 자동 투입되며, 에너지가 저렴한 시간대에 맞춰 작동을 예약할 수 있습니다.",
+                benefit: "옷감 손상과 에너지 낭비를 동시에 줄이고, 미세 플라스틱 저감 코스로 환경 부담까지 낮출 수 있습니다."
             },
             en: {
-                pain: "The hassle of manually adjusting lights, temperature, and blinds to create a gaming atmosphere.",
-                solution: "Syncs lights with the game screen, maintains comfort with WindFree AC, and lowers blinds automatically upon game start.",
-                benefit: "Instantly creates a perfect gaming environment with one trigger, maximizing immersion and fun."
+                pain: "Choosing the right wash cycle for changing laundry every day is tedious, and concerns about fabric damage or energy waste add up.",
+                solution: "AI automatically checks laundry type, weight, and soil level to set a custom wash-to-dry cycle. Detergent is auto-dispensed by load weight, and operation can be scheduled for off-peak energy hours.",
+                benefit: "Reduces fabric wear and energy waste simultaneously, with a microplastic-reduction cycle to lower your environmental footprint."
             }
         }
     },
+    // ── KEEP THE AIR FRESH ────────────────────────────────────────
+    {
+        id: "keep-air-fresh",
+        title: "Keep the air fresh",
+        tags: ["Air fresh", "Keep the air fresh"],
+        devices: ["에어컨", "공기청정기"],
+        missionBucket: "Save",
+        content: {
+            ko: {
+                pain: "외출 중 실내 공기질이 나빠져도 알 수가 없고, 귀가 후에야 탁한 공기를 마주하게 됩니다.",
+                solution: "SmartThings Air Care가 실외 공기질을 실시간으로 분석해 환기 최적 타이밍을 조명 색상으로 알려줍니다. 공기청정기와 에어컨이 자동으로 연동되어 실내 공기를 쾌적하게 유지합니다.",
+                benefit: "언제 환기할지 일일이 확인하지 않아도 집 안 공기가 항상 깨끗하게 유지되어 가족 모두의 건강을 지킬 수 있습니다."
+            },
+            en: {
+                pain: "Air quality worsens while you're out, and you only notice when you return home to stale air.",
+                solution: "SmartThings Air Care analyzes outdoor air quality in real time and signals the best ventilation timing via lighting color. The air purifier and AC work together automatically to keep indoor air fresh.",
+                benefit: "No need to check when to ventilate—your home air stays clean at all times, protecting the health of your whole family."
+            }
+        }
+    },
+    {
+        id: "welcome-to-scandinavia",
+        title: "Welcome to Scandinavia",
+        tags: ["Air fresh", "Keep the air fresh", "Save energy", "에너지 절약", "Help with chores"],
+        devices: ["에어컨", "세탁기", "건조기"],
+        missionBucket: "Save",
+        content: {
+            ko: {
+                pain: "쾌적한 공기질과 에너지 효율, 집안일 자동화를 모두 챙기려면 여러 기기를 따로따로 설정해야 해서 복잡합니다.",
+                solution: "북유럽 라이프스타일에서 영감을 받은 SmartThings 루틴이 공기청정기, 에어컨, 세탁기를 에너지 효율이 높은 시간대에 통합 운영합니다.",
+                benefit: "깨끗한 공기와 낮은 전기요금, 자동화된 가사까지 한 번에 관리되어 여유 있는 일상을 즐길 수 있습니다."
+            },
+            en: {
+                pain: "Managing air quality, energy efficiency, and home chore automation separately requires juggling multiple settings across devices.",
+                solution: "A SmartThings routine inspired by Nordic Hygge lifestyle integrates the air purifier, AC, and washer, running them automatically at energy-efficient times.",
+                benefit: "Clean air, lower electricity bills, and automated chores all managed together—freeing up your time for a more relaxed daily life."
+            }
+        }
+    },
+    // ── CONTROL LIGHTS ────────────────────────────────────────────
+    {
+        id: "lights-as-alerts",
+        title: "Your lights can alert you",
+        tags: ["Control lights", "Easily control your lights", "Help with chores", "Air fresh", "Keep the air fresh", "Sleep well"],
+        devices: ["조명"],
+        missionBucket: "Discover",
+        content: {
+            ko: {
+                pain: "세탁 완료 알림 소리를 놓치거나, 공기질이 나쁠 때 따로 앱을 열어 확인해야 하는 번거로움이 있습니다.",
+                solution: "SmartThings가 세탁 완료 시 거실 조명을 녹색으로 깜빡이고, 공기질이 나쁠 때 붉은빛으로 알립니다. 도어벨이 울리면 조명이 반응해 소리를 놓쳐도 방문자를 확인할 수 있습니다.",
+                benefit: "소리에 의존하지 않고도 조명만으로 중요한 생활 알림을 놓치지 않게 되어 일상이 훨씬 편리해집니다."
+            },
+            en: {
+                pain: "Missing laundry completion alerts or having to open an app to check air quality every time is inconvenient and easy to forget.",
+                solution: "SmartThings flashes living room lights green when laundry finishes, red when air quality drops. When the doorbell rings, lights signal so you never miss a visitor even without hearing it.",
+                benefit: "Important daily notifications arrive through lighting without relying on sound, making everyday life much more convenient."
+            }
+        }
+    },
+    {
+        id: "smart-lighting",
+        title: "Add convenience to your life with lighting",
+        tags: ["Control lights", "Easily control your lights"],
+        devices: ["조명"],
+        missionBucket: "Discover",
+        content: {
+            ko: {
+                pain: "외출 전 집안 곳곳의 불을 끄러 다니거나, 밤에 화장실 가면서 조명 스위치를 찾는 불편함이 반복됩니다.",
+                solution: "SmartThings와 스마트 조명을 연동하면 어디서든 조명을 제어하고 밝기·색온도를 조절해 원하는 분위기를 만들 수 있습니다. 재실 감지 센서와 연결하면 움직임 감지 시 조명이 자동으로 켜집니다.",
+                benefit: "수면 중 화장실도 안전하게, 퇴근 전 전등 걱정 없이—조명 하나로 생활 편의가 크게 달라집니다."
+            },
+            en: {
+                pain: "Walking around to turn off lights before leaving, or fumbling for a switch on a dark midnight bathroom trip, is a daily frustration.",
+                solution: "SmartThings with smart lighting lets you control any light remotely and adjust brightness and color temperature for the perfect ambience. Motion sensors turn lights on automatically when movement is detected.",
+                benefit: "Safe midnight trips, no more worrying about lights left on—one smart lighting setup transforms daily convenience."
+            }
+        }
+    },
+    // ── HELP WITH CHORES ──────────────────────────────────────────
+    {
+        id: "ai-handles-housework",
+        title: "Let AI handle the housework",
+        tags: ["Help with chores"],
+        devices: ["세탁기", "건조기", "세탁기/건조기", "로봇청소기"],
+        missionBucket: "Save",
+        content: {
+            ko: {
+                pain: "매일 달라지는 집안일을 직접 챙기다 보면 시간과 에너지가 계속 소모되고, 가전 사용법이 헷갈릴 때도 많습니다.",
+                solution: "AI가 세탁물 종류와 무게를 감지해 최적 코스를 자동 설정합니다. Bixby에게 '수건 코스 설정해줘'라고 말하거나, '세탁기 배수 필터 청소 방법'을 물어보면 바로 답을 받을 수 있습니다.",
+                benefit: "가전을 더 잘 활용하게 되면서 집안일의 시간과 노력이 눈에 띄게 줄고, 관리 스트레스도 함께 줄어듭니다."
+            },
+            en: {
+                pain: "Keeping up with daily housework drains time and energy, and it's easy to get confused about the right settings for each appliance.",
+                solution: "AI detects laundry type and weight to auto-set the optimal cycle. Tell Bixby 'set the towel cycle' or ask 'how do I clean the drain filter?'—and get an instant answer.",
+                benefit: "Better appliance use reduces the time and effort spent on chores significantly, along with the stress of managing them."
+            }
+        }
+    },
+    {
+        id: "smart-home-party",
+        title: "Hosting a smart home party",
+        tags: ["Help with chores", "Enhanced mood"],
+        devices: ["조명", "스피커", "TV", "로봇청소기"],
+        missionBucket: "Play",
+        content: {
+            ko: {
+                pain: "손님 맞이 준비부터 파티 분위기 연출, 파티 후 청소까지 모든 것을 혼자 챙기려면 지칩니다.",
+                solution: "파티 루틴을 실행하면 조명이 파티 모드로 바뀌고 스피커에서 음악이 흘러나옵니다. 파티가 끝나면 로봇청소기가 자동으로 청소를 시작해 뒷정리 걱정을 덜어줍니다.",
+                benefit: "파티 준비와 마무리 모두 자동화되어 손님 접대에만 집중할 수 있고, 피로한 뒷정리 걱정도 사라집니다."
+            },
+            en: {
+                pain: "Handling party setup, ambiance, and cleanup single-handedly is exhausting and takes away from actually enjoying the event.",
+                solution: "Running a party routine switches lights to party mode and starts music from the speaker. When the party ends, the robot vacuum automatically starts cleaning, taking care of itself.",
+                benefit: "Party prep and cleanup are both automated, letting you focus entirely on your guests without dreading the aftermath."
+            }
+        }
+    },
+    // ── KEEP YOUR HOME SAFE ───────────────────────────────────────
+    {
+        id: "keep-home-safe",
+        title: "Keep your home safe anytime, anywhere",
+        tags: ["Keep your home safe"],
+        devices: ["센서"],
+        missionBucket: "Secure",
+        content: {
+            ko: {
+                pain: "출장이나 여행 중에 집 보안이 걱정되고, 택배 분실이나 낯선 방문자가 신경 쓰입니다.",
+                solution: "비디오 도어벨이 움직임을 감지하면 스마트폰과 TV에 실시간 알림과 영상이 팝업됩니다. Knox Matrix 보안 기술로 사용자가 귀가하면 실내 카메라가 자동으로 꺼져 프라이버시가 보호됩니다.",
+                benefit: "어디서든 집 상황을 실시간으로 확인하고, 귀가 시엔 카메라가 자동 오프되어 보안과 프라이버시를 동시에 지킬 수 있습니다."
+            },
+            en: {
+                pain: "Worrying about home security during business trips or vacations, and concerns about missed deliveries or unfamiliar visitors.",
+                solution: "The video doorbell detects movement and pops up live alerts on your phone and TV. Knox Matrix technology automatically turns off indoor cameras when you arrive home, protecting your privacy.",
+                benefit: "Monitor your home in real time from anywhere, with cameras auto-off on arrival—security and privacy protected simultaneously."
+            }
+        }
+    },
+    {
+        id: "knox-protection",
+        title: "Help keep your home private and protected",
+        tags: ["Keep your home safe"],
+        devices: ["센서", "TV"],
+        missionBucket: "Secure",
+        content: {
+            ko: {
+                pain: "스마트홈 기기가 많아질수록 해킹 우려와 개인정보 유출이 걱정됩니다.",
+                solution: "Samsung Knox Matrix가 연결된 모든 기기를 프라이빗 블록체인으로 묶어 상호 보안 감시를 수행합니다. 취약한 기기가 감지되면 즉시 네트워크에서 격리시킵니다. 삼성 AI 가전은 업계 최초 UL Solutions 다이아몬드 등급을 획득했습니다.",
+                benefit: "기기가 늘어날수록 보안이 강해지는 삼성 생태계 안에서, 해킹 걱정 없이 스마트홈을 마음껏 확장할 수 있습니다."
+            },
+            en: {
+                pain: "As smart home devices multiply, concerns about hacking risks and personal data exposure grow alongside them.",
+                solution: "Samsung Knox Matrix links all connected devices in a private blockchain for mutual security monitoring. Vulnerable devices are immediately isolated when detected. Samsung AI appliances hold the industry-first Diamond security rating from UL Solutions.",
+                benefit: "The more devices you add, the stronger your security—expand your smart home freely without hacking concerns."
+            }
+        }
+    },
+    // ── SLEEP WELL ────────────────────────────────────────────────
     {
         id: "sleep-specialist",
         title: "Your own in-house sleep specialist",
-        tags: ["Sleep well", "Air fresh", "Control lights"],
-        devices: ["조명", "에어컨", "스마트워치", "공기청정기"],
+        tags: ["Sleep well", "Air fresh", "Keep the air fresh", "Control lights", "Easily control your lights"],
+        devices: ["조명", "에어컨", "공기청정기"],
+        missionBucket: "Save",
         content: {
             ko: {
-                pain: "잠들기 전 환경 설정이 어렵고 기상 시 개운하지 않은 수면 품질 문제.",
-                solution: "수면 단계에 맞춰 조명 밝기와 온도를 자동 조절하고, 기상 시간에 맞춰 서서히 밝아지는 환경을 조성합니다.",
-                benefit: "신체 리듬에 최적화된 수면 환경을 통해 깊은 휴식을 취하고 상쾌한 아침을 맞이하게 됩니다."
+                pain: "잠들기 전 조명, 온도, 공기질을 일일이 맞추는 것이 번거롭고, 아침에 일어날 때 개운하지 않은 날이 많습니다.",
+                solution: "갤럭시 워치나 갤럭시 링이 수면 감지를 시작하면, 침실 조명이 서서히 어두워지고 커튼이 닫히며 에어컨과 공기청정기가 조용히 작동합니다. 기상 시간에는 커튼이 열리고 TV가 자연스럽게 켜집니다.",
+                benefit: "수면 환경을 설정하는 수고 없이 신체 리듬에 맞춘 최적의 수면 환경이 자동으로 완성되어 더 깊고 개운한 숙면을 취할 수 있습니다."
             },
             en: {
-                pain: "Difficulty setting the right environment before bed and feeling unrefreshed upon waking.",
-                solution: "Automatically adjusts brightness and temperature based on sleep stages and simulates a sunrise for natural waking.",
-                benefit: "Ensures deep rest and a refreshed morning through an environment optimized for body rhythms."
+                pain: "Manually adjusting lights, temperature, and air quality before bed is tedious, and waking up unrefreshed happens too often.",
+                solution: "When your Galaxy Watch or Galaxy Ring detects sleep onset, bedroom lights gradually dim, curtains close, and the AC and air purifier quietly activate. At wake time, curtains open and the TV turns on naturally.",
+                benefit: "The optimal sleep environment sets itself to your body rhythm without any setup effort, delivering deeper, more refreshing sleep every night."
+            }
+        }
+    },
+    // ── ENHANCED MOOD ─────────────────────────────────────────────
+    {
+        id: "ultimate-gaming",
+        title: "The ultimate gaming environment",
+        tags: ["Enhanced mood", "Air fresh", "Keep the air fresh", "Control lights", "Easily control your lights"],
+        devices: ["TV", "조명", "에어컨"],
+        missionBucket: "Play",
+        content: {
+            ko: {
+                pain: "게임을 시작할 때마다 조명, 블라인드, 에어컨을 일일이 조절해야 하고, 장시간 게임으로 방이 더워져 집중력이 떨어집니다.",
+                solution: "게이밍 허브 실행과 동시에 조명이 게임 화면과 실시간으로 색상을 동기화하고, 블라인드가 자동으로 내려갑니다. 무풍 에어컨이 직풍 없이 쾌적한 온도를 유지하며, 게임 종료 시 모든 환경이 일상 모드로 자동 복귀합니다.",
+                benefit: "별도의 조작 없이 게임 시작과 동시에 완벽한 몰입 환경이 완성되고, 종료 후 정리도 자동으로 됩니다."
+            },
+            en: {
+                pain: "Adjusting lights, blinds, and AC manually every gaming session, then overheating during long play sessions that breaks concentration.",
+                solution: "Launching Gaming Hub syncs room lights to the screen in real time and lowers blinds automatically. WindFree AC maintains comfort without direct airflow, and everything resets to normal mode when gaming ends.",
+                benefit: "A perfect immersive environment is ready the moment gaming starts—and tidies itself when you're done, with zero manual intervention."
+            }
+        }
+    },
+    {
+        id: "upgrade-listening",
+        title: "Upgrade your listening experience",
+        tags: ["Enhanced mood"],
+        devices: ["스피커", "TV", "조명"],
+        missionBucket: "Play",
+        content: {
+            ko: {
+                pain: "좋은 음악이나 영상을 즐기고 싶은데 기기별 설정이 복잡하고, 음악과 조명이 따로따로 놀아 분위기가 반감됩니다.",
+                solution: "뮤직 프레임이나 사운드바의 음악 재생과 연동하여 조명이 음악의 분위기에 맞게 자동으로 색상과 밝기를 조절합니다. 멀티룸 오디오로 집 안 어디서든 같은 음악을 즐길 수 있습니다.",
+                benefit: "조명과 음악이 하나가 되어 집이 나만의 홈 콘서트홀로 변신하고, 방마다 끊김 없는 음악 경험을 즐길 수 있습니다."
+            },
+            en: {
+                pain: "Enjoying great music or content is hampered by complex per-device settings, and lights and audio working independently undercut the atmosphere.",
+                solution: "When the Music Frame or soundbar plays, lights automatically adjust color and brightness to match the music's mood. Multi-room audio lets you enjoy the same music seamlessly throughout your home.",
+                benefit: "Lights and music unite to transform your home into a personal concert hall, with uninterrupted audio flowing from room to room."
+            }
+        }
+    },
+    // ── CARE FOR SENIORS ──────────────────────────────────────────
+    {
+        id: "family-care-apart",
+        title: "Be worry-free even when apart",
+        tags: ["Care for seniors", "시니어 케어"],
+        devices: ["센서", "냉장고", "TV"],
+        missionBucket: "Care",
+        content: {
+            ko: {
+                pain: "멀리 사시는 부모님의 안부가 걱정되지만 매번 전화하기는 부담스럽고, 카메라 감시는 사생활 침해 같아 불편합니다.",
+                solution: "Family Care 서비스가 냉장고 문 열림, TV 시청, 정수기 사용 패턴을 분석합니다. 평소와 달리 일정 시간 활동이 없으면 보호자에게 알림을 보내고, 정해진 시간에 복약 알림도 TV 화면으로 제공합니다.",
+                benefit: "사생활을 침해하지 않으면서도 부모님의 안부를 확인하고, 이상 상황에는 빠르게 대처할 수 있어 마음이 훨씬 놓입니다."
+            },
+            en: {
+                pain: "Worrying about elderly parents far away, yet feeling awkward calling constantly—and using cameras feels like an invasion of their privacy.",
+                solution: "Family Care analyzes fridge door use, TV viewing, and water dispenser patterns. Unusual inactivity for a set period triggers an alert, and medication reminders appear on their TV at scheduled times.",
+                benefit: "Stay informed about your parents' wellbeing without intruding on their privacy, with fast alerts when something seems off—real peace of mind from a distance."
+            }
+        }
+    },
+    // ── CARE FOR KIDS ─────────────────────────────────────────────
+    {
+        id: "care-for-kids",
+        title: "Keep your children comfortable and safe",
+        tags: ["Care for kids", "Air fresh", "Keep the air fresh", "Keep your home safe"],
+        devices: ["에어컨", "센서"],
+        missionBucket: "Care",
+        content: {
+            ko: {
+                pain: "맞벌이 가정에서 아이가 혼자 귀가했을 때 안전한지, 실내 환경이 괜찮은지 직접 확인할 수 없어 걱정입니다.",
+                solution: "자녀가 귀가하면 도어락 신호로 스피커를 통해 따뜻한 음성 인사가 나오고, 더운 날은 에어컨이 자동으로 켜집니다. 주방 가전이 작동 중이면 즉시 알림을 받고, 공기질이 나쁘면 공기청정기가 자동 가동합니다.",
+                benefit: "아이의 귀가 확인부터 안전한 실내 환경 조성까지 자동으로 관리되어, 부모가 집에 없어도 아이가 안전하게 지낼 수 있습니다."
+            },
+            en: {
+                pain: "In a dual-income household, not being able to check whether your child arrived safely or if the home environment is comfortable is a constant worry.",
+                solution: "When your child arrives home, the door lock triggers a warm voice greeting from the speaker, and the AC turns on automatically on hot days. Kitchen appliance alerts come through instantly, and poor air quality starts the purifier.",
+                benefit: "From arrival confirmation to safe indoor environment setup, everything is managed automatically—your child is safe and comfortable even when you're not there."
+            }
+        }
+    },
+    // ── CARE FOR PET ──────────────────────────────────────────────
+    {
+        id: "purrfect-pet-care",
+        title: "Purrfect pet care",
+        tags: ["Care for pet", "반려동물 케어", "Keep your home safe", "Help with chores"],
+        devices: ["로봇청소기", "TV", "에어컨", "센서"],
+        missionBucket: "Care",
+        content: {
+            ko: {
+                pain: "야근이나 외출로 반려동물이 집에 혼자 있어 불안하고, 온도나 음식, 분리불안을 제때 돌봐주지 못할까 걱정됩니다.",
+                solution: "Jet Bot AI+ 로봇청소기로 원격 순찰을 하고 반려동물 사진을 실시간 전송합니다. 짖음이 감지되면 TV에서 안정을 돕는 음악이 자동 재생되고, 에어컨이 쾌적한 온도를 유지합니다. 스마트 급식기로 원격 급식도 가능합니다.",
+                benefit: "멀리 있어도 반려동물의 상태를 실시간으로 확인하고 돌봄 공백을 채울 수 있어, 보호자의 불안이 크게 줄어듭니다."
+            },
+            en: {
+                pain: "Anxiety about a pet left alone during overtime or outings—unable to check on temperature, food, or separation anxiety in time.",
+                solution: "The Jet Bot AI+ robot vacuum remotely patrols and sends real-time pet photos. Detected barking triggers calming music on the TV automatically, the AC maintains comfort, and a smart feeder enables remote feeding.",
+                benefit: "Check on your pet in real time and fill care gaps from anywhere—dramatically reducing a pet owner's worry while away."
+            }
+        }
+    },
+    // ── FIND YOUR BELONGINGS ──────────────────────────────────────
+    {
+        id: "find-belongings",
+        title: "Locate lost items easily",
+        tags: ["Find your belongings", "Keep your home safe"],
+        devices: ["TV", "센서"],
+        missionBucket: "Secure",
+        content: {
+            ko: {
+                pain: "열쇠, 지갑, 리모컨 등 자주 잃어버리는 물건을 찾느라 시간을 낭비하고, 외출 전에 특히 스트레스를 받습니다.",
+                solution: "SmartTag를 부착한 물건의 위치를 SmartThings 앱에서 바로 확인하고, UWB 기술로 정밀하게 위치를 추적합니다. TV 화면에서 'Find my phone' 기능으로 숨어있는 스마트폰도 찾을 수 있습니다.",
+                benefit: "외출 전 물건 찾는 스트레스에서 해방되고, 귀중품을 항상 파악할 수 있어 일상이 한결 가벼워집니다."
+            },
+            en: {
+                pain: "Wasting time hunting for keys, wallets, and remotes—especially stressful right before heading out.",
+                solution: "Check the location of SmartTag-attached items directly in the SmartThings app, with UWB technology for precision tracking. 'Find my phone' from the TV screen locates a hidden smartphone instantly.",
+                benefit: "No more pre-departure stress over lost items—knowing where your valuables are at all times lightens your daily routine considerably."
+            }
+        }
+    },
+    // ── STAY FIT & HEALTHY ────────────────────────────────────────
+    {
+        id: "stay-fit-healthy",
+        title: "Let SmartThings take care of your workouts",
+        tags: ["Stay fit & healthy", "Enhanced mood", "Air fresh", "Keep the air fresh"],
+        devices: ["TV", "에어컨"],
+        missionBucket: "Play",
+        content: {
+            ko: {
+                pain: "집에서 운동할 때 환경 세팅에 시간을 빼앗기고, 갤럭시 워치 데이터를 보면서 동시에 콘텐츠를 즐기기도 어렵습니다.",
+                solution: "SmartThings가 운동 시작과 동시에 에어컨과 공기청정기를 켜 쾌적한 환경을 조성합니다. 갤럭시 워치의 운동 정보(시간, 칼로리, 심박수)를 TV 화면에서 실시간으로 확인하면서 좋아하는 콘텐츠도 함께 즐길 수 있습니다.",
+                benefit: "운동 환경 세팅에 신경 쓰지 않고 바로 운동에 집중할 수 있으며, TV로 데이터를 확인하면서 더 즐겁고 효과적으로 운동할 수 있습니다."
+            },
+            en: {
+                pain: "Home workouts are disrupted by time spent adjusting the environment, and it's hard to view Galaxy Watch workout data on TV while enjoying other content.",
+                solution: "SmartThings turns on the AC and air purifier as your workout starts for an ideal environment. Galaxy Watch data—time, calories, heart rate—displays in real time on your TV alongside any content you enjoy.",
+                benefit: "No time lost on environment setup before working out—dive straight in and enjoy more effective, entertaining workouts with live stats on your big screen."
+            }
+        }
+    },
+    // ── FOOD / KITCHEN ────────────────────────────────────────────
+    {
+        id: "smart-cooking",
+        title: "How to make today's meal more enjoyable",
+        tags: ["Help with chores", "Smart cooking"],
+        devices: ["냉장고", "오븐"],
+        missionBucket: "Save",
+        content: {
+            ko: {
+                pain: "냉장고에 뭐가 있는지 매번 열어봐야 하고, 오븐 온도와 시간을 레시피마다 직접 맞춰야 해서 요리 시작 전부터 지칩니다.",
+                solution: "AI Vision Inside가 냉장고 식재료를 자동으로 인식해 목록을 만들고 유통기한을 알려줍니다. 오븐에 재료를 넣으면 재료를 인식해 최적 레시피를 추천하고 온도와 시간을 자동 설정합니다.",
+                benefit: "냉장고 문 열지 않고도 식재료를 파악하고, 오븐이 알아서 맞춰주는 덕분에 요리 시작부터 마무리까지 훨씬 수월해집니다."
+            },
+            en: {
+                pain: "Having to open the fridge every time to check ingredients, and manually setting oven temperature and time for every recipe, is draining before cooking even starts.",
+                solution: "AI Vision Inside automatically recognizes refrigerator contents, creates an ingredient list, and tracks expiry dates. Put ingredients in the oven and it recognizes them, recommends the best recipe, and auto-sets temperature and time.",
+                benefit: "Check your fridge without opening it, and let the oven handle the settings—cooking becomes smoother and more enjoyable from start to finish."
             }
         }
     }
