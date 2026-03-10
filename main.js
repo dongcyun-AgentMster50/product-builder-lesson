@@ -3173,12 +3173,18 @@ function updateStatePreview() {
     // Summary side panel intentionally removed.
 }
 
-function inferMissionBucket(purpose) {
+function inferMissionBucket(purpose, selectedDeviceGroups = []) {
     const text = purpose.toLowerCase();
     if (text.includes("에너지") || text.includes("절약") || text.includes("비용")) return "Save";
     if (text.includes("안전") || text.includes("보안") || text.includes("secure")) return "Secure";
-    if (text.includes("놀이") || text.includes("운동") || text.includes("엔터")) return "Play";
-    if (text.includes("가족") || text.includes("돌봄") || text.includes("반려")) return "Care";
+    if (text.includes("놀이") || text.includes("운동") || text.includes("엔터") || text.includes("게임") || text.includes("gaming")) return "Play";
+    if (text.includes("가족") || text.includes("돌봄") || text.includes("반려") || text.includes("펫") || text.includes("시니어")) return "Care";
+    // Device group-based fallback when purpose text is ambiguous
+    if (selectedDeviceGroups.includes("enhanced-mood")) return "Play";
+    if (selectedDeviceGroups.includes("care-scenarios")) return "Care";
+    if (selectedDeviceGroups.includes("home-safe")) return "Secure";
+    if (selectedDeviceGroups.includes("save-energy") || selectedDeviceGroups.includes("chores-help")) return "Save";
+    if (selectedDeviceGroups.includes("sleep-well")) return "Save";
     return "Discover";
 }
 
@@ -3201,7 +3207,8 @@ function generateScenario() {
         return;
     }
 
-    const intent = analyzeIntent(purpose, selectedSegment, selectedDevices);
+    const selectedDeviceGroups = getSelectedDeviceGroupIds();
+    const intent = analyzeIntent(purpose, selectedSegment, selectedDevices, selectedDeviceGroups);
     const services = findRelevantServices(intent);
     const deviceDecision = resolveDevice(country, selectedDevices[0], services, selectedDevices);
     const exploreGrounding = buildExploreGrounding(country, city, selectedSegment, intent, deviceDecision, services);
@@ -3222,6 +3229,14 @@ function generateScenario() {
     const segmentAnalysis = buildSegmentAnalysis(country, city, selectedSegment, intent, exploreGrounding);
     const campaignTiming = buildCampaignTiming(intent, exploreGrounding);
     const deviceGuide = buildDeviceGuide(country, deviceDecision, services);
+
+    // New Schema 11 additions
+    const storyboard = buildStoryboardWebtoon(intent, services, deviceDecision);
+    const sceneHook = buildSceneHook(intent, services);
+    const otpPlace = buildOtpPlace(country, city, intent);
+    const journeyTable = buildCustomerJourneyTable(intent, services, deviceDecision);
+    const addonPack = buildAddonPack(role, intent, services, deviceDecision);
+    const reflectionCheck = buildReflectionCheck(intent, services, exploreGrounding);
 
     latestPayload = {
         title: buildTitle(role, intent, selectedSegment, deviceDecision),
@@ -3244,6 +3259,12 @@ function generateScenario() {
         segmentAnalysis,
         campaignTiming,
         deviceGuide,
+        storyboard,
+        sceneHook,
+        otpPlace,
+        journeyTable,
+        addonPack,
+        reflectionCheck,
         scenarioMeta: {
             purpose: intent.purpose,
             missionBucket: intent.missionBucket,
@@ -3263,6 +3284,176 @@ function generateScenario() {
 
     activeLensTab = "overview";
     renderScenario(latestPayload);
+}
+
+function buildStoryboardWebtoon(intent, services, deviceDecision) {
+    const primary = services[0];
+    const device = deviceDecision.final.modelName;
+    const mission = intent.missionBucket;
+
+    const panelsKo = {
+        Save: [
+            { scene: "야근 후 지친 몸으로 어두운 현관문에 도착한 사용자", text: "오늘도 늦었네... 집이 텅 빈 것처럼 썰렁하겠지?" },
+            { scene: "문이 열리자마자 거실 조명이 은은하게 켜지고 TV에 환영 메시지가 뜸", text: "어? 벌써 따뜻해졌네? SmartThings가 미리 준비했구나." },
+            { scene: "주방으로 가니 인덕션이 예열 중이고 세탁기 완료 알림이 폰으로 옴", text: "하나하나 신경 쓸 필요 없이, 내 리듬에 맞춰 집이 움직여요." },
+            { scene: "소파에 앉아 편하게 휴식하며 에너지 절감 리포트를 확인", text: "불필요한 낭비는 줄이고, 내 시간은 더 여유롭게. 이게 진짜 스마트홈이죠." }
+        ],
+        Care: [
+            { scene: "사무실에서 회의 중, 집에 혼자 있을 반려동물이 걱정되는 사용자", text: "오늘 유독 늦어지네... 초코는 잘 있을까?" },
+            { scene: "SmartThings 앱을 켜니 펫 카메라로 평온하게 자는 모습이 보임", text: "다행이다! 조명도 적당하고, 클래식 음악도 잘 나오고 있네." },
+            { scene: "집에 도착해 반갑게 달려오는 반려동물과 마주하는 순간", text: "멀리 있어도 곁에 있는 것처럼. 돌봄의 공백이 사라졌어요." },
+            { scene: "가족 모두가 안심하고 일상을 공유하는 따뜻한 거실 풍경", text: "걱정은 덜고 사랑은 더 크게. SmartThings Pet Care." }
+        ],
+        Secure: [
+            { scene: "여행지에서 평화롭게 휴가를 즐기고 있는 가족", text: "집 비운 지 3일째인데, 별일 없겠지?" },
+            { scene: "수상한 움직임이 감지되었다는 알림과 함께 자동 녹화 영상이 폰에 뜸", text: "앗! 택배 기사님이구나. 실시간으로 확인하니 바로 안심되네." },
+            { scene: "원격으로 도어락 상태를 재점검하고 보안 모드를 강화함", text: "어디에 있든 우리 집은 내가 지킨다. 24시간 철통 보안." },
+            { scene: "안심하고 다시 휴가를 즐기는 가족들의 웃음소리", text: "불안한 확인 대신 확실한 안심. SmartThings Home Monitoring." }
+        ],
+        Play: [
+            { scene: "퇴근 후 게임 or 영상 감상을 시작하려는 사용자", text: "오늘은 좀 제대로 즐겨볼까? 버튼 하나면 되지." },
+            { scene: "게임 모드 실행과 동시에 조명이 어두워지고, TV 화면과 조명이 싱크", text: "와, 몰입감이 완전 다르네. 설정은 알아서 다 됐잖아?" },
+            { scene: "에어컨이 쾌적한 온도로 자동 유지되고, 블라인드가 내려옴", text: "끊기거나 세팅 때문에 흐름이 깨지는 일 없이, 그냥 즐기면 돼." },
+            { scene: "스피커와 TV가 연동된 서라운드 사운드로 리빙룸이 홈시어터로 변신", text: "집이 내 취향대로 반응해 줄 때, 이 공간이 더 좋아집니다. SmartThings." }
+        ],
+        Discover: [
+            { scene: "스마트홈을 처음 시작해 보려는 사용자가 SmartThings 앱을 열어봄", text: "어디서부터 시작해야 하지? 너무 복잡한 거 아닐까?" },
+            { scene: "첫 기기를 연결하자 앱이 맞춤 루틴을 제안해 줌", text: "이렇게 쉽게 되는 거였어? 생각보다 훨씬 간단하네." },
+            { scene: "하나씩 연결된 기기들이 일상 패턴에 맞게 자동으로 동작 시작", text: "알아서 맞춰주니까, 내가 신경 쓸 게 점점 줄어들고 있어." },
+            { scene: "일상이 더 편해졌다는 걸 체감하며 다음 기기 연결을 고민하는 사용자", text: "한 번 쓰기 시작하면 멈출 수가 없어요. SmartThings로 시작하세요." }
+        ]
+    };
+
+    const panelsEn = {
+        Save: [
+            { scene: "User arrives at a dark front door after a long day of work", text: "Home at last... but it's going to be so cold and empty." },
+            { scene: "Door opens, lights glow softly, and a welcome message appears on the TV", text: "Wait, it's already warm? SmartThings prepared everything for me." },
+            { scene: "In the kitchen, the oven is preheating and a laundry alert pops up", text: "Everything moves to my rhythm without me lifting a finger." },
+            { scene: "User relaxes on the sofa, checking an energy report on the phone", text: "No waste, just pure comfort. This is the real smart home." }
+        ],
+        Care: [
+            { scene: "User in an office meeting, worrying about their pet at home", text: "Running late today... I hope my puppy is okay." },
+            { scene: "Checks the app: the pet camera shows the puppy sleeping peacefully", text: "Relief! The lights are dimmed and the music is on." },
+            { scene: "Arrives home to a happy, energetic greeting from the pet", text: "Distance doesn't mean a care gap anymore." },
+            { scene: "A warm living room scene with the whole family sharing a moment", text: "Less worry, more love. SmartThings Pet Care." }
+        ],
+        Secure: [
+            { scene: "A family enjoying their vacation far from home", text: "Day 3 of our trip... wonder if everything is okay at the house?" },
+            { scene: "An alert pops up: suspicious movement detected, with a live video clip", text: "Oh, it's just the delivery person! So glad I can see this live." },
+            { scene: "User double-checks the door lock and reinforces security mode remotely", text: "Wherever I am, I'm in control of my home's safety." },
+            { scene: "The family goes back to enjoying their vacation with big smiles", text: "Certain reassurance instead of constant anxiety. SmartThings Monitoring." }
+        ],
+        Play: [
+            { scene: "User back from work, ready to unwind with games or a movie", text: "Tonight I'm going all in. One tap should do it." },
+            { scene: "Game mode launches: lights dim and sync with the screen", text: "Whoa, total immersion — and it set itself up automatically." },
+            { scene: "WindFree AC quietly maintains comfort, blinds slide down automatically", text: "Nothing breaks the flow. I just enjoy." },
+            { scene: "Speaker and TV deliver surround sound, turning the living room into a home theater", text: "When your space responds to you, it becomes somewhere special. SmartThings." }
+        ],
+        Discover: [
+            { scene: "First-time user opens SmartThings app, wondering where to start", text: "Where do I even begin? Hope it's not too complicated..." },
+            { scene: "Connects the first device and the app suggests a personalized routine", text: "Wait, that was it? Way simpler than I expected." },
+            { scene: "Connected devices start responding automatically to daily patterns", text: "The less I have to think about it, the better it works." },
+            { scene: "User notices daily life feels easier, considers adding more devices", text: "Once you start, you can't stop. Begin your smart home journey with SmartThings." }
+        ]
+    };
+
+    const panels = (currentLocale === "ko" ? panelsKo : panelsEn)[mission] || panelsEn.Discover;
+    return panels;
+}
+
+function buildSceneHook(intent, services) {
+    const isKo = currentLocale === "ko";
+    const mission = intent.missionBucket;
+    if (mission === "Save") {
+        return {
+            kr: "퇴근길, 문을 열기도 전에 집이 나를 먼저 반겨줍니다.",
+            en: "Coming home to a house that welcomes you before you even turn the key."
+        };
+    }
+    if (mission === "Care") {
+        return {
+            kr: "멀리 있어도 느껴지는 따뜻한 돌봄, SmartThings가 연결합니다.",
+            en: "Feel the warmth of care from anywhere, connected by SmartThings."
+        };
+    }
+    return {
+        kr: "반복되는 일상에 여유를 더하는 한 번의 터치.",
+        en: "One touch to reclaim your time in a busy routine."
+    };
+}
+
+function buildOtpPlace(country, city, intent) {
+    const isKo = currentLocale === "ko";
+    const loc = city ? `${getCountryName(country.countryCode)} ${city}` : getCountryName(country.countryCode);
+    const mission = intent.missionBucket;
+
+    if (mission === "Save") {
+        return isKo
+            ? `평일 저녁 / ${loc} 도심형 주거지 / 퇴근 후 빠른 휴식 전환 시점`
+            : `Weekday Evening / Urban home in ${loc} / Post-commute reset moment`;
+    }
+    if (mission === "Care") {
+        return isKo
+            ? `일과 시간 / ${loc} 주거지 / 가족이나 펫의 안부가 궁금한 시점`
+            : `Work Hours / Residential area in ${loc} / Remote care and wellbeing check`;
+    }
+    return isKo
+        ? `일상 구간 / ${loc} 생활권 / 편의가 필요한 모든 순간`
+        : `Daily Routine / Living area in ${loc} / Any moment where ease is needed`;
+}
+
+function buildCustomerJourneyTable(intent, services, deviceDecision) {
+    const isKo = currentLocale === "ko";
+    const mission = intent.missionBucket;
+    const service = getServiceLabel(services[0]);
+    const device = deviceDecision.final.modelName;
+
+    const stepsKo = [
+        { step: "Trigger", behavior: "퇴근 후 현관 도착", action: "지오펜싱/도어락 신호 감지", value: "Ease", note: "위치 권한 필요" },
+        { step: "Welcome", behavior: "거실 진입", action: "조명 및 에어컨 가동", value: "Comfort", note: "사전 설정 온도 기준" },
+        { step: "Context", behavior: "TV 앞 착석", action: "TV 추천 카드 노출", value: "Care", note: "개인화 메시지 적용" },
+        { step: "Execution", behavior: "추천 루틴 수락", action: "주방 가전 예열 시작", value: "Save", note: "기기 상태 확인" },
+        { step: "Feedback", behavior: "식사 준비 완료", action: "스마트폰 알림 발송", value: "Ease", note: "루틴 종료 안내" },
+        { step: "Retention", behavior: "취침 준비", action: "오늘의 절감/케어 요약", value: "Value", note: "익일 루틴 추천" }
+    ];
+
+    const stepsEn = [
+        { step: "Trigger", behavior: "Arriving at the front door", action: "Geofencing or door-lock signal", value: "Ease", note: "Location permission required" },
+        { step: "Welcome", behavior: "Entering the living room", action: "Lights and AC turn on", value: "Comfort", note: "Based on preset targets" },
+        { step: "Context", behavior: "Sitting in front of TV", action: "Tailored recommendation card", value: "Care", note: "Personalized message" },
+        { step: "Execution", behavior: "Accepting recommendation", action: "Kitchen appliances preheat", value: "Save", note: "Device status check" },
+        { step: "Feedback", behavior: "Meal prep complete", action: "Smartphone notification", value: "Ease", note: "Routine finish alert" },
+        { step: "Retention", behavior: "Preparing for bed", action: "Daily savings/care summary", value: "Value", note: "Next-day suggestions" }
+    ];
+
+    return isKo ? stepsKo : stepsEn;
+}
+
+function buildAddonPack(role, intent, services, deviceDecision) {
+    const isKo = currentLocale === "ko";
+    const mission = intent.missionBucket;
+    return {
+        setupGuide: [
+            isKo ? "Step 1: 핵심 기기 연결 및 서비스 활성화" : "Step 1: Connect core device and activate service",
+            isKo ? "Step 2: 상황별 자동화 루틴 설정 (1탭 저장)" : "Step 2: Configure situational automation (one-tap save)",
+            isKo ? "Step 3: 가족 초대 및 위젯/알림 공유" : "Step 3: Invite family and share widgets/alerts"
+        ],
+        funnelMapping: [
+            { stage: "Awareness", claim: isKo ? "신경 쓰지 않아도 집이 나를 배려합니다" : "Your home cares for you without you asking", metric: "Reach / CTR" },
+            { stage: "Conversion", claim: isKo ? "우리 집 맞춤형 1분 세팅" : "Tailored 1-minute setup for my home", metric: "Add-to-cart / Sales" },
+            { stage: "Retention", claim: isKo ? "반복되는 일상의 즐거운 변화" : "Joyful change in your daily routine", metric: "WAU / Stickiness" }
+        ]
+    };
+}
+
+function buildReflectionCheck(intent, services, exploreGrounding) {
+    const isKo = currentLocale === "ko";
+    return [
+        { label: isKo ? "고객 문제 명확성" : "Customer Pain Clarity", status: "PASS", note: isKo ? "반복되는 일상 불편을 타겟팅함" : "Targets recurring daily friction" },
+        { label: isKo ? "가치 연결 (Care/Save 등)" : "Value Linkage", status: "PASS", note: `${intent.missionBucket} ${isKo ? "가치에 집중함" : "value focused"}` },
+        { label: isKo ? "브랜드 verbal identity" : "Brand Verbal Identity", status: "PASS", note: isKo ? "절제된 프리미엄 톤 유지" : "Restrained premium tone maintained" },
+        { label: isKo ? "에이전틱 지능 반영" : "Agentic Intelligence", status: "PASS", note: isKo ? "사용자 의도 발견 로직 포함" : "Intent discovery logic included" }
+    ];
 }
 
 function buildFallbackPurpose(selectedSegment) {
@@ -3328,7 +3519,20 @@ function buildExploreGrounding(country, city, selectedSegment, intent, deviceDec
     };
 }
 
-function analyzeIntent(purpose, selectedSegment, selectedDevices = []) {
+// Maps device category group IDs to Explore scenario tags
+const DEVICE_GROUP_EXPLORE_TAGS = {
+    "air-fresh":      ["Air fresh"],
+    "lights-control": ["Control lights"],
+    "chores-help":    ["Help with chores"],
+    "home-safe":      ["Keep your home safe"],
+    "sleep-well":     ["Sleep well"],
+    "enhanced-mood":  ["Enhanced mood"],
+    "care-scenarios": ["Care for pet", "반려동물 케어", "Care for seniors"],
+    "save-energy":    ["Save energy", "에너지 절약"],
+    "food-home":      ["Help with chores"]
+};
+
+function analyzeIntent(purpose, selectedSegment, selectedDevices = [], selectedDeviceGroups = []) {
     const tags = new Set();
     const text = `${purpose} ${selectedSegment}`.toLowerCase();
     const normalizedDevices = selectedDevices.map((device) => getCategoryName(device).toLowerCase());
@@ -3338,17 +3542,25 @@ function analyzeIntent(purpose, selectedSegment, selectedDevices = []) {
         if (text.replace(/\s+/g, "").includes(needle)) tags.add(tag.tagName);
     });
 
+    // Text-based tags
     if (text.includes("반려") || text.includes("펫")) tags.add("반려동물 케어");
     if (text.includes("부모") || text.includes("시니어") || text.includes("가족")) tags.add("시니어 케어");
     if (text.includes("에너지") || text.includes("절약") || text.includes("비용")) tags.add("에너지 절약");
     if (selectedDevices.includes("TV")) tags.add("AOD (Always on Display)");
+
+    // Device group-based tags: maps Q4 selection → Explore scenario tags
+    selectedDeviceGroups.forEach((groupId) => {
+        (DEVICE_GROUP_EXPLORE_TAGS[groupId] || []).forEach((tag) => tags.add(tag));
+    });
+
     if (tags.size === 0) tags.add("입문 (Entry)");
 
     return {
-        missionBucket: inferMissionBucket(purpose),
+        missionBucket: inferMissionBucket(purpose, selectedDeviceGroups),
         purpose,
         selectedSegment,
         selectedDevices,
+        selectedDeviceGroups,
         selectedDeviceNames: normalizedDevices,
         lifestyleTags: [...tags],
         rawText: `${purpose} ${selectedSegment} ${normalizedDevices.join(" ")}`
@@ -4212,26 +4424,6 @@ function buildSummaryBullets(country, city, selectedSegment, intent, deviceDecis
     ];
 }
 
-function buildDetailedScenario(country, city, selectedSegment, intent, deviceDecision, services) {
-    const countryName = getCountryName(country.countryCode);
-    const serviceNames = [...new Set(services.slice(0, 3).map((service) => service.serviceName))];
-    const isPetContext = /pet|dog|cat|puppy|kitten|반려|강아지|고양이/i.test(`${selectedSegment} ${intent.purpose} ${serviceNames.join(" ")}`);
-    const appliedServices = [...new Set(services.slice(0, 3).map((service) => service.appCardLabel || service.serviceName))];
-    const serviceStories = services.slice(0, 3).map((service) => {
-        const story = buildServiceStory(service, intent, selectedSegment, isPetContext);
-        return { title: story.title, paragraphs: [story.pain, story.solution, story.benefit] };
-    });
-
-    return {
-        targetCustomer: currentLocale === "ko"
-            ? buildTargetCustomerLine(countryName, selectedSegment, intent.purpose)
-            : buildTargetCustomerLine(countryName, selectedSegment, intent.purpose),
-        appliedServices: appliedServices.join(" / "),
-        appliedServiceList: appliedServices,
-        cases: serviceStories
-    };
-}
-
 function buildTargetCustomerLine(countryName, selectedSegment, purpose) {
     const tokens = `${selectedSegment} / ${purpose}`
         .split(/[\/,|]|·/)
@@ -4706,33 +4898,249 @@ function buildSixLineSummary(payload) {
     return lines.slice(0, 6);
 }
 
+const EXPLORE_SCENARIOS = [
+    {
+        id: "save-energy-tips",
+        title: "Tips for saving energy at home",
+        tags: ["Save energy", "Keep your home safe", "에너지 절약"],
+        devices: ["에어컨", "세탁기", "건조기", "스마트 플러그"],
+        content: {
+            ko: {
+                pain: "전기요금 누진세와 대기전력 낭비가 걱정되지만 매번 기기를 끄기 번거로운 상황.",
+                solution: "AI Energy Mode를 통해 가전의 에너지 소비를 최적화하고, 외출 시 자동으로 미사용 기기를 차단합니다.",
+                benefit: "불필요한 에너지 낭비를 줄여 비용을 절감하고 탄소 발자국을 낮추는 친환경 생활이 가능해집니다."
+            },
+            en: {
+                pain: "Worrying about high electricity bills and standby power but finding it tedious to turn off every device manually.",
+                solution: "AI Energy Mode optimizes appliance energy consumption and automatically cuts off unused devices when you leave.",
+                benefit: "Reduces energy waste, lowers utility costs, and enables an eco-friendly lifestyle."
+            }
+        }
+    },
+    {
+        id: "purrfect-pet-care",
+        title: "Purrfect pet care",
+        tags: ["Care for pet", "Keep home safe", "Help with chores", "반려동물 케어"],
+        devices: ["로봇청소기", "홈 카메라", "에어컨", "TV"],
+        content: {
+            ko: {
+                pain: "야근이나 외출로 반려동물이 집에 혼자 있어 불안하고 환경이 걱정되는 상황.",
+                solution: "원격으로 펫 카메라를 통해 상태를 확인하고, 로봇청소기로 주변을 살피며 에어컨으로 쾌적한 온도를 유지합니다.",
+                benefit: "멀리 있어도 반려동물의 안심을 확인하고 돌봄의 공백을 채워 보호자의 불안을 해소합니다."
+            },
+            en: {
+                pain: "Feeling anxious about a pet staying home alone during long work hours or outings.",
+                solution: "Check on your pet via remote cameras, patrol with a robot vacuum, and maintain a comfortable temperature with the AC.",
+                benefit: "Ensures your pet's wellbeing and fills the care gap, giving you peace of mind while away."
+            }
+        }
+    },
+    {
+        id: "family-care-apart",
+        title: "Be worry-free even when apart",
+        tags: ["Care for seniors", "Family care", "시니어 케어"],
+        devices: ["센서", "냉장고", "TV", "스마트워치"],
+        content: {
+            ko: {
+                pain: "멀리 사시는 부모님의 안부가 걱정되지만 매번 전화하기는 부담스럽거나 어려운 상황.",
+                solution: "가전 사용 패턴(냉장고 문 열림, TV 시청 등)을 분석하여 비정상적인 비활동 상태가 감지되면 알림을 보냅니다.",
+                benefit: "사생활을 침해하지 않으면서도 부모님의 안전을 상시 확인하고 응급 상황에 빠르게 대처할 수 있습니다."
+            },
+            en: {
+                pain: "Worrying about elderly parents living far away but finding it difficult to call them constantly.",
+                solution: "Analyzes appliance usage patterns (fridge door, TV use) and sends alerts if unusual inactivity is detected.",
+                benefit: "Maintains safety checks without intruding on privacy, enabling fast responses to emergencies."
+            }
+        }
+    },
+    {
+        id: "seamless-save-energy",
+        title: "Seamlessly save energy",
+        tags: ["Save energy", "Control lights", "에너지 절약"],
+        devices: ["냉장고", "에어컨", "세탁기", "건조기"],
+        content: {
+            ko: {
+                pain: "사용자가 인지하지 못하는 사이 새어나가는 전력과 복잡한 절전 설정의 번거로움.",
+                solution: "가전제품이 스스로 에너지 사용량을 모니터링하고 피크 시간대를 피해 최적의 절전 알고리즘으로 작동합니다.",
+                benefit: "별도의 신경을 쓰지 않아도 매달 고지서에서 실질적인 비용 절감 효과를 체감하게 됩니다."
+            },
+            en: {
+                pain: "Wasted energy that users don't notice and the complexity of manual power-saving settings.",
+                solution: "Appliances monitor their own usage and run optimal power-saving algorithms, avoiding peak hours.",
+                benefit: "Delivers tangible cost savings on monthly bills without requiring constant user attention."
+            }
+        }
+    },
+    {
+        id: "ultimate-gaming",
+        title: "The ultimate gaming environment",
+        tags: ["Enhanced mood", "Air fresh", "Control lights"],
+        devices: ["TV", "조명", "에어컨", "모니터"],
+        content: {
+            ko: {
+                pain: "게임 몰입을 위해 조명, 온도, 블라인드 등을 일일이 조절해야 하는 번거로움.",
+                solution: "게임 실행과 동시에 조명이 게임 화면과 동기화되고, 무풍 에어컨이 쾌적한 온도를 유지하며 블라인드가 내려갑니다.",
+                benefit: "단 한 번의 트리거로 완벽한 게이밍 룸이 완성되어 몰입도와 즐거움을 극대화합니다."
+            },
+            en: {
+                pain: "The hassle of manually adjusting lights, temperature, and blinds to create a gaming atmosphere.",
+                solution: "Syncs lights with the game screen, maintains comfort with WindFree AC, and lowers blinds automatically upon game start.",
+                benefit: "Instantly creates a perfect gaming environment with one trigger, maximizing immersion and fun."
+            }
+        }
+    },
+    {
+        id: "sleep-specialist",
+        title: "Your own in-house sleep specialist",
+        tags: ["Sleep well", "Air fresh", "Control lights"],
+        devices: ["조명", "에어컨", "스마트워치", "공기청정기"],
+        content: {
+            ko: {
+                pain: "잠들기 전 환경 설정이 어렵고 기상 시 개운하지 않은 수면 품질 문제.",
+                solution: "수면 단계에 맞춰 조명 밝기와 온도를 자동 조절하고, 기상 시간에 맞춰 서서히 밝아지는 환경을 조성합니다.",
+                benefit: "신체 리듬에 최적화된 수면 환경을 통해 깊은 휴식을 취하고 상쾌한 아침을 맞이하게 됩니다."
+            },
+            en: {
+                pain: "Difficulty setting the right environment before bed and feeling unrefreshed upon waking.",
+                solution: "Automatically adjusts brightness and temperature based on sleep stages and simulates a sunrise for natural waking.",
+                benefit: "Ensures deep rest and a refreshed morning through an environment optimized for body rhythms."
+            }
+        }
+    }
+];
+
+function findExploreScenario(intent) {
+    let bestMatch = null;
+    let maxScore = 0;
+
+    const tags = intent.lifestyleTags.map(t => t.toLowerCase());
+    const purpose = intent.purpose.toLowerCase();
+    const devices = intent.selectedDevices.map(d => d.toLowerCase());
+
+    EXPLORE_SCENARIOS.forEach(scenario => {
+        let score = 0;
+        
+        // Tag matching
+        scenario.tags.forEach(tag => {
+            if (tags.includes(tag.toLowerCase())) score += 10;
+        });
+
+        // Device matching
+        scenario.devices.forEach(device => {
+            if (devices.includes(device.toLowerCase())) score += 5;
+        });
+
+        // Keyword in purpose matching
+        const keywords = scenario.title.toLowerCase().split(" ");
+        keywords.forEach(word => {
+            if (word.length > 3 && purpose.includes(word)) score += 3;
+        });
+
+        if (score > maxScore) {
+            maxScore = score;
+            bestMatch = scenario;
+        }
+    });
+
+    // Minimum score threshold for a "match"
+    return maxScore >= 10 ? bestMatch : null;
+}
+
+function buildDetailedScenario(country, city, selectedSegment, intent, deviceDecision, services) {
+    const countryName = getCountryName(country.countryCode);
+    const serviceNames = [...new Set(services.slice(0, 3).map((service) => service.serviceName))];
+    const isPetContext = /pet|dog|cat|puppy|kitten|반려|강아지|고양이/i.test(`${selectedSegment} ${intent.purpose} ${serviceNames.join(" ")}`);
+    const appliedServices = [...new Set(services.slice(0, 3).map((service) => service.appCardLabel || service.serviceName))];
+    
+    // Attempt to find a matching Explore scenario first
+    const exploreMatch = findExploreScenario(intent);
+    
+    let serviceStories;
+    if (exploreMatch) {
+        const locale = currentLocale === "ko" ? "ko" : "en";
+        const content = exploreMatch.content[locale] || exploreMatch.content.en;
+        serviceStories = [
+            {
+                title: `[Explore Mapped] ${exploreMatch.title}`,
+                paragraphs: [content.pain, content.solution, content.benefit]
+            },
+            ...services.slice(0, 2).map((service) => {
+                const story = buildServiceStory(service, intent, selectedSegment, isPetContext);
+                return { title: story.title, paragraphs: [story.pain, story.solution, story.benefit] };
+            })
+        ].slice(0, 3);
+    } else {
+        serviceStories = services.slice(0, 3).map((service) => {
+            const story = buildServiceStory(service, intent, selectedSegment, isPetContext);
+            return { title: story.title, paragraphs: [story.pain, story.solution, story.benefit] };
+        });
+    }
+
+    return {
+        targetCustomer: buildTargetCustomerLine(countryName, selectedSegment, intent.purpose),
+        appliedServices: appliedServices.join(" / "),
+        appliedServiceList: appliedServices,
+        cases: serviceStories,
+        isMapped: !!exploreMatch
+    };
+}
+
 function renderOverview(payload) {
     const marketingLines = currentLocale === "ko" ? payload.marketingMessages.kr : payload.marketingMessages.en;
-    const automationJson = JSON.stringify(payload.automation, null, 2);
+    const titles = getOutputTitles();
+
     return `
         <div class="output-stack">
+            <!-- 01. CX 시나리오 제목 및 Summary(웹툰 포함) -->
             <section class="output-block hero-result numbered-output">
                 <p class="block-index">01</p>
-                <h4>${currentLocale === "ko" ? "CX 시나리오 제목 및 Summary" : "CX Scenario Title & Summary"}</h4>
+                <h4>${titles.summary}</h4>
                 <h3>${escapeHtml(payload.title)}</h3>
-                <p>${escapeHtml(payload.summary)}</p>
-                <p class="subhead">${currentLocale === "ko" ? "1) Parent Story" : "1) Parent Story"}</p>
-                <p>${escapeHtml(buildParentStory(payload))}</p>
-                <p class="subhead">${currentLocale === "ko" ? "2) 4대 가치 반영" : "2) Reflected Four Values"}</p>
-                <ul>${buildReflectedValues(payload).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-                <p class="subhead">${currentLocale === "ko" ? "3) 핵심 요약 (6줄)" : "3) Executive Summary (6 lines)"}</p>
-                <ul>${buildSixLineSummary(payload).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                <p class="summary-text">${escapeHtml(payload.summary)}</p>
+                
+                <div class="summary-sub-grid">
+                    <div class="summary-sub-item">
+                        <p class="subhead">I. 참조된 Explore 시나리오 (Parent Story)</p>
+                        <p>${escapeHtml(buildParentStory(payload))}</p>
+                    </div>
+                    <div class="summary-sub-item">
+                        <p class="subhead">II. 4大 핵심 가치</p>
+                        <ul class="value-list">${buildReflectedValues(payload).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                    </div>
+                </div>
+
+                <div class="storyboard-webtoon">
+                    <p class="subhead">IV. Storyboard Webtoon (Summary)</p>
+                    <div class="webtoon-grid">
+                        ${payload.storyboard.map((panel, idx) => `
+                            <div class="webtoon-panel">
+                                <div class="webtoon-img-placeholder">Panel ${idx + 1}</div>
+                                <p class="webtoon-scene"><strong>${escapeHtml(panel.scene)}</strong></p>
+                                <p class="webtoon-text">"${escapeHtml(panel.text)}"</p>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+
+                <p class="subhead">III. Summary 요약 (6줄)</p>
+                <ul class="six-line-summary">${buildSixLineSummary(payload).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
+
+            <!-- 02. 상세 시나리오(Detailed Scenario) -->
             <section class="output-block numbered-output">
                 <p class="block-index">02</p>
-                <h4>${currentLocale === "ko" ? "상세 시나리오" : "Detailed Scenario"}</h4>
-                <div class="scenario-header">
-                    <p class="scenario-meta-label">Target Customer</p>
-                    <p class="scenario-meta-value">${escapeHtml(payload.detailedScenario.targetCustomer)}</p>
+                <h4>${titles.scenario}</h4>
+                <div class="scenario-details-grid">
+                    <div class="detail-col">
+                        <strong>Target Customer Context</strong>
+                        <p>${escapeHtml(payload.detailedScenario.targetCustomer)}</p>
+                    </div>
+                    <div class="detail-col">
+                        <strong>적용된 Life 서비스 및 테마</strong>
+                        <p>${payload.detailedScenario.appliedServiceList.map((s) => `<span class="service-pill">${escapeHtml(s)}</span>`).join(" ")}</p>
+                    </div>
                 </div>
-                <div class="scenario-services">
-                    ${payload.detailedScenario.appliedServiceList.map((service) => `<span class="service-pill">${escapeHtml(service)}</span>`).join("")}
-                </div>
+                
                 <div class="scenario-case-grid">
                 ${payload.detailedScenario.cases.map((item) => `
                     <div class="case-block">
@@ -4742,82 +5150,41 @@ function renderOverview(payload) {
                 `).join("")}
                 </div>
             </section>
+
+            <!-- 03. 지역 특성 및 데이터 근거 -->
             <section class="output-block numbered-output">
                 <p class="block-index">03</p>
-                <h4>Automation Logic Digest (JSON Skeleton)</h4>
-                <pre class="json-block">${escapeHtml(automationJson)}</pre>
+                <h4>${titles.facts}</h4>
+                <div class="insight-process">
+                    <div class="process-item">
+                        <strong>Observation (현지 데이터)</strong>
+                        <p>${escapeHtml(payload.facts.observation)}</p>
+                    </div>
+                    <div class="process-item">
+                        <strong>Insight (실무적 해석)</strong>
+                        <p>${escapeHtml(payload.facts.insight)}</p>
+                    </div>
+                    <div class="process-item">
+                        <strong>Implication (시사점)</strong>
+                        <p>${escapeHtml(payload.facts.implication)}</p>
+                    </div>
+                </div>
+                <div class="fact-links">
+                    <strong>Source Grounds</strong>
+                    <ul>${(payload.facts.sourceUrls || []).map((url) => `<li><a href="${url}" target="_blank">${url}</a></li>`).join("")}</ul>
+                </div>
             </section>
+
+            <!-- 04. 마케팅 메시지 -->
             <section class="output-block numbered-output">
                 <p class="block-index">04</p>
-                <h4>${currentLocale === "ko" ? "지역 특성 및 데이터 근거" : "Regional Traits & Data Grounds"}</h4>
-                <p class="subhead">${currentLocale === "ko" ? "Fact (확인)" : "Fact (Confirmed)"}</p>
-                <ul>${(payload.facts.confirmed || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-                <p class="subhead">${currentLocale === "ko" ? "Assumption (가정)" : "Assumption"}</p>
-                <ul>${(payload.facts.assumptions || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-                <p class="subhead">${currentLocale === "ko" ? "근거 URL" : "Source URLs"}</p>
-                <ul>${(payload.facts.sourceUrls || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                <h4>${titles.marketing}</h4>
+                <div class="marketing-wrap">
+                    <p class="role-badge">${escapeHtml(payload.marketingMessages.roleTone)} 관점의 메시지 적용</p>
+                    <ul class="marketing-list">${marketingLines.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                </div>
             </section>
-            <section class="output-block numbered-output">
-                <p class="block-index">05</p>
-                <h4>${currentLocale === "ko" ? "마케팅 메시지 (Role-Lens)" : "Marketing Messages (Role-Lens)"}</h4>
-                <ul>${marketingLines.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-            </section>
-            <section class="output-block numbered-output">
-                <p class="block-index">06</p>
-                <h4>Success Metrics (Cause & Effect)</h4>
-                <ul>${(payload.metrics || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-            </section>
-            <section class="output-block numbered-output">
-                <p class="block-index">07</p>
-                <h4>${currentLocale === "ko" ? "타겟 세그먼트 데이터" : "Target Segment Data"}</h4>
-                <ul>${(payload.segmentData || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-            </section>
-            <section class="output-block numbered-output">
-                <p class="block-index">08</p>
-                <h4>${currentLocale === "ko" ? "지역 가용 기기 및 설정 가이드" : "Regional Available Devices & Setup Guide"}</h4>
-                <p class="subhead">${currentLocale === "ko" ? "적용 가능 기기" : "Applicable Device Context"}</p>
-                <ul>${payload.deviceGuide.available.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-                <p class="subhead">${currentLocale === "ko" ? "설정/적용 단계" : "Setup / Adoption Ladder"}</p>
-                <ul>${payload.deviceGuide.steps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-                <p class="subhead">${currentLocale === "ko" ? "실행 체크포인트" : "Execution Checkpoints"}</p>
-                <ul>${(payload.setupGuide || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-            </section>
-            <section class="output-block numbered-output">
-                <p class="block-index">09</p>
-                <h4>${currentLocale === "ko" ? "시나리오 시장성 평가" : "Scenario Marketability Evaluation"}</h4>
-                <table class="result-table">
-                    <thead>
-                        <tr>
-                            <th>${currentLocale === "ko" ? "항목" : "Item"}</th>
-                            <th>${currentLocale === "ko" ? "평가" : "Assessment"}</th>
-                            <th>${currentLocale === "ko" ? "근거/메모" : "Rationale"}</th>
-                            <th>${currentLocale === "ko" ? "대응 전략" : "Action"}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Market Fit</td>
-                            <td>${escapeHtml(payload.marketability.verdict)}</td>
-                            <td>${escapeHtml(payload.marketability.rationale)}</td>
-                            <td>${escapeHtml(payload.marketability.nextActions[0] || "")}</td>
-                        </tr>
-                        <tr>
-                            <td>${currentLocale === "ko" ? "경쟁사 대안" : "Competitive Alternative"}</td>
-                            <td>${currentLocale === "ko" ? "중간" : "Medium"}</td>
-                            <td>${escapeHtml(payload.marketability.competitorView)}</td>
-                            <td>${escapeHtml(payload.marketability.nextActions[1] || "")}</td>
-                        </tr>
-                        <tr>
-                            <td>${currentLocale === "ko" ? "리스크: 프라이버시/신뢰" : "Risk: Privacy / Trust"}</td>
-                            <td>${currentLocale === "ko" ? "중간" : "Medium"}</td>
-                            <td>${escapeHtml(payload.marketability.risk)}</td>
-                            <td>${escapeHtml(payload.marketability.nextActions[2] || "")}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p class="subhead">${currentLocale === "ko" ? "대안 구도" : "Alternative Set"}</p>
-                <ul>${payload.marketability.alternatives.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-            </section>
+
             ${renderPostOutputPrompt(payload)}
         </div>
     `;
@@ -4941,27 +5308,31 @@ function renderLensPanel(lens) {
 function getOutputTitles() {
     if (currentLocale === "ko") {
         return {
-            summary: "CX 시나리오 제목 및 Summary",
-            scenario: "상세 시나리오 (스토리텔링 구조)",
-            automation: "Automation Logic Digest (JSON Skeleton)",
-            facts: "지역 특성 및 데이터 근거",
-            lenses: "마케팅 메시지 (Role-Lens)",
-            metrics: "Success Metrics (Cause & Effect)",
-            segment: "타겟 세그먼트 데이터",
-            guide: "지역 가용 기기 및 설정 가이드",
-            evaluation: "시장성 평가 및 Go/No-Go"
+            summary: "01. CX 시나리오 제목 및 Summary(웹툰 포함)",
+            scenario: "02. 상세 시나리오(Detailed Scenario)",
+            facts: "03. 지역 특성(출처 포함), 인사이트 등 추론 과정",
+            marketing: "04. 마케팅 메시지",
+            benefits: "05. 고객 베네핏",
+            target: "06. 타겟 고객 설명(규모, 비율, 구매력 등)",
+            timing: "07. 적용 시기",
+            devices: "08. 지역 적용 가능한 기기 및 설정 방법",
+            marketability: "09. 시나리오 시장성 평가(리스크 포함)",
+            addon: "10. Add-on Pack — 고객 적용 가이드/실행률 + Claim–Funnel–Metric Mapping",
+            reflection: "11. Brand/AI/철학 Reflection Check"
         };
     }
     return {
-        summary: "CX Scenario Title & Summary",
-        scenario: "Detailed Scenario (Storytelling Format)",
-        automation: "Automation Logic Digest (JSON Skeleton)",
-        facts: "Regional Context & Data Grounds",
-        lenses: "Marketing Messages (Role-Lens)",
-        metrics: "Success Metrics (Cause & Effect)",
-        segment: "Target Segment Data",
-        guide: "Available Devices & Setup Guide",
-        evaluation: "Marketability & Go/No-Go"
+        summary: "01. CX Scenario Title & Summary (Inc. Webtoon)",
+        scenario: "02. Detailed Scenario",
+        facts: "03. Regional Context & Data Grounds",
+        marketing: "04. Marketing Messages",
+        benefits: "05. Customer Benefits",
+        target: "06. Target Audience Data (Size, Purchase Power)",
+        timing: "07. Strategic Timing",
+        devices: "08. Available Devices & Setup Guide",
+        marketability: "09. Marketability & Risk Evaluation",
+        addon: "10. Add-on Pack — Implementation & Funnel Mapping",
+        reflection: "11. Brand/AI/Philosophy Reflection"
     };
 }
 
@@ -5414,6 +5785,14 @@ function getSelectedDevices() {
     );
     getCustomEntries(deviceCustomInput.value).forEach((entry) => normalized.add(entry));
     return [...normalized];
+}
+
+function getSelectedDeviceGroupIds() {
+    return [...new Set(
+        [...deviceGrid.querySelectorAll('input[data-node-type="child"]:checked')]
+            .map((input) => input.dataset.groupId)
+            .filter(Boolean)
+    )];
 }
 
 function getSelectedPersonaOptionIds() {
