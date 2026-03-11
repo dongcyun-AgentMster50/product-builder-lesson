@@ -1,83 +1,1482 @@
 {
-  "KR": {
+  "AE": {
     "ko": {
-      "headline": "AI 가전과 연결 경험을 일상 장면으로 묶는 흐름이 강해지고 있습니다.",
-      "signal": "고객은 단일 기기 제어보다 연결된 루틴과 에너지·케어 체감을 더 빠르게 기대합니다.",
-      "implication": "Q2 이후에는 빠른 저녁 전환, 공기 관리, 생활 리듬 정리 같은 장면형 제안이 유리합니다."
+      "headline": "아랍에미리트 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 아랍에미리트 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
     },
     "en": {
-      "headline": "The market is leaning toward connected AI-home moments rather than isolated device control.",
-      "signal": "Customers are responding faster to routines and visible care or energy value than to single-device features alone.",
-      "implication": "After Q2, scenario ideas framed around evening reset, air care, or daily rhythm management are more likely to land."
+      "headline": "In UAE, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for UAE should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
     },
     "de": {
-      "headline": "Der Markt bewegt sich stärker zu vernetzten AI-Home-Momenten statt zu isolierter Gerätesteuerung.",
-      "signal": "Nutzer reagieren schneller auf Routinen und sichtbar spürbaren Care- oder Energie-Nutzen als auf einzelne Gerätefunktionen.",
-      "implication": "Nach Q2 wirken Szenen rund um Abendübergang, Luftpflege oder Alltagsrhythmus meist stärker."
+      "headline": "In UAE werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für UAE vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
     },
     "sources": [
-      "https://news.samsung.com/global/ifa-2025-how-are-european-consumers-using-smart-home-technology"
+      "https://www.samsung.com/ae"
     ]
   },
-  "US": {
+  "AFRICA_EN": {
     "ko": {
-      "headline": "복수 기기 연결을 한 번의 생활 장면으로 압축해 보여주는 흐름이 더 강해지고 있습니다.",
-      "signal": "미국 스마트홈 시장은 확장 중이며, 단품 기능보다 체감 가치가 바로 보이는 통합 경험이 더 설득력 있습니다.",
-      "implication": "Q2 이후에는 집 도착, 외출, 가족 케어처럼 명확한 순간 중심의 시나리오가 유리합니다."
+      "headline": "아프리카 영어권 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 아프리카 영어권 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
     },
     "en": {
-      "headline": "The stronger direction is to compress multi-device value into one clearly felt life moment.",
-      "signal": "The U.S. smart home market is still expanding, and integrated experiences often persuade faster than isolated feature lists.",
-      "implication": "After Q2, scenarios framed around arrival home, away mode, or family care tend to work better."
+      "headline": "In Africa English, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Africa English should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
     },
     "de": {
-      "headline": "Die stärkere Richtung ist, den Mehrwert mehrerer Geräte in einen klar spürbaren Alltagsmoment zu verdichten.",
-      "signal": "Der US-Smart-Home-Markt wächst weiter, und integrierte Erlebnisse überzeugen oft schneller als isolierte Funktionslisten.",
-      "implication": "Nach Q2 wirken Szenarien rund um Heimkehr, Abwesenheit oder Familien-Care meist besser."
+      "headline": "In Africa English werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Africa English vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
     },
     "sources": [
-      "https://www.statista.com/outlook/cmo/smart-home/united-states",
-      "https://news.samsung.com/global/ifa-2025-how-are-european-consumers-using-smart-home-technology"
+      "https://www.samsung.com/africa_en"
     ]
   },
-  "GB": {
+  "AFRICA_FR": {
     "ko": {
-      "headline": "설정 피로를 줄이고 절감 효과를 분명히 보여주는 실용형 제안이 더 강해지고 있습니다.",
-      "signal": "영국에서는 루틴 저장, 에너지 효율, 반복 사용 가치가 또렷할수록 수용성이 높습니다.",
-      "implication": "Q2 이후에는 시간 절약, 난방·전력 관리, 반복 가능한 루틴 중심의 시나리오가 유리합니다."
+      "headline": "아프리카 프랑스어권 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 아프리카 프랑스어권 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
     },
     "en": {
-      "headline": "Practical framing that reduces setup friction and makes savings visible is getting stronger.",
-      "signal": "In the UK, saved routines, energy efficiency, and repeat-use value tend to raise acceptance faster.",
-      "implication": "After Q2, scenarios centered on time savings, heating or power management, and reusable routines are more likely to work."
+      "headline": "In Africa French, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Africa French should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
     },
     "de": {
-      "headline": "Pragmatische Botschaften, die Einrichtungsaufwand senken und Einsparungen sichtbar machen, werden stärker.",
-      "signal": "Im Vereinigten Königreich erhöhen gespeicherte Routinen, Energieeffizienz und Wiederverwendungswert oft schneller die Akzeptanz.",
-      "implication": "Nach Q2 wirken Szenarien rund um Zeitersparnis, Heiz- oder Strommanagement und wiederverwendbare Routinen meist besser."
+      "headline": "In Africa French werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Africa French vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
     },
     "sources": [
-      "https://news.samsung.com/global/ifa-2025-how-are-european-consumers-using-smart-home-technology"
+      "https://www.samsung.com/africa_fr"
+    ]
+  },
+  "AFRICA_PT": {
+    "ko": {
+      "headline": "아프리카 포르투갈어권 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 아프리카 포르투갈어권 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Africa Portuguese, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Africa Portuguese should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Africa Portuguese werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Africa Portuguese vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/africa_pt"
+    ]
+  },
+  "AR": {
+    "ko": {
+      "headline": "아르헨티나 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 아르헨티나 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Argentina, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Argentina should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Argentina werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Argentina vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/ar"
+    ]
+  },
+  "AT": {
+    "ko": {
+      "headline": "오스트리아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 오스트리아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Austria, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Austria should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Austria werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Austria vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/at"
+    ]
+  },
+  "AU": {
+    "ko": {
+      "headline": "호주 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 호주 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Australia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Australia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Australia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Australia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/au"
+    ]
+  },
+  "AZ": {
+    "ko": {
+      "headline": "아제르바이잔 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 아제르바이잔 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Azerbaijan, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Azerbaijan should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Azerbaijan werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Azerbaijan vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/az"
+    ]
+  },
+  "BD": {
+    "ko": {
+      "headline": "방글라데시 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 방글라데시 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Bangladesh, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Bangladesh should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Bangladesh werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Bangladesh vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/bd"
+    ]
+  },
+  "BE": {
+    "ko": {
+      "headline": "벨기에 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 벨기에 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Belgium, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Belgium should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Belgium werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Belgium vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/be"
+    ]
+  },
+  "BG": {
+    "ko": {
+      "headline": "불가리아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 불가리아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Bulgaria, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Bulgaria should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Bulgaria werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Bulgaria vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/bg"
+    ]
+  },
+  "BO": {
+    "ko": {
+      "headline": "볼리비아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 볼리비아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Bolivia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Bolivia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Bolivia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Bolivia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/bo"
+    ]
+  },
+  "BR": {
+    "ko": {
+      "headline": "브라질 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 브라질 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Brazil, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Brazil should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Brazil werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Brazil vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/br"
+    ]
+  },
+  "CA": {
+    "ko": {
+      "headline": "캐나다 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 캐나다 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Canada, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Canada should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Canada werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Canada vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/ca"
+    ]
+  },
+  "CH": {
+    "ko": {
+      "headline": "스위스 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 스위스 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Switzerland, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Switzerland should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Switzerland werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Switzerland vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/ch"
+    ]
+  },
+  "CL": {
+    "ko": {
+      "headline": "칠레 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 칠레 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Chile, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Chile should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Chile werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Chile vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/cl"
+    ]
+  },
+  "CN": {
+    "ko": {
+      "headline": "중국 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 중국 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In China, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for China should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In China werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für China vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/cn"
+    ]
+  },
+  "CO": {
+    "ko": {
+      "headline": "콜롬비아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 콜롬비아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Colombia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Colombia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Colombia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Colombia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/co"
+    ]
+  },
+  "CZ": {
+    "ko": {
+      "headline": "체코 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 체코 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Czech, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Czech should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Czech werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Czech vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/cz"
     ]
   },
   "DE": {
     "ko": {
-      "headline": "효율성과 신뢰를 함께 보여주는 자동화 제안이 더 설득력을 얻고 있습니다.",
-      "signal": "독일에서는 예측 가능성, 통제감, 에너지 효율이 함께 제시될 때 스마트홈 수용성이 높아집니다.",
-      "implication": "Q2 이후에는 안정적 루틴, 절감, 홈 컨트롤을 함께 묶는 시나리오가 유리합니다."
+      "headline": "독일 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 독일 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
     },
     "en": {
-      "headline": "Automation that combines efficiency with trust is becoming more persuasive.",
-      "signal": "In Germany, smart home value lands better when predictability, control, and energy efficiency are shown together.",
-      "implication": "After Q2, scenarios that combine stable routines, savings, and home control tend to be stronger."
+      "headline": "In Germany, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Germany should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
     },
     "de": {
-      "headline": "Automatisierung, die Effizienz und Vertrauen zusammen zeigt, wird überzeugender.",
-      "signal": "In Deutschland wirkt Smart-Home-Nutzen stärker, wenn Vorhersehbarkeit, Kontrolle und Energieeffizienz gemeinsam sichtbar werden.",
-      "implication": "Nach Q2 sind Szenarien stärker, die stabile Routinen, Einsparung und Home Control zusammenführen."
+      "headline": "In Germany werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Germany vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
     },
     "sources": [
-      "https://news.samsung.com/global/ifa-2025-how-are-european-consumers-using-smart-home-technology"
+      "https://www.samsung.com/de"
+    ]
+  },
+  "DK": {
+    "ko": {
+      "headline": "덴마크 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 덴마크 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Denmark, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Denmark should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Denmark werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Denmark vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/dk"
+    ]
+  },
+  "EE": {
+    "ko": {
+      "headline": "에스토니아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 에스토니아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Estonia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Estonia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Estonia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Estonia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/ee"
+    ]
+  },
+  "ES": {
+    "ko": {
+      "headline": "스페인 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 스페인 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Spain, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Spain should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Spain werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Spain vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/es"
+    ]
+  },
+  "FI": {
+    "ko": {
+      "headline": "핀란드 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 핀란드 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Finland, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Finland should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Finland werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Finland vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/fi"
+    ]
+  },
+  "FR": {
+    "ko": {
+      "headline": "프랑스 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 프랑스 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In France, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for France should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In France werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für France vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/fr"
+    ]
+  },
+  "GB": {
+    "ko": {
+      "headline": "영국 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 영국 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In United Kingdom, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for United Kingdom should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In United Kingdom werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für United Kingdom vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/uk"
+    ]
+  },
+  "GR": {
+    "ko": {
+      "headline": "그리스 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 그리스 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Greece, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Greece should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Greece werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Greece vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/gr"
+    ]
+  },
+  "HK": {
+    "ko": {
+      "headline": "홍콩 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 홍콩 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Hong Kong, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Hong Kong should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Hong Kong werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Hong Kong vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/hk"
+    ]
+  },
+  "HR": {
+    "ko": {
+      "headline": "크로아티아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 크로아티아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Croatia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Croatia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Croatia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Croatia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/hr"
+    ]
+  },
+  "HU": {
+    "ko": {
+      "headline": "헝가리 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 헝가리 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Hungary, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Hungary should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Hungary werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Hungary vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/hu"
+    ]
+  },
+  "IE": {
+    "ko": {
+      "headline": "아일랜드 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 아일랜드 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Ireland, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Ireland should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Ireland werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Ireland vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/ie"
+    ]
+  },
+  "IL": {
+    "ko": {
+      "headline": "이스라엘 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 이스라엘 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Israel, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Israel should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Israel werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Israel vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/il"
+    ]
+  },
+  "IN": {
+    "ko": {
+      "headline": "인도 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 인도 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In India, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for India should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In India werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für India vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/in"
+    ]
+  },
+  "IQ": {
+    "ko": {
+      "headline": "이라크 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 이라크 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Iraq, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Iraq should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Iraq werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Iraq vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/iq_ar"
+    ]
+  },
+  "IT": {
+    "ko": {
+      "headline": "이탈리아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 이탈리아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Italy, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Italy should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Italy werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Italy vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/it"
+    ]
+  },
+  "JP": {
+    "ko": {
+      "headline": "일본 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 일본 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Japan, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Japan should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Japan werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Japan vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/jp"
+    ]
+  },
+  "KR": {
+    "ko": {
+      "headline": "대한민국 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 대한민국 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In South Korea, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for South Korea should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In South Korea werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für South Korea vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/sec"
+    ]
+  },
+  "KZ": {
+    "ko": {
+      "headline": "카자흐스탄 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 카자흐스탄 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Kazakhstan, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Kazakhstan should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Kazakhstan werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Kazakhstan vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/kz_ru"
+    ]
+  },
+  "LB": {
+    "ko": {
+      "headline": "레바논 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 레바논 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Lebanon, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Lebanon should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Lebanon werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Lebanon vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/lb"
+    ]
+  },
+  "LEVANT": {
+    "ko": {
+      "headline": "레반트 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 레반트 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Levant, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Levant should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Levant werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Levant vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/levant"
+    ]
+  },
+  "LT": {
+    "ko": {
+      "headline": "리투아니아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 리투아니아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Lithuania, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Lithuania should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Lithuania werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Lithuania vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/lt"
+    ]
+  },
+  "LV": {
+    "ko": {
+      "headline": "라트비아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 라트비아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Latvia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Latvia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Latvia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Latvia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/lv"
+    ]
+  },
+  "MK": {
+    "ko": {
+      "headline": "북마케도니아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 북마케도니아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Macedonia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Macedonia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Macedonia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Macedonia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/mk"
+    ]
+  },
+  "MM": {
+    "ko": {
+      "headline": "미얀마 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 미얀마 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Myanmar, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Myanmar should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Myanmar werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Myanmar vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/mm"
+    ]
+  },
+  "MN": {
+    "ko": {
+      "headline": "몽골 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 몽골 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Mongolia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Mongolia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Mongolia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Mongolia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/mn"
+    ]
+  },
+  "MX": {
+    "ko": {
+      "headline": "멕시코 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 멕시코 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Mexico, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Mexico should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Mexico werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Mexico vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/mx"
+    ]
+  },
+  "MY": {
+    "ko": {
+      "headline": "말레이시아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 말레이시아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Malaysia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Malaysia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Malaysia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Malaysia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/my"
+    ]
+  },
+  "NL": {
+    "ko": {
+      "headline": "네덜란드 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 네덜란드 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Netherlands, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Netherlands should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Netherlands werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Netherlands vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/nl"
+    ]
+  },
+  "NO": {
+    "ko": {
+      "headline": "노르웨이 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 노르웨이 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Norway, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Norway should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Norway werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Norway vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/no"
+    ]
+  },
+  "NZ": {
+    "ko": {
+      "headline": "뉴질랜드 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 뉴질랜드 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In New Zealand, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for New Zealand should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In New Zealand werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für New Zealand vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/nz"
+    ]
+  },
+  "N_AFRICA": {
+    "ko": {
+      "headline": "북아프리카 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 북아프리카 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In North Africa, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for North Africa should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In North Africa werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für North Africa vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/n_africa"
+    ]
+  },
+  "PA": {
+    "ko": {
+      "headline": "파나마 / 라틴 아메리카 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 파나마 / 라틴 아메리카 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Panama / Latin America, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Panama / Latin America should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Panama / Latin America werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Panama / Latin America vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/latin"
+    ]
+  },
+  "PE": {
+    "ko": {
+      "headline": "페루 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 페루 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Peru, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Peru should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Peru werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Peru vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/pe"
+    ]
+  },
+  "PH": {
+    "ko": {
+      "headline": "필리핀 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 필리핀 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Philippines, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Philippines should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Philippines werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Philippines vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/ph"
+    ]
+  },
+  "PK": {
+    "ko": {
+      "headline": "파키스탄 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 파키스탄 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Pakistan, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Pakistan should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Pakistan werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Pakistan vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/pk"
+    ]
+  },
+  "PL": {
+    "ko": {
+      "headline": "폴란드 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 폴란드 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Poland, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Poland should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Poland werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Poland vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/pl"
+    ]
+  },
+  "PT": {
+    "ko": {
+      "headline": "포르투갈 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 포르투갈 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Portugal, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Portugal should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Portugal werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Portugal vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/pt"
+    ]
+  },
+  "PY": {
+    "ko": {
+      "headline": "파라과이 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 파라과이 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Paraguay, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Paraguay should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Paraguay werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Paraguay vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/py"
+    ]
+  },
+  "RO": {
+    "ko": {
+      "headline": "루마니아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 루마니아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Romania, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Romania should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Romania werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Romania vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/ro"
+    ]
+  },
+  "RS": {
+    "ko": {
+      "headline": "세르비아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 세르비아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Serbia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Serbia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Serbia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Serbia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/rs"
+    ]
+  },
+  "RU": {
+    "ko": {
+      "headline": "러시아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 러시아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Russian Federation, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Russian Federation should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Russian Federation werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Russian Federation vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/ru"
+    ]
+  },
+  "SA": {
+    "ko": {
+      "headline": "사우디아라비아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 사우디아라비아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Saudi Arabia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Saudi Arabia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Saudi Arabia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Saudi Arabia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/sa"
+    ]
+  },
+  "SE": {
+    "ko": {
+      "headline": "스웨덴 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 스웨덴 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Sweden, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Sweden should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Sweden werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Sweden vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/se"
+    ]
+  },
+  "SG": {
+    "ko": {
+      "headline": "싱가포르 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 싱가포르 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Singapore, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Singapore should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Singapore werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Singapore vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/sg"
+    ]
+  },
+  "SI": {
+    "ko": {
+      "headline": "슬로베니아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 슬로베니아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Slovenia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Slovenia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Slovenia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Slovenia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/si"
+    ]
+  },
+  "SK": {
+    "ko": {
+      "headline": "슬로바키아 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 슬로바키아 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Slovakia, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Slovakia should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Slovakia werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Slovakia vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/sk"
+    ]
+  },
+  "TH": {
+    "ko": {
+      "headline": "태국 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 태국 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Thailand, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Thailand should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Thailand werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Thailand vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/th"
+    ]
+  },
+  "TR": {
+    "ko": {
+      "headline": "튀르키예 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 튀르키예 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Turkiye, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Turkiye should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Turkiye werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Turkiye vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/tr"
+    ]
+  },
+  "TW": {
+    "ko": {
+      "headline": "대만 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 대만 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Taiwan, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Taiwan should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Taiwan werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Taiwan vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/tw"
+    ]
+  },
+  "UA": {
+    "ko": {
+      "headline": "우크라이나 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 우크라이나 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Ukraine, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Ukraine should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Ukraine werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Ukraine vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/ua"
+    ]
+  },
+  "US": {
+    "ko": {
+      "headline": "미국 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 미국 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In USA, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for USA should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In USA werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für USA vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/us"
+    ]
+  },
+  "UY": {
+    "ko": {
+      "headline": "우루과이 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 우루과이 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Uruguay, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Uruguay should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Uruguay werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Uruguay vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/uy"
+    ]
+  },
+  "UZ": {
+    "ko": {
+      "headline": "우즈베키스탄 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 우즈베키스탄 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Uzbekistan, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Uzbekistan should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Uzbekistan werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Uzbekistan vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/uz_uz"
+    ]
+  },
+  "VN": {
+    "ko": {
+      "headline": "베트남 시장에서는 연결된 루틴과 생활 맥락 중심 제안이 더 설득력을 얻고 있습니다.",
+      "signal": "단일 기기 기능보다 에너지, 케어, 시간 절약이 한 장면으로 읽히는 흐름이 수용성을 높입니다.",
+      "implication": "Q2 이후에는 베트남 생활 리듬에 맞는 도착 전 준비, 공기 관리, 반복 루틴 장면을 우선 제안하는 편이 유리합니다."
+    },
+    "en": {
+      "headline": "In Vietnam, connected routines and life-context framing are becoming more persuasive.",
+      "signal": "Adoption tends to rise when energy, care, and time-saving value can be understood in one scene rather than as isolated device features.",
+      "implication": "After Q2, scenarios for Vietnam should lead with pre-arrival setup, air care, and repeatable routines fitted to the local rhythm."
+    },
+    "de": {
+      "headline": "In Vietnam werden vernetzte Routinen und lebensnahe Nutzungsszenen überzeugender.",
+      "signal": "Die Akzeptanz steigt eher, wenn Energie-, Care- und Zeitsparwert in einer Szene statt als einzelne Gerätefunktion sichtbar wird.",
+      "implication": "Nach Q2 sollten für Vietnam vor allem Vorbereitungen vor der Heimkehr, Luftpflege und wiederholbare Routinen im lokalen Rhythmus gezeigt werden."
+    },
+    "sources": [
+      "https://www.samsung.com/vn"
     ]
   }
 }

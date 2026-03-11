@@ -415,6 +415,7 @@ const STEP_INSIGHTS = {
 
 const COUNTRY_LOCALES = {
     KR: "ko",
+    SEC: "ko",
     US: "en",
     GB: "en",
     UK: "en",
@@ -467,6 +468,33 @@ const COUNTRY_LOCALES = {
     VN: "vi",
     AE: "en",
     AE_AR: "ar",
+    TR: "tr",
+    LEVANT: "en",
+    LEVANT_AR: "ar",
+    LB: "ar",
+    IQ_AR: "ar",
+    IQ_KU: "en",
+    SA: "en",
+    SA_EN: "ar",
+    N_AFRICA: "fr",
+    IL: "en",
+    PK: "en",
+    IN: "en",
+    BD: "en",
+    RU: "ru",
+    AZ: "en",
+    KZ_RU: "ru",
+    KZ_KZ: "en",
+    UZ_UZ: "en",
+    UZ_RU: "ru",
+    MN: "en",
+    CN: "en",
+    HK: "en",
+    HK_EN: "en",
+    TW: "en",
+    AFRICA_EN: "en",
+    AFRICA_FR: "fr",
+    AFRICA_PT: "pt",
     CA: "en",
     IE: "en",
     AU: "en",
@@ -488,6 +516,8 @@ const DOTCOM_MARKETS = [
     ["Belgium", "BE", "Dutch", "www.samsung.com/be"],
     ["Belgium", "BE_FR", "French", "www.samsung.com/be_fr"],
     ["Luxembourg", "BE_FR", "French", "www.samsung.com/be_fr"],
+    ["Netherlands", "NL", "Dutch", "www.samsung.com/nl"],
+    ["Ireland", "IE", "English", "www.samsung.com/ie"],
     ["Sweden", "SE", "Swedish", "www.samsung.com/se"],
     ["Denmark", "DK", "Danish", "www.samsung.com/dk"],
     ["Finland", "FI", "Finnish", "www.samsung.com/fi"],
@@ -550,7 +580,98 @@ const DOTCOM_MARKETS = [
     ["UAE", "AE", "English", "www.samsung.com/ae"],
     ["UAE", "AE_AR", "Arabic", "www.samsung.com/ae_ar"],
     ["Kuwait", "AE", "English", "www.samsung.com/ae"],
-    ["Bahrain", "AE", "English", "www.samsung.com/ae"]
+    ["Bahrain", "AE", "English", "www.samsung.com/ae"],
+    ["Oman", "AE", "English", "www.samsung.com/ae"],
+    ["Qatar", "AE", "English", "www.samsung.com/ae"],
+    ["Yemen", "AE", "English", "www.samsung.com/ae"],
+    ["Turkey", "TR", "Turkish", "www.samsung.com/tr"],
+    ["Levant", "LEVANT", "English", "www.samsung.com/levant"],
+    ["Jordan", "LEVANT_AR", "Arabic", "www.samsung.com/levant_ar"],
+    ["Lebanon", "LB", "Arabic", "www.samsung.com/lb"],
+    ["Syria", "LB", "Arabic", "www.samsung.com/lb"],
+    ["Iraq", "IQ_AR", "Arabic", "www.samsung.com/iq_ar"],
+    ["Iraq", "IQ_KU", "Kurdish", "www.samsung.com/iq_ku"],
+    ["Saudi Arabia", "SA", "English", "www.samsung.com/sa"],
+    ["Saudi Arabia", "SA_EN", "Arabic", "www.samsung.com/sa_en"],
+    ["Morocco", "N_AFRICA", "French", "www.samsung.com/n_africa"],
+    ["Tunisia", "N_AFRICA", "French", "www.samsung.com/n_africa"],
+    ["Libya", "N_AFRICA", "French", "www.samsung.com/n_africa"],
+    ["Algeria", "N_AFRICA", "French", "www.samsung.com/n_africa"],
+    ["Israel", "IL", "Hebrew", "www.samsung.com/il"],
+    ["Pakistan", "PK", "English", "www.samsung.com/pk"],
+    ["Afghanistan", "PK", "English", "www.samsung.com/pk"],
+    ["India", "IN", "English", "www.samsung.com/in"],
+    ["Bangladesh", "BD", "Bengali", "www.samsung.com/bd"],
+    ["Sri Lanka", "BD", "Bengali", "www.samsung.com/bd"],
+    ["Nepal", "BD", "Bengali", "www.samsung.com/bd"],
+    ["Russia", "RU", "Russian", "www.samsung.com/ru"],
+    ["Armenia", "RU", "Russian", "www.samsung.com/ru"],
+    ["Georgia", "RU", "Russian", "www.samsung.com/ru"],
+    ["Azerbaijan", "AZ", "Azerbaijani", "www.samsung.com/az"],
+    ["Kazakhstan", "KZ_RU", "Russian", "www.samsung.com/kz_ru"],
+    ["Kazakhstan", "KZ_KZ", "Kazakh", "www.samsung.com/kz_kz"],
+    ["Kyrgyzstan", "KZ_KZ", "Kazakh", "www.samsung.com/kz_kz"],
+    ["Tajikistan", "KZ_KZ", "Kazakh", "www.samsung.com/kz_kz"],
+    ["Uzbekistan", "UZ_UZ", "Uzbek", "www.samsung.com/uz_uz"],
+    ["Uzbekistan", "UZ_RU", "Russian", "www.samsung.com/uz_ru"],
+    ["Mongolia", "MN", "Mongolian", "www.samsung.com/mn"],
+    ["China", "CN", "Insea Simpli", "www.samsung.com/cn"],
+    ["Hong Kong", "HK", "Insea Traditi", "www.samsung.com/hk"],
+    ["Hong Kong", "HK_EN", "English", "www.samsung.com/hk_en"],
+    ["Taiwan", "TW", "Insea Traditi", "www.samsung.com/tw"],
+    ["South Africa", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Africa", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Africa", "AFRICA_PT", "Portuguese", "www.samsung.com/africa_pt"],
+    ["Botswana", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Namibia", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Kingdom of Lesotho", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Kingdom of Eswatini", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Mauritius", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Zambia", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Zimbabwe", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Mozambique", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Malawi", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Angola", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Madagascar", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Reunion", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["The Union of Comoros", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Kenya", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Tanzania", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Uganda", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Rwanda", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["South Sudan", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["DR Congo", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Ethiopia", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Somalia", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Djibouti", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Seychelles", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Burundi", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Eritrea", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Sudan", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Nigeria", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Togo", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Benin", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Chad", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Ghana", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Côte d'Ivoire", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Cameroon", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Liberia", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Sierra Leone", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Central African Republic", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Congo", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Equatorial Guinea", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Sao Tome and Principe", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Senegal", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Gabon", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Burkina Faso", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Niger", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Guinea", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Mali", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Mauritania", "AFRICA_FR", "French", "www.samsung.com/africa_fr"],
+    ["Gambia", "AFRICA_EN", "English", "www.samsung.com/africa_en"],
+    ["Cape Verde", "AFRICA_PT", "Portuguese", "www.samsung.com/africa_pt"],
+    ["Korea", "SEC", "Korean", "www.samsung.com/sec"],
+    ["Japan", "JP", "Japanese", "www.samsung.com/jp"]
 ];
 
 const UI_TEXT = {
@@ -1656,6 +1777,10 @@ function getCountryFlagEmoji(countryCode) {
         DK: "\u{1F1E9}\u{1F1F0}", FI: "\u{1F1EB}\u{1F1EE}", NO: "\u{1F1F3}\u{1F1F4}", PL: "\u{1F1F5}\u{1F1F1}",
         HU: "\u{1F1ED}\u{1F1FA}", RO: "\u{1F1F7}\u{1F1F4}", CZ: "\u{1F1E8}\u{1F1FF}", GR: "\u{1F1EC}\u{1F1F7}",
         HR: "\u{1F1ED}\u{1F1F7}", IE: "\u{1F1EE}\u{1F1EA}", UA: "\u{1F1FA}\u{1F1E6}", KR: "\u{1F1F0}\u{1F1F7}",
+        IN: "\u{1F1EE}\u{1F1F3}", TR: "\u{1F1F9}\u{1F1F7}", RU: "\u{1F1F7}\u{1F1FA}", JP: "\u{1F1EF}\u{1F1F5}",
+        CN: "\u{1F1E8}\u{1F1F3}", HK: "\u{1F1ED}\u{1F1F0}", TW: "\u{1F1F9}\u{1F1FC}", IL: "\u{1F1EE}\u{1F1F1}",
+        PK: "\u{1F1F5}\u{1F1F0}", BD: "\u{1F1E7}\u{1F1E9}", AZ: "\u{1F1E6}\u{1F1FF}", KZ: "\u{1F1F0}\u{1F1FF}",
+        UZ: "\u{1F1FA}\u{1F1FF}", MN: "\u{1F1F2}\u{1F1F3}", SA: "\u{1F1F8}\u{1F1E6}", IQ: "\u{1F1EE}\u{1F1F6}",
         TH: "\u{1F1F9}\u{1F1ED}", VN: "\u{1F1FB}\u{1F1F3}", SG: "\u{1F1F8}\u{1F1EC}", MY: "\u{1F1F2}\u{1F1FE}",
         PH: "\u{1F1F5}\u{1F1ED}", AE: "\u{1F1E6}\u{1F1EA}", MM: "\u{1F1F2}\u{1F1F2}", AU: "\u{1F1E6}\u{1F1FA}",
         NZ: "\u{1F1F3}\u{1F1FF}"
@@ -6809,13 +6934,67 @@ function getUiPhrase(key) {
 }
 
 function getCountryName(code) {
-    const map = {
+    const normalized = normalizeSiteCode(code);
+    const sourceEntry = (sourceData?.countries || []).find((item) => item.countryCode === normalized);
+    const staticMap = {
         KR: { ko: "대한민국", en: "South Korea", de: "Südkorea" },
         US: { ko: "미국", en: "United States", de: "Vereinigte Staaten" },
         GB: { ko: "영국", en: "United Kingdom", de: "Vereinigtes Königreich" },
-        DE: { ko: "독일", en: "Germany", de: "Deutschland" }
+        DE: { ko: "독일", en: "Germany", de: "Deutschland" },
+        TR: { ko: "튀르키예", en: "Turkiye", de: "Türkei" },
+        RU: { ko: "러시아", en: "Russian Federation", de: "Russische Föderation" },
+        IN: { ko: "인도", en: "India", de: "Indien" },
+        JP: { ko: "일본", en: "Japan", de: "Japan" },
+        CN: { ko: "중국", en: "China", de: "China" },
+        HK: { ko: "홍콩", en: "Hong Kong", de: "Hongkong" },
+        TW: { ko: "대만", en: "Taiwan", de: "Taiwan" }
     };
-    return map[code]?.[currentLocale] || map[code]?.en || map[code]?.ko || code;
+    const mapped = staticMap[normalized];
+    if (mapped) return mapped[currentLocale] || mapped.en || mapped.ko;
+    if (sourceEntry) {
+        if (currentLocale === "ko") return sourceEntry.countryName || sourceEntry.countryNameEnglish || normalized;
+        return sourceEntry.countryNameEnglish || sourceEntry.countryName || normalized;
+    }
+    const market = DOTCOM_MARKETS.find((entry) => entry[1] === code) || DOTCOM_MARKETS.find((entry) => normalizeSiteCode(entry[1]) === normalized);
+    return market?.[0] || normalized;
+}
+
+const Q2_COUNTRY_PRIORITY = [
+    "US", "KR", "BR", "IN", "DE", "GB", "MX", "IT", "FR", "CA", "ES", "NL", "PL", "AU", "TR", "CO", "ID", "RU"
+];
+
+const Q2_COUNTRY_PRIORITY_INDEX = Q2_COUNTRY_PRIORITY.reduce((acc, code, index) => {
+    acc[code] = index;
+    return acc;
+}, {});
+
+function getMarketSortName(market) {
+    const country = resolveCountry(market);
+    if (country?.countryNameEnglish) return country.countryNameEnglish;
+
+    const fallbackNames = {
+        UK: "United Kingdom",
+        GB: "United Kingdom",
+        KR: "South Korea",
+        US: "United States",
+        BR: "Brazil",
+        IN: "India",
+        DE: "Germany",
+        MX: "Mexico",
+        IT: "Italy",
+        FR: "France",
+        CA: "Canada",
+        ES: "Spain",
+        NL: "Netherlands",
+        PL: "Poland",
+        AU: "Australia",
+        TR: "Turkiye",
+        CO: "Colombia",
+        ID: "Indonesia",
+        RU: "Russian Federation"
+    };
+
+    return fallbackNames[market.siteCode] || fallbackNames[market.baseCode] || market.countryName || market.label || market.siteCode;
 }
 
 function buildMarketOptions() {
@@ -6840,7 +7019,22 @@ function buildMarketOptions() {
             label: localizeCountryLabel("Korea", "KR")
         });
     }
-    return [...unique.values()];
+    return [...unique.values()].sort((a, b) => {
+        const aPriority = Q2_COUNTRY_PRIORITY_INDEX[a.baseCode] ?? Number.POSITIVE_INFINITY;
+        const bPriority = Q2_COUNTRY_PRIORITY_INDEX[b.baseCode] ?? Number.POSITIVE_INFINITY;
+
+        if (aPriority !== bPriority) return aPriority - bPriority;
+
+        if (a.baseCode === b.baseCode && a.siteCode !== b.siteCode) {
+            if (a.siteCode === a.baseCode) return -1;
+            if (b.siteCode === b.baseCode) return 1;
+        }
+
+        const nameCompare = getMarketSortName(a).localeCompare(getMarketSortName(b), "en", { sensitivity: "base" });
+        if (nameCompare !== 0) return nameCompare;
+
+        return a.label.localeCompare(b.label, "en", { sensitivity: "base" });
+    });
 }
 
 function normalizeSiteCode(siteCode) {
@@ -6851,7 +7045,17 @@ function normalizeSiteCode(siteCode) {
         AE_AR: "AE",
         CA_FR: "CA",
         BE_FR: "BE",
-        CH_FR: "CH"
+        CH_FR: "CH",
+        SEC: "KR",
+        LEVANT_AR: "LEVANT",
+        IQ_AR: "IQ",
+        IQ_KU: "IQ",
+        SA_EN: "SA",
+        KZ_RU: "KZ",
+        KZ_KZ: "KZ",
+        UZ_UZ: "UZ",
+        UZ_RU: "UZ",
+        HK_EN: "HK"
     };
     return aliases[siteCode] || siteCode;
 }
@@ -6859,6 +7063,7 @@ function normalizeSiteCode(siteCode) {
 function localizeCountryLabel(countryName, siteCode) {
     const bySite = {
         KR: { ko: "대한민국 (KR)", en: "South Korea (KR)", de: "Südkorea (KR)" },
+        SEC: { ko: "대한민국 (SEC)", en: "South Korea (SEC)", de: "Südkorea (SEC)" },
         US: { ko: "미국 (US)", en: "United States (US)", de: "Vereinigte Staaten (US)" },
         UK: { ko: "영국 (UK)", en: "United Kingdom (UK)", de: "Vereinigtes Königreich (UK)" },
         DE: { ko: "독일 (DE)", en: "Germany (DE)", de: "Deutschland (DE)" },
@@ -6872,9 +7077,19 @@ function localizeCountryLabel(countryName, siteCode) {
         CA: { ko: "캐나다 (CA)", en: "Canada (CA)", de: "Kanada (CA)" },
         CA_FR: { ko: "캐나다 프랑스어 (CA_FR)", en: "Canada French (CA_FR)", de: "Kanada Französisch (CA_FR)" },
         CH: { ko: "스위스 (CH)", en: "Switzerland (CH)", de: "Schweiz (CH)" },
-        CH_FR: { ko: "스위스 프랑스어 (CH_FR)", en: "Switzerland French (CH_FR)", de: "Schweiz Französisch (CH_FR)" }
+        CH_FR: { ko: "스위스 프랑스어 (CH_FR)", en: "Switzerland French (CH_FR)", de: "Schweiz Französisch (CH_FR)" },
+        TR: { ko: "튀르키예 (TR)", en: "Turkiye (TR)", de: "Türkei (TR)" },
+        IN: { ko: "인도 (IN)", en: "India (IN)", de: "Indien (IN)" },
+        RU: { ko: "러시아 (RU)", en: "Russian Federation (RU)", de: "Russische Föderation (RU)" },
+        JP: { ko: "일본 (JP)", en: "Japan (JP)", de: "Japan (JP)" }
     };
-    return bySite[siteCode]?.[currentLocale] || bySite[siteCode]?.en || `${countryName} (${siteCode})`;
+    if (bySite[siteCode]) return bySite[siteCode][currentLocale] || bySite[siteCode].en;
+    const normalized = normalizeSiteCode(siteCode);
+    const sourceEntry = (sourceData?.countries || []).find((item) => item.countryCode === normalized);
+    const localizedName = currentLocale === "ko"
+        ? (sourceEntry?.countryName || countryName)
+        : (sourceEntry?.countryNameEnglish || countryName);
+    return `${localizedName} (${siteCode})`;
 }
 
 function resolveCountry(selectedMarket) {

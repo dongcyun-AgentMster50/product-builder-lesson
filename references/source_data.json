@@ -1,47 +1,1779 @@
-
 {
   "countries": [
     {
-      "countryCode": "KR",
-      "countryName": "대한민국",
-      "samsungShopUrl": "https://www.samsung.com/sec/",
+      "countryCode": "AE",
+      "countryName": "아랍에미리트",
+      "countryNameEnglish": "UAE",
+      "samsungShopUrl": "https://www.samsung.com/ae",
       "availableProducts": [
-        {"category": "TV", "modelName": "Neo QLED 8K"},
-        {"category": "냉장고", "modelName": "비스포크 냉장고 4도어"},
-        {"category": "세탁기", "modelName": "비스포크 그랑데 AI"},
-        {"category": "로봇청소기", "modelName": "비스포크 제트 봇 AI"}
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
       ]
     },
     {
-      "countryCode": "US",
-      "countryName": "미국",
-      "samsungShopUrl": "https://www.samsung.com/us/",
+      "countryCode": "AFRICA_EN",
+      "countryName": "아프리카 영어권",
+      "countryNameEnglish": "Africa English",
+      "samsungShopUrl": "https://www.samsung.com/africa_en",
       "availableProducts": [
-        {"category": "TV", "modelName": "The Frame"},
-        {"category": "냉장고", "modelName": "Bespoke 4-Door Flex"},
-        {"category": "건조기", "modelName": "Smart Top Load Dryer"},
-        {"category": "에어컨", "modelName": "WindFree 2.0"}
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
       ]
     },
     {
-      "countryCode": "GB",
-      "countryName": "영국",
-      "samsungShopUrl": "https://www.samsung.com/uk/",
+      "countryCode": "AFRICA_FR",
+      "countryName": "아프리카 프랑스어권",
+      "countryNameEnglish": "Africa French",
+      "samsungShopUrl": "https://www.samsung.com/africa_fr",
       "availableProducts": [
-        {"category": "TV", "modelName": "The Sero"},
-        {"category": "세탁기", "modelName": "QuickDrive"},
-        {"category": "오븐", "modelName": "Dual Cook Flex"}
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "AFRICA_PT",
+      "countryName": "아프리카 포르투갈어권",
+      "countryNameEnglish": "Africa Portuguese",
+      "samsungShopUrl": "https://www.samsung.com/africa_pt",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "AR",
+      "countryName": "아르헨티나",
+      "countryNameEnglish": "Argentina",
+      "samsungShopUrl": "https://www.samsung.com/ar",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "AT",
+      "countryName": "오스트리아",
+      "countryNameEnglish": "Austria",
+      "samsungShopUrl": "https://www.samsung.com/at",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "AU",
+      "countryName": "호주",
+      "countryNameEnglish": "Australia",
+      "samsungShopUrl": "https://www.samsung.com/au",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "AZ",
+      "countryName": "아제르바이잔",
+      "countryNameEnglish": "Azerbaijan",
+      "samsungShopUrl": "https://www.samsung.com/az",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "BD",
+      "countryName": "방글라데시",
+      "countryNameEnglish": "Bangladesh",
+      "samsungShopUrl": "https://www.samsung.com/bd",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "BE",
+      "countryName": "벨기에",
+      "countryNameEnglish": "Belgium",
+      "samsungShopUrl": "https://www.samsung.com/be",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "BG",
+      "countryName": "불가리아",
+      "countryNameEnglish": "Bulgaria",
+      "samsungShopUrl": "https://www.samsung.com/bg",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "BO",
+      "countryName": "볼리비아",
+      "countryNameEnglish": "Bolivia",
+      "samsungShopUrl": "https://www.samsung.com/bo",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "BR",
+      "countryName": "브라질",
+      "countryNameEnglish": "Brazil",
+      "samsungShopUrl": "https://www.samsung.com/br",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "CA",
+      "countryName": "캐나다",
+      "countryNameEnglish": "Canada",
+      "samsungShopUrl": "https://www.samsung.com/ca",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "CH",
+      "countryName": "스위스",
+      "countryNameEnglish": "Switzerland",
+      "samsungShopUrl": "https://www.samsung.com/ch",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "CL",
+      "countryName": "칠레",
+      "countryNameEnglish": "Chile",
+      "samsungShopUrl": "https://www.samsung.com/cl",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "CN",
+      "countryName": "중국",
+      "countryNameEnglish": "China",
+      "samsungShopUrl": "https://www.samsung.com/cn",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "CO",
+      "countryName": "콜롬비아",
+      "countryNameEnglish": "Colombia",
+      "samsungShopUrl": "https://www.samsung.com/co",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "CZ",
+      "countryName": "체코",
+      "countryNameEnglish": "Czech",
+      "samsungShopUrl": "https://www.samsung.com/cz",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
       ]
     },
     {
       "countryCode": "DE",
       "countryName": "독일",
-      "samsungShopUrl": "https://www.samsung.com/de/",
+      "countryNameEnglish": "Germany",
+      "samsungShopUrl": "https://www.samsung.com/de",
       "availableProducts": [
-        {"category": "TV", "modelName": "QLED 4K"},
-        {"category": "냉장고", "modelName": "Family Hub"},
-        {"category": "에어컨", "modelName": "Wind-Free Avant"},
-        {"category": "세탁기", "modelName": "AddWash"}
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "DK",
+      "countryName": "덴마크",
+      "countryNameEnglish": "Denmark",
+      "samsungShopUrl": "https://www.samsung.com/dk",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "EE",
+      "countryName": "에스토니아",
+      "countryNameEnglish": "Estonia",
+      "samsungShopUrl": "https://www.samsung.com/ee",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "ES",
+      "countryName": "스페인",
+      "countryNameEnglish": "Spain",
+      "samsungShopUrl": "https://www.samsung.com/es",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "FI",
+      "countryName": "핀란드",
+      "countryNameEnglish": "Finland",
+      "samsungShopUrl": "https://www.samsung.com/fi",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "FR",
+      "countryName": "프랑스",
+      "countryNameEnglish": "France",
+      "samsungShopUrl": "https://www.samsung.com/fr",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "GB",
+      "countryName": "영국",
+      "countryNameEnglish": "United Kingdom",
+      "samsungShopUrl": "https://www.samsung.com/uk",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "GR",
+      "countryName": "그리스",
+      "countryNameEnglish": "Greece",
+      "samsungShopUrl": "https://www.samsung.com/gr",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "HK",
+      "countryName": "홍콩",
+      "countryNameEnglish": "Hong Kong",
+      "samsungShopUrl": "https://www.samsung.com/hk",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "HR",
+      "countryName": "크로아티아",
+      "countryNameEnglish": "Croatia",
+      "samsungShopUrl": "https://www.samsung.com/hr",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "HU",
+      "countryName": "헝가리",
+      "countryNameEnglish": "Hungary",
+      "samsungShopUrl": "https://www.samsung.com/hu",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "IE",
+      "countryName": "아일랜드",
+      "countryNameEnglish": "Ireland",
+      "samsungShopUrl": "https://www.samsung.com/ie",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "IL",
+      "countryName": "이스라엘",
+      "countryNameEnglish": "Israel",
+      "samsungShopUrl": "https://www.samsung.com/il",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "IN",
+      "countryName": "인도",
+      "countryNameEnglish": "India",
+      "samsungShopUrl": "https://www.samsung.com/in",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "IQ",
+      "countryName": "이라크",
+      "countryNameEnglish": "Iraq",
+      "samsungShopUrl": "https://www.samsung.com/iq_ar",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "IT",
+      "countryName": "이탈리아",
+      "countryNameEnglish": "Italy",
+      "samsungShopUrl": "https://www.samsung.com/it",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "JP",
+      "countryName": "일본",
+      "countryNameEnglish": "Japan",
+      "samsungShopUrl": "https://www.samsung.com/jp",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "KR",
+      "countryName": "대한민국",
+      "countryNameEnglish": "South Korea",
+      "samsungShopUrl": "https://www.samsung.com/sec",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "KZ",
+      "countryName": "카자흐스탄",
+      "countryNameEnglish": "Kazakhstan",
+      "samsungShopUrl": "https://www.samsung.com/kz_ru",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "LB",
+      "countryName": "레바논",
+      "countryNameEnglish": "Lebanon",
+      "samsungShopUrl": "https://www.samsung.com/lb",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "LEVANT",
+      "countryName": "레반트",
+      "countryNameEnglish": "Levant",
+      "samsungShopUrl": "https://www.samsung.com/levant",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "LT",
+      "countryName": "리투아니아",
+      "countryNameEnglish": "Lithuania",
+      "samsungShopUrl": "https://www.samsung.com/lt",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "LV",
+      "countryName": "라트비아",
+      "countryNameEnglish": "Latvia",
+      "samsungShopUrl": "https://www.samsung.com/lv",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "MK",
+      "countryName": "북마케도니아",
+      "countryNameEnglish": "Macedonia",
+      "samsungShopUrl": "https://www.samsung.com/mk",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "MM",
+      "countryName": "미얀마",
+      "countryNameEnglish": "Myanmar",
+      "samsungShopUrl": "https://www.samsung.com/mm",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "MN",
+      "countryName": "몽골",
+      "countryNameEnglish": "Mongolia",
+      "samsungShopUrl": "https://www.samsung.com/mn",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "MX",
+      "countryName": "멕시코",
+      "countryNameEnglish": "Mexico",
+      "samsungShopUrl": "https://www.samsung.com/mx",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "MY",
+      "countryName": "말레이시아",
+      "countryNameEnglish": "Malaysia",
+      "samsungShopUrl": "https://www.samsung.com/my",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "NL",
+      "countryName": "네덜란드",
+      "countryNameEnglish": "Netherlands",
+      "samsungShopUrl": "https://www.samsung.com/nl",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "NO",
+      "countryName": "노르웨이",
+      "countryNameEnglish": "Norway",
+      "samsungShopUrl": "https://www.samsung.com/no",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "NZ",
+      "countryName": "뉴질랜드",
+      "countryNameEnglish": "New Zealand",
+      "samsungShopUrl": "https://www.samsung.com/nz",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "N_AFRICA",
+      "countryName": "북아프리카",
+      "countryNameEnglish": "North Africa",
+      "samsungShopUrl": "https://www.samsung.com/n_africa",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "PA",
+      "countryName": "파나마 / 라틴 아메리카",
+      "countryNameEnglish": "Panama / Latin America",
+      "samsungShopUrl": "https://www.samsung.com/latin",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "PE",
+      "countryName": "페루",
+      "countryNameEnglish": "Peru",
+      "samsungShopUrl": "https://www.samsung.com/pe",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "PH",
+      "countryName": "필리핀",
+      "countryNameEnglish": "Philippines",
+      "samsungShopUrl": "https://www.samsung.com/ph",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "PK",
+      "countryName": "파키스탄",
+      "countryNameEnglish": "Pakistan",
+      "samsungShopUrl": "https://www.samsung.com/pk",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "PL",
+      "countryName": "폴란드",
+      "countryNameEnglish": "Poland",
+      "samsungShopUrl": "https://www.samsung.com/pl",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "PT",
+      "countryName": "포르투갈",
+      "countryNameEnglish": "Portugal",
+      "samsungShopUrl": "https://www.samsung.com/pt",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "PY",
+      "countryName": "파라과이",
+      "countryNameEnglish": "Paraguay",
+      "samsungShopUrl": "https://www.samsung.com/py",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "RO",
+      "countryName": "루마니아",
+      "countryNameEnglish": "Romania",
+      "samsungShopUrl": "https://www.samsung.com/ro",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "RS",
+      "countryName": "세르비아",
+      "countryNameEnglish": "Serbia",
+      "samsungShopUrl": "https://www.samsung.com/rs",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "RU",
+      "countryName": "러시아",
+      "countryNameEnglish": "Russian Federation",
+      "samsungShopUrl": "https://www.samsung.com/ru",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "SA",
+      "countryName": "사우디아라비아",
+      "countryNameEnglish": "Saudi Arabia",
+      "samsungShopUrl": "https://www.samsung.com/sa",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "SE",
+      "countryName": "스웨덴",
+      "countryNameEnglish": "Sweden",
+      "samsungShopUrl": "https://www.samsung.com/se",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "SG",
+      "countryName": "싱가포르",
+      "countryNameEnglish": "Singapore",
+      "samsungShopUrl": "https://www.samsung.com/sg",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "SI",
+      "countryName": "슬로베니아",
+      "countryNameEnglish": "Slovenia",
+      "samsungShopUrl": "https://www.samsung.com/si",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "SK",
+      "countryName": "슬로바키아",
+      "countryNameEnglish": "Slovakia",
+      "samsungShopUrl": "https://www.samsung.com/sk",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "TH",
+      "countryName": "태국",
+      "countryNameEnglish": "Thailand",
+      "samsungShopUrl": "https://www.samsung.com/th",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "TR",
+      "countryName": "튀르키예",
+      "countryNameEnglish": "Turkiye",
+      "samsungShopUrl": "https://www.samsung.com/tr",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "TW",
+      "countryName": "대만",
+      "countryNameEnglish": "Taiwan",
+      "samsungShopUrl": "https://www.samsung.com/tw",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "UA",
+      "countryName": "우크라이나",
+      "countryNameEnglish": "Ukraine",
+      "samsungShopUrl": "https://www.samsung.com/ua",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "US",
+      "countryName": "미국",
+      "countryNameEnglish": "USA",
+      "samsungShopUrl": "https://www.samsung.com/us",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "UY",
+      "countryName": "우루과이",
+      "countryNameEnglish": "Uruguay",
+      "samsungShopUrl": "https://www.samsung.com/uy",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "UZ",
+      "countryName": "우즈베키스탄",
+      "countryNameEnglish": "Uzbekistan",
+      "samsungShopUrl": "https://www.samsung.com/uz_uz",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
+      ]
+    },
+    {
+      "countryCode": "VN",
+      "countryName": "베트남",
+      "countryNameEnglish": "Vietnam",
+      "samsungShopUrl": "https://www.samsung.com/vn",
+      "availableProducts": [
+        {
+          "category": "TV",
+          "modelName": "Neo QLED 4K"
+        },
+        {
+          "category": "냉장고",
+          "modelName": "Bespoke Refrigerator"
+        },
+        {
+          "category": "세탁기",
+          "modelName": "Bespoke AI Washer"
+        },
+        {
+          "category": "에어컨",
+          "modelName": "WindFree Air Conditioner"
+        }
       ]
     }
   ]

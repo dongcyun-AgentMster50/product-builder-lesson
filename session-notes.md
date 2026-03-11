@@ -90,3 +90,10 @@
 - Files changed: `main.js`, `scripts/generate-dotcom-matrices.mjs`, `references/service_support_matrix.json`, `references/sku_availability_matrix.json`, `references/product_feature_matrix.json`, `session-notes.md`.
 - Git: not committed yet; repo also has unrelated existing modified/untracked files.
 - Next: Resume by switching deployed AI endpoints/UI flow to server-side OpenAI/Codex usage without user API-key input, then verify generate/refine end-to-end.
+
+## 2026-03-11 08:13 (UTC)
+- User message (raw): "현재까지의 작업들 다 저장해줘 그리고 다시 pc를 바꾸서 열건데 그대로 열리게 해줘"
+- Actions: Saved the conversation on explicit request, expanded Q2 market handling to the full provided dotcom list, aligned country/site aliases and labels, and regenerated `dotcom_mapping`, `source_data`, `country_trends`, and `city_signals` so new markets like India/Turkiye/Russia resolve in the UI with fallback and representative city data.
+- Files changed: `main.js`, `references/dotcom_mapping.json`, `references/source_data.json`, `references/country_trends.json`, `references/city_signals.json`, `session-notes.md`.
+- Git: pending commit and push from the current worktree.
+- Next: Commit the current state and push to `origin/main` so the same project state is available on another PC.
