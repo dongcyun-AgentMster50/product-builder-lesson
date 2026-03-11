@@ -283,8 +283,8 @@ const ANTHROPIC_MODEL   = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
 const SYSTEM_PROMPT_PATH = path.join(ROOT_DIR, "prompt.txt");
 
 /** Stream Anthropic API response directly to an SSE-enabled HTTP response. */
-function callAnthropicStream({ systemPrompt, messages, res, onDone, onError }) {
-    const apiKey = process.env.ANTHROPIC_API_KEY || "";
+function callAnthropicStream({ systemPrompt, messages, apiKey: userKey, res, onDone, onError }) {
+    const apiKey = userKey || process.env.ANTHROPIC_API_KEY || "";
     if (!apiKey) {
         onError(new Error("ANTHROPIC_API_KEY is not configured."));
         return;
@@ -373,6 +373,180 @@ function callAnthropicStream({ systemPrompt, messages, res, onDone, onError }) {
     req.end();
 }
 
+/** Stream OpenAI (ChatGPT) API response. */
+function callOpenAIStream({ systemPrompt, messages, apiKey, res, onDone, onError }) {
+    if (!apiKey) {
+        onError(new Error("OpenAI API key is required."));
+        return;
+    }
+
+    const openaiMessages = [
+        { role: "system", content: systemPrompt },
+        ...messages
+    ];
+
+    const body = JSON.stringify({
+        model: process.env.OPENAI_MODEL || "gpt-4o",
+        max_tokens: 8000,
+        stream: true,
+        messages: openaiMessages
+    });
+
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Length": Buffer.byteLength(body)
+        }
+    };
+
+    const req = https.request("https://api.openai.com/v1/chat/completions", options, (apiRes) => {
+        if (apiRes.statusCode !== 200) {
+            let errBody = "";
+            apiRes.on("data", (chunk) => { errBody += chunk; });
+            apiRes.on("end", () => {
+                try {
+                    const parsed = JSON.parse(errBody);
+                    onError(new Error(parsed?.error?.message || `OpenAI API error ${apiRes.statusCode}`));
+                } catch {
+                    onError(new Error(`OpenAI API error ${apiRes.statusCode}`));
+                }
+            });
+            return;
+        }
+
+        let buffer = "";
+        apiRes.on("data", (chunk) => {
+            buffer += chunk.toString();
+            const lines = buffer.split("\n");
+            buffer = lines.pop();
+
+            for (const line of lines) {
+                if (!line.startsWith("data: ")) continue;
+                const data = line.slice(6).trim();
+                if (data === "[DONE]") {
+                    res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+                    onDone();
+                    return;
+                }
+                try {
+                    const event = JSON.parse(data);
+                    const text = event.choices?.[0]?.delta?.content;
+                    if (text) {
+                        res.write(`data: ${JSON.stringify({ type: "chunk", text })}\n\n`);
+                    }
+                } catch { /* skip */ }
+            }
+        });
+
+        apiRes.on("end", () => {
+            res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+            onDone();
+        });
+
+        apiRes.on("error", onError);
+    });
+
+    req.on("error", onError);
+    req.write(body);
+    req.end();
+}
+
+/** Stream Google Gemini API response. */
+function callGeminiStream({ systemPrompt, messages, apiKey, res, onDone, onError }) {
+    if (!apiKey) {
+        onError(new Error("Gemini API key is required."));
+        return;
+    }
+
+    const geminiModel = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:streamGenerateContent?key=${apiKey}&alt=sse`;
+
+    const contents = messages.map((m) => ({
+        role: m.role === "assistant" ? "model" : "user",
+        parts: [{ text: m.content }]
+    }));
+
+    const body = JSON.stringify({
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents,
+        generationConfig: { maxOutputTokens: 8000 }
+    });
+
+    const parsed = new URL(url);
+    const options = {
+        method: "POST",
+        hostname: parsed.hostname,
+        path: parsed.pathname + parsed.search,
+        headers: {
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(body)
+        }
+    };
+
+    const req = https.request(options, (apiRes) => {
+        if (apiRes.statusCode !== 200) {
+            let errBody = "";
+            apiRes.on("data", (chunk) => { errBody += chunk; });
+            apiRes.on("end", () => {
+                try {
+                    const parsed = JSON.parse(errBody);
+                    const msg = parsed?.error?.message || `Gemini API error ${apiRes.statusCode}`;
+                    onError(new Error(msg));
+                } catch {
+                    onError(new Error(`Gemini API error ${apiRes.statusCode}`));
+                }
+            });
+            return;
+        }
+
+        let buffer = "";
+        apiRes.on("data", (chunk) => {
+            buffer += chunk.toString();
+            const lines = buffer.split("\n");
+            buffer = lines.pop();
+
+            for (const line of lines) {
+                if (!line.startsWith("data: ")) continue;
+                const data = line.slice(6).trim();
+                if (!data) continue;
+                try {
+                    const event = JSON.parse(data);
+                    const text = event.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        res.write(`data: ${JSON.stringify({ type: "chunk", text })}\n\n`);
+                    }
+                } catch { /* skip */ }
+            }
+        });
+
+        apiRes.on("end", () => {
+            res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+            onDone();
+        });
+
+        apiRes.on("error", onError);
+    });
+
+    req.on("error", onError);
+    req.write(body);
+    req.end();
+}
+
+/** Dispatch to the selected AI provider. */
+function callProviderStream({ provider, apiKey, systemPrompt, messages, res, onDone, onError }) {
+    switch (provider) {
+        case "openai":
+            return callOpenAIStream({ systemPrompt, messages, apiKey, res, onDone, onError });
+        case "gemini":
+            return callGeminiStream({ systemPrompt, messages, apiKey, res, onDone, onError });
+        case "claude":
+        default:
+            return callAnthropicStream({ systemPrompt, messages, apiKey, res, onDone, onError });
+    }
+}
+
 function sendSseHeaders(res) {
     res.writeHead(200, {
         "Content-Type": "text/event-stream; charset=utf-8",
@@ -412,6 +586,8 @@ async function handleGenerate(req, res) {
     const tags       = Array.isArray(body?.intentTags) ? body.intentTags.join(", ") : String(body?.intentTags || "");
     const mission    = String(body?.missionBucket || "").trim();
     const locale     = String(body?.locale || "ko").trim();
+    const provider   = String(body?.provider || "claude").trim();
+    const clientKey  = String(body?.apiKey || "").trim();
     const regionCtx  = body?.regionInsight ? JSON.stringify(body.regionInsight, null, 2) : null;
 
     const userMessage = [
@@ -436,13 +612,15 @@ async function handleGenerate(req, res) {
     res.write(`data: ${JSON.stringify({ type: "start" })}\n\n`);
 
     let done = false;
-    callAnthropicStream({
+    callProviderStream({
+        provider,
+        apiKey: clientKey,
         systemPrompt,
         messages: [{ role: "user", content: userMessage }],
         res,
         onDone: () => { if (!done) { done = true; res.end(); } },
         onError: (err) => {
-            console.error("Anthropic generate error:", err.message);
+            console.error(`${provider} generate error:`, err.message);
             if (!done) {
                 done = true;
                 try {
@@ -477,6 +655,8 @@ async function handleRefine(req, res) {
     const previousOutput    = String(body?.previousOutput || "").trim();
     const refinementRequest = String(body?.refinementRequest || "").trim();
     const context           = body?.context || {};
+    const provider          = String(body?.provider || "claude").trim();
+    const clientKey         = String(body?.apiKey || "").trim();
 
     if (!refinementRequest) {
         sendJson(res, 400, { ok: false, error: { code: "MISSING_REQUEST", message: "refinementRequest is required." } });
@@ -506,13 +686,15 @@ async function handleRefine(req, res) {
     res.write(`data: ${JSON.stringify({ type: "start" })}\n\n`);
 
     let done = false;
-    callAnthropicStream({
+    callProviderStream({
+        provider,
+        apiKey: clientKey,
         systemPrompt,
         messages,
         res,
         onDone: () => { if (!done) { done = true; res.end(); } },
         onError: (err) => {
-            console.error("Anthropic refine error:", err.message);
+            console.error(`${provider} refine error:`, err.message);
             if (!done) {
                 done = true;
                 try {

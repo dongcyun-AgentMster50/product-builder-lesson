@@ -1,0 +1,1002 @@
+{
+  "version": "2026-03-11",
+  "generatedAt": "2026-03-11T04:52:05.644Z",
+  "source": "Samsung dotcom category-page JSON-LD + references/fact_pack.json",
+  "markets": [
+    {
+      "siteCode": "KR",
+      "countryCode": "KR",
+      "countryName": "South Korea",
+      "services": [
+        {
+          "serviceName": "Pet Care",
+          "appCardLabel": "SmartThings Pet Care",
+          "requiredCategories": [
+            "센서",
+            "조명",
+            "스피커",
+            "로봇청소기"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "로봇청소기",
+                "found": true,
+                "categoryKey": "로봇청소기",
+                "sourceUrl": "https://www.samsung.com/sec/vacuum-cleaners/all-vacuum-cleaners/",
+                "productCount": 31,
+                "inStockCount": 30
+              }
+            ],
+            "missingCategories": [
+              "센서",
+              "조명",
+              "스피커"
+            ]
+          },
+          "inferredSupport": {
+            "status": "limited",
+            "confidence": "low",
+            "rationale": "Only part of the required category set has official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Family Care",
+          "appCardLabel": "SmartThings Family Care",
+          "requiredCategories": [
+            "센서",
+            "스피커",
+            "조명"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [],
+            "missingCategories": [
+              "센서",
+              "스피커",
+              "조명"
+            ]
+          },
+          "inferredSupport": {
+            "status": "unverified",
+            "confidence": "low",
+            "rationale": "No required category had direct dotcom SKU evidence in the tracked market pages."
+          }
+        },
+        {
+          "serviceName": "SmartThings Energy",
+          "appCardLabel": "SmartThings Energy",
+          "requiredCategories": [
+            "에어컨",
+            "세탁기/건조기",
+            "냉장고"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "에어컨",
+                "found": true,
+                "categoryKey": "에어컨",
+                "sourceUrl": "https://www.samsung.com/sec/air-conditioners/all-air-conditioners/",
+                "productCount": 37,
+                "inStockCount": 37
+              },
+              {
+                "requiredCategory": "세탁기/건조기",
+                "found": true,
+                "categoryKey": "세탁기/건조기",
+                "sourceUrl": "https://www.samsung.com/sec/washers-and-dryers/all-washers-and-dryers/",
+                "productCount": 73,
+                "inStockCount": 72
+              },
+              {
+                "requiredCategory": "냉장고",
+                "found": true,
+                "categoryKey": "냉장고",
+                "sourceUrl": "https://www.samsung.com/sec/refrigerators/all-refrigerators/",
+                "productCount": 62,
+                "inStockCount": 60
+              }
+            ],
+            "missingCategories": []
+          },
+          "inferredSupport": {
+            "status": "supported",
+            "confidence": "medium",
+            "rationale": "All required categories have official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Samsung Health",
+          "appCardLabel": "Samsung Health",
+          "requiredCategories": [
+            "TV",
+            "스피커",
+            "조명"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "TV",
+                "found": true,
+                "categoryKey": "TV",
+                "sourceUrl": "https://www.samsung.com/sec/tvs/all-tvs/",
+                "productCount": 101,
+                "inStockCount": 66
+              }
+            ],
+            "missingCategories": [
+              "스피커",
+              "조명"
+            ]
+          },
+          "inferredSupport": {
+            "status": "limited",
+            "confidence": "low",
+            "rationale": "Only part of the required category set has official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Samsung Find",
+          "appCardLabel": "Samsung Find",
+          "requiredCategories": [
+            "센서",
+            "조명"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [],
+            "missingCategories": [
+              "센서",
+              "조명"
+            ]
+          },
+          "inferredSupport": {
+            "status": "unverified",
+            "confidence": "low",
+            "rationale": "No required category had direct dotcom SKU evidence in the tracked market pages."
+          }
+        },
+        {
+          "serviceName": "Home Monitoring",
+          "appCardLabel": "Home Monitoring",
+          "requiredCategories": [
+            "센서",
+            "조명"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [],
+            "missingCategories": [
+              "센서",
+              "조명"
+            ]
+          },
+          "inferredSupport": {
+            "status": "unverified",
+            "confidence": "low",
+            "rationale": "No required category had direct dotcom SKU evidence in the tracked market pages."
+          }
+        },
+        {
+          "serviceName": "Home Care",
+          "appCardLabel": "Home Care",
+          "requiredCategories": [
+            "로봇청소기",
+            "세탁기/건조기",
+            "냉장고"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "로봇청소기",
+                "found": true,
+                "categoryKey": "로봇청소기",
+                "sourceUrl": "https://www.samsung.com/sec/vacuum-cleaners/all-vacuum-cleaners/",
+                "productCount": 31,
+                "inStockCount": 30
+              },
+              {
+                "requiredCategory": "세탁기/건조기",
+                "found": true,
+                "categoryKey": "세탁기/건조기",
+                "sourceUrl": "https://www.samsung.com/sec/washers-and-dryers/all-washers-and-dryers/",
+                "productCount": 73,
+                "inStockCount": 72
+              },
+              {
+                "requiredCategory": "냉장고",
+                "found": true,
+                "categoryKey": "냉장고",
+                "sourceUrl": "https://www.samsung.com/sec/refrigerators/all-refrigerators/",
+                "productCount": 62,
+                "inStockCount": 60
+              }
+            ],
+            "missingCategories": []
+          },
+          "inferredSupport": {
+            "status": "supported",
+            "confidence": "medium",
+            "rationale": "All required categories have official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Air Care",
+          "appCardLabel": "Air Care",
+          "requiredCategories": [
+            "에어컨",
+            "센서"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "에어컨",
+                "found": true,
+                "categoryKey": "에어컨",
+                "sourceUrl": "https://www.samsung.com/sec/air-conditioners/all-air-conditioners/",
+                "productCount": 37,
+                "inStockCount": 37
+              }
+            ],
+            "missingCategories": [
+              "센서"
+            ]
+          },
+          "inferredSupport": {
+            "status": "limited",
+            "confidence": "low",
+            "rationale": "Only part of the required category set has official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Clothing Care",
+          "appCardLabel": "Clothing Care",
+          "requiredCategories": [
+            "세탁기/건조기"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "세탁기/건조기",
+                "found": true,
+                "categoryKey": "세탁기/건조기",
+                "sourceUrl": "https://www.samsung.com/sec/washers-and-dryers/all-washers-and-dryers/",
+                "productCount": 73,
+                "inStockCount": 72
+              }
+            ],
+            "missingCategories": []
+          },
+          "inferredSupport": {
+            "status": "supported",
+            "confidence": "medium",
+            "rationale": "All required categories have official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Smart Cooking",
+          "appCardLabel": "Smart Cooking",
+          "requiredCategories": [
+            "오븐",
+            "냉장고",
+            "TV"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "오븐",
+                "found": true,
+                "categoryKey": "오븐",
+                "sourceUrl": "https://www.samsung.com/sec/electric-range/all-electric-range/",
+                "productCount": 9,
+                "inStockCount": 9
+              },
+              {
+                "requiredCategory": "냉장고",
+                "found": true,
+                "categoryKey": "냉장고",
+                "sourceUrl": "https://www.samsung.com/sec/refrigerators/all-refrigerators/",
+                "productCount": 62,
+                "inStockCount": 60
+              },
+              {
+                "requiredCategory": "TV",
+                "found": true,
+                "categoryKey": "TV",
+                "sourceUrl": "https://www.samsung.com/sec/tvs/all-tvs/",
+                "productCount": 101,
+                "inStockCount": 66
+              }
+            ],
+            "missingCategories": []
+          },
+          "inferredSupport": {
+            "status": "supported",
+            "confidence": "medium",
+            "rationale": "All required categories have official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Home Fitness",
+          "appCardLabel": "Home Fitness",
+          "requiredCategories": [
+            "TV",
+            "스피커"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "TV",
+                "found": true,
+                "categoryKey": "TV",
+                "sourceUrl": "https://www.samsung.com/sec/tvs/all-tvs/",
+                "productCount": 101,
+                "inStockCount": 66
+              }
+            ],
+            "missingCategories": [
+              "스피커"
+            ]
+          },
+          "inferredSupport": {
+            "status": "limited",
+            "confidence": "low",
+            "rationale": "Only part of the required category set has official dotcom SKU evidence in this market."
+          }
+        }
+      ]
+    },
+    {
+      "siteCode": "US",
+      "countryCode": "US",
+      "countryName": "United States",
+      "services": [
+        {
+          "serviceName": "Pet Care",
+          "appCardLabel": "SmartThings Pet Care",
+          "requiredCategories": [
+            "센서",
+            "조명",
+            "스피커",
+            "로봇청소기"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "로봇청소기",
+                "found": true,
+                "categoryKey": "로봇청소기",
+                "sourceUrl": "https://www.samsung.com/us/home-appliances/vacuums/all-vacuums/?shop=Buy+Online",
+                "productCount": 6,
+                "inStockCount": 6
+              }
+            ],
+            "missingCategories": [
+              "센서",
+              "조명",
+              "스피커"
+            ]
+          },
+          "inferredSupport": {
+            "status": "limited",
+            "confidence": "low",
+            "rationale": "Only part of the required category set has official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Family Care",
+          "appCardLabel": "SmartThings Family Care",
+          "requiredCategories": [
+            "센서",
+            "스피커",
+            "조명"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [],
+            "missingCategories": [
+              "센서",
+              "스피커",
+              "조명"
+            ]
+          },
+          "inferredSupport": {
+            "status": "unverified",
+            "confidence": "low",
+            "rationale": "No required category had direct dotcom SKU evidence in the tracked market pages."
+          }
+        },
+        {
+          "serviceName": "SmartThings Energy",
+          "appCardLabel": "SmartThings Energy",
+          "requiredCategories": [
+            "에어컨",
+            "세탁기/건조기",
+            "냉장고"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "세탁기/건조기",
+                "found": true,
+                "categoryKey": "세탁기/건조기",
+                "sourceUrl": "https://www.samsung.com/us/home-appliances/washers/all-washers/?shop=Buy+Online",
+                "productCount": 24,
+                "inStockCount": 24
+              },
+              {
+                "requiredCategory": "냉장고",
+                "found": true,
+                "categoryKey": "냉장고",
+                "sourceUrl": "https://www.samsung.com/us/home-appliances/refrigerators/all-refrigerators/?shop=Buy+Online",
+                "productCount": 24,
+                "inStockCount": 24
+              }
+            ],
+            "missingCategories": [
+              "에어컨"
+            ]
+          },
+          "inferredSupport": {
+            "status": "limited",
+            "confidence": "low",
+            "rationale": "Only part of the required category set has official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Samsung Health",
+          "appCardLabel": "Samsung Health",
+          "requiredCategories": [
+            "TV",
+            "스피커",
+            "조명"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "TV",
+                "found": true,
+                "categoryKey": "TV",
+                "sourceUrl": "https://www.samsung.com/us/televisions-home-theater/tvs/all-tvs/?shop=Buy+Online",
+                "productCount": 24,
+                "inStockCount": 24
+              }
+            ],
+            "missingCategories": [
+              "스피커",
+              "조명"
+            ]
+          },
+          "inferredSupport": {
+            "status": "limited",
+            "confidence": "low",
+            "rationale": "Only part of the required category set has official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Samsung Find",
+          "appCardLabel": "Samsung Find",
+          "requiredCategories": [
+            "센서",
+            "조명"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [],
+            "missingCategories": [
+              "센서",
+              "조명"
+            ]
+          },
+          "inferredSupport": {
+            "status": "unverified",
+            "confidence": "low",
+            "rationale": "No required category had direct dotcom SKU evidence in the tracked market pages."
+          }
+        },
+        {
+          "serviceName": "Home Monitoring",
+          "appCardLabel": "Home Monitoring",
+          "requiredCategories": [
+            "센서",
+            "조명"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [],
+            "missingCategories": [
+              "센서",
+              "조명"
+            ]
+          },
+          "inferredSupport": {
+            "status": "unverified",
+            "confidence": "low",
+            "rationale": "No required category had direct dotcom SKU evidence in the tracked market pages."
+          }
+        },
+        {
+          "serviceName": "Home Care",
+          "appCardLabel": "Home Care",
+          "requiredCategories": [
+            "로봇청소기",
+            "세탁기/건조기",
+            "냉장고"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "로봇청소기",
+                "found": true,
+                "categoryKey": "로봇청소기",
+                "sourceUrl": "https://www.samsung.com/us/home-appliances/vacuums/all-vacuums/?shop=Buy+Online",
+                "productCount": 6,
+                "inStockCount": 6
+              },
+              {
+                "requiredCategory": "세탁기/건조기",
+                "found": true,
+                "categoryKey": "세탁기/건조기",
+                "sourceUrl": "https://www.samsung.com/us/home-appliances/washers/all-washers/?shop=Buy+Online",
+                "productCount": 24,
+                "inStockCount": 24
+              },
+              {
+                "requiredCategory": "냉장고",
+                "found": true,
+                "categoryKey": "냉장고",
+                "sourceUrl": "https://www.samsung.com/us/home-appliances/refrigerators/all-refrigerators/?shop=Buy+Online",
+                "productCount": 24,
+                "inStockCount": 24
+              }
+            ],
+            "missingCategories": []
+          },
+          "inferredSupport": {
+            "status": "supported",
+            "confidence": "medium",
+            "rationale": "All required categories have official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Air Care",
+          "appCardLabel": "Air Care",
+          "requiredCategories": [
+            "에어컨",
+            "센서"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [],
+            "missingCategories": [
+              "에어컨",
+              "센서"
+            ]
+          },
+          "inferredSupport": {
+            "status": "unverified",
+            "confidence": "low",
+            "rationale": "No required category had direct dotcom SKU evidence in the tracked market pages."
+          }
+        },
+        {
+          "serviceName": "Clothing Care",
+          "appCardLabel": "Clothing Care",
+          "requiredCategories": [
+            "세탁기/건조기"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "세탁기/건조기",
+                "found": true,
+                "categoryKey": "세탁기/건조기",
+                "sourceUrl": "https://www.samsung.com/us/home-appliances/washers/all-washers/?shop=Buy+Online",
+                "productCount": 24,
+                "inStockCount": 24
+              }
+            ],
+            "missingCategories": []
+          },
+          "inferredSupport": {
+            "status": "supported",
+            "confidence": "medium",
+            "rationale": "All required categories have official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Smart Cooking",
+          "appCardLabel": "Smart Cooking",
+          "requiredCategories": [
+            "오븐",
+            "냉장고",
+            "TV"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "오븐",
+                "found": true,
+                "categoryKey": "오븐",
+                "sourceUrl": "https://www.samsung.com/us/home-appliances/ranges/all-ranges/?shop=Buy+Online",
+                "productCount": 15,
+                "inStockCount": 15
+              },
+              {
+                "requiredCategory": "냉장고",
+                "found": true,
+                "categoryKey": "냉장고",
+                "sourceUrl": "https://www.samsung.com/us/home-appliances/refrigerators/all-refrigerators/?shop=Buy+Online",
+                "productCount": 24,
+                "inStockCount": 24
+              },
+              {
+                "requiredCategory": "TV",
+                "found": true,
+                "categoryKey": "TV",
+                "sourceUrl": "https://www.samsung.com/us/televisions-home-theater/tvs/all-tvs/?shop=Buy+Online",
+                "productCount": 24,
+                "inStockCount": 24
+              }
+            ],
+            "missingCategories": []
+          },
+          "inferredSupport": {
+            "status": "supported",
+            "confidence": "medium",
+            "rationale": "All required categories have official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Home Fitness",
+          "appCardLabel": "Home Fitness",
+          "requiredCategories": [
+            "TV",
+            "스피커"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "TV",
+                "found": true,
+                "categoryKey": "TV",
+                "sourceUrl": "https://www.samsung.com/us/televisions-home-theater/tvs/all-tvs/?shop=Buy+Online",
+                "productCount": 24,
+                "inStockCount": 24
+              }
+            ],
+            "missingCategories": [
+              "스피커"
+            ]
+          },
+          "inferredSupport": {
+            "status": "limited",
+            "confidence": "low",
+            "rationale": "Only part of the required category set has official dotcom SKU evidence in this market."
+          }
+        }
+      ]
+    },
+    {
+      "siteCode": "UK",
+      "countryCode": "GB",
+      "countryName": "United Kingdom",
+      "services": [
+        {
+          "serviceName": "Pet Care",
+          "appCardLabel": "SmartThings Pet Care",
+          "requiredCategories": [
+            "센서",
+            "조명",
+            "스피커",
+            "로봇청소기"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "로봇청소기",
+                "found": true,
+                "categoryKey": "로봇청소기",
+                "sourceUrl": "https://www.samsung.com/uk/vacuum-cleaners/all-vacuum-cleaners/",
+                "productCount": 39,
+                "inStockCount": 38
+              }
+            ],
+            "missingCategories": [
+              "센서",
+              "조명",
+              "스피커"
+            ]
+          },
+          "inferredSupport": {
+            "status": "limited",
+            "confidence": "low",
+            "rationale": "Only part of the required category set has official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Family Care",
+          "appCardLabel": "SmartThings Family Care",
+          "requiredCategories": [
+            "센서",
+            "스피커",
+            "조명"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [],
+            "missingCategories": [
+              "센서",
+              "스피커",
+              "조명"
+            ]
+          },
+          "inferredSupport": {
+            "status": "unverified",
+            "confidence": "low",
+            "rationale": "No required category had direct dotcom SKU evidence in the tracked market pages."
+          }
+        },
+        {
+          "serviceName": "SmartThings Energy",
+          "appCardLabel": "SmartThings Energy",
+          "requiredCategories": [
+            "에어컨",
+            "세탁기/건조기",
+            "냉장고"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "세탁기/건조기",
+                "found": true,
+                "categoryKey": "세탁기/건조기",
+                "sourceUrl": "https://www.samsung.com/uk/washers-and-dryers/all-washers-and-dryers/",
+                "productCount": 56,
+                "inStockCount": 54
+              },
+              {
+                "requiredCategory": "냉장고",
+                "found": true,
+                "categoryKey": "냉장고",
+                "sourceUrl": "https://www.samsung.com/uk/refrigerators/all-refrigerators/",
+                "productCount": 54,
+                "inStockCount": 51
+              }
+            ],
+            "missingCategories": [
+              "에어컨"
+            ]
+          },
+          "inferredSupport": {
+            "status": "limited",
+            "confidence": "low",
+            "rationale": "Only part of the required category set has official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Samsung Health",
+          "appCardLabel": "Samsung Health",
+          "requiredCategories": [
+            "TV",
+            "스피커",
+            "조명"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "TV",
+                "found": true,
+                "categoryKey": "TV",
+                "sourceUrl": "https://www.samsung.com/uk/tvs/all-tvs/",
+                "productCount": 36,
+                "inStockCount": 34
+              }
+            ],
+            "missingCategories": [
+              "스피커",
+              "조명"
+            ]
+          },
+          "inferredSupport": {
+            "status": "limited",
+            "confidence": "low",
+            "rationale": "Only part of the required category set has official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Samsung Find",
+          "appCardLabel": "Samsung Find",
+          "requiredCategories": [
+            "센서",
+            "조명"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [],
+            "missingCategories": [
+              "센서",
+              "조명"
+            ]
+          },
+          "inferredSupport": {
+            "status": "unverified",
+            "confidence": "low",
+            "rationale": "No required category had direct dotcom SKU evidence in the tracked market pages."
+          }
+        },
+        {
+          "serviceName": "Home Monitoring",
+          "appCardLabel": "Home Monitoring",
+          "requiredCategories": [
+            "센서",
+            "조명"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [],
+            "missingCategories": [
+              "센서",
+              "조명"
+            ]
+          },
+          "inferredSupport": {
+            "status": "unverified",
+            "confidence": "low",
+            "rationale": "No required category had direct dotcom SKU evidence in the tracked market pages."
+          }
+        },
+        {
+          "serviceName": "Home Care",
+          "appCardLabel": "Home Care",
+          "requiredCategories": [
+            "로봇청소기",
+            "세탁기/건조기",
+            "냉장고"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "로봇청소기",
+                "found": true,
+                "categoryKey": "로봇청소기",
+                "sourceUrl": "https://www.samsung.com/uk/vacuum-cleaners/all-vacuum-cleaners/",
+                "productCount": 39,
+                "inStockCount": 38
+              },
+              {
+                "requiredCategory": "세탁기/건조기",
+                "found": true,
+                "categoryKey": "세탁기/건조기",
+                "sourceUrl": "https://www.samsung.com/uk/washers-and-dryers/all-washers-and-dryers/",
+                "productCount": 56,
+                "inStockCount": 54
+              },
+              {
+                "requiredCategory": "냉장고",
+                "found": true,
+                "categoryKey": "냉장고",
+                "sourceUrl": "https://www.samsung.com/uk/refrigerators/all-refrigerators/",
+                "productCount": 54,
+                "inStockCount": 51
+              }
+            ],
+            "missingCategories": []
+          },
+          "inferredSupport": {
+            "status": "supported",
+            "confidence": "medium",
+            "rationale": "All required categories have official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Air Care",
+          "appCardLabel": "Air Care",
+          "requiredCategories": [
+            "에어컨",
+            "센서"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [],
+            "missingCategories": [
+              "에어컨",
+              "센서"
+            ]
+          },
+          "inferredSupport": {
+            "status": "unverified",
+            "confidence": "low",
+            "rationale": "No required category had direct dotcom SKU evidence in the tracked market pages."
+          }
+        },
+        {
+          "serviceName": "Clothing Care",
+          "appCardLabel": "Clothing Care",
+          "requiredCategories": [
+            "세탁기/건조기"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "세탁기/건조기",
+                "found": true,
+                "categoryKey": "세탁기/건조기",
+                "sourceUrl": "https://www.samsung.com/uk/washers-and-dryers/all-washers-and-dryers/",
+                "productCount": 56,
+                "inStockCount": 54
+              }
+            ],
+            "missingCategories": []
+          },
+          "inferredSupport": {
+            "status": "supported",
+            "confidence": "medium",
+            "rationale": "All required categories have official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Smart Cooking",
+          "appCardLabel": "Smart Cooking",
+          "requiredCategories": [
+            "오븐",
+            "냉장고",
+            "TV"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "오븐",
+                "found": true,
+                "categoryKey": "오븐",
+                "sourceUrl": "https://www.samsung.com/uk/cooking-appliances/all-cooking-appliances/",
+                "productCount": 54,
+                "inStockCount": 53
+              },
+              {
+                "requiredCategory": "냉장고",
+                "found": true,
+                "categoryKey": "냉장고",
+                "sourceUrl": "https://www.samsung.com/uk/refrigerators/all-refrigerators/",
+                "productCount": 54,
+                "inStockCount": 51
+              },
+              {
+                "requiredCategory": "TV",
+                "found": true,
+                "categoryKey": "TV",
+                "sourceUrl": "https://www.samsung.com/uk/tvs/all-tvs/",
+                "productCount": 36,
+                "inStockCount": 34
+              }
+            ],
+            "missingCategories": []
+          },
+          "inferredSupport": {
+            "status": "supported",
+            "confidence": "medium",
+            "rationale": "All required categories have official dotcom SKU evidence in this market."
+          }
+        },
+        {
+          "serviceName": "Home Fitness",
+          "appCardLabel": "Home Fitness",
+          "requiredCategories": [
+            "TV",
+            "스피커"
+          ],
+          "confirmedEvidence": {
+            "coveredCategories": [
+              {
+                "requiredCategory": "TV",
+                "found": true,
+                "categoryKey": "TV",
+                "sourceUrl": "https://www.samsung.com/uk/tvs/all-tvs/",
+                "productCount": 36,
+                "inStockCount": 34
+              }
+            ],
+            "missingCategories": [
+              "스피커"
+            ]
+          },
+          "inferredSupport": {
+            "status": "limited",
+            "confidence": "low",
+            "rationale": "Only part of the required category set has official dotcom SKU evidence in this market."
+          }
+        }
+      ]
+    }
+  ]
+}

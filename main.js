@@ -41,13 +41,42 @@ const PERSONA_CATEGORY_GROUPS = [
         id: "household",
         title: "가구 구성",
         options: [
-            { id: "dual_income", label: "맞벌이 부부" },
-            { id: "single_parent", label: "한부모 가구" },
-            { id: "senior_couple", label: "노년 부부" },
-            { id: "newlywed", label: "신혼부부" },
-            { id: "solo_wife", label: "여성 1인 가구" },
-            { id: "solo_husband", label: "남성 1인 가구" },
-            { id: "shared_home", label: "룸메이트/셰어하우스" }
+            { id: "dual_income", label: "맞벌이 부부", sub: [
+                { id: "dual_income_no_child", label: "자녀 없음" },
+                { id: "dual_income_infant", label: "영유아 자녀" },
+                { id: "dual_income_school", label: "초등 이상 자녀" },
+                { id: "dual_income_pet_yes", label: "반려동물 있음" },
+                { id: "dual_income_pet_no", label: "반려동물 없음" }
+            ]},
+            { id: "single_parent", label: "한부모 가구", sub: [
+                { id: "single_parent_infant", label: "영유아 자녀" },
+                { id: "single_parent_school", label: "초등 이상 자녀" },
+                { id: "single_parent_teen", label: "청소년 자녀" }
+            ]},
+            { id: "senior_couple", label: "노년 부부", sub: [
+                { id: "senior_couple_independent", label: "독립 생활" },
+                { id: "senior_couple_care", label: "돌봄 필요" },
+                { id: "senior_couple_pet", label: "반려동물 있음" }
+            ]},
+            { id: "newlywed", label: "신혼부부", sub: [
+                { id: "newlywed_planning", label: "자녀 계획 중" },
+                { id: "newlywed_pet", label: "반려동물 있음" },
+                { id: "newlywed_new_home", label: "신규 입주" }
+            ]},
+            { id: "solo_wife", label: "여성 1인 가구", sub: [
+                { id: "solo_wife_early", label: "사회초년생" },
+                { id: "solo_wife_worker", label: "직장인" },
+                { id: "solo_wife_pet", label: "반려동물 있음" }
+            ]},
+            { id: "solo_husband", label: "남성 1인 가구", sub: [
+                { id: "solo_husband_early", label: "사회초년생" },
+                { id: "solo_husband_worker", label: "직장인" },
+                { id: "solo_husband_pet", label: "반려동물 있음" }
+            ]},
+            { id: "shared_home", label: "룸메이트/셰어하우스", sub: [
+                { id: "shared_home_two", label: "2인" },
+                { id: "shared_home_three_plus", label: "3인 이상" }
+            ]}
         ]
     },
     {
@@ -87,6 +116,7 @@ const PERSONA_CATEGORY_GROUPS = [
         id: "living_pattern",
         title: "생활 패턴",
         options: [
+            { id: "regular_routine", label: "규칙적 출퇴근 (일반적 패턴)" },
             { id: "remote_worker", label: "재택근무 중심" },
             { id: "commuter", label: "장거리 출퇴근" },
             { id: "night_shift", label: "야간 생활/교대근무" },
@@ -117,6 +147,28 @@ const PERSONA_OPTION_LABEL_EN = {
     solo_wife: "Single woman household",
     solo_husband: "Single man household",
     shared_home: "Roommate / Shared home",
+    dual_income_no_child: "No children",
+    dual_income_infant: "Infant/toddler",
+    dual_income_school: "Elementary or older",
+    dual_income_pet_yes: "Has pets",
+    dual_income_pet_no: "No pets",
+    single_parent_infant: "Infant/toddler",
+    single_parent_school: "Elementary or older",
+    single_parent_teen: "Teenager",
+    senior_couple_independent: "Independent living",
+    senior_couple_care: "Care needed",
+    senior_couple_pet: "Has pets",
+    newlywed_planning: "Planning for children",
+    newlywed_pet: "Has pets",
+    newlywed_new_home: "New home move-in",
+    solo_wife_early: "Early career",
+    solo_wife_worker: "Working professional",
+    solo_wife_pet: "Has pets",
+    solo_husband_early: "Early career",
+    solo_husband_worker: "Working professional",
+    solo_husband_pet: "Has pets",
+    shared_home_two: "2 people",
+    shared_home_three_plus: "3 or more",
     dog_owner: "Dog owner household",
     cat_owner: "Cat owner household",
     senior_pet: "Senior pet household",
@@ -132,6 +184,7 @@ const PERSONA_OPTION_LABEL_EN = {
     caregiver: "Caregiver household",
     empty_nester: "Empty nester couple",
     retired_stage: "Retired / Second-life stage",
+    regular_routine: "Regular commute (typical pattern)",
     remote_worker: "Remote-work focused",
     commuter: "Long-distance commuter",
     night_shift: "Night shift / rotating schedule",
@@ -147,7 +200,11 @@ function getLocalizedPersonaGroups(locale) {
         title: PERSONA_GROUP_TITLE_EN[group.id] || group.title,
         options: group.options.map((option) => ({
             ...option,
-            label: PERSONA_OPTION_LABEL_EN[option.id] || option.label
+            label: PERSONA_OPTION_LABEL_EN[option.id] || option.label,
+            ...(option.sub ? { sub: option.sub.map((s) => ({
+                ...s,
+                label: PERSONA_OPTION_LABEL_EN[s.id] || s.label
+            })) } : {})
         }))
     }));
 }
@@ -1178,6 +1235,7 @@ const prevBtn = document.getElementById("prev-btn");
 const nextBtn = document.getElementById("next-btn");
 const generateBtn = document.getElementById("generate-btn");
 const stepInsight = document.getElementById("step-insight");
+const aiProviderScreen = document.getElementById("ai-provider-screen");
 const CITY_CUSTOM_VALUE = "__custom__";
 const LOCAL_BYPASS_ACCESS_CODE = "demo-access";
 
@@ -1187,6 +1245,10 @@ let sourceData = {};
 let countryTrends = {};
 let citySignals = {};
 let dotcomMapping = { markets: [] };
+let verbalGuideline = null;
+let serviceSupportMatrix = { markets: [] };
+let skuAvailabilityMatrix = { markets: [] };
+let productFeatureMatrix = { products: [] };
 let latestPayload = null;
 let activeLensTab = "overview";
 let currentStep = 1;
@@ -1204,9 +1266,12 @@ let accessClientSessionId = "";
 let latestStep2InsightRequest = 0;
 let bypassSessionReady = false;
 let bypassSessionPromise = null;
+let selectedProvider = sessionStorage.getItem("aiProvider") || "openai";
 
 document.addEventListener("DOMContentLoaded", () => {
     accessClientSessionId = ensureAccessClientSessionId();
+    sessionStorage.setItem("aiProvider", "openai");
+    sessionStorage.removeItem("aiApiKey");
     hydrateStaticUi();
     if (enforceServerOrigin()) return;
     bindEvents();
@@ -1239,10 +1304,12 @@ function bindEvents() {
     roleSelectionContainer?.addEventListener("keydown", handleRoleCardKeydown);
     countrySelect.addEventListener("change", updateStatePreview);
     countrySelect.addEventListener("change", updateLocaleFromCountry);
+    countrySelect.addEventListener("change", renderCityProfileCard);
     citySelect.addEventListener("change", () => {
         toggleCityCustomInput();
         updateStatePreview();
         updateStepInsight();
+        renderCityProfileCard();
         if (citySelect.value === CITY_CUSTOM_VALUE) {
             cityCustomInput.focus();
         }
@@ -1250,6 +1317,7 @@ function bindEvents() {
     cityCustomInput.addEventListener("input", () => {
         updateStatePreview();
         updateStepInsight();
+        renderCityProfileCard();
     });
     personaGroups.addEventListener("change", (event) => {
         handleChecklistChange(event, personaGroups);
@@ -1388,6 +1456,34 @@ async function loadReferenceData() {
             dotcomMapping = { markets: [] };
         }
 
+        try {
+            const verbalGuidelineRes = await fetch("references/verbal_guideline.json");
+            verbalGuideline = verbalGuidelineRes.ok ? await verbalGuidelineRes.json() : null;
+        } catch {
+            verbalGuideline = null;
+        }
+
+        try {
+            const serviceSupportRes = await fetch("references/service_support_matrix.json");
+            serviceSupportMatrix = serviceSupportRes.ok ? await serviceSupportRes.json() : { markets: [] };
+        } catch {
+            serviceSupportMatrix = { markets: [] };
+        }
+
+        try {
+            const skuAvailabilityRes = await fetch("references/sku_availability_matrix.json");
+            skuAvailabilityMatrix = skuAvailabilityRes.ok ? await skuAvailabilityRes.json() : { markets: [] };
+        } catch {
+            skuAvailabilityMatrix = { markets: [] };
+        }
+
+        try {
+            const productFeatureRes = await fetch("references/product_feature_matrix.json");
+            productFeatureMatrix = productFeatureRes.ok ? await productFeatureRes.json() : { products: [] };
+        } catch {
+            productFeatureMatrix = { products: [] };
+        }
+
         populateInputs();
         updateLocaleFromCountry();
         updateRoleBrief();
@@ -1435,21 +1531,45 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
                     <span class="tree-parent-title">${escapeHtml(group.title)}</span>
                 </label>
                 <div class="tree-children">
-                    ${group.options.map((option) => `
-                        <label class="tree-child">
-                            <input
-                                type="checkbox"
-                                value="${option.id}"
-                                data-kind="${kind}"
-                                data-node-type="child"
-                                data-group-id="${group.id}"
-                                data-label="${escapeHtml(option.label)}"
-                                ${option.normalized ? `data-normalized="${escapeHtml(option.normalized)}"` : ""}
-                                ${selected.has(option.id) ? "checked" : ""}
-                            >
-                            <span>${escapeHtml(option.label)}</span>
-                        </label>
-                    `).join("")}
+                    ${group.options.map((option) => {
+                        const childChecked = selected.has(option.id);
+                        const subHtml = option.sub ? `
+                            <div class="tree-sub-children" data-parent-option="${option.id}" style="${childChecked ? "" : "display:none"}">
+                                ${option.sub.map((s) => `
+                                    <label class="tree-sub-child">
+                                        <input
+                                            type="checkbox"
+                                            value="${s.id}"
+                                            data-kind="${kind}"
+                                            data-node-type="sub-child"
+                                            data-group-id="${group.id}"
+                                            data-parent-option="${option.id}"
+                                            data-label="${escapeHtml(s.label)}"
+                                            ${selected.has(s.id) ? "checked" : ""}
+                                        >
+                                        <span>${escapeHtml(s.label)}</span>
+                                    </label>
+                                `).join("")}
+                            </div>
+                        ` : "";
+                        return `
+                            <label class="tree-child">
+                                <input
+                                    type="checkbox"
+                                    value="${option.id}"
+                                    data-kind="${kind}"
+                                    data-node-type="child"
+                                    data-group-id="${group.id}"
+                                    data-label="${escapeHtml(option.label)}"
+                                    ${option.sub ? `data-has-sub="true"` : ""}
+                                    ${option.normalized ? `data-normalized="${escapeHtml(option.normalized)}"` : ""}
+                                    ${childChecked ? "checked" : ""}
+                                >
+                                <span>${escapeHtml(option.label)}</span>
+                            </label>
+                            ${subHtml}
+                        `;
+                    }).join("")}
                 </div>
             </section>
         `;
@@ -1472,10 +1592,26 @@ function handleChecklistChange(event, container) {
     if (target.dataset.nodeType === "parent") {
         children.forEach((child) => {
             child.checked = target.checked;
+            toggleSubChildren(group, child.value, target.checked);
         });
     }
 
+    if (target.dataset.nodeType === "child" && target.dataset.hasSub === "true") {
+        toggleSubChildren(group, target.value, target.checked);
+    }
+
     syncChecklistParent(group, parent, children);
+}
+
+function toggleSubChildren(group, optionId, show) {
+    const subContainer = group.querySelector(`.tree-sub-children[data-parent-option="${optionId}"]`);
+    if (!subContainer) return;
+    subContainer.style.display = show ? "" : "none";
+    if (!show) {
+        subContainer.querySelectorAll('input[data-node-type="sub-child"]').forEach((input) => {
+            input.checked = false;
+        });
+    }
 }
 
 function syncChecklistParent(group, parent = null, children = null) {
@@ -1490,6 +1626,96 @@ function syncChecklistParent(group, parent = null, children = null) {
 
 function syncAllChecklistParents(container) {
     container.querySelectorAll(".tree-group").forEach((group) => syncChecklistParent(group));
+}
+
+function getCitySignalContent(countryCode, cityName) {
+    const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
+    const normalizedCity = normalizeCityValue(cityName);
+    const entry = cityEntries.find((e) =>
+        e.countryCode === countryCode &&
+        (normalizeCityValue(e.displayName) === normalizedCity ||
+         (e.aliases || []).some((a) => normalizeCityValue(a) === normalizedCity))
+    );
+    if (entry?.content) {
+        return entry.content[currentLocale] || entry.content.en || null;
+    }
+    const fallback = citySignals?.fallbacks?.[countryCode];
+    if (fallback) {
+        return fallback[currentLocale] || fallback.en || null;
+    }
+    return null;
+}
+
+function getCountryFlagEmoji(countryCode) {
+    const flags = {
+        US: "\u{1F1FA}\u{1F1F8}", CA: "\u{1F1E8}\u{1F1E6}", MX: "\u{1F1F2}\u{1F1FD}", BR: "\u{1F1E7}\u{1F1F7}",
+        AR: "\u{1F1E6}\u{1F1F7}", CO: "\u{1F1E8}\u{1F1F4}", CL: "\u{1F1E8}\u{1F1F1}", PE: "\u{1F1F5}\u{1F1EA}",
+        GB: "\u{1F1EC}\u{1F1E7}", UK: "\u{1F1EC}\u{1F1E7}", DE: "\u{1F1E9}\u{1F1EA}", FR: "\u{1F1EB}\u{1F1F7}",
+        IT: "\u{1F1EE}\u{1F1F9}", ES: "\u{1F1EA}\u{1F1F8}", PT: "\u{1F1F5}\u{1F1F9}", NL: "\u{1F1F3}\u{1F1F1}",
+        BE: "\u{1F1E7}\u{1F1EA}", AT: "\u{1F1E6}\u{1F1F9}", CH: "\u{1F1E8}\u{1F1ED}", SE: "\u{1F1F8}\u{1F1EA}",
+        DK: "\u{1F1E9}\u{1F1F0}", FI: "\u{1F1EB}\u{1F1EE}", NO: "\u{1F1F3}\u{1F1F4}", PL: "\u{1F1F5}\u{1F1F1}",
+        HU: "\u{1F1ED}\u{1F1FA}", RO: "\u{1F1F7}\u{1F1F4}", CZ: "\u{1F1E8}\u{1F1FF}", GR: "\u{1F1EC}\u{1F1F7}",
+        HR: "\u{1F1ED}\u{1F1F7}", IE: "\u{1F1EE}\u{1F1EA}", UA: "\u{1F1FA}\u{1F1E6}", KR: "\u{1F1F0}\u{1F1F7}",
+        TH: "\u{1F1F9}\u{1F1ED}", VN: "\u{1F1FB}\u{1F1F3}", SG: "\u{1F1F8}\u{1F1EC}", MY: "\u{1F1F2}\u{1F1FE}",
+        PH: "\u{1F1F5}\u{1F1ED}", AE: "\u{1F1E6}\u{1F1EA}", MM: "\u{1F1F2}\u{1F1F2}", AU: "\u{1F1E6}\u{1F1FA}",
+        NZ: "\u{1F1F3}\u{1F1FF}"
+    };
+    return flags[countryCode] || "\u{1F30D}";
+}
+
+function renderCityProfileCard() {
+    const profileCard = document.getElementById("city-profile-card");
+    if (!profileCard) return;
+
+    const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
+    const country = resolveCountry(selectedMarket);
+    if (!country) {
+        profileCard.classList.add("hidden");
+        profileCard.innerHTML = "";
+        return;
+    }
+
+    const cityName = getCityValue();
+    const content = getCitySignalContent(country.countryCode, cityName);
+    if (!content) {
+        profileCard.classList.add("hidden");
+        profileCard.innerHTML = "";
+        return;
+    }
+
+    const flag = getCountryFlagEmoji(country.countryCode);
+    const displayCity = cityName || (currentLocale === "ko" ? "전체 지역" : "All regions");
+    const countryName = selectedMarket?.label || country.countryCode;
+
+    const isKo = currentLocale === "ko";
+    profileCard.innerHTML = `
+        <div class="city-profile-header">
+            <span class="city-profile-flag">${flag}</span>
+            <div>
+                <strong class="city-profile-name">${escapeHtml(displayCity)}</strong>
+                <span class="city-profile-country">${escapeHtml(countryName)}</span>
+            </div>
+        </div>
+        <div class="city-profile-grid">
+            <div class="city-profile-item">
+                <span class="city-profile-icon">${isKo ? "\u{1F3E0}" : "\u{1F3E0}"}</span>
+                <div><span class="city-profile-label">${isKo ? "주거" : "Housing"}</span><p>${escapeHtml(content.housing)}</p></div>
+            </div>
+            <div class="city-profile-item">
+                <span class="city-profile-icon">${isKo ? "\u{1F321}\u{FE0F}" : "\u{1F321}\u{FE0F}"}</span>
+                <div><span class="city-profile-label">${isKo ? "기후" : "Climate"}</span><p>${escapeHtml(content.climate)}</p></div>
+            </div>
+            <div class="city-profile-item">
+                <span class="city-profile-icon">${isKo ? "\u{1F464}" : "\u{1F464}"}</span>
+                <div><span class="city-profile-label">${isKo ? "생활 특성" : "Behavior"}</span><p>${escapeHtml(content.behavior)}</p></div>
+            </div>
+            <div class="city-profile-item">
+                <span class="city-profile-icon">${isKo ? "\u{1F4A1}" : "\u{1F4A1}"}</span>
+                <div><span class="city-profile-label">${isKo ? "시나리오 시사점" : "Implication"}</span><p>${escapeHtml(content.implication)}</p></div>
+            </div>
+        </div>
+    `;
+    profileCard.classList.remove("hidden");
 }
 
 function getAvailableCitiesByCountry(countryCode) {
@@ -1681,6 +1907,10 @@ async function handleUnlock() {
     }
 
     setAccessStatus("success", "accessGranted");
+    // If provider already chosen in this session, skip provider screen
+    selectedProvider = "openai";
+    sessionStorage.setItem("aiProvider", "openai");
+    sessionStorage.removeItem("aiApiKey");
     showGuideScreen();
 }
 
@@ -1836,6 +2066,7 @@ function showGuideScreen() {
     clearAccessStatus();
     setGuideChoice("");
     accessScreen.classList.add("hidden");
+    aiProviderScreen?.classList.add("hidden");
     guideScreen.classList.remove("hidden");
     logoutBtn.classList.remove("hidden");
 }
@@ -1879,6 +2110,10 @@ function resetToAccessScreen() {
     clearAccessLockout();
     guideScreen.classList.add("hidden");
     wizardScreen.classList.add("hidden");
+    aiProviderScreen?.classList.add("hidden");
+    sessionStorage.setItem("aiProvider", "openai");
+    sessionStorage.removeItem("aiApiKey");
+    selectedProvider = "openai";
     guideCopy.classList.add("hidden");
     guideContinueBtn.classList.add("hidden");
     setGuideChoice("");
@@ -3227,7 +3462,7 @@ function generateScenario() {
     const referenceLinks = buildReferenceLinks(intent, services);
     const summaryBullets = buildSummaryBullets(country, city, selectedSegment, intent, deviceDecision, services, exploreGrounding);
     const detailedScenario = buildDetailedScenario(country, city, selectedSegment, intent, deviceDecision, services);
-    const marketingMessages = buildMarketingMessages(role, selectedSegment, intent, services, exploreGrounding);
+    const marketingMessages = buildMarketingMessages(role, selectedSegment, intent, services, exploreGrounding, deviceDecision);
     const benefits = buildBenefits(intent, services, exploreGrounding);
     const segmentAnalysis = buildSegmentAnalysis(country, city, selectedSegment, intent, exploreGrounding);
     const campaignTiming = buildCampaignTiming(intent, exploreGrounding);
@@ -3287,7 +3522,6 @@ function generateScenario() {
 
     activeLensTab = "overview";
 
-    // Try Claude API streaming first; fall back to local render if unavailable
     aiScenarioContext = {
         role: getRoleTitle(role.id),
         roleId: role.id,
@@ -3301,6 +3535,13 @@ function generateScenario() {
         missionBucket: intent.missionBucket,
         locale: currentLocale
     };
+
+    // Fallback local path
+    if (selectedProvider === "none" || !selectedProvider) {
+        renderScenario(latestPayload);
+        return;
+    }
+    // AI mode: stream via the server-managed OpenAI endpoint
     streamGenerateScenario(aiScenarioContext);
 }
 
@@ -3327,7 +3568,10 @@ async function streamGenerateScenario(context) {
         }
     } catch { /* region insight is optional */ }
 
-    const bodyPayload = { ...context, regionInsight };
+    const bodyPayload = {
+        ...context,
+        regionInsight
+    };
 
     let response;
     try {
@@ -3349,9 +3593,13 @@ async function streamGenerateScenario(context) {
         const errData = await response.json().catch(() => ({}));
         if (response.status === 401) {
             resultDiv.innerHTML = `<p class="error">${currentLocale === "ko" ? "세션이 만료됐습니다. 다시 로그인해 주세요." : "Session expired. Please log in again."}</p>`;
+        } else if (response.status === 429 || errData?.error?.code === "BUDGET_EXCEEDED") {
+            const msg = errData?.error?.message || (currentLocale === "ko" ? "월간 AI 예산 한도에 도달했습니다." : "Monthly AI budget limit reached.");
+            resultDiv.innerHTML = `<p class="error">${escapeHtml(msg)}</p>`;
         } else {
             const msg = errData?.error?.message || `Server error ${response.status}`;
-            resultDiv.innerHTML = `<p class="error">${msg}</p>`;
+            console.warn("AI generate failed, falling back to local scenario:", msg);
+            renderScenario(latestPayload);
         }
         return;
     }
@@ -3393,7 +3641,8 @@ async function streamGenerateScenario(context) {
                     break;
                 } else if (event.type === "error") {
                     aiGenerating = false;
-                    resultDiv.innerHTML = `<p class="error">AI 오류: ${escapeHtml(event.message || "Unknown error")}</p>`;
+                    console.warn("AI stream event error:", event.message || "Unknown error");
+                    renderScenario(latestPayload);
                     return;
                 }
             }
@@ -3406,7 +3655,7 @@ async function streamGenerateScenario(context) {
     processStream().catch((err) => {
         aiGenerating = false;
         console.error("Stream processing error:", err);
-        resultDiv.innerHTML = `<p class="error">${currentLocale === "ko" ? "스트리밍 처리 중 오류가 발생했습니다." : "Error during streaming."}</p>`;
+        renderScenario(latestPayload);
     });
 }
 
@@ -3495,7 +3744,11 @@ function bindRefinementPrompt(previousOutput, context) {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify({ previousOutput, refinementRequest: request, context })
+                body: JSON.stringify({
+                    previousOutput,
+                    refinementRequest: request,
+                    context
+                })
             });
         } catch (err) {
             aiGenerating = false;
@@ -3507,7 +3760,8 @@ function bindRefinementPrompt(previousOutput, context) {
         if (!response.ok) {
             aiGenerating = false;
             askBtn.disabled = false;
-            answer.textContent = currentLocale === "ko" ? `오류: ${response.status}` : `Error: ${response.status}`;
+            const errData = await response.json().catch(() => ({}));
+            answer.textContent = errData?.error?.message || (currentLocale === "ko" ? `오류: ${response.status}` : `Error: ${response.status}`);
             return;
         }
 
@@ -3556,7 +3810,7 @@ function bindRefinementPrompt(previousOutput, context) {
     });
 }
 
-/** Simple markdown→HTML converter for Claude's scenario output. */
+/** Simple markdown-to-HTML converter for streamed AI scenario output. */
 function markdownToHtml(md) {
     if (!md) return "";
 
@@ -4183,35 +4437,237 @@ function buildAutomationSkeleton(country, intent, deviceDecision, services) {
     };
 }
 
-function buildFacts(country, city, selectedSegment, deviceDecision, services, exploreGrounding) {
+function getMatrixMarket(siteCode) {
+    const normalized = normalizeSiteCode(siteCode || "");
+    return (skuAvailabilityMatrix?.markets || []).find((market) =>
+        market.siteCode === siteCode || market.countryCode === normalized
+    ) || null;
+}
+
+function getServiceMatrixMarket(siteCode) {
+    const normalized = normalizeSiteCode(siteCode || "");
+    return (serviceSupportMatrix?.markets || []).find((market) =>
+        market.siteCode === siteCode || market.countryCode === normalized
+    ) || null;
+}
+
+function getCategoryAliases(category) {
+    if (category === "세탁기" || category === "건조기") return ["세탁기", "건조기", "세탁기/건조기"];
+    return [category];
+}
+
+function getMarketCategoryEvidence(siteCode, category) {
+    const market = getMatrixMarket(siteCode);
+    if (!market) return null;
+    const aliases = getCategoryAliases(category);
+    return market.categories.find((item) => {
+        const categoryAliases = item.aliases || [item.categoryKey];
+        return categoryAliases.some((alias) => aliases.includes(alias));
+    }) || null;
+}
+
+function normalizeComparisonText(value) {
+    return String(value || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9가-힣]/g, "");
+}
+
+function findAnchorSkuEvidence(siteCode, deviceDecision) {
+    const categoryEvidence = getMarketCategoryEvidence(siteCode, deviceDecision.final.category);
+    if (!categoryEvidence) return { categoryEvidence: null, product: null, matchType: "none" };
+
+    const normalizedModel = normalizeComparisonText(deviceDecision.final.modelName);
+    const exact = (categoryEvidence.products || []).find((product) =>
+        normalizeComparisonText(product.modelName) === normalizedModel || normalizeComparisonText(product.sku) === normalizedModel
+    );
+    if (exact) return { categoryEvidence, product: exact, matchType: "exact" };
+
+    const partial = (categoryEvidence.products || []).find((product) =>
+        normalizedModel && normalizeComparisonText(product.modelName).includes(normalizedModel)
+    );
+    if (partial) return { categoryEvidence, product: partial, matchType: "partial" };
+
     return {
-        facts: [
-            localizeSentence("factsCountry", city ? `${getCountryName(country.countryCode)} / ${city}` : getCountryName(country.countryCode)),
-            localizeSentence("factsDevice", `${(deviceDecision.selectedDevices || [deviceDecision.final.category]).map((device) => getCategoryName(device)).join(", ")} / ${deviceDecision.final.modelName}`),
-            localizeSentence("factsService", getServiceLabel(services[0])),
-            localizeSentence("factsNote", `${selectedSegment} / ${deviceDecision.note}`),
-            currentLocale === "ko" ? `Explore 태그 근거: ${exploreGrounding.exploreTagSummary}` : `Explore tag grounding: ${exploreGrounding.exploreTagSummary}`
-        ],
-        assumptions: [
-            deviceDecision.fallbackApplied ? localizeSentence("assumptionFallback") : localizeSentence("assumptionExact"),
-            localizeSentence("assumptionGeneral"),
-            currentLocale === "ko" ? `가정: ${exploreGrounding.functionalJob}이 이 타겟의 반복 문제로 작동합니다.` : `Assumption: ${exploreGrounding.functionalJob} is a repeated problem for this segment.`
-        ],
-        dependencies: [
-            currentLocale === "ko"
-                ? `${getServiceLabel(services[0])}가 해당 시장 앱 플로우에서 노출 가능해야 합니다.`
-                : `${getServiceLabel(services[0])} should be available in the market app flow.`,
-            currentLocale === "ko"
-                ? `${deviceDecision.final.modelName} 또는 유사 카테고리의 가용성이 유지되어야 합니다.`
-                : `Availability of ${deviceDecision.final.modelName} or an equivalent category should be maintained.`,
-            currentLocale === "ko"
-                ? `현지 카피와 CTA는 선택 시장 언어 기준으로 조정되어야 합니다.`
-                : "Local copy and CTA should be adapted to the selected market language."
-        ],
+        categoryEvidence,
+        product: categoryEvidence.products?.[0] || null,
+        matchType: categoryEvidence.products?.length ? "category_fallback" : "none"
+    };
+}
+
+function getServiceSupportEntry(siteCode, serviceName) {
+    const market = getServiceMatrixMarket(siteCode);
+    return market?.services?.find((service) => service.serviceName === serviceName || service.appCardLabel === serviceName) || null;
+}
+
+function buildFacts(country, city, selectedSegment, deviceDecision, services, exploreGrounding) {
+    const selectedMarket = marketOptions.find((market) => market.siteCode === countrySelect.value);
+    const marketInfo = getDotcomMarketInfo(selectedMarket);
+    const trend = getCountryTrend(country.countryCode);
+    const citySignal = city ? getCitySignal(country.countryCode, city) : null;
+    const anchorService = services[0];
+    const exactProductAvailable = country.availableProducts.some((product) => product.modelName === deviceDecision.final.modelName);
+    const marketSku = getMatrixMarket(selectedMarket?.siteCode);
+    const anchorSkuEvidence = findAnchorSkuEvidence(selectedMarket?.siteCode, deviceDecision);
+    const serviceSupport = anchorService ? getServiceSupportEntry(selectedMarket?.siteCode, anchorService.serviceName) : null;
+    const trackedCategoryCount = marketSku?.categories?.length || 0;
+    const trackedSkuCount = marketSku?.categories?.reduce((sum, category) => sum + (category.productCount || 0), 0) || 0;
+    const cityFact = citySignal
+        ? [citySignal.region, citySignal.climate, citySignal.housing, citySignal.behavior].filter(Boolean).slice(0, 2).join(" / ")
+        : "";
+
+    const confirmed = [
+        trend ? {
+            no: 1,
+            fact: trend.headline,
+            source: "references/country_trends.json",
+            confidence: "High",
+            impact: currentLocale === "ko" ? "국가 단위 메시지 방향과 장면 우선순위를 고정합니다." : "Sets the country-level message direction and scene priority."
+        } : null,
+        {
+            no: 2,
+            fact: currentLocale === "ko"
+                ? `${selectedMarket?.siteCode || country.countryCode} 마켓은 ${marketInfo?.fullUrl || country.samsungShopUrl || "삼성닷컴"} 기준으로 연결됩니다.`
+                : `The selected market routes to ${marketInfo?.fullUrl || country.samsungShopUrl || "the Samsung store"} via ${selectedMarket?.siteCode || country.countryCode}.`,
+            source: marketInfo ? "references/dotcom_mapping.json" : "references/source_data.json",
+            confidence: "High",
+            impact: currentLocale === "ko" ? "닷컴 문구와 CTA의 언어/마켓 기준을 확정합니다." : "Locks the market and language basis for dotcom copy and CTA."
+        },
+        {
+            no: 3,
+            fact: currentLocale === "ko"
+                ? `${selectedMarket?.siteCode || country.countryCode} 삼성닷컴 추적 카테고리 ${trackedCategoryCount}개에서 SKU ${trackedSkuCount}개를 확인했습니다.`
+                : `Confirmed ${trackedSkuCount} SKUs across ${trackedCategoryCount} tracked Samsung dotcom categories for ${selectedMarket?.siteCode || country.countryCode}.`,
+            source: "references/sku_availability_matrix.json",
+            confidence: marketSku ? "High" : "Medium",
+            impact: currentLocale === "ko" ? "03의 모델/구매 준비도 판단을 실제 삼성닷컴 SKU 기준으로 고정합니다." : "Anchors model and purchase-readiness judgement to official Samsung dotcom SKUs."
+        },
+        anchorSkuEvidence.categoryEvidence ? {
+            no: 4,
+            fact: currentLocale === "ko"
+                ? `${getCategoryName(deviceDecision.final.category)} 카테고리는 ${anchorSkuEvidence.categoryEvidence.productCount || 0}개 SKU가 추적되며, 구매 가능 표시는 ${anchorSkuEvidence.categoryEvidence.inStockCount || 0}개입니다.`
+                : `${getCategoryName(deviceDecision.final.category)} is backed by ${anchorSkuEvidence.categoryEvidence.productCount || 0} tracked SKUs, with ${anchorSkuEvidence.categoryEvidence.inStockCount || 0} showing purchasable availability.`,
+            source: "references/sku_availability_matrix.json",
+            confidence: "High",
+            impact: currentLocale === "ko" ? "앵커 기기와 구매 가능성 판단을 시장별 공식 카테고리 페이지에 맞춥니다." : "Aligns the anchor-device and purchase-readiness judgement to market-specific official category pages."
+        } : null,
+        anchorService ? {
+            no: 5,
+            fact: currentLocale === "ko"
+                ? `${anchorService.appCardLabel || anchorService.serviceName} 서비스 후보는 ${anchorService.keyFeatures.slice(0, 2).join(", ")} 신호를 중심으로 연결됩니다.`
+                : `${anchorService.appCardLabel || anchorService.serviceName} is grounded on signals such as ${anchorService.keyFeatures.slice(0, 2).join(", ")}.`,
+            source: "references/fact_pack.json",
+            confidence: "High",
+            impact: currentLocale === "ko" ? "서비스 스택과 자동화 흐름의 기준점을 제공합니다." : "Provides the baseline for service-stack and automation logic."
+        } : null,
+        cityFact ? {
+            no: 6,
+            fact: `${citySignal.cityDisplay}: ${cityFact}`,
+            source: "references/city_signals.json",
+            confidence: "Medium",
+            impact: currentLocale === "ko" ? "도시 맥락에 맞는 첫 장면과 카피 톤을 조정합니다." : "Tunes the first scene and copy tone to the city context."
+        } : null
+    ].filter(Boolean);
+
+    const assumptions = [
+        anchorSkuEvidence.matchType === "partial" || anchorSkuEvidence.matchType === "category_fallback" || deviceDecision.fallbackApplied
+            ? (currentLocale === "ko"
+                ? `추론: ${deviceDecision.final.modelName}와 정확히 일치하는 삼성닷컴 SKU를 찾지 못해 ${anchorSkuEvidence.product?.modelName || "동일 카테고리 대표 SKU"} 기준으로 연결했습니다.`
+                : `Inference: no exact Samsung dotcom SKU matched ${deviceDecision.final.modelName}, so the closest in-category SKU was used.`)
+            : (currentLocale === "ko"
+                ? `추론: ${(deviceDecision.selectedDevices || [deviceDecision.final.category]).map((device) => getCategoryName(device)).join(", ")} 조합이 하나의 생활 루틴으로 함께 운영된다고 가정했습니다.`
+                : "Inference: the selected device mix is assumed to operate as one connected life routine."),
+        serviceSupport
+            ? (currentLocale === "ko"
+                ? `추론: ${anchorService.appCardLabel || anchorService.serviceName}의 시장 지원도는 필수 카테고리 충족률 기준 ${serviceSupport.inferredSupport.status}로 계산했습니다.`
+                : `Inference: ${anchorService.appCardLabel || anchorService.serviceName} support was estimated from required-category coverage and rated ${serviceSupport.inferredSupport.status}.`)
+            : (currentLocale === "ko"
+                ? "추론: 서비스 매트릭스에 직접 연결되지 않은 경우 서비스 지원도는 미검증으로 유지합니다."
+                : "Inference: when the service matrix has no direct link, service support remains unverified."),
+        currentLocale === "ko"
+            ? `추론: ${selectedSegment} 타겟은 "${exploreGrounding.functionalJob}" 문제를 반복적으로 느낀다고 가정했습니다.`
+            : `Inference: the ${selectedSegment} segment is assumed to repeatedly feel the pain of "${exploreGrounding.functionalJob}".`,
+        !citySignal
+            ? (currentLocale === "ko"
+                ? `추론: ${city || getCountryName(country.countryCode)}에 대한 정밀 도시 데이터가 없어 국가 기본 패턴으로 보강했습니다.`
+                : `Inference: no precise city-level dataset was found for ${city || getCountryName(country.countryCode)}, so country fallback logic was applied.`)
+            : (currentLocale === "ko"
+                ? "추론: 도시 데이터는 생활 환경 단서로 사용했고 실제 캠페인 집행 전 리테일/재고 확인이 필요합니다."
+                : "Inference: city data was used as an environmental cue and still needs retail and stock confirmation before launch.")
+    ];
+
+    const readiness = [
+        {
+            label: currentLocale === "ko" ? "앵커 기기" : "Anchor device",
+            status: anchorSkuEvidence.matchType === "exact" ? "Supported" : anchorSkuEvidence.product ? "Limited" : "Unverified",
+            note: anchorSkuEvidence.matchType === "exact"
+                ? (currentLocale === "ko"
+                    ? `${anchorSkuEvidence.product.modelName} SKU가 삼성닷컴에 직접 확인됩니다.`
+                    : `${anchorSkuEvidence.product.modelName} is directly confirmed on Samsung dotcom.`)
+                : anchorSkuEvidence.product
+                    ? (currentLocale === "ko"
+                        ? `${anchorSkuEvidence.product.modelName}로 카테고리 대체 연결했습니다.`
+                        : `Mapped to ${anchorSkuEvidence.product.modelName} as the closest category-level fallback.`)
+                    : (currentLocale === "ko" ? "공식 삼성닷컴 SKU 증거가 아직 없습니다." : "No official Samsung dotcom SKU evidence was found yet.")
+        },
+        {
+            label: currentLocale === "ko" ? "서비스 스택" : "Service stack",
+            status: serviceSupport?.inferredSupport?.status === "supported"
+                ? "Supported"
+                : serviceSupport?.inferredSupport?.status === "limited"
+                    ? "Limited"
+                    : "Unverified",
+            note: serviceSupport
+                ? (currentLocale === "ko"
+                    ? `필수 카테고리 ${serviceSupport.confirmedEvidence.coveredCategories.length}/${serviceSupport.requiredCategories.length}개가 삼성닷컴 SKU로 확인됩니다.`
+                    : `${serviceSupport.confirmedEvidence.coveredCategories.length}/${serviceSupport.requiredCategories.length} required categories have Samsung dotcom SKU evidence.`)
+                : (currentLocale === "ko"
+                    ? "시장별 서비스 증거가 없어 미검증으로 유지합니다."
+                    : "No market-level service evidence was found, so this remains unverified.")
+        },
+        {
+            label: currentLocale === "ko" ? "구매 가능 상태" : "Purchase status",
+            status: anchorSkuEvidence.product?.availability?.status === "supported"
+                ? "Supported"
+                : anchorSkuEvidence.product
+                    ? "Limited"
+                    : "Unknown",
+            note: anchorSkuEvidence.product
+                ? `${anchorSkuEvidence.product.availability.status} / ${anchorSkuEvidence.product.availability.confidence}`
+                : (currentLocale === "ko" ? "실시간 구매 상태를 연결할 SKU를 찾지 못했습니다." : "No SKU was mapped for live purchase-state sync.")
+        },
+        {
+            label: currentLocale === "ko" ? "특징 추출" : "Feature extraction",
+            status: anchorSkuEvidence.product?.features?.confirmed?.length ? "Supported" : "Limited",
+            note: anchorSkuEvidence.product?.features?.confirmed?.length
+                ? (currentLocale === "ko"
+                    ? `삼성닷컴 문구에서 핵심 특징 ${anchorSkuEvidence.product.features.confirmed.length}개를 구조화했습니다.`
+                    : `Structured ${anchorSkuEvidence.product.features.confirmed.length} core features from Samsung dotcom copy.`)
+                : (currentLocale === "ko"
+                    ? "모델명 중심 태그만 추출되어 추가 확인이 필요합니다."
+                    : "Only model-name tags were extracted, so more validation is still needed.")
+        },
+        {
+            label: currentLocale === "ko" ? "도시 정밀도" : "City precision",
+            status: citySignal ? "Supported" : "Limited",
+            note: citySignal
+                ? (currentLocale === "ko" ? "도시/생활 신호를 적용했습니다." : "Applied city and lifestyle signals.")
+                : (currentLocale === "ko" ? "국가 기본 시그널로 보강했습니다." : "Used the country fallback signal.")
+        }
+    ];
+
+    return {
+        confirmed,
+        assumptions,
+        readiness,
         observation: exploreGrounding.observation,
         insight: exploreGrounding.insight,
         implication: exploreGrounding.implication,
-        sourceUrls: [country.samsungShopUrl]
+        sourceUrls: [],
+        sourceRefs: [...new Set([
+            ...confirmed.map((item) => item.source),
+            serviceSupport ? "references/service_support_matrix.json" : null,
+            anchorSkuEvidence.product ? "references/product_feature_matrix.json" : null
+        ].filter(Boolean))]
     };
 }
 
@@ -4935,85 +5391,143 @@ function buildServiceStory(service, intent, selectedSegment, isPetContext) {
     };
 }
 
-function buildMarketingMessages(role, selectedSegment, intent, services, exploreGrounding) {
-    const valueWords = currentLocale === "ko"
-        ? (intent.missionBucket === "Care"
-            ? ["안심", "배려", "생활"]
-            : intent.missionBucket === "Save"
-                ? ["절감", "통제", "생활"]
-                : ["편안함", "리듬", "생활"])
-        : (intent.missionBucket === "Care"
-            ? ["reassurance", "care", "daily life"]
-            : intent.missionBucket === "Save"
-                ? ["savings", "control", "daily life"]
-                : ["comfort", "rhythm", "daily life"]);
+function getVerbalGuidelineData() {
+    return verbalGuideline || {
+        voice: "Confident Explorer",
+        identity: ["bold", "authentic", "modern", "playful", "premium"],
+        guardrails: [
+            "Lead with outcome before features.",
+            "Keep the tone premium and clear.",
+            "Prefer AI Home in user-facing copy unless the official service name is required."
+        ]
+    };
+}
 
-    if (role.id === "brand") {
-        return {
-            kr: [
-                "브랜드 아이덴티티 앵커: 사람 중심의 배려, 절제된 프리미엄 톤, 연결된 일상 효용",
-                `[단문] ${selectedSegment}의 일상을 더 가볍게, ${exploreGrounding.primaryValue}은 더 또렷하게.`,
-                `[장문] "${intent.purpose}" 순간에 기술 설명보다 감정적 안도감을 먼저 전달해 브랜드 의미를 강화합니다.`,
-                `[구분 논리] Global: ${exploreGrounding.coreMessage} / Local: 지역 생활 맥락과 언어 톤에 맞춘 사례 문장`
-            ],
-            en: [
-                "Brand identity anchor: human-first care, restrained premium tone, connected daily utility.",
-                `[Short] Make daily life lighter for ${selectedSegment}, with clearer ${exploreGrounding.primaryValue}.`,
-                `[Long] In the "${intent.purpose}" moment, lead with emotional relief before feature explanation to build brand meaning.`,
-                `[Logic] Global: ${exploreGrounding.coreMessage} / Local: examples tuned to local daily context and language tone`
-            ],
-            roleTone: getRoleTitle(role.id)
-        };
+function applyUserFacingTerminology(text) {
+    return String(text || "").replace(/\bSmartThings\b/g, "AI Home");
+}
+
+function enforceOutcomeFirst(text) {
+    const cleaned = String(text || "").trim();
+    if (!cleaned) return cleaned;
+    if (/^(less |feel |make |turn |bring |give |keep |reduce |start |see )/i.test(cleaned)) return cleaned;
+    if (currentLocale === "ko") {
+        return cleaned.includes("먼저") ? cleaned : `${cleaned} 이 장면에서 먼저 체감되는 결과부터 말합니다.`;
+    }
+    return `Feel the result first. ${cleaned}`;
+}
+
+function applyVerbalGuidelines(text, options = {}) {
+    const guideline = getVerbalGuidelineData();
+    let output = String(text || "").trim();
+    if (!output) return output;
+
+    if (options.userFacing !== false) {
+        const prefersAiHome = (guideline.guardrails || []).some((rule) => /AI Home|AI Living/i.test(rule));
+        if (prefersAiHome) {
+            output = applyUserFacingTerminology(output);
+        }
     }
 
-    if (role.id === "dotcom") {
-        return {
-            kr: [
-                "브랜드 아이덴티티 앵커: 신뢰 가능한 정보 구조, 명확한 효용 증명, 부담 없는 전환 흐름",
-                `Benefit first: ${exploreGrounding.primaryValue}`,
-                `PDP 전개: 문제 장면 -> 핵심 가치 -> 추천 제품 -> CTA`,
-                `${getServiceLabel(services[0])}는 기능 나열보다 전환 흐름 중심 카피로 구성합니다.`
-            ],
-            en: [
-                "Brand identity anchor: trustworthy information architecture, clear utility proof, low-friction conversion flow.",
-                `Benefit first: ${exploreGrounding.primaryValue}`,
-                `PDP flow: pain moment -> core value -> recommended product -> CTA`,
-                `Position ${getServiceLabel(services[0])} with conversion-led copy over feature lists.`
-            ],
-            roleTone: getRoleTitle(role.id)
-        };
+    if (options.outcomeFirst !== false) {
+        output = enforceOutcomeFirst(output);
     }
 
-    if (role.id === "retail") {
-        return {
-            kr: [
-                "브랜드 아이덴티티 앵커: 친절한 전문성, 즉시 체감 효용, 매장 대화의 신뢰감",
-                `30초 오프닝: "${exploreGrounding.coreMessage}"`,
-                `1분 전개: 문제 확인 -> 데모 1회 -> 세팅 안내 -> 업셀 제안`,
-                `매장 설명은 브랜드 서사보다 즉시 체감되는 효용 중심으로 유지합니다.`
-            ],
-            en: [
-                "Brand identity anchor: warm expertise, immediate felt utility, confidence in store conversations.",
-                `30s opening: "${exploreGrounding.coreMessage}"`,
-                `1m flow: identify pain -> run one demo -> guide setup -> propose upsell`,
-                `Keep in-store messaging focused on immediate utility over long brand storytelling.`
-            ],
-            roleTone: getRoleTitle(role.id)
-        };
+    output = output.replace(/\s+/g, " ").trim();
+    if (options.maxLength && output.length > options.maxLength) {
+        output = `${output.slice(0, options.maxLength - 1).trim()}…`;
     }
+    return output;
+}
+
+function flattenMarketingMessages(marketingMessages) {
+    const lenses = marketingMessages?.lenses || {};
+    return [
+        lenses.retail?.hookEn,
+        lenses.retail?.shortCopyKo,
+        lenses.dotcom?.h1En,
+        lenses.dotcom?.subCopyKo,
+        lenses.brand?.campaignConceptEn,
+        lenses.brand?.emotionalNarrativeKo,
+        lenses.brand?.brandValue
+    ].filter(Boolean);
+}
+
+function deviceDecisionText(deviceDecision) {
+    return `${getCategoryName(deviceDecision.final.category)} / ${deviceDecision.final.modelName}`;
+}
+
+function buildMarketingMessages(role, selectedSegment, intent, services, exploreGrounding, deviceDecision) {
+    const guideline = getVerbalGuidelineData();
+    const anchorService = getServiceLabel(services[0]);
+    const selectedLensId = role?.id || "retail";
+    const selectedMarket = marketOptions.find((market) => market.siteCode === countrySelect.value);
+    const anchorSkuEvidence = findAnchorSkuEvidence(selectedMarket?.siteCode, deviceDecision);
+    const serviceSupport = services[0] ? getServiceSupportEntry(selectedMarket?.siteCode, services[0].serviceName) : null;
+    const emotionalNoun = intent.missionBucket === "Save"
+        ? "절감의 확신"
+        : intent.missionBucket === "Secure"
+            ? "안전의 통제감"
+            : "돌봄의 안심";
+    const proofLine = currentLocale === "ko"
+        ? `근거: ${anchorService} / ${deviceDecisionText(deviceDecision)} / ${anchorSkuEvidence.product?.availability?.status || "unverified"} / service ${serviceSupport?.inferredSupport?.status || "unverified"}`
+        : `Evidence: ${anchorService} / ${deviceDecisionText(deviceDecision)} / ${anchorSkuEvidence.product?.availability?.status || "unverified"} / service ${serviceSupport?.inferredSupport?.status || "unverified"}`;
 
     return {
-        kr: [
-            `${selectedSegment}의 하루를 더 가볍게, ${exploreGrounding.primaryValue}은 더 분명하게.`,
-            `${exploreGrounding.messageAngle}이 필요한 순간에 ${valueWords[1]}가 아니라 실제 변화가 느껴지게 합니다.`,
-            `${getServiceLabel(services[0])}는 기능 설명보다 ${exploreGrounding.coreMessage}를 먼저 전달해야 합니다.`
+        selectedLensId,
+        roleTone: getRoleTitle(selectedLensId),
+        guideline,
+        voice: guideline.voice,
+        confirmedRules: [
+            `Voice: ${guideline.voice} / ${(guideline.identity || []).join(", ")}`,
+            currentLocale === "ko"
+                ? "규칙: 결과를 먼저 말하고 기능은 뒤에서 짧게 보강"
+                : "Rule: lead with the outcome, then support it briefly with features.",
+            currentLocale === "ko"
+                ? "규칙: 공식 서비스명 외에는 AI Home 표현을 우선"
+                : "Rule: prefer AI Home wording unless an official service name is required.",
+            currentLocale === "ko"
+                ? "규칙: 03의 확정/추론/구매 상태와 충돌하지 않는 문구만 사용"
+                : "Rule: keep copy aligned with the confirmed/inferred/purchase states in block 03."
         ],
-        en: [
-            `Make daily life lighter for the ${selectedSegment} segment, with clearer ${exploreGrounding.primaryValue}.`,
-            `Lead with ${exploreGrounding.messageAngle} so the user feels a real shift, not just more control.`,
-            `${getServiceLabel(services[0])} should deliver ${exploreGrounding.coreMessage} before feature detail.`
-        ],
-        roleTone: getRoleTitle(role.id)
+        globalLocalSplit: {
+            global: applyVerbalGuidelines(exploreGrounding.coreMessage, { maxLength: 110 }),
+            local: currentLocale === "ko"
+                ? applyVerbalGuidelines(`${selectedSegment}의 생활 맥락에 맞게 사례 문장과 감정 어휘를 현지화`, { maxLength: 110 })
+                : applyVerbalGuidelines(`Localize examples and emotional wording to the daily context of ${selectedSegment}.`, { maxLength: 110 })
+        },
+        lenses: {
+            retail: {
+                label: "Retail Lens",
+                selected: selectedLensId === "retail",
+                hookEn: applyVerbalGuidelines(`Feel ${exploreGrounding.primaryValue} before you learn the setup.`, { maxLength: 90 }),
+                shortCopyKo: applyVerbalGuidelines(`${selectedSegment} 고객에게는 기능 설명보다 "${exploreGrounding.messageAngle}"이 먼저 체감되어야 합니다.`, { maxLength: 110 }),
+                talkTrackKo: [
+                    applyVerbalGuidelines(`처음 10초에는 ${exploreGrounding.coreMessage} 한 문장으로 시작합니다.`, { maxLength: 90 }),
+                    applyVerbalGuidelines(`그다음 ${anchorService}가 ${intent.purpose} 순간을 어떻게 줄여주는지 한 번만 보여줍니다.`, { maxLength: 110 }),
+                    applyVerbalGuidelines("마지막에는 복잡한 설명 대신 바로 따라 할 수 있는 한 가지 루틴으로 끝냅니다.", { maxLength: 90 })
+                ],
+                cta: applyVerbalGuidelines(currentLocale === "ko" ? "지금 이 장면을 매장에서 바로 데모해 보세요." : "Demo this moment in-store now.", { maxLength: 70 })
+            },
+            dotcom: {
+                label: "Dotcom Lens",
+                selected: selectedLensId === "dotcom",
+                h1En: applyVerbalGuidelines(`Less setup. More ${exploreGrounding.primaryValue}.`, { maxLength: 80 }),
+                subCopyKo: applyVerbalGuidelines(`${selectedSegment}에게 필요한 것은 기능 나열이 아니라 ${intent.purpose} 순간의 부담을 덜어주는 AI Home 경험입니다.`, { maxLength: 110 }),
+                proofPointKo: applyVerbalGuidelines(proofLine, { userFacing: false, outcomeFirst: false, maxLength: 130 }),
+                cta: applyVerbalGuidelines(currentLocale === "ko" ? "PDP 첫 화면에서 이 메시지로 진입시키세요." : "Use this as the PDP opening line.", { maxLength: 70 })
+            },
+            brand: {
+                label: "Brand Lens",
+                selected: selectedLensId === "brand",
+                campaignConceptEn: applyVerbalGuidelines("AI Home, with a more human rhythm.", { maxLength: 70 }),
+                emotionalNarrativeKo: applyVerbalGuidelines(`${intent.purpose} 순간에 기술이 앞서는 대신 사람이 먼저 안심하게 만드는 것, 그것이 이번 메시지의 중심입니다. ${selectedSegment}의 하루를 더 가볍게 만들며 ${emotionalNoun}을 남기도록 설계합니다.`, { maxLength: 130 }),
+                brandValue: currentLocale === "ko"
+                    ? "사람 중심의 배려, 절제된 프리미엄, 연결된 일상 효용"
+                    : "Human-first care, restrained premium, connected daily utility",
+                cta: applyVerbalGuidelines(currentLocale === "ko" ? "글로벌 메시지는 유지하고 현지 장면만 더 구체화하세요." : "Keep the global message and localize only the scene.", { maxLength: 80 })
+            }
+        }
     };
 }
 
@@ -5021,7 +5535,7 @@ function buildBenefits(intent, services, exploreGrounding) {
     return [
         currentLocale === "ko" ? `기능적 가치: ${exploreGrounding.functionalJob}을 줄여 반복 확인과 수동 조작을 덜어줍니다.` : `Functional value: reduce ${exploreGrounding.functionalJob} and lighten repeated checking.`,
         currentLocale === "ko" ? `감정적 가치: ${exploreGrounding.emotionalJob}이 가능해져 심리적 부담이 낮아집니다.` : `Emotional value: enable ${exploreGrounding.emotionalJob} and lower emotional burden.`,
-        currentLocale === "ko" ? `체감 가치: ${exploreGrounding.primaryValue}이 한 번의 사용 장면에서도 바로 읽히도록 설계됩니다.` : `Felt value: make ${exploreGrounding.primaryValue} legible from the first use moment.`
+        currentLocale === "ko" ? `감성적 체감: ${exploreGrounding.primaryValue}이 한 번의 사용 장면에서도 바로 읽히도록 설계됩니다.` : `Emotional experience: make ${exploreGrounding.primaryValue} legible from the first use moment.`
     ];
 }
 
@@ -5080,31 +5594,13 @@ function buildDeviceGuide(country, deviceDecision, services) {
 }
 
 function renderScenario(payload) {
-    const tabButtons = [{ id: "overview", label: "Overview" }, ...payload.lensOutputs.map((lens) => ({ id: lens.id, label: lens.title }))];
     resultDiv.innerHTML = `
         <article class="scenario-output">
-            <section class="output-toolbar">
-                <div class="tabs" id="role-tabs">
-                    ${tabButtons.map((tab) => `<button type="button" class="tab-btn ${tab.id === activeLensTab ? "active" : ""}" data-tab="${tab.id}">${tab.label}</button>`).join("")}
-                </div>
-            </section>
-            <section id="tab-panel-overview" class="tab-panel ${activeLensTab === "overview" ? "active" : ""}">
+            <section id="tab-panel-overview" class="tab-panel active">
                 ${renderOverview(payload)}
             </section>
-            ${payload.lensOutputs.map((lens) => `
-                <section id="tab-panel-${lens.id}" class="tab-panel ${activeLensTab === lens.id ? "active" : ""}">
-                    ${renderLensPanel(lens)}
-                </section>
-            `).join("")}
         </article>
     `;
-
-    resultDiv.querySelectorAll(".tab-btn").forEach((button) => {
-        button.addEventListener("click", () => {
-            activeLensTab = button.dataset.tab;
-            renderScenario(payload);
-        });
-    });
 
     bindPostOutputPrompt(payload);
 }
@@ -5713,8 +6209,9 @@ function buildDetailedScenario(country, city, selectedSegment, intent, deviceDec
 }
 
 function renderOverview(payload) {
-    const marketingLines = currentLocale === "ko" ? payload.marketingMessages.kr : payload.marketingMessages.en;
     const titles = getOutputTitles();
+    const marketing = payload.marketingMessages || {};
+    const marketingLenses = Object.values(marketing.lenses || {});
 
     return `
         <div class="output-stack">
@@ -5782,6 +6279,37 @@ function renderOverview(payload) {
             <section class="output-block numbered-output">
                 <p class="block-index">03</p>
                 <h4>${titles.facts}</h4>
+                <div class="fact-separation">
+                    <div class="fact-box confirmed-box">
+                        <strong>${currentLocale === "ko" ? "확정 정보" : "Confirmed Facts"}</strong>
+                        <table class="fact-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Fact</th>
+                                    <th>Source</th>
+                                    <th>Confidence</th>
+                                    <th>Impact</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${(payload.facts.confirmed || []).map((item) => `
+                                    <tr>
+                                        <td>${item.no}</td>
+                                        <td>${escapeHtml(item.fact)}</td>
+                                        <td>${escapeHtml(item.source)}</td>
+                                        <td>${escapeHtml(item.confidence)}</td>
+                                        <td>${escapeHtml(item.impact)}</td>
+                                    </tr>
+                                `).join("")}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="fact-box assumption-box">
+                        <strong>${currentLocale === "ko" ? "추론 정보" : "Inferences"}</strong>
+                        <ul>${(payload.facts.assumptions || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                    </div>
+                </div>
                 <div class="insight-process">
                     <div class="process-item">
                         <strong>Observation (현지 데이터)</strong>
@@ -5796,9 +6324,13 @@ function renderOverview(payload) {
                         <p>${escapeHtml(payload.facts.implication)}</p>
                     </div>
                 </div>
+                <div class="fact-readiness">
+                    <strong>${currentLocale === "ko" ? "Readiness Sync" : "Readiness Sync"}</strong>
+                    <ul>${(payload.facts.readiness || []).map((item) => `<li><strong>${escapeHtml(item.label)}</strong> · ${escapeHtml(item.status)} · ${escapeHtml(item.note)}</li>`).join("")}</ul>
+                </div>
                 <div class="fact-links">
-                    <strong>Source Grounds</strong>
-                    <ul>${(payload.facts.sourceUrls || []).map((url) => `<li><a href="${url}" target="_blank">${url}</a></li>`).join("")}</ul>
+                    <strong>${currentLocale === "ko" ? "내부 참조 파일" : "Internal Reference Files"}</strong>
+                    <ul>${(payload.facts.sourceRefs || []).map((ref) => `<li>${escapeHtml(ref)}</li>`).join("")}</ul>
                 </div>
             </section>
 
@@ -5807,8 +6339,35 @@ function renderOverview(payload) {
                 <p class="block-index">04</p>
                 <h4>${titles.marketing}</h4>
                 <div class="marketing-wrap">
-                    <p class="role-badge">${escapeHtml(payload.marketingMessages.roleTone)} 관점의 메시지 적용</p>
-                    <ul class="marketing-list">${marketingLines.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                    <p class="role-badge">${escapeHtml(marketing.roleTone || "")} ${currentLocale === "ko" ? "선택 상태, 아래는 3개 렌즈 전체 출력입니다." : "selected, but all three lenses are shown below."}</p>
+                    <div class="marketing-guideline-box">
+                        <strong>${currentLocale === "ko" ? "확정된 Verbal Guideline 반영 규칙" : "Confirmed Verbal Guideline Rules"}</strong>
+                        <ul class="marketing-list">${(marketing.confirmedRules || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+                    </div>
+                    <div class="marketing-guideline-box">
+                        <strong>Global / Local Split</strong>
+                        <ul class="marketing-list">
+                            <li><strong>Global</strong>: ${escapeHtml(marketing.globalLocalSplit?.global || "")}</li>
+                            <li><strong>Local</strong>: ${escapeHtml(marketing.globalLocalSplit?.local || "")}</li>
+                        </ul>
+                    </div>
+                    <div class="marketing-lens-grid">
+                        ${marketingLenses.map((lens) => `
+                            <article class="marketing-lens-card ${lens.selected ? "selected" : ""}">
+                                <p class="marketing-lens-label">${escapeHtml(lens.label)}</p>
+                                ${lens.hookEn ? `<p><strong>Hook (EN)</strong><br>${escapeHtml(lens.hookEn)}</p>` : ""}
+                                ${lens.shortCopyKo ? `<p><strong>Short copy (KO)</strong><br>${escapeHtml(lens.shortCopyKo)}</p>` : ""}
+                                ${lens.talkTrackKo ? `<div><strong>Talk-track (KO)</strong><ul>${lens.talkTrackKo.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>` : ""}
+                                ${lens.h1En ? `<p><strong>H1 (EN)</strong><br>${escapeHtml(lens.h1En)}</p>` : ""}
+                                ${lens.subCopyKo ? `<p><strong>Sub-copy (KO)</strong><br>${escapeHtml(lens.subCopyKo)}</p>` : ""}
+                                ${lens.proofPointKo ? `<p><strong>Proof point</strong><br>${escapeHtml(lens.proofPointKo)}</p>` : ""}
+                                ${lens.campaignConceptEn ? `<p><strong>Campaign concept (EN)</strong><br>${escapeHtml(lens.campaignConceptEn)}</p>` : ""}
+                                ${lens.emotionalNarrativeKo ? `<p><strong>Emotional narrative (KO)</strong><br>${escapeHtml(lens.emotionalNarrativeKo)}</p>` : ""}
+                                ${lens.brandValue ? `<p><strong>${currentLocale === "ko" ? "Brand value reinforced" : "Brand value reinforced"}</strong><br>${escapeHtml(lens.brandValue)}</p>` : ""}
+                                <p><strong>CTA</strong><br>${escapeHtml(lens.cta || "")}</p>
+                            </article>
+                        `).join("")}
+                    </div>
                 </div>
             </section>
 
@@ -5819,24 +6378,23 @@ function renderOverview(payload) {
 
 function renderPostOutputPrompt(payload) {
     const title = currentLocale === "ko"
-        ? "10. 후속 프롬프트 (ChatGPT Subscriber Mode)"
+        ? "추가 요청"
         : currentLocale === "de"
-            ? "10. Folge-Prompt (ChatGPT Subscriber Mode)"
-            : "10. Follow-up Prompt (ChatGPT Subscriber Mode)";
+            ? "Weitere Anfrage"
+            : "Additional Request";
     const placeholder = currentLocale === "ko"
         ? "예: 이 시나리오를 Dotcom용 3문장 CTA로 바꿔줘"
         : "Example: Rewrite this scenario into three Dotcom CTAs";
     const button = currentLocale === "ko" ? "질문하기" : "Ask";
     const helper = currentLocale === "ko"
-        ? "생성된 01~09 결과를 기반으로 후속 요청을 입력하면 즉시 답변합니다."
-        : "Ask a follow-up request and get an instant answer grounded in outputs 01~09.";
+        ? "생성된 01~04 결과를 바탕으로 추가 요청을 입력하면, 내부 계산된 컨텍스트까지 반영해 바로 답변합니다."
+        : "Ask an additional request based on outputs 01~04, and get an immediate answer grounded in the internal context.";
     const initial = currentLocale === "ko"
         ? `현재 컨텍스트: ${payload.title}`
         : `Current context: ${payload.title}`;
 
     return `
-        <section class="output-block numbered-output post-output-prompt">
-            <p class="block-index">10</p>
+        <section class="output-block post-output-prompt">
             <h4>${escapeHtml(title)}</h4>
             <p class="post-output-helper">${escapeHtml(helper)}</p>
             <div class="post-output-input-row">
@@ -5871,7 +6429,7 @@ function bindPostOutputPrompt(payload) {
 function buildPostOutputAnswer(question, payload) {
     const q = String(question || "").toLowerCase();
     const isKo = currentLocale === "ko";
-    const messages = isKo ? payload.marketingMessages.kr : payload.marketingMessages.en;
+    const messages = flattenMarketingMessages(payload.marketingMessages);
 
     if (/요약|summary|tl;dr/.test(q)) {
         return isKo
@@ -5984,8 +6542,7 @@ async function copySummary() {
 }
 
 function buildMarkdownReport(payload) {
-    const marketingLines = currentLocale === "ko" ? payload.marketingMessages.kr : payload.marketingMessages.en;
-    const automationJson = JSON.stringify(payload.automation, null, 2);
+    const marketingLines = flattenMarketingMessages(payload.marketingMessages);
     return [
         `# ${payload.title}`,
         "",
@@ -6015,52 +6572,30 @@ function buildMarkdownReport(payload) {
             ""
         ]),
         "",
-        "## 03. Automation Logic Digest (JSON Skeleton)",
-        "```json",
-        automationJson,
-        "```",
-        "",
-        currentLocale === "ko" ? "## 04. 지역 특성 및 데이터 근거" : "## 04. Regional Traits & Data Grounds",
+        currentLocale === "ko" ? "## 03. 지역 특성 및 데이터 근거" : "## 03. Regional Traits & Data Grounds",
         currentLocale === "ko" ? "### Fact (확인)" : "### Fact (Confirmed)",
-        ...(payload.facts.confirmed || []).map((item) => `- ${item}`),
+        ...(payload.facts.confirmed || []).map((item) => `- [${item.no}] ${item.fact} | ${item.source} | ${item.confidence} | ${item.impact}`),
         "",
         currentLocale === "ko" ? "### Assumption (가정)" : "### Assumption",
         ...(payload.facts.assumptions || []).map((item) => `- ${item}`),
         "",
-        currentLocale === "ko" ? "### 근거 URL" : "### Source URLs",
-        ...(payload.facts.sourceUrls || []).map((item) => `- ${item}`),
+        currentLocale === "ko" ? "### Readiness Sync" : "### Readiness Sync",
+        ...(payload.facts.readiness || []).map((item) => `- ${item.label}: ${item.status} / ${item.note}`),
+        "",
+        currentLocale === "ko" ? "### Observation / Insight / Implication" : "### Observation / Insight / Implication",
+        `- Observation: ${payload.facts.observation || ""}`,
+        `- Insight: ${payload.facts.insight || ""}`,
+        `- Implication: ${payload.facts.implication || ""}`,
+        "",
+        currentLocale === "ko" ? "### 내부 참조 파일" : "### Internal Source Files",
+        ...(payload.facts.sourceRefs || []).map((item) => `- ${item}`),
         "",
         currentLocale === "ko"
-            ? "## 05. 마케팅 메시지 (브랜드 아이덴티티 반영)"
+            ? "## 04. 마케팅 메시지 (브랜드 아이덴티티 반영)"
             : currentLocale === "de"
-                ? "## 05. Marketing-Botschaften (Brand-Identity Applied)"
-                : "## 05. Marketing Message (Brand-Identity Applied)",
-        ...marketingLines.map((item) => `- ${item}`),
-        "",
-        currentLocale === "ko" ? "## 06. 성공 지표 (Cause & Effect)" : "## 06. Success Metrics (Cause & Effect)",
-        ...(payload.metrics || []).map((item) => `- ${item}`),
-        "",
-        currentLocale === "ko" ? "## 07. 타겟 세그먼트 데이터" : "## 07. Target Segment Data",
-        ...(payload.segmentData || []).map((item) => `- ${item}`),
-        "",
-        currentLocale === "ko" ? "## 08. 지역 가용 기기 및 설정 가이드" : "## 08. Regional Available Devices & Setup Guide",
-        currentLocale === "ko" ? "### 적용 가능 기기" : "### Applicable Device Context",
-        ...payload.deviceGuide.available.map((item) => `- ${item}`),
-        "",
-        currentLocale === "ko" ? "### 설정/적용 단계" : "### Setup / Adoption Ladder",
-        ...payload.deviceGuide.steps.map((item) => `- ${item}`),
-        "",
-        currentLocale === "ko" ? "### 실행 체크포인트" : "### Execution Checkpoints",
-        ...(payload.setupGuide || []).map((item) => `- ${item}`),
-        "",
-        currentLocale === "ko" ? "## 09. 시나리오 시장성 평가" : "## 09. Scenario Marketability Evaluation",
-        "| Item | Assessment | Rationale | Action |",
-        "| --- | --- | --- | --- |",
-        `| Market Fit | ${payload.marketability.verdict} | ${payload.marketability.rationale} | ${(payload.marketability.nextActions?.[0] || "")} |`,
-        `| Competitive Alternative | Medium | ${payload.marketability.competitorView} | ${(payload.marketability.nextActions?.[1] || "")} |`,
-        `| Risk: Privacy / Trust | Medium | ${payload.marketability.risk} | ${(payload.marketability.nextActions?.[2] || "")} |`,
-        "",
-        ...(payload.marketability.alternatives || []).map((item) => `- ${currentLocale === "ko" ? "대안" : "Alternative"}: ${item}`)
+                ? "## 04. Marketing-Botschaften (Brand-Identity Applied)"
+                : "## 04. Marketing Message (Brand-Identity Applied)",
+        ...marketingLines.map((item) => `- ${item}`)
     ].join("\n");
 }
 
@@ -6423,7 +6958,7 @@ function getSelectedDeviceGroupIds() {
 }
 
 function getSelectedPersonaOptionIds() {
-    return [...personaGroups.querySelectorAll('input[data-node-type="child"]:checked')].map((input) => input.value);
+    return [...personaGroups.querySelectorAll('input[data-node-type="child"]:checked, input[data-node-type="sub-child"]:checked')].map((input) => input.value);
 }
 
 function getSelectedDeviceOptionIds() {
@@ -6431,7 +6966,7 @@ function getSelectedDeviceOptionIds() {
 }
 
 function getSelectedPersonaLabels() {
-    return [...personaGroups.querySelectorAll('input[data-node-type="child"]:checked')]
+    return [...personaGroups.querySelectorAll('input[data-node-type="child"]:checked, input[data-node-type="sub-child"]:checked')]
         .map((input) => input.dataset.label || input.value)
         .filter(Boolean);
 }

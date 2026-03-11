@@ -83,3 +83,10 @@
 - Files changed: `main.js`, `server.js`, `functions/api/region-insight.js`, `style.css`, `session-notes.md`.
 - Git: not committed yet after latest UI/content/deploy-only changes.
 - Next: If requested, bundle latest changes into a clean commit/push and finalize production deployment target URL.
+
+## 2026-03-11 05:39 (UTC)
+- User message (raw): "대화세션 저장 바람"
+- Actions: Continued the KR/US/UK No-AI completion work by adding Samsung dotcom matrix generation, wiring new reference JSONs into `main.js`, improving block 03 confirmed/inferred/readiness logic, and applying verbal-guideline rules to block 04 copy; then reviewed API-key removal and server-paid AI strategy, estimated API operating costs, and started inspecting a migration from Anthropic to the user's OpenAI/Codex-backed server flow.
+- Files changed: `main.js`, `scripts/generate-dotcom-matrices.mjs`, `references/service_support_matrix.json`, `references/sku_availability_matrix.json`, `references/product_feature_matrix.json`, `session-notes.md`.
+- Git: not committed yet; repo also has unrelated existing modified/untracked files.
+- Next: Resume by switching deployed AI endpoints/UI flow to server-side OpenAI/Codex usage without user API-key input, then verify generate/refine end-to-end.

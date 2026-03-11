@@ -1,0 +1,36 @@
+{
+  "source": "260202_Verbal Guideline v1.0.docx",
+  "voice": "Confident Explorer",
+  "identity": [
+    "bold",
+    "authentic",
+    "modern",
+    "playful",
+    "premium"
+  ],
+  "principles": {
+    "open": [
+      "Personify the technology when it clarifies the benefit.",
+      "Upend expectations with a short twist.",
+      "Go beyond literal features to reveal a wider human upside."
+    ],
+    "bold": [
+      "Say what you mean with confident brevity.",
+      "Pair detail with emotion.",
+      "Use contrast to sharpen the innovation story."
+    ],
+    "authentic": [
+      "Write like you would to a friend.",
+      "Keep technical language understandable.",
+      "Reframe negatives into approachable positives.",
+      "Land on a tangible everyday benefit."
+    ]
+  },
+  "guardrails": [
+    "Lead with outcome before features.",
+    "Keep sentences concise and premium, not slang-heavy.",
+    "Do not brag or put down competitors.",
+    "Use wit only when it stays clear and useful.",
+    "User-facing copy should prefer AI Home or AI Living over SmartThings unless the official service name is required."
+  ]
+}
