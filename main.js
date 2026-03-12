@@ -5791,7 +5791,7 @@ function getRoleCardLocaleCopy(roleId) {
                 ],
                 de: [
                     "Statt komplexer Spezifikationen einen Demo-Ablauf bauen, der zum Alltag des Kunden passt.",
-                    "Klare Momente wie „In dieser Situation so nutzen" zeigen, damit der Mehrwert sofort ankommt.",
+                    "Klare Momente wie 'In dieser Situation so nutzen' zeigen, damit der Mehrwert sofort ankommt.",
                     "Selbst am Vorabend eines Store-Meetings ein überzeugendes Szenario in Minuten erstellen."
                 ]
             }
