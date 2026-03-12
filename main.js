@@ -5777,6 +5777,23 @@ function getRoleCardLocaleCopy(roleId) {
                 ko: "매장 직원이 고객의 \"그래서 이게 나한테 뭐가 좋은데?\"라는 질문에 답하고, 기술을 즉각적인 가치로 전환해 판매를 마무리하도록 돕습니다.",
                 en: "Help store staff answer \"What does this do for me?\" and turn technology into immediate customer value at closing.",
                 de: "Hilft dem Store-Team, die Frage \"Was bringt mir das konkret?\" zu beantworten und Technik in sofort erlebbaren Nutzen zu übersetzen."
+            },
+            hoverDetails: {
+                ko: [
+                    "복잡한 스펙 대신, 고객의 실제 생활에 맞는 시연 흐름을 만들어 보세요.",
+                    "\"이런 상황에선 이렇게 쓰세요\" 같은 명확한 장면을 보여주면 가치가 바로 와닿습니다.",
+                    "매장 미팅 전날이라도, 몇 분 안에 설득력 있는 응대 시나리오를 완성할 수 있습니다."
+                ],
+                en: [
+                    "Instead of complex specs, build a demo flow that fits how the customer actually lives.",
+                    "Show clear moments like \"In this situation, use it this way\" so the value lands immediately.",
+                    "Even the day before a store meeting, you can shape a convincing response scenario in minutes."
+                ],
+                de: [
+                    "Statt komplexer Spezifikationen einen Demo-Ablauf bauen, der zum Alltag des Kunden passt.",
+                    "Klare Momente wie „In dieser Situation so nutzen" zeigen, damit der Mehrwert sofort ankommt.",
+                    "Selbst am Vorabend eines Store-Meetings ein überzeugendes Szenario in Minuten erstellen."
+                ]
             }
         },
         dotcom: {
@@ -5790,6 +5807,23 @@ function getRoleCardLocaleCopy(roleId) {
                 ko: "웹사이트 방문자를 충성 고객으로 전환하는 데이터 기반 온라인 여정을 설계하고, 각 단계 성과를 측정하고 증명하는 데 집중합니다.",
                 en: "Design a data-driven online journey that turns visitors into loyal customers and prove impact at each conversion stage.",
                 de: "Entwirft eine datenbasierte Online-Journey, die Besuchende zu loyalen Kunden macht, und belegt die Wirkung je Funnel-Stufe."
+            },
+            hoverDetails: {
+                ko: [
+                    "검색 의도부터 전환까지, 데이터 기반의 온라인 여정을 더 날카롭게 설계하세요.",
+                    "A/B 테스트 카피부터 랜딩 구성까지, 측정 가능한 성과에 집중한 콘텐츠를 만듭니다.",
+                    "빈 페이지 앞에서 고민하는 시간을 줄이고, 바로 쓸 수 있는 초안부터 시작하세요."
+                ],
+                en: [
+                    "Map the online journey from search intent to conversion with a sharper, data-backed structure.",
+                    "From A/B test copy to landing-page composition, focus the content on measurable performance.",
+                    "Spend less time staring at a blank page and start from a draft that is already usable."
+                ],
+                de: [
+                    "Die Online-Journey von Suchintention bis Conversion datengestützt und präziser gestalten.",
+                    "Vom A/B-Test-Text bis zur Landing-Page: Inhalte auf messbare Performance ausrichten.",
+                    "Weniger Zeit vor der leeren Seite verbringen — mit einem sofort nutzbaren Entwurf starten."
+                ]
             }
         },
         brand: {
@@ -5803,6 +5837,23 @@ function getRoleCardLocaleCopy(roleId) {
                 ko: "제품 기능보다 브랜드 철학과 스토리로 감성적 유대를 만들고, 사용자를 브랜드 팬으로 전환하는 큰 그림을 설계합니다.",
                 en: "Build emotional connection through brand philosophy and story, not feature lists, and grow long-term brand love.",
                 de: "Baut emotionale Bindung über Markenphilosophie und Story statt Feature-Listen auf und stärkt langfristige Markenpräferenz."
+            },
+            hoverDetails: {
+                ko: [
+                    "제품 스펙을 반복하는 대신, 고객의 일상에 자연스럽게 녹아드는 브랜드 스토리를 만드세요.",
+                    "광고 슬로건부터 캠페인 컨셉까지, 호감과 기억에 남는 메시지 방향을 잡아줍니다.",
+                    "기능 나열을 넘어, 감성적 출발점이 되는 한 줄을 찾아보세요."
+                ],
+                en: [
+                    "Build a brand story that blends into the customer's life instead of repeating product specs.",
+                    "From ad slogans to campaign concepts, shape message directions that grow affinity and recall.",
+                    "Move beyond feature lists and find the one line that creates an emotional starting point."
+                ],
+                de: [
+                    "Eine Markengeschichte aufbauen, die sich in den Alltag der Kunden einfügt, statt Produktdaten zu wiederholen.",
+                    "Vom Werbeslogan bis zum Kampagnenkonzept: Botschaftsrichtungen formen, die Sympathie und Erinnerung stärken.",
+                    "Über Feature-Listen hinausgehen und den einen Satz finden, der einen emotionalen Einstieg schafft."
+                ]
             }
         }
     }[roleId];
@@ -5811,7 +5862,8 @@ function getRoleCardLocaleCopy(roleId) {
     return {
         title: copy.title[locale] || copy.title.en,
         mantra: copy.mantra[locale] || copy.mantra.en,
-        desc: copy.desc[locale] || copy.desc.en
+        desc: copy.desc[locale] || copy.desc.en,
+        hoverDetails: copy.hoverDetails?.[locale] || copy.hoverDetails?.en || []
     };
 }
 
@@ -5824,9 +5876,13 @@ function syncRoleCardLocale() {
         const title = card.querySelector("h3");
         const mantra = card.querySelector(".role-mantra");
         const desc = card.querySelector(".role-desc");
+        const hoverDetail = card.querySelector(".role-hover-detail");
         if (title) title.textContent = copy.title;
         if (mantra) mantra.textContent = copy.mantra;
         if (desc) desc.textContent = copy.desc;
+        if (hoverDetail && copy.hoverDetails.length) {
+            hoverDetail.innerHTML = copy.hoverDetails.map(t => `<p>${t}</p>`).join("");
+        }
     });
 }
 
