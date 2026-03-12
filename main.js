@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentLocale = detectBrowserLocale();
     document.documentElement.lang = currentLocale;
     document.documentElement.dir = currentLocale === "ar" ? "rtl" : "ltr";
-    hydrateStaticUi();
+    try { hydrateStaticUi(); } catch (e) { console.error("hydrateStaticUi error:", e); }
     if (enforceServerOrigin()) return;
     bindEvents();
     if (shouldBypassAccessForLocal()) {
@@ -5881,7 +5881,7 @@ function syncRoleCardLocale() {
         if (mantra) mantra.textContent = copy.mantra;
         if (desc) desc.textContent = copy.desc;
         if (hoverDetail && copy.hoverDetails.length) {
-            hoverDetail.innerHTML = copy.hoverDetails.map(t => `<p>${t}</p>`).join("");
+            hoverDetail.innerHTML = copy.hoverDetails.map(line => `<p>${line}</p>`).join("");
         }
     });
 }
