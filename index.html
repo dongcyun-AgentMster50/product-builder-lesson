@@ -9,6 +9,10 @@
 <body>
     <div class="shell">
         <header class="hero">
+            <div id="locale-selector" class="locale-selector">
+                <button type="button" id="locale-current-btn" class="locale-toggle-btn">English</button>
+                <ul id="locale-dropdown" class="locale-dropdown hidden"></ul>
+            </div>
             <div class="hero-copy">
                 <p class="eyebrow">Your Strategic Co-pilot for Growth</p>
                 <h1>Scenario Self Generation Agent</h1>
@@ -139,11 +143,11 @@
 
                         <section class="wizard-step" data-step="3">
                             <div class="field">
-                                <label id="segment-label" for="segment-custom">Q3. 어떤 타겟 세그먼트와 생활 맥락을 떠올리고 있나요?</label>
+                                <label id="segment-label">Q3. 타겟의 생활 맥락을 잡아 주세요</label>
+                                <p class="q3-guide" id="q3-guide">A·B·C 각 영역에서 최소 1개를 선택하거나 직접 입력해 주세요. 조합이 구체적일수록 시나리오가 날카로워집니다.</p>
                                 <div id="persona-groups" class="tree-groups persona-groups"></div>
-                                <input type="text" id="segment-custom" name="segment-custom" placeholder="추가 대상이나 세부 조건을 직접 입력">
-                                <textarea id="purpose" name="purpose" rows="4" placeholder="예: 맞벌이 가정이 퇴근 후 아이와 함께 집에 들어왔을 때 더 빠르고 편안하게 저녁 시간을 시작하고 싶다"></textarea>
-                                <p class="helper">상위 카테고리를 체크하면 하위 항목이 함께 선택됩니다. 필요 없는 항목은 개별 해제하고, 추가 조건은 아래에 직접 입력해 주세요.</p>
+                                <textarea id="purpose" name="purpose" rows="3" placeholder="위 선택 외에 추가로 떠오르는 상황이 있다면 자유롭게 적어 주세요"></textarea>
+                                <input type="text" id="segment-custom" name="segment-custom" class="hidden">
                             </div>
                         </section>
 

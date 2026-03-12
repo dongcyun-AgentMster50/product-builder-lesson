@@ -94,6 +94,11 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        if (pathname === "/api/nudge" && req.method === "POST") {
+            await handleNudge(req, res);
+            return;
+        }
+
         if (req.method !== "GET" && req.method !== "HEAD") {
             sendJson(res, 405, {
                 ok: false,
@@ -281,7 +286,7 @@ const https = require("https");
 const SYSTEM_PROMPT_PATH = path.join(ROOT_DIR, "prompt.txt");
 
 /** Stream OpenAI (ChatGPT) API response. */
-function callOpenAIStream({ systemPrompt, messages, apiKey, res, onDone, onError }) {
+function callOpenAIStream({ systemPrompt, messages, apiKey, res, onDone, onError, model, max_tokens }) {
     if (!apiKey) {
         onError(new Error("OpenAI API key is required."));
         return;
@@ -293,8 +298,8 @@ function callOpenAIStream({ systemPrompt, messages, apiKey, res, onDone, onError
     ];
 
     const body = JSON.stringify({
-        model: process.env.OPENAI_MODEL || "gpt-4o",
-        max_tokens: 8000,
+        model: model || process.env.OPENAI_MODEL || "gpt-4o",
+        max_tokens: max_tokens || 8000,
         stream: true,
         messages: openaiMessages
     });
@@ -361,8 +366,8 @@ function callOpenAIStream({ systemPrompt, messages, apiKey, res, onDone, onError
 }
 
 /** Stream AI response via OpenAI. */
-function callAIStream({ systemPrompt, messages, apiKey, res, onDone, onError }) {
-    return callOpenAIStream({ systemPrompt, messages, apiKey, res, onDone, onError });
+function callAIStream({ systemPrompt, messages, apiKey, res, onDone, onError, model, max_tokens }) {
+    return callOpenAIStream({ systemPrompt, messages, apiKey, res, onDone, onError, model, max_tokens });
 }
 
 function sendSseHeaders(res) {
@@ -509,6 +514,79 @@ async function handleRefine(req, res) {
         onDone: () => { if (!done) { done = true; res.end(); } },
         onError: (err) => {
             console.error("refine error:", err.message);
+            if (!done) {
+                done = true;
+                try {
+                    res.write(`data: ${JSON.stringify({ type: "error", message: err.message })}\n\n`);
+                } catch { /* ignore */ }
+                res.end();
+            }
+        }
+    });
+}
+
+// ─── Real-time nudge via GPT-4o-mini ─────────────────────────────────────────
+
+const NUDGE_SYSTEM_PROMPT = `You are a Samsung SmartThings global marketing advisor.
+Given a country, city, and marketing role, generate exactly 3 nudge cards in JSON format.
+
+Output ONLY valid JSON — no markdown, no explanation:
+{
+  "situation": "One paragraph: what is happening RIGHT NOW in this city/market that affects the product category (housing trends, climate, lifestyle shifts, recent events). Be specific to the city, not generic.",
+  "need": "One paragraph: what consumer need or pain point naturally arises from that situation. Frame it as an empathetic observation a local marketer would recognize.",
+  "opportunity": "One paragraph: a concrete, actionable marketing opportunity for the given role. Include a specific tactic, not just a direction."
+}
+
+Rules:
+- Be hyper-specific to the city. Never give advice that could apply to any city.
+- Use the latest knowledge you have about this market.
+- If locale is "ko", write in Korean. Otherwise write in English.
+- Keep each field to 2-3 sentences max.`;
+
+async function handleNudge(req, res) {
+    const authState = requireAuthenticatedSession(req, res);
+    if (!authState.ok) return;
+
+    let body;
+    try {
+        body = await readJsonBody(req);
+    } catch {
+        sendJson(res, 400, { ok: false, error: { code: "BAD_REQUEST", message: "Invalid JSON body." } });
+        return;
+    }
+
+    const country   = String(body?.country || "").trim();
+    const city      = String(body?.city || "").trim();
+    const role      = String(body?.role || "retail").trim();
+    const locale    = String(body?.locale || "ko").trim();
+    const clientKey = String(body?.apiKey || "").trim();
+
+    if (!country) {
+        sendJson(res, 400, { ok: false, error: { code: "MISSING_COUNTRY", message: "Country is required." } });
+        return;
+    }
+
+    const marketLabel = city ? `${country} ${city}` : country;
+    const roleName = role === "dotcom" ? "Digital/e-Commerce marketer"
+        : role === "brand" ? "Brand marketer"
+        : "Retail/in-store marketer";
+
+    const userMessage = `Market: ${marketLabel}\nRole: ${roleName}\nLocale: ${locale}`;
+
+    sendSseHeaders(res);
+    res.write(`data: ${JSON.stringify({ type: "start" })}\n\n`);
+
+    let done = false;
+    callAIStream({
+        systemPrompt: NUDGE_SYSTEM_PROMPT,
+        apiKey: clientKey,
+        model: "gpt-4o-mini",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: userMessage }],
+        res,
+        onDone: () => { if (!done) { done = true; res.end(); } },
+        onError: (err) => {
+            console.error("nudge error:", err.message);
             if (!done) {
                 done = true;
                 try {
@@ -921,112 +999,97 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
 function buildRoleLensInsight({ role, locale, country, city }) {
     const marketLabel = city ? `${country} ${city}` : country;
     const isKo = locale === "ko";
-    const isDe = locale === "de";
 
     if (role === "dotcom") {
         return {
-            why_this_matters: isKo
-                ? `${marketLabel}에서는 유입 키워드와 랜딩 전환 장벽을 먼저 정리할수록 캠페인 효율이 올라갑니다.`
-                : isDe
-                    ? `In ${marketLabel} steigen Ergebnisse, wenn Suchintent und Conversion-Hürden zuerst geklärt werden.`
-                    : `In ${marketLabel}, results improve when search intent and conversion friction are clarified first.`,
-            must_know: isKo
+            pain_points: isKo
                 ? [
-                    "검색/광고 유입 사용자가 기대하는 문제 해결 문장을 헤드라인에 반영",
-                    "PDP 이탈 구간을 1~2개 핵심 장벽으로 단순화",
-                    "시간 절약·비용 절감 근거를 첫 스크롤 내 배치"
+                    `"상세페이지 문구를 어디서부터 써야 하죠?" — ${city || marketLabel} 유입 키워드와 랜딩 카피가 따로 놀아서 이탈률이 높은 상태`,
+                    `"AI 기능 켜면 전기세 더 나와요?" — 에너지 절감/비용 체감 질문이 PDP 이탈의 주요 원인`,
+                    `"경쟁사 대비 뭐가 나은지 한눈에 안 보여요" — 비교 근거 없이 스펙만 나열하면 첫 스크롤에서 이탈`
                 ]
                 : [
-                    "Reflect problem-first search intent in the first headline.",
-                    "Reduce PDP drop-off friction to one or two obvious blockers.",
-                    "Place time/cost payoff proof above the first scroll."
+                    `"Where do I even start with PDP copy?" — search keywords and landing copy are misaligned, causing high bounce`,
+                    `"Does the AI feature increase my electricity bill?" — cost/savings proof is the top conversion blocker`,
+                    `"I can't see why this beats the competition" — spec-only listings lose visitors at the first scroll`
                 ],
-            execution_points: isKo
+            solutions: isKo
                 ? [
-                    "광고 메시지와 랜딩 H1 약속을 동일하게 맞춤",
-                    "CTA 직전에 설치 난이도와 체감 시간 안내",
-                    "Q3 타겟별 A/B 헤드라인 2안 작성"
+                    "유입 키워드 Top 3의 '문제 문장'을 H1에 그대로 반영 → 광고와 랜딩 약속 일치시키기",
+                    "CTA 바로 위에 '월 ₩12,000 절감' 같은 체감 숫자 1개 배치 → 비용 질문 사전 차단",
+                    "경쟁사 대비표를 첫 스크롤 안에 넣되, '일상 변화' 축으로 비교 → 스펙 비교 함정 탈출"
                 ]
                 : [
-                    "Align ad promise and landing H1 as one message.",
-                    "Add setup effort and payoff time before CTA.",
-                    "Prepare two A/B headlines per Q3 segment."
+                    "Mirror the top 3 search-intent 'problem sentences' directly in H1 — align ad promise with landing",
+                    "Place one tangible savings number (e.g. '$10/month saved') right above the CTA — preempt cost objections",
+                    "Put a competitor comparison within first scroll, but frame it as 'life impact' not spec-vs-spec"
                 ],
-            primary_metric: isKo ? "CTR -> PDP 전환율 -> 구매 전환율" : "CTR -> PDP conversion -> purchase conversion",
+            primary_metric: isKo ? "CTR → PDP 체류 → 장바구니 전환" : "CTR → PDP dwell → add-to-cart",
             next_step: isKo
-                ? "Q3에 타겟 1개와 유입 상황 1개를 고정하고, 검증할 KPI를 하나만 지정하세요."
-                : "In Q3, lock one target and one entry context, then pick one KPI to validate."
+                ? "Q3에서 타겟 1명의 검색 상황을 고정하면, 헤드라인 초안이 바로 나옵니다."
+                : "Lock one searcher profile in Q3 and the headline draft writes itself."
         };
     }
 
     if (role === "brand") {
         return {
-            why_this_matters: isKo
-                ? `${marketLabel}에서는 기능 나열보다 문화 맥락에 맞는 스토리 각도가 브랜드 선호를 더 빠르게 만듭니다.`
-                : isDe
-                    ? `In ${marketLabel} wirkt ein kulturpassender Story-Winkel stärker als reine Feature-Auflistung.`
-                    : `In ${marketLabel}, culture-fit storytelling builds brand preference faster than feature lists.`,
-            must_know: isKo
+            pain_points: isKo
                 ? [
-                    "시장 맥락에서 공감되는 생활 장면(가족/웰빙/시간가치) 정의",
-                    "브랜드가 해결하는 감정적 긴장을 한 문장으로 명시",
-                    "글로벌 메시지와 로컬 표현의 역할 분리"
+                    `"우리 브랜드 광고가 다 비슷비슷해 보여요" — ${city || marketLabel}에서 기능 나열만으로는 기억에 남지 않는 상태`,
+                    `"SNS 영상 조회수는 나오는데 브랜드 회상이 안 돼요" — 감정 키워드 없이 콘텐츠만 소비되는 구조`,
+                    `"글로벌 캠페인 카피를 로컬에 그대로 쓰면 어색해요" — 문화 맥락 번역 없이 직역하면 공감 손실`
                 ]
                 : [
-                    "Define one culturally resonant life scene first.",
-                    "Name the emotional tension the brand resolves in one line.",
-                    "Separate global message backbone from local expression."
+                    `"All our brand ads look the same" — feature-listing alone is not memorable in ${city || marketLabel}`,
+                    `"Views are up but no one remembers our brand" — content gets consumed without an emotional anchor`,
+                    `"Global campaign copy feels off when localized" — direct translation without cultural context loses empathy`
                 ],
-            execution_points: isKo
+            solutions: isKo
                 ? [
-                    "캠페인 첫 문장을 기능이 아닌 사람의 변화로 시작",
-                    "영상/소셜/배너에 동일 감정 키워드 유지",
-                    "Q3 타겟용 3컷 스토리보드(문제-전환-해결) 작성"
+                    "제품 스펙 대신 '이 사람의 하루가 어떻게 달라지는가' 한 장면으로 시작 → 기억 잔존율 확보",
+                    "영상·소셜·배너에 동일 감정 키워드 1개를 관통시키기 → 채널 넘어 브랜드 회상 연결",
+                    "글로벌 메시지의 '감정 핵심'만 추출하고, 로컬 생활 장면으로 재구성 → 어색함 없는 현지화"
                 ]
                 : [
-                    "Open campaign copy with human change, not specs.",
-                    "Keep one emotional keyword across video/social/banner.",
-                    "Draft a 3-cut storyboard (problem-shift-resolution) for Q3 segment."
+                    "Start with 'how this person's day changes' instead of specs — one scene creates recall",
+                    "Thread one emotional keyword through video/social/banner — link recall across channels",
+                    "Extract the 'emotional core' of global copy, then rebuild with local life scenes — natural localization"
                 ],
-            primary_metric: isKo ? "브랜드 선호도 + 메시지 회상률" : "Brand preference + message recall",
+            primary_metric: isKo ? "브랜드 비보조 회상률 + 감정 연상 일치도" : "Unaided brand recall + emotional association match",
             next_step: isKo
-                ? "Q3에 타겟과 감정 키워드를 함께 고정하고, 스토리 톤을 한 줄로 정의하세요."
-                : "In Q3, lock target and emotional keyword, then define tone in one line."
+                ? "Q3에서 타겟의 감정 키워드를 하나 고정하면, 스토리 톤이 바로 잡힙니다."
+                : "Lock one emotional keyword for the target in Q3 and the story tone follows."
         };
     }
 
+    // retail (default)
     return {
-        why_this_matters: isKo
-            ? `${marketLabel}에서는 매장 대화에 바로 쓰는 설명 구조가 판매 전환에 가장 직접적으로 연결됩니다.`
-            : isDe
-                ? `In ${marketLabel} wirkt eine sofort nutzbare In-Store-Erklärung am direktesten auf den Abschluss.`
-                : `In ${marketLabel}, an in-store explanation flow staff can use immediately is most conversion-critical.`,
-        must_know: isKo
+        pain_points: isKo
             ? [
-                "매장에서 가장 먼저 나오는 질문(가격/설치/호환) 우선 정리",
-                "기능보다 고객 일상의 변화 포인트를 먼저 제시",
-                "첫 시연 30초 내 체감 포인트 제시"
+                `"이 제품 왜 필요해요?" — ${city || marketLabel} 매장에서 고객이 가장 먼저 던지는 질문인데, 기능 설명으로는 답이 안 되는 상태`,
+                `"AI 기능 켜면 전기세 더 나와요?" — 에너지 절감 체감이 구매 결정의 핵심 포인트인데 시연에 빠져 있음`,
+                `"설치 복잡하지 않아요?" — 원스텝 셋업 시연이 30초 안에 끝나야 설득되는데, 현재 시연 흐름이 너무 김`
             ]
             : [
-                "Prioritize first in-store objections: price, setup, compatibility.",
-                "Lead with daily-life payoff before feature detail.",
-                "Show one felt benefit within the first 30 seconds."
+                `"Why do I need this?" — the first question in ${city || marketLabel} stores, and feature specs don't answer it`,
+                `"Will the AI feature raise my power bill?" — energy savings proof is the purchase tipping point but missing from demos`,
+                `"Is setup complicated?" — customers need to see one-step setup in under 30 seconds, but current demos run too long`
             ],
-        execution_points: isKo
+        solutions: isKo
             ? [
-                "직원용 1문장 오프너 + 2문장 클로징 스크립트 작성",
-                "시연 순서를 문제-체감-증거 3단계로 고정",
-                "Q3 타겟에 맞춘 FAQ 반박 문장 3개 준비"
+                "'왜 필요해요?' 질문엔 → \"퇴근하고 집에 들어오면 3초 만에 자동으로 켜집니다\" 한 장면 시연으로 대답",
+                "전기세 질문엔 → 비포/애프터 숫자 1개 (\"월 약 ₩12,000 절감\") 시연 중 자연스럽게 언급",
+                "설치 질문엔 → 박스 개봉~첫 작동까지 30초 타임랩스 시연 → \"이게 끝이에요\"로 클로징"
             ]
             : [
-                "Write a 1-line opener and 2-line closer for store staff.",
-                "Fix demo order as problem -> felt payoff -> proof.",
-                "Prepare three objection-handling lines for the Q3 target."
+                "For 'Why do I need this?' → demo one scene: \"Walk in the door, everything turns on in 3 seconds\"",
+                "For the power bill question → drop one before/after number (\"saves ~$10/month\") naturally during demo",
+                "For setup worry → 30-second time-lapse from unbox to first run → close with \"That's it, you're done\""
             ],
-        primary_metric: isKo ? "상담 전환율 + 시연 완료율" : "Consultation conversion + demo completion",
+        primary_metric: isKo ? "시연 완료율 → 상담 전환율" : "Demo completion → consultation conversion",
         next_step: isKo
-            ? "Q3에 타겟 고객 1명과 매장 상황 1개를 고정하고 시연 문장을 작성하세요."
-            : "In Q3, lock one shopper type and one store context, then draft the demo line."
+            ? "Q3에서 타겟 고객 1명과 매장 상황을 고정하면, 시연 스크립트 초안이 바로 나옵니다."
+            : "Lock one shopper type and store moment in Q3 — the demo script draft follows."
     };
 }
 

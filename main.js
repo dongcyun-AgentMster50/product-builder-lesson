@@ -71,11 +71,30 @@ let latestStep2InsightRequest = 0;
 let bypassSessionReady = false;
 let bypassSessionPromise = null;
 let selectedProvider = sessionStorage.getItem("aiProvider") || "openai";
+let userOverrideLocale = null;
+
+const SUPPORTED_UI_LOCALES = ["ko", "en", "de", "fr", "es", "pt", "it", "nl", "ar"];
+
+function detectBrowserLocale() {
+    const lang = (navigator.language || navigator.userLanguage || "en").toLowerCase();
+    const primary = lang.split("-")[0];
+    if (SUPPORTED_UI_LOCALES.includes(primary)) return primary;
+    return "en";
+}
+
+function resolveEffectiveLocale(countryLocale) {
+    if (userOverrideLocale) return userOverrideLocale;
+    if (SUPPORTED_UI_LOCALES.includes(countryLocale)) return countryLocale;
+    return detectBrowserLocale();
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     accessClientSessionId = ensureAccessClientSessionId();
     sessionStorage.setItem("aiProvider", "openai");
     sessionStorage.removeItem("aiApiKey");
+    currentLocale = detectBrowserLocale();
+    document.documentElement.lang = currentLocale;
+    document.documentElement.dir = currentLocale === "ar" ? "rtl" : "ltr";
     hydrateStaticUi();
     if (enforceServerOrigin()) return;
     bindEvents();
@@ -83,6 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
         openWizard();
     }
     loadReferenceData();
+    initLocaleSelector();
+    updateEnglishToggleVisibility();
 });
 
 function bindEvents() {
@@ -128,7 +149,14 @@ function bindEvents() {
         updateStatePreview();
         updateStepInsight();
     });
-    segmentCustomInput.addEventListener("input", () => {
+    personaGroups.addEventListener("input", (event) => {
+        const input = event.target;
+        if (!input.classList.contains("tree-custom-input")) return;
+        const group = input.closest(".tree-group");
+        if (group && group.dataset.mode === "radio" && input.value.trim()) {
+            group.querySelectorAll('input[type="radio"]').forEach((r) => { r.checked = false; });
+        }
+        clearQ3Error();
         updateStatePreview();
         updateStepInsight();
     });
@@ -327,54 +355,65 @@ function getDotcomMarketInfo(selectedMarket) {
 function renderChecklistGroups(groups, selectedIds = [], kind) {
     const selected = new Set(selectedIds);
     return groups.map((group) => {
-        const allSelected = group.options.every((option) => selected.has(option.id));
-        return `
-            <section class="tree-group" data-group-id="${group.id}">
-                <label class="tree-parent">
-                    <input type="checkbox" data-kind="${kind}" data-node-type="parent" data-group-id="${group.id}" ${allSelected ? "checked" : ""}>
-                    <span class="tree-parent-title">${escapeHtml(group.title)}</span>
-                </label>
-                <div class="tree-children">
-                    ${group.options.map((option) => {
-                        const childChecked = selected.has(option.id);
-                        const subHtml = option.sub ? `
-                            <div class="tree-sub-children" data-parent-option="${option.id}" style="${childChecked ? "" : "display:none"}">
-                                ${option.sub.map((s) => `
-                                    <label class="tree-sub-child">
-                                        <input
-                                            type="checkbox"
-                                            value="${s.id}"
-                                            data-kind="${kind}"
-                                            data-node-type="sub-child"
-                                            data-group-id="${group.id}"
-                                            data-parent-option="${option.id}"
-                                            data-label="${escapeHtml(s.label)}"
-                                            ${selected.has(s.id) ? "checked" : ""}
-                                        >
-                                        <span>${escapeHtml(s.label)}</span>
-                                    </label>
-                                `).join("")}
-                            </div>
-                        ` : "";
-                        return `
-                            <label class="tree-child">
-                                <input
-                                    type="checkbox"
-                                    value="${option.id}"
-                                    data-kind="${kind}"
-                                    data-node-type="child"
-                                    data-group-id="${group.id}"
-                                    data-label="${escapeHtml(option.label)}"
-                                    ${option.sub ? `data-has-sub="true"` : ""}
-                                    ${option.normalized ? `data-normalized="${escapeHtml(option.normalized)}"` : ""}
-                                    ${childChecked ? "checked" : ""}
-                                >
-                                <span>${escapeHtml(option.label)}</span>
-                            </label>
-                            ${subHtml}
-                        `;
-                    }).join("")}
+        const mode = group.mode || "checkbox";
+        const inputType = mode === "radio" ? "radio" : "checkbox";
+        const radioName = mode === "radio" ? `${kind}_${group.id}` : "";
+
+        // For device groups (no mode field), keep legacy parent-checkbox behaviour
+        const isLegacy = !group.mode;
+        const allSelected = isLegacy && group.options.every((option) => selected.has(option.id));
+
+        const parentHtml = isLegacy ? `
+            <label class="tree-parent">
+                <input type="checkbox" data-kind="${kind}" data-node-type="parent" data-group-id="${group.id}" ${allSelected ? "checked" : ""}>
+                <span class="tree-parent-title">${escapeHtml(group.title)}</span>
+            </label>
+        ` : `<div class="tree-parent tree-parent--label"><span class="tree-parent-title">${escapeHtml(group.title)}</span></div>`;
+
+        const optionsHtml = group.options.map((option) => {
+            const childChecked = selected.has(option.id);
+            // Legacy sub-children support (for device groups)
+            const subHtml = option.sub ? `
+                <div class="tree-sub-children" data-parent-option="${option.id}" style="${childChecked ? "" : "display:none"}">
+                    ${option.sub.map((s) => `
+                        <label class="tree-sub-child">
+                            <input type="checkbox" value="${s.id}" data-kind="${kind}" data-node-type="sub-child" data-group-id="${group.id}" data-parent-option="${option.id}" data-label="${escapeHtml(s.label)}" ${selected.has(s.id) ? "checked" : ""}>
+                            <span>${escapeHtml(s.label)}</span>
+                        </label>
+                    `).join("")}
                 </div>
+            ` : "";
+            return `
+                <label class="tree-child">
+                    <input
+                        type="${inputType}"
+                        ${radioName ? `name="${radioName}"` : ""}
+                        value="${option.id}"
+                        data-kind="${kind}"
+                        data-node-type="child"
+                        data-group-id="${group.id}"
+                        data-label="${escapeHtml(option.label)}"
+                        ${option.sub ? `data-has-sub="true"` : ""}
+                        ${option.normalized ? `data-normalized="${escapeHtml(option.normalized)}"` : ""}
+                        ${childChecked ? "checked" : ""}
+                    >
+                    <span>${escapeHtml(option.label)}</span>
+                </label>
+                ${subHtml}
+            `;
+        }).join("");
+
+        const customHtml = group.customPlaceholder ? `
+            <input type="text" class="tree-custom-input" data-kind="${kind}" data-group-id="${group.id}" placeholder="${escapeHtml(group.customPlaceholder)}">
+        ` : "";
+
+        return `
+            <section class="tree-group" data-group-id="${group.id}" data-mode="${mode}">
+                ${parentHtml}
+                <div class="tree-children">
+                    ${optionsHtml}
+                </div>
+                ${customHtml}
             </section>
         `;
     }).join("");
@@ -390,21 +429,42 @@ function handleChecklistChange(event, container) {
     const group = container.querySelector(`.tree-group[data-group-id="${groupId}"]`);
     if (!group) return;
 
-    const parent = group.querySelector('input[data-node-type="parent"]');
-    const children = [...group.querySelectorAll('input[data-node-type="child"]')];
+    const mode = group.dataset.mode;
 
-    if (target.dataset.nodeType === "parent") {
-        children.forEach((child) => {
-            child.checked = target.checked;
-            toggleSubChildren(group, child.value, target.checked);
-        });
+    // Radio groups: clear custom input when an option is selected
+    if (mode === "radio" && target.checked) {
+        const customInput = group.querySelector('.tree-custom-input');
+        if (customInput) customInput.value = "";
     }
 
-    if (target.dataset.nodeType === "child" && target.dataset.hasSub === "true") {
-        toggleSubChildren(group, target.value, target.checked);
+    // Legacy checkbox-parent behaviour (device groups)
+    if (!mode || mode === "checkbox") {
+        const parent = group.querySelector('input[data-node-type="parent"]');
+        const children = [...group.querySelectorAll('input[data-node-type="child"]')];
+
+        if (target.dataset.nodeType === "parent") {
+            children.forEach((child) => {
+                child.checked = target.checked;
+                toggleSubChildren(group, child.value, target.checked);
+            });
+        }
+
+        if (target.dataset.nodeType === "child" && target.dataset.hasSub === "true") {
+            toggleSubChildren(group, target.value, target.checked);
+        }
+
+        syncChecklistParent(group, parent, children);
     }
 
-    syncChecklistParent(group, parent, children);
+    // Clear Q3 validation error on interaction
+    clearQ3Error();
+}
+
+function clearQ3Error() {
+    const errEl = resultDiv.querySelector('.error');
+    if (errEl && (errEl.textContent.includes("영역에서") || errEl.textContent.includes("select at least"))) {
+        resultDiv.innerHTML = "";
+    }
 }
 
 function toggleSubChildren(group, optionId, show) {
@@ -471,6 +531,9 @@ function getCountryFlagEmoji(countryCode) {
     return flags[countryCode] || "\u{1F30D}";
 }
 
+let _nudgeAbort = null;
+const _nudgeCache = new Map();
+
 function renderCityProfileCard() {
     const profileCard = document.getElementById("city-profile-card");
     if (!profileCard) return;
@@ -484,19 +547,52 @@ function renderCityProfileCard() {
     }
 
     const cityName = getCityValue();
-    const content = getCitySignalContent(country.countryCode, cityName);
-    if (!content) {
-        profileCard.classList.add("hidden");
-        profileCard.innerHTML = "";
-        return;
-    }
-
     const flag = getCountryFlagEmoji(country.countryCode);
     const displayCity = cityName || (currentLocale === "ko" ? "전체 지역" : "All regions");
     const countryName = selectedMarket?.label || country.countryCode;
-
     const isKo = currentLocale === "ko";
-    profileCard.innerHTML = `
+    const role = normalizeRoleId(roleSelect.value) || "retail";
+
+    // Show skeleton immediately
+    profileCard.innerHTML = buildNudgeCardHTML({
+        flag, displayCity, countryName, isKo,
+        situation: null, need: null, opportunity: null, loading: true
+    });
+    profileCard.classList.remove("hidden");
+
+    // Try real-time API nudge
+    fetchLiveNudge({ countryCode: country.countryCode, cityName, role, locale: currentLocale, isKo })
+        .then((nudge) => {
+            profileCard.innerHTML = buildNudgeCardHTML({
+                flag, displayCity, countryName, isKo,
+                situation: nudge.situation,
+                need: nudge.need,
+                opportunity: nudge.opportunity,
+                loading: false
+            });
+        })
+        .catch(() => {
+            // Fallback to static data
+            const content = getCitySignalContent(country.countryCode, cityName);
+            if (!content) {
+                profileCard.classList.add("hidden");
+                profileCard.innerHTML = "";
+                return;
+            }
+            const situation = `${escapeHtml(content.housing)} ${escapeHtml(content.climate)}`;
+            profileCard.innerHTML = buildNudgeCardHTML({
+                flag, displayCity, countryName, isKo,
+                situation,
+                need: escapeHtml(content.behavior),
+                opportunity: escapeHtml(content.implication),
+                loading: false
+            });
+        });
+}
+
+function buildNudgeCardHTML({ flag, displayCity, countryName, isKo, situation, need, opportunity, loading }) {
+    const shimmer = `<span class="nudge-shimmer"></span>`;
+    return `
         <div class="city-profile-header">
             <span class="city-profile-flag">${flag}</span>
             <div>
@@ -504,43 +600,112 @@ function renderCityProfileCard() {
                 <span class="city-profile-country">${escapeHtml(countryName)}</span>
             </div>
         </div>
-        <div class="city-profile-grid">
-            <div class="city-profile-item">
-                <span class="city-profile-icon">${isKo ? "\u{1F3E0}" : "\u{1F3E0}"}</span>
-                <div><span class="city-profile-label">${isKo ? "주거" : "Housing"}</span><p>${escapeHtml(content.housing)}</p></div>
+        <div class="city-profile-nudges">
+            <div class="city-nudge city-nudge--situation">
+                <span class="city-nudge-label">${isKo ? "지금 상황" : "Now"}</span>
+                <p>${loading ? shimmer : situation}</p>
             </div>
-            <div class="city-profile-item">
-                <span class="city-profile-icon">${isKo ? "\u{1F321}\u{FE0F}" : "\u{1F321}\u{FE0F}"}</span>
-                <div><span class="city-profile-label">${isKo ? "기후" : "Climate"}</span><p>${escapeHtml(content.climate)}</p></div>
+            <div class="city-nudge city-nudge--need">
+                <span class="city-nudge-label">${isKo ? "예상 니즈" : "Likely need"}</span>
+                <p>${loading ? shimmer : need}</p>
             </div>
-            <div class="city-profile-item">
-                <span class="city-profile-icon">${isKo ? "\u{1F464}" : "\u{1F464}"}</span>
-                <div><span class="city-profile-label">${isKo ? "생활 특성" : "Behavior"}</span><p>${escapeHtml(content.behavior)}</p></div>
-            </div>
-            <div class="city-profile-item">
-                <span class="city-profile-icon">${isKo ? "\u{1F4A1}" : "\u{1F4A1}"}</span>
-                <div><span class="city-profile-label">${isKo ? "시나리오 시사점" : "Implication"}</span><p>${escapeHtml(content.implication)}</p></div>
+            <div class="city-nudge city-nudge--opportunity">
+                <span class="city-nudge-label">${isKo ? "기회 포인트" : "Opportunity"}</span>
+                <p>${loading ? shimmer : opportunity}</p>
             </div>
         </div>
     `;
-    profileCard.classList.remove("hidden");
+}
+
+async function fetchLiveNudge({ countryCode, cityName, role, locale, isKo }) {
+    // Cancel any in-flight nudge request
+    if (_nudgeAbort) { _nudgeAbort.abort(); }
+
+    // Check cache (key = country+city+role+locale)
+    const cacheKey = `${countryCode}|${cityName}|${role}|${locale}`;
+    if (_nudgeCache.has(cacheKey)) return _nudgeCache.get(cacheKey);
+
+    _nudgeAbort = new AbortController();
+    const countryLabel = marketOptions.find((m) => m.siteCode === countryCode)?.label || countryCode;
+
+    const res = await fetch("/api/nudge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        signal: _nudgeAbort.signal,
+        body: JSON.stringify({
+            country: countryLabel,
+            city: cityName || "",
+            role,
+            locale
+        })
+    });
+
+    if (!res.ok) throw new Error(`nudge API ${res.status}`);
+
+    // Read SSE stream and collect full text
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = "";
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        for (const line of chunk.split("\n")) {
+            if (!line.startsWith("data: ")) continue;
+            try {
+                const evt = JSON.parse(line.slice(6));
+                if (evt.type === "chunk" && evt.text) fullText += evt.text;
+            } catch { /* skip */ }
+        }
+    }
+
+    // Parse JSON from response
+    const jsonMatch = fullText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("No JSON in nudge response");
+    const nudge = JSON.parse(jsonMatch[0]);
+
+    // Cache result
+    _nudgeCache.set(cacheKey, nudge);
+    return nudge;
+}
+
+function getLocalizedCityName(entry) {
+    const aliases = Array.isArray(entry.aliases) ? entry.aliases : [];
+    const name = entry.displayName || "";
+    if (currentLocale === "ko") {
+        const hangul = aliases.find((a) => /[\uAC00-\uD7AF]/.test(a));
+        if (hangul) return hangul;
+    }
+    if (currentLocale === "ar") {
+        const arabic = aliases.find((a) => /[\u0600-\u06FF]/.test(a));
+        if (arabic) return arabic;
+    }
+    if (["de", "fr", "es", "pt", "it", "nl"].includes(currentLocale)) {
+        const local = aliases.find((a) =>
+            a !== a.toLowerCase() || /[àáâãäåæçèéêëìíîïðñòóôõöùúûüýþÿ]/i.test(a)
+        );
+        if (local && local.toLowerCase() !== name.toLowerCase()) return local;
+    }
+    return name;
 }
 
 function getAvailableCitiesByCountry(countryCode) {
     if (!countryCode) return [];
     const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
     const seen = new Set();
-    const names = [];
+    const results = [];
 
     cityEntries.forEach((entry) => {
         if (entry.countryCode !== countryCode || !entry.displayName) return;
         const normalized = normalizeCityValue(entry.displayName);
         if (!normalized || seen.has(normalized)) return;
         seen.add(normalized);
-        names.push(entry.displayName);
+        results.push({ value: entry.displayName, label: getLocalizedCityName(entry) });
     });
 
-    return names.sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
+    return results.sort((a, b) => a.label.localeCompare(b.label, currentLocale, { sensitivity: "base" }));
 }
 
 function getCityValue() {
@@ -594,7 +759,7 @@ function populateCityOptions(countryCode, preservedCity = "") {
 
     citySelect.innerHTML = [
         `<option value="">${escapeHtml(defaultLabel)}</option>`,
-        ...cities.map((city) => `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`),
+        ...cities.map((c) => `<option value="${escapeHtml(c.value)}">${escapeHtml(c.label)}</option>`),
         `<option value="${CITY_CUSTOM_VALUE}">${escapeHtml(customLabel)}</option>`
     ].join("");
 
@@ -806,7 +971,7 @@ function buildGuideMarkup() {
         return `
             <div class="guide-hero">
                 <span class="guide-kicker">Scenario Guide</span>
-                <h3>4단계 입력만으로<br>완성도 높은 시나리오를 만듭니다</h3>
+                <h3>4단계 입력만으로<br>완성도 높은 시나리오를<br>만듭니다</h3>
                 <p class="guide-lead">핵심만 빠르게 선택하고, 필요한 정보만 더해 바로 검토할 수 있는 결과로 정리합니다.</p>
             </div>
             <div class="guide-grid">
@@ -826,12 +991,12 @@ function buildGuideMarkup() {
                     <div class="guide-stack">
                         <div class="guide-item"><strong>Step by step</strong><span>질문은 한 번에 하나씩 열려 흐름이 명확합니다.</span></div>
                         <div class="guide-item"><strong>Lean follow-up</strong><span>필요할 때만 추가 확인 포인트를 최소로 더합니다.</span></div>
-                        <div class="guide-item"><strong>Clear output</strong><span>불확실한 내용은 assumption으로 분리해 결과의 완성도를 유지합니다.</span></div>
+                        <div class="guide-item"><strong>Clear output</strong><span>불확실한 내용은 가정 사항으로 분리해 결과의 완성도를 유지합니다.</span></div>
                     </div>
                 </section>
             </div>
             <div class="guide-footer">
-                <p class="guide-note">가이드를 확인했다면 아래 Start로 바로 Q1부터 시작하세요. 짧은 입력만으로도 검토와 공유에 바로 쓸 수 있는 결과를 만듭니다.</p>
+                <p class="guide-note">가이드를 확인했다면 아래 시작 버튼으로 바로 첫 번째 질문부터 시작하세요. 짧은 입력만으로도 검토와 공유에 바로 쓸 수 있는 결과를 만듭니다.</p>
             </div>
         `;
     }
@@ -934,9 +1099,10 @@ function resetToAccessScreen() {
     if (marketOptions[0]) countrySelect.value = marketOptions[0].siteCode;
     const defaultCountryCode = resolveCountry(marketOptions[0])?.countryCode || "";
     populateCityOptions(defaultCountryCode, "");
-    personaGroups.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+    personaGroups.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach((input) => {
         input.checked = false;
     });
+    personaGroups.querySelectorAll('.tree-custom-input').forEach((input) => { input.value = ""; });
     segmentCustomInput.value = "";
     purposeInput.value = "";
     deviceGrid.querySelectorAll('input[type="checkbox"]').forEach((input) => {
@@ -1381,55 +1547,52 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const roleLens = data.role_lens || {};
     const roleTitle = selectedRoleId ? getRoleTitle(selectedRoleId) : (currentLocale === "ko" ? "마케터" : "Marketer");
     const marketLabel = city ? `${getCountryName(countryCode)} ${city}` : getCountryName(countryCode);
-    const macro = data.macro || {};
     const local = data.local || null;
     const evidence = [];
-    const countryName = getCountryName(countryCode);
+    const painPoints = toList(roleLens.pain_points).slice(0, 3);
+    const solutions = toList(roleLens.solutions).slice(0, 3);
     const mustKnow = toList(roleLens.must_know).slice(0, 3);
     const executionPoints = toList(roleLens.execution_points).slice(0, 3);
-    const roleMetric = roleLens.primary_metric || "";
-    const cityCx = inferCityCxProfile(countryCode, city, macro, local);
+    const realPains = painPoints.length ? painPoints : mustKnow;
+    const realSolutions = solutions.length ? solutions : executionPoints;
 
     const sections = [];
-    sections.push({
-        title: currentLocale === "ko" ? `${city} 고객경험 핵심 맥락` : `${city} customer-experience context`,
-        items: cityCx
-    });
 
-    if (mustKnow.length) {
+    if (realPains.length) {
         sections.push({
             title: currentLocale === "ko"
-                ? `${roleTitle}가 ${countryName}${city ? ` ${city}` : ""}에서 먼저 알아야 할 것`
-                : `What ${roleTitle} should know first in ${countryName}${city ? ` ${city}` : ""}`,
-            items: mustKnow
+                ? `요즘 ${city || marketLabel}에서 이런 고민 많죠?`
+                : `Sound familiar in ${city || marketLabel}?`,
+            items: realPains
         });
     }
-    if (executionPoints.length) {
-        sections.push({
-            title: currentLocale === "ko" ? "바로 실행할 포인트" : "Execution points to use now",
-            items: executionPoints
-        });
-    }
-
-    const rows = [
-        {
-            label: currentLocale === "ko" ? "이번 역할의 핵심 KPI" : "Primary KPI for this role",
-            value: roleMetric || (currentLocale === "ko" ? "Q3에서 목표 KPI를 한 줄로 고정해 주세요." : "Lock one KPI line in Q3.")
+    if (realSolutions.length) {
+        const roleMetric = roleLens.primary_metric || "";
+        const solutionItems = [...realSolutions];
+        if (roleMetric) {
+            solutionItems.push(currentLocale === "ko"
+                ? `[KPI] ${roleMetric}`
+                : `[KPI] ${roleMetric}`);
         }
-    ];
+        sections.push({
+            title: currentLocale === "ko" ? "이렇게 풀어보세요" : "Try this approach",
+            items: solutionItems
+        });
+    }
 
+    const rows = [];
     rows.push({
-        label: currentLocale === "ko" ? "Q3에서 바로 넣을 문장" : "Line to lock in Q3",
+        label: currentLocale === "ko" ? "Q3 힌트" : "Q3 hint",
         value: roleLens.next_step || (currentLocale === "ko"
-            ? "타겟(누가) + 상황(언제/어디서) + 목표 KPI를 한 줄로 고정해 주세요."
-            : "Lock target (who) + context (when/where) + one KPI in one line.")
+            ? "다음 단계에서 타겟과 상황을 구체화하면 시나리오가 더 날카로워집니다."
+            : "Sharpen the scenario by specifying target and context in the next step.")
     });
 
     return {
         badge: currentLocale === "ko" ? "Q2 Live Region" : "Q2 Live Region",
         title: currentLocale === "ko"
-            ? `${roleTitle} 관점의 ${marketLabel} 실무 인사이트`
-            : `${marketLabel} insight for ${roleTitle}`,
+            ? `${roleTitle}를 위한 ${marketLabel} 넛지`
+            : `${marketLabel} nudge for ${roleTitle}`,
         chips: [
             city || marketLabel,
             roleTitle,
@@ -1917,9 +2080,15 @@ function validateCurrentStep() {
         resultDiv.innerHTML = `<p class="error">${t("countryMissing")}</p>`;
         return false;
     }
-    if (currentStep === 3 && (!getSelectedSegment() && !purposeInput.value.trim())) {
-        resultDiv.innerHTML = `<p class="error">${t("personaMissing")}</p>`;
-        return false;
+    if (currentStep === 3) {
+        const missing = validateQ3Groups();
+        if (missing.length > 0) {
+            const labels = missing.join(", ");
+            resultDiv.innerHTML = `<p class="error">${currentLocale === "ko"
+                ? `${labels} 영역에서 최소 1개를 선택하거나 직접 입력해 주세요.`
+                : `Please select at least one option or type in: ${labels}`}</p>`;
+            return false;
+        }
     }
     if (currentStep === 4 && getSelectedDevices().length === 0) {
         resultDiv.innerHTML = `<p class="error">${currentLocale === "ko" ? "Q4에서 기기를 하나 이상 선택해 주세요." : "Please select at least one device in Q4."}</p>`;
@@ -4414,72 +4583,34 @@ function renderScenario(payload) {
 }
 
 function renderOutputPreview() {
-    const title = currentLocale === "ko"
-        ? "사용자가 Q1~Q4를 모두 완료하면 아래 형식으로 출력됩니다."
-        : "After Q1 to Q4 are completed, the output will follow this format.";
-    const subtitle = currentLocale === "ko"
-        ? "아래 01~03은 예시 고정 안내입니다. 실제 생성 시 입력한 내용으로 대체됩니다."
-        : "The fixed 01~03 blocks below are examples and will be replaced by your generated content.";
-    const samples = currentLocale === "ko"
+    const isKo = currentLocale === "ko";
+    const title = isKo
+        ? "Q1~Q4를 완료하면 아래 구성으로 결과가 생성됩니다."
+        : "Complete Q1–Q4 and receive your results in this structure.";
+    const cards = isKo
         ? [
-            {
-                title: "01) 시나리오 제목 및 요약",
-                lines: [
-                    "예시: 맞벌이 가구의 저녁 루틴을 더 빠르게 시작하는 SmartThings 시나리오",
-                    "요약: 퇴근 직후 반복되는 준비 시간을 줄이고, 핵심 기기 조합으로 체감 가치를 먼저 전달합니다."
-                ]
-            },
-            {
-                title: "02) 상세 시나리오 구조",
-                lines: [
-                    "예시: 상황 인지 -> 추천 카드 노출 -> 1회 자동화 실행 -> 반복 루틴 저장",
-                    "포함: 타겟 고객 맥락, 핵심 행동 흐름, 역할별 활용 포인트"
-                ]
-            },
-            {
-                title: "03) 지역/직무 맞춤 출력",
-                lines: [
-                    "예시: 국가별 가용 기기, 직무별 메시지, 실행 체크리스트",
-                    "안내: 닷컴 번들은 지역 eStore 기준이며 SKU/재고는 최종 확인이 필요합니다."
-                ]
-            }
+            { icon: "01", title: "시나리오 요약", desc: "타겟 고객과 핵심 가치가 한눈에 정리됩니다." },
+            { icon: "02", title: "상세 시나리오", desc: "고객 여정, 자동화 흐름, 역할별 활용 포인트가 포함됩니다." },
+            { icon: "03", title: "실행 체크리스트", desc: "기기 가용성, 지역 데이터, 실행 가능 여부가 검증됩니다." }
         ]
         : [
-            {
-                title: "01) Scenario Title & Summary",
-                lines: [
-                    "Example: A SmartThings evening routine scenario for dual-income households.",
-                    "Summary: Reduce repeated setup time after work and highlight value through a focused device mix."
-                ]
-            },
-            {
-                title: "02) Detailed Scenario Structure",
-                lines: [
-                    "Example: Context trigger -> recommendation card -> one-tap automation -> routine save.",
-                    "Includes: target context, core action flow, and role-specific activation points."
-                ]
-            },
-            {
-                title: "03) Region & Role-Tailored Output",
-                lines: [
-                    "Example: country-ready devices, role-specific messages, execution checklist.",
-                    "Note: dotcom bundles follow regional eStore mapping, and SKU/stock require final confirmation."
-                ]
-            }
+            { icon: "01", title: "Scenario Summary", desc: "Target customer and core value proposition at a glance." },
+            { icon: "02", title: "Detailed Scenario", desc: "Customer journey, automation flow, and role-specific action points." },
+            { icon: "03", title: "Execution Checklist", desc: "Device availability, regional data, and feasibility are verified." }
         ];
 
     resultDiv.innerHTML = `
         <section class="placeholder-preview">
-            <div class="placeholder-intro">
-                <p class="placeholder-title">${escapeHtml(title)}</p>
-                <p class="placeholder-subtitle">${escapeHtml(subtitle)}</p>
+            <p class="placeholder-title">${escapeHtml(title)}</p>
+            <div class="preview-cards">
+                ${cards.map((card) => `
+                    <article class="preview-expect-card">
+                        <span class="preview-expect-icon">${card.icon}</span>
+                        <h4>${escapeHtml(card.title)}</h4>
+                        <p>${escapeHtml(card.desc)}</p>
+                    </article>
+                `).join("")}
             </div>
-            ${samples.map((sample) => `
-                <article class="placeholder-card">
-                    <h4>${escapeHtml(sample.title)}</h4>
-                    <ul>${sample.lines.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>
-                </article>
-            `).join("")}
         </section>
     `;
 }
@@ -5021,28 +5152,49 @@ function renderOverview(payload) {
     const marketing = payload.marketingMessages || {};
     const marketingLenses = Object.values(marketing.lenses || {});
 
+    const isKo = currentLocale === "ko";
+    const state = payload.state || payload.scenarioMeta || {};
+    const briefTarget = compactDescriptor(state.segment || "", 3);
+    const briefCountry = [state.countryName, state.city].filter(Boolean).join(" / ") || "";
+    const briefRole = getRoleTitle(state.role || "") || "";
+    const summaryLines = buildSixLineSummary(payload).slice(0, 3);
+
     return `
         <div class="output-stack">
-            <!-- 01. CX 시나리오 제목 및 Summary(웹툰 포함) -->
+            <!-- Brief Card: 1분 브리핑 -->
+            <section class="output-block brief-card">
+                <div class="brief-card-header">
+                    <h3>${escapeHtml(payload.title)}</h3>
+                </div>
+                <div class="brief-card-meta">
+                    ${briefRole ? `<span class="brief-tag">${escapeHtml(briefRole)}</span>` : ""}
+                    ${briefCountry ? `<span class="brief-tag">${escapeHtml(briefCountry)}</span>` : ""}
+                    ${briefTarget ? `<span class="brief-tag">${escapeHtml(briefTarget)}</span>` : ""}
+                </div>
+                <ul class="brief-card-points">
+                    ${summaryLines.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}
+                </ul>
+            </section>
+
+            <!-- 01. CX 시나리오 요약 -->
             <section class="output-block hero-result numbered-output">
                 <p class="block-index">01</p>
                 <h4>${titles.summary}</h4>
-                <h3>${escapeHtml(payload.title)}</h3>
                 <p class="summary-text">${escapeHtml(payload.summary)}</p>
-                
+
                 <div class="summary-sub-grid">
                     <div class="summary-sub-item">
-                        <p class="subhead">I. 참조된 Explore 시나리오 (Parent Story)</p>
+                        <p class="subhead">${isKo ? "참조된 시나리오 기반 스토리" : "Parent Story"}</p>
                         <p>${escapeHtml(buildParentStory(payload))}</p>
                     </div>
                     <div class="summary-sub-item">
-                        <p class="subhead">II. 4大 핵심 가치</p>
+                        <p class="subhead">${isKo ? "핵심 가치" : "Core Values"}</p>
                         <ul class="value-list">${buildReflectedValues(payload).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
                     </div>
                 </div>
 
                 <div class="storyboard-webtoon">
-                    <p class="subhead">IV. Storyboard Webtoon (Summary)</p>
+                    <p class="subhead">${isKo ? "스토리보드 요약" : "Storyboard Summary"}</p>
                     <div class="webtoon-grid">
                         ${payload.storyboard.map((panel, idx) => `
                             <div class="webtoon-panel">
@@ -5054,7 +5206,7 @@ function renderOverview(payload) {
                     </div>
                 </div>
 
-                <p class="subhead">III. Summary 요약 (6줄)</p>
+                <p class="subhead">${isKo ? "핵심 요약" : "Executive Summary"}</p>
                 <ul class="six-line-summary">${buildSixLineSummary(payload).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
 
@@ -5334,19 +5486,176 @@ function handleExport(type) {
         resultDiv.innerHTML = `<p class="error">${t("downloadFirst")}</p>`;
         return;
     }
+    if (type === "pdf") return exportPdf();
+    if (type === "word") return exportWord();
+    if (type === "excel") return exportExcel();
     if (type === "copy") return copySummary();
-    if (type === "html") return window.print();
-    if (type === "markdown") return downloadFile("scenario-report.md", buildMarkdownReport(latestPayload), "text/markdown");
-    if (type === "json") return downloadFile("scenario-report.json", JSON.stringify(latestPayload, null, 2), "application/json");
 }
 
 async function copySummary() {
-    const text = buildMarkdownReport(latestPayload);
+    const text = buildPlainTextReport(latestPayload);
     try {
         await navigator.clipboard.writeText(text);
+        const btn = exportActions.querySelector('[data-export="copy"]');
+        if (btn) {
+            const orig = btn.querySelector("strong").textContent;
+            btn.querySelector("strong").textContent = currentLocale === "ko" ? "복사 완료!" : "Copied!";
+            setTimeout(() => { btn.querySelector("strong").textContent = orig; }, 1500);
+        }
     } catch {
         window.prompt(currentLocale === "ko" ? "아래 내용을 복사하세요." : "Copy the text below.", text);
     }
+}
+
+function buildPlainTextReport(payload) {
+    const lines = [];
+    lines.push(payload.title || "");
+    lines.push("");
+    lines.push(payload.summary || "");
+    lines.push("");
+    if (payload.detailedScenario) {
+        lines.push(currentLocale === "ko" ? "[ 상세 시나리오 ]" : "[ Detailed Scenario ]");
+        lines.push(`Target: ${payload.detailedScenario.targetCustomer || ""}`);
+        lines.push(payload.detailedScenario.appliedServices || "");
+        (payload.detailedScenario.cases || []).forEach((c) => {
+            lines.push("");
+            lines.push(c.title);
+            lines.push(...c.paragraphs);
+        });
+    }
+    lines.push("");
+    if (payload.facts) {
+        lines.push(currentLocale === "ko" ? "[ 데이터 근거 ]" : "[ Data Grounds ]");
+        (payload.facts.confirmed || []).forEach((f) => {
+            lines.push(`[${f.no}] ${f.fact} | ${f.source} | ${f.confidence}`);
+        });
+        if (payload.facts.assumptions?.length) {
+            lines.push("");
+            lines.push(currentLocale === "ko" ? "가정 사항:" : "Assumptions:");
+            payload.facts.assumptions.forEach((a) => lines.push(`- ${a}`));
+        }
+    }
+    if (payload.marketingMessages) {
+        lines.push("");
+        lines.push(currentLocale === "ko" ? "[ 마케팅 메시지 ]" : "[ Marketing Messages ]");
+        flattenMarketingMessages(payload.marketingMessages).forEach((m) => lines.push(`- ${m}`));
+    }
+    return lines.join("\n");
+}
+
+function buildExportHtml(payload) {
+    const md = buildMarkdownReport(payload);
+    const bodyHtml = markdownToHtml(md);
+    return `<!DOCTYPE html>
+<html lang="${currentLocale}">
+<head>
+<meta charset="UTF-8">
+<title>${escapeHtml(payload.title || "Scenario Report")}</title>
+<style>
+body { font-family: "Segoe UI", Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 24px; color: #1a1a1a; line-height: 1.7; word-break: keep-all; }
+h1 { font-size: 1.6rem; border-bottom: 2px solid #003366; padding-bottom: 8px; }
+h2 { font-size: 1.2rem; margin-top: 28px; color: #003366; }
+h3 { font-size: 1rem; margin-top: 20px; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9rem; }
+th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+th { background: #f0f4f8; font-weight: 600; }
+ul { padding-left: 20px; }
+li { margin-bottom: 4px; }
+@media print { body { margin: 0; } }
+</style>
+</head>
+<body>${bodyHtml}</body>
+</html>`;
+}
+
+function exportPdf() {
+    const html = buildExportHtml(latestPayload);
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => { win.print(); }, 400);
+}
+
+function exportWord() {
+    const html = buildExportHtml(latestPayload);
+    const wordHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]--></head>
+<body>${html.replace(/.*<body>/s, "").replace(/<\/body>.*/s, "")}</body></html>`;
+    const blob = new Blob(["\ufeff", wordHtml], { type: "application/msword" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `scenario-report-${Date.now()}.doc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function exportExcel() {
+    const payload = latestPayload;
+    const rows = [];
+
+    rows.push(["Section", "Item", "Detail", "Source", "Confidence", "Impact"]);
+
+    rows.push(["Title", payload.title || "", "", "", "", ""]);
+    rows.push(["Summary", payload.summary || "", "", "", "", ""]);
+    rows.push(["", "", "", "", "", ""]);
+
+    if (payload.detailedScenario) {
+        rows.push(["Target Customer", payload.detailedScenario.targetCustomer || "", "", "", "", ""]);
+        (payload.detailedScenario.cases || []).forEach((c) => {
+            rows.push(["Scenario", c.title, c.paragraphs.join(" "), "", "", ""]);
+        });
+        rows.push(["", "", "", "", "", ""]);
+    }
+
+    if (payload.facts?.confirmed?.length) {
+        rows.push(["Fact Table", "", "", "", "", ""]);
+        payload.facts.confirmed.forEach((f) => {
+            rows.push(["Fact", `[${f.no}] ${f.fact}`, "", f.source || "", f.confidence || "", f.impact || ""]);
+        });
+        rows.push(["", "", "", "", "", ""]);
+    }
+
+    if (payload.facts?.assumptions?.length) {
+        rows.push(["Assumptions", "", "", "", "", ""]);
+        payload.facts.assumptions.forEach((a) => {
+            rows.push(["Assumption", a, "", "", "", ""]);
+        });
+        rows.push(["", "", "", "", "", ""]);
+    }
+
+    if (payload.facts?.readiness?.length) {
+        rows.push(["Readiness Sync", "", "", "", "", ""]);
+        payload.facts.readiness.forEach((r) => {
+            rows.push(["Readiness", r.label || "", r.status || "", r.note || "", "", ""]);
+        });
+        rows.push(["", "", "", "", "", ""]);
+    }
+
+    if (payload.marketingMessages) {
+        rows.push(["Marketing Messages", "", "", "", "", ""]);
+        flattenMarketingMessages(payload.marketingMessages).forEach((m) => {
+            rows.push(["Message", m, "", "", "", ""]);
+        });
+    }
+
+    const escCell = (v) => {
+        const s = String(v || "").replace(/"/g, '""');
+        return s.includes(",") || s.includes("\n") || s.includes('"') ? `"${s}"` : s;
+    };
+    const csv = rows.map((row) => row.map(escCell).join(",")).join("\r\n");
+    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `scenario-data-${Date.now()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 function buildMarkdownReport(payload) {
@@ -5438,7 +5747,9 @@ function updateLocaleFromCountry() {
         deviceSelections: getSelectedDeviceOptionIds(),
         deviceCustom: deviceCustomInput.value
     };
-    currentLocale = "en";
+    const countryCode = countrySelect.value;
+    const countryLocale = countryCode ? (COUNTRY_LOCALES[countryCode] || null) : null;
+    currentLocale = resolveEffectiveLocale(countryLocale);
     document.documentElement.lang = currentLocale;
     document.documentElement.dir = currentLocale === "ar" ? "rtl" : "ltr";
     populateInputs(preserved);
@@ -5449,6 +5760,7 @@ function updateLocaleFromCountry() {
     renderWizardProgress();
     updateStepInsight();
     applyLocale();
+    updateEnglishToggleVisibility();
 }
 
 function getRoleCardLocaleCopy(roleId) {
@@ -5562,9 +5874,15 @@ function applyLocale() {
     syncRoleCardLocale();
     document.querySelector("label[for='country']").textContent = t("countryQuestion");
     document.getElementById("segment-label").textContent = t("personaQuestion");
+    const q3Guide = document.getElementById("q3-guide");
+    if (q3Guide) q3Guide.textContent = currentLocale === "ko"
+        ? "A·B·C 각 영역에서 최소 1개를 선택하거나 직접 입력해 주세요. 조합이 구체적일수록 시나리오가 날카로워집니다."
+        : "Pick at least one from each of A, B, and C (or type your own). The more specific the combo, the sharper the scenario.";
     if (deviceLabel) deviceLabel.textContent = t("deviceQuestion");
-    purposeInput.placeholder = t("purposePlaceholder");
-    segmentCustomInput.placeholder = currentLocale === "ko" ? "추가 대상이나 세부 조건을 직접 입력" : currentLocale === "de" ? "Zusätzliche Zielgruppe oder Details eingeben" : "Add any extra target detail";
+    purposeInput.placeholder = currentLocale === "ko"
+        ? "위 선택 외에 추가로 떠오르는 상황이 있다면 자유롭게 적어 주세요"
+        : "Any extra context beyond the selections above";
+    segmentCustomInput.placeholder = "";
     deviceCustomInput.placeholder = currentLocale === "ko" ? "추가 기기나 세부 모델을 직접 입력" : currentLocale === "de" ? "Zusätzliche Geräte oder Modelle eingeben" : "Add any extra device or model";
     cityCustomInput.placeholder = currentLocale === "ko" ? "도시 / 주 / 지역 직접 입력" : currentLocale === "de" ? "Stadt / Bundesland / Region manuell" : "Type city / state / region";
     updateQuestionHelpers();
@@ -5574,24 +5892,106 @@ function applyLocale() {
     if (!latestPayload) renderOutputPreview();
     document.querySelector(".report-head h2").textContent = t("output");
     renderExportActions();
+    updateEnglishToggleVisibility();
+}
+
+const LOCALE_NATIVE_NAMES = {
+    ko: "한국어", en: "English", de: "Deutsch", fr: "Français", es: "Español",
+    pt: "Português", it: "Italiano", nl: "Nederlands", ar: "العربية"
+};
+
+function updateEnglishToggleVisibility() {
+    const btn = document.getElementById("locale-current-btn");
+    if (!btn) return;
+    btn.textContent = LOCALE_NATIVE_NAMES[currentLocale] || currentLocale;
+    closeLocaleDropdown();
+}
+
+function initLocaleSelector() {
+    const btn = document.getElementById("locale-current-btn");
+    const dropdown = document.getElementById("locale-dropdown");
+    if (!btn || !dropdown) return;
+
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = !dropdown.classList.contains("hidden");
+        if (isOpen) {
+            closeLocaleDropdown();
+        } else {
+            openLocaleDropdown();
+        }
+    });
+
+    document.addEventListener("click", () => closeLocaleDropdown());
+    dropdown.addEventListener("click", (e) => e.stopPropagation());
+}
+
+function openLocaleDropdown() {
+    const dropdown = document.getElementById("locale-dropdown");
+    if (!dropdown) return;
+    dropdown.innerHTML = SUPPORTED_UI_LOCALES.map((loc) =>
+        `<li data-locale="${loc}" class="${loc === currentLocale ? "active" : ""}">${LOCALE_NATIVE_NAMES[loc] || loc}</li>`
+    ).join("");
+    dropdown.querySelectorAll("li").forEach((li) => {
+        li.addEventListener("click", () => {
+            switchToLocale(li.dataset.locale);
+            closeLocaleDropdown();
+        });
+    });
+    dropdown.classList.remove("hidden");
+}
+
+function closeLocaleDropdown() {
+    const dropdown = document.getElementById("locale-dropdown");
+    if (dropdown) dropdown.classList.add("hidden");
+}
+
+function switchToLocale(locale) {
+    if (locale === currentLocale) return;
+    const nativeLocale = getNativeLocale();
+    userOverrideLocale = (locale === nativeLocale) ? null : locale;
+    currentLocale = locale;
+    document.documentElement.lang = currentLocale;
+    document.documentElement.dir = currentLocale === "ar" ? "rtl" : "ltr";
+    const preserved = {
+        role: roleSelect.value,
+        country: countrySelect.value,
+        city: getCityValue(),
+        personaSelections: getSelectedPersonaOptionIds(),
+        segmentCustom: segmentCustomInput.value,
+        deviceSelections: getSelectedDeviceOptionIds(),
+        deviceCustom: deviceCustomInput.value
+    };
+    populateInputs(preserved);
+    updateRoleBrief();
+    renderWizardProgress();
+    updateStepInsight();
+    applyLocale();
+}
+
+function getNativeLocale() {
+    const countryCode = countrySelect?.value;
+    const cl = countryCode ? (COUNTRY_LOCALES[countryCode] || null) : null;
+    if (cl && SUPPORTED_UI_LOCALES.includes(cl)) return cl;
+    return detectBrowserLocale();
 }
 
 function renderExportActions() {
+    const isKo = currentLocale === "ko";
     const labels = {
-        markdown: { title: t("downloadMarkdown"), desc: currentLocale === "ko" ? "문서 리뷰용" : "Review doc" },
-        json: { title: t("downloadJson"), desc: currentLocale === "ko" ? "데이터 연동용" : "Data handoff" },
-        html: { title: t("printPdf"), desc: currentLocale === "ko" ? "회의 공유용" : "Share / Print" },
-        copy: { title: t("copySummary"), desc: currentLocale === "ko" ? "메신저 공유용" : "Quick share" }
+        pdf:   { title: isKo ? "PDF 저장"       : "Save PDF",        desc: isKo ? "회의 공유 / 이메일 첨부용" : "For meetings & email" },
+        word:  { title: isKo ? "Word 저장"       : "Save Word",       desc: isKo ? "편집 및 협업용"           : "Editable document" },
+        excel: { title: isKo ? "Excel 저장"      : "Save Excel",      desc: isKo ? "데이터 테이블 정리용"     : "Structured data tables" },
+        copy:  { title: isKo ? "클립보드 복사"    : "Copy to Clipboard", desc: isKo ? "메신저 / 메일 본문용"   : "Quick paste & share" }
     };
-    exportActions.innerHTML = `
-        ${["markdown", "json", "html", "copy"].map((type, index) => `
-            <button type="button" class="action-btn export-tile" data-export="${type}">
-                <span class="export-tile-index">${String(index + 1).padStart(2, "0")}</span>
-                <strong>${escapeHtml(labels[type].title)}</strong>
-                <span>${escapeHtml(labels[type].desc)}</span>
-            </button>
-        `).join("")}
-    `;
+    const types = ["pdf", "word", "excel", "copy"];
+    exportActions.innerHTML = types.map((type, index) => `
+        <button type="button" class="action-btn export-tile" data-export="${type}">
+            <span class="export-tile-index">${String(index + 1).padStart(2, "0")}</span>
+            <strong>${escapeHtml(labels[type].title)}</strong>
+            <span>${escapeHtml(labels[type].desc)}</span>
+        </button>
+    `).join("");
     exportActions.querySelectorAll(".action-btn").forEach((button) => {
         button.addEventListener("click", () => handleExport(button.dataset.export));
     });
@@ -5643,7 +6043,7 @@ function getCountryName(code) {
 }
 
 const Q2_COUNTRY_PRIORITY = [
-    "US", "KR", "BR", "IN", "DE", "GB", "MX", "IT", "FR", "CA", "ES", "NL", "PL", "AU", "TR", "CO", "ID", "RU"
+    "KR", "US", "BR", "IN", "DE", "GB", "MX", "IT", "FR", "CA", "ES", "NL", "PL", "AU", "TR", "CO", "ID", "RU"
 ];
 
 const Q2_COUNTRY_PRIORITY_INDEX = Q2_COUNTRY_PRIORITY.reduce((acc, code, index) => {
@@ -5833,8 +6233,36 @@ function getRoleBrief(id) {
     return map[id]?.[currentLocale] || map[id]?.en || map[id]?.ko || id;
 }
 
+function validateQ3Groups() {
+    const requiredGroups = ["household", "interest", "housing"];
+    const groupLabels = currentLocale === "ko"
+        ? { household: "A. 우리 집은", interest: "B. 요즘 관심사", housing: "C. 집 환경" }
+        : { household: "A. Our home", interest: "B. Interests", housing: "C. Home environment" };
+    const missing = [];
+    requiredGroups.forEach((gid) => {
+        const group = personaGroups.querySelector(`.tree-group[data-group-id="${gid}"]`);
+        if (!group) return;
+        const hasChecked = group.querySelector('input[data-node-type="child"]:checked');
+        const customInput = group.querySelector('.tree-custom-input');
+        const hasCustom = customInput && customInput.value.trim();
+        if (!hasChecked && !hasCustom) missing.push(groupLabels[gid] || gid);
+    });
+    return missing;
+}
+
 function getSelectedSegment() {
-    return [...getSelectedPersonaLabels(), ...getCustomEntries(segmentCustomInput.value)].join(" / ");
+    return [...getSelectedPersonaLabels(), ...getPersonaCustomEntries()].join(" / ");
+}
+
+function getPersonaCustomEntries() {
+    const entries = [];
+    personaGroups.querySelectorAll('.tree-custom-input').forEach((input) => {
+        const val = input.value.trim();
+        if (val) entries.push(val);
+    });
+    const purposeVal = purposeInput.value.trim();
+    if (purposeVal) entries.push(purposeVal);
+    return entries;
 }
 
 function getSelectedDevices() {
@@ -5856,7 +6284,7 @@ function getSelectedDeviceGroupIds() {
 }
 
 function getSelectedPersonaOptionIds() {
-    return [...personaGroups.querySelectorAll('input[data-node-type="child"]:checked, input[data-node-type="sub-child"]:checked')].map((input) => input.value);
+    return [...personaGroups.querySelectorAll('input[data-node-type="child"]:checked')].map((input) => input.value);
 }
 
 function getSelectedDeviceOptionIds() {
@@ -5864,7 +6292,7 @@ function getSelectedDeviceOptionIds() {
 }
 
 function getSelectedPersonaLabels() {
-    return [...personaGroups.querySelectorAll('input[data-node-type="child"]:checked, input[data-node-type="sub-child"]:checked')]
+    return [...personaGroups.querySelectorAll('input[data-node-type="child"]:checked')]
         .map((input) => input.dataset.label || input.value)
         .filter(Boolean);
 }

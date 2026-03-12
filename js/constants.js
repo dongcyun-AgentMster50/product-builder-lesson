@@ -28,168 +28,86 @@ const ROLE_LENSES = [
 
 const PERSONA_CATEGORY_GROUPS = [
     {
-        id: "generation",
-        title: "세대/연령대",
-        options: [
-            { id: "gen_z", label: "Z세대 (18-24)" },
-            { id: "millennial", label: "밀레니얼 (25-39)" },
-            { id: "gen_x", label: "X세대 (40-54)" },
-            { id: "boomer", label: "베이비붐/시니어 (55+)" }
-        ]
-    },
-    {
         id: "household",
-        title: "가구 구성",
+        title: "A. 우리 집은",
+        mode: "radio",
         options: [
-            { id: "dual_income", label: "맞벌이 부부", sub: [
-                { id: "dual_income_no_child", label: "자녀 없음" },
-                { id: "dual_income_infant", label: "영유아 자녀" },
-                { id: "dual_income_school", label: "초등 이상 자녀" },
-                { id: "dual_income_pet_yes", label: "반려동물 있음" },
-                { id: "dual_income_pet_no", label: "반려동물 없음" }
-            ]},
-            { id: "single_parent", label: "한부모 가구", sub: [
-                { id: "single_parent_infant", label: "영유아 자녀" },
-                { id: "single_parent_school", label: "초등 이상 자녀" },
-                { id: "single_parent_teen", label: "청소년 자녀" }
-            ]},
-            { id: "senior_couple", label: "노년 부부", sub: [
-                { id: "senior_couple_independent", label: "독립 생활" },
-                { id: "senior_couple_care", label: "돌봄 필요" },
-                { id: "senior_couple_pet", label: "반려동물 있음" }
-            ]},
-            { id: "newlywed", label: "신혼부부", sub: [
-                { id: "newlywed_planning", label: "자녀 계획 중" },
-                { id: "newlywed_pet", label: "반려동물 있음" },
-                { id: "newlywed_new_home", label: "신규 입주" }
-            ]},
-            { id: "solo_wife", label: "여성 1인 가구", sub: [
-                { id: "solo_wife_early", label: "사회초년생" },
-                { id: "solo_wife_worker", label: "직장인" },
-                { id: "solo_wife_pet", label: "반려동물 있음" }
-            ]},
-            { id: "solo_husband", label: "남성 1인 가구", sub: [
-                { id: "solo_husband_early", label: "사회초년생" },
-                { id: "solo_husband_worker", label: "직장인" },
-                { id: "solo_husband_pet", label: "반려동물 있음" }
-            ]},
-            { id: "shared_home", label: "룸메이트/셰어하우스", sub: [
-                { id: "shared_home_two", label: "2인" },
-                { id: "shared_home_three_plus", label: "3인 이상" }
-            ]}
-        ]
+            { id: "solo", label: "나 혼자 산다" },
+            { id: "couple", label: "둘이 산다 (커플/부부/룸메이트)" },
+            { id: "with_child", label: "아이와 함께 산다" },
+            { id: "with_senior", label: "부모님(시니어)과 함께 산다" },
+            { id: "multi_gen", label: "여러 세대가 함께 산다" }
+        ],
+        customPlaceholder: "위에 해당하지 않는 경우 직접 입력"
     },
     {
-        id: "life_stage",
-        title: "생활 단계",
+        id: "interest",
+        title: "B. 요즘 관심사",
+        mode: "checkbox",
         options: [
-            { id: "student_early", label: "대학생/사회초년" },
-            { id: "with_baby", label: "영유아 자녀 가구" },
-            { id: "with_kids", label: "초등 자녀 가구" },
-            { id: "with_teens", label: "청소년 자녀 가구" },
-            { id: "caregiver", label: "돌봄 책임 가구" },
-            { id: "empty_nester", label: "자녀 독립 후 부부 가구" },
-            { id: "retired_stage", label: "은퇴/세컨드 라이프" }
-        ]
+            { id: "int_pet", label: "반려동물 케어" },
+            { id: "int_health", label: "건강·수면·운동" },
+            { id: "int_energy", label: "에너지·비용 절감" },
+            { id: "int_entertain", label: "홈시네마·음악·게임" },
+            { id: "int_cooking", label: "홈쿡·식생활 관리" },
+            { id: "int_remote", label: "재택·하이브리드 근무" },
+            { id: "int_night", label: "야간·교대 생활" },
+            { id: "int_away", label: "외출·출장 잦음" },
+            { id: "int_hosting", label: "홈파티·손님 맞이" },
+            { id: "int_season", label: "시즌 이벤트 (명절·연말·월드컵 등)" }
+        ],
+        customPlaceholder: "위에 없는 관심사 직접 입력"
     },
     {
-        id: "pet_care",
-        title: "펫 케어",
+        id: "housing",
+        title: "C. 집 환경",
+        mode: "radio",
         options: [
-            { id: "dog_owner", label: "강아지와 함께 사는 가구" },
-            { id: "cat_owner", label: "고양이와 함께 사는 가구" },
-            { id: "senior_pet", label: "노령 반려동물과 함께 사는 가구" },
-            { id: "multi_pet", label: "반려동물 다두 가구" }
-        ]
-    },
-    {
-        id: "housing_context",
-        title: "주거 맥락",
-        options: [
-            { id: "apt_highrise", label: "아파트/고층 주거" },
-            { id: "small_studio", label: "원룸/소형 주거" },
-            { id: "suburban_house", label: "단독/타운하우스" },
-            { id: "rental_home", label: "임대 거주" }
-        ]
-    },
-    {
-        id: "living_pattern",
-        title: "생활 패턴",
-        options: [
-            { id: "regular_routine", label: "규칙적 출퇴근 (일반적 패턴)" },
-            { id: "remote_worker", label: "재택근무 중심" },
-            { id: "commuter", label: "장거리 출퇴근" },
-            { id: "night_shift", label: "야간 생활/교대근무" },
-            { id: "frequent_travel", label: "출장·외출이 잦은 생활" },
-            { id: "weekend_host", label: "주말 홈파티·손님 맞이" }
-        ]
+            { id: "apt_high", label: "아파트 고층 (15층+)" },
+            { id: "apt_low", label: "아파트·빌라 저중층" },
+            { id: "studio", label: "원룸·스튜디오" },
+            { id: "detached", label: "단독·타운하우스" },
+            { id: "suburban", label: "전원·교외 주택" },
+            { id: "rental", label: "임대·단기 거주" }
+        ],
+        customPlaceholder: "위에 해당하지 않는 경우 직접 입력"
     }
 ];
 
 const PERSONA_GROUP_TITLE_EN = {
-    generation: "Generation / Age",
-    household: "Household Type",
-    pet_care: "Pet Care",
-    housing_context: "Housing Context",
-    life_stage: "Life Stage",
-    living_pattern: "Living Pattern"
+    household: "A. Our home is",
+    interest: "B. Current interests",
+    housing: "C. Home environment"
 };
 
 const PERSONA_OPTION_LABEL_EN = {
-    gen_z: "Gen Z (18-24)",
-    millennial: "Millennial (25-39)",
-    gen_x: "Gen X (40-54)",
-    boomer: "Boomer / Senior (55+)",
-    dual_income: "Dual-income couple",
-    single_parent: "Single-parent household",
-    senior_couple: "Senior couple",
-    newlywed: "Newlywed couple",
-    solo_wife: "Single woman household",
-    solo_husband: "Single man household",
-    shared_home: "Roommate / Shared home",
-    dual_income_no_child: "No children",
-    dual_income_infant: "Infant/toddler",
-    dual_income_school: "Elementary or older",
-    dual_income_pet_yes: "Has pets",
-    dual_income_pet_no: "No pets",
-    single_parent_infant: "Infant/toddler",
-    single_parent_school: "Elementary or older",
-    single_parent_teen: "Teenager",
-    senior_couple_independent: "Independent living",
-    senior_couple_care: "Care needed",
-    senior_couple_pet: "Has pets",
-    newlywed_planning: "Planning for children",
-    newlywed_pet: "Has pets",
-    newlywed_new_home: "New home move-in",
-    solo_wife_early: "Early career",
-    solo_wife_worker: "Working professional",
-    solo_wife_pet: "Has pets",
-    solo_husband_early: "Early career",
-    solo_husband_worker: "Working professional",
-    solo_husband_pet: "Has pets",
-    shared_home_two: "2 people",
-    shared_home_three_plus: "3 or more",
-    dog_owner: "Dog owner household",
-    cat_owner: "Cat owner household",
-    senior_pet: "Senior pet household",
-    multi_pet: "Multi-pet household",
-    apt_highrise: "Apartment / High-rise living",
-    small_studio: "Studio / Small home",
-    suburban_house: "Detached / Townhouse",
-    rental_home: "Rental home",
-    student_early: "Student / Early career",
-    with_baby: "Household with infant/toddler",
-    with_kids: "Household with elementary-age kids",
-    with_teens: "Household with teenagers",
-    caregiver: "Caregiver household",
-    empty_nester: "Empty nester couple",
-    retired_stage: "Retired / Second-life stage",
-    regular_routine: "Regular commute (typical pattern)",
-    remote_worker: "Remote-work focused",
-    commuter: "Long-distance commuter",
-    night_shift: "Night shift / rotating schedule",
-    frequent_travel: "Frequent travel / away often",
-    weekend_host: "Weekend host / home gatherings"
+    solo: "I live alone",
+    couple: "Two of us (couple / spouse / roommate)",
+    with_child: "Living with children",
+    with_senior: "Living with parents (senior)",
+    multi_gen: "Multi-generational household",
+    int_pet: "Pet care",
+    int_health: "Health / Sleep / Fitness",
+    int_energy: "Energy / Cost saving",
+    int_entertain: "Home cinema / Music / Gaming",
+    int_cooking: "Home cooking / Meal management",
+    int_remote: "Remote / Hybrid work",
+    int_night: "Night shift / Rotating schedule",
+    int_away: "Frequently away / Business travel",
+    int_hosting: "Home party / Hosting guests",
+    int_season: "Seasonal events (holidays, year-end, World Cup, etc.)",
+    apt_high: "High-rise apartment (15F+)",
+    apt_low: "Low/mid-rise apartment or villa",
+    studio: "Studio / One-room",
+    detached: "Detached / Townhouse",
+    suburban: "Suburban / Rural home",
+    rental: "Rental / Short-term residence"
+};
+
+const PERSONA_CUSTOM_PLACEHOLDER_EN = {
+    household: "Other household type — type here",
+    interest: "Other interests — type here",
+    housing: "Other housing type — type here"
 };
 
 function getLocalizedPersonaGroups(locale) {
@@ -198,6 +116,7 @@ function getLocalizedPersonaGroups(locale) {
     return PERSONA_CATEGORY_GROUPS.map((group) => ({
         ...group,
         title: PERSONA_GROUP_TITLE_EN[group.id] || group.title,
+        customPlaceholder: PERSONA_CUSTOM_PLACEHOLDER_EN[group.id] || group.customPlaceholder,
         options: group.options.map((option) => ({
             ...option,
             label: PERSONA_OPTION_LABEL_EN[option.id] || option.label,
