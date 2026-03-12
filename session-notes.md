@@ -97,3 +97,19 @@
 - Files changed: `main.js`, `references/dotcom_mapping.json`, `references/source_data.json`, `references/country_trends.json`, `references/city_signals.json`, `session-notes.md`.
 - Git: pending commit and push from the current worktree.
 - Next: Commit the current state and push to `origin/main` so the same project state is available on another PC.
+
+## 2026-03-12 (UTC)
+- User message (raw): "현재까지의 작업(너 토큰 없어서 codex에서 진행좀 했어) 내용들 검토하고 검토 결과 알려줘" → "권장단계 3가지 진행하되 네가 AGEN로서 스스로 답변하면서 처리 완료해줘" → "대화 세션 저장 해줘"
+- Actions:
+  1. **프로젝트 전체 검토** — Codex에서 진행된 작업 포함 전체 코드베이스 리뷰 완료. 블로킹 이슈 없음 확인, 마이너 이슈 4건 발견.
+  2. **server.js 레거시 코드 정리** — Anthropic `callAnthropicStream` (89줄), Gemini `callGeminiStream` (79줄) 삭제. 멀티 프로바이더 디스패처 → 단일 `callAIStream`으로 단순화. `provider` 변수 제거. (1,896줄 → 1,710줄)
+  3. **dotcom_mapping.json 인코딩 수정** — `"Insea Simpli"` → `"Simplified Chinese"`, `"Insea Traditi"` → `"Traditional Chinese"` (CN, HK, TW). `references/dotcom_mapping.json` + `js/constants.js` 모두 수정.
+  4. **main.js 모듈화** — 7,420줄 단일 파일을 3개로 분리:
+     - `js/constants.js` (676줄): 데이터 정의, 마켓/디바이스/페르소나 배열
+     - `js/ui-text.js` (641줄): 8개 언어 UI 텍스트 (UI_TEXT)
+     - `main.js` (6,103줄): 앱 로직
+     - `index.html` 업데이트: `<script>` 태그 3개 순서 로드
+  5. 모든 파일 구문 검증(node -c) 통과 확인.
+- Files changed: `server.js`, `main.js`, `js/constants.js`(new), `js/ui-text.js`(new), `index.html`, `references/dotcom_mapping.json`, `session-notes.md`.
+- Git: not committed yet.
+- Next: 필요시 commit/push. 추가 모듈화(builders, renderer 분리) 가능.

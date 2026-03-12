@@ -797,14 +797,14 @@
     {
       "country": "China",
       "siteCode": "CN",
-      "language": "Insea Simpli",
+      "language": "Simplified Chinese",
       "url": "www.samsung.com/cn",
       "fullUrl": "https://www.samsung.com/cn"
     },
     {
       "country": "Hong Kong",
       "siteCode": "HK",
-      "language": "Insea Traditi",
+      "language": "Traditional Chinese",
       "url": "www.samsung.com/hk",
       "fullUrl": "https://www.samsung.com/hk"
     },
@@ -818,7 +818,7 @@
     {
       "country": "Taiwan",
       "siteCode": "TW",
-      "language": "Insea Traditi",
+      "language": "Traditional Chinese",
       "url": "www.samsung.com/tw",
       "fullUrl": "https://www.samsung.com/tw"
     },
