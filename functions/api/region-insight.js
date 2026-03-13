@@ -179,7 +179,7 @@ async function buildLiveRegionInsight({ country, city, cityLocal, locale, role, 
     // Fetch live trends via GPT-4o-mini (non-blocking — won't delay other data)
     const apiKey = String(env?.OPENAI_API_KEY || "").trim();
     if (city && apiKey) {
-        tasks.push(fetchLiveTrends(city, country, locale, apiKey));
+        tasks.push(fetchLiveTrends(city, country, locale, role, apiKey));
     }
 
     const settled = await Promise.allSettled(tasks);
@@ -204,41 +204,67 @@ async function buildLiveRegionInsight({ country, city, cityLocal, locale, role, 
         evidence: buildEvidence(locale, gdp, urban, climate, place),
         visual: buildVisualInsight({ country, city, geocode, countryProfile, landmark }),
         live_trends: liveTrends?.trends || [],
-        live_events: liveTrends?.events || []
+        live_events: liveTrends?.events || [],
+        live_pains: liveTrends?.pains || [],
+        live_solutions: liveTrends?.solutions || []
     };
 }
 
-async function fetchLiveTrends(city, country, locale, apiKey) {
+async function fetchLiveTrends(city, country, locale, role, apiKey) {
     const isKo = locale === "ko";
     const lang = isKo ? "Korean" : "English";
     const now = new Date();
     const monthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
+    const roleContext = {
+        retail: isKo
+            ? "리테일 매장 담당자 — 매장에서 고객에게 제품 가치를 직접 시연하고 설득해야 하는 역할"
+            : "Retail store lead — demonstrates and persuades customers on product value in-store",
+        dotcom: isKo
+            ? "온라인 커머스 담당자 — 상세페이지, 랜딩, 전환율 최적화를 담당하는 역할"
+            : "E-commerce lead — owns PDP copy, landing pages, and conversion optimization",
+        brand: isKo
+            ? "브랜드 마케터 — 캠페인 스토리텔링, 감성 메시지, 브랜드 회상을 담당하는 역할"
+            : "Brand marketer — owns campaign storytelling, emotional messaging, and brand recall"
+    };
+    const roleLine = roleContext[role] || roleContext.retail;
+
     const systemPrompt = `You are a local market intelligence analyst for Samsung smart home and appliance marketing.
-Given a city and country, return a JSON object with two fields:
+Given a city, country, and marketer role, return a JSON object with exactly 4 fields.
+The logic MUST flow: trends → pains (problems caused by these trends) → solutions (how to address those pains).
 
-1. "trends": exactly 4 current lifestyle/consumer trends specific to THIS city as of ${monthYear}. Focus on housing, consumer behavior, technology adoption, wellness, energy, or lifestyle shifts relevant to smart home products. Trends must reflect the latest situation — do NOT use outdated 2024 or early-2025 data.
+1. "trends": exactly 4 current lifestyle/consumer trends specific to THIS city as of ${monthYear}.
+   Focus on housing, consumer behavior, technology adoption, wellness, energy, or lifestyle shifts relevant to smart home products.
 
-2. "events": exactly 3 upcoming or ongoing local events, festivals, exhibitions, or seasonal occasions in or near this city (within the next 2-3 months from ${monthYear}). These should be events a Samsung marketer could tie a campaign to — cultural festivals, tech expos, seasonal shifts, sports events, local holidays, etc. Only include events that are actually scheduled or highly likely for this period.
+2. "events": exactly 3 upcoming or ongoing local events, festivals, or seasonal occasions in or near this city (within 2-3 months from ${monthYear}).
+
+3. "pains": exactly 3 pain points that THIS role would face given these trends.
+   Each pain must clearly reference or stem from one of the trends above.
+   Format: a realistic quote or concern from this role's perspective.
+
+4. "solutions": exactly 3 actionable suggestions matching each pain above (same order).
+   Each solution should be a concrete, executable tactic — not a vague recommendation.
 
 Output ONLY valid JSON — no markdown, no explanation:
 {
   "trends": ["trend1", "trend2", "trend3", "trend4"],
-  "events": [
-    {"name": "Event name", "when": "approximate date or period", "hook": "One-line marketing angle for Samsung products"}
-  ]
+  "events": [{"name": "...", "when": "...", "hook": "..."}],
+  "pains": ["pain1", "pain2", "pain3"],
+  "solutions": ["solution1", "solution2", "solution3"]
 }
 
 Rules:
-- Each trend must be under 50 characters.
-- Each event hook must be under 60 characters.
+- Each trend: under 50 characters.
+- Each event hook: under 60 characters.
+- Each pain: under 80 characters, written as a realistic concern/quote.
+- Each solution: under 100 characters, written as an actionable tactic.
 - Be hyper-specific to the city — nothing generic.
-- Use the latest knowledge you have about this city's calendar and culture.
+- Use the latest knowledge you have about this city.
 - Write in ${lang}.`;
 
     const messages = [
         { role: "system", content: systemPrompt },
-        { role: "user", content: `City: ${city}\nCountry: ${country}` }
+        { role: "user", content: `City: ${city}\nCountry: ${country}\nRole: ${roleLine}` }
     ];
 
     // 1차 시도 (5초) → 실패 시 2차 재시도 (8초)
@@ -257,7 +283,7 @@ Rules:
                 },
                 body: JSON.stringify({
                     model: "gpt-4o-mini",
-                    max_tokens: 600,
+                    max_tokens: 900,
                     temperature: 0.7,
                     messages
                 }),
@@ -278,10 +304,12 @@ Rules:
             const result = {
                 type: "live_trends",
                 trends: Array.isArray(parsed?.trends) ? parsed.trends.slice(0, 4) : [],
-                events: Array.isArray(parsed?.events) ? parsed.events.slice(0, 3) : []
+                events: Array.isArray(parsed?.events) ? parsed.events.slice(0, 3) : [],
+                pains: Array.isArray(parsed?.pains) ? parsed.pains.slice(0, 3) : [],
+                solutions: Array.isArray(parsed?.solutions) ? parsed.solutions.slice(0, 3) : []
             };
             // 파싱 성공했지만 내용이 비어있으면 재시도
-            if (!result.trends.length && !result.events.length) {
+            if (!result.trends.length && !result.pains.length) {
                 console.error(`[fetchLiveTrends] Attempt ${attempt + 1}: Empty result for ${city}, ${country}`);
                 clearTimeout(timer);
                 continue;

@@ -1577,38 +1577,20 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const marketLabel = localCity ? `${getCountryName(countryCode)} ${localCity}` : getCountryName(countryCode);
     const local = data.local || null;
     const evidence = [];
-    const painPoints = toList(roleLens.pain_points).slice(0, 3);
-    const solutions = toList(roleLens.solutions).slice(0, 3);
+
+    // 라이브 트렌드 기반 고민/솔루션 우선, 정적 role_lens fallback
+    const livePains = toList(data.live_pains).slice(0, 3);
+    const liveSolutions = toList(data.live_solutions).slice(0, 3);
+    const staticPains = toList(roleLens.pain_points).slice(0, 3);
+    const staticSolutions = toList(roleLens.solutions).slice(0, 3);
     const mustKnow = toList(roleLens.must_know).slice(0, 3);
     const executionPoints = toList(roleLens.execution_points).slice(0, 3);
-    const realPains = painPoints.length ? painPoints : mustKnow;
-    const realSolutions = solutions.length ? solutions : executionPoints;
+    const realPains = livePains.length ? livePains : (staticPains.length ? staticPains : mustKnow);
+    const realSolutions = liveSolutions.length ? liveSolutions : (staticSolutions.length ? staticSolutions : executionPoints);
 
     const sections = [];
 
-    if (realPains.length) {
-        sections.push({
-            title: currentLocale === "ko"
-                ? `요즘 <strong class="city-accent">${localCity || marketLabel}</strong>에서 이런 고민 많죠?`
-                : `Sound familiar in <strong class="city-accent">${localCity || marketLabel}</strong>?`,
-            items: realPains
-        });
-    }
-    if (realSolutions.length) {
-        const roleMetric = roleLens.primary_metric || "";
-        const solutionItems = [...realSolutions];
-        if (roleMetric) {
-            solutionItems.push(currentLocale === "ko"
-                ? `[KPI] ${roleMetric}`
-                : `[KPI] ${roleMetric}`);
-        }
-        sections.push({
-            title: currentLocale === "ko" ? "이렇게 풀어보세요" : "Try this approach",
-            items: solutionItems
-        });
-    }
-
-    // 지역 트렌드 섹션: 실시간 API 우선, 정적 데이터 fallback
+    // 1) 지역 트렌드 섹션: 실시간 API 우선, 정적 데이터 fallback
     const liveTrends = toList(data.live_trends).slice(0, 4);
     const cityContent = getCitySignalContent(countryCode, city);
     const staticTrends = toList(cityContent?.trends).slice(0, 4);
@@ -1622,7 +1604,7 @@ function mapLiveStep2Insight(data, countryCode, city) {
         });
     }
 
-    // 근처 행사/이벤트 섹션: 실시간 API
+    // 2) 근처 행사/이벤트 섹션: 실시간 API
     const liveEvents = Array.isArray(data.live_events) ? data.live_events.slice(0, 3) : [];
     if (liveEvents.length) {
         sections.push({
@@ -1632,6 +1614,31 @@ function mapLiveStep2Insight(data, countryCode, city) {
             items: liveEvents.map(ev =>
                 `${ev.name} (${ev.when}) — ${ev.hook}`
             )
+        });
+    }
+
+    // 3) 트렌드 기반 고민 섹션
+    if (realPains.length) {
+        sections.push({
+            title: currentLocale === "ko"
+                ? `이 트렌드에서 예상되는 <strong class="city-accent">${localCity || marketLabel}</strong> 고민`
+                : `Trend-driven concerns in <strong class="city-accent">${localCity || marketLabel}</strong>`,
+            items: realPains
+        });
+    }
+
+    // 4) 트렌드 기반 제안 섹션
+    if (realSolutions.length) {
+        const roleMetric = roleLens.primary_metric || "";
+        const solutionItems = [...realSolutions];
+        if (roleMetric) {
+            solutionItems.push(currentLocale === "ko"
+                ? `[KPI] ${roleMetric}`
+                : `[KPI] ${roleMetric}`);
+        }
+        sections.push({
+            title: currentLocale === "ko" ? "이렇게 풀어보세요" : "Try this approach",
+            items: solutionItems
         });
     }
 
