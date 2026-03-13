@@ -558,41 +558,33 @@ function renderCityProfileCard() {
     const isKo = currentLocale === "ko";
     const role = normalizeRoleId(roleSelect.value) || "retail";
 
-    // Show skeleton immediately
+    // 정적 city_signals 데이터로 프로필 카드 렌더링
+    const content = getCitySignalContent(country.countryCode, cityName);
+    if (!content) {
+        profileCard.classList.add("hidden");
+        profileCard.innerHTML = "";
+        return;
+    }
+
+    // 도시명 로케일 변환
+    const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
+    const normCity = normalizeCityValue(cityName);
+    const matchedEntry = cityEntries.find((e) =>
+        e.countryCode === country.countryCode &&
+        (normalizeCityValue(e.displayName) === normCity ||
+         (e.aliases || []).some((a) => normalizeCityValue(a) === normCity))
+    );
+    const localDisplayCity = matchedEntry ? getLocalizedCityName(matchedEntry) : cityName;
+
+    const situation = `${escapeHtml(content.housing)} ${escapeHtml(content.climate)}`;
     profileCard.innerHTML = buildNudgeCardHTML({
-        flag, displayCity, countryName, isKo,
-        situation: null, need: null, opportunity: null, loading: true
+        flag, displayCity: localDisplayCity, countryName, isKo,
+        situation,
+        need: escapeHtml(content.behavior),
+        opportunity: escapeHtml(content.implication),
+        loading: false
     });
     profileCard.classList.remove("hidden");
-
-    // Try real-time API nudge
-    fetchLiveNudge({ countryCode: country.countryCode, cityName, role, locale: currentLocale, isKo })
-        .then((nudge) => {
-            profileCard.innerHTML = buildNudgeCardHTML({
-                flag, displayCity, countryName, isKo,
-                situation: nudge.situation,
-                need: nudge.need,
-                opportunity: nudge.opportunity,
-                loading: false
-            });
-        })
-        .catch(() => {
-            // Fallback to static data
-            const content = getCitySignalContent(country.countryCode, cityName);
-            if (!content) {
-                profileCard.classList.add("hidden");
-                profileCard.innerHTML = "";
-                return;
-            }
-            const situation = `${escapeHtml(content.housing)} ${escapeHtml(content.climate)}`;
-            profileCard.innerHTML = buildNudgeCardHTML({
-                flag, displayCity, countryName, isKo,
-                situation,
-                need: escapeHtml(content.behavior),
-                opportunity: escapeHtml(content.implication),
-                loading: false
-            });
-        });
 }
 
 function buildNudgeCardHTML({ flag, displayCity, countryName, isKo, situation, need, opportunity, loading }) {
