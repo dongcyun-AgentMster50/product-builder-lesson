@@ -1594,6 +1594,19 @@ function mapLiveStep2Insight(data, countryCode, city) {
         });
     }
 
+    // 근처 행사/이벤트 섹션: 실시간 API
+    const liveEvents = Array.isArray(data.live_events) ? data.live_events.slice(0, 3) : [];
+    if (liveEvents.length) {
+        sections.push({
+            title: currentLocale === "ko"
+                ? `${city || marketLabel} 근처 행사`
+                : `${city || marketLabel} nearby events`,
+            items: liveEvents.map(ev =>
+                `${ev.name} (${ev.when}) — ${ev.hook}`
+            )
+        });
+    }
+
     const rows = [];
     rows.push({
         label: currentLocale === "ko" ? "Q3 힌트" : "Q3 hint",

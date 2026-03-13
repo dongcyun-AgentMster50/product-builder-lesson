@@ -202,25 +202,37 @@ async function buildLiveRegionInsight({ country, city, locale, role, env }) {
         local: city ? buildLocal(locale, city, place, urban, climate) : null,
         evidence: buildEvidence(locale, gdp, urban, climate, place),
         visual: buildVisualInsight({ country, city, geocode, countryProfile, landmark }),
-        live_trends: liveTrends?.trends || []
+        live_trends: liveTrends?.trends || [],
+        live_events: liveTrends?.events || []
     };
 }
 
 async function fetchLiveTrends(city, country, locale, apiKey) {
     const isKo = locale === "ko";
-    const marketLabel = `${country} ${city}`;
     const lang = isKo ? "Korean" : "English";
+    const now = new Date();
+    const monthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
-    const systemPrompt = `You are a market trend analyst for Samsung smart home products.
-Given a city and country, return exactly 4 current lifestyle/consumer trends (2025-2026) that are specific to that city and relevant to smart home, appliances, or connected living.
+    const systemPrompt = `You are a local market intelligence analyst for Samsung smart home and appliance marketing.
+Given a city and country, return a JSON object with two fields:
 
-Output ONLY a JSON array of 4 strings. No markdown, no explanation.
-Example: ["Trend 1", "Trend 2", "Trend 3", "Trend 4"]
+1. "trends": exactly 4 current lifestyle/consumer trends specific to THIS city (2025-2026). Focus on housing, consumer behavior, technology adoption, wellness, energy, or lifestyle shifts relevant to smart home products.
+
+2. "events": exactly 3 upcoming or ongoing local events, festivals, exhibitions, or seasonal occasions in or near this city (within the next 2-3 months from ${monthYear}). These should be events a Samsung marketer could tie a campaign to — cultural festivals, tech expos, seasonal shifts, sports events, local holidays, etc.
+
+Output ONLY valid JSON — no markdown, no explanation:
+{
+  "trends": ["trend1", "trend2", "trend3", "trend4"],
+  "events": [
+    {"name": "Event name", "when": "approximate date or period", "hook": "One-line marketing angle for Samsung products"}
+  ]
+}
 
 Rules:
 - Each trend must be under 50 characters.
-- Be hyper-specific to the city — no generic trends.
-- Focus on lifestyle, housing, consumer behavior, or technology adoption.
+- Each event hook must be under 60 characters.
+- Be hyper-specific to the city — nothing generic.
+- Use the latest knowledge you have about this city's calendar and culture.
 - Write in ${lang}.`;
 
     const controller = new AbortController();
@@ -235,7 +247,7 @@ Rules:
             },
             body: JSON.stringify({
                 model: "gpt-4o-mini",
-                max_tokens: 300,
+                max_tokens: 600,
                 temperature: 0.7,
                 messages: [
                     { role: "system", content: systemPrompt },
@@ -245,17 +257,18 @@ Rules:
             signal: controller.signal
         });
 
-        if (!response.ok) return { type: "live_trends", trends: [] };
+        if (!response.ok) return { type: "live_trends", trends: [], events: [] };
 
         const data = await response.json();
         const content = data?.choices?.[0]?.message?.content || "";
         const parsed = JSON.parse(content);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-            return { type: "live_trends", trends: parsed.slice(0, 4) };
-        }
-        return { type: "live_trends", trends: [] };
+        return {
+            type: "live_trends",
+            trends: Array.isArray(parsed?.trends) ? parsed.trends.slice(0, 4) : [],
+            events: Array.isArray(parsed?.events) ? parsed.events.slice(0, 3) : []
+        };
     } catch {
-        return { type: "live_trends", trends: [] };
+        return { type: "live_trends", trends: [], events: [] };
     } finally {
         clearTimeout(timer);
     }
