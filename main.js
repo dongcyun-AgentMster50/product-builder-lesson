@@ -2883,8 +2883,10 @@ async function streamGenerateScenario(context) {
         });
     } catch (err) {
         aiGenerating = false;
-        console.warn("API unavailable, falling back to local generation.", err.message);
-        renderScenario(latestPayload);
+        console.warn("API unavailable:", err.message);
+        renderGenerateError(context, currentLocale === "ko"
+            ? "생성 서버에 연결하지 못했습니다. 정적 예시 대신 실제 오류를 표시합니다."
+            : "Could not reach the generation server. Showing the real error instead of a static example.");
         return;
     }
 
@@ -2892,14 +2894,16 @@ async function streamGenerateScenario(context) {
         aiGenerating = false;
         const errData = await response.json().catch(() => ({}));
         if (response.status === 401) {
-            resultDiv.innerHTML = `<p class="error">${currentLocale === "ko" ? "세션이 만료됐습니다. 다시 로그인해 주세요." : "Session expired. Please log in again."}</p>`;
+            renderGenerateError(context, currentLocale === "ko"
+                ? "세션이 만료됐습니다. 다시 로그인해 주세요."
+                : "Session expired. Please log in again.");
         } else if (response.status === 429 || errData?.error?.code === "BUDGET_EXCEEDED") {
             const msg = errData?.error?.message || (currentLocale === "ko" ? "월간 AI 예산 한도에 도달했습니다." : "Monthly AI budget limit reached.");
-            resultDiv.innerHTML = `<p class="error">${escapeHtml(msg)}</p>`;
+            renderGenerateError(context, msg);
         } else {
             const msg = errData?.error?.message || `Server error ${response.status}`;
-            console.warn("AI generate failed, falling back to local scenario:", msg);
-            renderScenario(latestPayload);
+            console.warn("AI generate failed:", msg);
+            renderGenerateError(context, msg, response.status);
         }
         return;
     }
@@ -2942,7 +2946,7 @@ async function streamGenerateScenario(context) {
                 } else if (event.type === "error") {
                     aiGenerating = false;
                     console.warn("AI stream event error:", event.message || "Unknown error");
-                    renderScenario(latestPayload);
+                    renderGenerateError(context, event.message || (currentLocale === "ko" ? "스트리밍 생성 중 오류가 발생했습니다." : "Streaming generation failed."));
                     return;
                 }
             }
@@ -2955,8 +2959,35 @@ async function streamGenerateScenario(context) {
     processStream().catch((err) => {
         aiGenerating = false;
         console.error("Stream processing error:", err);
-        renderScenario(latestPayload);
+        renderGenerateError(context, currentLocale === "ko"
+            ? "스트리밍 처리 중 오류가 발생했습니다."
+            : "A streaming error occurred.");
     });
+}
+
+function renderGenerateError(context, message, statusCode = "") {
+    const title = currentLocale === "ko" ? "AI 생성이 완료되지 않았습니다" : "AI generation did not complete";
+    const retry = currentLocale === "ko"
+        ? "API 응답이 정상적으로 돌아오면 01~07 형식으로 출력됩니다."
+        : "Once the API responds normally, the result will render in the 01–07 format.";
+    const statusText = statusCode ? `${currentLocale === "ko" ? "상태 코드" : "Status"}: ${statusCode}` : "";
+
+    resultDiv.innerHTML = `
+        <article class="scenario-output ai-result ai-result--error">
+            <div class="ai-result-meta">
+                <span class="ai-result-badge">${currentLocale === "ko" ? "AI Error" : "AI Error"}</span>
+                <span class="ai-result-context">${escapeHtml(context.role || "")}</span>
+            </div>
+            ${buildSelectionSummaryCard(context)}
+            <div class="ai-result-body">
+                <h3>${escapeHtml(title)}</h3>
+                <p class="error">${escapeHtml(message || (currentLocale === "ko" ? "알 수 없는 오류" : "Unknown error"))}</p>
+                ${statusText ? `<p>${escapeHtml(statusText)}</p>` : ""}
+                <p>${escapeHtml(retry)}</p>
+            </div>
+        </article>
+    `;
+    scrollToResult();
 }
 
 function getMissionBucketLabel(missionBucket) {
