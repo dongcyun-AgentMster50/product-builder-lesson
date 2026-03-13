@@ -33,6 +33,7 @@ export async function onRequestGet(context) {
     const url = new URL(context.request.url);
     const country = normalizeCountry(url.searchParams.get("country"));
     const city = String(url.searchParams.get("city") || "").trim();
+    const cityLocal = String(url.searchParams.get("city_local") || "").trim() || city;
     const locale = normalizeLocale(url.searchParams.get("locale"));
     const role = normalizeRole(url.searchParams.get("role"));
     const forceRefresh = url.searchParams.get("force") === "1";
@@ -68,7 +69,7 @@ export async function onRequestGet(context) {
 
     const startedAt = Date.now();
     try {
-        const data = await buildLiveRegionInsight({ country, city, locale, role, env: context.env });
+        const data = await buildLiveRegionInsight({ country, city, cityLocal, locale, role, env: context.env });
         const payload = {
             ok: true,
             data: {
@@ -160,7 +161,7 @@ async function fetchJson(url, options = {}) {
     return response.json();
 }
 
-async function buildLiveRegionInsight({ country, city, locale, role, env }) {
+async function buildLiveRegionInsight({ country, city, cityLocal, locale, role, env }) {
     const geocode = await withTimeout((signal) => fetchOpenMeteoGeocode(city || country, country, signal), TIMEOUT_MS);
     const lat = Number(geocode?.latitude || 0);
     const lon = Number(geocode?.longitude || 0);
@@ -197,7 +198,7 @@ async function buildLiveRegionInsight({ country, city, locale, role, env }) {
 
     return {
         role,
-        role_lens: buildRoleLens(locale, role, country, city),
+        role_lens: buildRoleLens(locale, role, country, cityLocal || city),
         macro: buildMacro(locale, country, city, gdp, urban, climate),
         local: city ? buildLocal(locale, city, place, urban, climate) : null,
         evidence: buildEvidence(locale, gdp, urban, climate, place),
@@ -216,9 +217,9 @@ async function fetchLiveTrends(city, country, locale, apiKey) {
     const systemPrompt = `You are a local market intelligence analyst for Samsung smart home and appliance marketing.
 Given a city and country, return a JSON object with two fields:
 
-1. "trends": exactly 4 current lifestyle/consumer trends specific to THIS city (2025-2026). Focus on housing, consumer behavior, technology adoption, wellness, energy, or lifestyle shifts relevant to smart home products.
+1. "trends": exactly 4 current lifestyle/consumer trends specific to THIS city as of ${monthYear}. Focus on housing, consumer behavior, technology adoption, wellness, energy, or lifestyle shifts relevant to smart home products. Trends must reflect the latest situation — do NOT use outdated 2024 or early-2025 data.
 
-2. "events": exactly 3 upcoming or ongoing local events, festivals, exhibitions, or seasonal occasions in or near this city (within the next 2-3 months from ${monthYear}). These should be events a Samsung marketer could tie a campaign to — cultural festivals, tech expos, seasonal shifts, sports events, local holidays, etc.
+2. "events": exactly 3 upcoming or ongoing local events, festivals, exhibitions, or seasonal occasions in or near this city (within the next 2-3 months from ${monthYear}). These should be events a Samsung marketer could tie a campaign to — cultural festivals, tech expos, seasonal shifts, sports events, local holidays, etc. Only include events that are actually scheduled or highly likely for this period.
 
 Output ONLY valid JSON — no markdown, no explanation:
 {

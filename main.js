@@ -1493,11 +1493,24 @@ async function renderStep2Insight(forceRefresh = false) {
 }
 
 async function fetchLiveStep2Insight(countryCode, city, role, forceRefresh = false) {
+    // 로케일 기반 도시명 조회 (서버에 전달하여 콘텐츠 본문에 반영)
+    const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
+    const normCity = normalizeCityValue(city);
+    const matchedEntry = city ? cityEntries.find((e) =>
+        e.countryCode === countryCode &&
+        (normalizeCityValue(e.displayName) === normCity ||
+         (e.aliases || []).some((a) => normalizeCityValue(a) === normCity))
+    ) : null;
+    const cityLocal = matchedEntry ? getLocalizedCityName(matchedEntry) : city;
+
     const params = new URLSearchParams({
         country: countryCode,
         city,
         locale: currentLocale
     });
+    if (cityLocal && cityLocal !== city) {
+        params.set("city_local", cityLocal);
+    }
     if (role) {
         params.set("role", role);
     }
