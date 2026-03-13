@@ -1580,6 +1580,18 @@ function mapLiveStep2Insight(data, countryCode, city) {
         });
     }
 
+    // 지역 트렌드 섹션
+    const cityContent = getCitySignalContent(countryCode, city);
+    const trends = toList(cityContent?.trends).slice(0, 4);
+    if (trends.length) {
+        sections.push({
+            title: currentLocale === "ko"
+                ? `${city || marketLabel} 지역 트렌드`
+                : `${city || marketLabel} local trends`,
+            items: trends
+        });
+    }
+
     const rows = [];
     rows.push({
         label: currentLocale === "ko" ? "Q3 힌트" : "Q3 hint",

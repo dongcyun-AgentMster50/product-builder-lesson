@@ -1537,14 +1537,16 @@
           "climate": "사막 기후로 여름(5-9월) 극심한 고온(45°C+)과 모래폭풍이 있고, 겨울은 온화합니다.",
           "housing": "초고층 아파트와 빌라가 주류이며, 럭셔리 스마트홈 시장이 매우 발달했습니다.",
           "behavior": "극한 냉방 수요와 프리미엄 자동화, 보안 시스템에 대한 높은 기대치를 가집니다.",
-          "implication": "극한 고온 대응 에너지 효율과 럭셔리 풀 자동화 시스템이 핵심입니다."
+          "implication": "극한 고온 대응 에너지 효율과 럭셔리 풀 자동화 시스템이 핵심입니다.",
+          "trends": ["단지 단위 IoT 스마트커뮤니티 표준 도입 확산", "생체인식 출입·AI 예측 유지보수 프리미엄 기대", "웰니스·저밀도·녹지 중심 커뮤니티 설계 부상", "다국어 음성비서·럭셔리 자동화 동시 수요"]
         },
         "en": {
           "region": "The UAE's largest city and global business-tourism hub, characterized by ultra-modern infrastructure.",
           "climate": "Desert climate with extreme summer heat (45°C+) and sandstorms (May-Sep); mild pleasant winters.",
           "housing": "Ultra-high-rise apartments and villas dominate; highly developed luxury smart home market.",
           "behavior": "Extreme cooling demand with high expectations for premium automation and security systems.",
-          "implication": "Energy efficiency for extreme heat and luxury full automation systems are key."
+          "implication": "Energy efficiency for extreme heat and luxury full automation systems are key.",
+          "trends": ["Neighborhood-scale IoT smart communities standard", "Biometric access and AI predictive maintenance", "Wellness, low-density, green community design rises", "Multilingual voice assistant + luxury automation"]
         }
       }
     },
@@ -2233,14 +2235,16 @@
           "climate": "온화한 해양성 기후로 여름은 덥고 겨울은 온화하며, 냉방 중심.",
           "housing": "단독주택과 아파트가 혼재하며, 부동산 가격이 매우 높음.",
           "behavior": "에너지 비용과 환경에 대한 관심이 높고, 태양광 보급이 활발.",
-          "implication": "태양광 연동 에너지 관리, 스마트 냉방, 보안 시스템 수요가 높음."
+          "implication": "태양광 연동 에너지 관리, 스마트 냉방, 보안 시스템 수요가 높음.",
+          "trends": ["전기요금 상승으로 태양광+스마트 자동화 결합 확산", "실시간 기기별 에너지 대시보드 소비자 기대 표준화", "AI 루틴 학습으로 조명·온도·음악 자동 맞춤", "생체인식 잠금·얼굴인식 카메라 보안 수요 급증"]
         },
         "en": {
           "region": "Australia's largest city, in New South Wales.",
           "climate": "Mild oceanic climate with hot summers and mild winters; cooling-focused.",
           "housing": "Mix of single-family homes and apartments; very high property prices.",
           "behavior": "Strong interest in energy costs and environment; active solar panel adoption.",
-          "implication": "High demand for solar-integrated energy management, smart cooling, and security systems."
+          "implication": "High demand for solar-integrated energy management, smart cooling, and security systems.",
+          "trends": ["Rising energy costs drive solar+smart automation", "Real-time per-device energy dashboards expected", "AI learns routines to auto-adjust light, temp, music", "Biometric locks and facial recognition cameras surge"]
         }
       }
     },
@@ -2729,25 +2733,27 @@
     },
     {
       "countryCode": "BR",
-      "displayName": "Sao Paulo",
+      "displayName": "São Paulo",
       "aliases": [
         "sao paulo",
-        "são paulo"
+        "sp"
       ],
       "content": {
         "ko": {
-          "region": "브라질 남동부에 위치한 남미 최대 도시.",
-          "climate": "아열대 기후로 온화하지만, 대기오염과 도시 열섬 현상이 심각.",
-          "housing": "고층 아파트 비율이 매우 높으며, 게이티드 콘도가 일반적.",
-          "behavior": "보안 최우선 도시로 출입 통제와 모니터링에 높은 관심.",
-          "implication": "보안 시스템, 공기질 관리, 스마트 출입 통제 수요가 매우 높음."
+          "region": "남미 최대 경제 도시이자 브라질의 금융·산업 중심지입니다.",
+          "climate": "아열대 기후로 여름 고온다습하며, 난방보다 냉방 수요가 높습니다.",
+          "housing": "고층 아파트(콘도미니오)와 게이티드 커뮤니티가 주류입니다.",
+          "behavior": "중산층 확대와 함께 프리미엄 가전에 대한 관심이 빠르게 증가하고 있습니다.",
+          "implication": "가성비와 에너지 절감을 동시에 어필하는 스마트홈 입문 시나리오가 적합합니다.",
+          "trends": ["중산층 12% 확대로 프리미엄 주방가전 수요 증가", "전기요금 상승으로 에너지 효율 가전 핵심 구매 기준", "에어프라이어 등 건강·웰니스 소형 가전 인기", "가성비 중심 소비에 스마트 연결 기능 기대 추가"]
         },
         "en": {
-          "region": "South America's largest city, in southeastern Brazil.",
-          "climate": "Subtropical and mild, but air pollution and urban heat island effects are significant.",
-          "housing": "Very high share of high-rise apartments; gated condos are the norm.",
-          "behavior": "Security is the top priority; strong interest in access control and monitoring.",
-          "implication": "Very high demand for security systems, air quality management, and smart access control."
+          "region": "South America's largest economic city and Brazil's financial-industrial hub.",
+          "climate": "Subtropical climate with hot humid summers, cooling demand outweighs heating.",
+          "housing": "High-rise condominiums and gated communities are mainstream.",
+          "behavior": "Growing middle class is rapidly increasing interest in premium appliances.",
+          "implication": "Smart home entry scenarios that balance value and energy savings work best.",
+          "trends": ["Middle class +12% drives premium kitchen appliance demand", "Rising electricity costs make efficiency top priority", "Air fryers and health-wellness small appliances boom", "Value-conscious buyers now expect smart connectivity"]
         }
       }
     },
@@ -3557,14 +3563,16 @@
           "climate": "겨울 난방과 계절 대비가 분명해 실내 제어 체감이 큽니다.",
           "housing": "아파트형 주거와 정돈된 생활 운영이 시나리오 설계에 중요합니다.",
           "behavior": "즉흥성보다 계획적 사용, 절감, 제어 가능성을 더 높게 평가하는 편입니다.",
-          "implication": "예측 가능한 루틴, 절감 가시성, 단계별 제어형 시나리오가 적합합니다."
+          "implication": "예측 가능한 루틴, 절감 가시성, 단계별 제어형 시나리오가 적합합니다.",
+          "trends": ["75% 친환경 이동수단, 60% 재활용률 도시 문화", "제로웨이스트·리필 문화 일상 소비로 정착", "옥상 텃밭·도시농업으로 로컬푸드 자급 확대", "경험 소비 우선, 물건보다 체험 중심 지출"]
         },
         "en": {
           "region": "This reads as a major city that still values efficiency and self-directed routines.",
           "climate": "Winter heating and seasonal contrast make indoor control benefits tangible.",
           "housing": "Apartment living and orderly home operation matter in scenario framing.",
           "behavior": "Planned use, savings, and visible control often matter more than novelty.",
-          "implication": "Predictable routines, visible savings, and staged-control scenarios fit well."
+          "implication": "Predictable routines, visible savings, and staged-control scenarios fit well.",
+          "trends": ["75% green mobility, 60% recycling rate culture", "Zero-waste and refill culture becomes mainstream", "Urban farming and rooftop gardens cut food miles", "Experiential spending over material purchases"]
         },
         "de": {
           "region": "Dies liest sich als Großstadt, in der Effizienz und selbstbestimmte Routinen wichtig bleiben.",
@@ -4458,14 +4466,16 @@
           "climate": "온대 해양성 기후로 겨울 평균 3–6°C, 여름은 온난합니다.",
           "housing": "오스만 양식 아파트가 대부분이며 공간이 협소합니다.",
           "behavior": "좁은 주거 공간 때문에 컴팩트 가전 수요가 매우 높습니다.",
-          "implication": "슬림형 세탁기·냉장고와 다기능 소형 주방 가전이 핵심입니다."
+          "implication": "슬림형 세탁기·냉장고와 다기능 소형 주방 가전이 핵심입니다.",
+          "trends": ["코리빙 수요 30% 증가, 유연 주거 트렌드 확산", "2026 에너지 전환 계수 개정으로 전기 효율 부각", "리사이클·천연 소재 인테리어 디자인 주류화", "하이브리드 근무 40%로 홈오피스 자동화 수요 증가"]
         },
         "en": {
           "region": "The capital of France and a global cultural and economic center.",
           "climate": "Temperate oceanic, winter averages 3–6°C, warm summers.",
           "housing": "Mostly Haussmann-style apartments with limited living space.",
           "behavior": "Small living spaces create very high demand for compact appliances.",
-          "implication": "Slim washers, refrigerators, and multifunctional small kitchen appliances are key."
+          "implication": "Slim washers, refrigerators, and multifunctional small kitchen appliances are key.",
+          "trends": ["Co-living demand up 30%, flexible housing rises", "2026 energy regulation boosts electric efficiency", "Recycled and natural fiber interiors go mainstream", "40% hybrid work drives home office automation"]
         }
       }
     },
@@ -4711,14 +4721,16 @@
           "climate": "서늘하고 습한 날씨가 잦아 조명, 난방, 쾌적성 관리가 생활성 가치로 이어집니다.",
           "housing": "공간 효율이 중요한 도심형 주거가 많습니다.",
           "behavior": "출퇴근 후 짧은 시간 안에 집안 컨디션을 정리하고 싶어하는 경향이 있습니다.",
-          "implication": "조명·난방·절감 루틴을 짧고 명확한 장면으로 보여주는 편이 효과적입니다."
+          "implication": "조명·난방·절감 루틴을 짧고 명확한 장면으로 보여주는 편이 효과적입니다.",
+          "trends": ["스마트홈 가구 보급률 87.8%, 2029년 98% 전망", "에코 소재+스마트 기술 결합한 지속가능 인테리어", "클라우드 의존 줄이고 로컬 AI 제어 선호 확산", "에너지 모니터·스마트 온도조절기 절감 수요 폭증"]
         },
         "en": {
           "region": "A dense global city where movement volume and routine shifts are fast.",
           "climate": "Cooler and damp conditions make lighting, heating, and comfort management feel relevant.",
           "housing": "Urban homes often make space efficiency a practical concern.",
           "behavior": "People often want the home to settle quickly after commuting back.",
-          "implication": "Short, clear scenes around lighting, heating, and savings routines tend to work well."
+          "implication": "Short, clear scenes around lighting, heating, and savings routines tend to work well.",
+          "trends": ["Smart home penetration 87.8%, 98% by 2029", "Eco-materials meet smart tech in sustainable design", "Shift from cloud to local AI home control", "Energy monitors and smart thermostats surge"]
         },
         "de": {
           "region": "Eine dichte globale Stadt mit hohem Bewegungsvolumen und schnellen Routinenwechseln.",
@@ -5381,14 +5393,16 @@
           "climate": "계절 변화와 실내 쾌적성 요구가 공기 관리와 에너지 메시지에 직접 연결됩니다.",
           "housing": "아파트와 중밀도 주거가 함께 나타나며 공간 효율과 구역별 제어 가치가 큽니다.",
           "behavior": "출퇴근, 외출, 가족 일정이 복합적으로 얽혀 있어 즉시 체감되는 자동화 편익을 선호합니다.",
-          "implication": "귀가 전 준비, 수면/공기 관리, 보안 확인 루틴을 전면에 둔 시나리오가 잘 맞습니다."
+          "implication": "귀가 전 준비, 수면/공기 관리, 보안 확인 루틴을 전면에 둔 시나리오가 잘 맞습니다.",
+          "trends": ["MZ세대 미니멀·테크 통합 주거 선호 급증", "힌디·지역어 음성 AI 인터페이스 빠르게 확산", "태양광 보안카메라·스마트 온도조절 절전 수요 부상", "고급 주거에 호텔급 공기질·음향·EV 충전 기대"]
         },
         "en": {
           "region": "Mumbai is a representative metro where pace of life and movement patterns are clearly defined within India.",
           "climate": "Seasonal change and indoor comfort demand directly connect to air-care and energy messaging.",
           "housing": "Apartments and medium-density housing mix together, increasing the value of space efficiency and zone control.",
           "behavior": "Commute, time away, and family scheduling overlap, so automation needs to feel immediately useful.",
-          "implication": "Scenarios led by pre-arrival setup, sleep or air care, and security check routines fit well."
+          "implication": "Scenarios led by pre-arrival setup, sleep or air care, and security check routines fit well.",
+          "trends": ["Gen MZ prefers minimal, tech-integrated homes", "Hindi and local-language voice AI adoption surges", "Solar cameras and smart thermostats for savings", "Luxury homes expect hotel-grade air, sound, EV"]
         },
         "de": {
           "region": "Mumbai ist ein repräsentativer Ballungsraum, in dem Alltagstempo und Bewegungsmuster in India klar ausgeprägt sind.",
@@ -5738,14 +5752,16 @@
           "climate": "계절 변화와 실내 쾌적성 요구가 공기 관리와 에너지 메시지에 직접 연결됩니다.",
           "housing": "아파트와 중밀도 주거가 함께 나타나며 공간 효율과 구역별 제어 가치가 큽니다.",
           "behavior": "출퇴근, 외출, 가족 일정이 복합적으로 얽혀 있어 즉시 체감되는 자동화 편익을 선호합니다.",
-          "implication": "귀가 전 준비, 수면/공기 관리, 보안 확인 루틴을 전면에 둔 시나리오가 잘 맞습니다."
+          "implication": "귀가 전 준비, 수면/공기 관리, 보안 확인 루틴을 전면에 둔 시나리오가 잘 맞습니다.",
+          "trends": ["초소형 주거 맞춤 슬림·모듈·스택형 가전 인기", "고령 인구 3,620만, 낙상감지·음성조명 보조금 확대", "스마트 보안 기기 설치 시 보험료 5-10% 할인", "Matter 1.3 표준으로 멀티브랜드 호환 가속"]
         },
         "en": {
           "region": "Tokyo is a representative metro where pace of life and movement patterns are clearly defined within Japan.",
           "climate": "Seasonal change and indoor comfort demand directly connect to air-care and energy messaging.",
           "housing": "Apartments and medium-density housing mix together, increasing the value of space efficiency and zone control.",
           "behavior": "Commute, time away, and family scheduling overlap, so automation needs to feel immediately useful.",
-          "implication": "Scenarios led by pre-arrival setup, sleep or air care, and security check routines fit well."
+          "implication": "Scenarios led by pre-arrival setup, sleep or air care, and security check routines fit well.",
+          "trends": ["Slim, modular, stackable appliances for tiny homes", "36.2M seniors: fall detection and voice-light subsidies", "Smart security install gets 5-10% insurance discount", "Matter 1.3 standard accelerates cross-brand compat"]
         },
         "de": {
           "region": "Tokyo ist ein repräsentativer Ballungsraum, in dem Alltagstempo und Bewegungsmuster in Japan klar ausgeprägt sind.",
@@ -5769,14 +5785,16 @@
           "climate": "여름철 고온다습하고 태풍 영향권에 있어 습도 관리와 방재 대비가 중요합니다.",
           "housing": "해안가 고층 아파트와 언덕 위 주택이 혼재하며, 염분과 습기에 강한 설비가 필요합니다.",
           "behavior": "여름철 제습과 환기 수요가 높고, 태풍 시즌에는 창문·방범 자동화 관심이 큽니다.",
-          "implication": "해양 환경에 적합한 내구성 높은 스마트홈 기기와 기상 연동 자동화가 핵심입니다."
+          "implication": "해양 환경에 적합한 내구성 높은 스마트홈 기기와 기상 연동 자동화가 핵심입니다.",
+          "trends": ["1인 가구 도심 소형 주거 효율화 트렌드 확산", "15분 생활권 도시 전략으로 근거리 라이프 강화", "해양 도시 야간관광·라이트업 기반 스마트조명 수요", "2030 청년층 온라인 쇼핑 중심 소비 패턴 정착"]
         },
         "en": {
           "region": "A major coastal city in southeastern South Korea, known for its port industry and maritime climate.",
           "climate": "Hot and humid summers with typhoon exposure make humidity control and disaster preparedness essential.",
           "housing": "Mix of high-rise coastal apartments and hillside homes requiring salt- and moisture-resistant installations.",
           "behavior": "High demand for dehumidification and ventilation in summer; interest in window and security automation during typhoon season.",
-          "implication": "Durable smart home devices suited to marine environments and weather-linked automation are key."
+          "implication": "Durable smart home devices suited to marine environments and weather-linked automation are key.",
+          "trends": ["Single-person urban micro-living efficiency trend", "15-minute city strategy for local-first living", "Coastal nighttime tourism drives smart lighting", "Gen MZ online-first shopping behavior dominant"]
         }
       }
     },
@@ -5937,14 +5955,16 @@
           "climate": "사계절 편차와 미세먼지 이슈가 공기 관리와 냉난방 체감에 직접 연결됩니다.",
           "housing": "아파트 중심 주거에서 실내 상태를 빠르게 바꾸는 자동화 수요가 큽니다.",
           "behavior": "퇴근 후 짧은 시간 안에 공기, 조명, 가전 상태를 빠르게 정리하고 싶어합니다.",
-          "implication": "집 도착 직후 쾌적성 회복, 취침 전 정리 루틴, 빠른 케어 장면이 잘 맞습니다."
+          "implication": "집 도착 직후 쾌적성 회복, 취침 전 정리 루틴, 빠른 케어 장면이 잘 맞습니다.",
+          "trends": ["1인·1.5인 가구 급증, 소형 맞춤 가전 수요 확대", "슬로우에이징·수면·멘탈 등 일상 웰니스 관심 폭증", "AI 홈로봇·SmartThings 통합 스마트홈 일상화", "감정 소비(필코노미) 중심 제품 선택 트렌드"]
         },
         "en": {
           "region": "A very dense metro where fast routine shifts and home efficiency matter a lot.",
           "climate": "Seasonal contrast and air-quality sensitivity directly connect to air care and heating or cooling value.",
           "housing": "Apartment living creates strong demand for automation that can reset the home state quickly.",
           "behavior": "People often want air, lighting, and appliance status to settle quickly after arriving home.",
-          "implication": "Fast comfort recovery, pre-sleep reset routines, and quick care scenes fit naturally."
+          "implication": "Fast comfort recovery, pre-sleep reset routines, and quick care scenes fit naturally.",
+          "trends": ["Solo/1.5-person households surge, compact appliance demand", "Daily wellness boom: sleep, mental care, slow aging", "AI home robots and SmartThings-integrated living", "Feelconomy: mood-driven product choices rise"]
         },
         "de": {
           "region": "Eine sehr dichte Metropole, in der schnelle Routinenwechsel und Wohneffizienz stark zählen.",
@@ -8642,14 +8662,16 @@
           "climate": "사계절이 뚜렷하고 여름 습도, 겨울 난방 수요가 모두 존재합니다.",
           "housing": "아파트와 콘도 중심 주거가 많아 실내 동선과 공간 활용이 중요합니다.",
           "behavior": "출퇴근과 외출이 길고, 집에 머무는 시간에는 즉시 체감되는 편의성을 선호합니다.",
-          "implication": "도착 직후 집안 상태가 정리되는 장면, 공기·조명·보안의 빠른 전환 장면이 잘 맞습니다."
+          "implication": "도착 직후 집안 상태가 정리되는 장면, 공기·조명·보안의 빠른 전환 장면이 잘 맞습니다.",
+          "trends": ["좁은 공간 맞춤 다기능·콤팩트 가전 수요 급증", "위생·건강 중심 가전 매출 6% 성장세", "에너지 효율 고려 구매자 45%까지 증가", "Wi-Fi 가전 원격 제어가 기본 기대치로 정착"]
         },
         "en": {
           "region": "A high-density metro where movement time and everyday pace are both fast.",
           "climate": "There is clear seasonality, with humid summers and real winter heating demand.",
           "housing": "Apartment and condo living is common, so indoor flow and space use matter.",
           "behavior": "Commute and time away from home can be long, and convenience needs to feel immediate once people return.",
-          "implication": "Arrival-home reset scenes and fast transitions across air, lighting, and security fit well."
+          "implication": "Arrival-home reset scenes and fast transitions across air, lighting, and security fit well.",
+          "trends": ["Compact multifunctional appliances for small spaces", "Hygiene-health appliances see 6% sales growth", "45% of buyers now weigh environmental impact", "Wi-Fi remote appliance control now expected"]
         },
         "de": {
           "region": "Eine hochverdichtete Metropole mit schnellem Alltagstempo und langen Wegen.",
@@ -8875,24 +8897,49 @@
       "countryCode": "VN",
       "displayName": "Ho Chi Minh City",
       "aliases": [
-        "ho chi minh city",
+        "ho chi minh",
         "hcmc",
         "saigon"
       ],
       "content": {
         "ko": {
-          "region": "베트남 남부의 최대 경제 도시로, 급속한 도시화와 중산층 성장이 두드러집니다.",
-          "climate": "열대 사바나 기후로 연중 고온이며, 우기(5-11월)에 도심 침수가 빈번합니다.",
-          "housing": "좁고 긴 타운하우스(nhà phố)와 신축 아파트가 혼재하며, 아파트 스마트홈 도입이 빠릅니다.",
-          "behavior": "냉방 에너지 절감과 보안, 침수 감지에 대한 관심이 높습니다.",
-          "implication": "에어컨 자동화, 수해 감지, 보안 카메라가 핵심 스마트홈 진입 제품입니다."
+          "region": "베트남 최대 경제 도시이자 남부 상업 중심지입니다.",
+          "climate": "열대 몬순 기후로 연중 고온다습하며 냉방 수요가 상시 존재합니다.",
+          "housing": "좁고 깊은 튜브하우스와 현대식 고층 아파트가 혼재합니다.",
+          "behavior": "스마트폰 중심 생활이 일상이며, 모바일 결제와 소셜커머스 사용률이 높습니다.",
+          "implication": "모바일 허브 중심 스마트홈과 냉방 에너지 절감 시나리오가 핵심입니다.",
+          "trends": ["스마트홈 기기 지출 3배 증가(33→99 USD/가구)", "모듈 가구+IoT 통합 미니멀 인테리어 트렌드", "스마트폰 허브 중심 통합 에코시스템 선호", "AI 보안카메라 이상행동 감지 수요 급증"]
         },
         "en": {
-          "region": "Vietnam's largest economic city in the south, with rapid urbanization and a growing middle class.",
-          "climate": "Tropical savanna climate, hot year-round with frequent urban flooding during rainy season (May-Nov).",
-          "housing": "Mix of narrow townhouses (nhà phố) and new apartments; smart home adoption is fast in apartments.",
-          "behavior": "High interest in cooling energy savings, security, and flood detection.",
-          "implication": "AC automation, flood detection, and security cameras are key smart home entry products."
+          "region": "Vietnam's largest economic city and southern commercial hub.",
+          "climate": "Tropical monsoon with year-round high heat and humidity, constant cooling demand.",
+          "housing": "Mix of narrow tube houses and modern high-rise apartments.",
+          "behavior": "Smartphone-centric living with high mobile payment and social commerce usage.",
+          "implication": "Mobile-hub smart home and cooling energy savings scenarios are key.",
+          "trends": ["Smart device spend tripled ($33 to $99/household)", "Modular furniture with IoT-integrated minimalism", "Phone-as-hub unified smart home ecosystem preferred", "AI security cameras with anomaly detection surge"]
+        }
+      }
+    },
+    {
+      "countryCode": "ID",
+      "displayName": "Jakarta",
+      "aliases": ["jakarta", "dki jakarta"],
+      "content": {
+        "ko": {
+          "region": "인도네시아 수도이자 동남아 최대 메가시티입니다.",
+          "climate": "열대 기후로 연중 고온다습하며 우기 침수 문제가 있습니다.",
+          "housing": "교통 허브 인근 고층 아파트와 전통 캄풍 주거가 혼재합니다.",
+          "behavior": "하루 3.5시간 SNS 사용, 모바일 퍼스트 소비가 기본입니다.",
+          "implication": "모바일 중심 스마트홈 입문과 냉방·공기질 관리 시나리오가 핵심입니다.",
+          "trends": ["스마트홈 활성 가구 1,520만 돌파 전망(2026)", "교통허브 인근 고층 복합주거 수직 성장 가속", "하루 3.5시간 SNS 사용, 모바일 퍼스트 라이프", "지속가능·윤리 소비 의식 빠르게 상승 중"]
+        },
+        "en": {
+          "region": "Indonesia's capital and Southeast Asia's largest megacity.",
+          "climate": "Tropical climate with year-round high heat and humidity, rainy season flooding.",
+          "housing": "Mix of high-rise apartments near transit hubs and traditional kampung housing.",
+          "behavior": "3.5 hours daily social media usage, mobile-first consumption is default.",
+          "implication": "Mobile-first smart home entry and cooling/air quality scenarios are key.",
+          "trends": ["Smart home active households to hit 15.2M in 2026", "High-rise mixed-use near transit hubs accelerates", "3.5hr daily social media, mobile-first lifestyle", "Sustainability and ethical consumption rising fast"]
         }
       }
     }
