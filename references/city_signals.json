@@ -5786,7 +5786,9 @@
           "housing": "해안가 고층 아파트와 언덕 위 주택이 혼재하며, 염분과 습기에 강한 설비가 필요합니다.",
           "behavior": "여름철 제습과 환기 수요가 높고, 태풍 시즌에는 창문·방범 자동화 관심이 큽니다.",
           "implication": "해양 환경에 적합한 내구성 높은 스마트홈 기기와 기상 연동 자동화가 핵심입니다.",
-          "trends": ["1인 가구 도심 소형 주거 효율화 트렌드 확산", "15분 생활권 도시 전략으로 근거리 라이프 강화", "해양 도시 야간관광·라이트업 기반 스마트조명 수요", "2030 청년층 온라인 쇼핑 중심 소비 패턴 정착"]
+          "trends": ["1인 가구 도심 소형 주거 효율화 트렌드 확산", "15분 생활권 도시 전략으로 근거리 라이프 강화", "해양 도시 야간관광·라이트업 기반 스마트조명 수요", "2030 청년층 온라인 쇼핑 중심 소비 패턴 정착"],
+          "pains": ["1인 가구 소형 주거 고객이 공간 효율 가전을 찾지만 스마트홈은 '복잡한 설치'라 기피함", "15분 생활권 근거리 매장에서 스마트홈을 체험할 곳이 없어 온라인 리뷰만으로 판단함", "야간관광 라이트업에 관심 있는 숙박업주가 스마트조명 도입 방법을 몰라 수동 관리 중"],
+          "solutions": ["부산 원룸 맞춤 '플러그인 스마트홈' — 공사 없이 설치 가능한 3종 세트 체험 제공", "해운대·서면 등 15분 생활권 거점에 '스마트홈 미니 체험 키오스크' 배치로 접점 확대", "숙박업 대상 '야간 무드 조명 자동화 패키지' — 일몰 연동 SmartThings 조명 시연으로 도입 유도"]
         },
         "en": {
           "region": "A major coastal city in southeastern South Korea, known for its port industry and maritime climate.",
@@ -5794,7 +5796,9 @@
           "housing": "Mix of high-rise coastal apartments and hillside homes requiring salt- and moisture-resistant installations.",
           "behavior": "High demand for dehumidification and ventilation in summer; interest in window and security automation during typhoon season.",
           "implication": "Durable smart home devices suited to marine environments and weather-linked automation are key.",
-          "trends": ["Single-person urban micro-living efficiency trend", "15-minute city strategy for local-first living", "Coastal nighttime tourism drives smart lighting", "Gen MZ online-first shopping behavior dominant"]
+          "trends": ["Single-person urban micro-living efficiency trend", "15-minute city strategy for local-first living", "Coastal nighttime tourism drives smart lighting", "Gen MZ online-first shopping behavior dominant"],
+          "pains": ["Solo micro-living residents want space-efficient appliances but avoid smart home as 'too complex to install'", "No smart home experience spot within 15-minute living zones — buyers rely only on online reviews", "Accommodation owners interested in nighttime lighting but don't know how to adopt smart lighting"],
+          "solutions": ["Busan studio 'plug-in smart home' — no-construction 3-piece set hands-on experience", "Place 'smart home mini experience kiosks' in Haeundae/Seomyeon 15-min living zone hubs", "Hospitality 'night mood lighting package' — sunset-synced SmartThings lighting demo to drive adoption"]
         }
       }
     },
@@ -5812,7 +5816,9 @@
           "housing": "중대형 아파트 단지 중심의 주거 구조로, 중앙 냉난방 및 개별 에어컨 병행 사용이 일반적입니다.",
           "behavior": "폭염 시즌 냉방 에너지 절감과 실내 온도 자동 제어에 높은 관심을 보입니다.",
           "implication": "극한 기온 대응 에너지 효율 솔루션과 온도 자동화가 핵심 가치입니다.",
-          "trends": ["대구 K-패션·섬유 융합 팝업 소비 문화 확산", "폭염 대비 AI 실내 냉방 자동화 관심 급증", "수성구 카페거리 MZ 라이프스타일 소비 집중", "대구경북 신공항 개항 대비 인프라 투자 확대"]
+          "trends": ["대구 K-패션·섬유 융합 팝업 소비 문화 확산", "폭염 대비 AI 실내 냉방 자동화 관심 급증", "수성구 카페거리 MZ 라이프스타일 소비 집중", "대구경북 신공항 개항 대비 인프라 투자 확대"],
+          "pains": ["팝업 매장에서 '이거 우리 집에서도 되나요?' 질문에 실제 시연이 없어 설득 못하는 상태", "폭염 시즌 에어컨 전기세 불안 — AI 절감 체감을 수치로 보여주지 못하면 구매 전환 안 됨", "MZ 고객이 카페처럼 감성적 공간을 원하는데 스마트홈을 기능 나열로만 설명하고 있음"],
+          "solutions": ["팝업 현장에서 '원룸~아파트 3가지 공간별 시연' 30초 영상 루프로 즉시 체감시키기", "비포/애프터 전기세 비교 1장 — '대구 7-8월 평균 대비 월 ₩15,000 절감' 숫자로 클로징", "수성구 카페 무드 조명 + 음악 자동화 시연 → '우리 집도 이 분위기' 감성 진입점 만들기"]
         },
         "en": {
           "region": "An inland basin city in southeastern Korea, a center of the textile and fashion industry.",
@@ -5820,7 +5826,9 @@
           "housing": "Primarily mid-to-large apartment complexes using both central and individual air conditioning systems.",
           "behavior": "Strong interest in cooling energy savings and automated indoor temperature control during heatwave season.",
           "implication": "Energy-efficient solutions for extreme temperatures and temperature automation are core value propositions.",
-          "trends": ["K-fashion textile fusion pop-up culture expanding", "AI indoor cooling automation demand surging for heatwaves", "Suseong-gu cafe district MZ lifestyle spending hub", "New Daegu-Gyeongbuk airport infra investment growing"]
+          "trends": ["K-fashion textile fusion pop-up culture expanding", "AI indoor cooling automation demand surging for heatwaves", "Suseong-gu cafe district MZ lifestyle spending hub", "New Daegu-Gyeongbuk airport infra investment growing"],
+          "pains": ["Pop-up shoppers ask 'Will this work in my home?' but no live demo to prove it", "Heatwave energy anxiety — AI savings claims without hard numbers won't convert", "MZ customers want cafe-mood spaces but smart home pitch is all spec sheets"],
+          "solutions": ["Loop 30-sec 'room-type demo' video at pop-ups — studio/apt/house side by side", "One before/after bill card — 'Save ₩15K/month vs Daegu Jul-Aug average' closes the deal", "Demo cafe-mood lighting + auto-music scene — 'your home, this vibe' as the emotional hook"]
         }
       }
     },
@@ -5838,7 +5846,9 @@
           "housing": "연구단지 인근 신축 아파트와 원도심 주택이 혼재하며, 기술 수용도가 높습니다.",
           "behavior": "IT 종사자가 많아 첨단 스마트홈 기술 얼리어답터 비율이 높습니다.",
           "implication": "기술 친화적 사용자를 위한 고급 자동화 및 IoT 통합 솔루션이 유리합니다.",
-          "trends": ["대덕연구단지 R&D 인력 기반 IoT 얼리어답터 시장", "KTX 대전역 역세권 개발 — 신규 스마트홈 수요 창출", "사이언스 페스티벌·빵축제 등 지역 특화 행사 확대", "KAIST 스타트업 생태계 — 스마트홈 기술 시범 도시"]
+          "trends": ["대덕연구단지 R&D 인력 기반 IoT 얼리어답터 시장", "KTX 대전역 역세권 개발 — 신규 스마트홈 수요 창출", "사이언스 페스티벌·빵축제 등 지역 특화 행사 확대", "KAIST 스타트업 생태계 — 스마트홈 기술 시범 도시"],
+          "pains": ["대덕 R&D 연구원이 IoT 기기에 관심은 높지만 '삼성 스마트홈이 뭐가 다른지' 차별점 설명이 안 됨", "KTX 역세권 신축 입주민이 빌트인 가전 비교 중인데 현장 체험 공간이 없어 경쟁사에 밀림", "사이언스 페스티벌 방문객 대상 체험 부스 운영 시 기술 데모만 있고 구매 전환 동선이 없음"],
+          "solutions": ["대덕 연구원 대상 'SmartThings 오픈 API 연동 시연' — 기술자 눈높이 차별화 포인트 제시", "KTX 역세권 모델하우스에 '3분 스마트홈 투어' 상설 체험존 구축 → 입주 전 사전 경험 제공", "페스티벌 부스에서 체험→QR→온라인 견적 자동 연결 동선 설계로 현장 리드 확보"]
         },
         "en": {
           "region": "A central inland city in Korea, an innovation hub with dense science and technology research complexes.",
@@ -5846,7 +5856,9 @@
           "housing": "Mix of new apartments near research parks and older urban homes, with high technology acceptance.",
           "behavior": "High proportion of IT professionals leads to strong early adopter rates for advanced smart home technology.",
           "implication": "Advanced automation and IoT integration solutions for tech-savvy users are advantageous.",
-          "trends": ["Daedeok R&D cluster IoT early-adopter market", "KTX Daejeon station area development creating smart home demand", "Science Festival and Bread Festival local events expanding", "KAIST startup ecosystem — smart home tech pilot city"]
+          "trends": ["Daedeok R&D cluster IoT early-adopter market", "KTX Daejeon station area development creating smart home demand", "Science Festival and Bread Festival local events expanding", "KAIST startup ecosystem — smart home tech pilot city"],
+          "pains": ["Daedeok R&D staff are IoT-curious but can't articulate Samsung smart home differentiators", "KTX station new residents comparing built-in brands with no hands-on experience space", "Science Festival booth has tech demos but zero purchase conversion funnel"],
+          "solutions": ["Demo 'SmartThings open API integration' for researchers — speak their technical language", "Set up '3-min smart home tour' permanent zone in KTX-area model homes for pre-move-in experience", "Design booth experience → QR → online quote auto-flow to capture on-site leads"]
         }
       }
     },
@@ -5864,7 +5876,9 @@
           "housing": "중형 아파트 단지와 단독주택이 혼재하며, 리모델링 기반 스마트홈 수요가 있습니다.",
           "behavior": "에너지 절약과 생활 편의 중심의 실용적 스마트홈 관심이 높습니다.",
           "implication": "기존 주택 리모델링에 적합한 설치 용이한 스마트홈 솔루션이 효과적입니다.",
-          "trends": ["힙트레디션 — 옛 감성 현대적 재해석 소비 2026년에도 확산", "필코노미 — 가치 중심 프리미엄 경험 소비 증가 지속", "광주 비엔날레 연계 문화·예술 마케팅 시즌 활성", "MZ세대 팝업스토어·이색체험·로컬크리에이터 반응 활발"]
+          "trends": ["힙트레디션 — 옛 감성 현대적 재해석 소비 2026년에도 확산", "필코노미 — 가치 중심 프리미엄 경험 소비 증가 지속", "광주 비엔날레 연계 문화·예술 마케팅 시즌 활성", "MZ세대 팝업스토어·이색체험·로컬크리에이터 반응 활발"],
+          "pains": ["힙트레디션 소비자가 '레트로 감성 인테리어'를 원하는데 스마트홈을 차갑고 기계적으로 인식함", "필코노미 고객이 '가치 있는 경험'에 투자하지만 스마트홈의 감성 가치를 전달하지 못하고 있음", "비엔날레 시즌 유입 고객 대상으로 문화·예술과 연계한 스마트홈 체험 기회를 놓치고 있음"],
+          "solutions": ["한옥 무드 조명 + 자연음 자동화 시연 → '옛 감성 + 첨단 편의' 힙트레디션 콘셉트 체험존 구성", "필코노미 타깃 '나만의 홈 루틴 큐레이션' 체험 → 수면·아로마·조명 패키지로 감성 가치 소구", "비엔날레 전시장 연계 팝업에서 예술 작품 조명 연동 SmartThings 시연으로 문화 소비층 유입"]
         },
         "en": {
           "region": "The central city of the Honam region in southwestern Korea, known as a city of culture and arts.",
@@ -5872,7 +5886,9 @@
           "housing": "Mix of mid-size apartment complexes and detached houses, with demand for remodeling-based smart home solutions.",
           "behavior": "Practical smart home interest focused on energy savings and daily convenience.",
           "implication": "Easy-to-install smart home solutions suitable for existing home remodeling are effective.",
-          "trends": ["Hip-Tradition — retro aesthetics reimagined, still growing in 2026", "Feel-conomy — value-driven premium experience spending continues", "Gwangju Biennale-linked cultural and art marketing season", "Pop-up stores, experiential retail, and local creators thriving"]
+          "trends": ["Hip-Tradition — retro aesthetics reimagined, still growing in 2026", "Feel-conomy — value-driven premium experience spending continues", "Gwangju Biennale-linked cultural and art marketing season", "Pop-up stores, experiential retail, and local creators thriving"],
+          "pains": ["Hip-Tradition shoppers want retro-mood interiors but see smart home as cold and mechanical", "Feel-conomy buyers invest in 'meaningful experiences' but smart home fails to convey emotional value", "Biennale-season foot traffic is missed — no art-linked smart home experience offered"],
+          "solutions": ["Hanok-mood lighting + nature sound automation demo — 'retro charm + smart convenience' zone", "Curate 'My Home Routine' experience for Feel-conomy — sleep/aroma/lighting emotional package", "Biennale pop-up with art-piece-synced SmartThings lighting demo to capture culture consumers"]
         }
       }
     },
@@ -5890,7 +5906,9 @@
           "housing": "신도시 대단지 아파트와 구도심 주택이 공존하며, 신축 스마트홈 수요가 높습니다.",
           "behavior": "공기질 관리와 난방 에너지 절감에 대한 관심이 높습니다.",
           "implication": "공기청정 연동 환기 시스템과 에너지 모니터링이 중요한 시장입니다.",
-          "trends": ["송도·청라 스마트시티 2.0 IoT 인프라 확대", "미세먼지 공기질 관리 가전 수요 급증", "공항 인근 물류·숙박업 자동화 니즈 확산", "신도시 영패밀리 빌트인 스마트홈 선호"]
+          "trends": ["송도·청라 스마트시티 2.0 IoT 인프라 확대", "미세먼지 공기질 관리 가전 수요 급증", "공항 인근 물류·숙박업 자동화 니즈 확산", "신도시 영패밀리 빌트인 스마트홈 선호"],
+          "pains": ["송도 스마트시티 입주민이 IoT 인프라는 갖춰져 있는데 삼성 연동 혜택을 모르고 타사 선택함", "미세먼지 심한 날 공기청정기 가동만으로 부족 — 환기·에어컨·청정기 통합 제어 방법을 모름", "영패밀리가 빌트인 스마트홈을 원하지만 아이 안전·육아 연동 기능이 있는지 확인이 안 됨"],
+          "solutions": ["송도 입주민 대상 'SmartThings × 스마트시티 연동 가이드' 배포 → 타사 대비 통합 우위 입증", "미세먼지 시즌 '공기질 토탈케어 패키지' — 청정기+환기+에어컨 자동 연동 원스톱 시연", "영패밀리 타깃 '아이방 안심 모드' 시연 — 창문 잠금·공기질·온도 자동 관리 육아 시나리오 제시"]
         },
         "en": {
           "region": "A western coastal city in the Seoul metropolitan area, home to the international airport and free economic zones.",
@@ -5898,7 +5916,9 @@
           "housing": "Coexistence of large new-town apartment complexes and older urban housing, with high demand for new smart home installations.",
           "behavior": "Strong interest in air quality management and heating energy savings.",
           "implication": "Air purifier-linked ventilation systems and energy monitoring are key market drivers.",
-          "trends": ["Songdo/Cheongna Smart City 2.0 IoT expansion", "Fine dust drives air quality appliance demand", "Airport-area logistics and hospitality automation", "Young families prefer built-in smart home packages"]
+          "trends": ["Songdo/Cheongna Smart City 2.0 IoT expansion", "Fine dust drives air quality appliance demand", "Airport-area logistics and hospitality automation", "Young families prefer built-in smart home packages"],
+          "pains": ["Songdo smart city residents have IoT infra but pick competitors — unaware of Samsung integration perks", "Air purifier alone isn't enough on bad dust days — no idea how to unify purifier/ventilation/AC control", "Young families want built-in smart home but can't verify child-safety or parenting-linked features"],
+          "solutions": ["Distribute 'SmartThings × Smart City integration guide' to Songdo residents — prove ecosystem edge", "Fine dust season 'Total Air Care Package' — one-stop demo of purifier + ventilation + AC auto-sync", "Demo 'Kids Room Safe Mode' for young families — auto window lock, air quality, temp management scenario"]
         }
       }
     },
@@ -5916,7 +5936,9 @@
           "housing": "단독주택과 펜션형 건물이 많으며, 이주민 대상 스마트홈 리모델링 수요가 증가 중입니다.",
           "behavior": "원격 관리와 보안에 대한 관심이 높고, 관광 숙박업 대상 자동화 수요도 있습니다.",
           "implication": "강풍·고습 환경 대응과 원격 모니터링, 숙박업 자동화가 핵심 니즈입니다.",
-          "trends": ["디지털 노마드·한달살기 원격 스마트홈 관리 수요", "제2공항 추진 — 관광 인프라 대규모 재편 예정", "친환경 에너지 자급자족 섬 프로젝트 확대", "이주민 대상 펜션 자동화·보안 솔루션 인기"]
+          "trends": ["디지털 노마드·한달살기 원격 스마트홈 관리 수요", "제2공항 추진 — 관광 인프라 대규모 재편 예정", "친환경 에너지 자급자족 섬 프로젝트 확대", "이주민 대상 펜션 자동화·보안 솔루션 인기"],
+          "pains": ["한달살기 게스트가 체크아웃 후 에어컨·조명 끄지 않아 전기요금 폭탄 — 원격 관리가 안 됨", "제2공항 개항 대비 숙박업 확장 중인데 객실마다 수동 관리하면 인건비가 감당이 안 됨", "태양광 패널은 설치했지만 가전 에너지 소비와 연동이 안 돼 절감 효과를 체감 못함"],
+          "solutions": ["SmartThings 원격 관리 — 체크아웃 감지 시 전체 가전 자동 OFF + 에너지 리포트 오너에게 전송", "객실별 IoT 자동화 패키지 — 체크인/아웃 연동 조명·온도·도어락 일괄 제어로 무인 운영 구현", "태양광 발전량 + 가전 소비량 SmartThings 대시보드 통합 → 실시간 에너지 자급률 시각화"]
         },
         "en": {
           "region": "South Korea's southernmost volcanic island, a special autonomous province with high tourism and migration demand.",
@@ -5924,7 +5946,9 @@
           "housing": "Many detached houses and pension-style buildings; growing smart home remodeling demand from new residents.",
           "behavior": "High interest in remote management and security; automation demand for tourism accommodation businesses.",
           "implication": "Wind and humidity resilience, remote monitoring, and hospitality automation are core needs.",
-          "trends": ["Digital nomad 'month-stay' remote smart home demand", "Second airport project reshaping tourism infra", "Eco-energy self-sufficient island initiatives expand", "Pension automation and security for new residents"]
+          "trends": ["Digital nomad 'month-stay' remote smart home demand", "Second airport project reshaping tourism infra", "Eco-energy self-sufficient island initiatives expand", "Pension automation and security for new residents"],
+          "pains": ["Month-stay guests leave AC/lights on after checkout — no remote shutoff means surprise utility bills", "Expanding lodging for 2nd airport but manual room-by-room management is cost-prohibitive", "Solar panels installed but not linked to appliance usage — can't feel the energy savings"],
+          "solutions": ["SmartThings remote control — auto-off all devices on checkout detection + energy report to owner", "Per-room IoT package — check-in/out synced lighting, temp, door lock for unmanned operation", "Integrate solar output + appliance consumption on SmartThings dashboard — real-time self-sufficiency view"]
         }
       }
     },
@@ -5942,7 +5966,9 @@
           "housing": "최신 스마트시티 인프라를 갖춘 신축 아파트 중심으로, 스마트홈 빌트인 비율이 매우 높습니다.",
           "behavior": "젊은 공무원 가구 중심으로 스마트홈 기술 수용도와 활용도가 높습니다.",
           "implication": "스마트시티 연계 서비스와 최신 IoT 플랫폼 통합이 핵심 차별화 요소입니다.",
-          "trends": ["행복도시 2단계 스마트시티 인프라 본격 가동", "젊은 공무원 가구 IoT 기기 얼리어답터 비율 최고", "자율주행 셔틀·드론배송 등 신기술 시범 도시 선정", "공공 데이터 기반 에너지 관리 플랫폼 실증 확대"]
+          "trends": ["행복도시 2단계 스마트시티 인프라 본격 가동", "젊은 공무원 가구 IoT 기기 얼리어답터 비율 최고", "자율주행 셔틀·드론배송 등 신기술 시범 도시 선정", "공공 데이터 기반 에너지 관리 플랫폼 실증 확대"],
+          "pains": ["스마트시티 인프라는 깔렸는데 집 안 가전이 도시 플랫폼과 연동 안 돼 따로 노는 느낌", "얼리어답터 공무원이 IoT 기기를 여러 개 쓰는데 브랜드별로 앱이 달라 통합 관리가 안 됨", "공공 에너지 플랫폼 데이터는 있는데 우리 집 가전 절감에 어떻게 적용하는지 모름"],
+          "solutions": ["SmartThings × 세종 스마트시티 플랫폼 연동 시연 → '도시와 집이 하나로' 통합 체험 제공", "멀티브랜드 IoT 기기 SmartThings 허브 통합 데모 → '앱 하나로 전부 관리' 전환 유도", "공공 에너지 데이터 기반 '우리 집 맞춤 절전 추천' 자동화 시나리오 시연으로 실질 절감 체감"]
         },
         "en": {
           "region": "Korea's planned administrative capital in the central region, where government ministries have relocated.",
@@ -5950,7 +5976,9 @@
           "housing": "Centered on new apartments with cutting-edge smart city infrastructure; very high built-in smart home rates.",
           "behavior": "Young civil servant households show high smart home technology acceptance and utilization.",
           "implication": "Smart city-linked services and latest IoT platform integration are key differentiators.",
-          "trends": ["Happy City Phase 2 smart city infra fully operational", "Highest IoT early-adopter ratio among young civil servants", "Autonomous shuttle and drone delivery pilot city", "Public data-driven energy management platform expanding"]
+          "trends": ["Happy City Phase 2 smart city infra fully operational", "Highest IoT early-adopter ratio among young civil servants", "Autonomous shuttle and drone delivery pilot city", "Public data-driven energy management platform expanding"],
+          "pains": ["Smart city infra is deployed but home appliances don't sync with the city platform — feels disconnected", "Early-adopter civil servants use multiple IoT devices but different brand apps prevent unified control", "Public energy platform data exists but residents don't know how to apply it to their home savings"],
+          "solutions": ["Demo SmartThings × Sejong smart city platform sync — 'city and home as one' integrated experience", "Multi-brand IoT hub consolidation demo — 'one app controls everything' conversion pitch", "Auto-recommend 'personalized home energy savings' using public data — show real bill reduction"]
         }
       }
     },
@@ -5968,7 +5996,9 @@
           "housing": "아파트 중심 주거에서 실내 상태를 빠르게 바꾸는 자동화 수요가 큽니다.",
           "behavior": "퇴근 후 짧은 시간 안에 공기, 조명, 가전 상태를 빠르게 정리하고 싶어합니다.",
           "implication": "집 도착 직후 쾌적성 회복, 취침 전 정리 루틴, 빠른 케어 장면이 잘 맞습니다.",
-          "trends": ["1인·1.5인 가구 급증, 소형 맞춤 가전 수요 확대", "슬로우에이징·수면·멘탈 등 일상 웰니스 관심 폭증", "AI 홈로봇·SmartThings 통합 스마트홈 일상화", "감정 소비(필코노미) 중심 제품 선택 트렌드"]
+          "trends": ["1인·1.5인 가구 급증, 소형 맞춤 가전 수요 확대", "슬로우에이징·수면·멘탈 등 일상 웰니스 관심 폭증", "AI 홈로봇·SmartThings 통합 스마트홈 일상화", "감정 소비(필코노미) 중심 제품 선택 트렌드"],
+          "pains": ["1인 가구 고객이 소형 가전을 찾는데 스마트홈은 '큰 집용'이라는 인식이 강해 관심 밖", "수면·웰니스 관심은 높은데 스마트홈이 '건강 관리'에 어떻게 도움되는지 연결이 안 됨", "필코노미 소비자가 감성적 구매를 원하는데 스마트홈 매장은 스펙 비교표만 보여주고 있음"],
+          "solutions": ["원룸·오피스텔 맞춤 '미니 스마트홈 세트' 시연 — 3평에서도 작동하는 자동화 체험 제공", "수면 루틴 자동화 시연 — 취침 시간 조명 감소 + 공기질 조절 + 알람 연동 웰니스 패키지", "감성 체험존 구성 — 무드 조명 + 음악 + 향기 자동화 시연으로 '느끼는 스마트홈' 전환"]
         },
         "en": {
           "region": "A very dense metro where fast routine shifts and home efficiency matter a lot.",
@@ -5976,7 +6006,9 @@
           "housing": "Apartment living creates strong demand for automation that can reset the home state quickly.",
           "behavior": "People often want air, lighting, and appliance status to settle quickly after arriving home.",
           "implication": "Fast comfort recovery, pre-sleep reset routines, and quick care scenes fit naturally.",
-          "trends": ["Solo/1.5-person households surge, compact appliance demand", "Daily wellness boom: sleep, mental care, slow aging", "AI home robots and SmartThings-integrated living", "Feelconomy: mood-driven product choices rise"]
+          "trends": ["Solo/1.5-person households surge, compact appliance demand", "Daily wellness boom: sleep, mental care, slow aging", "AI home robots and SmartThings-integrated living", "Feelconomy: mood-driven product choices rise"],
+          "pains": ["Solo households think smart home is 'for big houses' — compact appliance buyers don't even consider it", "Sleep and wellness interest is high but no connection made between smart home and health benefits", "Feelconomy shoppers want emotional purchases but stores only show spec comparison charts"],
+          "solutions": ["Demo 'Mini Smart Home Set' for studios — show automation works even in 10sqm spaces", "Sleep routine automation demo — bedtime dimming + air quality adjust + alarm sync wellness package", "Build mood experience zone — lighting + music + scent automation to shift from specs to feelings"]
         },
         "de": {
           "region": "Eine sehr dichte Metropole, in der schnelle Routinenwechsel und Wohneffizienz stark zählen.",
@@ -6025,7 +6057,9 @@
           "housing": "산업단지 인근 대형 아파트 단지가 주를 이루며, 소득 수준이 높아 프리미엄 수요가 있습니다.",
           "behavior": "공기질 관리와 에너지 효율에 관심이 높으며, 고소득 가구의 프리미엄 기기 선호가 뚜렷합니다.",
           "implication": "산업 도시 특성에 맞는 공기질 솔루션과 프리미엄 스마트홈 패키지가 유효합니다.",
-          "trends": ["현대차·조선 산업단지 스마트팩토리 연계 가전 수요", "고소득 맞벌이 가구 프리미엄 빌트인 시장 확대", "산업지역 미세먼지 — 공기청정 토탈 솔루션 니즈", "울산 태화강 생태도시 전환 — 친환경 에너지 관심"]
+          "trends": ["현대차·조선 산업단지 스마트팩토리 연계 가전 수요", "고소득 맞벌이 가구 프리미엄 빌트인 시장 확대", "산업지역 미세먼지 — 공기청정 토탈 솔루션 니즈", "울산 태화강 생태도시 전환 — 친환경 에너지 관심"],
+          "pains": ["현대차 직원이 공장에선 스마트팩토리 쓰면서 집에선 수동 가전 — 홈 자동화 기대치가 높음", "맞벌이라 집에 없는 시간이 길어 프리미엄 가전을 사도 활용도가 낮다고 느끼는 불만", "산업단지 미세먼지가 심한데 공기청정기만으론 부족 — 환기·세탁·건조까지 연계가 필요"],
+          "solutions": ["스마트팩토리 출근 경험과 연결 — '퇴근하면 집도 자동 세팅' SmartThings 루틴 시연", "맞벌이 타깃 '외출 중 자동 케어' 시나리오 — 로봇청소기+공기청정+세탁 예약 통합 데모", "산업단지 인근 아파트 대상 '미세먼지 토탈케어' — 외부 공기질 연동 환기+청정+건조 자동화"]
         },
         "en": {
           "region": "A southeastern industrial city, the center of heavy industries including automotive, shipbuilding, and petrochemicals.",
@@ -6033,7 +6067,9 @@
           "housing": "Predominantly large apartment complexes near industrial zones; high income levels support premium demand.",
           "behavior": "Strong interest in air quality management and energy efficiency; high-income households prefer premium devices.",
           "implication": "Air quality solutions tailored to industrial cities and premium smart home packages are effective.",
-          "trends": ["Hyundai/shipyard smart factory-linked appliance demand", "Dual-income premium built-in smart home market growth", "Industrial district fine dust — total air purification needs", "Taehwagang eco-city transition — green energy interest"]
+          "trends": ["Hyundai/shipyard smart factory-linked appliance demand", "Dual-income premium built-in smart home market growth", "Industrial district fine dust — total air purification needs", "Taehwagang eco-city transition — green energy interest"],
+          "pains": ["Hyundai workers use smart factory at work but manual appliances at home — high home automation expectations", "Dual-income couples feel premium appliances are underused since nobody's home most of the day", "Industrial fine dust too heavy for air purifier alone — need ventilation, laundry, dryer integration"],
+          "solutions": ["Link factory experience — 'home auto-sets when you leave work' SmartThings routine demo", "Dual-income 'auto-care while away' scenario — robot vacuum + purifier + laundry reservation combo demo", "Industrial-area apartment 'Total Dust Care' — outdoor air quality-synced ventilation + purifier + dryer automation"]
         }
       }
     },

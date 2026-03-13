@@ -1578,21 +1578,23 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const local = data.local || null;
     const evidence = [];
 
-    // 라이브 트렌드 기반 고민/솔루션 우선, 정적 role_lens fallback
+    // 라이브 트렌드 기반 고민/솔루션 우선 → 정적 city_signals 연결 → 정적 role_lens fallback
     const livePains = toList(data.live_pains).slice(0, 3);
     const liveSolutions = toList(data.live_solutions).slice(0, 3);
+    const cityContent = getCitySignalContent(countryCode, city);
+    const cityPains = toList(cityContent?.pains).slice(0, 3);
+    const citySolutions = toList(cityContent?.solutions).slice(0, 3);
     const staticPains = toList(roleLens.pain_points).slice(0, 3);
     const staticSolutions = toList(roleLens.solutions).slice(0, 3);
     const mustKnow = toList(roleLens.must_know).slice(0, 3);
     const executionPoints = toList(roleLens.execution_points).slice(0, 3);
-    const realPains = livePains.length ? livePains : (staticPains.length ? staticPains : mustKnow);
-    const realSolutions = liveSolutions.length ? liveSolutions : (staticSolutions.length ? staticSolutions : executionPoints);
+    const realPains = livePains.length ? livePains : (cityPains.length ? cityPains : (staticPains.length ? staticPains : mustKnow));
+    const realSolutions = liveSolutions.length ? liveSolutions : (citySolutions.length ? citySolutions : (staticSolutions.length ? staticSolutions : executionPoints));
 
     const sections = [];
 
     // 1) 지역 트렌드 섹션: 실시간 API 우선, 정적 데이터 fallback
     const liveTrends = toList(data.live_trends).slice(0, 4);
-    const cityContent = getCitySignalContent(countryCode, city);
     const staticTrends = toList(cityContent?.trends).slice(0, 4);
     const trends = liveTrends.length ? liveTrends : staticTrends;
     if (trends.length) {
