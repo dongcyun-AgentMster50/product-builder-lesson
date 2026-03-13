@@ -4988,7 +4988,7 @@ function renderOutputPreview() {
             { icon: "03", title: "지역 맞춤 인사이트", desc: "Observation-Insight-Implication 구조로 왜 이 시장에서 먹히는지 설명합니다." },
             { icon: "04", title: "마케팅 메시지", desc: "직무에 맞는 메시지와 카피 옵션을 비교해 볼 수 있습니다." },
             { icon: "05", title: "주요 고객 혜택", desc: "사용자가 직접 느끼는 이점을 우선순위로 정리합니다." },
-            { icon: "06", title: "타겟 및 AI FGD 관점", desc: "좋아할 점과 우려할 점을 함께 보고 수용도를 판단합니다." },
+            { icon: "06", title: "타겟 및 고객 수용도 분석", desc: "좋아할 점과 우려할 점을 함께 보고 수용도를 판단합니다." },
             { icon: "07", title: "캠페인 타이밍 및 크리에이티브 방향", desc: "언제, 어떤 장면으로 밀어야 하는지 바로 연결합니다." }
         ]
         : [
@@ -4997,7 +4997,7 @@ function renderOutputPreview() {
             { icon: "03", title: "Local Insight", desc: "Explain why this scenario should work in the market through Observation, Insight, and Implication." },
             { icon: "04", title: "Marketing Messages", desc: "Compare campaign-ready copy options tuned to the selected role." },
             { icon: "05", title: "Customer Benefits", desc: "Prioritize the user benefits that will persuade most clearly." },
-            { icon: "06", title: "Target & AI FGD Read", desc: "Estimate likely likes, concerns, and acceptance before execution." },
+            { icon: "06", title: "Target & Acceptance Read", desc: "Estimate likely likes, concerns, and acceptance before execution." },
             { icon: "07", title: "Timing & Creative Direction", desc: "Connect the scenario to campaign timing and usable story direction." }
         ];
 
@@ -5860,7 +5860,7 @@ function getOutputTitles() {
             facts: "03. 지역 맞춤 인사이트",
             marketing: "04. 마케팅 메시지",
             benefits: "05. 고객 베네핏",
-            target: "06. 타겟 세그먼트 및 AI FGD 수용도 관점",
+            target: "06. 타겟 세그먼트 및 고객 수용도 분석",
             timing: "07. 캠페인 타이밍 및 크리에이티브 방향",
             devices: "08. 지역 적용 가능한 기기 및 설정 방법",
             marketability: "09. 시나리오 시장성 평가(리스크 포함)",
@@ -5874,7 +5874,7 @@ function getOutputTitles() {
         facts: "03. Local Insight",
         marketing: "04. Marketing Messages",
         benefits: "05. Customer Benefits",
-        target: "06. Target Segment & AI FGD Acceptance Read",
+        target: "06. Target Segment & Acceptance Read",
         timing: "07. Timing & Creative Direction",
         devices: "08. Available Devices & Setup Guide",
         marketability: "09. Marketability & Risk Evaluation",
