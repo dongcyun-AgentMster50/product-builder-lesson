@@ -113,3 +113,10 @@
 - Files changed: `server.js`, `main.js`, `js/constants.js`(new), `js/ui-text.js`(new), `index.html`, `references/dotcom_mapping.json`, `session-notes.md`.
 - Git: not committed yet.
 - Next: 필요시 commit/push. 추가 모듈화(builders, renderer 분리) 가능.
+
+## 2026-03-13 07:02 (UTC)
+- User message (raw): "대화 저장, 커밋 및 푸시 부탁해"
+- Actions: Saved this session on explicit request; fixed local OpenAI fallback and `gpt-5` streaming compatibility in `server.js`; updated Q2 live KPI wording, Q3 household exclusivity for `나 혼자`, and redesigned Q4 into presets/quick chips/summary; replaced the generic streaming status with a Samsung-toned status plus a reusable selection summary card for generate/refine context.
+- Files changed: `index.html`, `main.js`, `style.css`, `server.js`, `session-notes.md`.
+- Git: commit and push requested for the current worktree.
+- Next: verify the refreshed Q3/Q4 and streaming summary UI in-browser, then iterate on phone selection and any remaining layout polish.

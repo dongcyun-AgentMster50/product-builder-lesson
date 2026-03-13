@@ -33,6 +33,10 @@ const personaGroups = document.getElementById("persona-groups");
 const segmentCustomInput = document.getElementById("segment-custom");
 const deviceGrid = document.getElementById("device-grid");
 const deviceCustomInput = document.getElementById("device-custom");
+const q4Presets = document.getElementById("q4-presets");
+const q4CoreChips = document.getElementById("q4-core-chips");
+const q4AddonChips = document.getElementById("q4-addon-chips");
+const q4Summary = document.getElementById("q4-summary");
 const exportActions = document.getElementById("export-actions");
 const wizardLogoutBtn = document.getElementById("wizard-logout-btn");
 const prevBtn = document.getElementById("prev-btn");
@@ -74,6 +78,14 @@ let selectedProvider = sessionStorage.getItem("aiProvider") || "openai";
 let userOverrideLocale = null;
 
 const SUPPORTED_UI_LOCALES = ["ko", "en", "de", "fr", "es", "pt", "it", "nl", "ar"];
+const Q4_CORE_DEVICE_IDS = ["tv-premium", "refrigerator", "washer", "air-conditioner"];
+const Q4_ADDON_DEVICE_IDS = ["wearable-care", "air-purifier", "robot-vacuum", "smart-plug", "camera", "hub", "speaker"];
+const Q4_PRESETS = [
+    { id: "baseline", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner"] },
+    { id: "energy", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "smart-plug", "eco-aircon"] },
+    { id: "care", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "care-camera", "activity-sensor"] },
+    { id: "mood", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "speaker", "soundbar"] }
+];
 
 function detectBrowserLocale() {
     const lang = (navigator.language || navigator.userLanguage || "en").toLowerCase();
@@ -168,11 +180,16 @@ function bindEvents() {
         handleChecklistChange(event, deviceGrid);
         updateStatePreview();
         updateStepInsight();
+        renderQ4Composer();
     });
     deviceCustomInput.addEventListener("input", () => {
         updateStatePreview();
         updateStepInsight();
+        renderQ4Summary();
     });
+    q4Presets?.addEventListener("click", handleQ4PresetClick);
+    q4CoreChips?.addEventListener("click", handleQ4QuickChipClick);
+    q4AddonChips?.addEventListener("click", handleQ4QuickChipClick);
 }
 
 function shouldBypassAccessForLocal() {
@@ -419,6 +436,201 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
     }).join("");
 }
 
+function getDefaultDeviceSelectionsForCountry(siteCode) {
+    const normalizedSiteCode = normalizeSiteCode(String(siteCode || "").trim().toUpperCase());
+    if (normalizedSiteCode === "KR") {
+        return ["air-conditioner", "washer", "tv-premium", "refrigerator"];
+    }
+    return [];
+}
+
+function getQ4PresetCopy(presetId) {
+    const ko = {
+        baseline: { title: "기본 조합", desc: "한국 가정의 기본 가전 중심으로 시작" },
+        energy: { title: "에너지 절약형", desc: "절약 루틴과 전력 관리까지 같이 보기" },
+        care: { title: "케어 확장형", desc: "돌봄·부재 대응까지 엮는 조합" },
+        mood: { title: "무드 확장형", desc: "TV와 사운드 중심의 체감형 조합" }
+    };
+    const en = {
+        baseline: { title: "Baseline", desc: "Start from common home devices" },
+        energy: { title: "Energy", desc: "Add savings and power control" },
+        care: { title: "Care", desc: "Extend into care and away-mode use" },
+        mood: { title: "Mood", desc: "Lean into TV and sound moments" }
+    };
+    const source = currentLocale === "ko" ? ko : en;
+    return source[presetId] || source.baseline;
+}
+
+function getQ4SummaryCopy() {
+    if (currentLocale === "ko") {
+        return {
+            selected: "현재 반영 기기",
+            capabilities: "가능한 기능",
+            limits: "현재 제한",
+            recommend: "추천 추가 기기",
+            empty: "기기를 고르면 여기서 가능한 시나리오 범위와 한계가 바로 보입니다."
+        };
+    }
+    return {
+        selected: "Current devices",
+        capabilities: "What this enables",
+        limits: "Current limits",
+        recommend: "Recommended additions",
+        empty: "Choose devices to see what the scenario can realistically do."
+    };
+}
+
+function renderQ4Composer() {
+    if (!q4Presets || !q4CoreChips || !q4AddonChips) return;
+
+    q4Presets.innerHTML = Q4_PRESETS.map((preset) => {
+        const copy = getQ4PresetCopy(preset.id);
+        return `
+            <button type="button" class="q4-preset-btn" data-preset-id="${preset.id}">
+                <strong>${escapeHtml(copy.title)}</strong>
+                <span>${escapeHtml(copy.desc)}</span>
+            </button>
+        `;
+    }).join("");
+
+    q4CoreChips.innerHTML = renderQ4QuickChipButtons(Q4_CORE_DEVICE_IDS, "core");
+    q4AddonChips.innerHTML = renderQ4QuickChipButtons(Q4_ADDON_DEVICE_IDS, "addon");
+    syncQ4QuickChipSelection();
+    renderQ4Summary();
+}
+
+function renderQ4QuickChipButtons(optionIds, kind) {
+    return optionIds.map((optionId) => {
+        const input = deviceGrid?.querySelector(`input[data-node-type="child"][value="${optionId}"]`);
+        if (!input) return "";
+        const label = input.dataset.label || input.value;
+        const selectedClass = input.checked ? " selected" : "";
+        return `
+            <button type="button" class="q4-chip-btn${selectedClass}" data-q4-chip="${kind}" data-option-id="${optionId}">
+                ${escapeHtml(label)}
+            </button>
+        `;
+    }).join("");
+}
+
+function handleQ4PresetClick(event) {
+    const button = event.target.closest("[data-preset-id]");
+    if (!button) return;
+    const preset = Q4_PRESETS.find((item) => item.id === button.dataset.presetId);
+    if (!preset) return;
+
+    const allQuickIds = new Set([...Q4_CORE_DEVICE_IDS, ...Q4_ADDON_DEVICE_IDS, ...preset.deviceIds]);
+    allQuickIds.forEach((optionId) => setDeviceOptionChecked(optionId, preset.deviceIds.includes(optionId)));
+    renderQ4Composer();
+    updateStatePreview();
+    updateStepInsight();
+}
+
+function handleQ4QuickChipClick(event) {
+    const button = event.target.closest("[data-option-id]");
+    if (!button) return;
+    const optionId = button.dataset.optionId;
+    const input = deviceGrid?.querySelector(`input[data-node-type="child"][value="${optionId}"]`);
+    if (!input) return;
+    setDeviceOptionChecked(optionId, !input.checked);
+    renderQ4Composer();
+    updateStatePreview();
+    updateStepInsight();
+}
+
+function setDeviceOptionChecked(optionId, shouldCheck) {
+    const input = deviceGrid?.querySelector(`input[data-node-type="child"][value="${optionId}"]`);
+    if (!input) return;
+    input.checked = shouldCheck;
+    const group = input.closest(".tree-group");
+    if (group) {
+        if (input.dataset.hasSub === "true") {
+            toggleSubChildren(group, optionId, shouldCheck);
+        }
+        syncChecklistParent(group);
+    }
+}
+
+function syncQ4QuickChipSelection() {
+    [q4CoreChips, q4AddonChips].forEach((container) => {
+        container?.querySelectorAll("[data-option-id]").forEach((button) => {
+            const optionId = button.dataset.optionId;
+            const input = deviceGrid?.querySelector(`input[data-node-type="child"][value="${optionId}"]`);
+            button.classList.toggle("selected", Boolean(input?.checked));
+        });
+    });
+}
+
+function buildQ4CapabilitySummary(selectedNormalizedDevices) {
+    const deviceSet = new Set(selectedNormalizedDevices);
+    const capabilities = [];
+    const limits = [];
+    const recommendations = [];
+
+    if (deviceSet.has("TV")) capabilities.push(currentLocale === "ko" ? "TV를 알림 허브나 장면 연출 포인트로 활용 가능" : "TV can act as a visible alert and scene anchor");
+    else recommendations.push(currentLocale === "ko" ? "TV를 넣으면 집 안 장면 연출과 알림 전달이 쉬워집니다." : "Add a TV to make alerts and scene storytelling more visible.");
+
+    if (deviceSet.has("세탁기") || deviceSet.has("세탁기/건조기")) capabilities.push(currentLocale === "ko" ? "가사 자동화와 세탁 루틴 중심 시나리오 구성 가능" : "Laundry-driven automation becomes credible");
+    else limits.push(currentLocale === "ko" ? "가사 자동화 축이 약해져 생활 밀착감이 줄어듭니다." : "Without laundry devices, chore automation feels weaker.");
+
+    if (deviceSet.has("냉장고")) capabilities.push(currentLocale === "ko" ? "식생활/푸드 케어 장면까지 자연스럽게 확장 가능" : "Food-care and kitchen routines can be included");
+    else recommendations.push(currentLocale === "ko" ? "냉장고를 넣으면 주방·식생활 메시지까지 확장됩니다." : "Add a refrigerator to extend into food-care routines.");
+
+    if (deviceSet.has("에어컨")) capabilities.push(currentLocale === "ko" ? "쾌적성·에너지 절감 메시지를 바로 연결 가능" : "Comfort and energy-saving scenarios become immediate");
+    else limits.push(currentLocale === "ko" ? "귀가 직후 쾌적성 장면이 약해질 수 있습니다." : "Arrival comfort moments will be weaker without climate control.");
+
+    if (deviceSet.has("센서")) capabilities.push(currentLocale === "ko" ? "재실·부재·감지 기반 자동 실행 설계 가능" : "Presence and trigger-based automation becomes possible");
+    else {
+        limits.push(currentLocale === "ko" ? "센서가 없으면 감지 기반 자동화는 보수적으로 설명해야 합니다." : "Without sensors, trigger automation must stay conservative.");
+        recommendations.push(currentLocale === "ko" ? "센서나 허브를 추가하면 자동화 설득력이 크게 올라갑니다." : "Add sensors or a hub to unlock stronger automation logic.");
+    }
+
+    if (!deviceSet.has("스피커")) {
+        recommendations.push(currentLocale === "ko" ? "스피커를 넣으면 음성·무드 경험을 더 쉽게 연결할 수 있습니다." : "Add a speaker to support voice and mood-driven scenes.");
+    }
+
+    return { capabilities, limits, recommendations };
+}
+
+function renderQ4Summary() {
+    if (!q4Summary) return;
+    syncQ4QuickChipSelection();
+
+    const copy = getQ4SummaryCopy();
+    const selectedLabels = getSelectedDeviceLabels();
+    const selectedDevices = getSelectedDevices();
+
+    if (!selectedLabels.length) {
+        q4Summary.innerHTML = `<p class="q4-summary-empty">${escapeHtml(copy.empty)}</p>`;
+        return;
+    }
+
+    const capabilitySummary = buildQ4CapabilitySummary(selectedDevices);
+    const selectedMarkup = selectedLabels.slice(0, 8).map((label) => `<span class="q4-summary-chip">${escapeHtml(label)}</span>`).join("");
+    const capabilityMarkup = capabilitySummary.capabilities.slice(0, 3).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+    const limitMarkup = capabilitySummary.limits.slice(0, 2).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+    const recommendMarkup = capabilitySummary.recommendations.slice(0, 2).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+
+    q4Summary.innerHTML = `
+        <section class="q4-summary-block">
+            <span class="q4-summary-label">${escapeHtml(copy.selected)}</span>
+            <div class="q4-summary-chip-row">${selectedMarkup}</div>
+        </section>
+        <section class="q4-summary-block">
+            <span class="q4-summary-label">${escapeHtml(copy.capabilities)}</span>
+            <ul class="q4-summary-list">${capabilityMarkup}</ul>
+        </section>
+        <section class="q4-summary-block">
+            <span class="q4-summary-label">${escapeHtml(copy.limits)}</span>
+            <ul class="q4-summary-list">${limitMarkup || `<li>${escapeHtml(currentLocale === "ko" ? "현재 조합으로도 기본 시나리오 구성은 가능합니다." : "The current setup still supports a viable baseline scenario.")}</li>`}</ul>
+        </section>
+        <section class="q4-summary-block">
+            <span class="q4-summary-label">${escapeHtml(copy.recommend)}</span>
+            <ul class="q4-summary-list">${recommendMarkup || `<li>${escapeHtml(currentLocale === "ko" ? "지금 조합만으로도 1차 결과를 만들기 충분합니다." : "This setup is already enough for a strong first output.")}</li>`}</ul>
+        </section>
+    `;
+}
+
 function handleChecklistChange(event, container) {
     const target = event.target;
     if (!(target instanceof HTMLInputElement)) return;
@@ -435,6 +647,28 @@ function handleChecklistChange(event, container) {
     if (mode === "radio" && target.checked) {
         const customInput = group.querySelector('.tree-custom-input');
         if (customInput) customInput.value = "";
+    }
+
+    if (
+        container === personaGroups &&
+        groupId === "household" &&
+        target.dataset.nodeType === "child" &&
+        target.checked
+    ) {
+        const householdChildren = [...group.querySelectorAll('input[data-node-type="child"]')];
+        if (target.value === "solo") {
+            householdChildren.forEach((child) => {
+                if (child === target) return;
+                child.checked = false;
+                toggleSubChildren(group, child.value, false);
+            });
+        } else {
+            const soloInput = group.querySelector('input[data-node-type="child"][value="solo"]');
+            if (soloInput) {
+                soloInput.checked = false;
+                toggleSubChildren(group, "solo", false);
+            }
+        }
     }
 
     // Legacy checkbox-parent behaviour (device groups)
@@ -712,6 +946,18 @@ function getCityValue() {
     return citySelect.value.trim();
 }
 
+function getCityDisplayValue(countryCode, cityName) {
+    const normalizedCity = normalizeCityValue(cityName);
+    if (!normalizedCity) return "";
+    const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
+    const matchedEntry = cityEntries.find((entry) =>
+        entry.countryCode === countryCode &&
+        (normalizeCityValue(entry.displayName) === normalizedCity ||
+         (entry.aliases || []).some((alias) => normalizeCityValue(alias) === normalizedCity))
+    );
+    return matchedEntry ? getLocalizedCityName(matchedEntry) : cityName;
+}
+
 function toggleCityCustomInput() {
     const useCustom = citySelect.value === CITY_CUSTOM_VALUE;
     cityCustomInput.classList.toggle("hidden", !useCustom);
@@ -819,7 +1065,10 @@ function populateInputs(preserved = {}) {
     const previousCity = preserved.city || getCityValue();
     const previousPersonaSelections = preserved.personaSelections || getSelectedPersonaOptionIds();
     const previousSegmentCustom = preserved.segmentCustom || segmentCustomInput.value;
-    const previousDeviceSelections = preserved.deviceSelections || getSelectedDeviceOptionIds();
+    const rawDeviceSelections = preserved.deviceSelections || getSelectedDeviceOptionIds();
+    const previousDeviceSelections = rawDeviceSelections.length
+        ? rawDeviceSelections
+        : getDefaultDeviceSelectionsForCountry(previousCountry);
     const previousDeviceCustom = preserved.deviceCustom || deviceCustomInput.value;
 
     marketOptions = buildMarketOptions();
@@ -844,6 +1093,7 @@ function populateInputs(preserved = {}) {
     if (previousDeviceCustom) deviceCustomInput.value = previousDeviceCustom;
     syncAllChecklistParents(personaGroups);
     syncAllChecklistParents(deviceGrid);
+    renderQ4Composer();
 }
 
 async function handleUnlock() {
@@ -1585,6 +1835,20 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const executionPoints = toList(roleLens.execution_points).slice(0, 3);
     const realPains = livePains.length ? livePains : (cityPains.length ? cityPains : (staticPains.length ? staticPains : mustKnow));
     const realSolutions = liveSolutions.length ? liveSolutions : (citySolutions.length ? citySolutions : (staticSolutions.length ? staticSolutions : executionPoints));
+    const formatQ2MetricHint = (metric) => {
+        const normalizedMetric = String(metric || "").trim();
+        if (!normalizedMetric) return "";
+        if (currentLocale === "ko") {
+            if (normalizedMetric === "시연 완료율 → 상담 전환율") {
+                return "[KPI] 매장 시연을 끝까지 본 고객이 실제 상담까지 이어지도록 만드는 흐름";
+            }
+            return `[KPI] ${normalizedMetric}`;
+        }
+        if (normalizedMetric === "Demo completion → consultation conversion") {
+            return "[KPI] Turn completed demos into actual consultation conversations";
+        }
+        return `[KPI] ${normalizedMetric}`;
+    };
 
     const sections = [];
 
@@ -1629,9 +1893,7 @@ function mapLiveStep2Insight(data, countryCode, city) {
         const roleMetric = roleLens.primary_metric || "";
         const solutionItems = [...realSolutions];
         if (roleMetric) {
-            solutionItems.push(currentLocale === "ko"
-                ? `[KPI] ${roleMetric}`
-                : `[KPI] ${roleMetric}`);
+            solutionItems.push(formatQ2MetricHint(roleMetric));
         }
         sections.push({
             title: currentLocale === "ko" ? "이렇게 풀어보세요" : "Try this approach",
@@ -2561,8 +2823,10 @@ function generateScenario() {
     aiScenarioContext = {
         role: getRoleTitle(role.id),
         roleId: role.id,
+        countryCode: country.countryCode,
         country: getCountryName(country.countryCode),
         city: city || "",
+        cityDisplay: getCityDisplayValue(country.countryCode, city || ""),
         segment: selectedSegment,
         purpose,
         devices: selectedDeviceLabels.length > 0 ? selectedDeviceLabels : selectedDevices.map((device) => getCategoryName(device)),
@@ -2695,16 +2959,86 @@ async function streamGenerateScenario(context) {
     });
 }
 
+function getMissionBucketLabel(missionBucket) {
+    const labels = {
+        Discover: { ko: "Discover", en: "Discover" },
+        Save: { ko: "Save", en: "Save" },
+        Care: { ko: "Care", en: "Care" },
+        Secure: { ko: "Secure", en: "Secure" },
+        Play: { ko: "Play", en: "Play" }
+    };
+    const key = String(missionBucket || "Discover");
+    return labels[key]?.[currentLocale] || labels[key]?.en || key;
+}
+
+function buildSelectionSummaryCard(context) {
+    const copy = currentLocale === "ko"
+        ? {
+            market: "시장",
+            target: "타겟",
+            value: "반영할 가치",
+            devices: "반영 기기",
+            purpose: "상황 메모"
+        }
+        : {
+            market: "Market",
+            target: "Target",
+            value: "Value to reflect",
+            devices: "Devices",
+            purpose: "Scenario note"
+        };
+
+    const cityText = context.cityDisplay || context.city || "";
+    const marketText = `${context.country}${cityText ? ` / ${cityText}` : ""}`;
+    const deviceItems = (context.devices || []).slice(0, 6).map((device) => `<span class="ai-selection-chip">${escapeHtml(device)}</span>`).join("");
+
+    return `
+        <section class="ai-selection-card">
+            <div class="ai-selection-grid">
+                <div class="ai-selection-block">
+                    <span class="ai-selection-label">${escapeHtml(copy.market)}</span>
+                    <strong>${escapeHtml(marketText)}</strong>
+                </div>
+                <div class="ai-selection-block">
+                    <span class="ai-selection-label">${escapeHtml(copy.value)}</span>
+                    <strong>${escapeHtml(getMissionBucketLabel(context.missionBucket))}</strong>
+                </div>
+                <div class="ai-selection-block ai-selection-block--wide">
+                    <span class="ai-selection-label">${escapeHtml(copy.target)}</span>
+                    <strong>${escapeHtml(context.segment || "-")}</strong>
+                </div>
+                <div class="ai-selection-block ai-selection-block--wide">
+                    <span class="ai-selection-label">${escapeHtml(copy.devices)}</span>
+                    <div class="ai-selection-chip-row">${deviceItems || `<span class="ai-selection-chip">${escapeHtml(currentLocale === "ko" ? "선택 기기 없음" : "No devices selected")}</span>`}</div>
+                </div>
+                ${context.purpose ? `
+                    <div class="ai-selection-block ai-selection-block--wide">
+                        <span class="ai-selection-label">${escapeHtml(copy.purpose)}</span>
+                        <strong>${escapeHtml(context.purpose)}</strong>
+                    </div>
+                ` : ""}
+            </div>
+        </section>
+    `;
+}
+
 function buildStreamingUI(context) {
     const label = currentLocale === "ko"
-        ? `AI가 시나리오를 생성 중입니다... (${context.country}${context.city ? " / " + context.city : ""} · ${context.missionBucket})`
-        : `Generating scenario... (${context.country}${context.city ? " / " + context.city : ""} · ${context.missionBucket})`;
+        ? "선택한 조건에 맞춰 시나리오를 정리하고 있습니다"
+        : "Shaping the scenario around your selected inputs";
+    const sublabel = currentLocale === "ko"
+        ? "시장, 타겟, 기기, 반영할 가치를 기준으로 결과를 맞추는 중입니다."
+        : "Aligning the result to your market, target, devices, and chosen value.";
     return `
         <article class="scenario-output ai-streaming">
             <div class="ai-stream-header">
                 <span class="ai-stream-spinner" aria-hidden="true"></span>
-                <span class="ai-stream-status">${escapeHtml(label)}</span>
+                <div class="ai-stream-status-wrap">
+                    <span class="ai-stream-status">${escapeHtml(label)}</span>
+                    <span class="ai-stream-substatus">${escapeHtml(sublabel)}</span>
+                </div>
             </div>
+            ${buildSelectionSummaryCard(context)}
             <pre class="ai-stream-output" aria-live="polite" aria-label="AI generating scenario"></pre>
         </article>
     `;
@@ -2716,9 +3050,10 @@ function renderAIResult(markdown, context) {
         <article class="scenario-output ai-result">
             <div class="ai-result-meta">
                 <span class="ai-result-badge">AI Generated</span>
-                <span class="ai-result-context">${escapeHtml(context.country)}${context.city ? " / " + escapeHtml(context.city) : ""} · ${escapeHtml(context.missionBucket)} · ${escapeHtml(context.role)}</span>
+                <span class="ai-result-context">${escapeHtml(context.role)}</span>
                 <button type="button" class="tab-btn ai-copy-btn" id="ai-copy-btn">${currentLocale === "ko" ? "복사" : "Copy"}</button>
             </div>
+            ${buildSelectionSummaryCard(context)}
             <div class="ai-result-body">${html}</div>
             ${buildRefinementUI()}
         </article>
