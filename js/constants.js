@@ -29,14 +29,40 @@ const ROLE_LENSES = [
 const PERSONA_CATEGORY_GROUPS = [
     {
         id: "household",
-        title: "A. 우리 집은",
-        mode: "radio",
+        title: "A. 우리 집 구성원",
+        mode: "checkbox",
         options: [
-            { id: "solo", label: "나 혼자 산다" },
-            { id: "couple", label: "둘이 산다 (커플/부부/룸메이트)" },
-            { id: "with_child", label: "아이와 함께 산다" },
-            { id: "with_senior", label: "부모님(시니어)과 함께 산다" },
-            { id: "multi_gen", label: "여러 세대가 함께 산다" }
+            { id: "solo", label: "나 혼자" },
+            { id: "partner", label: "배우자/파트너", sub: [
+                { id: "partner_dual_income", label: "맞벌이" },
+                { id: "partner_single_income", label: "외벌이" }
+            ]},
+            { id: "children", label: "자녀", sub: [
+                { id: "child_infant", label: "영유아 (0–6세)" },
+                { id: "child_elementary", label: "초등 (7–12세)" },
+                { id: "child_teen", label: "청소년 (13–18세)" },
+                { id: "child_adult", label: "성인 자녀 (19세+)" },
+                { id: "child_multi", label: "자녀 2명 이상" }
+            ]},
+            { id: "parents_senior", label: "부모님/시니어", sub: [
+                { id: "parent_one", label: "한 분" },
+                { id: "parent_both", label: "두 분" },
+                { id: "parent_60s", label: "60대" },
+                { id: "parent_70plus", label: "70대 이상" }
+            ]},
+            { id: "siblings", label: "형제·자매" },
+            { id: "roommate", label: "룸메이트/하우스메이트" },
+            { id: "pet", label: "반려동물", sub: [
+                { id: "pet_dog", label: "강아지" },
+                { id: "pet_cat", label: "고양이" },
+                { id: "pet_other", label: "기타 (파충류·어류·소동물 등)" }
+            ]},
+            { id: "accessibility", label: "접근성 배려 필요 구성원", sub: [
+                { id: "acc_mobility", label: "거동 불편 (휠체어·보행기)" },
+                { id: "acc_visual_hearing", label: "시각·청각 지원 필요" },
+                { id: "acc_cognitive", label: "인지 지원 (치매·발달장애 등)" },
+                { id: "acc_child_safety", label: "영유아 안전 (문잠금·모서리 등)" }
+            ]}
         ],
         customPlaceholder: "위에 해당하지 않는 경우 직접 입력"
     },
@@ -45,7 +71,6 @@ const PERSONA_CATEGORY_GROUPS = [
         title: "B. 요즘 관심사",
         mode: "checkbox",
         options: [
-            { id: "int_pet", label: "반려동물 케어" },
             { id: "int_health", label: "건강·수면·운동" },
             { id: "int_energy", label: "에너지·비용 절감" },
             { id: "int_entertain", label: "홈시네마·음악·게임" },
@@ -60,33 +85,55 @@ const PERSONA_CATEGORY_GROUPS = [
     },
     {
         id: "housing",
-        title: "C. 집 환경",
+        title: "C. 거주지 유형",
         mode: "radio",
         options: [
             { id: "apt_high", label: "아파트 고층 (15층+)" },
             { id: "apt_low", label: "아파트·빌라 저중층" },
-            { id: "studio", label: "원룸·스튜디오" },
-            { id: "detached", label: "단독·타운하우스" },
+            { id: "studio", label: "원룸·오피스텔·스튜디오" },
+            { id: "detached", label: "단독주택" },
+            { id: "townhouse", label: "타운하우스·연립" },
             { id: "suburban", label: "전원·교외 주택" },
-            { id: "rental", label: "임대·단기 거주" }
+            { id: "rental", label: "임대·단기 거주 (월세·전세)" },
+            { id: "shared", label: "셰어하우스·기숙사" }
         ],
         customPlaceholder: "위에 해당하지 않는 경우 직접 입력"
     }
 ];
 
 const PERSONA_GROUP_TITLE_EN = {
-    household: "A. Our home is",
+    household: "A. Household members",
     interest: "B. Current interests",
-    housing: "C. Home environment"
+    housing: "C. Housing type"
 };
 
 const PERSONA_OPTION_LABEL_EN = {
     solo: "I live alone",
-    couple: "Two of us (couple / spouse / roommate)",
-    with_child: "Living with children",
-    with_senior: "Living with parents (senior)",
-    multi_gen: "Multi-generational household",
-    int_pet: "Pet care",
+    partner: "Spouse / Partner",
+    partner_dual_income: "Dual income",
+    partner_single_income: "Single income",
+    children: "Children",
+    child_infant: "Infant / Toddler (0–6)",
+    child_elementary: "Elementary (7–12)",
+    child_teen: "Teenager (13–18)",
+    child_adult: "Adult child (19+)",
+    child_multi: "2+ children",
+    parents_senior: "Parents / Senior",
+    parent_one: "One parent",
+    parent_both: "Both parents",
+    parent_60s: "60s",
+    parent_70plus: "70s or older",
+    siblings: "Siblings",
+    roommate: "Roommate / Housemate",
+    pet: "Pets",
+    pet_dog: "Dog",
+    pet_cat: "Cat",
+    pet_other: "Other (reptile, fish, small animal, etc.)",
+    accessibility: "Accessibility needs",
+    acc_mobility: "Mobility support (wheelchair, walker)",
+    acc_visual_hearing: "Visual / Hearing support",
+    acc_cognitive: "Cognitive support (dementia, developmental)",
+    acc_child_safety: "Child safety (locks, corner guards, etc.)",
     int_health: "Health / Sleep / Fitness",
     int_energy: "Energy / Cost saving",
     int_entertain: "Home cinema / Music / Gaming",
@@ -98,22 +145,166 @@ const PERSONA_OPTION_LABEL_EN = {
     int_season: "Seasonal events (holidays, year-end, World Cup, etc.)",
     apt_high: "High-rise apartment (15F+)",
     apt_low: "Low/mid-rise apartment or villa",
-    studio: "Studio / One-room",
-    detached: "Detached / Townhouse",
+    studio: "Studio / Officetel / One-room",
+    detached: "Detached house",
+    townhouse: "Townhouse / Row house",
     suburban: "Suburban / Rural home",
-    rental: "Rental / Short-term residence"
+    rental: "Rental / Short-term residence",
+    shared: "Shared housing / Dormitory"
 };
 
 const PERSONA_CUSTOM_PLACEHOLDER_EN = {
-    household: "Other household type — type here",
+    household: "Other household member — type here",
     interest: "Other interests — type here",
     housing: "Other housing type — type here"
 };
 
-function getLocalizedPersonaGroups(locale) {
-    if (locale === "ko") return PERSONA_CATEGORY_GROUPS;
+/* Locale-specific housing overrides — merged at runtime via getLocalizedPersonaGroups */
+const LOCALE_HOUSING_OPTIONS = {
+    KR: [
+        { id: "apt_high", label: "아파트 고층 (15층+)" },
+        { id: "apt_low", label: "아파트·빌라 저중층" },
+        { id: "officetel", label: "오피스텔" },
+        { id: "studio", label: "원룸" },
+        { id: "jusang", label: "주상복합" },
+        { id: "detached", label: "단독주택" },
+        { id: "rental", label: "임대 (월세·전세)" },
+        { id: "shared", label: "셰어하우스·고시원" }
+    ],
+    US: [
+        { id: "apartment", label: "Apartment" },
+        { id: "condo", label: "Condominium" },
+        { id: "townhouse", label: "Townhouse" },
+        { id: "single_family", label: "Single-family home" },
+        { id: "studio", label: "Studio" },
+        { id: "duplex", label: "Duplex" },
+        { id: "mobile_home", label: "Mobile / Manufactured home" },
+        { id: "loft", label: "Loft" }
+    ],
+    GB: [
+        { id: "detached", label: "Detached house" },
+        { id: "semi_detached", label: "Semi-detached house" },
+        { id: "terraced", label: "Terraced house" },
+        { id: "flat", label: "Flat / Apartment" },
+        { id: "bungalow", label: "Bungalow" },
+        { id: "cottage", label: "Cottage" },
+        { id: "maisonette", label: "Maisonette" },
+        { id: "studio", label: "Studio" }
+    ],
+    UK: null, // alias — resolved to GB at runtime
+    DE: [
+        { id: "wohnung", label: "Wohnung (Apartment)" },
+        { id: "altbau", label: "Altbau (Pre-war)" },
+        { id: "neubau", label: "Neubau (Modern)" },
+        { id: "einfamilienhaus", label: "Einfamilienhaus (Detached)" },
+        { id: "reihenhaus", label: "Reihenhaus (Row house)" },
+        { id: "doppelhaus", label: "Doppelhaus (Semi-detached)" },
+        { id: "wg", label: "WG (Shared flat)" },
+        { id: "studio", label: "Studio / 1-Zimmer" }
+    ],
+    FR: [
+        { id: "appartement", label: "Appartement" },
+        { id: "studio", label: "Studio" },
+        { id: "maison", label: "Maison individuelle" },
+        { id: "maison_ville", label: "Maison de ville" },
+        { id: "hlm", label: "HLM (Social housing)" },
+        { id: "pavillon", label: "Pavillon" },
+        { id: "loft", label: "Loft" },
+        { id: "chambre_bonne", label: "Chambre de bonne" }
+    ],
+    IN: [
+        { id: "flat", label: "Flat / Apartment (BHK)" },
+        { id: "independent", label: "Independent house" },
+        { id: "bungalow", label: "Bungalow" },
+        { id: "villa", label: "Villa (gated community)" },
+        { id: "chawl", label: "Chawl" },
+        { id: "pg", label: "PG (Paying Guest)" },
+        { id: "row_house", label: "Row house" },
+        { id: "penthouse", label: "Penthouse" }
+    ],
+    JP: [
+        { id: "mansion", label: "マンション (Mansion)" },
+        { id: "apaato", label: "アパート (Apartment)" },
+        { id: "ikkodate", label: "一戸建て (Detached)" },
+        { id: "danchi", label: "団地 (Public housing)" },
+        { id: "one_room", label: "ワンルーム (Studio)" },
+        { id: "ur", label: "UR賃貸 (UR Rental)" },
+        { id: "sharehouse", label: "シェアハウス (Share house)" }
+    ],
+    BR: [
+        { id: "apartamento", label: "Apartamento" },
+        { id: "casa", label: "Casa" },
+        { id: "sobrado", label: "Sobrado" },
+        { id: "quitinete", label: "Quitinete / Studio" },
+        { id: "cobertura", label: "Cobertura (Penthouse)" },
+        { id: "condominio", label: "Condominio fechado" },
+        { id: "casa_geminada", label: "Casa geminada" },
+        { id: "loft", label: "Loft" }
+    ],
+    VN: [
+        { id: "chung_cu", label: "Chung cu (Apartment)" },
+        { id: "nha_pho", label: "Nha pho (Townhouse)" },
+        { id: "nha_rieng", label: "Nha rieng (Detached)" },
+        { id: "biet_thu", label: "Biet thu (Villa)" },
+        { id: "tube_house", label: "Nha ong (Tube house)" },
+        { id: "can_ho_dv", label: "Can ho dich vu (Serviced apt)" },
+        { id: "officetel", label: "Officetel" },
+        { id: "studio", label: "Studio" }
+    ],
+    ID: [
+        { id: "rumah_tapak", label: "Rumah tapak (Landed house)" },
+        { id: "apartemen", label: "Apartemen" },
+        { id: "rumah_susun", label: "Rumah susun (Public flat)" },
+        { id: "perumahan", label: "Perumahan (Housing estate)" },
+        { id: "cluster", label: "Cluster housing" },
+        { id: "kost", label: "Kost (Boarding house)" },
+        { id: "kontrakan", label: "Kontrakan (Rented house)" },
+        { id: "townhouse", label: "Townhouse" }
+    ],
+    AE: [
+        { id: "apartment", label: "Apartment" },
+        { id: "studio", label: "Studio" },
+        { id: "villa", label: "Villa" },
+        { id: "townhouse", label: "Townhouse" },
+        { id: "compound", label: "Compound / Villa community" },
+        { id: "penthouse", label: "Penthouse" },
+        { id: "duplex", label: "Duplex" }
+    ],
+    SA: [
+        { id: "apartment", label: "Apartment (شقة)" },
+        { id: "villa", label: "Villa (فيلا)" },
+        { id: "duplex_villa", label: "Duplex Villa" },
+        { id: "townhouse", label: "Townhouse" },
+        { id: "compound", label: "Compound (كمباوند)" },
+        { id: "traditional", label: "Traditional house" },
+        { id: "penthouse", label: "Penthouse" }
+    ]
+};
 
-    return PERSONA_CATEGORY_GROUPS.map((group) => ({
+function getLocalizedPersonaGroups(locale, countryCode) {
+    const resolveHousingOptions = (baseOptions) => {
+        if (!countryCode) return baseOptions;
+        const code = countryCode === "UK" ? "GB" : countryCode === "SEC" ? "KR" : countryCode;
+        const localeOptions = LOCALE_HOUSING_OPTIONS[code];
+        if (localeOptions) return localeOptions;
+        // Check alias (e.g. AT → DE)
+        const aliasMap = { AT: "DE", CH: "DE", CH_FR: "FR", CA_FR: "FR", BE_FR: "FR", AU: "US", CA: "US", NZ: "US", IE: "GB" };
+        const alias = aliasMap[code];
+        if (alias && LOCALE_HOUSING_OPTIONS[alias]) return LOCALE_HOUSING_OPTIONS[alias];
+        return baseOptions;
+    };
+
+    const groups = PERSONA_CATEGORY_GROUPS.map((group) => {
+        const g = { ...group };
+        if (group.id === "housing") {
+            g.options = resolveHousingOptions(group.options);
+        }
+        return g;
+    });
+
+    if (locale === "ko") return groups;
+
+    return groups.map((group) => ({
         ...group,
         title: PERSONA_GROUP_TITLE_EN[group.id] || group.title,
         customPlaceholder: PERSONA_CUSTOM_PLACEHOLDER_EN[group.id] || group.customPlaceholder,
