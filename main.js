@@ -4984,13 +4984,21 @@ function renderOutputPreview() {
     const cards = isKo
         ? [
             { icon: "01", title: "시나리오 요약", desc: "타겟 고객과 핵심 가치가 한눈에 정리됩니다." },
-            { icon: "02", title: "상세 시나리오", desc: "고객 여정, 자동화 흐름, 역할별 활용 포인트가 포함됩니다." },
-            { icon: "03", title: "실행 체크리스트", desc: "기기 가용성, 지역 데이터, 실행 가능 여부가 검증됩니다." }
+            { icon: "02", title: "상세 시나리오", desc: "타겟 고객과 적용 서비스, Pain Point-해결책-Benefit 구조의 시나리오 카드가 정리됩니다." },
+            { icon: "03", title: "지역 맞춤 인사이트", desc: "Observation-Insight-Implication 구조로 왜 이 시장에서 먹히는지 설명합니다." },
+            { icon: "04", title: "마케팅 메시지", desc: "직무에 맞는 메시지와 카피 옵션을 비교해 볼 수 있습니다." },
+            { icon: "05", title: "주요 고객 혜택", desc: "사용자가 직접 느끼는 이점을 우선순위로 정리합니다." },
+            { icon: "06", title: "타겟 및 AI FGD 관점", desc: "좋아할 점과 우려할 점을 함께 보고 수용도를 판단합니다." },
+            { icon: "07", title: "캠페인 타이밍 및 크리에이티브 방향", desc: "언제, 어떤 장면으로 밀어야 하는지 바로 연결합니다." }
         ]
         : [
             { icon: "01", title: "Scenario Summary", desc: "Target customer and core value proposition at a glance." },
-            { icon: "02", title: "Detailed Scenario", desc: "Customer journey, automation flow, and role-specific action points." },
-            { icon: "03", title: "Execution Checklist", desc: "Device availability, regional data, and feasibility are verified." }
+            { icon: "02", title: "Detailed Scenario", desc: "Target customer, applied services, and mini scenario cards with pain, resolution, and benefit." },
+            { icon: "03", title: "Local Insight", desc: "Explain why this scenario should work in the market through Observation, Insight, and Implication." },
+            { icon: "04", title: "Marketing Messages", desc: "Compare campaign-ready copy options tuned to the selected role." },
+            { icon: "05", title: "Customer Benefits", desc: "Prioritize the user benefits that will persuade most clearly." },
+            { icon: "06", title: "Target & AI FGD Read", desc: "Estimate likely likes, concerns, and acceptance before execution." },
+            { icon: "07", title: "Timing & Creative Direction", desc: "Connect the scenario to campaign timing and usable story direction." }
         ];
 
     resultDiv.innerHTML = `
@@ -5847,13 +5855,13 @@ function renderLensPanel(lens) {
 function getOutputTitles() {
     if (currentLocale === "ko") {
         return {
-            summary: "01. CX 시나리오 제목 및 Summary(웹툰 포함)",
-            scenario: "02. 상세 시나리오(Detailed Scenario)",
-            facts: "03. 지역 특성(출처 포함), 인사이트 등 추론 과정",
+            summary: "01. 시나리오 제목 및 요약",
+            scenario: "02. 상세 시나리오",
+            facts: "03. 지역 맞춤 인사이트",
             marketing: "04. 마케팅 메시지",
             benefits: "05. 고객 베네핏",
-            target: "06. 타겟 고객 설명(규모, 비율, 구매력 등)",
-            timing: "07. 적용 시기",
+            target: "06. 타겟 세그먼트 및 AI FGD 수용도 관점",
+            timing: "07. 캠페인 타이밍 및 크리에이티브 방향",
             devices: "08. 지역 적용 가능한 기기 및 설정 방법",
             marketability: "09. 시나리오 시장성 평가(리스크 포함)",
             addon: "10. Add-on Pack — 고객 적용 가이드/실행률 + Claim–Funnel–Metric Mapping",
@@ -5861,13 +5869,13 @@ function getOutputTitles() {
         };
     }
     return {
-        summary: "01. CX Scenario Title & Summary (Inc. Webtoon)",
+        summary: "01. Title & Summary",
         scenario: "02. Detailed Scenario",
-        facts: "03. Regional Context & Data Grounds",
+        facts: "03. Local Insight",
         marketing: "04. Marketing Messages",
         benefits: "05. Customer Benefits",
-        target: "06. Target Audience Data (Size, Purchase Power)",
-        timing: "07. Strategic Timing",
+        target: "06. Target Segment & AI FGD Acceptance Read",
+        timing: "07. Timing & Creative Direction",
         devices: "08. Available Devices & Setup Guide",
         marketability: "09. Marketability & Risk Evaluation",
         addon: "10. Add-on Pack — Implementation & Funnel Mapping",
