@@ -236,49 +236,69 @@ Rules:
 - Use the latest knowledge you have about this city's calendar and culture.
 - Write in ${lang}.`;
 
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 8000);
+    const messages = [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `City: ${city}\nCountry: ${country}` }
+    ];
 
-    try {
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-                model: "gpt-4o-mini",
-                max_tokens: 600,
-                temperature: 0.7,
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: `City: ${city}\nCountry: ${country}` }
-                ]
-            }),
-            signal: controller.signal
-        });
+    // 1차 시도 (5초) → 실패 시 2차 재시도 (8초)
+    const ATTEMPT_TIMEOUTS = [5000, 8000];
 
-        if (!response.ok) {
-            console.error(`[fetchLiveTrends] OpenAI API returned ${response.status} for ${city}, ${country}`);
-            return { type: "live_trends", trends: [], events: [] };
+    for (let attempt = 0; attempt < ATTEMPT_TIMEOUTS.length; attempt++) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), ATTEMPT_TIMEOUTS[attempt]);
+
+        try {
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: "gpt-4o-mini",
+                    max_tokens: 600,
+                    temperature: 0.7,
+                    messages
+                }),
+                signal: controller.signal
+            });
+
+            if (!response.ok) {
+                console.error(`[fetchLiveTrends] Attempt ${attempt + 1}: OpenAI API returned ${response.status} for ${city}, ${country}`);
+                clearTimeout(timer);
+                continue; // 재시도
+            }
+
+            const data = await response.json();
+            let content = data?.choices?.[0]?.message?.content || "";
+            // GPT가 ```json ... ``` 마크다운으로 감쌀 수 있으므로 제거
+            content = content.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+            const parsed = JSON.parse(content);
+            const result = {
+                type: "live_trends",
+                trends: Array.isArray(parsed?.trends) ? parsed.trends.slice(0, 4) : [],
+                events: Array.isArray(parsed?.events) ? parsed.events.slice(0, 3) : []
+            };
+            // 파싱 성공했지만 내용이 비어있으면 재시도
+            if (!result.trends.length && !result.events.length) {
+                console.error(`[fetchLiveTrends] Attempt ${attempt + 1}: Empty result for ${city}, ${country}`);
+                clearTimeout(timer);
+                continue;
+            }
+            clearTimeout(timer);
+            if (attempt > 0) console.log(`[fetchLiveTrends] Succeeded on retry (attempt ${attempt + 1}) for ${city}, ${country}`);
+            return result;
+        } catch (err) {
+            clearTimeout(timer);
+            console.error(`[fetchLiveTrends] Attempt ${attempt + 1} failed for ${city}, ${country}:`, err?.message || err);
+            // 마지막 시도가 아니면 루프가 다음 시도로 넘어감
         }
-
-        const data = await response.json();
-        let content = data?.choices?.[0]?.message?.content || "";
-        // GPT가 ```json ... ``` 마크다운으로 감쌀 수 있으므로 제거
-        content = content.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
-        const parsed = JSON.parse(content);
-        return {
-            type: "live_trends",
-            trends: Array.isArray(parsed?.trends) ? parsed.trends.slice(0, 4) : [],
-            events: Array.isArray(parsed?.events) ? parsed.events.slice(0, 3) : []
-        };
-    } catch (err) {
-        console.error(`[fetchLiveTrends] Failed for ${city}, ${country}:`, err?.message || err);
-        return { type: "live_trends", trends: [], events: [] };
-    } finally {
-        clearTimeout(timer);
     }
+
+    // 모든 시도 실패
+    console.error(`[fetchLiveTrends] All attempts exhausted for ${city}, ${country}`);
+    return { type: "live_trends", trends: [], events: [] };
 }
 
 function buildRoleLens(locale, role, country, city) {

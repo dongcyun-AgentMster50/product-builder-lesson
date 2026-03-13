@@ -5,7 +5,7 @@ const ACCESS_API = {
     logoutEndpoint: "/api/access/logout"
 };
 const REGION_INSIGHT_API = "/api/region-insight";
-const REGION_INSIGHT_CLIENT_TIMEOUT_MS = 12500;
+const REGION_INSIGHT_CLIENT_TIMEOUT_MS = 20000;
 const ACCESS_CLIENT_SESSION_KEY = "scenario-access-client-session-id";
 
 const resultDiv = document.getElementById("result");
