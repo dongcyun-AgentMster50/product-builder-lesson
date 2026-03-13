@@ -120,3 +120,10 @@
 - Files changed: `index.html`, `main.js`, `style.css`, `server.js`, `session-notes.md`.
 - Git: commit and push requested for the current worktree.
 - Next: verify the refreshed Q3/Q4 and streaming summary UI in-browser, then iterate on phone selection and any remaining layout polish.
+
+## 2026-03-13 09:45 (UTC)
+- User message (raw): "지금 내용 저장바래"
+- Actions: Saved the current discussion state on explicit request; confirmed the latest production issue is not static fallback but the deployed `SYSTEM_PROMPT` still using the older schema with storyboard/08/09 output, while code fixes for API error visibility, serverless `gpt-5` token params, and Q2 city-specific grounding had already been committed and pushed.
+- Files changed: `session-notes.md`
+- Git: worktree was clean before this note; latest pushed application commit remained on `origin/main`.
+- Next: on the next machine, continue from the prompt-source unification issue by switching deployed serverless generation/refine to the latest prompt source or updating the deployed `SYSTEM_PROMPT`.
