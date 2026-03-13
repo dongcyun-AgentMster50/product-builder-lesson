@@ -297,12 +297,21 @@ function callOpenAIStream({ systemPrompt, messages, apiKey, res, onDone, onError
         ...messages
     ];
 
-    const body = JSON.stringify({
-        model: model || process.env.OPENAI_MODEL || "gpt-4o",
-        max_tokens: max_tokens || 8000,
+    const resolvedModel = model || process.env.OPENAI_MODEL || "gpt-4o";
+    const resolvedMaxTokens = max_tokens || 8000;
+    const requestBody = {
+        model: resolvedModel,
         stream: true,
         messages: openaiMessages
-    });
+    };
+
+    if (/^gpt-5(\b|[-.])/i.test(resolvedModel)) {
+        requestBody.max_completion_tokens = resolvedMaxTokens;
+    } else {
+        requestBody.max_tokens = resolvedMaxTokens;
+    }
+
+    const body = JSON.stringify(requestBody);
 
     const options = {
         method: "POST",
@@ -409,7 +418,7 @@ async function handleGenerate(req, res) {
     const tags       = Array.isArray(body?.intentTags) ? body.intentTags.join(", ") : String(body?.intentTags || "");
     const mission    = String(body?.missionBucket || "").trim();
     const locale     = String(body?.locale || "ko").trim();
-    const clientKey  = String(body?.apiKey || "").trim();
+    const clientKey  = String(body?.apiKey || process.env.OPENAI_API_KEY || "").trim();
     const regionCtx  = body?.regionInsight ? JSON.stringify(body.regionInsight, null, 2) : null;
 
     const userMessage = [
@@ -476,7 +485,7 @@ async function handleRefine(req, res) {
     const previousOutput    = String(body?.previousOutput || "").trim();
     const refinementRequest = String(body?.refinementRequest || "").trim();
     const context           = body?.context || {};
-    const clientKey         = String(body?.apiKey || "").trim();
+    const clientKey         = String(body?.apiKey || process.env.OPENAI_API_KEY || "").trim();
 
     if (!refinementRequest) {
         sendJson(res, 400, { ok: false, error: { code: "MISSING_REQUEST", message: "refinementRequest is required." } });
