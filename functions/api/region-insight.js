@@ -68,7 +68,7 @@ export async function onRequestGet(context) {
 
     const startedAt = Date.now();
     try {
-        const data = await buildLiveRegionInsight({ country, city, locale, role });
+        const data = await buildLiveRegionInsight({ country, city, locale, role, env: context.env });
         const payload = {
             ok: true,
             data: {
@@ -160,7 +160,7 @@ async function fetchJson(url, options = {}) {
     return response.json();
 }
 
-async function buildLiveRegionInsight({ country, city, locale, role }) {
+async function buildLiveRegionInsight({ country, city, locale, role, env }) {
     const geocode = await withTimeout((signal) => fetchOpenMeteoGeocode(city || country, country, signal), TIMEOUT_MS);
     const lat = Number(geocode?.latitude || 0);
     const lon = Number(geocode?.longitude || 0);
@@ -175,6 +175,12 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
     if (city) tasks.push(withTimeout((signal) => fetchNominatim(city, country, signal), TIMEOUT_MS));
     if (city) tasks.push(withTimeout((signal) => fetchCityLandmarkImage(city, country, signal), TIMEOUT_MS));
 
+    // Fetch live trends via GPT-4o-mini (non-blocking — won't delay other data)
+    const apiKey = String(env?.OPENAI_API_KEY || "").trim();
+    if (city && apiKey) {
+        tasks.push(fetchLiveTrends(city, country, locale, apiKey));
+    }
+
     const settled = await Promise.allSettled(tasks);
     const values = settled.filter((entry) => entry.status === "fulfilled").map((entry) => entry.value);
     if (!values.length) {
@@ -187,6 +193,7 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
     const place = values.find((value) => value.type === "place");
     const countryProfile = values.find((value) => value.type === "country_profile");
     const landmark = values.find((value) => value.type === "city_landmark");
+    const liveTrends = values.find((value) => value.type === "live_trends");
 
     return {
         role,
@@ -194,8 +201,64 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
         macro: buildMacro(locale, country, city, gdp, urban, climate),
         local: city ? buildLocal(locale, city, place, urban, climate) : null,
         evidence: buildEvidence(locale, gdp, urban, climate, place),
-        visual: buildVisualInsight({ country, city, geocode, countryProfile, landmark })
+        visual: buildVisualInsight({ country, city, geocode, countryProfile, landmark }),
+        live_trends: liveTrends?.trends || []
     };
+}
+
+async function fetchLiveTrends(city, country, locale, apiKey) {
+    const isKo = locale === "ko";
+    const marketLabel = `${country} ${city}`;
+    const lang = isKo ? "Korean" : "English";
+
+    const systemPrompt = `You are a market trend analyst for Samsung smart home products.
+Given a city and country, return exactly 4 current lifestyle/consumer trends (2025-2026) that are specific to that city and relevant to smart home, appliances, or connected living.
+
+Output ONLY a JSON array of 4 strings. No markdown, no explanation.
+Example: ["Trend 1", "Trend 2", "Trend 3", "Trend 4"]
+
+Rules:
+- Each trend must be under 50 characters.
+- Be hyper-specific to the city — no generic trends.
+- Focus on lifestyle, housing, consumer behavior, or technology adoption.
+- Write in ${lang}.`;
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
+
+    try {
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                max_tokens: 300,
+                temperature: 0.7,
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: `City: ${city}\nCountry: ${country}` }
+                ]
+            }),
+            signal: controller.signal
+        });
+
+        if (!response.ok) return { type: "live_trends", trends: [] };
+
+        const data = await response.json();
+        const content = data?.choices?.[0]?.message?.content || "";
+        const parsed = JSON.parse(content);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+            return { type: "live_trends", trends: parsed.slice(0, 4) };
+        }
+        return { type: "live_trends", trends: [] };
+    } catch {
+        return { type: "live_trends", trends: [] };
+    } finally {
+        clearTimeout(timer);
+    }
 }
 
 function buildRoleLens(locale, role, country, city) {

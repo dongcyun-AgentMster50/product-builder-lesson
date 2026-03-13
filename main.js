@@ -1580,9 +1580,11 @@ function mapLiveStep2Insight(data, countryCode, city) {
         });
     }
 
-    // 지역 트렌드 섹션
+    // 지역 트렌드 섹션: 실시간 API 우선, 정적 데이터 fallback
+    const liveTrends = toList(data.live_trends).slice(0, 4);
     const cityContent = getCitySignalContent(countryCode, city);
-    const trends = toList(cityContent?.trends).slice(0, 4);
+    const staticTrends = toList(cityContent?.trends).slice(0, 4);
+    const trends = liveTrends.length ? liveTrends : staticTrends;
     if (trends.length) {
         sections.push({
             title: currentLocale === "ko"
