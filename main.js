@@ -1549,6 +1549,9 @@ async function fetchLiveStep2Insight(countryCode, city, role, forceRefresh = fal
                 : "Failed to load live regional insight.");
             return buildStep2ErrorInsight(message);
         }
+        if (payload.data?._live_status) {
+            console.log(`[Region Insight] live_status: ${payload.data._live_status}, trends: ${(payload.data.live_trends || []).length}, pains: ${(payload.data.live_pains || []).length}`);
+        }
         return mapLiveStep2Insight(payload.data, countryCode, city);
     } catch {
         const timeoutMessage = currentLocale === "ko"

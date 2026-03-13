@@ -178,12 +178,17 @@ async function buildLiveRegionInsight({ country, city, cityLocal, locale, role, 
 
     // Fetch live trends via GPT-4o-mini (non-blocking — won't delay other data)
     const apiKey = String(env?.OPENAI_API_KEY || "").trim();
-    if (city && apiKey) {
+    let liveStatus = "skipped"; // 진단: no_key / pending / ok / error
+    if (!apiKey) {
+        liveStatus = "no_key";
+    } else if (city) {
+        liveStatus = "pending";
         tasks.push(fetchLiveTrends(city, country, locale, role, apiKey));
     }
 
     const settled = await Promise.allSettled(tasks);
     const values = settled.filter((entry) => entry.status === "fulfilled").map((entry) => entry.value);
+    const rejected = settled.filter((entry) => entry.status === "rejected");
     if (!values.length) {
         throw Object.assign(new Error("All live insight sources failed."), { code: "REGION_INSIGHT_ALL_SOURCES_FAILED" });
     }
@@ -196,6 +201,10 @@ async function buildLiveRegionInsight({ country, city, cityLocal, locale, role, 
     const landmark = values.find((value) => value.type === "city_landmark");
     const liveTrends = values.find((value) => value.type === "live_trends");
 
+    if (liveStatus === "pending") {
+        liveStatus = (liveTrends?.trends?.length || liveTrends?.pains?.length) ? "ok" : "empty";
+    }
+
     return {
         role,
         role_lens: buildRoleLens(locale, role, country, cityLocal || city),
@@ -206,7 +215,8 @@ async function buildLiveRegionInsight({ country, city, cityLocal, locale, role, 
         live_trends: liveTrends?.trends || [],
         live_events: liveTrends?.events || [],
         live_pains: liveTrends?.pains || [],
-        live_solutions: liveTrends?.solutions || []
+        live_solutions: liveTrends?.solutions || [],
+        _live_status: liveStatus
     };
 }
 
