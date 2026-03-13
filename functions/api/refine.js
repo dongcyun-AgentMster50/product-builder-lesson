@@ -32,22 +32,29 @@ function buildRefineMessages(body) {
 }
 
 async function streamOpenAIResponse({ apiKey, systemPrompt, messages, model, maxTokens }) {
+    const requestBody = {
+        model,
+        stream: true,
+        stream_options: { include_usage: true },
+        messages: [
+            { role: "system", content: systemPrompt },
+            ...messages
+        ]
+    };
+
+    if (/^gpt-5/i.test(String(model || "").trim())) {
+        requestBody.max_completion_tokens = maxTokens;
+    } else {
+        requestBody.max_tokens = maxTokens;
+    }
+
     const response = await fetch(OPENAI_API_URL, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${apiKey}`
         },
-        body: JSON.stringify({
-            model,
-            stream: true,
-            stream_options: { include_usage: true },
-            max_tokens: maxTokens,
-            messages: [
-                { role: "system", content: systemPrompt },
-                ...messages
-            ]
-        })
+        body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
