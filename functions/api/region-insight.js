@@ -257,17 +257,23 @@ Rules:
             signal: controller.signal
         });
 
-        if (!response.ok) return { type: "live_trends", trends: [], events: [] };
+        if (!response.ok) {
+            console.error(`[fetchLiveTrends] OpenAI API returned ${response.status} for ${city}, ${country}`);
+            return { type: "live_trends", trends: [], events: [] };
+        }
 
         const data = await response.json();
-        const content = data?.choices?.[0]?.message?.content || "";
+        let content = data?.choices?.[0]?.message?.content || "";
+        // GPT가 ```json ... ``` 마크다운으로 감쌀 수 있으므로 제거
+        content = content.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
         const parsed = JSON.parse(content);
         return {
             type: "live_trends",
             trends: Array.isArray(parsed?.trends) ? parsed.trends.slice(0, 4) : [],
             events: Array.isArray(parsed?.events) ? parsed.events.slice(0, 3) : []
         };
-    } catch {
+    } catch (err) {
+        console.error(`[fetchLiveTrends] Failed for ${city}, ${country}:`, err?.message || err);
         return { type: "live_trends", trends: [], events: [] };
     } finally {
         clearTimeout(timer);

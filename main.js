@@ -1292,7 +1292,7 @@ function buildInsightMarkup(insight) {
             : "";
         return `
             <section class="insight-section">
-                <h4>${escapeHtml(section.title || "")}</h4>
+                <h4>${section.title || ""}</h4>
                 ${text}
                 ${items}
             </section>
@@ -1371,7 +1371,7 @@ function buildInsightMarkup(insight) {
     return `
         <div class="insight-head">
             ${badge}
-            <strong>${escapeHtml(insight.title)}</strong>
+            <strong>${insight.title}</strong>
         </div>
         ${useStep2AdaptiveLayout ? "" : media}
         ${summary}
@@ -1546,7 +1546,17 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const selectedRoleId = normalizeRoleId(data.role || roleSelect.value);
     const roleLens = data.role_lens || {};
     const roleTitle = selectedRoleId ? getRoleTitle(selectedRoleId) : (currentLocale === "ko" ? "마케터" : "Marketer");
-    const marketLabel = city ? `${getCountryName(countryCode)} ${city}` : getCountryName(countryCode);
+
+    // 도시명 로케일 변환: city_signals에서 한글/현지어 이름 찾기
+    const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
+    const normalizedCityVal = normalizeCityValue(city);
+    const cityEntry = city ? cityEntries.find((e) =>
+        e.countryCode === countryCode &&
+        (normalizeCityValue(e.displayName) === normalizedCityVal ||
+         (e.aliases || []).some((a) => normalizeCityValue(a) === normalizedCityVal))
+    ) : null;
+    const localCity = cityEntry ? getLocalizedCityName(cityEntry) : city;
+    const marketLabel = localCity ? `${getCountryName(countryCode)} ${localCity}` : getCountryName(countryCode);
     const local = data.local || null;
     const evidence = [];
     const painPoints = toList(roleLens.pain_points).slice(0, 3);
@@ -1561,8 +1571,8 @@ function mapLiveStep2Insight(data, countryCode, city) {
     if (realPains.length) {
         sections.push({
             title: currentLocale === "ko"
-                ? `요즘 ${city || marketLabel}에서 이런 고민 많죠?`
-                : `Sound familiar in ${city || marketLabel}?`,
+                ? `요즘 <strong class="city-accent">${localCity || marketLabel}</strong>에서 이런 고민 많죠?`
+                : `Sound familiar in <strong class="city-accent">${localCity || marketLabel}</strong>?`,
             items: realPains
         });
     }
@@ -1588,8 +1598,8 @@ function mapLiveStep2Insight(data, countryCode, city) {
     if (trends.length) {
         sections.push({
             title: currentLocale === "ko"
-                ? `${city || marketLabel} 지역 트렌드`
-                : `${city || marketLabel} local trends`,
+                ? `<strong class="city-accent">${localCity || marketLabel}</strong> 지역 트렌드`
+                : `<strong class="city-accent">${localCity || marketLabel}</strong> local trends`,
             items: trends
         });
     }
@@ -1599,8 +1609,8 @@ function mapLiveStep2Insight(data, countryCode, city) {
     if (liveEvents.length) {
         sections.push({
             title: currentLocale === "ko"
-                ? `${city || marketLabel} 근처 행사`
-                : `${city || marketLabel} nearby events`,
+                ? `<strong class="city-accent">${localCity || marketLabel}</strong> 근처 행사`
+                : `<strong class="city-accent">${localCity || marketLabel}</strong> nearby events`,
             items: liveEvents.map(ev =>
                 `${ev.name} (${ev.when}) — ${ev.hook}`
             )
@@ -1618,10 +1628,10 @@ function mapLiveStep2Insight(data, countryCode, city) {
     return {
         badge: currentLocale === "ko" ? "Q2 Live Region" : "Q2 Live Region",
         title: currentLocale === "ko"
-            ? `${roleTitle}를 위한 ${marketLabel} 넛지`
-            : `${marketLabel} nudge for ${roleTitle}`,
+            ? `${roleTitle}를 위한 <strong class="city-accent">${marketLabel}</strong> 넛지`
+            : `<strong class="city-accent">${marketLabel}</strong> nudge for ${roleTitle}`,
         chips: [
-            city || marketLabel,
+            localCity || marketLabel,
             roleTitle,
             ...(local?.archetype ? [local.archetype] : [])
         ],

@@ -5811,14 +5811,16 @@
           "climate": "분지 지형으로 여름 폭염이 극심하고 겨울에도 한랭하여 냉난방 수요가 매우 높습니다.",
           "housing": "중대형 아파트 단지 중심의 주거 구조로, 중앙 냉난방 및 개별 에어컨 병행 사용이 일반적입니다.",
           "behavior": "폭염 시즌 냉방 에너지 절감과 실내 온도 자동 제어에 높은 관심을 보입니다.",
-          "implication": "극한 기온 대응 에너지 효율 솔루션과 온도 자동화가 핵심 가치입니다."
+          "implication": "극한 기온 대응 에너지 효율 솔루션과 온도 자동화가 핵심 가치입니다.",
+          "trends": ["대구 K-패션·섬유 융합 팝업 소비 문화 확산", "폭염 대비 AI 실내 냉방 자동화 관심 급증", "수성구 카페거리 MZ 라이프스타일 소비 집중", "대구경북 신공항 개항 대비 인프라 투자 확대"]
         },
         "en": {
           "region": "An inland basin city in southeastern Korea, a center of the textile and fashion industry.",
           "climate": "Basin terrain causes extreme summer heat and cold winters, driving very high HVAC demand.",
           "housing": "Primarily mid-to-large apartment complexes using both central and individual air conditioning systems.",
           "behavior": "Strong interest in cooling energy savings and automated indoor temperature control during heatwave season.",
-          "implication": "Energy-efficient solutions for extreme temperatures and temperature automation are core value propositions."
+          "implication": "Energy-efficient solutions for extreme temperatures and temperature automation are core value propositions.",
+          "trends": ["K-fashion textile fusion pop-up culture expanding", "AI indoor cooling automation demand surging for heatwaves", "Suseong-gu cafe district MZ lifestyle spending hub", "New Daegu-Gyeongbuk airport infra investment growing"]
         }
       }
     },
@@ -5835,14 +5837,16 @@
           "climate": "대륙성 기후로 사계절이 뚜렷하며, 여름 장마와 겨울 한파에 대비가 필요합니다.",
           "housing": "연구단지 인근 신축 아파트와 원도심 주택이 혼재하며, 기술 수용도가 높습니다.",
           "behavior": "IT 종사자가 많아 첨단 스마트홈 기술 얼리어답터 비율이 높습니다.",
-          "implication": "기술 친화적 사용자를 위한 고급 자동화 및 IoT 통합 솔루션이 유리합니다."
+          "implication": "기술 친화적 사용자를 위한 고급 자동화 및 IoT 통합 솔루션이 유리합니다.",
+          "trends": ["대덕연구단지 R&D 인력 기반 IoT 얼리어답터 시장", "KTX 대전역 역세권 개발 — 신규 스마트홈 수요 창출", "사이언스 페스티벌·빵축제 등 지역 특화 행사 확대", "KAIST 스타트업 생태계 — 스마트홈 기술 시범 도시"]
         },
         "en": {
           "region": "A central inland city in Korea, an innovation hub with dense science and technology research complexes.",
           "climate": "Continental climate with distinct four seasons; preparation needed for summer monsoons and winter cold snaps.",
           "housing": "Mix of new apartments near research parks and older urban homes, with high technology acceptance.",
           "behavior": "High proportion of IT professionals leads to strong early adopter rates for advanced smart home technology.",
-          "implication": "Advanced automation and IoT integration solutions for tech-savvy users are advantageous."
+          "implication": "Advanced automation and IoT integration solutions for tech-savvy users are advantageous.",
+          "trends": ["Daedeok R&D cluster IoT early-adopter market", "KTX Daejeon station area development creating smart home demand", "Science Festival and Bread Festival local events expanding", "KAIST startup ecosystem — smart home tech pilot city"]
         }
       }
     },
@@ -5859,14 +5863,16 @@
           "climate": "온난습윤 기후로 여름 강수량이 많고, 겨울은 비교적 온화합니다.",
           "housing": "중형 아파트 단지와 단독주택이 혼재하며, 리모델링 기반 스마트홈 수요가 있습니다.",
           "behavior": "에너지 절약과 생활 편의 중심의 실용적 스마트홈 관심이 높습니다.",
-          "implication": "기존 주택 리모델링에 적합한 설치 용이한 스마트홈 솔루션이 효과적입니다."
+          "implication": "기존 주택 리모델링에 적합한 설치 용이한 스마트홈 솔루션이 효과적입니다.",
+          "trends": ["힙트레디션 — 옛 감성 현대적 재해석 소비 확산", "필코노미 — 가치 중심 프리미엄 경험 소비 증가", "2025 광주 방문의 해 — 시즌별 축제·문화행사 집중", "MZ세대 팝업스토어·이색체험 반응 활발"]
         },
         "en": {
           "region": "The central city of the Honam region in southwestern Korea, known as a city of culture and arts.",
           "climate": "Warm and humid climate with heavy summer rainfall; relatively mild winters.",
           "housing": "Mix of mid-size apartment complexes and detached houses, with demand for remodeling-based smart home solutions.",
           "behavior": "Practical smart home interest focused on energy savings and daily convenience.",
-          "implication": "Easy-to-install smart home solutions suitable for existing home remodeling are effective."
+          "implication": "Easy-to-install smart home solutions suitable for existing home remodeling are effective.",
+          "trends": ["Hip-Tradition — retro aesthetics reimagined for Gen MZ", "Feel-conomy — value-driven premium experience spending", "2025 Visit Gwangju Year — seasonal festivals and events", "Pop-up stores and experiential retail gaining traction"]
         }
       }
     },
@@ -5883,14 +5889,16 @@
           "climate": "서해안 해양성 기후로 겨울 한파와 여름 해무가 특징이며, 미세먼지 영향이 큽니다.",
           "housing": "신도시 대단지 아파트와 구도심 주택이 공존하며, 신축 스마트홈 수요가 높습니다.",
           "behavior": "공기질 관리와 난방 에너지 절감에 대한 관심이 높습니다.",
-          "implication": "공기청정 연동 환기 시스템과 에너지 모니터링이 중요한 시장입니다."
+          "implication": "공기청정 연동 환기 시스템과 에너지 모니터링이 중요한 시장입니다.",
+          "trends": ["송도·청라 스마트시티 2.0 IoT 인프라 확대", "미세먼지 공기질 관리 가전 수요 급증", "공항 인근 물류·숙박업 자동화 니즈 확산", "신도시 영패밀리 빌트인 스마트홈 선호"]
         },
         "en": {
           "region": "A western coastal city in the Seoul metropolitan area, home to the international airport and free economic zones.",
           "climate": "West coast maritime climate with cold winter winds and summer sea fog; heavily affected by fine dust.",
           "housing": "Coexistence of large new-town apartment complexes and older urban housing, with high demand for new smart home installations.",
           "behavior": "Strong interest in air quality management and heating energy savings.",
-          "implication": "Air purifier-linked ventilation systems and energy monitoring are key market drivers."
+          "implication": "Air purifier-linked ventilation systems and energy monitoring are key market drivers.",
+          "trends": ["Songdo/Cheongna Smart City 2.0 IoT expansion", "Fine dust drives air quality appliance demand", "Airport-area logistics and hospitality automation", "Young families prefer built-in smart home packages"]
         }
       }
     },
@@ -5907,14 +5915,16 @@
           "climate": "해양성 아열대 기후로 강풍과 높은 습도가 특징이며, 태풍 영향이 빈번합니다.",
           "housing": "단독주택과 펜션형 건물이 많으며, 이주민 대상 스마트홈 리모델링 수요가 증가 중입니다.",
           "behavior": "원격 관리와 보안에 대한 관심이 높고, 관광 숙박업 대상 자동화 수요도 있습니다.",
-          "implication": "강풍·고습 환경 대응과 원격 모니터링, 숙박업 자동화가 핵심 니즈입니다."
+          "implication": "강풍·고습 환경 대응과 원격 모니터링, 숙박업 자동화가 핵심 니즈입니다.",
+          "trends": ["디지털 노마드·한달살기 원격 스마트홈 관리 수요", "제2공항 추진 — 관광 인프라 대규모 재편 예정", "친환경 에너지 자급자족 섬 프로젝트 확대", "이주민 대상 펜션 자동화·보안 솔루션 인기"]
         },
         "en": {
           "region": "South Korea's southernmost volcanic island, a special autonomous province with high tourism and migration demand.",
           "climate": "Maritime subtropical climate with strong winds and high humidity; frequent typhoon exposure.",
           "housing": "Many detached houses and pension-style buildings; growing smart home remodeling demand from new residents.",
           "behavior": "High interest in remote management and security; automation demand for tourism accommodation businesses.",
-          "implication": "Wind and humidity resilience, remote monitoring, and hospitality automation are core needs."
+          "implication": "Wind and humidity resilience, remote monitoring, and hospitality automation are core needs.",
+          "trends": ["Digital nomad 'month-stay' remote smart home demand", "Second airport project reshaping tourism infra", "Eco-energy self-sufficient island initiatives expand", "Pension automation and security for new residents"]
         }
       }
     },
@@ -5931,14 +5941,16 @@
           "climate": "내륙 분지 기후로 여름 고온, 겨울 한랭하며 사계절 변화가 뚜렷합니다.",
           "housing": "최신 스마트시티 인프라를 갖춘 신축 아파트 중심으로, 스마트홈 빌트인 비율이 매우 높습니다.",
           "behavior": "젊은 공무원 가구 중심으로 스마트홈 기술 수용도와 활용도가 높습니다.",
-          "implication": "스마트시티 연계 서비스와 최신 IoT 플랫폼 통합이 핵심 차별화 요소입니다."
+          "implication": "스마트시티 연계 서비스와 최신 IoT 플랫폼 통합이 핵심 차별화 요소입니다.",
+          "trends": ["행복도시 2단계 스마트시티 인프라 본격 가동", "젊은 공무원 가구 IoT 기기 얼리어답터 비율 최고", "자율주행 셔틀·드론배송 등 신기술 시범 도시 선정", "공공 데이터 기반 에너지 관리 플랫폼 실증 확대"]
         },
         "en": {
           "region": "Korea's planned administrative capital in the central region, where government ministries have relocated.",
           "climate": "Inland basin climate with hot summers, cold winters, and distinct four seasons.",
           "housing": "Centered on new apartments with cutting-edge smart city infrastructure; very high built-in smart home rates.",
           "behavior": "Young civil servant households show high smart home technology acceptance and utilization.",
-          "implication": "Smart city-linked services and latest IoT platform integration are key differentiators."
+          "implication": "Smart city-linked services and latest IoT platform integration are key differentiators.",
+          "trends": ["Happy City Phase 2 smart city infra fully operational", "Highest IoT early-adopter ratio among young civil servants", "Autonomous shuttle and drone delivery pilot city", "Public data-driven energy management platform expanding"]
         }
       }
     },
@@ -6012,14 +6024,16 @@
           "climate": "해양성 기후로 여름 고온다습하고 겨울은 비교적 온화하나, 산업 지역 공기질 이슈가 있습니다.",
           "housing": "산업단지 인근 대형 아파트 단지가 주를 이루며, 소득 수준이 높아 프리미엄 수요가 있습니다.",
           "behavior": "공기질 관리와 에너지 효율에 관심이 높으며, 고소득 가구의 프리미엄 기기 선호가 뚜렷합니다.",
-          "implication": "산업 도시 특성에 맞는 공기질 솔루션과 프리미엄 스마트홈 패키지가 유효합니다."
+          "implication": "산업 도시 특성에 맞는 공기질 솔루션과 프리미엄 스마트홈 패키지가 유효합니다.",
+          "trends": ["현대차·조선 산업단지 스마트팩토리 연계 가전 수요", "고소득 맞벌이 가구 프리미엄 빌트인 시장 확대", "산업지역 미세먼지 — 공기청정 토탈 솔루션 니즈", "울산 태화강 생태도시 전환 — 친환경 에너지 관심"]
         },
         "en": {
           "region": "A southeastern industrial city, the center of heavy industries including automotive, shipbuilding, and petrochemicals.",
           "climate": "Maritime climate with hot humid summers and mild winters, but industrial area air quality is a concern.",
           "housing": "Predominantly large apartment complexes near industrial zones; high income levels support premium demand.",
           "behavior": "Strong interest in air quality management and energy efficiency; high-income households prefer premium devices.",
-          "implication": "Air quality solutions tailored to industrial cities and premium smart home packages are effective."
+          "implication": "Air quality solutions tailored to industrial cities and premium smart home packages are effective.",
+          "trends": ["Hyundai/shipyard smart factory-linked appliance demand", "Dual-income premium built-in smart home market growth", "Industrial district fine dust — total air purification needs", "Taehwagang eco-city transition — green energy interest"]
         }
       }
     },
