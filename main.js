@@ -547,8 +547,13 @@ function renderCityProfileCard() {
     }
 
     const cityName = getCityValue();
+    if (!cityName) {
+        profileCard.classList.add("hidden");
+        profileCard.innerHTML = "";
+        return;
+    }
     const flag = getCountryFlagEmoji(country.countryCode);
-    const displayCity = cityName || (currentLocale === "ko" ? "전체 지역" : "All regions");
+    const displayCity = cityName;
     const countryName = selectedMarket?.label || country.countryCode;
     const isKo = currentLocale === "ko";
     const role = normalizeRoleId(roleSelect.value) || "retail";
@@ -5791,7 +5796,7 @@ function updateLocaleFromCountry() {
     const preserved = {
         role: roleSelect.value,
         country: countrySelect.value,
-        city: getCityValue(),
+        city: "",                          // 국가 변경 시 도시 초기화
         personaSelections: getSelectedPersonaOptionIds(),
         segmentCustom: segmentCustomInput.value,
         deviceSelections: getSelectedDeviceOptionIds(),
