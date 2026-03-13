@@ -1833,8 +1833,29 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const staticSolutions = toList(roleLens.solutions).slice(0, 3);
     const mustKnow = toList(roleLens.must_know).slice(0, 3);
     const executionPoints = toList(roleLens.execution_points).slice(0, 3);
-    const realPains = livePains.length ? livePains : (cityPains.length ? cityPains : (staticPains.length ? staticPains : mustKnow));
-    const realSolutions = liveSolutions.length ? liveSolutions : (citySolutions.length ? citySolutions : (staticSolutions.length ? staticSolutions : executionPoints));
+
+    const mergeUniqueItems = (primary, secondary, limit) => {
+        const seen = new Set();
+        return [...primary, ...secondary]
+            .map((item) => String(item || "").trim())
+            .filter(Boolean)
+            .filter((item) => {
+                const key = item.toLowerCase();
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            })
+            .slice(0, limit);
+    };
+
+    // 도시별 로컬 데이터가 있으면 그 내용을 우선해 개성을 살리고,
+    // live AI 결과는 보강용으로만 덧붙인다.
+    const realPains = cityPains.length
+        ? mergeUniqueItems(cityPains, livePains.length ? livePains : staticPains, 3)
+        : (livePains.length ? livePains : (staticPains.length ? staticPains : mustKnow));
+    const realSolutions = citySolutions.length
+        ? mergeUniqueItems(citySolutions, liveSolutions.length ? liveSolutions : staticSolutions, 3)
+        : (liveSolutions.length ? liveSolutions : (staticSolutions.length ? staticSolutions : executionPoints));
     const formatQ2MetricHint = (metric) => {
         const normalizedMetric = String(metric || "").trim();
         if (!normalizedMetric) return "";
@@ -1855,7 +1876,9 @@ function mapLiveStep2Insight(data, countryCode, city) {
     // 1) 지역 트렌드 섹션: 실시간 API 우선, 정적 데이터 fallback
     const liveTrends = toList(data.live_trends).slice(0, 4);
     const staticTrends = toList(cityContent?.trends).slice(0, 4);
-    const trends = liveTrends.length ? liveTrends : staticTrends;
+    const trends = staticTrends.length
+        ? mergeUniqueItems(staticTrends, liveTrends, 4)
+        : liveTrends;
     if (trends.length) {
         sections.push({
             title: currentLocale === "ko"
