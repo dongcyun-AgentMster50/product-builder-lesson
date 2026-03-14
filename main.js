@@ -1609,8 +1609,11 @@ function buildInsightMarkup(insight) {
         const srcTag = section.sourceLabel
             ? `<span class="source-tag" data-source-detail="${srcId}">${escapeHtml(section.sourceLabel)}</span>`
             : "";
+        const srcUrlLink = section.sourceUrl
+            ? `<a class="source-detail-url" href="${escapeHtml(section.sourceUrl)}" target="_blank" rel="noopener noreferrer">🔗 ${escapeHtml(section.sourceUrl.length > 60 ? section.sourceUrl.slice(0, 60) + "…" : section.sourceUrl)}</a>`
+            : "";
         const srcDetail = section.sourceLabel
-            ? `<div class="source-detail" id="${srcId}"><p class="source-detail-label">${escapeHtml(section.sourceLabel)}</p><p class="source-detail-snippet">${escapeHtml(section.sourceSnippet || "—")}</p></div>`
+            ? `<div class="source-detail" id="${srcId}"><p class="source-detail-label">${escapeHtml(section.sourceLabel)}</p><p class="source-detail-snippet">${escapeHtml(section.sourceSnippet || "—")}</p>${srcUrlLink}</div>`
             : "";
         return `
             <section class="insight-section">
@@ -1623,18 +1626,22 @@ function buildInsightMarkup(insight) {
     };
     const evidence = Array.isArray(insight.evidence) && insight.evidence.length
         ? `<div class="insight-evidence">${insight.evidence.map((item, idx) => {
-            const chipId = `ev-chip-${idx}-${Date.now()}`;
             const detailId = `ev-detail-${idx}-${Date.now()}`;
             const domainLabel = (item.source_domain || "").replace(/^https?:\/\//, "").replace(/\/.*$/, "");
-            const confidenceLabel = item.confidence === "high" ? "✅ high" : item.confidence === "medium" ? "⚠️ medium" : `ℹ️ ${item.confidence || "—"}`;
+            const confidenceBadge = item.confidence === "high" ? "✅" : item.confidence === "medium" ? "⚠️" : "ℹ️";
+            const sourceUrl = item.source_url || "";
+            const urlLink = sourceUrl
+                ? `<a class="source-detail-url" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">🔗 ${escapeHtml(sourceUrl.length > 80 ? sourceUrl.slice(0, 80) + "…" : sourceUrl)}</a>`
+                : "";
             return `
-                <span class="insight-evidence-chip" data-ev-chip="${chipId}" data-ev-detail="${detailId}" title="${escapeHtml(item.snippet || "")}">
-                    ${escapeHtml(domainLabel)} · ${escapeHtml(item.confidence || "")}
+                <span class="insight-evidence-chip" data-ev-detail="${detailId}">
+                    ${escapeHtml(domainLabel)} ${confidenceBadge}
                 </span>
                 <div class="insight-evidence-detail" id="${detailId}">
-                    <p class="source-detail-label">${escapeHtml(domainLabel)}</p>
+                    <p class="source-detail-label">${escapeHtml(item.title || domainLabel)}</p>
                     <p class="source-detail-snippet">${escapeHtml(item.snippet || "—")}</p>
-                    <p class="source-detail-meta">${escapeHtml(`${currentLocale === "ko" ? "신뢰도" : "Confidence"}: ${confidenceLabel}`)} · ${escapeHtml(item.collected_at_utc ? new Date(item.collected_at_utc).toLocaleString() : "—")}</p>
+                    <p class="source-detail-meta">${currentLocale === "ko" ? "신뢰도" : "Confidence"}: ${confidenceBadge} ${escapeHtml(item.confidence || "—")} · ${escapeHtml(item.collected_at_utc ? new Date(item.collected_at_utc).toLocaleString() : "—")}</p>
+                    ${urlLink}
                 </div>
             `;
         }).join("")}</div>`
@@ -1968,6 +1975,10 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const trends = staticTrends.length
         ? mergeUniqueItems(staticTrends, liveTrends, 4)
         : liveTrends;
+    // 삼성닷컴 URL (트렌드 출처 연결용)
+    const trendCountrySources = countryTrends?.[countryCode]?.sources || [];
+    const samsungUrl = trendCountrySources[0] || "";
+
     // 트렌드 소스 라벨 결정
     const trendSourceLabel = staticTrends.length
         ? "city_signals.json"
@@ -1979,6 +1990,7 @@ function mapLiveStep2Insight(data, countryCode, city) {
                 : `<strong class="city-accent">${localCity || marketLabel}</strong> local trends`,
             items: trends,
             sourceLabel: trendSourceLabel,
+            sourceUrl: samsungUrl,
             sourceSnippet: staticTrends.length
                 ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} 트렌드 항목` : `city_signals.json → ${localCity || city} trends`)
                 : (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation (server region-insight API)")
@@ -2011,6 +2023,7 @@ function mapLiveStep2Insight(data, countryCode, city) {
                 : `Trend-driven concerns in <strong class="city-accent">${localCity || marketLabel}</strong>`,
             items: realPains,
             sourceLabel: painSourceLabel,
+            sourceUrl: samsungUrl,
             sourceSnippet: cityPains.length
                 ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} pains 항목` : `city_signals.json → ${localCity || city} pains`)
                 : (livePains.length
@@ -2033,6 +2046,7 @@ function mapLiveStep2Insight(data, countryCode, city) {
             title: currentLocale === "ko" ? "이렇게 풀어보세요" : "Try this approach",
             items: solutionItems,
             sourceLabel: solutionSourceLabel,
+            sourceUrl: samsungUrl,
             sourceSnippet: citySolutions.length
                 ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} solutions 항목` : `city_signals.json → ${localCity || city} solutions`)
                 : (liveSolutions.length
@@ -3217,7 +3231,7 @@ function buildStreamingUI(context) {
 }
 
 function renderAIResult(markdown, context) {
-    const html = markdownToHtml(markdown);
+    const html = parseSourceCitations(markdownToHtml(markdown));
     resultDiv.innerHTML = `
         <article class="scenario-output ai-result">
             <div class="ai-result-meta">
@@ -3242,6 +3256,7 @@ function renderAIResult(markdown, context) {
     }
 
     bindRefinementPrompt(markdown, context);
+    bindSourceTags(resultDiv);
     scrollToResult();
 }
 
@@ -3418,6 +3433,28 @@ function markdownToHtml(md) {
     }).filter(Boolean).join("\n");
 
     return html;
+}
+
+function parseSourceCitations(html) {
+    // Pattern matches both escaped and unescaped: [Source: label | URL] or [Source: label]
+    // After escapeHtml, brackets become: [Source: ... | ...] (brackets aren't escaped by escapeHtml)
+    // Also handle [Assumption] markers
+    return html
+        .replace(/\[Source:\s*([^\]|]+?)\s*\|\s*(https?:\/\/[^\]\s]+)\s*\]/g, (_, label, url) => {
+            const domain = url.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+            const detailId = `ai-src-${Math.random().toString(36).slice(2, 8)}`;
+            return `<span class="source-tag" data-source-detail="${detailId}">${label.trim()}</span>` +
+                `<span class="source-detail" id="${detailId}">` +
+                `<span class="source-detail-label">${label.trim()}</span> ` +
+                `<a class="source-detail-url" href="${url}" target="_blank" rel="noopener noreferrer">🔗 ${url.length > 60 ? url.slice(0, 60) + "…" : url}</a>` +
+                `</span>`;
+        })
+        .replace(/\[Source:\s*([^\]]+?)\s*\]/g, (_, label) => {
+            return `<span class="source-tag source-tag-inline">${label.trim()}</span>`;
+        })
+        .replace(/\[Assumption\]/gi, () => {
+            return `<span class="source-tag source-tag-assumption">Assumption</span>`;
+        });
 }
 
 function scrollToResult() {
@@ -4058,11 +4095,22 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
         ? [citySignal.region, citySignal.climate, citySignal.housing, citySignal.behavior].filter(Boolean).slice(0, 2).join(" / ")
         : "";
 
+    // 삼성닷컴 URL & Explore URL 결정
+    const trendSources = countryTrends?.[country.countryCode]?.sources || [];
+    const samsungDotcomUrl = marketInfo?.fullUrl
+        ? `https://${marketInfo.fullUrl}`
+        : (country.samsungShopUrl || (trendSources[0] || ""));
+    const categorySourceUrl = anchorSkuEvidence.categoryEvidence?.sourceUrl || "";
+    const productSourceUrl = anchorSkuEvidence.product?.productUrl || "";
+    const exploreV1Url = "https://cxoffering.samsungiotcloud.com/default/en-US/explore/step?state=PUBLISHED";
+    const exploreV2Url = "https://cxoffering.samsungiotcloud.com/v2_default/en-GB/explore/step";
+
     const confirmed = [
         trend ? {
             no: 1,
             fact: trend.headline,
-            source: "references/country_trends.json",
+            source: "country_trends.json",
+            source_url: samsungDotcomUrl,
             confidence: "High",
             impact: currentLocale === "ko" ? "국가 단위 메시지 방향과 장면 우선순위를 고정합니다." : "Sets the country-level message direction and scene priority."
         } : null,
@@ -4071,7 +4119,8 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
             fact: currentLocale === "ko"
                 ? `${selectedMarket?.siteCode || country.countryCode} 마켓은 ${marketInfo?.fullUrl || country.samsungShopUrl || "삼성닷컴"} 기준으로 연결됩니다.`
                 : `The selected market routes to ${marketInfo?.fullUrl || country.samsungShopUrl || "the Samsung store"} via ${selectedMarket?.siteCode || country.countryCode}.`,
-            source: marketInfo ? "references/dotcom_mapping.json" : "references/source_data.json",
+            source: "samsung.com",
+            source_url: samsungDotcomUrl,
             confidence: "High",
             impact: currentLocale === "ko" ? "닷컴 문구와 CTA의 언어/마켓 기준을 확정합니다." : "Locks the market and language basis for dotcom copy and CTA."
         },
@@ -4080,7 +4129,8 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
             fact: currentLocale === "ko"
                 ? `${selectedMarket?.siteCode || country.countryCode} 삼성닷컴 추적 카테고리 ${trackedCategoryCount}개에서 SKU ${trackedSkuCount}개를 확인했습니다.`
                 : `Confirmed ${trackedSkuCount} SKUs across ${trackedCategoryCount} tracked Samsung dotcom categories for ${selectedMarket?.siteCode || country.countryCode}.`,
-            source: "references/sku_availability_matrix.json",
+            source: "sku_availability_matrix.json",
+            source_url: categorySourceUrl || samsungDotcomUrl,
             confidence: marketSku ? "High" : "Medium",
             impact: currentLocale === "ko" ? "03의 모델/구매 준비도 판단을 실제 삼성닷컴 SKU 기준으로 고정합니다." : "Anchors model and purchase-readiness judgement to official Samsung dotcom SKUs."
         },
@@ -4089,7 +4139,8 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
             fact: currentLocale === "ko"
                 ? `${getCategoryName(deviceDecision.final.category)} 카테고리는 ${anchorSkuEvidence.categoryEvidence.productCount || 0}개 SKU가 추적되며, 구매 가능 표시는 ${anchorSkuEvidence.categoryEvidence.inStockCount || 0}개입니다.`
                 : `${getCategoryName(deviceDecision.final.category)} is backed by ${anchorSkuEvidence.categoryEvidence.productCount || 0} tracked SKUs, with ${anchorSkuEvidence.categoryEvidence.inStockCount || 0} showing purchasable availability.`,
-            source: "references/sku_availability_matrix.json",
+            source: "samsung.com",
+            source_url: categorySourceUrl || samsungDotcomUrl,
             confidence: "High",
             impact: currentLocale === "ko" ? "앵커 기기와 구매 가능성 판단을 시장별 공식 카테고리 페이지에 맞춥니다." : "Aligns the anchor-device and purchase-readiness judgement to market-specific official category pages."
         } : null,
@@ -4098,14 +4149,16 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
             fact: currentLocale === "ko"
                 ? `${anchorService.appCardLabel || anchorService.serviceName} 서비스 후보는 ${anchorService.keyFeatures.slice(0, 2).join(", ")} 신호를 중심으로 연결됩니다.`
                 : `${anchorService.appCardLabel || anchorService.serviceName} is grounded on signals such as ${anchorService.keyFeatures.slice(0, 2).join(", ")}.`,
-            source: "references/fact_pack.json",
+            source: "Explore Contents",
+            source_url: exploreV1Url,
             confidence: "High",
             impact: currentLocale === "ko" ? "서비스 스택과 자동화 흐름의 기준점을 제공합니다." : "Provides the baseline for service-stack and automation logic."
         } : null,
         cityFact ? {
             no: 6,
             fact: `${citySignal.cityDisplay}: ${cityFact}`,
-            source: "references/city_signals.json",
+            source: "city_signals.json",
+            source_url: samsungDotcomUrl,
             confidence: "Medium",
             impact: currentLocale === "ko" ? "도시 맥락에 맞는 첫 장면과 카피 톤을 조정합니다." : "Tunes the first scene and copy tone to the city context."
         } : null
@@ -4198,6 +4251,21 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
         }
     ];
 
+    // sourceRefs: 내부 파일 + 외부 URL 모두 포함
+    const sourceRefEntries = [...new Set([
+        ...confirmed.map((item) => item.source),
+        serviceSupport ? "service_support_matrix.json" : null,
+        anchorSkuEvidence.product ? "product_feature_matrix.json" : null
+    ].filter(Boolean))];
+    // 외부 URL 출처
+    const sourceUrlEntries = [...new Set([
+        samsungDotcomUrl,
+        categorySourceUrl,
+        productSourceUrl,
+        exploreV1Url,
+        exploreV2Url
+    ].filter(Boolean))];
+
     return {
         confirmed,
         assumptions,
@@ -4205,12 +4273,8 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
         observation: exploreGrounding.observation,
         insight: exploreGrounding.insight,
         implication: exploreGrounding.implication,
-        sourceUrls: [],
-        sourceRefs: [...new Set([
-            ...confirmed.map((item) => item.source),
-            serviceSupport ? "references/service_support_matrix.json" : null,
-            anchorSkuEvidence.product ? "references/product_feature_matrix.json" : null
-        ].filter(Boolean))]
+        sourceRefs: sourceRefEntries,
+        sourceUrls: sourceUrlEntries
     };
 }
 
@@ -5887,6 +5951,10 @@ function renderOverview(payload) {
                             <tbody>
                                 ${(payload.facts.confirmed || []).map((item) => {
                                     const srcDetailId = `fact-src-${item.no}-${Date.now()}`;
+                                    const srcUrl = item.source_url || "";
+                                    const urlLink = srcUrl
+                                        ? `<a class="source-detail-url" href="${escapeHtml(srcUrl)}" target="_blank" rel="noopener noreferrer">🔗 ${escapeHtml(srcUrl.length > 70 ? srcUrl.slice(0, 70) + "…" : srcUrl)}</a>`
+                                        : "";
                                     return `
                                     <tr>
                                         <td>${item.no}</td>
@@ -5901,6 +5969,7 @@ function renderOverview(payload) {
                                                 <p class="source-detail-label">${escapeHtml(item.source)}</p>
                                                 <p class="source-detail-snippet">${escapeHtml(item.fact)}</p>
                                                 <p class="source-detail-meta">${currentLocale === "ko" ? "신뢰도" : "Confidence"}: ${escapeHtml(item.confidence)} · ${escapeHtml(item.impact)}</p>
+                                                ${urlLink}
                                             </div>
                                         </td>
                                     </tr>`;
@@ -5932,10 +6001,18 @@ function renderOverview(payload) {
                     <ul>${(payload.facts.readiness || []).map((item) => `<li><strong>${escapeHtml(item.label)}</strong> · ${escapeHtml(item.status)} · ${escapeHtml(item.note)}</li>`).join("")}</ul>
                 </div>
                 <div class="fact-links source-refs-summary">
-                    <h5>${currentLocale === "ko" ? "내부 참조 파일" : "Internal Reference Files"}</h5>
+                    <h5>${currentLocale === "ko" ? "참조 출처" : "Reference Sources"}</h5>
                     <div class="output-source-bar">
                         ${(payload.facts.sourceRefs || []).map((ref) => `<span class="source-tag" title="${escapeHtml(ref)}">${escapeHtml(ref.replace("references/", ""))}</span>`).join("")}
                     </div>
+                    ${(payload.facts.sourceUrls || []).length ? `
+                        <div class="output-source-bar">
+                            ${payload.facts.sourceUrls.map((url) => {
+                                const domain = url.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+                                return `<a class="source-tag source-tag-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(url)}">${escapeHtml(domain)}</a>`;
+                            }).join("")}
+                        </div>
+                    ` : ""}
                 </div>
             </section>
 

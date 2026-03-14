@@ -1210,7 +1210,8 @@ async function fetchWorldBankCountrySignals(country) {
         indicator,
         value: latest?.value || null,
         year: latest?.date || null,
-        source: "api.worldbank.org"
+        source: "api.worldbank.org",
+        url
     };
 }
 
@@ -1225,7 +1226,8 @@ async function fetchWorldBankUrbanSignals(country) {
         indicator,
         value: latest?.value || null,
         year: latest?.date || null,
-        source: "api.worldbank.org"
+        source: "api.worldbank.org",
+        url
     };
 }
 
@@ -1249,7 +1251,8 @@ async function fetchOpenMeteoSignals(lat, lon) {
         avgMax,
         avgMin,
         avgRain,
-        source: "api.open-meteo.com"
+        source: "api.open-meteo.com",
+        url
     };
 }
 
@@ -1267,7 +1270,8 @@ async function fetchNominatimCitySignals(city, country) {
         typeName: top?.type || "",
         importance: Number(top?.importance || 0),
         displayName: top?.display_name || city,
-        source: "nominatim.openstreetmap.org"
+        source: "nominatim.openstreetmap.org",
+        url
     };
 }
 
@@ -1831,6 +1835,8 @@ function buildEvidence({ locale, worldBankMarket, worldBankUrban, climate, cityS
     if (worldBankMarket) {
         items.push({
             source_domain: worldBankMarket.source,
+            source_url: worldBankMarket.url || "",
+            title: "World Bank Open Data — GDP per capita",
             collected_at_utc: now,
             confidence: "high",
             snippet: locale === "ko"
@@ -1841,6 +1847,8 @@ function buildEvidence({ locale, worldBankMarket, worldBankUrban, climate, cityS
     if (worldBankUrban) {
         items.push({
             source_domain: worldBankUrban.source,
+            source_url: worldBankUrban.url || "",
+            title: "World Bank Open Data — Urban population ratio",
             collected_at_utc: now,
             confidence: "high",
             snippet: locale === "ko"
@@ -1851,6 +1859,8 @@ function buildEvidence({ locale, worldBankMarket, worldBankUrban, climate, cityS
     if (climate) {
         items.push({
             source_domain: climate.source,
+            source_url: climate.url || "",
+            title: "Open-Meteo — 7-day weather forecast",
             collected_at_utc: now,
             confidence: "medium",
             snippet: locale === "ko"
@@ -1861,6 +1871,8 @@ function buildEvidence({ locale, worldBankMarket, worldBankUrban, climate, cityS
     if (citySignal) {
         items.push({
             source_domain: citySignal.source,
+            source_url: citySignal.url || "",
+            title: "OpenStreetMap Nominatim — City geocode",
             collected_at_utc: now,
             confidence: Number(citySignal.importance || 0) >= 0.5 ? "medium" : "low",
             snippet: locale === "ko"
