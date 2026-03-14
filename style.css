@@ -1975,7 +1975,33 @@ pre {
 .output-block h3,
 .output-block h4,
 .output-block h5 {
-    margin: 6px 0 12px;
+    margin: 6px 0 14px;
+}
+
+.output-block p,
+.output-block li {
+    line-height: 1.75;
+}
+
+.output-block section,
+.output-block .summary-sub-grid,
+.output-block .scenario-details-grid,
+.output-block .insight-process,
+.output-block .marketing-wrap {
+    margin-bottom: 16px;
+}
+
+.output-block .summary-sub-item,
+.output-block .detail-col,
+.output-block .process-item,
+.output-block .fact-box,
+.output-block .fact-readiness,
+.output-block .fact-links {
+    margin-bottom: 14px;
+}
+
+.output-block .case-block {
+    margin-bottom: 18px;
 }
 
 /* Brief Card — 1분 브리핑 */
@@ -3109,7 +3135,13 @@ pre {
 }
 
 .ai-result-body li {
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    line-height: 1.7;
+}
+
+.ai-result-body p {
+    margin: 10px 0;
+    line-height: 1.8;
 }
 
 .ai-result-body hr {

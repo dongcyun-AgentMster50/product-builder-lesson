@@ -3127,7 +3127,7 @@ function renderAIResult(markdown, context) {
     resultDiv.innerHTML = `
         <article class="scenario-output ai-result">
             <div class="ai-result-meta">
-                <span class="ai-result-badge">AI Generated</span>
+                <span class="ai-result-badge">${currentLocale === "ko" ? "AI 생성 결과" : "AI Generated"}</span>
                 <span class="ai-result-context">${escapeHtml(context.role)}</span>
                 <button type="button" class="tab-btn ai-copy-btn" id="ai-copy-btn">${currentLocale === "ko" ? "복사" : "Copy"}</button>
             </div>
@@ -4553,15 +4553,26 @@ function buildTargetSegment(country, city, selectedSegment, intent, exploreGroun
 }
 
 function buildSetupGuide(deviceDecision, services, selectedRole) {
-    return [
-        localizeSentence("guide1", deviceDecision.final.modelName),
-        localizeSentence("guide2", getServiceLabel(services[0])),
-        localizeSentence("guide3"),
-        localizeSentence("guide4"),
-        currentLocale === "ko"
-            ? `${getRoleTitle(selectedRole.id)} 담당자는 첫 배포 시 가장 반응이 좋은 문구와 CTA를 함께 기록합니다.`
-            : `${getRoleTitle(selectedRole.id)} owners should log the best-performing message and CTA from the first rollout.`
-    ];
+    const roleName = getRoleTitle(selectedRole.id);
+    const deviceName = deviceDecision.final.modelName;
+    const serviceName = getServiceLabel(services[0]);
+    return currentLocale === "ko"
+        ? [
+            `시작 전 준비: ${deviceName} 전원 켜기, SmartThings 앱 설치, 삼성 계정 로그인 완료`,
+            `기기 연결: 앱에서 '+' → '기기 추가' → ${deviceName}을 선택하고 화면 안내를 따릅니다.`,
+            `서비스 활성화: '자동화' 탭에서 ${serviceName}을 활성화하고 원하는 조건을 설정합니다.`,
+            "첫 성공 확인: 설정한 자동화가 1회 이상 정상 동작하는지 확인합니다.",
+            "알림 및 공유: 알림 설정을 켜고, 필요하면 가족 구성원을 초대합니다.",
+            `${roleName} 담당자는 첫 배포 시 가장 반응이 좋은 문구와 CTA를 함께 기록합니다.`
+        ]
+        : [
+            `Preparation: Power on ${deviceName}, install SmartThings, sign in.`,
+            `Connect: In the app, tap '+' → 'Add device' → select ${deviceName} and follow instructions.`,
+            `Activate: In 'Automations', enable ${serviceName} and set conditions.`,
+            "Verify: Confirm the automation runs at least once.",
+            "Notify & share: Enable alerts and invite family members.",
+            `${roleName} owners should log the best-performing message and CTA from the first rollout.`
+        ];
 }
 
 function buildMarketability(country, intent, deviceDecision, services, selectedRole, selectedSegment, exploreGrounding) {
@@ -4989,8 +5000,13 @@ function buildBenefits(intent, services, exploreGrounding) {
 }
 
 function buildSegmentAnalysis(country, city, selectedSegment, intent, exploreGrounding) {
+    const countryName = getCountryName(country.countryCode);
+    const locationLabel = city ? `${city}, ${countryName}` : countryName;
     return {
-        core: currentLocale === "ko" ? `${selectedSegment} / ${city ? `${city}, ` : ""}${getCountryName(country.countryCode)} 생활권` : `${selectedSegment} / ${city || getCountryName(country.countryCode)}`,
+        core: currentLocale === "ko" ? `${selectedSegment} / ${locationLabel} 생활권` : `${selectedSegment} / ${locationLabel}`,
+        populationEstimate: currentLocale === "ko"
+            ? `추정 규모: ${locationLabel} 기준 해당 세그먼트 약 [AI가 공공 통계 기반으로 추정]명, 전체 인구 대비 약 [비율]% (통계 출처가 없는 경우 추론 근거를 병기)`
+            : `Estimated size: approximately [AI estimates from public statistics] in ${locationLabel}, roughly [ratio]% of total population`,
         behaviors: [
             currentLocale === "ko" ? `${exploreGrounding.functionalJob}을 줄여주는 요약형 UX에 반응할 가능성이 큽니다.` : `Likely to respond well to UX that reduces ${exploreGrounding.functionalJob}.`,
             currentLocale === "ko" ? `${exploreGrounding.primaryValue}처럼 결과가 선명한 메시지에 더 크게 반응합니다.` : `Responds more strongly to messages where outcomes like ${exploreGrounding.primaryValue} are clear.`
@@ -5025,20 +5041,61 @@ function buildCampaignTiming(intent, exploreGrounding) {
 }
 
 function buildDeviceGuide(country, deviceDecision, services) {
+    const countryName = getCountryName(country.countryCode);
+    const serviceName = getServiceLabel(services[0]);
     return {
         available: [
-            currentLocale === "ko" ? `[확정] ${getCountryName(country.countryCode)} 기준 활용 가능 카테고리와 연결 시나리오를 우선 반영합니다.` : `[Confirmed] Prioritize categories and connected scenarios available in ${getCountryName(country.countryCode)}.`,
+            currentLocale === "ko" ? `[확정] ${countryName} 기준 활용 가능 카테고리와 연결 시나리오를 우선 반영합니다.` : `[Confirmed] Prioritize categories and connected scenarios available in ${countryName}.`,
             currentLocale === "ko" ? `대표 기준 기기: ${deviceDecision.final.modelName}` : `Representative anchor device: ${deviceDecision.final.modelName}`,
             currentLocale === "ko" ? "[체크 포인트] 실제 판매 모델/SKU는 시점에 따라 변동될 수 있어 최종 확인이 필요합니다." : "[Check point] Final retail model and SKU availability should be confirmed at launch."
         ],
-        steps: [
-            currentLocale === "ko" ? "1단계: SmartThings 앱 설치 및 계정 로그인" : "Step 1: Install SmartThings and sign in",
-            currentLocale === "ko" ? "2단계: 집(Home) 생성 후 핵심 기기 1대 먼저 연결" : "Step 2: Create the home and connect one core device first",
-            currentLocale === "ko" ? `3단계: ${getServiceLabel(services[0])} 또는 추천 자동화 카드 활성화` : `Step 3: Activate ${getServiceLabel(services[0])} or the recommended automation card`,
-            currentLocale === "ko" ? "4단계: 알림/절감/케어 중 가장 필요한 흐름 1개만 먼저 성공" : "Step 4: Make one needed flow succeed first",
-            currentLocale === "ko" ? "5단계: 자주 쓰는 장면을 저장해 반복 사용" : "Step 5: Save the most-used moment for repeat use",
-            currentLocale === "ko" ? "6단계: 추가 기기/가족 구성원으로 확장" : "Step 6: Expand to more devices or family members"
-        ]
+        preparation: currentLocale === "ko"
+            ? [
+                "Wi-Fi 환경 확인: 2.4GHz Wi-Fi가 안정적으로 연결되어 있는지 확인합니다 (5GHz만 지원하는 공유기는 설정 필요).",
+                "삼성 계정 준비: account.samsung.com에서 계정이 없으면 먼저 생성합니다.",
+                "SmartThings 앱 설치: Galaxy Store 또는 App Store에서 'SmartThings'를 검색해 설치합니다.",
+                "기기 전원: 연결할 기기의 전원을 켜고 초기 설정(공장 초기화)이 완료된 상태여야 합니다."
+            ]
+            : [
+                "Wi-Fi check: Ensure a stable 2.4GHz Wi-Fi connection is available.",
+                "Samsung account: Create one at account.samsung.com if you don't have one.",
+                "SmartThings app: Install from Galaxy Store or App Store.",
+                "Device power: Turn on the device and complete its initial factory setup."
+            ],
+        steps: currentLocale === "ko"
+            ? [
+                "1단계: SmartThings 앱을 열고 삼성 계정으로 로그인합니다.",
+                "2단계: 하단의 '+' 버튼 → '기기 추가'를 눌러 새 기기를 검색합니다.",
+                `3단계: '집(Home)'이 없으면 자동으로 생성됩니다. 방 이름(거실, 침실 등)을 지정해 기기를 배치합니다.`,
+                `4단계: 화면 안내에 따라 ${deviceDecision.final.modelName}을 Wi-Fi에 연결합니다. 기기 화면에 인증 코드가 뜨면 앱에 입력합니다.`,
+                "5단계: 연결 완료 후 기기 카드가 대시보드에 나타나는지 확인합니다. 제어 버튼을 눌러 정상 동작을 테스트합니다.",
+                `6단계: '자동화' 탭 → '+' → '${serviceName}' 또는 추천 루틴 카드를 활성화합니다. 조건(시간, 센서 등)과 동작(기기 켜기/끄기)을 설정합니다.`,
+                "7단계: '알림' 설정에서 원하는 알림을 켜고, 가족 구성원을 '멤버 초대'로 추가합니다.",
+                "8단계: 2~3일간 자동화가 정상 실행되는지 확인합니다. 문제가 있으면 기기 상세 → '연결 상태'에서 재연결하거나 펌웨어 업데이트를 진행합니다.",
+                "9단계: 자주 쓰는 장면(루틴)을 저장해 반복 사용하고, 추가 기기를 연결해 확장합니다."
+            ]
+            : [
+                "Step 1: Open SmartThings and sign in with your Samsung account.",
+                "Step 2: Tap '+' → 'Add device' to search for a new device.",
+                "Step 3: Create a Home if one doesn't exist. Assign rooms (living room, bedroom, etc.).",
+                `Step 4: Follow on-screen instructions to connect ${deviceDecision.final.modelName} to Wi-Fi.`,
+                "Step 5: Verify the device card appears on the dashboard. Test basic controls.",
+                `Step 6: Go to 'Automations' → '+' → activate '${serviceName}' or a recommended routine.`,
+                "Step 7: Enable notifications and invite family members.",
+                "Step 8: Monitor for 2-3 days. Reconnect or update firmware if issues arise.",
+                "Step 9: Save frequently used scenes and expand with additional devices."
+            ],
+        troubleshooting: currentLocale === "ko"
+            ? [
+                "기기가 검색되지 않을 때: 기기를 공장 초기화하고, 앱과 같은 Wi-Fi에 연결되어 있는지 확인합니다.",
+                "연결이 자주 끊길 때: 공유기와 기기 사이 거리를 확인하고, 펌웨어를 최신으로 업데이트합니다.",
+                "자동화가 실행되지 않을 때: 조건(시간, 위치)이 올바른지, 기기가 온라인 상태인지 확인합니다."
+            ]
+            : [
+                "Device not found: Factory reset the device and check it's on the same Wi-Fi.",
+                "Frequent disconnection: Check distance to router and update firmware.",
+                "Automation not running: Verify trigger conditions and device online status."
+            ]
     };
 }
 
@@ -5603,7 +5660,7 @@ function buildDetailedScenario(country, city, selectedSegment, intent, deviceDec
         const content = exploreMatch.content[locale] || exploreMatch.content.en;
         serviceStories = [
             {
-                title: `[Explore Mapped] ${exploreMatch.title}`,
+                title: currentLocale === "ko" ? `[참조 시나리오] ${exploreMatch.title}` : `[Explore Mapped] ${exploreMatch.title}`,
                 paragraphs: [content.pain, content.solution, content.benefit]
             },
             ...services.slice(0, 2).map((service) => {
@@ -5696,7 +5753,7 @@ function renderOverview(payload) {
                 <h4>${titles.scenario}</h4>
                 <div class="scenario-details-grid">
                     <div class="detail-col">
-                        <strong>Target Customer Context</strong>
+                        <strong>${isKo ? "타겟 고객" : "Target Customer Context"}</strong>
                         <p>${escapeHtml(payload.detailedScenario.targetCustomer)}</p>
                     </div>
                     <div class="detail-col">
@@ -5752,20 +5809,20 @@ function renderOverview(payload) {
                 </div>
                 <div class="insight-process">
                     <div class="process-item">
-                        <strong>Observation (현지 데이터)</strong>
+                        <strong>${isKo ? "지역 현황 (Observation)" : "Observation"}</strong>
                         <p>${escapeHtml(payload.facts.observation)}</p>
                     </div>
                     <div class="process-item">
-                        <strong>Insight (실무적 해석)</strong>
+                        <strong>${isKo ? "핵심 도출 (Insight)" : "Insight"}</strong>
                         <p>${escapeHtml(payload.facts.insight)}</p>
                     </div>
                     <div class="process-item">
-                        <strong>Implication (시사점)</strong>
+                        <strong>${isKo ? "CX 적용 (Implication)" : "Implication"}</strong>
                         <p>${escapeHtml(payload.facts.implication)}</p>
                     </div>
                 </div>
                 <div class="fact-readiness">
-                    <strong>${currentLocale === "ko" ? "Readiness Sync" : "Readiness Sync"}</strong>
+                    <strong>${currentLocale === "ko" ? "기기/서비스 준비 상태" : "Readiness Sync"}</strong>
                     <ul>${(payload.facts.readiness || []).map((item) => `<li><strong>${escapeHtml(item.label)}</strong> · ${escapeHtml(item.status)} · ${escapeHtml(item.note)}</li>`).join("")}</ul>
                 </div>
                 <div class="fact-links">
@@ -5781,11 +5838,11 @@ function renderOverview(payload) {
                 <div class="marketing-wrap">
                     <p class="role-badge">${escapeHtml(marketing.roleTone || "")} ${currentLocale === "ko" ? "선택 상태, 아래는 3개 렌즈 전체 출력입니다." : "selected, but all three lenses are shown below."}</p>
                     <div class="marketing-guideline-box">
-                        <strong>${currentLocale === "ko" ? "확정된 Verbal Guideline 반영 규칙" : "Confirmed Verbal Guideline Rules"}</strong>
+                        <strong>${currentLocale === "ko" ? "확정된 언어 가이드라인 반영 규칙" : "Confirmed Verbal Guideline Rules"}</strong>
                         <ul class="marketing-list">${(marketing.confirmedRules || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
                     </div>
                     <div class="marketing-guideline-box">
-                        <strong>Global / Local Split</strong>
+                        <strong>${currentLocale === "ko" ? "글로벌 / 로컬 메시지 구분" : "Global / Local Split"}</strong>
                         <ul class="marketing-list">
                             <li><strong>Global</strong>: ${escapeHtml(marketing.globalLocalSplit?.global || "")}</li>
                             <li><strong>Local</strong>: ${escapeHtml(marketing.globalLocalSplit?.local || "")}</li>
@@ -5795,16 +5852,16 @@ function renderOverview(payload) {
                         ${marketingLenses.map((lens) => `
                             <article class="marketing-lens-card ${lens.selected ? "selected" : ""}">
                                 <p class="marketing-lens-label">${escapeHtml(lens.label)}</p>
-                                ${lens.hookEn ? `<p><strong>Hook (EN)</strong><br>${escapeHtml(lens.hookEn)}</p>` : ""}
-                                ${lens.shortCopyKo ? `<p><strong>Short copy (KO)</strong><br>${escapeHtml(lens.shortCopyKo)}</p>` : ""}
-                                ${lens.talkTrackKo ? `<div><strong>Talk-track (KO)</strong><ul>${lens.talkTrackKo.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>` : ""}
-                                ${lens.h1En ? `<p><strong>H1 (EN)</strong><br>${escapeHtml(lens.h1En)}</p>` : ""}
-                                ${lens.subCopyKo ? `<p><strong>Sub-copy (KO)</strong><br>${escapeHtml(lens.subCopyKo)}</p>` : ""}
-                                ${lens.proofPointKo ? `<p><strong>Proof point</strong><br>${escapeHtml(lens.proofPointKo)}</p>` : ""}
-                                ${lens.campaignConceptEn ? `<p><strong>Campaign concept (EN)</strong><br>${escapeHtml(lens.campaignConceptEn)}</p>` : ""}
-                                ${lens.emotionalNarrativeKo ? `<p><strong>Emotional narrative (KO)</strong><br>${escapeHtml(lens.emotionalNarrativeKo)}</p>` : ""}
-                                ${lens.brandValue ? `<p><strong>${currentLocale === "ko" ? "Brand value reinforced" : "Brand value reinforced"}</strong><br>${escapeHtml(lens.brandValue)}</p>` : ""}
-                                <p><strong>CTA</strong><br>${escapeHtml(lens.cta || "")}</p>
+                                ${lens.hookEn ? `<p><strong>${isKo ? "훅 메시지 (영문)" : "Hook (EN)"}</strong><br>${escapeHtml(lens.hookEn)}</p>` : ""}
+                                ${lens.shortCopyKo ? `<p><strong>${isKo ? "짧은 카피 (국문)" : "Short copy (KO)"}</strong><br>${escapeHtml(lens.shortCopyKo)}</p>` : ""}
+                                ${lens.talkTrackKo ? `<div><strong>${isKo ? "설명 멘트 (국문)" : "Talk-track (KO)"}</strong><ul>${lens.talkTrackKo.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>` : ""}
+                                ${lens.h1En ? `<p><strong>${isKo ? "메인 헤드라인 (영문)" : "H1 (EN)"}</strong><br>${escapeHtml(lens.h1En)}</p>` : ""}
+                                ${lens.subCopyKo ? `<p><strong>${isKo ? "보조 카피 (국문)" : "Sub-copy (KO)"}</strong><br>${escapeHtml(lens.subCopyKo)}</p>` : ""}
+                                ${lens.proofPointKo ? `<p><strong>${isKo ? "증거 포인트" : "Proof point"}</strong><br>${escapeHtml(lens.proofPointKo)}</p>` : ""}
+                                ${lens.campaignConceptEn ? `<p><strong>${isKo ? "캠페인 컨셉 (영문)" : "Campaign concept (EN)"}</strong><br>${escapeHtml(lens.campaignConceptEn)}</p>` : ""}
+                                ${lens.emotionalNarrativeKo ? `<p><strong>${isKo ? "감성 내러티브 (국문)" : "Emotional narrative (KO)"}</strong><br>${escapeHtml(lens.emotionalNarrativeKo)}</p>` : ""}
+                                ${lens.brandValue ? `<p><strong>${isKo ? "강화되는 브랜드 가치" : "Brand value reinforced"}</strong><br>${escapeHtml(lens.brandValue)}</p>` : ""}
+                                <p><strong>${isKo ? "행동 유도 문구" : "CTA"}</strong><br>${escapeHtml(lens.cta || "")}</p>
                             </article>
                         `).join("")}
                     </div>
@@ -5940,10 +5997,10 @@ function getOutputTitles() {
             benefits: "05. 고객 베네핏",
             target: "06. 타겟 세그먼트 및 고객 수용도 분석",
             timing: "07. 캠페인 타이밍 및 크리에이티브 방향",
-            devices: "08. 지역 적용 가능한 기기 및 설정 방법",
-            marketability: "09. 시나리오 시장성 평가(리스크 포함)",
-            addon: "10. Add-on Pack — 고객 적용 가이드/실행률 + Claim–Funnel–Metric Mapping",
-            reflection: "11. Brand/AI/철학 Reflection Check"
+            devices: "08. 기기 구성 및 설정 가이드",
+            marketability: "09. 시나리오 시장성 평가 (리스크 포함)",
+            addon: "10. 실행 확장 팩 — 고객 적용 가이드 + 성과 지표 연결",
+            reflection: "11. 브랜드/AI/철학 품질 점검"
         };
     }
     return {

@@ -104,25 +104,34 @@ Each scenario should map to 1–4 of these keywords (multiple OK):
 **Language**: Korean-primary. Section 04 marketing messages should include English-ready copy options where useful.
 **Tone**: Samsung Premium — confident, human, no jargon overload.
 
+**포맷 규칙 (전체 적용)**:
+- 모든 섹션에서 항목 사이에 빈 줄(줄바꿈)을 넣어 가독성을 확보할 것
+- 메타데이터성 라벨(예: Explore ID, 가치 태그, 서비스 매핑 등)은 내부 코드명이 아닌 **사용자가 바로 이해할 수 있는 한국어**로 표기
+- 영문 전문용어가 불가피한 경우에만 병기하되, 한국어 설명을 먼저 쓸 것
+- 긴 문단은 3~4줄마다 줄바꿈으로 시각적 쉼을 줄 것
+- 불릿 리스트는 항목 간 간격을 유지하여 읽기 피로를 줄일 것
+
 ---
 
 ### (01) CX 시나리오 제목 및 Summary
 • 제목:
-- Combine 1–2 reflected value tags (Care / Secure / Save / Play) with an emotional, presentation-ready headline
+- 반영된 가치 태그(Care / Secure / Save / Play) 1~2개를 결합한, 감성적이고 발표에 바로 쓸 수 있는 헤드라인
 
-• Explore 근거:
-- Must explicitly show mapped Explore ID + title + URL
-- Also state the localization point briefly: what was adapted for the region/context while keeping Parent identity
+• 참조 시나리오 (Explore 기반):
+- 참조된 Explore 시나리오의 번호, 제목, 링크를 명시
+- 예시: "참조 시나리오: #5 Keep your home safe — 부재 중 안심 모니터링"
+- 해당 지역/맥락에 맞게 어떤 부분을 현지화했는지 한 줄로 설명
 
 • 핵심 요약:
-- In 6 lines or fewer, explain who the scenario is for, in what situation, through what solution, and what change the customer feels
+- 6줄 이내로, 누구를 위한 시나리오인지, 어떤 상황에서, 어떤 솔루션으로, 고객이 느끼는 변화가 무엇인지 설명
+- 각 항목 사이에 줄바꿈을 넣어 가독성 확보
 
 • 우선 검토 이유:
-- Add 1 short line on why this scenario is worth prioritizing for marketers now
+- 마케터가 이 시나리오를 지금 우선 검토해야 하는 이유를 한 줄로 추가
 
-• Optional visual extension:
-- Do not output storyboard, webtoon, or image prompt in the default 01–07 version
-- Only provide visual storyboard / image prompt when the user explicitly asks for it later
+• 시각 자료 확장 (선택):
+- 기본 01~07 버전에서는 스토리보드, 웹툰, 이미지 프롬프트를 출력하지 않음
+- 사용자가 별도로 요청할 때만 제공
 
 ---
 
@@ -202,11 +211,11 @@ Provide Korean + English-ready messaging optimized to the selected Q1 role.
 - Must feel tailored to Retail / Dotcom / Brand, not generic
 - This section is mandatory in the default 01–07 output
 
-Required structure:
-- **Primary campaign message**
-- **Alternative copy options (2–3)**
-- **Nuance guide**: briefly explain how each option differs in tone or emphasis
-- **Recommended use**: in-store / dotcom / brand campaign / social / KV headline etc.
+필수 구성:
+- **메인 캠페인 메시지**
+- **대안 카피 옵션 (2~3개)**
+- **톤 차이 가이드**: 각 옵션이 어떤 톤이나 강조점에서 다른지 간략 설명
+- **활용 채널 추천**: 매장 / 닷컴 / 브랜드 캠페인 / 소셜 / KV 헤드라인 등
 
 ---
 
@@ -219,17 +228,18 @@ List 3 direct user-facing benefits.
 ---
 
 ### (06) 타겟 세그먼트 및 고객 수용도 분석
-Explain why this segment is representative in the country and how it is likely to react in AI FGD-style evaluation.
+이 세그먼트가 해당 국가에서 왜 대표성을 갖는지, 실제 고객이 어떻게 반응할지를 평가합니다.
 
-Required structure:
-- **Representative basis**: demographic + lifestyle grounding
-- **Likely positive reactions**: what customers may like about this scenario
-- **Likely concerns / resistance**: what may feel unclear, excessive, creepy, costly, or unrealistic
-- **AI FGD-style takeaway**: what kinds of opinions would likely emerge if this scenario were tested with personas
-- **Acceptance read**: High / Medium / Low with a short reason
+필수 구성:
+- **대표성 근거**: 인구통계 + 라이프스타일 기반 설명
+- **추정 규모**: 해당 세그먼트의 대략적인 인원 수와 구성 비율 (국가 인구 대비 또는 도시/지역 인구 대비 등). 예: "서울 수도권 30~40대 맞벌이 가구 약 280만 세대, 전체 가구의 약 22%". 공식 통계가 없으면 추론 근거를 함께 명시
+- **긍정 반응 예상**: 고객이 이 시나리오에서 좋아할 만한 점
+- **우려/저항 예상**: 불명확하거나 과도하거나 불안하거나 비용이 높다고 느낄 수 있는 점
+- **고객 반응 예상도**: 이 시나리오를 실제 고객 페르소나에게 테스트했을 때 나올 법한 의견들을 구체적으로 서술
+- **수용도 판단**: 높음 / 보통 / 낮음 + 한 줄 근거
 
-Purpose:
-- This section should help marketers judge which scenario is likely to land best before deeper execution work
+목적:
+- 마케터가 본격적인 실행 작업 전에 어떤 시나리오가 가장 잘 먹힐지 판단할 수 있도록 지원
 
 ---
 
@@ -248,14 +258,22 @@ Purpose:
 
 ---
 
-### (08) 지역 적용 가능한 기기 및 설정 가이드 (Devices & Setup)
-Only output when explicitly requested after 01–07.
+### (08) 기기 구성 및 설정 가이드 (처음부터 차근차근)
+요청 시에만 출력합니다 (01~07 이후).
 
-Provide:
-- A list of locally sale-confirmed or locally plausible devices for the scenario
-- A simple step-by-step setup guide that even a beginner can follow
-- If support is uncertain, separate confirmed setup from conditional setup
-- Keep this practical, not overly technical
+필수 구성:
+- **추천 기기 목록**: 해당 지역에서 판매 확정 또는 판매 가능성이 높은 기기 리스트
+- **설정 전 준비사항**: Wi-Fi 환경, 삼성 계정 생성, 앱 설치 등 시작 전에 필요한 것
+- **단계별 설정 가이드** (초보자도 따라할 수 있도록 상세히):
+  1. SmartThings 앱 설치 및 삼성 계정 로그인 방법
+  2. '집(Home)' 만들기 및 방 구성 방법
+  3. 첫 번째 기기 연결 방법 (Wi-Fi 기기 / Zigbee 기기 각각)
+  4. 기기가 정상 연결되었는지 확인하는 방법
+  5. 자동화(루틴) 설정 방법 — 예시 포함
+  6. 알림 설정 및 가족 구성원 초대 방법
+  7. 문제 발생 시 확인할 사항 (재연결, 펌웨어 업데이트 등)
+- **확정 지원 vs 조건부 지원**: 지원이 불확실한 경우 구분하여 안내
+- 기술 용어를 최소화하고, "어디를 누르면 된다" 수준의 실용적 안내 지향
 
 ---
 
@@ -271,44 +289,44 @@ Use a table format.
 
 ---
 
-### (10) Add-on Pack — 고객 적용 가이드 + Claim-Funnel-Metric Mapping
-Only output when explicitly requested after 08–09 or when the user specifically asks for internal execution materials.
+### (10) 실행 확장 팩 — 고객 적용 가이드 + 성과 지표 연결
+요청 시에만 출력합니다 (08~09 이후 또는 내부 실행 자료 요청 시).
 
-**A. Role-specific Execution Materials** (per Q1 role):
+**A. 직무별 실행 자료** (Q1에서 선택한 역할 기준):
 
 **B. 고객 적용 가이드 / 실행률**
-- Setup / First Run / Repeat Use / Expand — each with activation trigger
+- 설정 → 첫 실행 → 반복 사용 → 확장 — 각 단계별 활성화 트리거 포함
 
-**C. Claim–Funnel–Metric Mapping**
-| Claim | Funnel Stage | Metric | 2026 Target Link |
-|-------|-------------|--------|-----------------|
-- WAU +50% / Stickiness (DAU/MAU) +30% linkage required
+**C. 클레임–퍼널–지표 연결표**
+| 클레임 | 퍼널 단계 | 측정 지표 | 2026 목표 연결 |
+|--------|----------|----------|---------------|
+- WAU +50% / 고착도(DAU/MAU) +30% 연결 필수
 
 ---
 
-### (11) Brand/AI/철학 Reflection Check (15-Item Gate)
-Only output when explicitly requested or when a structural revision needs internal QA evidence.
+### (11) 브랜드/AI/철학 품질 점검 (15개 항목)
+요청 시 또는 구조적 수정 후 내부 QA가 필요할 때 출력합니다.
 
-Score each: **Pass / Partial / Fail** with 1–2 line evidence.
-If any Fail → immediately rewrite that section, then re-check.
+각 항목: **통과 / 부분 / 미달** + 근거 1~2줄.
+미달 항목 → 해당 섹션 즉시 재작성 → 재점검.
 
-| No | Check Item | Result | Evidence |
-|----|-----------|--------|----------|
-| 1 | Outcome-first (no feature dump) | | |
-| 2 | Samsung Verbal Identity tone | | |
-| 3 | SmartThings minimized in UX copy | | |
-| 4 | Explore v2.0 tag mapping valid | | |
-| 5 | No hallucinated features | | |
-| 6 | Knox/security referenced if Secure value | | |
-| 7 | JTBD job statement present | | |
-| 8 | 3 Role-lens messages all present | | |
-| 9 | Automation JSON valid structure | | |
-| 10 | Storyboard Webtoon (4 panels, EN) present | | |
-| 11 | Fact vs Assumption clearly separated | | |
-| 12 | Regional 5-dimension analysis present | | |
-| 13 | Adoption Ladder in (08) present | | |
-| 14 | Claim-Funnel-Metric mapping in (10) | | |
-| 15 | Output Integrity: 11 sections complete | | |
+| No | 점검 항목 | 결과 | 근거 |
+|----|----------|------|------|
+| 1 | 결과 중심 서술 (기능 나열 X) | | |
+| 2 | 삼성 버벌 아이덴티티 톤 | | |
+| 3 | UX 카피에서 SmartThings 최소화 | | |
+| 4 | Explore v2.0 태그 매핑 적합성 | | |
+| 5 | 허구 기능 없음 | | |
+| 6 | Secure 가치 시 Knox/보안 언급 | | |
+| 7 | JTBD 직무 진술 포함 | | |
+| 8 | 3개 직무 렌즈 메시지 포함 | | |
+| 9 | 자동화 JSON 구조 유효성 | | |
+| 10 | 스토리보드 웹툰 (4컷, EN) 포함 | | |
+| 11 | 확정 vs 추론 정보 구분 | | |
+| 12 | 지역 5차원 분석 포함 | | |
+| 13 | (08) 기기 설정 가이드 포함 | | |
+| 14 | (10) 클레임-퍼널-지표 연결 | | |
+| 15 | 전체 11개 섹션 완결성 | | |
 
 ## Part 6. Gate System v2.0 (Self-Reflection)
 
