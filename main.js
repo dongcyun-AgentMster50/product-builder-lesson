@@ -138,6 +138,14 @@ function bindEvents() {
     prevBtn.addEventListener("click", () => moveStep(-1));
     nextBtn.addEventListener("click", () => moveStep(1));
     generateBtn.addEventListener("click", generateScenario);
+    document.getElementById("provider-toggle")?.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-provider]");
+        if (!btn) return;
+        selectedProvider = btn.dataset.provider;
+        sessionStorage.setItem("aiProvider", selectedProvider);
+        document.querySelectorAll(".provider-btn").forEach((b) => b.classList.toggle("active", b.dataset.provider === selectedProvider));
+    });
+    document.querySelectorAll(".provider-btn").forEach((b) => b.classList.toggle("active", b.dataset.provider === selectedProvider));
     roleSelectionContainer?.addEventListener("click", handleRoleCardClick);
     roleSelectionContainer?.addEventListener("keydown", handleRoleCardKeydown);
     countrySelect.addEventListener("change", updateStatePreview);
@@ -2880,7 +2888,8 @@ function generateScenario() {
         deviceGroups: selectedDeviceGroups,
         intentTags: [...(intent.tags || [])],
         missionBucket: intent.missionBucket,
-        locale: currentLocale
+        locale: currentLocale,
+        provider: selectedProvider
     };
 
     // Fallback local path
@@ -3127,7 +3136,7 @@ function renderAIResult(markdown, context) {
     resultDiv.innerHTML = `
         <article class="scenario-output ai-result">
             <div class="ai-result-meta">
-                <span class="ai-result-badge">${currentLocale === "ko" ? "AI 생성 결과" : "AI Generated"}</span>
+                <span class="ai-result-badge">${context.provider === "claude" ? "Claude" : "GPT"} ${currentLocale === "ko" ? "생성 결과" : "Generated"}</span>
                 <span class="ai-result-context">${escapeHtml(context.role)}</span>
                 <button type="button" class="tab-btn ai-copy-btn" id="ai-copy-btn">${currentLocale === "ko" ? "복사" : "Copy"}</button>
             </div>

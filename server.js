@@ -374,8 +374,97 @@ function callOpenAIStream({ systemPrompt, messages, apiKey, res, onDone, onError
     req.end();
 }
 
-/** Stream AI response via OpenAI. */
-function callAIStream({ systemPrompt, messages, apiKey, res, onDone, onError, model, max_tokens }) {
+/** Stream Anthropic Claude API response. */
+function callClaudeStream({ systemPrompt, messages, apiKey, res, onDone, onError, model, max_tokens }) {
+    if (!apiKey) {
+        onError(new Error("Anthropic API key is required."));
+        return;
+    }
+
+    const resolvedModel = model || process.env.CLAUDE_MODEL || "claude-sonnet-4-20250514";
+    const resolvedMaxTokens = max_tokens || 8000;
+
+    const claudeMessages = messages.map((m) => ({
+        role: m.role,
+        content: m.content
+    }));
+
+    const requestBody = {
+        model: resolvedModel,
+        max_tokens: resolvedMaxTokens,
+        stream: true,
+        system: systemPrompt,
+        messages: claudeMessages
+    };
+
+    const body = JSON.stringify(requestBody);
+
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey,
+            "anthropic-version": "2023-06-01",
+            "Content-Length": Buffer.byteLength(body)
+        }
+    };
+
+    const req = https.request("https://api.anthropic.com/v1/messages", options, (apiRes) => {
+        if (apiRes.statusCode !== 200) {
+            let errBody = "";
+            apiRes.on("data", (chunk) => { errBody += chunk; });
+            apiRes.on("end", () => {
+                try {
+                    const parsed = JSON.parse(errBody);
+                    onError(new Error(parsed?.error?.message || `Claude API error ${apiRes.statusCode}`));
+                } catch {
+                    onError(new Error(`Claude API error ${apiRes.statusCode}`));
+                }
+            });
+            return;
+        }
+
+        let buffer = "";
+        apiRes.on("data", (chunk) => {
+            buffer += chunk.toString();
+            const lines = buffer.split("\n");
+            buffer = lines.pop();
+
+            for (const line of lines) {
+                if (!line.startsWith("data: ")) continue;
+                const data = line.slice(6).trim();
+                if (!data) continue;
+                try {
+                    const event = JSON.parse(data);
+                    if (event.type === "content_block_delta" && event.delta?.text) {
+                        res.write(`data: ${JSON.stringify({ type: "chunk", text: event.delta.text })}\n\n`);
+                    } else if (event.type === "message_stop") {
+                        res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+                        onDone();
+                        return;
+                    }
+                } catch { /* skip */ }
+            }
+        });
+
+        apiRes.on("end", () => {
+            res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+            onDone();
+        });
+
+        apiRes.on("error", onError);
+    });
+
+    req.on("error", onError);
+    req.write(body);
+    req.end();
+}
+
+/** Stream AI response — dispatch by provider. */
+function callAIStream({ systemPrompt, messages, apiKey, res, onDone, onError, model, max_tokens, provider }) {
+    if (provider === "claude") {
+        return callClaudeStream({ systemPrompt, messages, apiKey, res, onDone, onError, model, max_tokens });
+    }
     return callOpenAIStream({ systemPrompt, messages, apiKey, res, onDone, onError, model, max_tokens });
 }
 
@@ -418,7 +507,10 @@ async function handleGenerate(req, res) {
     const tags       = Array.isArray(body?.intentTags) ? body.intentTags.join(", ") : String(body?.intentTags || "");
     const mission    = String(body?.missionBucket || "").trim();
     const locale     = String(body?.locale || "ko").trim();
-    const clientKey  = String(body?.apiKey || process.env.OPENAI_API_KEY || "").trim();
+    const provider   = String(body?.provider || "openai").trim();
+    const clientKey  = provider === "claude"
+        ? String(body?.anthropicKey || process.env.ANTHROPIC_API_KEY || "").trim()
+        : String(body?.apiKey || process.env.OPENAI_API_KEY || "").trim();
     const regionCtx  = body?.regionInsight ? JSON.stringify(body.regionInsight, null, 2) : null;
 
     const userMessage = [
@@ -446,6 +538,7 @@ async function handleGenerate(req, res) {
     callAIStream({
         systemPrompt,
         apiKey: clientKey,
+        provider,
         messages: [{ role: "user", content: userMessage }],
         res,
         onDone: () => { if (!done) { done = true; res.end(); } },
@@ -485,7 +578,10 @@ async function handleRefine(req, res) {
     const previousOutput    = String(body?.previousOutput || "").trim();
     const refinementRequest = String(body?.refinementRequest || "").trim();
     const context           = body?.context || {};
-    const clientKey         = String(body?.apiKey || process.env.OPENAI_API_KEY || "").trim();
+    const provider          = String(body?.provider || "openai").trim();
+    const clientKey         = provider === "claude"
+        ? String(body?.anthropicKey || process.env.ANTHROPIC_API_KEY || "").trim()
+        : String(body?.apiKey || process.env.OPENAI_API_KEY || "").trim();
 
     if (!refinementRequest) {
         sendJson(res, 400, { ok: false, error: { code: "MISSING_REQUEST", message: "refinementRequest is required." } });
@@ -518,6 +614,7 @@ async function handleRefine(req, res) {
     callAIStream({
         systemPrompt,
         apiKey: clientKey,
+        provider,
         messages,
         res,
         onDone: () => { if (!done) { done = true; res.end(); } },
