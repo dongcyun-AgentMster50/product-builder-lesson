@@ -3161,14 +3161,14 @@ function renderAIResult(markdown, context) {
 }
 
 function buildRefinementUI() {
-    const title = currentLocale === "ko" ? "후속 요청 / 섹션 수정" : "Refine / Follow-up";
+    const title = currentLocale === "ko" ? "추가 요청 / 수정" : "Refine / Follow-up";
     const placeholder = currentLocale === "ko"
-        ? "예) 독일 시장 데이터로 교체해줘 / 섹션 08 기기 목록 업데이트 / 섹션 10~11 출력해줘"
-        : "e.g. Switch to Germany market / Update Section 08 devices / Output sections 10-11";
+        ? "예) 독일 시장으로 바꿔줘 / 기기 목록 업데이트 / 실행 가이드 추가 / 품질 점검 해줘"
+        : "e.g. Switch to Germany / Update devices / Add execution guide / Run quality check";
     const btn = currentLocale === "ko" ? "요청 전송" : "Send";
     const initial = currentLocale === "ko"
-        ? "어떤 부분을 수정하거나 더 자세히 보고 싶으신가요? (섹션 번호 또는 자유 요청)"
-        : "Which section to refine, or request sections 10–11?";
+        ? "수정하거나 더 자세히 보고 싶은 부분이 있으면 자유롭게 요청하세요."
+        : "Ask for any refinement or additional detail you need.";
     return `
         <section class="output-block numbered-output post-output-prompt">
             <p class="block-index">+</p>

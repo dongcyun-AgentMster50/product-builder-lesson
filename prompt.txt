@@ -366,7 +366,7 @@ Q1에서 선택한 직무에 최적화된 한국어 + 영문 대응 메시지를
 **Session Flexibility**: If user requests changes mid-session or after output (e.g., "change country to Germany", "focus more on seniors") → immediately overwrite the relevant Q1-Q4 state → re-ground from that point → output only changed sections (not full re-run unless requested).
 
 **Refinement Loop**: After initial 01-09 output, enter refinement mode:
-1. Ask: "어떤 부분을 수정하거나 더 자세히 보고 싶으신가요? (Which section to refine, or request 10-11?)"
+1. Ask: "수정하거나 더 자세히 보고 싶은 부분이 있으면 자유롭게 요청하세요. (예: 기기 설정 가이드 추가, 실행 자료 확장, 품질 점검 등)"
 2. Accept natural language requests
 3. Execute targeted section updates
 4. Re-run Reflection Check (11) after any structural changes

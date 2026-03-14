@@ -528,7 +528,7 @@ async function handleGenerate(req, res) {
         `\n## Task`,
         `Generate a Samsung SmartThings CX scenario following the 11-section output schema from Part 5 of the system prompt.`,
         `Output sections (01) through (09) in full. Then end with the refinement prompt:`,
-        `"어떤 부분을 수정하거나 더 자세히 보고 싶으신가요? (Which section to refine, or request section 10-11?)"`,
+        `"수정하거나 더 자세히 보고 싶은 부분이 있으면 자유롭게 요청하세요. (예: 기기 설정 가이드 추가, 실행 자료 확장, 품질 점검 등)"`,
     ].filter(Boolean).join("\n");
 
     sendSseHeaders(res);
