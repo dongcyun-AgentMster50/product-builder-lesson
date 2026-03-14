@@ -1027,8 +1027,113 @@ function withTimeout(promiseFactory, timeoutMs) {
             .catch((error) => {
                 clearTimeout(timer);
                 reject(error);
-            });
+        });
     });
+}
+
+function normalizeLooseText(value) {
+    return String(value || "").trim().replace(/\s+/g, " ");
+}
+
+function isWithinUpcomingWindow(dateText, windowDays = 92) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(dateText || ""))) return false;
+    const start = new Date(`${dateText}T00:00:00Z`);
+    if (Number.isNaN(start.getTime())) return false;
+    const today = new Date();
+    const utcToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+    const diffDays = Math.floor((start.getTime() - utcToday.getTime()) / (1000 * 60 * 60 * 24));
+    return diffDays >= 0 && diffDays <= windowDays;
+}
+
+function sanitizeCityLiveContent(payload) {
+    if (!payload || typeof payload !== "object") return null;
+
+    const asList = (value, limit) => {
+        const seen = new Set();
+        return (Array.isArray(value) ? value : [])
+            .map((item) => normalizeLooseText(item))
+            .filter(Boolean)
+            .filter((item) => {
+                const key = item.toLowerCase();
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            })
+            .slice(0, limit);
+    };
+
+    const liveEvents = (Array.isArray(payload.live_events) ? payload.live_events : [])
+        .map((item) => ({
+            name: normalizeLooseText(item?.name),
+            when: normalizeLooseText(item?.when),
+            hook: normalizeLooseText(item?.hook)
+        }))
+        .filter((item) => item.name && item.hook && isWithinUpcomingWindow(item.when))
+        .slice(0, 3);
+
+    return {
+        live_trends: asList(payload.live_trends, 4),
+        live_events: liveEvents,
+        live_pains: asList(payload.live_pains, 3),
+        live_solutions: asList(payload.live_solutions, 3)
+    };
+}
+
+function pickBestGeocodeResult(results, cityQuery) {
+    const list = Array.isArray(results) ? results : [];
+    if (!list.length) return null;
+
+    const normalizedQuery = normalizeLooseText(cityQuery).toLowerCase();
+    const ranked = list
+        .map((item) => {
+            const name = normalizeLooseText(item?.name || item?.admin1 || item?.admin2 || "");
+            const featureCode = String(item?.feature_code || "");
+            let score = 0;
+            if (name && normalizedQuery && name.toLowerCase() === normalizedQuery) score += 5;
+            if (["PPLA", "PPLA2", "PPLA3", "PPLA4", "PPLC", "PPL", "PPLX"].includes(featureCode)) score += 4;
+            if (String(item?.country_code || "").toUpperCase() === String(item?.country || "").toUpperCase()) score += 0;
+            if (Number.isFinite(Number(item?.population)) && Number(item.population) > 0) score += 2;
+            return { item, score };
+        })
+        .sort((a, b) => b.score - a.score);
+
+    return ranked[0]?.score >= 4 ? ranked[0].item : ranked[0]?.item || null;
+}
+
+function pickBestNominatimCityResult(results, cityQuery) {
+    const list = Array.isArray(results) ? results : [];
+    if (!list.length) return null;
+
+    const normalizedQuery = normalizeLooseText(cityQuery).toLowerCase();
+    const ranked = list
+        .map((item) => {
+            const displayName = normalizeLooseText(item?.display_name);
+            const name = normalizeLooseText(item?.name || item?.display_name?.split(",")[0] || "");
+            const className = String(item?.class || "");
+            const typeName = String(item?.type || "");
+            let score = 0;
+            if (name && normalizedQuery && name.toLowerCase() === normalizedQuery) score += 5;
+            if (displayName.toLowerCase().startsWith(normalizedQuery)) score += 2;
+            if (className === "place" && ["city", "town", "municipality", "administrative"].includes(typeName)) score += 5;
+            if (className === "boundary" && ["administrative", "census"].includes(typeName)) score += 3;
+            if (["station", "railway", "halt", "residential", "house", "building", "apartments"].includes(typeName)) score -= 8;
+            return { item, score };
+        })
+        .sort((a, b) => b.score - a.score);
+
+    return ranked[0]?.score >= 3 ? ranked[0].item : null;
+}
+
+function getNominatimDisplayName(item, fallbackCity) {
+    const address = item?.address || {};
+    return normalizeLooseText(
+        address.city
+        || address.town
+        || address.municipality
+        || address.county
+        || item?.name
+        || fallbackCity
+    );
 }
 
 async function fetchJsonWithTimeout(url, options = {}) {
@@ -1070,7 +1175,9 @@ async function fetchCityLiveContent({ country, city, role, locale }) {
 
     const localeMap = { ko: "Korean", en: "English", de: "German", fr: "French", es: "Spanish", pt: "Portuguese", it: "Italian", nl: "Dutch", ar: "Arabic" };
     const lang = localeMap[locale] || "English";
+    const todayIso = new Date().toISOString().slice(0, 10);
     const prompt = `City: ${city}, Country code: ${country}, Role: ${role}, Language: ${lang}
+Today (UTC): ${todayIso}
 
 Return ONLY valid JSON — no markdown, no explanation:
 {
@@ -1084,10 +1191,12 @@ Return ONLY valid JSON — no markdown, no explanation:
 
 Rules:
 - live_trends: 4 current market/lifestyle trends specific to this EXACT city (not the country). Be hyper-local.
-- live_events: 2-3 upcoming local events, festivals, or seasonal moments in or near this city within the next 3 months. Include realistic dates.
+- live_events: 2-3 upcoming local events, festivals, or seasonal moments in or near this city within the next 3 months from ${todayIso}. Include realistic dates.
 - live_pains: 3 consumer pain points a ${role} marketer would face in this city, tied to the trends.
 - live_solutions: 3 actionable tactics for Samsung SmartThings marketing, specific to this city.
 - Every item must be specific to ${city}. Never give generic advice.
+- If you are not confident about an event date, omit the event instead of inventing a past or uncertain date.
+- Do not use dates earlier than ${todayIso}.
 - Write in ${lang}.`;
 
     try {
@@ -1114,7 +1223,13 @@ Rules:
         const text = response?.choices?.[0]?.message?.content || "";
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (!jsonMatch) return null;
-        return JSON.parse(jsonMatch[0]);
+        const parsed = JSON.parse(jsonMatch[0]);
+        const sanitized = sanitizeCityLiveContent(parsed);
+        if (!sanitized) return null;
+        if (!sanitized.live_trends.length && !sanitized.live_events.length) {
+            return null;
+        }
+        return sanitized;
     } catch (err) {
         console.error("[CityLiveContent] AI fetch failed:", err.message);
         return null;
@@ -1312,9 +1427,9 @@ async function fetchWorldBankUrbanSignals(country) {
 }
 
 async function fetchOpenMeteoGeocode(cityQuery, country) {
-    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityQuery)}&count=1&language=en&countryCode=${country}&format=json`;
+    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityQuery)}&count=8&language=en&countryCode=${country}&format=json`;
     const payload = await fetchJsonWithTimeout(url);
-    return Array.isArray(payload?.results) && payload.results.length ? payload.results[0] : null;
+    return pickBestGeocodeResult(payload?.results, cityQuery);
 }
 
 async function fetchOpenMeteoSignals(lat, lon) {
@@ -1337,19 +1452,19 @@ async function fetchOpenMeteoSignals(lat, lon) {
 }
 
 async function fetchNominatimCitySignals(city, country) {
-    const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&city=${encodeURIComponent(city)}&countrycodes=${country.toLowerCase()}&limit=1`;
+    const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(city)}&countrycodes=${country.toLowerCase()}&addressdetails=1&limit=5`;
     const payload = await fetchJsonWithTimeout(url, {
         headers: {
             "User-Agent": "scenario-self-generation-agent/1.0 (+local)"
         }
     });
-    const top = Array.isArray(payload) && payload.length ? payload[0] : null;
+    const top = pickBestNominatimCityResult(payload, city);
     return {
         type: "nominatim_city",
         className: top?.class || "",
         typeName: top?.type || "",
         importance: Number(top?.importance || 0),
-        displayName: top?.display_name || city,
+        displayName: getNominatimDisplayName(top, city),
         source: "nominatim.openstreetmap.org",
         url
     };
