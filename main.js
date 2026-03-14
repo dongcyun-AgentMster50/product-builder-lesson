@@ -1930,16 +1930,19 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const selectedRoleId = normalizeRoleId(data.role || roleSelect.value);
     const roleLens = data.role_lens || {};
     const roleTitle = selectedRoleId ? getRoleTitle(selectedRoleId) : (currentLocale === "ko" ? "마케터" : "Marketer");
+    const queryCity = String(data?.meta?.query_city || city || "").trim();
 
     // 도시명 로케일 변환: city_signals에서 한글/현지어 이름 찾기
     const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
-    const normalizedCityVal = normalizeCityValue(city);
-    const cityEntry = city ? cityEntries.find((e) =>
+    const normalizedCityVal = normalizeCityValue(queryCity);
+    const cityEntry = queryCity ? cityEntries.find((e) =>
         e.countryCode === countryCode &&
         (normalizeCityValue(e.displayName) === normalizedCityVal ||
          (e.aliases || []).some((a) => normalizeCityValue(a) === normalizedCityVal))
     ) : null;
-    const localCity = cityEntry ? getLocalizedCityName(cityEntry) : city;
+    const localCity = cityEntry
+        ? getLocalizedCityName(cityEntry)
+        : String(data?.local?.city_display || queryCity || city || "").trim();
     const marketLabel = localCity ? `${getCountryName(countryCode)} ${localCity}` : getCountryName(countryCode);
     const local = data.local || null;
     const evidence = Array.isArray(data.evidence) ? data.evidence : [];
@@ -1947,7 +1950,7 @@ function mapLiveStep2Insight(data, countryCode, city) {
     // 라이브 트렌드 기반 고민/솔루션 우선 → 정적 city_signals 연결 → 정적 role_lens fallback
     const livePains = toList(data.live_pains).slice(0, 3);
     const liveSolutions = toList(data.live_solutions).slice(0, 3);
-    const cityContent = getExactCitySignalContent(countryCode, city);
+    const cityContent = getExactCitySignalContent(countryCode, queryCity);
     const cityPains = toList(cityContent?.pains).slice(0, 3);
     const citySolutions = toList(cityContent?.solutions).slice(0, 3);
     const staticPains = toList(roleLens.pain_points).slice(0, 3);
@@ -1971,7 +1974,7 @@ function mapLiveStep2Insight(data, countryCode, city) {
     };
 
     const buildTrendSearchUrl = (trendText) => {
-        const query = [city, getCountryName(countryCode), trendText].filter(Boolean).join(" ");
+        const query = [queryCity || localCity, getCountryName(countryCode), trendText].filter(Boolean).join(" ");
         const params = new URLSearchParams({
             q: query,
             hl: currentLocale === "ko" ? "ko" : "en"
@@ -1984,8 +1987,8 @@ function mapLiveStep2Insight(data, countryCode, city) {
     if (!liveTrends.length && !hasExactCityData) {
         return buildStep2ErrorInsight(
             currentLocale === "ko"
-                ? `"${city}" 기준의 실시간 지역 트렌드를 아직 확인하지 못했습니다. 정적 도시 데이터를 섞지 않고 다시 시도해 주세요.`
-                : `Live city-specific trends for "${city}" were not confirmed yet. Retry without mixing static city data.`
+                ? `"${queryCity || city}" 기준의 실시간 지역 트렌드를 아직 확인하지 못했습니다. 정적 도시 데이터를 섞지 않고 다시 시도해 주세요.`
+                : `Live city-specific trends for "${queryCity || city}" were not confirmed yet. Retry without mixing static city data.`
         );
     }
 
@@ -2080,7 +2083,7 @@ function mapLiveStep2Insight(data, countryCode, city) {
             ? `${roleTitle}를 위한 <strong class="city-accent">${marketLabel}</strong> 넛지`
             : `<strong class="city-accent">${marketLabel}</strong> nudge for ${roleTitle}`,
         chips: [
-            localCity || marketLabel,
+            queryCity || localCity || marketLabel,
             roleTitle,
             ...(local?.archetype ? [local.archetype] : [])
         ],
