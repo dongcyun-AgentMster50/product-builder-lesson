@@ -1944,14 +1944,13 @@ function mapLiveStep2Insight(data, countryCode, city) {
             .slice(0, limit);
     };
 
-    // 도시별 로컬 데이터가 있으면 그 내용을 우선해 개성을 살리고,
-    // live AI 결과는 보강용으로만 덧붙인다.
-    const realPains = cityPains.length
-        ? mergeUniqueItems(cityPains, livePains.length ? livePains : staticPains, 3)
-        : (livePains.length ? livePains : (staticPains.length ? staticPains : mustKnow));
-    const realSolutions = citySolutions.length
-        ? mergeUniqueItems(citySolutions, liveSolutions.length ? liveSolutions : staticSolutions, 3)
-        : (liveSolutions.length ? liveSolutions : (staticSolutions.length ? staticSolutions : executionPoints));
+    // 라이브 AI 결과를 항상 우선, 정적 데이터는 보강용 fallback
+    const realPains = livePains.length
+        ? mergeUniqueItems(livePains, cityPains.length ? cityPains : staticPains, 3)
+        : (cityPains.length ? cityPains : (staticPains.length ? staticPains : mustKnow));
+    const realSolutions = liveSolutions.length
+        ? mergeUniqueItems(liveSolutions, citySolutions.length ? citySolutions : staticSolutions, 3)
+        : (citySolutions.length ? citySolutions : (staticSolutions.length ? staticSolutions : executionPoints));
     const formatQ2MetricHint = (metric) => {
         const normalizedMetric = String(metric || "").trim();
         if (!normalizedMetric) return "";
@@ -1972,17 +1971,17 @@ function mapLiveStep2Insight(data, countryCode, city) {
     // 1) 지역 트렌드 섹션: 실시간 API 우선, 정적 데이터 fallback
     const liveTrends = toList(data.live_trends).slice(0, 4);
     const staticTrends = toList(cityContent?.trends).slice(0, 4);
-    const trends = staticTrends.length
-        ? mergeUniqueItems(staticTrends, liveTrends, 4)
-        : liveTrends;
+    const trends = liveTrends.length
+        ? mergeUniqueItems(liveTrends, staticTrends, 4)
+        : staticTrends;
     // 삼성닷컴 URL (트렌드 출처 연결용)
     const trendCountrySources = countryTrends?.[countryCode]?.sources || [];
     const samsungUrl = trendCountrySources[0] || "";
 
-    // 트렌드 소스 라벨 결정
-    const trendSourceLabel = staticTrends.length
-        ? "city_signals.json"
-        : (liveTrends.length ? (currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis") : "");
+    // 트렌드 소스 라벨 결정 (라이브 우선)
+    const trendSourceLabel = liveTrends.length
+        ? (currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis")
+        : (staticTrends.length ? "city_signals.json" : "");
     if (trends.length) {
         sections.push({
             title: currentLocale === "ko"
@@ -1991,9 +1990,9 @@ function mapLiveStep2Insight(data, countryCode, city) {
             items: trends,
             sourceLabel: trendSourceLabel,
             sourceUrl: samsungUrl,
-            sourceSnippet: staticTrends.length
-                ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} 트렌드 항목` : `city_signals.json → ${localCity || city} trends`)
-                : (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation (server region-insight API)")
+            sourceSnippet: liveTrends.length
+                ? (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation (server region-insight API)")
+                : (currentLocale === "ko" ? `city_signals.json → ${localCity || city} 트렌드 항목` : `city_signals.json → ${localCity || city} trends`)
         });
     }
 
@@ -2013,9 +2012,9 @@ function mapLiveStep2Insight(data, countryCode, city) {
     }
 
     // 3) 트렌드 기반 고민 섹션
-    const painSourceLabel = cityPains.length
-        ? "city_signals.json"
-        : (livePains.length ? (currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis") : "role_lens");
+    const painSourceLabel = livePains.length
+        ? (currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis")
+        : (cityPains.length ? "city_signals.json" : "role_lens");
     if (realPains.length) {
         sections.push({
             title: currentLocale === "ko"
@@ -2024,18 +2023,18 @@ function mapLiveStep2Insight(data, countryCode, city) {
             items: realPains,
             sourceLabel: painSourceLabel,
             sourceUrl: samsungUrl,
-            sourceSnippet: cityPains.length
-                ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} pains 항목` : `city_signals.json → ${localCity || city} pains`)
-                : (livePains.length
-                    ? (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation")
+            sourceSnippet: livePains.length
+                ? (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation")
+                : (cityPains.length
+                    ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} pains 항목` : `city_signals.json → ${localCity || city} pains`)
                     : (currentLocale === "ko" ? "role_lens 정적 데이터 (pain_points)" : "role_lens static data (pain_points)"))
         });
     }
 
     // 4) 트렌드 기반 제안 섹션
-    const solutionSourceLabel = citySolutions.length
-        ? "city_signals.json"
-        : (liveSolutions.length ? (currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis") : "role_lens");
+    const solutionSourceLabel = liveSolutions.length
+        ? (currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis")
+        : (citySolutions.length ? "city_signals.json" : "role_lens");
     if (realSolutions.length) {
         const roleMetric = roleLens.primary_metric || "";
         const solutionItems = [...realSolutions];
@@ -2047,10 +2046,10 @@ function mapLiveStep2Insight(data, countryCode, city) {
             items: solutionItems,
             sourceLabel: solutionSourceLabel,
             sourceUrl: samsungUrl,
-            sourceSnippet: citySolutions.length
-                ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} solutions 항목` : `city_signals.json → ${localCity || city} solutions`)
-                : (liveSolutions.length
-                    ? (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation")
+            sourceSnippet: liveSolutions.length
+                ? (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation")
+                : (citySolutions.length
+                    ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} solutions 항목` : `city_signals.json → ${localCity || city} solutions`)
                     : (currentLocale === "ko" ? "role_lens 정적 데이터 (solutions)" : "role_lens static data (solutions)"))
         });
     }

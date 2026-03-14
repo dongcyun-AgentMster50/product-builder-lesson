@@ -1056,6 +1056,63 @@ async function fetchBinaryWithTimeout(url, options = {}) {
     }, REGION_INSIGHT_TIMEOUT_MS);
 }
 
+async function fetchCityLiveContent({ country, city, role, locale }) {
+    const apiKey = String(process.env.OPENAI_API_KEY || "").trim();
+    if (!apiKey || !city) return null;
+
+    const localeMap = { ko: "Korean", en: "English", de: "German", fr: "French", es: "Spanish", pt: "Portuguese", it: "Italian", nl: "Dutch", ar: "Arabic" };
+    const lang = localeMap[locale] || "English";
+    const prompt = `City: ${city}, Country code: ${country}, Role: ${role}, Language: ${lang}
+
+Return ONLY valid JSON — no markdown, no explanation:
+{
+  "live_trends": ["trend1", "trend2", "trend3", "trend4"],
+  "live_events": [
+    {"name": "event name", "when": "YYYY-MM-DD", "hook": "one-line marketing angle"}
+  ],
+  "live_pains": ["pain1", "pain2", "pain3"],
+  "live_solutions": ["solution1", "solution2", "solution3"]
+}
+
+Rules:
+- live_trends: 4 current market/lifestyle trends specific to this EXACT city (not the country). Be hyper-local.
+- live_events: 2-3 upcoming local events, festivals, or seasonal moments in or near this city within the next 3 months. Include realistic dates.
+- live_pains: 3 consumer pain points a ${role} marketer would face in this city, tied to the trends.
+- live_solutions: 3 actionable tactics for Samsung SmartThings marketing, specific to this city.
+- Every item must be specific to ${city}. Never give generic advice.
+- Write in ${lang}.`;
+
+    try {
+        const body = JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+                { role: "system", content: "You are a hyper-local Samsung SmartThings marketing advisor. You provide city-specific trends, events, pain points, and solutions." },
+                { role: "user", content: prompt }
+            ],
+            max_tokens: 1200,
+            temperature: 0.7
+        });
+
+        const response = await withTimeout(async () => {
+            const res = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+                body
+            });
+            if (!res.ok) throw new Error(`OpenAI ${res.status}`);
+            return res.json();
+        }, 8000);
+
+        const text = response?.choices?.[0]?.message?.content || "";
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) return null;
+        return JSON.parse(jsonMatch[0]);
+    } catch (err) {
+        console.error("[CityLiveContent] AI fetch failed:", err.message);
+        return null;
+    }
+}
+
 async function buildLiveRegionInsight({ country, city, locale, role }) {
     const cityQuery = city || country;
     const geocode = await fetchOpenMeteoGeocode(cityQuery, country);
@@ -1073,6 +1130,8 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
     if (city) {
         sources.push(fetchNominatimCitySignals(city, country));
     }
+    // AI 기반 도시별 실시간 트렌드/이벤트/고민/솔루션 생성
+    const cityLivePromise = fetchCityLiveContent({ country, city, role, locale });
 
     const settled = await Promise.allSettled(sources.map((sourcePromise) => withTimeout(() => sourcePromise, REGION_INSIGHT_TIMEOUT_MS)));
     const fulfilled = settled.filter((entry) => entry.status === "fulfilled").map((entry) => entry.value);
@@ -1086,6 +1145,9 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
     const citySignal = fulfilled.find((item) => item.type === "nominatim_city");
     const countryProfile = fulfilled.find((item) => item.type === "country_profile");
 
+    // AI 도시 콘텐츠 병렬 대기
+    const cityLive = await cityLivePromise.catch(() => null);
+
     const macro = buildMacroInsight({ country, city, locale, worldBankMarket, worldBankUrban, climate });
     const local = city
         ? buildLocalInsight({ city, locale, citySignal, climate, worldBankUrban })
@@ -1098,7 +1160,12 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
         macro,
         local,
         evidence,
-        visual: buildVisualInsight({ country, city, geocode, countryProfile, landmark: null })
+        visual: buildVisualInsight({ country, city, geocode, countryProfile, landmark: null }),
+        live_trends: cityLive?.live_trends || [],
+        live_events: cityLive?.live_events || [],
+        live_pains: cityLive?.live_pains || [],
+        live_solutions: cityLive?.live_solutions || [],
+        _live_status: cityLive ? "ok" : "fallback"
     };
 }
 
