@@ -245,6 +245,11 @@ async function handleRegionInsight(req, res, requestUrl) {
             local: liveInsight.local,
             evidence: liveInsight.evidence,
             visual: liveInsight.visual,
+            live_trends: liveInsight.live_trends || [],
+            live_events: liveInsight.live_events || [],
+            live_pains: liveInsight.live_pains || [],
+            live_solutions: liveInsight.live_solutions || [],
+            _live_status: liveInsight._live_status || "fallback",
             meta: {
                 query_country: country,
                 query_city: city,
@@ -665,7 +670,7 @@ async function handleNudge(req, res) {
     const city      = String(body?.city || "").trim();
     const role      = String(body?.role || "retail").trim();
     const locale    = String(body?.locale || "ko").trim();
-    const clientKey = String(body?.apiKey || "").trim();
+    const clientKey = String(body?.apiKey || process.env.OPENAI_API_KEY || "").trim();
 
     if (!country) {
         sendJson(res, 400, { ok: false, error: { code: "MISSING_COUNTRY", message: "Country is required." } });
@@ -993,8 +998,10 @@ function normalizeCountryParam(value) {
 
 function normalizeLocaleParam(value) {
     const normalized = String(value || "").trim().toLowerCase();
-    if (normalized.startsWith("ko")) return "ko";
-    if (normalized.startsWith("de")) return "de";
+    const supported = ["ko", "en", "de", "fr", "es", "pt", "it", "nl", "ar"];
+    for (const loc of supported) {
+        if (normalized.startsWith(loc)) return loc;
+    }
     return "en";
 }
 
