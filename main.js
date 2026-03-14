@@ -34,8 +34,7 @@ const segmentCustomInput = document.getElementById("segment-custom");
 const deviceGrid = document.getElementById("device-grid");
 const deviceCustomInput = document.getElementById("device-custom");
 const q4Presets = document.getElementById("q4-presets");
-const q4CoreChips = document.getElementById("q4-core-chips");
-const q4AddonChips = document.getElementById("q4-addon-chips");
+const q4AllChips = document.getElementById("q4-all-chips");
 const q4Summary = document.getElementById("q4-summary");
 const exportActions = document.getElementById("export-actions");
 const wizardLogoutBtn = document.getElementById("wizard-logout-btn");
@@ -78,13 +77,15 @@ let selectedProvider = sessionStorage.getItem("aiProvider") || "openai";
 let userOverrideLocale = null;
 
 const SUPPORTED_UI_LOCALES = ["ko", "en", "de", "fr", "es", "pt", "it", "nl", "ar"];
-const Q4_CORE_DEVICE_IDS = ["tv-premium", "refrigerator", "washer", "air-conditioner"];
-const Q4_ADDON_DEVICE_IDS = ["wearable-care", "air-purifier", "robot-vacuum", "smart-plug", "camera", "hub", "speaker"];
+const Q4_ALL_QUICK_IDS = ["tv-premium", "refrigerator", "washer", "air-conditioner", "air-purifier", "ventilation", "robot-vacuum", "dryer", "dishwasher", "smart-plug", "eco-aircon", "camera", "door-lock", "hub", "care-camera", "activity-sensor", "speaker", "soundbar", "wearable-care", "lighting", "sleep-sensor", "energy-monitor"];
 const Q4_PRESETS = [
     { id: "baseline", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner"] },
     { id: "energy", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "smart-plug", "eco-aircon"] },
     { id: "care", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "care-camera", "activity-sensor"] },
-    { id: "mood", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "speaker", "soundbar"] }
+    { id: "mood", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "speaker", "soundbar"] },
+    { id: "security", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "camera", "door-lock", "hub"] },
+    { id: "chores", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "robot-vacuum", "dryer", "dishwasher"] },
+    { id: "comfort", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "air-purifier", "ventilation"] }
 ];
 
 function detectBrowserLocale() {
@@ -188,8 +189,7 @@ function bindEvents() {
         renderQ4Summary();
     });
     q4Presets?.addEventListener("click", handleQ4PresetClick);
-    q4CoreChips?.addEventListener("click", handleQ4QuickChipClick);
-    q4AddonChips?.addEventListener("click", handleQ4QuickChipClick);
+    q4AllChips?.addEventListener("click", handleQ4QuickChipClick);
 }
 
 function shouldBypassAccessForLocal() {
@@ -446,16 +446,22 @@ function getDefaultDeviceSelectionsForCountry(siteCode) {
 
 function getQ4PresetCopy(presetId) {
     const ko = {
-        baseline: { title: "기본 조합", desc: "한국 가정의 기본 가전 중심으로 시작" },
-        energy: { title: "에너지 절약형", desc: "절약 루틴과 전력 관리까지 같이 보기" },
-        care: { title: "케어 확장형", desc: "돌봄·부재 대응까지 엮는 조합" },
-        mood: { title: "무드 확장형", desc: "TV와 사운드 중심의 체감형 조합" }
+        baseline: { title: "기본 조합" },
+        energy: { title: "에너지 절약형" },
+        care: { title: "케어 확장형" },
+        mood: { title: "무드 확장형" },
+        security: { title: "홈 시큐리티형" },
+        chores: { title: "가사 올인형" },
+        comfort: { title: "쾌적 환경형" }
     };
     const en = {
-        baseline: { title: "Baseline", desc: "Start from common home devices" },
-        energy: { title: "Energy", desc: "Add savings and power control" },
-        care: { title: "Care", desc: "Extend into care and away-mode use" },
-        mood: { title: "Mood", desc: "Lean into TV and sound moments" }
+        baseline: { title: "Baseline" },
+        energy: { title: "Energy Saver" },
+        care: { title: "Care+" },
+        mood: { title: "Mood+" },
+        security: { title: "Security" },
+        chores: { title: "Chores All-in" },
+        comfort: { title: "Air Comfort" }
     };
     const source = currentLocale === "ko" ? ko : en;
     return source[presetId] || source.baseline;
@@ -481,20 +487,33 @@ function getQ4SummaryCopy() {
 }
 
 function renderQ4Composer() {
-    if (!q4Presets || !q4CoreChips || !q4AddonChips) return;
+    if (!q4Presets) return;
+
+    const selectedDeviceIds = new Set(
+        [...(deviceGrid?.querySelectorAll('input[data-node-type="child"]:checked') || [])].map((input) => input.value)
+    );
 
     q4Presets.innerHTML = Q4_PRESETS.map((preset) => {
         const copy = getQ4PresetCopy(preset.id);
+        const isActive = preset.deviceIds.length === selectedDeviceIds.size &&
+            preset.deviceIds.every((id) => selectedDeviceIds.has(id));
+        const chips = preset.deviceIds.map((optionId) => {
+            const input = deviceGrid?.querySelector(`input[data-node-type="child"][value="${optionId}"]`);
+            const label = input?.dataset.label || optionId;
+            return `<span class="q4-preset-device">${escapeHtml(label)}</span>`;
+        }).join("");
         return `
-            <button type="button" class="q4-preset-btn" data-preset-id="${preset.id}">
+            <button type="button" class="q4-preset-btn${isActive ? " active" : ""}" data-preset-id="${preset.id}">
                 <strong>${escapeHtml(copy.title)}</strong>
-                <span>${escapeHtml(copy.desc)}</span>
+                <div class="q4-preset-devices">${chips}</div>
             </button>
         `;
     }).join("");
 
-    q4CoreChips.innerHTML = renderQ4QuickChipButtons(Q4_CORE_DEVICE_IDS, "core");
-    q4AddonChips.innerHTML = renderQ4QuickChipButtons(Q4_ADDON_DEVICE_IDS, "addon");
+    const allChipsEl = document.getElementById("q4-all-chips");
+    if (allChipsEl) {
+        allChipsEl.innerHTML = renderQ4QuickChipButtons(Q4_ALL_QUICK_IDS, "all");
+    }
     syncQ4QuickChipSelection();
     renderQ4Summary();
 }
@@ -519,7 +538,7 @@ function handleQ4PresetClick(event) {
     const preset = Q4_PRESETS.find((item) => item.id === button.dataset.presetId);
     if (!preset) return;
 
-    const allQuickIds = new Set([...Q4_CORE_DEVICE_IDS, ...Q4_ADDON_DEVICE_IDS, ...preset.deviceIds]);
+    const allQuickIds = new Set([...Q4_ALL_QUICK_IDS, ...preset.deviceIds]);
     allQuickIds.forEach((optionId) => setDeviceOptionChecked(optionId, preset.deviceIds.includes(optionId)));
     renderQ4Composer();
     updateStatePreview();
@@ -552,7 +571,8 @@ function setDeviceOptionChecked(optionId, shouldCheck) {
 }
 
 function syncQ4QuickChipSelection() {
-    [q4CoreChips, q4AddonChips].forEach((container) => {
+    const q4AllChips = document.getElementById("q4-all-chips");
+    [q4AllChips].forEach((container) => {
         container?.querySelectorAll("[data-option-id]").forEach((button) => {
             const optionId = button.dataset.optionId;
             const input = deviceGrid?.querySelector(`input[data-node-type="child"][value="${optionId}"]`);
@@ -611,23 +631,27 @@ function renderQ4Summary() {
     const limitMarkup = capabilitySummary.limits.slice(0, 2).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
     const recommendMarkup = capabilitySummary.recommendations.slice(0, 2).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 
+    const deviceCount = selectedLabels.length;
+    const countLabel = currentLocale === "ko" ? `기기 ${deviceCount}개 선택됨` : `${deviceCount} devices selected`;
+
     q4Summary.innerHTML = `
+        <div class="q4-summary-count">${escapeHtml(countLabel)}</div>
         <section class="q4-summary-block">
             <span class="q4-summary-label">${escapeHtml(copy.selected)}</span>
             <div class="q4-summary-chip-row">${selectedMarkup}</div>
         </section>
-        <section class="q4-summary-block">
+        ${capabilityMarkup ? `<section class="q4-summary-block q4-summary-block--ok">
             <span class="q4-summary-label">${escapeHtml(copy.capabilities)}</span>
             <ul class="q4-summary-list">${capabilityMarkup}</ul>
-        </section>
-        <section class="q4-summary-block">
+        </section>` : ""}
+        ${limitMarkup ? `<section class="q4-summary-block q4-summary-block--warn">
             <span class="q4-summary-label">${escapeHtml(copy.limits)}</span>
-            <ul class="q4-summary-list">${limitMarkup || `<li>${escapeHtml(currentLocale === "ko" ? "현재 조합으로도 기본 시나리오 구성은 가능합니다." : "The current setup still supports a viable baseline scenario.")}</li>`}</ul>
-        </section>
-        <section class="q4-summary-block">
+            <ul class="q4-summary-list">${limitMarkup}</ul>
+        </section>` : ""}
+        ${recommendMarkup ? `<section class="q4-summary-block q4-summary-block--tip">
             <span class="q4-summary-label">${escapeHtml(copy.recommend)}</span>
-            <ul class="q4-summary-list">${recommendMarkup || `<li>${escapeHtml(currentLocale === "ko" ? "지금 조합만으로도 1차 결과를 만들기 충분합니다." : "This setup is already enough for a strong first output.")}</li>`}</ul>
-        </section>
+            <ul class="q4-summary-list">${recommendMarkup}</ul>
+        </section>` : ""}
     `;
 }
 
