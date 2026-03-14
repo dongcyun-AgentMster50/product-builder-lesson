@@ -235,6 +235,7 @@ async function handleRegionInsight(req, res, requestUrl) {
     }
 
     const startedAt = Date.now();
+    console.log(`[RegionInsight] country=${country}, city="${city}", locale=${locale}, role=${role}, force=${forceRefresh}`);
 
     try {
         const liveInsight = await buildLiveRegionInsight({ country, city, locale, role });
@@ -1138,6 +1139,7 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
         sources.push(fetchNominatimCitySignals(city, country));
     }
     // AI 기반 도시별 실시간 트렌드/이벤트/고민/솔루션 생성
+    console.log(`[buildLiveRegionInsight] Calling fetchCityLiveContent for city="${city}"`);
     const cityLivePromise = fetchCityLiveContent({ country, city, role, locale });
 
     const settled = await Promise.allSettled(sources.map((sourcePromise) => withTimeout(() => sourcePromise, REGION_INSIGHT_TIMEOUT_MS)));
@@ -1153,7 +1155,11 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
     const countryProfile = fulfilled.find((item) => item.type === "country_profile");
 
     // AI 도시 콘텐츠 병렬 대기
-    const cityLive = await cityLivePromise.catch(() => null);
+    const cityLive = await cityLivePromise.catch((err) => {
+        console.error(`[buildLiveRegionInsight] fetchCityLiveContent failed for city="${city}":`, err.message);
+        return null;
+    });
+    console.log(`[buildLiveRegionInsight] cityLive result for "${city}":`, cityLive ? `trends=${(cityLive.live_trends||[]).length}, events=${(cityLive.live_events||[]).length}` : "null");
 
     const macro = buildMacroInsight({ country, city, locale, worldBankMarket, worldBankUrban, climate });
     const local = city

@@ -157,9 +157,19 @@ function bindEvents() {
         toggleCityCustomInput();
         updateStatePreview();
         if (citySelect.value === CITY_CUSTOM_VALUE) {
-            // "직접 입력" 선택 시 — 아직 도시명이 없으므로 API 호출하지 않음
+            // "직접 입력" 선택 시 — 이전 도시 인사이트 제거 + 가이드 카드 표시
             cityCustomInput.value = "";
             cityCustomInput.focus();
+            // 이전 도시(부산 등) 인사이트가 남아있지 않도록 즉시 교체
+            ++latestStep2InsightRequest;
+            const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
+            if (selectedMarket && currentStep === 2) {
+                const country = resolveCountry(selectedMarket);
+                stepInsight.innerHTML = buildInsightMarkup(buildStep2CitySelectGuide(country.countryCode));
+            }
+            // 도시 프로필 카드도 숨김
+            const profileCard = document.getElementById("city-profile-card");
+            if (profileCard) profileCard.classList.add("hidden");
             return;
         }
         // 드롭다운에서 실제 도시를 선택한 경우에만 API 호출
@@ -1605,22 +1615,11 @@ function buildInsightMarkup(insight) {
         const items = Array.isArray(section.items) && section.items.length
             ? `<ul>${section.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
             : "";
-        const srcId = section.sourceLabel ? `src-sec-${Math.random().toString(36).slice(2, 8)}` : "";
-        const srcTag = section.sourceLabel
-            ? `<span class="source-tag" data-source-detail="${srcId}">${escapeHtml(section.sourceLabel)}</span>`
-            : "";
-        const srcUrlLink = section.sourceUrl
-            ? `<a class="source-detail-url" href="${escapeHtml(section.sourceUrl)}" target="_blank" rel="noopener noreferrer">🔗 ${escapeHtml(section.sourceUrl.length > 60 ? section.sourceUrl.slice(0, 60) + "…" : section.sourceUrl)}</a>`
-            : "";
-        const srcDetail = section.sourceLabel
-            ? `<div class="source-detail" id="${srcId}"><p class="source-detail-label">${escapeHtml(section.sourceLabel)}</p><p class="source-detail-snippet">${escapeHtml(section.sourceSnippet || "—")}</p>${srcUrlLink}</div>`
-            : "";
         return `
             <section class="insight-section">
-                <h4>${section.title || ""} ${srcTag}</h4>
+                <h4>${section.title || ""}</h4>
                 ${text}
                 ${items}
-                ${srcDetail}
             </section>
         `;
     };
@@ -1812,6 +1811,7 @@ async function renderStep2Insight(forceRefresh = false) {
 
     const country = resolveCountry(selectedMarket);
     const city = getCityValue();
+    console.log(`[renderStep2Insight] city="${city}", dropdown="${citySelect.value}", customInput="${cityCustomInput.value}"`);
     if (!city) {
         stepInsight.innerHTML = buildInsightMarkup(buildStep2CitySelectGuide(country.countryCode));
         return;
@@ -1974,25 +1974,12 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const trends = liveTrends.length
         ? mergeUniqueItems(liveTrends, staticTrends, 4)
         : staticTrends;
-    // 삼성닷컴 URL (트렌드 출처 연결용)
-    const trendCountrySources = countryTrends?.[countryCode]?.sources || [];
-    const samsungUrl = trendCountrySources[0] || "";
-
-    // 트렌드 소스 라벨 결정 (라이브 우선)
-    const trendSourceLabel = liveTrends.length
-        ? (currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis")
-        : (staticTrends.length ? "city_signals.json" : "");
     if (trends.length) {
         sections.push({
             title: currentLocale === "ko"
                 ? `<strong class="city-accent">${localCity || marketLabel}</strong> 지역 트렌드`
                 : `<strong class="city-accent">${localCity || marketLabel}</strong> local trends`,
-            items: trends,
-            sourceLabel: trendSourceLabel,
-            sourceUrl: samsungUrl,
-            sourceSnippet: liveTrends.length
-                ? (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation (server region-insight API)")
-                : (currentLocale === "ko" ? `city_signals.json → ${localCity || city} 트렌드 항목` : `city_signals.json → ${localCity || city} trends`)
+            items: trends
         });
     }
 
@@ -2005,36 +1992,21 @@ function mapLiveStep2Insight(data, countryCode, city) {
                 : `<strong class="city-accent">${localCity || marketLabel}</strong> nearby events`,
             items: liveEvents.map(ev =>
                 `${ev.name} (${ev.when}) — ${ev.hook}`
-            ),
-            sourceLabel: currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis",
-            sourceSnippet: currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation (server region-insight API)"
+            )
         });
     }
 
     // 3) 트렌드 기반 고민 섹션
-    const painSourceLabel = livePains.length
-        ? (currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis")
-        : (cityPains.length ? "city_signals.json" : "role_lens");
     if (realPains.length) {
         sections.push({
             title: currentLocale === "ko"
                 ? `이 트렌드에서 예상되는 <strong class="city-accent">${localCity || marketLabel}</strong> 고민`
                 : `Trend-driven concerns in <strong class="city-accent">${localCity || marketLabel}</strong>`,
-            items: realPains,
-            sourceLabel: painSourceLabel,
-            sourceUrl: samsungUrl,
-            sourceSnippet: livePains.length
-                ? (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation")
-                : (cityPains.length
-                    ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} pains 항목` : `city_signals.json → ${localCity || city} pains`)
-                    : (currentLocale === "ko" ? "role_lens 정적 데이터 (pain_points)" : "role_lens static data (pain_points)"))
+            items: realPains
         });
     }
 
     // 4) 트렌드 기반 제안 섹션
-    const solutionSourceLabel = liveSolutions.length
-        ? (currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis")
-        : (citySolutions.length ? "city_signals.json" : "role_lens");
     if (realSolutions.length) {
         const roleMetric = roleLens.primary_metric || "";
         const solutionItems = [...realSolutions];
@@ -2043,14 +2015,7 @@ function mapLiveStep2Insight(data, countryCode, city) {
         }
         sections.push({
             title: currentLocale === "ko" ? "이렇게 풀어보세요" : "Try this approach",
-            items: solutionItems,
-            sourceLabel: solutionSourceLabel,
-            sourceUrl: samsungUrl,
-            sourceSnippet: liveSolutions.length
-                ? (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation")
-                : (citySolutions.length
-                    ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} solutions 항목` : `city_signals.json → ${localCity || city} solutions`)
-                    : (currentLocale === "ko" ? "role_lens 정적 데이터 (solutions)" : "role_lens static data (solutions)"))
+            items: solutionItems
         });
     }
 
