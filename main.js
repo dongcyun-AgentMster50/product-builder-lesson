@@ -1531,6 +1531,42 @@ function getStepInsight() {
     return STEP_INSIGHTS[currentStep];
 }
 
+function bindEvidenceChips(container) {
+    container.querySelectorAll(".insight-evidence-chip[data-ev-detail]").forEach((chip) => {
+        chip.addEventListener("click", () => {
+            const detailId = chip.dataset.evDetail;
+            const detail = document.getElementById(detailId);
+            if (!detail) return;
+            const isOpen = detail.classList.contains("open");
+            // close all
+            container.querySelectorAll(".insight-evidence-detail.open").forEach((d) => d.classList.remove("open"));
+            container.querySelectorAll(".insight-evidence-chip.active").forEach((c) => c.classList.remove("active"));
+            if (!isOpen) {
+                detail.classList.add("open");
+                chip.classList.add("active");
+            }
+        });
+    });
+}
+
+function bindSourceTags(container) {
+    container.querySelectorAll(".source-tag[data-source-detail]").forEach((tag) => {
+        tag.addEventListener("click", () => {
+            const detailId = tag.dataset.sourceDetail;
+            const detail = document.getElementById(detailId);
+            if (!detail) return;
+            const isOpen = detail.classList.contains("open");
+            // close all in this container
+            container.querySelectorAll(".source-detail.open").forEach((d) => d.classList.remove("open"));
+            container.querySelectorAll(".source-tag.active").forEach((t) => t.classList.remove("active"));
+            if (!isOpen) {
+                detail.classList.add("open");
+                tag.classList.add("active");
+            }
+        });
+    });
+}
+
 function buildInsightMarkup(insight) {
     const badge = insight.badge ? `<span class="insight-badge">${escapeHtml(insight.badge)}</span>` : "";
     const summary = insight.summary ? `<p class="insight-summary">${escapeHtml(insight.summary)}</p>` : "";
@@ -1569,20 +1605,39 @@ function buildInsightMarkup(insight) {
         const items = Array.isArray(section.items) && section.items.length
             ? `<ul>${section.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
             : "";
+        const srcId = section.sourceLabel ? `src-sec-${Math.random().toString(36).slice(2, 8)}` : "";
+        const srcTag = section.sourceLabel
+            ? `<span class="source-tag" data-source-detail="${srcId}">${escapeHtml(section.sourceLabel)}</span>`
+            : "";
+        const srcDetail = section.sourceLabel
+            ? `<div class="source-detail" id="${srcId}"><p class="source-detail-label">${escapeHtml(section.sourceLabel)}</p><p class="source-detail-snippet">${escapeHtml(section.sourceSnippet || "—")}</p></div>`
+            : "";
         return `
             <section class="insight-section">
-                <h4>${section.title || ""}</h4>
+                <h4>${section.title || ""} ${srcTag}</h4>
                 ${text}
                 ${items}
+                ${srcDetail}
             </section>
         `;
     };
     const evidence = Array.isArray(insight.evidence) && insight.evidence.length
-        ? `<div class="insight-evidence">${insight.evidence.map((item) => `
-            <span class="insight-evidence-chip" title="${escapeHtml(item.snippet || "")}">
-                ${escapeHtml(`${item.source_domain} · ${item.collected_at_utc || ""} · ${item.confidence || ""}`)}
-            </span>
-        `).join("")}</div>`
+        ? `<div class="insight-evidence">${insight.evidence.map((item, idx) => {
+            const chipId = `ev-chip-${idx}-${Date.now()}`;
+            const detailId = `ev-detail-${idx}-${Date.now()}`;
+            const domainLabel = (item.source_domain || "").replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+            const confidenceLabel = item.confidence === "high" ? "✅ high" : item.confidence === "medium" ? "⚠️ medium" : `ℹ️ ${item.confidence || "—"}`;
+            return `
+                <span class="insight-evidence-chip" data-ev-chip="${chipId}" data-ev-detail="${detailId}" title="${escapeHtml(item.snippet || "")}">
+                    ${escapeHtml(domainLabel)} · ${escapeHtml(item.confidence || "")}
+                </span>
+                <div class="insight-evidence-detail" id="${detailId}">
+                    <p class="source-detail-label">${escapeHtml(domainLabel)}</p>
+                    <p class="source-detail-snippet">${escapeHtml(item.snippet || "—")}</p>
+                    <p class="source-detail-meta">${escapeHtml(`${currentLocale === "ko" ? "신뢰도" : "Confidence"}: ${confidenceLabel}`)} · ${escapeHtml(item.collected_at_utc ? new Date(item.collected_at_utc).toLocaleString() : "—")}</p>
+                </div>
+            `;
+        }).join("")}</div>`
         : "";
     const action = insight.retry
         ? `<button type="button" id="region-insight-retry" class="secondary-btn insight-retry-btn">${escapeHtml(insight.retryLabel || "Retry")}</button>`
@@ -1759,6 +1814,8 @@ async function renderStep2Insight(forceRefresh = false) {
     if (requestId !== latestStep2InsightRequest || currentStep !== 2) return;
 
     stepInsight.innerHTML = buildInsightMarkup(insight);
+    bindEvidenceChips(stepInsight);
+    bindSourceTags(stepInsight);
     const retryBtn = document.getElementById("region-insight-retry");
     if (retryBtn) {
         retryBtn.addEventListener("click", () => {
@@ -1853,7 +1910,7 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const localCity = cityEntry ? getLocalizedCityName(cityEntry) : city;
     const marketLabel = localCity ? `${getCountryName(countryCode)} ${localCity}` : getCountryName(countryCode);
     const local = data.local || null;
-    const evidence = [];
+    const evidence = Array.isArray(data.evidence) ? data.evidence : [];
 
     // 라이브 트렌드 기반 고민/솔루션 우선 → 정적 city_signals 연결 → 정적 role_lens fallback
     const livePains = toList(data.live_pains).slice(0, 3);
@@ -1911,12 +1968,20 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const trends = staticTrends.length
         ? mergeUniqueItems(staticTrends, liveTrends, 4)
         : liveTrends;
+    // 트렌드 소스 라벨 결정
+    const trendSourceLabel = staticTrends.length
+        ? "city_signals.json"
+        : (liveTrends.length ? (currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis") : "");
     if (trends.length) {
         sections.push({
             title: currentLocale === "ko"
                 ? `<strong class="city-accent">${localCity || marketLabel}</strong> 지역 트렌드`
                 : `<strong class="city-accent">${localCity || marketLabel}</strong> local trends`,
-            items: trends
+            items: trends,
+            sourceLabel: trendSourceLabel,
+            sourceSnippet: staticTrends.length
+                ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} 트렌드 항목` : `city_signals.json → ${localCity || city} trends`)
+                : (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation (server region-insight API)")
         });
     }
 
@@ -1929,21 +1994,35 @@ function mapLiveStep2Insight(data, countryCode, city) {
                 : `<strong class="city-accent">${localCity || marketLabel}</strong> nearby events`,
             items: liveEvents.map(ev =>
                 `${ev.name} (${ev.when}) — ${ev.hook}`
-            )
+            ),
+            sourceLabel: currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis",
+            sourceSnippet: currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation (server region-insight API)"
         });
     }
 
     // 3) 트렌드 기반 고민 섹션
+    const painSourceLabel = cityPains.length
+        ? "city_signals.json"
+        : (livePains.length ? (currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis") : "role_lens");
     if (realPains.length) {
         sections.push({
             title: currentLocale === "ko"
                 ? `이 트렌드에서 예상되는 <strong class="city-accent">${localCity || marketLabel}</strong> 고민`
                 : `Trend-driven concerns in <strong class="city-accent">${localCity || marketLabel}</strong>`,
-            items: realPains
+            items: realPains,
+            sourceLabel: painSourceLabel,
+            sourceSnippet: cityPains.length
+                ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} pains 항목` : `city_signals.json → ${localCity || city} pains`)
+                : (livePains.length
+                    ? (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation")
+                    : (currentLocale === "ko" ? "role_lens 정적 데이터 (pain_points)" : "role_lens static data (pain_points)"))
         });
     }
 
     // 4) 트렌드 기반 제안 섹션
+    const solutionSourceLabel = citySolutions.length
+        ? "city_signals.json"
+        : (liveSolutions.length ? (currentLocale === "ko" ? "AI 실시간 분석" : "AI live analysis") : "role_lens");
     if (realSolutions.length) {
         const roleMetric = roleLens.primary_metric || "";
         const solutionItems = [...realSolutions];
@@ -1952,7 +2031,13 @@ function mapLiveStep2Insight(data, countryCode, city) {
         }
         sections.push({
             title: currentLocale === "ko" ? "이렇게 풀어보세요" : "Try this approach",
-            items: solutionItems
+            items: solutionItems,
+            sourceLabel: solutionSourceLabel,
+            sourceSnippet: citySolutions.length
+                ? (currentLocale === "ko" ? `city_signals.json → ${localCity || city} solutions 항목` : `city_signals.json → ${localCity || city} solutions`)
+                : (liveSolutions.length
+                    ? (currentLocale === "ko" ? "GPT-4o-mini 실시간 생성 (서버 region-insight API)" : "GPT-4o-mini live generation")
+                    : (currentLocale === "ko" ? "role_lens 정적 데이터 (solutions)" : "role_lens static data (solutions)"))
         });
     }
 
@@ -5118,6 +5203,7 @@ function renderScenario(payload) {
     `;
 
     bindPostOutputPrompt(payload);
+    bindSourceTags(resultDiv);
 }
 
 function renderOutputPreview() {
@@ -5799,15 +5885,26 @@ function renderOverview(payload) {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${(payload.facts.confirmed || []).map((item) => `
+                                ${(payload.facts.confirmed || []).map((item) => {
+                                    const srcDetailId = `fact-src-${item.no}-${Date.now()}`;
+                                    return `
                                     <tr>
                                         <td>${item.no}</td>
                                         <td>${escapeHtml(item.fact)}</td>
-                                        <td>${escapeHtml(item.source)}</td>
+                                        <td><span class="source-tag" data-source-detail="${srcDetailId}">${escapeHtml(item.source)}</span></td>
                                         <td>${escapeHtml(item.confidence)}</td>
                                         <td>${escapeHtml(item.impact)}</td>
                                     </tr>
-                                `).join("")}
+                                    <tr class="source-detail-row">
+                                        <td colspan="5">
+                                            <div class="source-detail" id="${srcDetailId}">
+                                                <p class="source-detail-label">${escapeHtml(item.source)}</p>
+                                                <p class="source-detail-snippet">${escapeHtml(item.fact)}</p>
+                                                <p class="source-detail-meta">${currentLocale === "ko" ? "신뢰도" : "Confidence"}: ${escapeHtml(item.confidence)} · ${escapeHtml(item.impact)}</p>
+                                            </div>
+                                        </td>
+                                    </tr>`;
+                                }).join("")}
                             </tbody>
                         </table>
                     </div>
@@ -5834,9 +5931,11 @@ function renderOverview(payload) {
                     <strong>${currentLocale === "ko" ? "기기/서비스 준비 상태" : "Readiness Sync"}</strong>
                     <ul>${(payload.facts.readiness || []).map((item) => `<li><strong>${escapeHtml(item.label)}</strong> · ${escapeHtml(item.status)} · ${escapeHtml(item.note)}</li>`).join("")}</ul>
                 </div>
-                <div class="fact-links">
-                    <strong>${currentLocale === "ko" ? "내부 참조 파일" : "Internal Reference Files"}</strong>
-                    <ul>${(payload.facts.sourceRefs || []).map((ref) => `<li>${escapeHtml(ref)}</li>`).join("")}</ul>
+                <div class="fact-links source-refs-summary">
+                    <h5>${currentLocale === "ko" ? "내부 참조 파일" : "Internal Reference Files"}</h5>
+                    <div class="output-source-bar">
+                        ${(payload.facts.sourceRefs || []).map((ref) => `<span class="source-tag" title="${escapeHtml(ref)}">${escapeHtml(ref.replace("references/", ""))}</span>`).join("")}
+                    </div>
                 </div>
             </section>
 
