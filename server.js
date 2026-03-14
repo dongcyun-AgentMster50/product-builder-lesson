@@ -646,7 +646,7 @@ Output ONLY valid JSON — no markdown, no explanation:
 Rules:
 - Be hyper-specific to the city. Never give advice that could apply to any city.
 - Use the latest knowledge you have about this market.
-- If locale is "ko", write in Korean. Otherwise write in English.
+- Write in the language matching the given locale code (e.g. "ko"=Korean, "de"=German, "fr"=French, "es"=Spanish, "pt"=Portuguese, "it"=Italian, "nl"=Dutch, "ar"=Arabic, "en"=English).
 - Keep each field to 2-3 sentences max.`;
 
 async function handleNudge(req, res) {

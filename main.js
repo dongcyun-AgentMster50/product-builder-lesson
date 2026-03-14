@@ -838,18 +838,8 @@ function renderCityProfileCard() {
         return;
     }
     const flag = getCountryFlagEmoji(country.countryCode);
-    const displayCity = cityName;
     const countryName = selectedMarket?.label || country.countryCode;
-    const isKo = currentLocale === "ko";
     const role = normalizeRoleId(roleSelect.value) || "retail";
-
-    // 정적 city_signals 데이터로 프로필 카드 렌더링
-    const content = getCitySignalContent(country.countryCode, cityName);
-    if (!content) {
-        profileCard.classList.add("hidden");
-        profileCard.innerHTML = "";
-        return;
-    }
 
     // 도시명 로케일 변환
     const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
@@ -861,18 +851,33 @@ function renderCityProfileCard() {
     );
     const localDisplayCity = matchedEntry ? getLocalizedCityName(matchedEntry) : cityName;
 
-    const situation = `${escapeHtml(content.housing)} ${escapeHtml(content.climate)}`;
+    // 항상 라이브 넛지 API로 최신 트렌드 정보를 가져옴
     profileCard.innerHTML = buildNudgeCardHTML({
-        flag, displayCity: localDisplayCity, countryName, isKo,
-        situation,
-        need: escapeHtml(content.behavior),
-        opportunity: escapeHtml(content.implication),
-        loading: false
+        flag, displayCity: localDisplayCity, countryName,
+        situation: "", need: "", opportunity: "",
+        loading: true
     });
     profileCard.classList.remove("hidden");
+
+    fetchLiveNudge({ countryCode: country.countryCode, cityName, role, locale: currentLocale })
+        .then((nudge) => {
+            if (getCityValue() !== cityName) return;
+            profileCard.innerHTML = buildNudgeCardHTML({
+                flag, displayCity: localDisplayCity, countryName,
+                situation: escapeHtml(nudge.situation || ""),
+                need: escapeHtml(nudge.need || ""),
+                opportunity: escapeHtml(nudge.opportunity || ""),
+                loading: false
+            });
+        })
+        .catch(() => {
+            if (getCityValue() !== cityName) return;
+            profileCard.classList.add("hidden");
+            profileCard.innerHTML = "";
+        });
 }
 
-function buildNudgeCardHTML({ flag, displayCity, countryName, isKo, situation, need, opportunity, loading }) {
+function buildNudgeCardHTML({ flag, displayCity, countryName, situation, need, opportunity, loading }) {
     const shimmer = `<span class="nudge-shimmer"></span>`;
     return `
         <div class="city-profile-header">
@@ -884,15 +889,15 @@ function buildNudgeCardHTML({ flag, displayCity, countryName, isKo, situation, n
         </div>
         <div class="city-profile-nudges">
             <div class="city-nudge city-nudge--situation">
-                <span class="city-nudge-label">${isKo ? "지금 상황" : "Now"}</span>
+                <span class="city-nudge-label">${t("nudgeNow")}</span>
                 <p>${loading ? shimmer : situation}</p>
             </div>
             <div class="city-nudge city-nudge--need">
-                <span class="city-nudge-label">${isKo ? "예상 니즈" : "Likely need"}</span>
+                <span class="city-nudge-label">${t("nudgeNeed")}</span>
                 <p>${loading ? shimmer : need}</p>
             </div>
             <div class="city-nudge city-nudge--opportunity">
-                <span class="city-nudge-label">${isKo ? "기회 포인트" : "Opportunity"}</span>
+                <span class="city-nudge-label">${t("nudgeOpportunity")}</span>
                 <p>${loading ? shimmer : opportunity}</p>
             </div>
         </div>
@@ -1267,69 +1272,35 @@ function setGuideChoice(choice) {
 }
 
 function buildGuideMarkup() {
-    if (currentLocale === "ko") {
-        return `
-            <div class="guide-hero">
-                <span class="guide-kicker">Scenario Guide</span>
-                <h3>4단계 입력만으로<br>완성도 높은 시나리오를<br>만듭니다</h3>
-                <p class="guide-lead">핵심만 빠르게 선택하고, 필요한 정보만 더해 바로 검토할 수 있는 결과로 정리합니다.</p>
-            </div>
-            <div class="guide-grid">
-                <section class="guide-panel">
-                    <p class="guide-index">01 Inputs</p>
-                    <h4>먼저 기준이 되는 4가지를 정합니다</h4>
-                    <div class="guide-stack">
-                        <div class="guide-item"><strong>Q1 담당업무</strong><span>리테일, 닷컴 캠페인, 브랜드 마케팅 중 관점을 고릅니다.</span></div>
-                        <div class="guide-item"><strong>Q2 국가·지역</strong><span>대상 국가와 도시 또는 주를 함께 정합니다.</span></div>
-                        <div class="guide-item"><strong>Q3 타겟 고객</strong><span>가구 특성, 시즌, 생활 맥락을 짧게 적습니다.</span></div>
-                        <div class="guide-item"><strong>Q4 기기·환경</strong><span>핵심 기기 조합과 실제 제약 조건을 선택합니다.</span></div>
-                    </div>
-                </section>
-                <section class="guide-panel">
-                    <p class="guide-index">02 Flow</p>
-                    <h4>입력은 간결하게, 결과는 더 선명하게</h4>
-                    <div class="guide-stack">
-                        <div class="guide-item"><strong>Step by step</strong><span>질문은 한 번에 하나씩 열려 흐름이 명확합니다.</span></div>
-                        <div class="guide-item"><strong>Lean follow-up</strong><span>필요할 때만 추가 확인 포인트를 최소로 더합니다.</span></div>
-                        <div class="guide-item"><strong>Clear output</strong><span>불확실한 내용은 가정 사항으로 분리해 결과의 완성도를 유지합니다.</span></div>
-                    </div>
-                </section>
-            </div>
-            <div class="guide-footer">
-                <p class="guide-note">가이드를 확인했다면 아래 시작 버튼으로 바로 첫 번째 질문부터 시작하세요. 짧은 입력만으로도 검토와 공유에 바로 쓸 수 있는 결과를 만듭니다.</p>
-            </div>
-        `;
-    }
-
     return `
         <div class="guide-hero">
             <span class="guide-kicker">Scenario Guide</span>
-            <h3>Build a usable scenario<br>from four guided inputs</h3>
-            <p class="guide-lead">Pick the essentials first. The agent turns them into a sharper, review-ready scenario.</p>
+            <h3>${t("guideHeroTitle")}</h3>
+            <p class="guide-lead">${escapeHtml(t("guideLead"))}</p>
         </div>
         <div class="guide-grid">
             <section class="guide-panel">
                 <p class="guide-index">01 Inputs</p>
-                <h4>What you set first</h4>
+                <h4>${escapeHtml(t("guideInputsTitle"))}</h4>
                 <div class="guide-stack">
-                    <div class="guide-item"><strong>Q1 Work Lens</strong><span>Retail, Dotcom Campaign, or Brand Marketing</span></div>
-                    <div class="guide-item"><strong>Q2 Country & Region</strong><span>Target market plus city, state, or region</span></div>
-                    <div class="guide-item"><strong>Q3 Target Customer</strong><span>Household type, season, and real-life context</span></div>
-                    <div class="guide-item"><strong>Q4 Devices & Environment</strong><span>Core device mix and practical constraints</span></div>
+                    <div class="guide-item"><strong>${escapeHtml(t("guideQ1"))}</strong><span>${escapeHtml(t("guideQ1Desc"))}</span></div>
+                    <div class="guide-item"><strong>${escapeHtml(t("guideQ2"))}</strong><span>${escapeHtml(t("guideQ2Desc"))}</span></div>
+                    <div class="guide-item"><strong>${escapeHtml(t("guideQ3"))}</strong><span>${escapeHtml(t("guideQ3Desc"))}</span></div>
+                    <div class="guide-item"><strong>${escapeHtml(t("guideQ4"))}</strong><span>${escapeHtml(t("guideQ4Desc"))}</span></div>
                 </div>
             </section>
             <section class="guide-panel">
                 <p class="guide-index">02 Flow</p>
-                <h4>Simple input, clearer output</h4>
+                <h4>${escapeHtml(t("guideFlowTitle"))}</h4>
                 <div class="guide-stack">
-                    <div class="guide-item"><strong>Step by step</strong><span>One question opens at a time.</span></div>
-                    <div class="guide-item"><strong>Lean follow-up</strong><span>Extra checks appear only when needed.</span></div>
-                    <div class="guide-item"><strong>Clear output</strong><span>Assumptions stay separated for faster review.</span></div>
+                    <div class="guide-item"><strong>Step by step</strong><span>${escapeHtml(t("guideFlowStep"))}</span></div>
+                    <div class="guide-item"><strong>Lean follow-up</strong><span>${escapeHtml(t("guideFlowLean"))}</span></div>
+                    <div class="guide-item"><strong>Clear output</strong><span>${escapeHtml(t("guideFlowClear"))}</span></div>
                 </div>
             </section>
         </div>
         <div class="guide-footer">
-            <p class="guide-note">If this is clear, press Start below and move into Q1. Keep the input short and the output ready to review.</p>
+            <p class="guide-note">${escapeHtml(t("guideNote"))}</p>
         </div>
     `;
 }
@@ -5292,29 +5263,16 @@ function renderScenario(payload) {
 }
 
 function renderOutputPreview() {
-    const isKo = currentLocale === "ko";
-    const title = isKo
-        ? "Q1~Q4를 완료하면 아래 구성으로 결과가 생성됩니다."
-        : "Complete Q1–Q4 and receive your results in this structure.";
-    const cards = isKo
-        ? [
-            { icon: "01", title: "시나리오 요약", desc: "타겟 고객과 핵심 가치가 한눈에 정리됩니다." },
-            { icon: "02", title: "상세 시나리오", desc: "타겟 고객과 적용 서비스, Pain Point-해결책-Benefit 구조의 시나리오 카드가 정리됩니다." },
-            { icon: "03", title: "지역 맞춤 인사이트", desc: "Observation-Insight-Implication 구조로 왜 이 시장에서 먹히는지 설명합니다." },
-            { icon: "04", title: "마케팅 메시지", desc: "직무에 맞는 메시지와 카피 옵션을 비교해 볼 수 있습니다." },
-            { icon: "05", title: "주요 고객 혜택", desc: "사용자가 직접 느끼는 이점을 우선순위로 정리합니다." },
-            { icon: "06", title: "타겟 및 고객 수용도 분석", desc: "좋아할 점과 우려할 점을 함께 보고 수용도를 판단합니다." },
-            { icon: "07", title: "캠페인 타이밍 및 크리에이티브 방향", desc: "언제, 어떤 장면으로 밀어야 하는지 바로 연결합니다." }
-        ]
-        : [
-            { icon: "01", title: "Scenario Summary", desc: "Target customer and core value proposition at a glance." },
-            { icon: "02", title: "Detailed Scenario", desc: "Target customer, applied services, and mini scenario cards with pain, resolution, and benefit." },
-            { icon: "03", title: "Local Insight", desc: "Explain why this scenario should work in the market through Observation, Insight, and Implication." },
-            { icon: "04", title: "Marketing Messages", desc: "Compare campaign-ready copy options tuned to the selected role." },
-            { icon: "05", title: "Customer Benefits", desc: "Prioritize the user benefits that will persuade most clearly." },
-            { icon: "06", title: "Target & Acceptance Read", desc: "Estimate likely likes, concerns, and acceptance before execution." },
-            { icon: "07", title: "Timing & Creative Direction", desc: "Connect the scenario to campaign timing and usable story direction." }
-        ];
+    const title = t("previewTitle");
+    const cards = [
+        { icon: "01", title: t("prev01Title"), desc: t("prev01Desc") },
+        { icon: "02", title: t("prev02Title"), desc: t("prev02Desc") },
+        { icon: "03", title: t("prev03Title"), desc: t("prev03Desc") },
+        { icon: "04", title: t("prev04Title"), desc: t("prev04Desc") },
+        { icon: "05", title: t("prev05Title"), desc: t("prev05Desc") },
+        { icon: "06", title: t("prev06Title"), desc: t("prev06Desc") },
+        { icon: "07", title: t("prev07Title"), desc: t("prev07Desc") }
+    ];
 
     resultDiv.innerHTML = `
         <section class="placeholder-preview">
@@ -6194,33 +6152,18 @@ function renderLensPanel(lens) {
 }
 
 function getOutputTitles() {
-    if (currentLocale === "ko") {
-        return {
-            summary: "01. 시나리오 제목 및 요약",
-            scenario: "02. 상세 시나리오",
-            facts: "03. 지역 맞춤 인사이트",
-            marketing: "04. 마케팅 메시지",
-            benefits: "05. 고객 베네핏",
-            target: "06. 타겟 세그먼트 및 고객 수용도 분석",
-            timing: "07. 캠페인 타이밍 및 크리에이티브 방향",
-            devices: "08. 기기 구성 및 설정 가이드",
-            marketability: "09. 시나리오 시장성 평가 (리스크 포함)",
-            addon: "10. 실행 확장 팩 — 고객 적용 가이드 + 성과 지표 연결",
-            reflection: "11. 브랜드/AI/철학 품질 점검"
-        };
-    }
     return {
-        summary: "01. Title & Summary",
-        scenario: "02. Detailed Scenario",
-        facts: "03. Local Insight",
-        marketing: "04. Marketing Messages",
-        benefits: "05. Customer Benefits",
-        target: "06. Target Segment & Acceptance Read",
-        timing: "07. Timing & Creative Direction",
-        devices: "08. Available Devices & Setup Guide",
-        marketability: "09. Marketability & Risk Evaluation",
-        addon: "10. Add-on Pack — Implementation & Funnel Mapping",
-        reflection: "11. Brand/AI/Philosophy Reflection"
+        summary: t("outTitle01"),
+        scenario: t("outTitle02"),
+        facts: t("outTitle03"),
+        marketing: t("outTitle04"),
+        benefits: t("outTitle05"),
+        target: t("outTitle06"),
+        timing: t("outTitle07"),
+        devices: t("outTitle08"),
+        marketability: t("outTitle09"),
+        addon: t("outTitle10"),
+        reflection: t("outTitle11")
     };
 }
 
@@ -6661,6 +6604,8 @@ function applyLocale() {
     guideYesBtn.textContent = t("guideYes");
     guideNoBtn.textContent = t("guideNo");
     guideContinueBtn.textContent = t("guideStart");
+    const guideSessionNote = document.querySelector(".guide-session-note");
+    if (guideSessionNote) guideSessionNote.textContent = t("guideSessionNote");
     if (!guideCopy.classList.contains("hidden")) {
         guideCopy.innerHTML = buildGuideMarkup();
     }
@@ -6768,12 +6713,11 @@ function getNativeLocale() {
 }
 
 function renderExportActions() {
-    const isKo = currentLocale === "ko";
     const labels = {
-        pdf:   { title: isKo ? "PDF 저장"       : "Save PDF",        desc: isKo ? "회의 공유 / 이메일 첨부용" : "For meetings & email" },
-        word:  { title: isKo ? "Word 저장"       : "Save Word",       desc: isKo ? "편집 및 협업용"           : "Editable document" },
-        excel: { title: isKo ? "Excel 저장"      : "Save Excel",      desc: isKo ? "데이터 테이블 정리용"     : "Structured data tables" },
-        copy:  { title: isKo ? "클립보드 복사"    : "Copy to Clipboard", desc: isKo ? "메신저 / 메일 본문용"   : "Quick paste & share" }
+        pdf:   { title: t("exportPdf"),   desc: t("exportPdfDesc") },
+        word:  { title: t("exportWord"),  desc: t("exportWordDesc") },
+        excel: { title: t("exportExcel"), desc: t("exportExcelDesc") },
+        copy:  { title: t("exportCopy"),  desc: t("exportCopyDesc") }
     };
     const types = ["pdf", "word", "excel", "copy"];
     exportActions.innerHTML = types.map((type, index) => `
@@ -6793,18 +6737,7 @@ function t(key) {
 }
 
 function getUiPhrase(key) {
-    const map = {
-        personaTask: { ko: "주요 과제", en: "Core task", de: "Zentrale Aufgabe" },
-        personaSuccess: { ko: "기대 결과", en: "Expected result", de: "Erwartetes Ergebnis" },
-        stateRole: { ko: "담당업무", en: "Work Lens", de: "Perspektive" },
-        stateCountry: { ko: "국가", en: "Country", de: "Land" },
-        statePersona: { ko: "타겟고객", en: "Target User", de: "Zielnutzer" },
-        stateSituation: { ko: "상황설명", en: "Situation", de: "Situation" },
-        stateDevice: { ko: "반영기기", en: "Device", de: "Gerät" },
-        notSelected: { ko: "미선택", en: "Not selected", de: "Nicht gewählt" },
-        notEntered: { ko: "미입력", en: "Not entered", de: "Nicht eingegeben" }
-    };
-    return map[key]?.[currentLocale] || map[key]?.en || map[key]?.ko || key;
+    return t(key);
 }
 
 function getCountryName(code) {
