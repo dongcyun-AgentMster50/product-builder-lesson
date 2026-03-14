@@ -152,15 +152,19 @@ function bindEvents() {
     roleSelectionContainer?.addEventListener("keydown", handleRoleCardKeydown);
     countrySelect.addEventListener("change", updateStatePreview);
     countrySelect.addEventListener("change", updateLocaleFromCountry);
-    countrySelect.addEventListener("change", renderCityProfileCard);
+    // renderCityProfileCard는 updateLocaleFromCountry 안에서 city 초기화 후 처리됨
     citySelect.addEventListener("change", () => {
         toggleCityCustomInput();
         updateStatePreview();
+        if (citySelect.value === CITY_CUSTOM_VALUE) {
+            // "직접 입력" 선택 시 — 아직 도시명이 없으므로 API 호출하지 않음
+            cityCustomInput.value = "";
+            cityCustomInput.focus();
+            return;
+        }
+        // 드롭다운에서 실제 도시를 선택한 경우에만 API 호출
         updateStepInsight();
         renderCityProfileCard();
-        if (citySelect.value === CITY_CUSTOM_VALUE) {
-            cityCustomInput.focus();
-        }
     });
     cityCustomInput.addEventListener("input", () => {
         updateStatePreview();
@@ -171,7 +175,8 @@ function bindEvents() {
         updateStepInsight();
         renderCityProfileCard();
     };
-    cityCustomInput.addEventListener("change", confirmCityCustom);
+    // change(blur) 이벤트 제거 — 모바일에서 blur 시 dropdown change와 충돌 방지
+    // 오직 ✓ 버튼과 Enter 키로만 확정
     cityCustomInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             event.preventDefault();
@@ -818,8 +823,10 @@ function getCountryFlagEmoji(countryCode) {
 
 let _nudgeAbort = null;
 const _nudgeCache = new Map();
+let _cityProfileRequestId = 0;
 
 function renderCityProfileCard() {
+    ++_cityProfileRequestId;
     const profileCard = document.getElementById("city-profile-card");
     if (!profileCard) return;
 
@@ -859,9 +866,10 @@ function renderCityProfileCard() {
     });
     profileCard.classList.remove("hidden");
 
+    const thisRequestId = _cityProfileRequestId;
     fetchLiveNudge({ countryCode: country.countryCode, cityName, role, locale: currentLocale })
         .then((nudge) => {
-            if (getCityValue() !== cityName) return;
+            if (thisRequestId !== _cityProfileRequestId) return;
             profileCard.innerHTML = buildNudgeCardHTML({
                 flag, displayCity: localDisplayCity, countryName,
                 situation: escapeHtml(nudge.situation || ""),
@@ -871,7 +879,7 @@ function renderCityProfileCard() {
             });
         })
         .catch(() => {
-            if (getCityValue() !== cityName) return;
+            if (thisRequestId !== _cityProfileRequestId) return;
             profileCard.classList.add("hidden");
             profileCard.innerHTML = "";
         });
