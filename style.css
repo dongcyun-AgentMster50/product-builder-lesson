@@ -1467,6 +1467,16 @@ textarea {
     gap: 4px;
 }
 
+.insight-inline-link {
+    margin-left: 6px;
+    font-size: 0.82rem;
+    color: var(--accent-strong);
+}
+
+.insight-inline-link:hover {
+    color: var(--accent);
+}
+
 .insight-evidence {
     display: flex;
     flex-wrap: wrap;

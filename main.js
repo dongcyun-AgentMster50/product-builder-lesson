@@ -810,6 +810,20 @@ function getCitySignalContent(countryCode, cityName) {
     return null;
 }
 
+function getExactCitySignalContent(countryCode, cityName) {
+    const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
+    const normalizedCity = normalizeCityValue(cityName);
+    const entry = cityEntries.find((e) =>
+        e.countryCode === countryCode &&
+        (normalizeCityValue(e.displayName) === normalizedCity ||
+         (e.aliases || []).some((a) => normalizeCityValue(a) === normalizedCity))
+    );
+    if (entry?.content) {
+        return entry.content[currentLocale] || entry.content.en || null;
+    }
+    return null;
+}
+
 function getCountryFlagEmoji(countryCode) {
     const flags = {
         US: "\u{1F1FA}\u{1F1F8}", CA: "\u{1F1E8}\u{1F1E6}", MX: "\u{1F1F2}\u{1F1FD}", BR: "\u{1F1E7}\u{1F1F7}",
@@ -1613,7 +1627,18 @@ function buildInsightMarkup(insight) {
     const renderSection = (section) => {
         const text = section.text ? `<p>${escapeHtml(section.text)}</p>` : "";
         const items = Array.isArray(section.items) && section.items.length
-            ? `<ul>${section.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+            ? `<ul>${section.items.map((item) => {
+                if (item && typeof item === "object") {
+                    const label = escapeHtml(item.text || "");
+                    const sourceUrl = String(item.sourceUrl || "").trim();
+                    const sourceLabel = escapeHtml(item.sourceLabel || (currentLocale === "ko" ? "웹검색" : "Web search"));
+                    const link = sourceUrl
+                        ? ` <a class="insight-inline-link" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${sourceLabel}</a>`
+                        : "";
+                    return `<li>${label}${link}</li>`;
+                }
+                return `<li>${escapeHtml(item)}</li>`;
+            }).join("")}</ul>`
             : "";
         return `
             <section class="insight-section">
@@ -1623,7 +1648,7 @@ function buildInsightMarkup(insight) {
             </section>
         `;
     };
-    const evidence = Array.isArray(insight.evidence) && insight.evidence.length
+    const evidence = !insight.hideEvidence && Array.isArray(insight.evidence) && insight.evidence.length
         ? `<div class="insight-evidence">${insight.evidence.map((item, idx) => {
             const detailId = `ev-detail-${idx}-${Date.now()}`;
             const domainLabel = (item.source_domain || "").replace(/^https?:\/\//, "").replace(/\/.*$/, "");
@@ -1922,13 +1947,14 @@ function mapLiveStep2Insight(data, countryCode, city) {
     // 라이브 트렌드 기반 고민/솔루션 우선 → 정적 city_signals 연결 → 정적 role_lens fallback
     const livePains = toList(data.live_pains).slice(0, 3);
     const liveSolutions = toList(data.live_solutions).slice(0, 3);
-    const cityContent = getCitySignalContent(countryCode, city);
+    const cityContent = getExactCitySignalContent(countryCode, city);
     const cityPains = toList(cityContent?.pains).slice(0, 3);
     const citySolutions = toList(cityContent?.solutions).slice(0, 3);
     const staticPains = toList(roleLens.pain_points).slice(0, 3);
     const staticSolutions = toList(roleLens.solutions).slice(0, 3);
     const mustKnow = toList(roleLens.must_know).slice(0, 3);
     const executionPoints = toList(roleLens.execution_points).slice(0, 3);
+    const hasExactCityData = Boolean(cityContent);
 
     const mergeUniqueItems = (primary, secondary, limit) => {
         const seen = new Set();
@@ -1943,6 +1969,25 @@ function mapLiveStep2Insight(data, countryCode, city) {
             })
             .slice(0, limit);
     };
+
+    const buildTrendSearchUrl = (trendText) => {
+        const query = [city, getCountryName(countryCode), trendText].filter(Boolean).join(" ");
+        const params = new URLSearchParams({
+            q: query,
+            hl: currentLocale === "ko" ? "ko" : "en"
+        });
+        return `https://www.google.com/search?${params.toString()}`;
+    };
+
+    const liveTrends = toList(data.live_trends).slice(0, 4);
+    const staticTrends = toList(cityContent?.trends).slice(0, 4);
+    if (!liveTrends.length && !hasExactCityData) {
+        return buildStep2ErrorInsight(
+            currentLocale === "ko"
+                ? `"${city}" 기준의 실시간 지역 트렌드를 아직 확인하지 못했습니다. 정적 도시 데이터를 섞지 않고 다시 시도해 주세요.`
+                : `Live city-specific trends for "${city}" were not confirmed yet. Retry without mixing static city data.`
+        );
+    }
 
     // 라이브 AI 결과를 항상 우선, 정적 데이터는 보강용 fallback
     const realPains = livePains.length
@@ -1969,8 +2014,6 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const sections = [];
 
     // 1) 지역 트렌드 섹션: 실시간 API 우선, 정적 데이터 fallback
-    const liveTrends = toList(data.live_trends).slice(0, 4);
-    const staticTrends = toList(cityContent?.trends).slice(0, 4);
     const trends = liveTrends.length
         ? mergeUniqueItems(liveTrends, staticTrends, 4)
         : staticTrends;
@@ -1979,7 +2022,11 @@ function mapLiveStep2Insight(data, countryCode, city) {
             title: currentLocale === "ko"
                 ? `<strong class="city-accent">${localCity || marketLabel}</strong> 지역 트렌드`
                 : `<strong class="city-accent">${localCity || marketLabel}</strong> local trends`,
-            items: trends
+            items: trends.map((trend) => ({
+                text: trend,
+                sourceUrl: buildTrendSearchUrl(trend),
+                sourceLabel: currentLocale === "ko" ? "검색 링크" : "Search link"
+            }))
         });
     }
 
@@ -2040,7 +2087,8 @@ function mapLiveStep2Insight(data, countryCode, city) {
         sections,
         rows,
         media: [],
-        evidence
+        evidence,
+        hideEvidence: true
     };
 }
 
