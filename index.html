@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scenario Self Generation Agent</title>
-    <link rel="stylesheet" href="style.css?v=20260314-1100">
+    <link rel="stylesheet" href="style.css?v=20260314-1200">
 </head>
 <body>
     <div class="shell">
@@ -135,7 +135,10 @@
                                 <label for="country">Q2. 어느 국가를 대상으로 하나요?</label>
                                 <select id="country" name="country"></select>
                                 <select id="city" name="city"></select>
-                                <input type="text" id="city-custom" name="city-custom" class="hidden" placeholder="직접 도시 입력">
+                                <div class="city-custom-row hidden" id="city-custom-row">
+                                    <input type="text" id="city-custom" name="city-custom" placeholder="직접 도시 입력">
+                                    <button type="button" id="city-custom-confirm" class="secondary-btn city-custom-confirm-btn">✓</button>
+                                </div>
                                 <div id="city-profile-card" class="city-profile-card hidden"></div>
                                 <p class="helper">지역에 따라 추천 기기와 활용 방식이 달라집니다.</p>
                             </div>
@@ -224,7 +227,7 @@
     </div>
 
     <script src="js/constants.js?v=20260312"></script>
-    <script src="js/ui-text.js?v=20260312"></script>
-    <script src="main.js?v=20260314-1100"></script>
+    <script src="js/ui-text.js?v=20260314-1200"></script>
+    <script src="main.js?v=20260314-1200"></script>
 </body>
 </html>

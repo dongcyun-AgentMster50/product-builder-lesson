@@ -29,6 +29,8 @@ const purposeInput = document.getElementById("purpose");
 const countrySelect = document.getElementById("country");
 const citySelect = document.getElementById("city");
 const cityCustomInput = document.getElementById("city-custom");
+const cityCustomRow = document.getElementById("city-custom-row");
+const cityCustomConfirmBtn = document.getElementById("city-custom-confirm");
 const personaGroups = document.getElementById("persona-groups");
 const segmentCustomInput = document.getElementById("segment-custom");
 const deviceGrid = document.getElementById("device-grid");
@@ -162,9 +164,26 @@ function bindEvents() {
     });
     cityCustomInput.addEventListener("input", () => {
         updateStatePreview();
+    });
+    const confirmCityCustom = () => {
+        const val = cityCustomInput.value.trim();
+        if (!val) return;
         updateStepInsight();
         renderCityProfileCard();
+    };
+    cityCustomInput.addEventListener("change", confirmCityCustom);
+    cityCustomInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            cityCustomInput.blur();
+            confirmCityCustom();
+        }
     });
+    if (cityCustomConfirmBtn) {
+        cityCustomConfirmBtn.addEventListener("click", () => {
+            confirmCityCustom();
+        });
+    }
     personaGroups.addEventListener("change", (event) => {
         handleChecklistChange(event, personaGroups);
         updateStatePreview();
@@ -992,7 +1011,9 @@ function getCityDisplayValue(countryCode, cityName) {
 
 function toggleCityCustomInput() {
     const useCustom = citySelect.value === CITY_CUSTOM_VALUE;
-    cityCustomInput.classList.toggle("hidden", !useCustom);
+    if (cityCustomRow) {
+        cityCustomRow.classList.toggle("hidden", !useCustom);
+    }
     cityCustomInput.disabled = !useCustom;
 }
 
@@ -6614,19 +6635,15 @@ function applyLocale() {
     const heroChips = document.querySelectorAll(".hero-chip");
     const heroMetricLabels = document.querySelectorAll(".hero-metric span");
 
-    document.querySelector(".eyebrow").textContent = currentLocale === "ko" ? "Interactive Scenario Builder" : currentLocale === "de" ? "Interaktiver Szenario-Builder" : "Interactive Scenario Builder";
-    document.querySelector(".hero-text").textContent = currentLocale === "ko"
-        ? "핵심 입력만 선택하면 메시지부터 활용안까지 완성도 높은 시나리오로 정리됩니다."
-        : currentLocale === "de"
-            ? "Beantworten Sie die Fragen der Reihe nach und bauen Sie schrittweise ein App-Szenario auf, das für Nutzer attraktiver wirkt."
-            : "Answer the questions in sequence and build an app scenario step by step that feels more compelling to users.";
-    if (heroChips[0]) heroChips[0].textContent = currentLocale === "ko" ? "맥락 중심 설계" : currentLocale === "de" ? "Kontext zuerst" : "Context-first flow";
-    if (heroChips[1]) heroChips[1].textContent = currentLocale === "ko" ? "4단계 guided flow" : currentLocale === "de" ? "4 Schritte" : "4 guided inputs";
-    if (heroChips[2]) heroChips[2].textContent = currentLocale === "ko" ? "바로 검토 가능한 결과" : currentLocale === "de" ? "Direkt prüfbare Ergebnisse" : "Review-ready output";
-    if (heroMetricLabels[0]) heroMetricLabels[0].textContent = currentLocale === "ko" ? "접근 확인 후 시작 가이드" : currentLocale === "de" ? "Zugang und Guide" : "Access and guide check";
-    if (heroMetricLabels[1]) heroMetricLabels[1].textContent = currentLocale === "ko" ? "질문에 따라 단계별 입력" : currentLocale === "de" ? "Schrittweise Eingabe" : "Step-by-step scenario setup";
-    if (heroMetricLabels[2]) heroMetricLabels[2].textContent = currentLocale === "ko" ? "결과 확인과 바로 내보내기" : currentLocale === "de" ? "Output und Export" : "Immediate output and export";
-    document.querySelector("#access-screen h2").textContent = currentLocale === "ko" ? "시작하기" : currentLocale === "de" ? "Loslegen" : "Get Started";
+    document.querySelector(".eyebrow").textContent = t("heroEyebrow");
+    document.querySelector(".hero-text").textContent = t("heroText");
+    if (heroChips[0]) heroChips[0].textContent = t("heroChip1");
+    if (heroChips[1]) heroChips[1].textContent = t("heroChip2");
+    if (heroChips[2]) heroChips[2].textContent = t("heroChip3");
+    if (heroMetricLabels[0]) heroMetricLabels[0].textContent = t("heroFlow1");
+    if (heroMetricLabels[1]) heroMetricLabels[1].textContent = t("heroFlow2");
+    if (heroMetricLabels[2]) heroMetricLabels[2].textContent = t("heroFlow3");
+    document.querySelector("#access-screen h2").textContent = t("getStarted");
     document.querySelector("label[for='access-code']").textContent = t("accessRequired").replace(".", "");
     accessCodeInput.placeholder = t("accessPlaceholder");
     document.querySelector("#access-screen .helper").textContent = t("accessHelper");
@@ -6641,9 +6658,9 @@ function applyLocale() {
             : t(accessStatus.dataset.key);
     }
     document.querySelector("#guide-screen h2").textContent = t("guideTitle");
-    guideYesBtn.textContent = currentLocale === "ko" ? "Yes" : currentLocale === "de" ? "Ja" : "Yes";
-    guideNoBtn.textContent = currentLocale === "ko" ? "No" : currentLocale === "de" ? "Nein" : "No";
-    guideContinueBtn.textContent = currentLocale === "ko" ? "시작" : currentLocale === "de" ? "Start" : "Start";
+    guideYesBtn.textContent = t("guideYes");
+    guideNoBtn.textContent = t("guideNo");
+    guideContinueBtn.textContent = t("guideStart");
     if (!guideCopy.classList.contains("hidden")) {
         guideCopy.innerHTML = buildGuideMarkup();
     }
@@ -6653,16 +6670,12 @@ function applyLocale() {
     document.querySelector("label[for='country']").textContent = t("countryQuestion");
     document.getElementById("segment-label").textContent = t("personaQuestion");
     const q3Guide = document.getElementById("q3-guide");
-    if (q3Guide) q3Guide.textContent = currentLocale === "ko"
-        ? "A·B·C 각 영역에서 최소 1개를 선택하거나 직접 입력해 주세요. 조합이 구체적일수록 시나리오가 날카로워집니다."
-        : "Pick at least one from each of A, B, and C (or type your own). The more specific the combo, the sharper the scenario.";
+    if (q3Guide) q3Guide.textContent = t("q3Guide");
     if (deviceLabel) deviceLabel.textContent = t("deviceQuestion");
-    purposeInput.placeholder = currentLocale === "ko"
-        ? "위 선택 외에 추가로 떠오르는 상황이 있다면 자유롭게 적어 주세요"
-        : "Any extra context beyond the selections above";
+    purposeInput.placeholder = t("purposeExtraPlaceholder");
     segmentCustomInput.placeholder = "";
-    deviceCustomInput.placeholder = currentLocale === "ko" ? "추가 기기나 세부 모델을 직접 입력" : currentLocale === "de" ? "Zusätzliche Geräte oder Modelle eingeben" : "Add any extra device or model";
-    cityCustomInput.placeholder = currentLocale === "ko" ? "도시 / 주 / 지역 직접 입력" : currentLocale === "de" ? "Stadt / Bundesland / Region manuell" : "Type city / state / region";
+    deviceCustomInput.placeholder = t("deviceCustomPlaceholder");
+    cityCustomInput.placeholder = t("cityCustomPlaceholder");
     updateQuestionHelpers();
     prevBtn.textContent = t("prev");
     nextBtn.textContent = t("next");
