@@ -5844,8 +5844,8 @@ function renderOverview(payload) {
                     <div class="marketing-guideline-box">
                         <strong>${currentLocale === "ko" ? "글로벌 / 로컬 메시지 구분" : "Global / Local Split"}</strong>
                         <ul class="marketing-list">
-                            <li><strong>Global</strong>: ${escapeHtml(marketing.globalLocalSplit?.global || "")}</li>
-                            <li><strong>Local</strong>: ${escapeHtml(marketing.globalLocalSplit?.local || "")}</li>
+                            <li><strong>${isKo ? "글로벌" : "Global"}</strong>: ${escapeHtml(marketing.globalLocalSplit?.global || "")}</li>
+                            <li><strong>${isKo ? "로컬" : "Local"}</strong>: ${escapeHtml(marketing.globalLocalSplit?.local || "")}</li>
                         </ul>
                     </div>
                     <div class="marketing-lens-grid">
