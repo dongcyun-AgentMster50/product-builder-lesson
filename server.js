@@ -1205,10 +1205,18 @@ async function fetchCityLiveContent({ country, city, role, locale }) {
     const prompt = `City: ${city}, Country code: ${country}, Role: ${role}, Language: ${lang}
 Today (UTC): ${todayIso}
 
-Return ONLY valid JSON — no markdown, no explanation:
+Return ONLY valid JSON — no markdown, no explanation. EVERY trend MUST be an object with ALL 5 fields (text, evidence, source_title, source_org, source_date, source_url). Do NOT return trends as plain strings.
+
 {
   "live_trends": [
-    {"text": "trend headline", "evidence": "1-2 sentence factual basis with specific numbers", "source_title": "article or report title", "source_org": "Publisher or Organization", "source_date": "YYYY-MM-DD", "source_url": "https://example.com"}
+    {
+      "text": "trend headline (concise)",
+      "evidence": "2-3 sentence factual basis with specific numbers, statistics, or policy details that prove this trend",
+      "source_title": "exact article/report/data title",
+      "source_org": "publishing organization name",
+      "source_date": "YYYY-MM-DD",
+      "source_url": "https://real-domain.example.com/path"
+    }
   ],
   "live_events": [
     {"name": "event name", "when": "YYYY-MM-DD", "hook": "one-line marketing angle"}
@@ -1218,24 +1226,28 @@ Return ONLY valid JSON — no markdown, no explanation:
 }
 
 Rules:
-- live_trends: 4 current market/lifestyle trends specific to this EXACT city (not the country). Be hyper-local. Each trend MUST include: "evidence" (1-2 sentence factual basis with specific numbers), "source_title" (the article/report/data title), "source_org" (publisher or organization name), "source_date" (publication date as YYYY-MM-DD, best estimate if exact date unknown), "source_url" (a real, verifiable URL to the source — use the actual domain, e.g. https://kostat.go.kr, https://www.chungnam.go.kr). Do NOT invent fake URLs.
-- live_events: 2-3 upcoming local events, festivals, or seasonal moments in or near this city within the next 3 months from ${todayIso}. Include realistic dates.
-- live_pains: 3 consumer pain points a ${role} marketer would face in this city, tied to the trends.
-- live_solutions: 3 actionable tactics for Samsung SmartThings marketing, specific to this city.
-- Every item must be specific to ${city}. Never give generic advice.
-- If you are not confident about an event date, omit the event instead of inventing a past or uncertain date.
+- live_trends: EXACTLY 4 trends. Each must be an OBJECT (never a string). Be hyper-local to ${city} specifically.
+  * "evidence": 2-3 sentences with concrete data — percentages, monetary figures, population counts, policy names, or year-over-year comparisons. This is the most important field.
+  * "source_title": the specific article, report, or dataset name
+  * "source_org": the publishing organization (government agency, research institute, news outlet)
+  * "source_date": publication date (YYYY-MM-DD, estimate if unknown)
+  * "source_url": a real URL from the source organization's domain (e.g. kostat.go.kr, incheon.go.kr, kdi.re.kr). If unsure of exact path, use the organization's main domain.
+- live_events: 2-3 upcoming local events within 3 months from ${todayIso}. Include realistic dates only.
+- live_pains: 3 consumer pain points a ${role} marketer faces in ${city}, tied to the trends.
+- live_solutions: 3 actionable Samsung SmartThings marketing tactics specific to ${city}.
+- If you are not confident about an event date, omit it rather than guess.
 - Do not use dates earlier than ${todayIso}.
-- Write ALL content in ${lang}. When writing in Korean, ALWAYS use the Korean city name (e.g. 천안, 전주, 수원) — never use English transliterations like Cheonan, Jeonju, or Suwon in Korean text.`;
+- Write ALL content in ${lang}. When writing in Korean, ALWAYS use Korean city names (인천, 수원, 전주) — NEVER English transliterations.`;
 
     try {
         const body = JSON.stringify({
             model: "gpt-4o-mini",
             messages: [
-                { role: "system", content: "You are a hyper-local Samsung SmartThings marketing advisor. You provide city-specific trends, events, pain points, and solutions." },
+                { role: "system", content: "You are a hyper-local Samsung SmartThings marketing research analyst. You ALWAYS return live_trends as an array of OBJECTS with all fields (text, evidence, source_title, source_org, source_date, source_url). Never return trends as plain strings. The evidence field must contain concrete statistics and verifiable facts." },
                 { role: "user", content: prompt }
             ],
-            max_tokens: 1200,
-            temperature: 0.7
+            max_tokens: 2000,
+            temperature: 0.6
         });
 
         const response = await withTimeout(async () => {

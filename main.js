@@ -1932,19 +1932,19 @@ function buildInsightMarkup(insight) {
         const org = String(item.source_org || "").trim();
         const date = String(item.source_date || "").trim();
         const rawUrl = String(item.source_url || "").trim();
-        // 구조화된 출처 필드가 하나라도 있으면 인라인 형식 사용
         if (!title && !org) return "";
         const shortDomain = rawUrl ? rawUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "") : "";
         const linkUrl = rawUrl || `https://www.google.com/search?q=${encodeURIComponent([title, org, date].filter(Boolean).join(" "))}`;
+        // 인라인 출처 텍스트
         const parts = [];
         if (title) parts.push(title);
         if (org) parts.push(`— ${org}`);
         if (date) parts.push(date);
         const citation = parts.join(", ");
-        const domainTag = shortDomain
-            ? ` <a class="evidence-source-tag" href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(shortDomain)}</a>`
-            : ` <a class="evidence-source-tag" href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(org || "source")}</a>`;
-        return `<span class="trend-source-line">[Source] ${escapeHtml(citation)}${domainTag}</span>`;
+        // 도메인 태그 (클릭 시 원문으로 이동)
+        const domainLabel = shortDomain || org || "source";
+        const domainTag = `<a class="evidence-source-tag" href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(domainLabel)}</a>`;
+        return `<span class="trend-source-line">[Source] ${escapeHtml(citation)} ${domainTag}</span>`;
     };
 
     const renderSection = (section) => {
