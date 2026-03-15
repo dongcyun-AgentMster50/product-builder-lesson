@@ -225,65 +225,21 @@ async function fetchLiveTrends(city, country, locale, role, apiKey) {
     const lang = isKo ? "Korean" : "English";
     const todayIso = new Date().toISOString().slice(0, 10);
 
-    const systemPrompt = `You are a hyper-local Samsung SmartThings marketing research analyst who specializes in city-level market intelligence. STRICT RULES: (1) Every trend MUST be specific to the requested city — generic national trends are REJECTED. Mention local districts, municipal policies, or city-specific statistics. (2) live_trends is ALWAYS an array of OBJECTS with ALL fields: text, evidence, source_title, source_org, source_date, source_url. NEVER return trends as plain strings. (3) The evidence field MUST contain 2-3 sentences with concrete numbers (%, ₩, population, budgets, year-over-year). (4) Sources must reference real organizations with real domain URLs.`;
+    const systemPrompt = `You are a hyper-local Samsung SmartThings marketing analyst. Return ONLY valid JSON. All trends must be city-specific (not generic national). Write in ${lang}.`;
 
-    const userPrompt = `You are researching REAL, SPECIFIC trends for "${city}" (country: ${country}) as of ${todayIso}.
-Role context: Samsung SmartThings ${role} marketer. Language: ${lang}.
+    const userPrompt = `${city} (${country}), ${todayIso}, ${role} marketer.
 
-CRITICAL RULES — read before generating:
-1. Every trend MUST be UNIQUE to "${city}" — not generic national trends. Mention ${city}-specific districts, neighborhoods, local government policies, infrastructure projects, demographic shifts, or local consumer behaviors.
-2. BAD example (too generic): "스마트 홈 기기 수요 증가" — this applies to ANY city.
-   GOOD example (hyper-local): "인천 송도국제도시 스마트시티 2단계 사업으로 IoT 인프라 확충, 신규 아파트 85%에 홈IoT 사전설치 의무화"
-3. Each trend's "evidence" MUST contain specific numbers: %, ₩/$ amounts, population figures, year-over-year changes, policy numbers, or project budgets.
-4. Each trend's source MUST be a real, verifiable organization. Use government (.go.kr, .gov), statistics agencies, research institutes, or major news outlets.
+BAD trend: "스마트 홈 기기 수요 증가" (generic). GOOD: "인천 송도 스마트시티 2단계 — 신규 아파트 85% 홈IoT 사전설치 의무화"
 
-Return ONLY valid JSON — no markdown, no explanation.
+Return JSON:
+{"trends":[{"text":"${city}-specific headline with district/policy","evidence":"2-3 sentences, concrete numbers (%, ₩, population, YoY)","source_title":"report title","source_org":"org","source_date":"YYYY-MM-DD","source_url":"https://org-domain/path"}],"events":[{"name":"event","when":"YYYY-MM-DD","hook":"Samsung angle"}],"pains":[{"text":"realistic ${role} pain quote mentioning ${city} context","insight":"WHY this hurts — link to a trend + local data"}],"solutions":[{"text":"concrete tactic with Samsung product name + ${city} location","insight":"HOW to execute + expected impact metric"}]}
 
-{
-  "trends": [
-    {
-      "text": "hyper-local trend headline mentioning ${city}-specific details",
-      "evidence": "3 sentences with concrete statistics, budget figures, policy names.",
-      "source_title": "specific report or article title",
-      "source_org": "publishing organization",
-      "source_date": "YYYY-MM-DD",
-      "source_url": "https://real-organization-domain/path"
-    }
-  ],
-  "events": [
-    {"name": "event name", "when": "YYYY-MM-DD", "hook": "one-line Samsung marketing angle"}
-  ],
-  "pains": [
-    {
-      "text": "pain headline — realistic quote from a ${role} marketer in ${city}",
-      "insight": "1-2 sentences explaining WHY this is a pain, referencing a specific trend above and ${city} demographics/market data"
-    }
-  ],
-  "solutions": [
-    {
-      "text": "actionable tactic headline",
-      "insight": "1-2 sentences explaining HOW to execute this in ${city}, referencing specific Samsung products, local partnerships, or channel strategies with expected impact"
-    }
-  ]
-}
-
-Field requirements:
-- trends: EXACTLY 4 objects. Each MUST reference ${city}-specific data (district names, local stats, municipal policies).
-  * "text": 1-2 sentence headline. MUST mention a ${city}-specific detail (neighborhood, project name, local stat).
-  * "evidence": 2-3 sentences packed with numbers. This is the MOST IMPORTANT field. Include specific figures like budgets, percentages, population counts, policy IDs, or year-over-year comparisons.
-  * "source_title": exact article/report/dataset title
-  * "source_org": the publishing organization (government agency, statistical office, research institute, news outlet)
-  * "source_date": YYYY-MM-DD (best estimate if exact date unknown)
-  * "source_url": a real URL from the source org's domain. If unsure of exact path, use the org's homepage URL.
-- events: 2-3 upcoming events in or near ${city} within 3 months of ${todayIso}. Omit if not confident about dates.
-- pains: EXACTLY 3 objects. Each pain MUST:
-  * "text": a realistic first-person quote/concern from a ${role} marketer working in ${city}. BAD: "인식이 낮다" (vague). GOOD: "수지구 신규 입주 단지에서 '이거 월 전기세 얼마나 올라요?' 질문이 시연 10건 중 8건 — 답변 스크립트가 없어서 상담 전환율이 15%에 그치고 있다"
-  * "insight": connect this pain to a specific trend above + ${city} data. Why does this matter HERE specifically?
-- solutions: EXACTLY 3 objects. Each solution MUST:
-  * "text": concrete tactic headline (not vague advice). BAD: "체험 프로그램 운영" (generic). GOOD: "기흥구 롯데몰 체험존에서 'AI 절전 30초 시연' → 비포/애프터 전기요금 비교 태블릿 배치"
-  * "insight": explain HOW to execute in ${city} — mention specific Samsung products (SmartThings Energy, AI Hub, Jet Bot), local retail locations, or partnership opportunities + expected impact metric.
-- Do NOT use dates before ${todayIso}.
-- Write ALL content in ${lang}. For Korean: use Korean city/district names (강남구, 송도, 청라) — NEVER English transliterations.`;
+Rules:
+- trends: 4 objects. ${city} districts/policies/stats required. evidence=most important field.
+- events: 2-3 within 3 months of ${todayIso}. Skip if unsure.
+- pains: 3 objects. Each tied to a trend. Quote style, specific to ${city}.
+- solutions: 3 objects. Name Samsung products (SmartThings Energy, AI Hub, Jet Bot etc.) + local retail/channel.
+- Korean city names only (강남구, 송도) — never English transliterations.`;
 
     const messages = [
         { role: "system", content: systemPrompt },
@@ -306,7 +262,7 @@ Field requirements:
                 },
                 body: JSON.stringify({
                     model: "gpt-4o-mini",
-                    max_tokens: 3000,
+                    max_tokens: 2000,
                     temperature: 0.7,
                     messages
                 }),
@@ -322,7 +278,36 @@ Field requirements:
             const data = await response.json();
             let content = data?.choices?.[0]?.message?.content || "";
             content = content.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
-            const parsed = JSON.parse(content);
+            // JSON이 잘려있을 수 있으므로 가장 큰 { } 블록 추출
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) {
+                console.error(`[fetchLiveTrends] No JSON found in GPT response for ${city}`);
+                clearTimeout(timer);
+                continue;
+            }
+            let parsed;
+            try {
+                parsed = JSON.parse(jsonMatch[0]);
+            } catch {
+                // 잘린 JSON 복구 시도: 닫히지 않은 괄호 보정
+                let fixedJson = jsonMatch[0];
+                const openBraces = (fixedJson.match(/\{/g) || []).length;
+                const closeBraces = (fixedJson.match(/\}/g) || []).length;
+                const openBrackets = (fixedJson.match(/\[/g) || []).length;
+                const closeBrackets = (fixedJson.match(/\]/g) || []).length;
+                // 마지막 완전한 항목까지 잘라내고 괄호 닫기
+                fixedJson = fixedJson.replace(/,\s*(?:"[^"]*":\s*)?(?:\{[^}]*)?$/, "");
+                fixedJson += "]".repeat(Math.max(0, openBrackets - closeBrackets));
+                fixedJson += "}".repeat(Math.max(0, openBraces - closeBraces));
+                try {
+                    parsed = JSON.parse(fixedJson);
+                    console.log(`[fetchLiveTrends] Recovered truncated JSON for ${city}`);
+                } catch {
+                    console.error(`[fetchLiveTrends] JSON parse failed even after recovery for ${city}`);
+                    clearTimeout(timer);
+                    continue;
+                }
+            }
 
             // trends: 객체 배열 또는 문자열 배열 모두 지원
             const rawTrends = Array.isArray(parsed?.trends) ? parsed.trends : [];
