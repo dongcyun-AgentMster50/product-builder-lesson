@@ -276,8 +276,8 @@ Field requirements:
         { role: "user", content: userPrompt }
     ];
 
-    // 1차 시도 (8초) → 실패 시 2차 재시도 (12초)
-    const ATTEMPT_TIMEOUTS = [8000, 12000];
+    // 단일 시도 — 프롬프트가 길어 GPT 응답에 10-15초 소요
+    const ATTEMPT_TIMEOUTS = [18000];
 
     for (let attempt = 0; attempt < ATTEMPT_TIMEOUTS.length; attempt++) {
         const controller = new AbortController();

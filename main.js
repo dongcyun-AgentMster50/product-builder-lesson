@@ -5,7 +5,7 @@ const ACCESS_API = {
     logoutEndpoint: "/api/access/logout"
 };
 const REGION_INSIGHT_API = "/api/region-insight";
-const REGION_INSIGHT_CLIENT_TIMEOUT_MS = 20000;
+const REGION_INSIGHT_CLIENT_TIMEOUT_MS = 30000;
 const ACCESS_CLIENT_SESSION_KEY = "scenario-access-client-session-id";
 
 const resultDiv = document.getElementById("result");
@@ -2234,8 +2234,8 @@ async function fetchLiveStep2Insight(countryCode, city, role, forceRefresh = fal
         return mapLiveStep2Insight(payload.data, countryCode, city);
     } catch {
         const timeoutMessage = currentLocale === "ko"
-            ? "실시간 지역 인사이트 요청이 시간 제한(12초)을 초과했습니다."
-            : "Live regional insight timed out after 12 seconds.";
+            ? "실시간 지역 인사이트 요청이 시간 제한(30초)을 초과했습니다."
+            : "Live regional insight timed out after 30 seconds.";
         return buildStep2ErrorInsight(timeoutMessage);
     } finally {
         clearTimeout(timer);
