@@ -247,9 +247,489 @@ document.addEventListener('click', function(e) {
 });
 </script>
 
+<!-- ===== PAGE 4: Q2 DETAIL ===== -->
+<div class="slide flow">
+    <span class="page-num">3/18</span>
+    <span class="badge green">Part A — Q2 상세</span>
+    <h2>Q2 라이브 트렌드 카드 — 함수별 상세</h2>
+    <div class="detail-grid">
+        <div class="detail-card"><h4>① selectCity(value, label)</h4><p><code>main.js:1280</code> — cityHiddenInput.value 설정, updateStepInsight() 호출</p></div>
+        <div class="detail-card"><h4>② renderStep2Insight()</h4><p><code>main.js:2148</code> — 로딩 UI → getCityValue() → fetchLiveStep2Insight(country, city, role)</p></div>
+        <div class="detail-card"><h4>③ fetchLiveStep2Insight()</h4><p><code>main.js:2186</code> — getCityDisplayValue() 로케일 변환 → <code>GET /api/region-insight?country=KR&city=Seoul&locale=ko&role=retail&force=1</code> — 타임아웃 60초</p></div>
+        <div class="detail-card"><h4>④ handleRegionInsight()</h4><p><code>functions/api/region-insight.js:6</code> — 인증 확인 → 캐시 확인 (force=1 스킵) → buildLiveRegionInsight()</p></div>
+        <div class="detail-card"><h4>⑤ buildLiveRegionInsight()</h4><p><code>:164</code> — <strong>전부 병렬:</strong> geocode, WorldBank×2, CountryProfile, Nominatim, Landmark, <strong>fetchLiveTrends()</strong> → geocode 후 날씨 추가 조회</p></div>
+        <div class="detail-card"><h4>⑥ fetchLiveTrends()</h4><p><code>:230</code> — <strong>OpenAI Responses API</strong> (<code>POST /v1/responses</code>) + gpt-4o + web_search_preview → 10개 생활 카테고리 프레임워크 → 40초 타임아웃</p></div>
+        <div class="detail-card"><h4>⑦ 응답 파싱</h4><p>annotations에서 실제 URL 추출 → JSON 파싱 (잘림 복구) → 과거 이벤트 필터 (<code>when >= todayIso</code>) → trends/events/pains/solutions 반환</p></div>
+        <div class="detail-card"><h4>⑧ mapLiveStep2Insight()</h4><p><code>main.js:2251</code> — 카테고리 태그 [기후·계절] 부착 → 4개 섹션: 트렌드(+출처) / 행사 / 고민(+💡) / CX 시나리오 힌트</p></div>
+    </div>
+</div>
+
+<!-- ===== PAGE 4: API ENDPOINTS ===== -->
+<div class="slide flow">
+    <span class="page-num">4/18</span>
+    <span class="badge purple">Part A — API 전체</span>
+    <h2>서버 API 엔드포인트 & 외부 호출</h2>
+    <pre><code><span class="cm">// 인증</span>
+<span class="kw">POST</span> <span class="str">/api/access/verify</span>    액세스 코드 → 세션 토큰 발급
+<span class="kw">GET</span>  <span class="str">/api/access/session</span>    세션 상태 확인
+<span class="kw">POST</span> <span class="str">/api/access/logout</span>     세션 무효화
+
+<span class="cm">// 핵심 기능</span>
+<span class="kw">GET</span>  <span class="str">/api/region-insight</span>    Q2 라이브 트렌드 (GPT-4o + 웹검색 + 7개 API)
+<span class="kw">POST</span> <span class="str">/api/generate</span>          CX 시나리오 생성 (SSE 스트리밍)
+<span class="kw">POST</span> <span class="str">/api/refine</span>            시나리오 수정 (SSE, 대화 이력 기반)
+<span class="kw">POST</span> <span class="str">/api/nudge</span>             Q3 넛지 카드 (GPT-4o-mini)
+
+<span class="cm">// 외부 API (region-insight 내부, 병렬)</span>
+<span class="fn">fetchOpenMeteoGeocode</span>  geocoding-api.open-meteo.com   위도/경도
+<span class="fn">fetchWorldBank × 2</span>     api.worldbank.org              GDP, 도시화율
+<span class="fn">fetchCountryProfile</span>    restcountries.com              인구, 면적, 국경
+<span class="fn">fetchOpenMeteo</span>         api.open-meteo.com             7일 날씨 예보
+<span class="fn">fetchNominatim</span>         nominatim.openstreetmap.org    도시 중요도/분류
+<span class="fn">fetchCityLandmarkImage</span> en.wikipedia.org               랜드마크 이미지
+<span class="fn">fetchLiveTrends</span>        api.openai.com/v1/responses    GPT-4o + 웹검색
+
+<span class="cm">// 이중 코드 구조</span>
+<span class="fn">functions/api/*.js</span>     Cloudflare Pages Functions (배포)
+<span class="fn">server.js</span>              Node.js 로컬 개발용</code></pre>
+</div>
+
+<!-- ===== PAGE 5: 10-STEP OVERVIEW ===== -->
+<div class="slide flow">
+    <span class="page-num">5/18</span>
+    <span class="badge blue">Part B — 한눈에 보기</span>
+    <h2>GPT vs 웹앱 — 10단계 개선 요약</h2>
+    <div class="step-overview">
+        <div class="step-row">
+            <div class="step-num">1</div>
+            <div class="step-label"><strong>접속 및 시작</strong>GPT: ChatGPT Plus 구독 필수 ($20/월/인). 접속하면 빈 채팅창만 보임. 뭘 입력해야 할지 모르는 상태에서 시작.</div>
+            <div class="step-diff"><strong>웹앱:</strong> 전용 URL + 액세스 코드로 무료 접속. 접속 즉시 4단계 가이드 위자드가 표시되어 첫 사용자도 바로 시작 가능. 접근 제어 + 세션 관리로 보안 확보.</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">2</div>
+            <div class="step-label"><strong>역할/관점 설정 (Q1)</strong>GPT: "리테일 관점에서" 텍스트 입력. 역할을 안 쓰면 AI가 범용 관점으로 생성. Retail/Dotcom/Brand 구분 약함.</div>
+            <div class="step-diff"><strong>웹앱:</strong> 3장 역할 카드 클릭 선택. 선택 즉시 인사이트 카드("이 역할에서는 이런 흐름이 유리합니다") 표시. 이후 모든 출력에 3 Role-Lens 자동 분기.</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">3</div>
+            <div class="step-label"><strong>지역/시장 선택 (Q2)</strong>GPT: "한국 서울에서" 텍스트 입력. 학습 데이터 기반 추측 → 가짜 URL 생성. 어떤 도시를 넣어도 비슷한 일반론.</div>
+            <div class="step-diff"><strong>웹앱:</strong> 국가 드롭다운 + 도시 검색. GPT-4o 웹검색 + 7개 외부 API 병렬 호출. 실제 URL 출처 + 10개 생활 카테고리 프레임워크. 도시마다 완전히 다른 결과.</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">4</div>
+            <div class="step-label"><strong>타겟 세그먼트 (Q3)</strong>GPT: "30대 맞벌이 대상" 자유 텍스트. 세그먼트 기준 없음. 가구 형태, 기술 수용도 등 누락 빈번. 의도(intent) 별도 안 물어봄.</div>
+            <div class="step-diff"><strong>웹앱:</strong> MECE 21항목 체크리스트 (생애단계·가구·라이프스타일·기술수용도). AI 자동 구성 버튼. Q3 넛지 카드로 선택 가이드. 중복/누락 원천 차단.</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">5</div>
+            <div class="step-label"><strong>기기/제품 선택 (Q4)</strong>GPT: "냉장고, 세탁기" 텍스트 나열. 존재하지 않는 기기 입력 가능. 기기 조합 효과 예측 불가. "알아서 넣어줘" → AI 임의 선택.</div>
+            <div class="step-diff"><strong>웹앱:</strong> 7개 스타일별 프리셋 중복 선택 (에너지/케어/무드/시큐리티 등) + 22개 기기 직접 토글 + AI 자동 구성. 실시간 "현재 조합 요약" 패널에서 가능 범위 즉시 확인.</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">6</div>
+            <div class="step-label"><strong>지역 데이터 수집 (내부)</strong>GPT: 외부 API 호출 없음. 학습 데이터(~2024) 기반 추측. GDP, 날씨, 인구 실시간 접근 불가. 출처 = 지어낸 URL.</div>
+            <div class="step-diff"><strong>웹앱:</strong> 7개 외부 API 병렬 호출 — WorldBank(GDP/도시화율), Open-Meteo(날씨/좌표), Nominatim(도시분류), RestCountries(인구), Wikipedia(이미지), GPT-4o(웹검색). 모든 데이터 검증 가능.</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">7</div>
+            <div class="step-label"><strong>CX 시나리오 생성</strong>GPT: ~200줄 프롬프트 + 사용자 메시지 1개. 지역 데이터 없이 생성. 출력 섹션 수/순서 매번 다름. Explore 매핑 없음. Gate 검증 없음.</div>
+            <div class="step-diff"><strong>웹앱:</strong> 550줄 prompt.txt v8.2 + Q2 regionInsight 삽입. 11섹션 고정 스키마. Explore v2.0 12키워드 자동 매핑. Gate System v2.0 (Hard/Soft) 자동 검증. GPT-4o 또는 Claude 선택.</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">8</div>
+            <div class="step-label"><strong>결과 수신 방식</strong>GPT: 전체 완성까지 30~90초 빈 화면 대기. 토큰 초과 시 "Continue" 클릭 필요. 결과 = 긴 마크다운 텍스트 블록.</div>
+            <div class="step-diff"><strong>웹앱:</strong> SSE(Server-Sent Events) 실시간 스트리밍 → 생성 즉시 한 글자씩 표시. 체감 대기 80% 감소. 토큰 제한 사전 방지. 섹션별 카드 UI로 자동 파싱.</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">9</div>
+            <div class="step-label"><strong>수정 및 반복</strong>GPT: "02번 다시 써줘" 대화식. 대화 이력 길어지면 컨텍스트 잘림 → 이전 결과 까먹음. 전체/부분 수정 구분 없음. 품질 하락.</div>
+            <div class="step-diff"><strong>웹앱:</strong> POST /api/refine — 전용 수정 API. 이전 결과 + 수정 지시를 구조화된 messages[]로 전달. 해당 섹션만 타겟 업데이트. 수정 후 자동 품질 재검증(Gate).</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">10</div>
+            <div class="step-label"><strong>결과물 활용 & 공유</strong>GPT: 채팅창 마크다운 복사 → 붙여넣기. 표/JSON 깨짐 빈번. 한국어 전용. 공유 = ChatGPT 링크 (편집 불가).</div>
+            <div class="step-diff"><strong>웹앱:</strong> 11섹션 구조화 카드 UI. 섹션별/전체 복사. 표·JSON 정확 렌더링. 9개 로케일 자동 전환. URL 공유 → 팀원 즉시 사용. git push = 프롬프트 중앙 관리.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 6: GPT STEP 1 — 접속/시작 ===== -->
+<div class="slide compare">
+    <span class="page-num">6/18</span>
+    <span class="badge step">STEP 1/10</span><span class="badge orange">GPT 단계별 비교</span>
+    <h2>Step 1. 접속 및 시작</h2>
+    <div class="compare-grid">
+        <div class="compare-box old">
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
+            <ul>
+                <li>ChatGPT 접속 → "나의 GPT" 검색/클릭</li>
+                <li>ChatGPT Plus 구독 필수 ($20/월/인)</li>
+                <li>접근 제어 없음 — 링크만 있으면 누구나</li>
+                <li>시작 시 아무 가이드 없음 — 빈 채팅창</li>
+            </ul>
+            <div class="problem">비구독자 사용 불가. 처음 접속한 마케터는 뭘 입력해야 할지 모름.</div>
+        </div>
+        <div class="compare-box new">
+            <h3 style="color:#2d2d3d">웹앱</h3>
+            <ul>
+                <li>전용 URL 접속 → 액세스 코드 입력</li>
+                <li>Cloudflare Pages 무료 호스팅 — 구독 불필요</li>
+                <li>액세스 코드 기반 접근 제어 + 세션 관리</li>
+                <li>접속 즉시 단계별 가이드 위자드 표시</li>
+            </ul>
+            <div class="effect">구독 없이 누구나 사용. 접근 제어로 보안 확보. 가이드로 첫 사용 진입장벽 제거.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 6: GPT STEP 2 — 역할 설정 ===== -->
+<div class="slide compare">
+    <span class="page-num">7/18</span>
+    <span class="badge step">STEP 2/10</span><span class="badge orange">GPT 단계별 비교</span>
+    <h2>Step 2. 역할/관점 설정 (Q1)</h2>
+    <div class="compare-grid">
+        <div class="compare-box old">
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
+            <ul>
+                <li>"리테일 담당자 관점에서 시나리오 만들어줘"</li>
+                <li>역할을 안 쓰면 → AI가 범용 관점으로 생성</li>
+                <li>역할별 차이가 불분명 (retail/dotcom/brand 구분 약함)</li>
+                <li>역할이 시나리오 구조에 미치는 영향 불투명</li>
+            </ul>
+            <div class="problem">역할 미입력 시 초점 없는 범용 시나리오. 3가지 역할의 차이를 사용자가 직접 이해해야 함.</div>
+        </div>
+        <div class="compare-box new">
+            <h3 style="color:#2d2d3d">웹앱 Q1</h3>
+            <ul>
+                <li>3장의 역할 카드 중 <strong>클릭</strong>으로 선택</li>
+                <li>각 카드에 역할 설명 + 포커스 영역 명시</li>
+                <li>선택 즉시 <strong>Q1 인사이트 카드</strong> 표시 — "이 역할에서는 이런 흐름이 유리합니다"</li>
+                <li>역할이 이후 모든 출력(메시지 3 Role-Lens, KPI, 캠페인)에 자동 반영</li>
+            </ul>
+            <div class="effect">역할 누락 0%. 선택 즉시 해당 관점의 시나리오 구조가 결정됨. 3 Role-Lens 자동 분기.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 7: GPT STEP 3 — 지역 선택 ===== -->
+<div class="slide compare">
+    <span class="page-num">8/18</span>
+    <span class="badge step">STEP 3/10</span><span class="badge orange">GPT 단계별 비교</span>
+    <h2>Step 3. 지역/시장 선택 (Q2)</h2>
+    <div class="compare-grid">
+        <div class="compare-box old">
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
+            <ul>
+                <li>"한국 서울에서" 텍스트로 입력</li>
+                <li>국가/도시 스펠링 오류 → AI 오해석</li>
+                <li>지역 데이터 = <strong>AI 학습 데이터에서 추측</strong></li>
+                <li>출처 URL = 가짜 (hallucination)</li>
+                <li>어떤 도시를 넣어도 비슷한 결과</li>
+                <li>행사/날씨: 과거 데이터 혼입</li>
+            </ul>
+            <div class="problem">가짜 출처. 2023년 데이터. 도시별 차이 없음. 클릭해도 "페이지 없음".</div>
+        </div>
+        <div class="compare-box new">
+            <h3 style="color:#2d2d3d">웹앱 Q2</h3>
+            <ul>
+                <li>국가 드롭다운 (9개 로케일) + 도시 검색/자동완성</li>
+                <li>선택 즉시 <strong>라이브 트렌드 카드</strong> 자동 생성</li>
+                <li><strong>GPT-4o + web_search_preview</strong> = 실제 웹 검색</li>
+                <li>7개 외부 API 병렬 (GDP, 날씨, 좌표, 인구)</li>
+                <li>10개 생활 카테고리 프레임워크</li>
+                <li>과거 이벤트 서버 필터링 (todayIso 이후만)</li>
+                <li>출처: <strong>실제 URL</strong> + [Source] 표기</li>
+            </ul>
+            <div class="effect">구 단위 구체적 트렌드. 진짜 URL. 최신 데이터만. 도시마다 완전히 다른 결과.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 8: GPT STEP 4 — 타겟 세그먼트 ===== -->
+<div class="slide compare">
+    <span class="page-num">9/18</span>
+    <span class="badge step">STEP 4/10</span><span class="badge orange">GPT 단계별 비교</span>
+    <h2>Step 4. 타겟 세그먼트 설정 (Q3)</h2>
+    <div class="compare-grid">
+        <div class="compare-box old">
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
+            <ul>
+                <li>"30대 맞벌이 가구 대상으로" 텍스트 입력</li>
+                <li>세그먼트 분류 기준 없음 — 사용자 자의적</li>
+                <li>가구 형태, 라이프스타일, 기술 수용도 등 누락 빈번</li>
+                <li>사용 의도(intent)를 별도로 안 물어봄</li>
+            </ul>
+            <div class="problem">세그먼트 정의가 모호하거나 불완전. AI가 추측으로 보충하여 의도와 다른 시나리오 생성.</div>
+        </div>
+        <div class="compare-box new">
+            <h3 style="color:#2d2d3d">웹앱 Q3</h3>
+            <ul>
+                <li><strong>MECE 21항목</strong> 체크리스트 (생애 단계, 가구, 라이프스타일, 기술 수용도 등)</li>
+                <li>radio (단일 선택) + checkbox (복수 선택) 혼합</li>
+                <li>사용 의도 텍스트 입력란 별도 제공</li>
+                <li>Q3 넛지 카드 (<code>/api/nudge</code>) — AI가 세그먼트 선택 가이드</li>
+                <li>선택 즉시 <strong>Q3 인사이트 카드</strong> → 시나리오 방향 힌트</li>
+            </ul>
+            <div class="effect">세그먼트 정의 완전성 보장. MECE라 중복/누락 없음. 넛지가 선택을 안내.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 9: GPT STEP 5 — 기기 선택 ===== -->
+<div class="slide compare">
+    <span class="page-num">10/18</span>
+    <span class="badge step">STEP 5/10</span><span class="badge orange">GPT 단계별 비교</span>
+    <h2>Step 5. 기기/제품 선택 (Q4)</h2>
+    <div class="compare-grid">
+        <div class="compare-box old">
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
+            <ul>
+                <li>"냉장고, 세탁기, 에어컨" 텍스트로 나열</li>
+                <li>SmartThings 생태계 기기 목록을 사용자가 외워야 함</li>
+                <li>기기 조합의 시나리오 영향 불투명</li>
+                <li>"알아서 적절히 넣어줘" → AI 임의 선택</li>
+            </ul>
+            <div class="problem">존재하지 않는 기기 입력 가능. 조합 효과 예측 불가. 결과의 기기 일관성 없음.</div>
+        </div>
+        <div class="compare-box new">
+            <h3 style="color:#2d2d3d">웹앱 Q4</h3>
+            <ul>
+                <li><strong>7개 스타일별 프리셋</strong> (기본/에너지/케어/무드/시큐리티/가사/쾌적)</li>
+                <li>프리셋 <strong>중복 선택</strong> → 기기 자동 합산 (겹침 제거)</li>
+                <li>22개 기기 직접 선택 (칩 토글)</li>
+                <li><strong>"트렌드 기반 자동 구성"</strong> 버튼 — AI가 최적 기기 선택</li>
+                <li>실시간 <strong>"현재 조합 요약"</strong> — 가능한 기능 + 제한 표시</li>
+                <li>카테고리별 상세 보기 (접이식)</li>
+            </ul>
+            <div class="effect">기기 조합의 시나리오 효과 즉시 확인. 프리셋으로 3초 선택. AI 자동 구성으로 완전 위임 가능.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 10: GPT STEP 6 — 지역 데이터 수집 ===== -->
+<div class="slide compare">
+    <span class="page-num">11/18</span>
+    <span class="badge step">STEP 6/10</span><span class="badge orange">GPT 단계별 비교</span>
+    <h2>Step 6. 지역 데이터 수집 (내부 처리)</h2>
+    <div class="compare-grid">
+        <div class="compare-box old">
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
+            <ul>
+                <li>외부 API 호출 <strong>없음</strong></li>
+                <li>학습 데이터(~2024.04) 기반 추측</li>
+                <li>GDP, 날씨, 인구 등 실시간 데이터 접근 불가</li>
+                <li>도시 좌표/지도 제공 불가</li>
+                <li>출처 = 지어낸 URL</li>
+            </ul>
+            <div class="problem">모든 "데이터"가 AI 상상. 검증 불가. 보고서 신뢰도 하락.</div>
+        </div>
+        <div class="compare-box new">
+            <h3 style="color:#2d2d3d">웹앱</h3>
+            <ul>
+                <li><strong>7개 외부 API 병렬 호출:</strong></li>
+                <li>WorldBank (GDP, 도시화율) — 공식 통계</li>
+                <li>Open-Meteo (7일 날씨 예보) — 실시간</li>
+                <li>Nominatim (도시 중요도/분류) — OSM</li>
+                <li>RestCountries (인구, 면적, 국경)</li>
+                <li>Wikipedia (랜드마크 이미지)</li>
+                <li>GPT-4o web_search (트렌드 웹 검색) — 실시간</li>
+                <li>Open-Meteo Geocode (위도/경도) → 지도 생성</li>
+            </ul>
+            <div class="effect">7개 실시간 소스. 공식 통계 + 웹 검색 + 날씨. 모든 데이터 검증 가능.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 11: GPT STEP 7 — 시나리오 생성 ===== -->
+<div class="slide compare">
+    <span class="page-num">12/18</span>
+    <span class="badge step">STEP 7/10</span><span class="badge orange">GPT 단계별 비교</span>
+    <h2>Step 7. CX 시나리오 생성</h2>
+    <div class="compare-grid">
+        <div class="compare-box old">
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
+            <ul>
+                <li>시스템 프롬프트 (~200줄) + 사용자 메시지 1개</li>
+                <li>지역 데이터 없이 생성</li>
+                <li>Explore v1.0/v2.0 매핑 없음</li>
+                <li>출력 섹션 수/순서 매번 다름</li>
+                <li>Gate System 없음 — 환각 검증 안 함</li>
+                <li>한국어 전용</li>
+            </ul>
+            <div class="problem">포맷 불일치. 지역 현실과 괴리. Explore 시나리오와 연결 안 됨.</div>
+        </div>
+        <div class="compare-box new">
+            <h3 style="color:#2d2d3d">웹앱</h3>
+            <ul>
+                <li><strong>prompt.txt v8.2</strong> (550줄 시스템 프롬프트)</li>
+                <li>Q2 regionInsight 데이터 → 프롬프트에 삽입</li>
+                <li><strong>11섹션 고정 스키마</strong> (01~11 순서 고정)</li>
+                <li>Explore v2.0 12키워드 N:N 매핑</li>
+                <li>Gate System v2.0 (Hard/Soft Gate 자동 검증)</li>
+                <li>3 Role-Lens 메시지 동시 생성</li>
+                <li>GPT-4o 또는 Claude 선택 가능</li>
+            </ul>
+            <div class="effect">11섹션 완전한 보고서. 실시간 지역 데이터 기반. Explore 자동 매핑. Gate로 품질 보증.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 12: GPT STEP 8 — 결과 수신 ===== -->
+<div class="slide compare">
+    <span class="page-num">13/18</span>
+    <span class="badge step">STEP 8/10</span><span class="badge orange">GPT 단계별 비교</span>
+    <h2>Step 8. 결과 수신 방식</h2>
+    <div class="compare-grid">
+        <div class="compare-box old">
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
+            <ul>
+                <li>한 글자씩 채팅창에 표시 (ChatGPT 자체 스트리밍)</li>
+                <li>전체 완성까지 30~90초</li>
+                <li>중간에 토큰 초과 → "Continue generating" 클릭</li>
+                <li>결과 = 마크다운 텍스트 블록</li>
+                <li>섹션 구분 불명확 — 스크롤해서 찾기</li>
+            </ul>
+            <div class="problem">긴 대기. 토큰 잘림. 결과물이 긴 텍스트 블록이라 섹션별 활용 어려움.</div>
+        </div>
+        <div class="compare-box new">
+            <h3 style="color:#2d2d3d">웹앱</h3>
+            <ul>
+                <li><strong>SSE(Server-Sent Events)</strong> 실시간 스트리밍</li>
+                <li>생성 즉시 한 글자씩 UI에 표시</li>
+                <li>토큰 제한 → max_tokens 설정으로 사전 방지</li>
+                <li>섹션별 <strong>카드 UI</strong>로 자동 파싱</li>
+                <li>진행률 표시 (Q1 → Q2 → Q3 → Q4 → 생성 중)</li>
+                <li>생성 완료 후 섹션별 탭/접기 지원</li>
+            </ul>
+            <div class="effect">체감 대기 80% 감소. 토큰 잘림 없음. 섹션별 카드로 즉시 활용 가능.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 13: GPT STEP 9 — 수정/반복 ===== -->
+<div class="slide compare">
+    <span class="page-num">14/18</span>
+    <span class="badge step">STEP 9/10</span><span class="badge orange">GPT 단계별 비교</span>
+    <h2>Step 9. 수정 및 반복</h2>
+    <div class="compare-grid">
+        <div class="compare-box old">
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
+            <ul>
+                <li>"위에서 02번 상세 시나리오만 다시 써줘" 대화식 요청</li>
+                <li>대화 이력이 길어지면 → 컨텍스트 잘림</li>
+                <li>이전 결과를 AI가 까먹음 → 일관성 하락</li>
+                <li>전체 재생성 vs 부분 수정 구분 없음</li>
+                <li>여러 번 수정 → 대화창이 매우 길어짐</li>
+            </ul>
+            <div class="problem">대화 길어질수록 품질 하락. 이전 맥락 유실. 부분 수정 불가.</div>
+        </div>
+        <div class="compare-box new">
+            <h3 style="color:#2d2d3d">웹앱</h3>
+            <ul>
+                <li><strong>POST /api/refine</strong> — 전용 수정 API</li>
+                <li>이전 결과 + 수정 지시를 구조화된 messages[]로 전달</li>
+                <li><strong>해당 섹션만</strong> 타겟 업데이트 (전체 재생성 불필요)</li>
+                <li>수정 후 자동 Reflection Check (11번) 재실행</li>
+                <li>Q1~Q4 변경 시 → 즉시 영향받는 섹션만 재생성 제안</li>
+            </ul>
+            <div class="effect">부분 수정 → 속도/비용 절감. 대화 이력 구조화로 맥락 유실 없음. 수정 후 품질 재검증.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 14: GPT STEP 10 — 결과 활용 ===== -->
+<div class="slide compare">
+    <span class="page-num">15/18</span>
+    <span class="badge step">STEP 10/10</span><span class="badge orange">GPT 단계별 비교</span>
+    <h2>Step 10. 결과물 활용 & 공유</h2>
+    <div class="compare-grid">
+        <div class="compare-box old">
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
+            <ul>
+                <li>결과 = 채팅창 마크다운 텍스트</li>
+                <li>활용: 전체 선택 → 복사 → 문서에 붙여넣기</li>
+                <li>표/JSON이 깨지는 경우 빈번</li>
+                <li>공유: ChatGPT 대화 공유 링크 (편집 불가)</li>
+                <li>다국어: 한국어로 질문 → 한국어 결과만</li>
+                <li>이력 관리: ChatGPT 대화 목록에 묻힘</li>
+            </ul>
+            <div class="problem">수동 복사붙여넣기. 포맷 깨짐. 다국어 불가. 결과물 재활용 어려움.</div>
+        </div>
+        <div class="compare-box new">
+            <h3 style="color:#2d2d3d">웹앱</h3>
+            <ul>
+                <li>결과 = 구조화된 <strong>11섹션 카드 UI</strong></li>
+                <li>섹션별 복사 / 전체 내보내기</li>
+                <li>표/JSON 구조 정확히 렌더링</li>
+                <li><strong>9개 로케일</strong> 자동 전환 (한/영/독/불/서/포/이/네/아랍)</li>
+                <li>URL 공유 → 동일 환경에서 팀원 즉시 사용</li>
+                <li>프롬프트 중앙 관리: git push = 전체 반영</li>
+            </ul>
+            <div class="effect">깔끔한 보고서 포맷. 9개 언어 즉시 전환. 팀 공유 원클릭. 프롬프트 버전 중앙 관리.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 15: ARCHITECTURE DIFF ===== -->
+<div class="slide compare">
+    <span class="page-num">16/18</span>
+    <span class="badge red">아키텍처 근본 차이</span>
+    <h2>근본적 아키텍처 차이: 대화형 vs 파이프라인형</h2>
+    <div class="compare-grid">
+        <div class="compare-box old">
+            <h3 style="color:#1a1a2e">GPT: 대화형 (Conversational)</h3>
+            <pre style="font-size:.82em;background:#f5f5f5;color:#1a1a2e;border:1px solid #ddd;font-weight:700">사용자 → [자유 텍스트]
+         ↓
+    ChatGPT (단일 LLM)
+         ↓
+    [마크다운 텍스트]
+         ↓
+       사용자</pre>
+            <p style="font-size:.82em">단일 모델, 단일 호출, 단일 출력. 모든 것이 LLM의 상상에 의존.</p>
+        </div>
+        <div class="compare-box new">
+            <h3 style="color:#0000cc">웹앱: 파이프라인형 (Orchestrated)</h3>
+            <pre style="font-size:.82em;background:#1a1a2e;color:#fff;border:none;font-weight:700">사용자 → [구조화 4단계 입력]
+         ↓
+    ┌─ WorldBank API ──┐
+    ├─ OpenMeteo API ───┤
+    ├─ Nominatim API ──┤ 병렬
+    ├─ RestCountries ──┤
+    ├─ Wikipedia API ──┤
+    └─ <span style="color:#88f;font-weight:900">GPT-4o + Web ───┘</span>
+         ↓
+    <span style="color:#88f;font-weight:900">prompt.txt v8.2</span> + regionInsight
+         ↓
+    <span style="color:#88f;font-weight:900">GPT-4o / Claude (SSE)</span>
+         ↓
+    [11섹션 구조화 보고서]</pre>
+            <p style="font-size:.82em"><strong>다중 모델, 다중 소스, 구조화 출력.</strong> 실시간 데이터 + AI 생성 + 검증 파이프라인.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 16: SUMMARY ===== -->
+<div class="slide summary" style="justify-content:center;align-items:center;text-align:center">
+    <span class="page-num">17/18</span>
+    <span class="badge blue">Summary</span>
+    <h1>핵심 개선 효과 요약</h1>
+    <div class="stat-grid" style="margin:auto">
+        <div class="stat-card"><h3>0%</h3><p>입력 누락률<br><span style="color:#888;font-size:.78em">구조화 위자드</span></p></div>
+        <div class="stat-card"><h3>실시간</h3><p>웹 검색 트렌드<br><span style="color:#888;font-size:.78em">진짜 URL + 최신 데이터</span></p></div>
+        <div class="stat-card"><h3>11섹션</h3><p>완전한 보고서<br><span style="color:#888;font-size:.78em">Explore v2.0 매핑</span></p></div>
+        <div class="stat-card"><h3>80%↓</h3><p>체감 대기 시간<br><span style="color:#888;font-size:.78em">SSE + 병렬 처리</span></p></div>
+        <div class="stat-card"><h3>9개</h3><p>언어 자동 전환<br><span style="color:#888;font-size:.78em">글로벌 팀 즉시</span></p></div>
+        <div class="stat-card"><h3>중앙</h3><p>프롬프트 관리<br><span style="color:#888;font-size:.78em">git push = 반영</span></p></div>
+    </div>
+    <p style="margin-top:36px;color:#58a6ff;font-size:1.1em;font-weight:700">대화형 GPT → 파이프라인형 에이전트로의 전환</p>
+    <p style="color:#888;margin-top:24px">Samsung SmartThings CX Scenario Self-Generation Agent<br>David Yoon · 2026.03</p>
+</div>
+
+</div><!-- /deck -->
+
 <!-- ===== PAGE 3: ARCHITECTURE DIAGRAM ===== -->
 <div class="slide flow" style="position:relative">
-    <span class="page-num">3/18</span>
+    <span class="page-num">18/18</span>
     <span class="badge blue">Part A — Architecture</span>
     <h2>Server · Function · API <span style="font-size:.55em;color:#666;font-weight:400">— 각 항목 클릭 시 설명 팝업</span></h2>
     <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:4px;flex:1;min-height:0">
@@ -401,486 +881,6 @@ document.addEventListener('click', function(e) {
         </div>
     </div>
 </div>
-
-<!-- ===== PAGE 4: Q2 DETAIL ===== -->
-<div class="slide flow">
-    <span class="page-num">4/18</span>
-    <span class="badge green">Part A — Q2 상세</span>
-    <h2>Q2 라이브 트렌드 카드 — 함수별 상세</h2>
-    <div class="detail-grid">
-        <div class="detail-card"><h4>① selectCity(value, label)</h4><p><code>main.js:1280</code> — cityHiddenInput.value 설정, updateStepInsight() 호출</p></div>
-        <div class="detail-card"><h4>② renderStep2Insight()</h4><p><code>main.js:2148</code> — 로딩 UI → getCityValue() → fetchLiveStep2Insight(country, city, role)</p></div>
-        <div class="detail-card"><h4>③ fetchLiveStep2Insight()</h4><p><code>main.js:2186</code> — getCityDisplayValue() 로케일 변환 → <code>GET /api/region-insight?country=KR&city=Seoul&locale=ko&role=retail&force=1</code> — 타임아웃 60초</p></div>
-        <div class="detail-card"><h4>④ handleRegionInsight()</h4><p><code>functions/api/region-insight.js:6</code> — 인증 확인 → 캐시 확인 (force=1 스킵) → buildLiveRegionInsight()</p></div>
-        <div class="detail-card"><h4>⑤ buildLiveRegionInsight()</h4><p><code>:164</code> — <strong>전부 병렬:</strong> geocode, WorldBank×2, CountryProfile, Nominatim, Landmark, <strong>fetchLiveTrends()</strong> → geocode 후 날씨 추가 조회</p></div>
-        <div class="detail-card"><h4>⑥ fetchLiveTrends()</h4><p><code>:230</code> — <strong>OpenAI Responses API</strong> (<code>POST /v1/responses</code>) + gpt-4o + web_search_preview → 10개 생활 카테고리 프레임워크 → 40초 타임아웃</p></div>
-        <div class="detail-card"><h4>⑦ 응답 파싱</h4><p>annotations에서 실제 URL 추출 → JSON 파싱 (잘림 복구) → 과거 이벤트 필터 (<code>when >= todayIso</code>) → trends/events/pains/solutions 반환</p></div>
-        <div class="detail-card"><h4>⑧ mapLiveStep2Insight()</h4><p><code>main.js:2251</code> — 카테고리 태그 [기후·계절] 부착 → 4개 섹션: 트렌드(+출처) / 행사 / 고민(+💡) / CX 시나리오 힌트</p></div>
-    </div>
-</div>
-
-<!-- ===== PAGE 4: API ENDPOINTS ===== -->
-<div class="slide flow">
-    <span class="page-num">5/18</span>
-    <span class="badge purple">Part A — API 전체</span>
-    <h2>서버 API 엔드포인트 & 외부 호출</h2>
-    <pre><code><span class="cm">// 인증</span>
-<span class="kw">POST</span> <span class="str">/api/access/verify</span>    액세스 코드 → 세션 토큰 발급
-<span class="kw">GET</span>  <span class="str">/api/access/session</span>    세션 상태 확인
-<span class="kw">POST</span> <span class="str">/api/access/logout</span>     세션 무효화
-
-<span class="cm">// 핵심 기능</span>
-<span class="kw">GET</span>  <span class="str">/api/region-insight</span>    Q2 라이브 트렌드 (GPT-4o + 웹검색 + 7개 API)
-<span class="kw">POST</span> <span class="str">/api/generate</span>          CX 시나리오 생성 (SSE 스트리밍)
-<span class="kw">POST</span> <span class="str">/api/refine</span>            시나리오 수정 (SSE, 대화 이력 기반)
-<span class="kw">POST</span> <span class="str">/api/nudge</span>             Q3 넛지 카드 (GPT-4o-mini)
-
-<span class="cm">// 외부 API (region-insight 내부, 병렬)</span>
-<span class="fn">fetchOpenMeteoGeocode</span>  geocoding-api.open-meteo.com   위도/경도
-<span class="fn">fetchWorldBank × 2</span>     api.worldbank.org              GDP, 도시화율
-<span class="fn">fetchCountryProfile</span>    restcountries.com              인구, 면적, 국경
-<span class="fn">fetchOpenMeteo</span>         api.open-meteo.com             7일 날씨 예보
-<span class="fn">fetchNominatim</span>         nominatim.openstreetmap.org    도시 중요도/분류
-<span class="fn">fetchCityLandmarkImage</span> en.wikipedia.org               랜드마크 이미지
-<span class="fn">fetchLiveTrends</span>        api.openai.com/v1/responses    GPT-4o + 웹검색
-
-<span class="cm">// 이중 코드 구조</span>
-<span class="fn">functions/api/*.js</span>     Cloudflare Pages Functions (배포)
-<span class="fn">server.js</span>              Node.js 로컬 개발용</code></pre>
-</div>
-
-<!-- ===== PAGE 5: 10-STEP OVERVIEW ===== -->
-<div class="slide flow">
-    <span class="page-num">6/18</span>
-    <span class="badge blue">Part B — 한눈에 보기</span>
-    <h2>GPT vs 웹앱 — 10단계 개선 요약</h2>
-    <div class="step-overview">
-        <div class="step-row">
-            <div class="step-num">1</div>
-            <div class="step-label"><strong>접속 및 시작</strong>GPT: ChatGPT Plus 구독 필수 ($20/월/인). 접속하면 빈 채팅창만 보임. 뭘 입력해야 할지 모르는 상태에서 시작.</div>
-            <div class="step-diff"><strong>웹앱:</strong> 전용 URL + 액세스 코드로 무료 접속. 접속 즉시 4단계 가이드 위자드가 표시되어 첫 사용자도 바로 시작 가능. 접근 제어 + 세션 관리로 보안 확보.</div>
-        </div>
-        <div class="step-row">
-            <div class="step-num">2</div>
-            <div class="step-label"><strong>역할/관점 설정 (Q1)</strong>GPT: "리테일 관점에서" 텍스트 입력. 역할을 안 쓰면 AI가 범용 관점으로 생성. Retail/Dotcom/Brand 구분 약함.</div>
-            <div class="step-diff"><strong>웹앱:</strong> 3장 역할 카드 클릭 선택. 선택 즉시 인사이트 카드("이 역할에서는 이런 흐름이 유리합니다") 표시. 이후 모든 출력에 3 Role-Lens 자동 분기.</div>
-        </div>
-        <div class="step-row">
-            <div class="step-num">3</div>
-            <div class="step-label"><strong>지역/시장 선택 (Q2)</strong>GPT: "한국 서울에서" 텍스트 입력. 학습 데이터 기반 추측 → 가짜 URL 생성. 어떤 도시를 넣어도 비슷한 일반론.</div>
-            <div class="step-diff"><strong>웹앱:</strong> 국가 드롭다운 + 도시 검색. GPT-4o 웹검색 + 7개 외부 API 병렬 호출. 실제 URL 출처 + 10개 생활 카테고리 프레임워크. 도시마다 완전히 다른 결과.</div>
-        </div>
-        <div class="step-row">
-            <div class="step-num">4</div>
-            <div class="step-label"><strong>타겟 세그먼트 (Q3)</strong>GPT: "30대 맞벌이 대상" 자유 텍스트. 세그먼트 기준 없음. 가구 형태, 기술 수용도 등 누락 빈번. 의도(intent) 별도 안 물어봄.</div>
-            <div class="step-diff"><strong>웹앱:</strong> MECE 21항목 체크리스트 (생애단계·가구·라이프스타일·기술수용도). AI 자동 구성 버튼. Q3 넛지 카드로 선택 가이드. 중복/누락 원천 차단.</div>
-        </div>
-        <div class="step-row">
-            <div class="step-num">5</div>
-            <div class="step-label"><strong>기기/제품 선택 (Q4)</strong>GPT: "냉장고, 세탁기" 텍스트 나열. 존재하지 않는 기기 입력 가능. 기기 조합 효과 예측 불가. "알아서 넣어줘" → AI 임의 선택.</div>
-            <div class="step-diff"><strong>웹앱:</strong> 7개 스타일별 프리셋 중복 선택 (에너지/케어/무드/시큐리티 등) + 22개 기기 직접 토글 + AI 자동 구성. 실시간 "현재 조합 요약" 패널에서 가능 범위 즉시 확인.</div>
-        </div>
-        <div class="step-row">
-            <div class="step-num">6</div>
-            <div class="step-label"><strong>지역 데이터 수집 (내부)</strong>GPT: 외부 API 호출 없음. 학습 데이터(~2024) 기반 추측. GDP, 날씨, 인구 실시간 접근 불가. 출처 = 지어낸 URL.</div>
-            <div class="step-diff"><strong>웹앱:</strong> 7개 외부 API 병렬 호출 — WorldBank(GDP/도시화율), Open-Meteo(날씨/좌표), Nominatim(도시분류), RestCountries(인구), Wikipedia(이미지), GPT-4o(웹검색). 모든 데이터 검증 가능.</div>
-        </div>
-        <div class="step-row">
-            <div class="step-num">7</div>
-            <div class="step-label"><strong>CX 시나리오 생성</strong>GPT: ~200줄 프롬프트 + 사용자 메시지 1개. 지역 데이터 없이 생성. 출력 섹션 수/순서 매번 다름. Explore 매핑 없음. Gate 검증 없음.</div>
-            <div class="step-diff"><strong>웹앱:</strong> 550줄 prompt.txt v8.2 + Q2 regionInsight 삽입. 11섹션 고정 스키마. Explore v2.0 12키워드 자동 매핑. Gate System v2.0 (Hard/Soft) 자동 검증. GPT-4o 또는 Claude 선택.</div>
-        </div>
-        <div class="step-row">
-            <div class="step-num">8</div>
-            <div class="step-label"><strong>결과 수신 방식</strong>GPT: 전체 완성까지 30~90초 빈 화면 대기. 토큰 초과 시 "Continue" 클릭 필요. 결과 = 긴 마크다운 텍스트 블록.</div>
-            <div class="step-diff"><strong>웹앱:</strong> SSE(Server-Sent Events) 실시간 스트리밍 → 생성 즉시 한 글자씩 표시. 체감 대기 80% 감소. 토큰 제한 사전 방지. 섹션별 카드 UI로 자동 파싱.</div>
-        </div>
-        <div class="step-row">
-            <div class="step-num">9</div>
-            <div class="step-label"><strong>수정 및 반복</strong>GPT: "02번 다시 써줘" 대화식. 대화 이력 길어지면 컨텍스트 잘림 → 이전 결과 까먹음. 전체/부분 수정 구분 없음. 품질 하락.</div>
-            <div class="step-diff"><strong>웹앱:</strong> POST /api/refine — 전용 수정 API. 이전 결과 + 수정 지시를 구조화된 messages[]로 전달. 해당 섹션만 타겟 업데이트. 수정 후 자동 품질 재검증(Gate).</div>
-        </div>
-        <div class="step-row">
-            <div class="step-num">10</div>
-            <div class="step-label"><strong>결과물 활용 & 공유</strong>GPT: 채팅창 마크다운 복사 → 붙여넣기. 표/JSON 깨짐 빈번. 한국어 전용. 공유 = ChatGPT 링크 (편집 불가).</div>
-            <div class="step-diff"><strong>웹앱:</strong> 11섹션 구조화 카드 UI. 섹션별/전체 복사. 표·JSON 정확 렌더링. 9개 로케일 자동 전환. URL 공유 → 팀원 즉시 사용. git push = 프롬프트 중앙 관리.</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PAGE 6: GPT STEP 1 — 접속/시작 ===== -->
-<div class="slide compare">
-    <span class="page-num">7/18</span>
-    <span class="badge step">STEP 1/10</span><span class="badge orange">GPT 단계별 비교</span>
-    <h2>Step 1. 접속 및 시작</h2>
-    <div class="compare-grid">
-        <div class="compare-box old">
-            <h3 style="color:#1a1a2e">기존 GPT</h3>
-            <ul>
-                <li>ChatGPT 접속 → "나의 GPT" 검색/클릭</li>
-                <li>ChatGPT Plus 구독 필수 ($20/월/인)</li>
-                <li>접근 제어 없음 — 링크만 있으면 누구나</li>
-                <li>시작 시 아무 가이드 없음 — 빈 채팅창</li>
-            </ul>
-            <div class="problem">비구독자 사용 불가. 처음 접속한 마케터는 뭘 입력해야 할지 모름.</div>
-        </div>
-        <div class="compare-box new">
-            <h3 style="color:#2d2d3d">웹앱</h3>
-            <ul>
-                <li>전용 URL 접속 → 액세스 코드 입력</li>
-                <li>Cloudflare Pages 무료 호스팅 — 구독 불필요</li>
-                <li>액세스 코드 기반 접근 제어 + 세션 관리</li>
-                <li>접속 즉시 단계별 가이드 위자드 표시</li>
-            </ul>
-            <div class="effect">구독 없이 누구나 사용. 접근 제어로 보안 확보. 가이드로 첫 사용 진입장벽 제거.</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PAGE 6: GPT STEP 2 — 역할 설정 ===== -->
-<div class="slide compare">
-    <span class="page-num">8/18</span>
-    <span class="badge step">STEP 2/10</span><span class="badge orange">GPT 단계별 비교</span>
-    <h2>Step 2. 역할/관점 설정 (Q1)</h2>
-    <div class="compare-grid">
-        <div class="compare-box old">
-            <h3 style="color:#1a1a2e">기존 GPT</h3>
-            <ul>
-                <li>"리테일 담당자 관점에서 시나리오 만들어줘"</li>
-                <li>역할을 안 쓰면 → AI가 범용 관점으로 생성</li>
-                <li>역할별 차이가 불분명 (retail/dotcom/brand 구분 약함)</li>
-                <li>역할이 시나리오 구조에 미치는 영향 불투명</li>
-            </ul>
-            <div class="problem">역할 미입력 시 초점 없는 범용 시나리오. 3가지 역할의 차이를 사용자가 직접 이해해야 함.</div>
-        </div>
-        <div class="compare-box new">
-            <h3 style="color:#2d2d3d">웹앱 Q1</h3>
-            <ul>
-                <li>3장의 역할 카드 중 <strong>클릭</strong>으로 선택</li>
-                <li>각 카드에 역할 설명 + 포커스 영역 명시</li>
-                <li>선택 즉시 <strong>Q1 인사이트 카드</strong> 표시 — "이 역할에서는 이런 흐름이 유리합니다"</li>
-                <li>역할이 이후 모든 출력(메시지 3 Role-Lens, KPI, 캠페인)에 자동 반영</li>
-            </ul>
-            <div class="effect">역할 누락 0%. 선택 즉시 해당 관점의 시나리오 구조가 결정됨. 3 Role-Lens 자동 분기.</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PAGE 7: GPT STEP 3 — 지역 선택 ===== -->
-<div class="slide compare">
-    <span class="page-num">9/18</span>
-    <span class="badge step">STEP 3/10</span><span class="badge orange">GPT 단계별 비교</span>
-    <h2>Step 3. 지역/시장 선택 (Q2)</h2>
-    <div class="compare-grid">
-        <div class="compare-box old">
-            <h3 style="color:#1a1a2e">기존 GPT</h3>
-            <ul>
-                <li>"한국 서울에서" 텍스트로 입력</li>
-                <li>국가/도시 스펠링 오류 → AI 오해석</li>
-                <li>지역 데이터 = <strong>AI 학습 데이터에서 추측</strong></li>
-                <li>출처 URL = 가짜 (hallucination)</li>
-                <li>어떤 도시를 넣어도 비슷한 결과</li>
-                <li>행사/날씨: 과거 데이터 혼입</li>
-            </ul>
-            <div class="problem">가짜 출처. 2023년 데이터. 도시별 차이 없음. 클릭해도 "페이지 없음".</div>
-        </div>
-        <div class="compare-box new">
-            <h3 style="color:#2d2d3d">웹앱 Q2</h3>
-            <ul>
-                <li>국가 드롭다운 (9개 로케일) + 도시 검색/자동완성</li>
-                <li>선택 즉시 <strong>라이브 트렌드 카드</strong> 자동 생성</li>
-                <li><strong>GPT-4o + web_search_preview</strong> = 실제 웹 검색</li>
-                <li>7개 외부 API 병렬 (GDP, 날씨, 좌표, 인구)</li>
-                <li>10개 생활 카테고리 프레임워크</li>
-                <li>과거 이벤트 서버 필터링 (todayIso 이후만)</li>
-                <li>출처: <strong>실제 URL</strong> + [Source] 표기</li>
-            </ul>
-            <div class="effect">구 단위 구체적 트렌드. 진짜 URL. 최신 데이터만. 도시마다 완전히 다른 결과.</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PAGE 8: GPT STEP 4 — 타겟 세그먼트 ===== -->
-<div class="slide compare">
-    <span class="page-num">10/18</span>
-    <span class="badge step">STEP 4/10</span><span class="badge orange">GPT 단계별 비교</span>
-    <h2>Step 4. 타겟 세그먼트 설정 (Q3)</h2>
-    <div class="compare-grid">
-        <div class="compare-box old">
-            <h3 style="color:#1a1a2e">기존 GPT</h3>
-            <ul>
-                <li>"30대 맞벌이 가구 대상으로" 텍스트 입력</li>
-                <li>세그먼트 분류 기준 없음 — 사용자 자의적</li>
-                <li>가구 형태, 라이프스타일, 기술 수용도 등 누락 빈번</li>
-                <li>사용 의도(intent)를 별도로 안 물어봄</li>
-            </ul>
-            <div class="problem">세그먼트 정의가 모호하거나 불완전. AI가 추측으로 보충하여 의도와 다른 시나리오 생성.</div>
-        </div>
-        <div class="compare-box new">
-            <h3 style="color:#2d2d3d">웹앱 Q3</h3>
-            <ul>
-                <li><strong>MECE 21항목</strong> 체크리스트 (생애 단계, 가구, 라이프스타일, 기술 수용도 등)</li>
-                <li>radio (단일 선택) + checkbox (복수 선택) 혼합</li>
-                <li>사용 의도 텍스트 입력란 별도 제공</li>
-                <li>Q3 넛지 카드 (<code>/api/nudge</code>) — AI가 세그먼트 선택 가이드</li>
-                <li>선택 즉시 <strong>Q3 인사이트 카드</strong> → 시나리오 방향 힌트</li>
-            </ul>
-            <div class="effect">세그먼트 정의 완전성 보장. MECE라 중복/누락 없음. 넛지가 선택을 안내.</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PAGE 9: GPT STEP 5 — 기기 선택 ===== -->
-<div class="slide compare">
-    <span class="page-num">11/18</span>
-    <span class="badge step">STEP 5/10</span><span class="badge orange">GPT 단계별 비교</span>
-    <h2>Step 5. 기기/제품 선택 (Q4)</h2>
-    <div class="compare-grid">
-        <div class="compare-box old">
-            <h3 style="color:#1a1a2e">기존 GPT</h3>
-            <ul>
-                <li>"냉장고, 세탁기, 에어컨" 텍스트로 나열</li>
-                <li>SmartThings 생태계 기기 목록을 사용자가 외워야 함</li>
-                <li>기기 조합의 시나리오 영향 불투명</li>
-                <li>"알아서 적절히 넣어줘" → AI 임의 선택</li>
-            </ul>
-            <div class="problem">존재하지 않는 기기 입력 가능. 조합 효과 예측 불가. 결과의 기기 일관성 없음.</div>
-        </div>
-        <div class="compare-box new">
-            <h3 style="color:#2d2d3d">웹앱 Q4</h3>
-            <ul>
-                <li><strong>7개 스타일별 프리셋</strong> (기본/에너지/케어/무드/시큐리티/가사/쾌적)</li>
-                <li>프리셋 <strong>중복 선택</strong> → 기기 자동 합산 (겹침 제거)</li>
-                <li>22개 기기 직접 선택 (칩 토글)</li>
-                <li><strong>"트렌드 기반 자동 구성"</strong> 버튼 — AI가 최적 기기 선택</li>
-                <li>실시간 <strong>"현재 조합 요약"</strong> — 가능한 기능 + 제한 표시</li>
-                <li>카테고리별 상세 보기 (접이식)</li>
-            </ul>
-            <div class="effect">기기 조합의 시나리오 효과 즉시 확인. 프리셋으로 3초 선택. AI 자동 구성으로 완전 위임 가능.</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PAGE 10: GPT STEP 6 — 지역 데이터 수집 ===== -->
-<div class="slide compare">
-    <span class="page-num">12/18</span>
-    <span class="badge step">STEP 6/10</span><span class="badge orange">GPT 단계별 비교</span>
-    <h2>Step 6. 지역 데이터 수집 (내부 처리)</h2>
-    <div class="compare-grid">
-        <div class="compare-box old">
-            <h3 style="color:#1a1a2e">기존 GPT</h3>
-            <ul>
-                <li>외부 API 호출 <strong>없음</strong></li>
-                <li>학습 데이터(~2024.04) 기반 추측</li>
-                <li>GDP, 날씨, 인구 등 실시간 데이터 접근 불가</li>
-                <li>도시 좌표/지도 제공 불가</li>
-                <li>출처 = 지어낸 URL</li>
-            </ul>
-            <div class="problem">모든 "데이터"가 AI 상상. 검증 불가. 보고서 신뢰도 하락.</div>
-        </div>
-        <div class="compare-box new">
-            <h3 style="color:#2d2d3d">웹앱</h3>
-            <ul>
-                <li><strong>7개 외부 API 병렬 호출:</strong></li>
-                <li>WorldBank (GDP, 도시화율) — 공식 통계</li>
-                <li>Open-Meteo (7일 날씨 예보) — 실시간</li>
-                <li>Nominatim (도시 중요도/분류) — OSM</li>
-                <li>RestCountries (인구, 면적, 국경)</li>
-                <li>Wikipedia (랜드마크 이미지)</li>
-                <li>GPT-4o web_search (트렌드 웹 검색) — 실시간</li>
-                <li>Open-Meteo Geocode (위도/경도) → 지도 생성</li>
-            </ul>
-            <div class="effect">7개 실시간 소스. 공식 통계 + 웹 검색 + 날씨. 모든 데이터 검증 가능.</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PAGE 11: GPT STEP 7 — 시나리오 생성 ===== -->
-<div class="slide compare">
-    <span class="page-num">13/18</span>
-    <span class="badge step">STEP 7/10</span><span class="badge orange">GPT 단계별 비교</span>
-    <h2>Step 7. CX 시나리오 생성</h2>
-    <div class="compare-grid">
-        <div class="compare-box old">
-            <h3 style="color:#1a1a2e">기존 GPT</h3>
-            <ul>
-                <li>시스템 프롬프트 (~200줄) + 사용자 메시지 1개</li>
-                <li>지역 데이터 없이 생성</li>
-                <li>Explore v1.0/v2.0 매핑 없음</li>
-                <li>출력 섹션 수/순서 매번 다름</li>
-                <li>Gate System 없음 — 환각 검증 안 함</li>
-                <li>한국어 전용</li>
-            </ul>
-            <div class="problem">포맷 불일치. 지역 현실과 괴리. Explore 시나리오와 연결 안 됨.</div>
-        </div>
-        <div class="compare-box new">
-            <h3 style="color:#2d2d3d">웹앱</h3>
-            <ul>
-                <li><strong>prompt.txt v8.2</strong> (550줄 시스템 프롬프트)</li>
-                <li>Q2 regionInsight 데이터 → 프롬프트에 삽입</li>
-                <li><strong>11섹션 고정 스키마</strong> (01~11 순서 고정)</li>
-                <li>Explore v2.0 12키워드 N:N 매핑</li>
-                <li>Gate System v2.0 (Hard/Soft Gate 자동 검증)</li>
-                <li>3 Role-Lens 메시지 동시 생성</li>
-                <li>GPT-4o 또는 Claude 선택 가능</li>
-            </ul>
-            <div class="effect">11섹션 완전한 보고서. 실시간 지역 데이터 기반. Explore 자동 매핑. Gate로 품질 보증.</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PAGE 12: GPT STEP 8 — 결과 수신 ===== -->
-<div class="slide compare">
-    <span class="page-num">14/18</span>
-    <span class="badge step">STEP 8/10</span><span class="badge orange">GPT 단계별 비교</span>
-    <h2>Step 8. 결과 수신 방식</h2>
-    <div class="compare-grid">
-        <div class="compare-box old">
-            <h3 style="color:#1a1a2e">기존 GPT</h3>
-            <ul>
-                <li>한 글자씩 채팅창에 표시 (ChatGPT 자체 스트리밍)</li>
-                <li>전체 완성까지 30~90초</li>
-                <li>중간에 토큰 초과 → "Continue generating" 클릭</li>
-                <li>결과 = 마크다운 텍스트 블록</li>
-                <li>섹션 구분 불명확 — 스크롤해서 찾기</li>
-            </ul>
-            <div class="problem">긴 대기. 토큰 잘림. 결과물이 긴 텍스트 블록이라 섹션별 활용 어려움.</div>
-        </div>
-        <div class="compare-box new">
-            <h3 style="color:#2d2d3d">웹앱</h3>
-            <ul>
-                <li><strong>SSE(Server-Sent Events)</strong> 실시간 스트리밍</li>
-                <li>생성 즉시 한 글자씩 UI에 표시</li>
-                <li>토큰 제한 → max_tokens 설정으로 사전 방지</li>
-                <li>섹션별 <strong>카드 UI</strong>로 자동 파싱</li>
-                <li>진행률 표시 (Q1 → Q2 → Q3 → Q4 → 생성 중)</li>
-                <li>생성 완료 후 섹션별 탭/접기 지원</li>
-            </ul>
-            <div class="effect">체감 대기 80% 감소. 토큰 잘림 없음. 섹션별 카드로 즉시 활용 가능.</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PAGE 13: GPT STEP 9 — 수정/반복 ===== -->
-<div class="slide compare">
-    <span class="page-num">15/18</span>
-    <span class="badge step">STEP 9/10</span><span class="badge orange">GPT 단계별 비교</span>
-    <h2>Step 9. 수정 및 반복</h2>
-    <div class="compare-grid">
-        <div class="compare-box old">
-            <h3 style="color:#1a1a2e">기존 GPT</h3>
-            <ul>
-                <li>"위에서 02번 상세 시나리오만 다시 써줘" 대화식 요청</li>
-                <li>대화 이력이 길어지면 → 컨텍스트 잘림</li>
-                <li>이전 결과를 AI가 까먹음 → 일관성 하락</li>
-                <li>전체 재생성 vs 부분 수정 구분 없음</li>
-                <li>여러 번 수정 → 대화창이 매우 길어짐</li>
-            </ul>
-            <div class="problem">대화 길어질수록 품질 하락. 이전 맥락 유실. 부분 수정 불가.</div>
-        </div>
-        <div class="compare-box new">
-            <h3 style="color:#2d2d3d">웹앱</h3>
-            <ul>
-                <li><strong>POST /api/refine</strong> — 전용 수정 API</li>
-                <li>이전 결과 + 수정 지시를 구조화된 messages[]로 전달</li>
-                <li><strong>해당 섹션만</strong> 타겟 업데이트 (전체 재생성 불필요)</li>
-                <li>수정 후 자동 Reflection Check (11번) 재실행</li>
-                <li>Q1~Q4 변경 시 → 즉시 영향받는 섹션만 재생성 제안</li>
-            </ul>
-            <div class="effect">부분 수정 → 속도/비용 절감. 대화 이력 구조화로 맥락 유실 없음. 수정 후 품질 재검증.</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PAGE 14: GPT STEP 10 — 결과 활용 ===== -->
-<div class="slide compare">
-    <span class="page-num">16/18</span>
-    <span class="badge step">STEP 10/10</span><span class="badge orange">GPT 단계별 비교</span>
-    <h2>Step 10. 결과물 활용 & 공유</h2>
-    <div class="compare-grid">
-        <div class="compare-box old">
-            <h3 style="color:#1a1a2e">기존 GPT</h3>
-            <ul>
-                <li>결과 = 채팅창 마크다운 텍스트</li>
-                <li>활용: 전체 선택 → 복사 → 문서에 붙여넣기</li>
-                <li>표/JSON이 깨지는 경우 빈번</li>
-                <li>공유: ChatGPT 대화 공유 링크 (편집 불가)</li>
-                <li>다국어: 한국어로 질문 → 한국어 결과만</li>
-                <li>이력 관리: ChatGPT 대화 목록에 묻힘</li>
-            </ul>
-            <div class="problem">수동 복사붙여넣기. 포맷 깨짐. 다국어 불가. 결과물 재활용 어려움.</div>
-        </div>
-        <div class="compare-box new">
-            <h3 style="color:#2d2d3d">웹앱</h3>
-            <ul>
-                <li>결과 = 구조화된 <strong>11섹션 카드 UI</strong></li>
-                <li>섹션별 복사 / 전체 내보내기</li>
-                <li>표/JSON 구조 정확히 렌더링</li>
-                <li><strong>9개 로케일</strong> 자동 전환 (한/영/독/불/서/포/이/네/아랍)</li>
-                <li>URL 공유 → 동일 환경에서 팀원 즉시 사용</li>
-                <li>프롬프트 중앙 관리: git push = 전체 반영</li>
-            </ul>
-            <div class="effect">깔끔한 보고서 포맷. 9개 언어 즉시 전환. 팀 공유 원클릭. 프롬프트 버전 중앙 관리.</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PAGE 15: ARCHITECTURE DIFF ===== -->
-<div class="slide compare">
-    <span class="page-num">17/18</span>
-    <span class="badge red">아키텍처 근본 차이</span>
-    <h2>근본적 아키텍처 차이: 대화형 vs 파이프라인형</h2>
-    <div class="compare-grid">
-        <div class="compare-box old">
-            <h3 style="color:#1a1a2e">GPT: 대화형 (Conversational)</h3>
-            <pre style="font-size:.82em;background:#f5f5f5;color:#1a1a2e;border:1px solid #ddd;font-weight:700">사용자 → [자유 텍스트]
-         ↓
-    ChatGPT (단일 LLM)
-         ↓
-    [마크다운 텍스트]
-         ↓
-       사용자</pre>
-            <p style="font-size:.82em">단일 모델, 단일 호출, 단일 출력. 모든 것이 LLM의 상상에 의존.</p>
-        </div>
-        <div class="compare-box new">
-            <h3 style="color:#0000cc">웹앱: 파이프라인형 (Orchestrated)</h3>
-            <pre style="font-size:.82em;background:#1a1a2e;color:#fff;border:none;font-weight:700">사용자 → [구조화 4단계 입력]
-         ↓
-    ┌─ WorldBank API ──┐
-    ├─ OpenMeteo API ───┤
-    ├─ Nominatim API ──┤ 병렬
-    ├─ RestCountries ──┤
-    ├─ Wikipedia API ──┤
-    └─ <span style="color:#88f;font-weight:900">GPT-4o + Web ───┘</span>
-         ↓
-    <span style="color:#88f;font-weight:900">prompt.txt v8.2</span> + regionInsight
-         ↓
-    <span style="color:#88f;font-weight:900">GPT-4o / Claude (SSE)</span>
-         ↓
-    [11섹션 구조화 보고서]</pre>
-            <p style="font-size:.82em"><strong>다중 모델, 다중 소스, 구조화 출력.</strong> 실시간 데이터 + AI 생성 + 검증 파이프라인.</p>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PAGE 16: SUMMARY ===== -->
-<div class="slide summary" style="justify-content:center;align-items:center;text-align:center">
-    <span class="page-num">18/18</span>
-    <span class="badge blue">Summary</span>
-    <h1>핵심 개선 효과 요약</h1>
-    <div class="stat-grid" style="margin:auto">
-        <div class="stat-card"><h3>0%</h3><p>입력 누락률<br><span style="color:#888;font-size:.78em">구조화 위자드</span></p></div>
-        <div class="stat-card"><h3>실시간</h3><p>웹 검색 트렌드<br><span style="color:#888;font-size:.78em">진짜 URL + 최신 데이터</span></p></div>
-        <div class="stat-card"><h3>11섹션</h3><p>완전한 보고서<br><span style="color:#888;font-size:.78em">Explore v2.0 매핑</span></p></div>
-        <div class="stat-card"><h3>80%↓</h3><p>체감 대기 시간<br><span style="color:#888;font-size:.78em">SSE + 병렬 처리</span></p></div>
-        <div class="stat-card"><h3>9개</h3><p>언어 자동 전환<br><span style="color:#888;font-size:.78em">글로벌 팀 즉시</span></p></div>
-        <div class="stat-card"><h3>중앙</h3><p>프롬프트 관리<br><span style="color:#888;font-size:.78em">git push = 반영</span></p></div>
-    </div>
-    <p style="margin-top:36px;color:#58a6ff;font-size:1.1em;font-weight:700">대화형 GPT → 파이프라인형 에이전트로의 전환</p>
-    <p style="color:#888;margin-top:24px">Samsung SmartThings CX Scenario Self-Generation Agent<br>David Yoon · 2026.03</p>
-</div>
-
-</div><!-- /deck -->
 
 <div class="nav">
     <button id="prev-btn" disabled>← 이전</button>
