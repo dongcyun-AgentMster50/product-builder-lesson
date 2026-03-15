@@ -12,7 +12,7 @@ const PORT = Number(process.env.PORT || 8000);
 const ROOT_DIR = __dirname;
 const COOKIE_NAME = "scenario_agent_session";
 const SESSION_TTL_MS = Number(process.env.SESSION_TTL_MS || 1000 * 60 * 60 * 8);
-const REGION_INSIGHT_TIMEOUT_MS = Number(process.env.REGION_INSIGHT_TIMEOUT_MS || 12000);
+const REGION_INSIGHT_TIMEOUT_MS = Number(process.env.REGION_INSIGHT_TIMEOUT_MS || 20000);
 const REGION_INSIGHT_CACHE_TTL_MS = Number(process.env.REGION_INSIGHT_CACHE_TTL_MS || 1000 * 60 * 15);
 const MAX_FAILED_ATTEMPTS = Number(process.env.MAX_FAILED_ATTEMPTS || 3);
 const LOCK_WINDOW_MS = Number(process.env.LOCK_WINDOW_MS || 1000 * 60);
@@ -1258,7 +1258,7 @@ Rules:
             });
             if (!res.ok) throw new Error(`OpenAI ${res.status}`);
             return res.json();
-        }, 8000);
+        }, 15000);
 
         const text = response?.choices?.[0]?.message?.content || "";
         const jsonMatch = text.match(/\{[\s\S]*\}/);
