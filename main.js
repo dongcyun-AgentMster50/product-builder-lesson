@@ -1920,6 +1920,37 @@ function buildInsightMarkup(insight) {
                 <p>${escapeHtml(row.value)}</p>
             </div>
         `).join("");
+    const buildEvidenceSourceTag = (evidenceText) => {
+        if (!evidenceText) return "";
+        // 한국어 기관/보고서명 패턴 추출
+        const koPatterns = [
+            /([가-힣]+(?:부|청|원|처|위원회|연구원|협회|진흥원|공사|센터|연구소|통계청|환경청|시청|도청))/,
+            /([가-힣]+(?:보고서|통계|조사|백서|연감))/,
+            /([가-힣]+ ?[가-힣]*(?:연구|분석|발표))/
+        ];
+        // 영문 기관명 패턴
+        const enPatterns = [
+            /(?:according to |by |from |per |— )([\w\s&.'-]{3,40}?)(?:\.|,|$)/i,
+            /((?:Ministry|Department|Bureau|Institute|Association|Agency|Council|Board|Center|Commission)[\w\s.'-]{0,30})/i
+        ];
+        let sourceName = "";
+        for (const pat of koPatterns) {
+            const m = evidenceText.match(pat);
+            if (m) { sourceName = m[1]; break; }
+        }
+        if (!sourceName) {
+            for (const pat of enPatterns) {
+                const m = evidenceText.match(pat);
+                if (m) { sourceName = m[1].trim(); break; }
+            }
+        }
+        if (!sourceName || sourceName.length < 2) return "";
+        const searchQuery = `${sourceName} ${evidenceText.match(/\d{4}/)?.[0] || ""}`.trim();
+        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+        const shortLabel = sourceName.length > 16 ? sourceName.slice(0, 15) + "…" : sourceName;
+        return ` <a class="evidence-source-tag" href="${escapeHtml(searchUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(shortLabel)}</a>`;
+    };
+
     const renderSection = (section) => {
         const text = section.text ? `<p>${escapeHtml(section.text)}</p>` : "";
         const items = Array.isArray(section.items) && section.items.length
@@ -1928,7 +1959,7 @@ function buildInsightMarkup(insight) {
                     const label = escapeHtml(item.text || "");
                     const evidenceText = String(item.evidence || "").trim();
                     const evidenceHtml = evidenceText
-                        ? `<span class="trend-evidence">${escapeHtml(evidenceText)}</span>`
+                        ? `<span class="trend-evidence">${escapeHtml(evidenceText)}${buildEvidenceSourceTag(evidenceText)}</span>`
                         : "";
                     return `<li>${label}${evidenceHtml}</li>`;
                 }

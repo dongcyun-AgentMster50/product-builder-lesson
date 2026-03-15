@@ -1221,7 +1221,7 @@ Rules:
 - Every item must be specific to ${city}. Never give generic advice.
 - If you are not confident about an event date, omit the event instead of inventing a past or uncertain date.
 - Do not use dates earlier than ${todayIso}.
-- Write in ${lang}.`;
+- Write ALL content in ${lang}. When writing in Korean, ALWAYS use the Korean city name (e.g. 천안, 전주, 수원) — never use English transliterations like Cheonan, Jeonju, or Suwon in Korean text.`;
 
     try {
         const body = JSON.stringify({

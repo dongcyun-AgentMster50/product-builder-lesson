@@ -1604,6 +1604,26 @@ textarea {
     border-radius: 0 8px 8px 0;
     font-style: normal;
 }
+.evidence-source-tag {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 7px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(33,137,255,0.08);
+    border: 1px solid rgba(33,137,255,0.2);
+    border-radius: 6px;
+    text-decoration: none;
+    vertical-align: middle;
+    transition: background 120ms ease, border-color 120ms ease;
+    white-space: nowrap;
+}
+.evidence-source-tag:hover {
+    background: rgba(33,137,255,0.15);
+    border-color: rgba(33,137,255,0.4);
+    color: var(--accent-strong, #1565c0);
+}
 
 .insight-evidence {
     display: flex;
