@@ -2315,7 +2315,11 @@ function mapLiveStep2Insight(data, countryCode, city) {
                 : `<strong class="city-accent">${localCity || marketLabel}</strong> local trends`,
             items: trendItems.map((trend) => ({
                 text: trend.text,
-                evidence: trend.evidence || ""
+                evidence: trend.evidence || "",
+                source_title: trend.source_title || "",
+                source_org: trend.source_org || "",
+                source_date: trend.source_date || "",
+                source_url: trend.source_url || ""
             }))
         });
     }

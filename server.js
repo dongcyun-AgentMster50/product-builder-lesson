@@ -1202,52 +1202,59 @@ async function fetchCityLiveContent({ country, city, role, locale }) {
     const localeMap = { ko: "Korean", en: "English", de: "German", fr: "French", es: "Spanish", pt: "Portuguese", it: "Italian", nl: "Dutch", ar: "Arabic" };
     const lang = localeMap[locale] || "English";
     const todayIso = new Date().toISOString().slice(0, 10);
-    const prompt = `City: ${city}, Country code: ${country}, Role: ${role}, Language: ${lang}
-Today (UTC): ${todayIso}
+    const prompt = `You are researching REAL, SPECIFIC trends for "${city}" (country: ${country}) as of ${todayIso}.
+Role context: Samsung SmartThings ${role} marketer. Language: ${lang}.
 
-Return ONLY valid JSON — no markdown, no explanation. EVERY trend MUST be an object with ALL 5 fields (text, evidence, source_title, source_org, source_date, source_url). Do NOT return trends as plain strings.
+CRITICAL RULES — read before generating:
+1. Every trend MUST be UNIQUE to "${city}" — not generic national trends. Mention ${city}-specific districts, neighborhoods, local government policies, infrastructure projects, demographic shifts, or local consumer behaviors.
+2. BAD example (too generic): "스마트 홈 기기 수요 증가" — this applies to ANY city.
+   GOOD example (hyper-local): "인천 송도국제도시 스마트시티 2단계 사업으로 IoT 인프라 확충, 신규 아파트 85%에 홈IoT 사전설치 의무화"
+3. Each trend's "evidence" MUST contain specific numbers: %, ₩/$ amounts, population figures, year-over-year changes, policy numbers, or project budgets.
+4. Each trend's source MUST be a real, verifiable organization. Use government (.go.kr, .gov), statistics agencies, research institutes, or major news outlets.
+
+Return ONLY valid JSON — no markdown, no explanation.
 
 {
   "live_trends": [
     {
-      "text": "trend headline (concise)",
-      "evidence": "2-3 sentence factual basis with specific numbers, statistics, or policy details that prove this trend",
-      "source_title": "exact article/report/data title",
-      "source_org": "publishing organization name",
+      "text": "hyper-local trend headline mentioning ${city}-specific details",
+      "evidence": "3 sentences with concrete statistics, budget figures, policy names. Example: '인천시 2025년 스마트홈 보급 예산 340억원 편성. 송도·청라·영종 신도시 중심 15,000가구 IoT 사전설치 완료. 전년 대비 가구당 스마트기기 보유 2.3개→3.1개로 35% 증가.'",
+      "source_title": "specific report or article title",
+      "source_org": "publishing organization",
       "source_date": "YYYY-MM-DD",
-      "source_url": "https://real-domain.example.com/path"
+      "source_url": "https://real-organization-domain/path"
     }
   ],
   "live_events": [
-    {"name": "event name", "when": "YYYY-MM-DD", "hook": "one-line marketing angle"}
+    {"name": "event name", "when": "YYYY-MM-DD", "hook": "one-line Samsung marketing angle"}
   ],
-  "live_pains": ["pain1", "pain2", "pain3"],
-  "live_solutions": ["solution1", "solution2", "solution3"]
+  "live_pains": ["specific pain tied to a trend above — mention ${city} context"],
+  "live_solutions": ["specific Samsung SmartThings tactic tied to ${city} situation"]
 }
 
-Rules:
-- live_trends: EXACTLY 4 trends. Each must be an OBJECT (never a string). Be hyper-local to ${city} specifically.
-  * "evidence": 2-3 sentences with concrete data — percentages, monetary figures, population counts, policy names, or year-over-year comparisons. This is the most important field.
-  * "source_title": the specific article, report, or dataset name
-  * "source_org": the publishing organization (government agency, research institute, news outlet)
-  * "source_date": publication date (YYYY-MM-DD, estimate if unknown)
-  * "source_url": a real URL from the source organization's domain (e.g. kostat.go.kr, incheon.go.kr, kdi.re.kr). If unsure of exact path, use the organization's main domain.
-- live_events: 2-3 upcoming local events within 3 months from ${todayIso}. Include realistic dates only.
-- live_pains: 3 consumer pain points a ${role} marketer faces in ${city}, tied to the trends.
-- live_solutions: 3 actionable Samsung SmartThings marketing tactics specific to ${city}.
-- If you are not confident about an event date, omit it rather than guess.
-- Do not use dates earlier than ${todayIso}.
-- Write ALL content in ${lang}. When writing in Korean, ALWAYS use Korean city names (인천, 수원, 전주) — NEVER English transliterations.`;
+Field requirements:
+- live_trends: EXACTLY 4 objects. Each MUST reference ${city}-specific data (district names, local stats, municipal policies).
+  * "text": 1-2 sentence headline. MUST mention a ${city}-specific detail (neighborhood, project name, local stat).
+  * "evidence": 2-3 sentences packed with numbers. This is the MOST IMPORTANT field. Include specific figures like budgets, percentages, population counts, policy IDs, or year-over-year comparisons.
+  * "source_title": exact article/report/dataset title
+  * "source_org": the publishing organization (government agency, statistical office, research institute, news outlet)
+  * "source_date": YYYY-MM-DD (best estimate if exact date unknown)
+  * "source_url": a real URL from the source org's domain. If unsure of exact path, use the org's homepage URL.
+- live_events: 2-3 upcoming events in or near ${city} within 3 months of ${todayIso}. Omit if not confident about dates.
+- live_pains: 3 pain points a Samsung ${role} marketer faces in ${city}, each directly tied to one of the live_trends above. Be specific — reference ${city} demographics or local market conditions.
+- live_solutions: 3 actionable Samsung SmartThings tactics specific to ${city}. Reference specific products, local partnerships, or channel strategies.
+- Do NOT use dates before ${todayIso}.
+- Write ALL content in ${lang}. For Korean: use Korean city/district names (인천, 송도, 청라) — NEVER English transliterations.`;
 
     try {
         const body = JSON.stringify({
             model: "gpt-4o-mini",
             messages: [
-                { role: "system", content: "You are a hyper-local Samsung SmartThings marketing research analyst. You ALWAYS return live_trends as an array of OBJECTS with all fields (text, evidence, source_title, source_org, source_date, source_url). Never return trends as plain strings. The evidence field must contain concrete statistics and verifiable facts." },
+                { role: "system", content: "You are a hyper-local Samsung SmartThings marketing research analyst who specializes in city-level market intelligence. STRICT RULES: (1) Every trend MUST be specific to the requested city — generic national trends are REJECTED. Mention local districts, municipal policies, or city-specific statistics. (2) live_trends is ALWAYS an array of OBJECTS with ALL fields: text, evidence, source_title, source_org, source_date, source_url. NEVER return trends as plain strings. (3) The evidence field MUST contain 2-3 sentences with concrete numbers (%, ₩, population, budgets, year-over-year). (4) Sources must reference real organizations with real domain URLs." },
                 { role: "user", content: prompt }
             ],
-            max_tokens: 2000,
-            temperature: 0.6
+            max_tokens: 3000,
+            temperature: 0.7
         });
 
         const response = await withTimeout(async () => {
