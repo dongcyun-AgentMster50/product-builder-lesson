@@ -134,10 +134,11 @@
                             <div class="field split-field">
                                 <label for="country">Q2. 어느 국가를 대상으로 하나요?</label>
                                 <select id="country" name="country"></select>
-                                <select id="city" name="city"></select>
-                                <div class="city-custom-row hidden" id="city-custom-row">
-                                    <input type="text" id="city-custom" name="city-custom" placeholder="직접 도시 입력">
-                                    <button type="button" id="city-custom-confirm" class="secondary-btn city-custom-confirm-btn">✓</button>
+                                <div class="city-search-wrap" id="city-search-wrap">
+                                    <input type="text" id="city-search-input" autocomplete="off" placeholder="도시 검색 또는 입력" />
+                                    <span class="city-search-icon" id="city-search-icon"></span>
+                                    <input type="hidden" id="city-value" name="city" />
+                                    <div class="city-dropdown hidden" id="city-dropdown"></div>
                                 </div>
                                 <div id="city-profile-card" class="city-profile-card hidden"></div>
                                 <p class="helper">지역에 따라 추천 기기와 활용 방식이 달라집니다.</p>

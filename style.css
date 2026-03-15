@@ -306,23 +306,137 @@ body {
     grid-column: 1 / -1;
 }
 
-.city-custom-row {
+/* ── Searchable City Dropdown ── */
+.city-search-wrap {
     grid-column: 1 / -1;
-    display: flex;
-    gap: 8px;
-    align-items: center;
+    position: relative;
 }
-.city-custom-row input {
-    flex: 1;
+.city-search-wrap input[type="text"] {
+    width: 100%;
+    padding: 15px 42px 15px 16px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255,255,255,0.98);
+    font-size: 1rem;
+    color: var(--ink);
+    transition: border-color 160ms ease, box-shadow 160ms ease;
 }
-.city-custom-confirm-btn {
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0 12px;
-    font-size: 1.1rem;
+.city-search-wrap input[type="text"]:focus {
+    outline: 2px solid rgba(33,137,255,0.18);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(33,137,255,0.08);
+}
+.city-search-wrap.has-value input[type="text"] {
     font-weight: 700;
-    border-radius: 12px;
+    color: var(--ink);
+}
+.city-search-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px; height: 20px;
+    pointer-events: none;
+    opacity: 0.35;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat;
+    transition: transform 200ms ease, opacity 160ms ease;
+}
+.city-search-wrap.open .city-search-icon {
+    transform: translateY(-50%) rotate(180deg);
+    opacity: 0.55;
+}
+.city-search-wrap.has-value .city-search-icon {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2'%3E%3Cpath d='M18 6L6 18M6 6l12 12'/%3E%3C/svg%3E") center/contain no-repeat;
+    pointer-events: auto;
+    cursor: pointer;
+    opacity: 0.4;
+}
+.city-search-wrap.has-value .city-search-icon:hover { opacity: 0.7; }
+
+.city-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    max-height: 340px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    z-index: 120;
+    padding: 6px 0;
+    overscroll-behavior: contain;
+}
+.city-dropdown.hidden { display: none; }
+.city-dropdown::-webkit-scrollbar { width: 6px; }
+.city-dropdown::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+
+.city-group-label {
+    padding: 10px 16px 4px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    user-select: none;
+}
+.city-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 16px;
+    cursor: pointer;
+    transition: background 100ms ease;
+    gap: 8px;
+}
+.city-option:hover,
+.city-option.focused {
+    background: rgba(33,137,255,0.07);
+}
+.city-option.selected {
+    background: rgba(33,137,255,0.10);
+    font-weight: 700;
+}
+.city-option-name {
+    font-size: 0.95rem;
+    color: var(--ink);
+    flex: 1;
+    min-width: 0;
+}
+.city-option-name mark {
+    background: rgba(33,137,255,0.18);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
+}
+.city-option-pop {
+    font-size: 0.75rem;
+    color: var(--muted);
+    white-space: nowrap;
     flex-shrink: 0;
+}
+.city-option--custom {
+    border-top: 1px solid var(--line);
+    margin-top: 4px;
+    padding-top: 13px;
+    color: var(--accent);
+}
+.city-option--custom .city-option-name {
+    color: var(--accent);
+    font-weight: 700;
+}
+.city-option--custom .city-search-custom-icon {
+    width: 16px; height: 16px;
+    margin-right: 6px;
+    opacity: 0.6;
+    flex-shrink: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232189ff' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.city-empty-msg {
+    padding: 18px 16px;
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--muted);
 }
 
 .field.full {

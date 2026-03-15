@@ -27,10 +27,17 @@ const roleSelectionContainer = document.getElementById("role-selection");
 const roleCards = [...document.querySelectorAll(".role-card")];
 const purposeInput = document.getElementById("purpose");
 const countrySelect = document.getElementById("country");
-const citySelect = document.getElementById("city");
-const cityCustomInput = document.getElementById("city-custom");
-const cityCustomRow = document.getElementById("city-custom-row");
-const cityCustomConfirmBtn = document.getElementById("city-custom-confirm");
+/* ── Searchable city dropdown elements ── */
+const citySearchWrap = document.getElementById("city-search-wrap");
+const citySearchInput = document.getElementById("city-search-input");
+const cityHiddenInput = document.getElementById("city-value");
+const cityDropdown = document.getElementById("city-dropdown");
+const citySearchIcon = document.getElementById("city-search-icon");
+/* Legacy aliases — kept so downstream code that reads citySelect.value / cityCustomInput still compiles */
+const citySelect = { get value() { return cityHiddenInput.value; }, set value(v) { cityHiddenInput.value = v; }, options: [] };
+const cityCustomInput = { get value() { return citySearchInput.value; }, set value(v) { citySearchInput.value = v; }, disabled: false, focus() { citySearchInput.focus(); }, blur() { citySearchInput.blur(); } };
+const cityCustomRow = null;
+const cityCustomConfirmBtn = null;
 const personaGroups = document.getElementById("persona-groups");
 const segmentCustomInput = document.getElementById("segment-custom");
 const deviceGrid = document.getElementById("device-grid");
@@ -46,6 +53,117 @@ const generateBtn = document.getElementById("generate-btn");
 const stepInsight = document.getElementById("step-insight");
 const aiProviderScreen = document.getElementById("ai-provider-screen");
 const CITY_CUSTOM_VALUE = "__custom__";
+
+/* ── 한국 도시 마스터 데이터 (행정안전부 2024.04 주민등록인구) ── */
+const KR_CITY_MASTER = {
+    "수도권": [
+        { en: "Seoul", ko: "서울", pop: 9411453 },
+        { en: "Incheon", ko: "인천", pop: 2960000 },
+        { en: "Suwon", ko: "수원시", pop: 1223598 },
+        { en: "Goyang", ko: "고양시", pop: 1072217 },
+        { en: "Yongin", ko: "용인시", pop: 1077883 },
+        { en: "Hwaseong", ko: "화성시", pop: 948934 },
+        { en: "Seongnam", ko: "성남시", pop: 918122 },
+        { en: "Bucheon", ko: "부천시", pop: 785394 },
+        { en: "Namyangju", ko: "남양주시", pop: 733392 },
+        { en: "Ansan", ko: "안산시", pop: 627279 },
+        { en: "Pyeongtaek", ko: "평택시", pop: 592946 },
+        { en: "Anyang", ko: "안양시", pop: 545082 },
+        { en: "Siheung", ko: "시흥시", pop: 519956 },
+        { en: "Paju", ko: "파주시", pop: 504136 },
+        { en: "Gimpo", ko: "김포시", pop: 486952 },
+        { en: "Uijeongbu", ko: "의정부시", pop: 463059 },
+        { en: "Gwangju-si", ko: "광주시(경기)", pop: 393243 },
+        { en: "Hanam", ko: "하남시", pop: 331316 },
+        { en: "Gwangmyeong", ko: "광명시", pop: 283235 },
+        { en: "Yangju", ko: "양주시", pop: 280303 },
+        { en: "Gunpo", ko: "군포시", pop: 263164 },
+        { en: "Osan", ko: "오산시", pop: 239715 },
+        { en: "Icheon", ko: "이천시", pop: 222963 },
+        { en: "Anseong", ko: "안성시", pop: 190563 },
+        { en: "Guri", ko: "구리시", pop: 187709 },
+        { en: "Uiwang", ko: "의왕시", pop: 159384 },
+        { en: "Pocheon", ko: "포천시", pop: 146559 },
+        { en: "Yeoju", ko: "여주시", pop: 114646 },
+        { en: "Dongducheon", ko: "동두천시", pop: 88605 },
+        { en: "Gwacheon", ko: "과천시", pop: 78561 }
+    ],
+    "부산·울산·경남": [
+        { en: "Busan", ko: "부산", pop: 3350000 },
+        { en: "Ulsan", ko: "울산", pop: 1100000 },
+        { en: "Changwon", ko: "창원시", pop: 1006692 },
+        { en: "Gimhae", ko: "김해시", pop: 531911 },
+        { en: "Yangsan", ko: "양산시", pop: 355519 },
+        { en: "Jinju", ko: "진주시", pop: 340736 },
+        { en: "Geoje", ko: "거제시", pop: 234310 },
+        { en: "Tongyeong", ko: "통영시", pop: 120419 },
+        { en: "Sacheon", ko: "사천시", pop: 109692 },
+        { en: "Miryang", ko: "밀양시", pop: 102689 }
+    ],
+    "대구·경북": [
+        { en: "Daegu", ko: "대구", pop: 2380000 },
+        { en: "Pohang", ko: "포항시", pop: 492021 },
+        { en: "Gumi", ko: "구미시", pop: 406260 },
+        { en: "Gyeongsan", ko: "경산시", pop: 267823 },
+        { en: "Gyeongju", ko: "경주시", pop: 246144 },
+        { en: "Andong", ko: "안동시", pop: 153605 },
+        { en: "Gimcheon", ko: "김천시", pop: 137210 },
+        { en: "Yeongcheon", ko: "영천시", pop: 100248 },
+        { en: "Yeongju", ko: "영주시", pop: 100051 },
+        { en: "Sangju", ko: "상주시", pop: 93607 },
+        { en: "Mungyeong", ko: "문경시", pop: 68914 }
+    ],
+    "대전·세종·충청": [
+        { en: "Daejeon", ko: "대전", pop: 1450000 },
+        { en: "Sejong", ko: "세종", pop: 380000 },
+        { en: "Cheongju", ko: "청주시", pop: 849531 },
+        { en: "Cheonan", ko: "천안시", pop: 659471 },
+        { en: "Asan", ko: "아산시", pop: 385827 },
+        { en: "Chungju", ko: "충주시", pop: 208454 },
+        { en: "Seosan", ko: "서산시", pop: 177690 },
+        { en: "Dangjin", ko: "당진시", pop: 171159 },
+        { en: "Jecheon", ko: "제천시", pop: 130937 },
+        { en: "Nonsan", ko: "논산시", pop: 110653 },
+        { en: "Gongju", ko: "공주시", pop: 101617 },
+        { en: "Boryeong", ko: "보령시", pop: 95903 },
+        { en: "Gyeryong", ko: "계룡시", pop: 47065 }
+    ],
+    "광주·전라": [
+        { en: "Gwangju", ko: "광주", pop: 1430000, isMeta: true },
+        { en: "Jeonju", ko: "전주시", pop: 644146 },
+        { en: "Suncheon", ko: "순천시", pop: 278085 },
+        { en: "Iksan", ko: "익산시", pop: 270129 },
+        { en: "Yeosu", ko: "여수시", pop: 271061 },
+        { en: "Gunsan", ko: "군산시", pop: 260865 },
+        { en: "Mokpo", ko: "목포시", pop: 211878 },
+        { en: "Gwangyang", ko: "광양시", pop: 152001 },
+        { en: "Naju", ko: "나주시", pop: 114142 },
+        { en: "Jeongeup", ko: "정읍시", pop: 103048 },
+        { en: "Gimje", ko: "김제시", pop: 80729 },
+        { en: "Namwon", ko: "남원시", pop: 76462 }
+    ],
+    "강원": [
+        { en: "Chuncheon", ko: "춘천시", pop: 286812 },
+        { en: "Wonju", ko: "원주시", pop: 362074 },
+        { en: "Gangneung", ko: "강릉시", pop: 210037 },
+        { en: "Donghae", ko: "동해시", pop: 88574 },
+        { en: "Sokcho", ko: "속초시", pop: 82311 },
+        { en: "Samcheok", ko: "삼척시", pop: 62607 },
+        { en: "Taebaek", ko: "태백시", pop: 38710 }
+    ],
+    "제주": [
+        { en: "Jeju", ko: "제주시", pop: 493178 },
+        { en: "Seogwipo", ko: "서귀포시", pop: 184818 }
+    ]
+};
+
+function getKrCityMasterFlat() {
+    const result = [];
+    for (const [region, cities] of Object.entries(KR_CITY_MASTER)) {
+        cities.forEach((c) => result.push({ ...c, region }));
+    }
+    return result;
+}
 const LOCAL_BYPASS_ACCESS_CODE = "demo-access";
 
 let factPack = [];
@@ -152,53 +270,8 @@ function bindEvents() {
     roleSelectionContainer?.addEventListener("keydown", handleRoleCardKeydown);
     countrySelect.addEventListener("change", updateStatePreview);
     countrySelect.addEventListener("change", updateLocaleFromCountry);
-    // renderCityProfileCard는 updateLocaleFromCountry 안에서 city 초기화 후 처리됨
-    citySelect.addEventListener("change", () => {
-        toggleCityCustomInput();
-        updateStatePreview();
-        if (citySelect.value === CITY_CUSTOM_VALUE) {
-            // "직접 입력" 선택 시 — 이전 도시 인사이트 제거 + 가이드 카드 표시
-            cityCustomInput.value = "";
-            cityCustomInput.focus();
-            // 이전 도시(부산 등) 인사이트가 남아있지 않도록 즉시 교체
-            ++latestStep2InsightRequest;
-            const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
-            if (selectedMarket && currentStep === 2) {
-                const country = resolveCountry(selectedMarket);
-                stepInsight.innerHTML = buildInsightMarkup(buildStep2CitySelectGuide(country.countryCode));
-            }
-            // 도시 프로필 카드도 숨김
-            const profileCard = document.getElementById("city-profile-card");
-            if (profileCard) profileCard.classList.add("hidden");
-            return;
-        }
-        // 드롭다운에서 실제 도시를 선택한 경우에만 API 호출
-        updateStepInsight();
-        renderCityProfileCard();
-    });
-    cityCustomInput.addEventListener("input", () => {
-        updateStatePreview();
-    });
-    const confirmCityCustom = () => {
-        const val = cityCustomInput.value.trim();
-        if (!val) return;
-        updateStepInsight();
-        renderCityProfileCard();
-    };
-    // change(blur) 이벤트 제거 — 모바일에서 blur 시 dropdown change와 충돌 방지
-    // 오직 ✓ 버튼과 Enter 키로만 확정
-    cityCustomInput.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            cityCustomInput.blur();
-            confirmCityCustom();
-        }
-    });
-    if (cityCustomConfirmBtn) {
-        cityCustomConfirmBtn.addEventListener("click", () => {
-            confirmCityCustom();
-        });
-    }
+    // ── Searchable City Dropdown 이벤트 ──
+    initCitySearchDropdown();
     personaGroups.addEventListener("change", (event) => {
         handleChecklistChange(event, personaGroups);
         updateStatePreview();
@@ -1010,28 +1083,51 @@ function getLocalizedCityName(entry) {
     return name;
 }
 
+/* ══════════════════════════════════════════════════════
+   Searchable City Dropdown — core logic
+   ══════════════════════════════════════════════════════ */
+let _cityItems = [];          // current items for dropdown
+let _cityFocusIdx = -1;       // keyboard navigation index
+let _cityDropdownOpen = false;
+
 function getAvailableCitiesByCountry(countryCode) {
     if (!countryCode) return [];
+
+    // KR — use master data with region groups + population
+    if (countryCode === "KR") {
+        return getKrCityMasterFlat().map((c) => ({
+            value: c.en,
+            label: currentLocale === "ko" ? c.ko : c.en,
+            pop: c.pop,
+            region: c.region,
+            searchText: `${c.en} ${c.ko}`.toLowerCase()
+        }));
+    }
+
+    // Other countries — use city_signals.json
     const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
     const seen = new Set();
     const results = [];
-
     cityEntries.forEach((entry) => {
         if (entry.countryCode !== countryCode || !entry.displayName) return;
         const normalized = normalizeCityValue(entry.displayName);
         if (!normalized || seen.has(normalized)) return;
         seen.add(normalized);
-        results.push({ value: entry.displayName, label: getLocalizedCityName(entry) });
+        const label = getLocalizedCityName(entry);
+        const aliases = (entry.aliases || []).join(" ").toLowerCase();
+        results.push({
+            value: entry.displayName,
+            label,
+            pop: null,
+            region: null,
+            searchText: `${entry.displayName} ${label} ${aliases}`.toLowerCase()
+        });
     });
-
     return results.sort((a, b) => a.label.localeCompare(b.label, currentLocale, { sensitivity: "base" }));
 }
 
 function getCityValue() {
-    if (citySelect.value === CITY_CUSTOM_VALUE) {
-        return cityCustomInput.value.trim();
-    }
-    return citySelect.value.trim();
+    return cityHiddenInput.value.trim();
 }
 
 function getCityDisplayValue(countryCode, cityName) {
@@ -1043,60 +1139,267 @@ function getCityDisplayValue(countryCode, cityName) {
         (normalizeCityValue(entry.displayName) === normalizedCity ||
          (entry.aliases || []).some((alias) => normalizeCityValue(alias) === normalizedCity))
     );
-    return matchedEntry ? getLocalizedCityName(matchedEntry) : cityName;
-}
-
-function toggleCityCustomInput() {
-    const useCustom = citySelect.value === CITY_CUSTOM_VALUE;
-    if (cityCustomRow) {
-        cityCustomRow.classList.toggle("hidden", !useCustom);
+    if (matchedEntry) return getLocalizedCityName(matchedEntry);
+    // KR master fallback
+    if (countryCode === "KR") {
+        const krFlat = getKrCityMasterFlat();
+        const m = krFlat.find((c) =>
+            normalizeCityValue(c.en) === normalizedCity || normalizeCityValue(c.ko) === normalizedCity
+        );
+        if (m) return currentLocale === "ko" ? m.ko : m.en;
     }
-    cityCustomInput.disabled = !useCustom;
+    return cityName;
 }
 
 function setCityValue(city) {
     const normalized = normalizeCityValue(city);
     if (!normalized) {
-        citySelect.value = "";
-        cityCustomInput.value = "";
-        toggleCityCustomInput();
+        cityHiddenInput.value = "";
+        citySearchInput.value = "";
+        citySearchWrap.classList.remove("has-value");
         return;
     }
-
-    const matchedOption = [...citySelect.options].find((option) => (
-        option.value !== CITY_CUSTOM_VALUE && normalizeCityValue(option.value) === normalized
-    ));
-
-    if (matchedOption) {
-        citySelect.value = matchedOption.value;
-        cityCustomInput.value = "";
+    const matched = _cityItems.find((item) => normalizeCityValue(item.value) === normalized);
+    if (matched) {
+        cityHiddenInput.value = matched.value;
+        citySearchInput.value = matched.label;
     } else {
-        citySelect.value = CITY_CUSTOM_VALUE;
-        cityCustomInput.value = city;
+        cityHiddenInput.value = city;
+        citySearchInput.value = city;
     }
-    toggleCityCustomInput();
+    citySearchWrap.classList.toggle("has-value", !!cityHiddenInput.value);
 }
 
 function populateCityOptions(countryCode, preservedCity = "") {
-    const cities = getAvailableCitiesByCountry(countryCode);
-    const defaultLabel = currentLocale === "ko"
-        ? "도시 선택 (옵션)"
+    _cityItems = getAvailableCitiesByCountry(countryCode);
+    const placeholder = currentLocale === "ko"
+        ? "도시 검색 또는 입력"
         : currentLocale === "de"
-            ? "Stadt auswählen (optional)"
-            : "Select city (optional)";
-    const customLabel = currentLocale === "ko"
-        ? "목록에 없음 (직접 입력)"
-        : currentLocale === "de"
-            ? "Nicht gelistet (manuell eingeben)"
-            : "Not listed (type manually)";
+            ? "Stadt suchen oder eingeben"
+            : "Search or type a city";
+    citySearchInput.placeholder = placeholder;
+    cityHiddenInput.value = "";
+    citySearchInput.value = "";
+    citySearchWrap.classList.remove("has-value");
+    closeCityDropdown();
+    if (preservedCity) setCityValue(preservedCity);
+}
 
-    citySelect.innerHTML = [
-        `<option value="">${escapeHtml(defaultLabel)}</option>`,
-        ...cities.map((c) => `<option value="${escapeHtml(c.value)}">${escapeHtml(c.label)}</option>`),
-        `<option value="${CITY_CUSTOM_VALUE}">${escapeHtml(customLabel)}</option>`
-    ].join("");
+/* ── Dropdown rendering ── */
+function formatPopulation(pop) {
+    if (!pop) return "";
+    if (pop >= 1000000) return `${(pop / 10000).toFixed(0)}만`;
+    if (pop >= 10000) return `${(pop / 10000).toFixed(1)}만`;
+    return pop.toLocaleString();
+}
 
-    setCityValue(preservedCity);
+function highlightMatch(text, query) {
+    if (!query) return escapeHtml(text);
+    const escaped = escapeHtml(text);
+    const idx = text.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return escaped;
+    const before = escapeHtml(text.slice(0, idx));
+    const match = escapeHtml(text.slice(idx, idx + query.length));
+    const after = escapeHtml(text.slice(idx + query.length));
+    return `${before}<mark>${match}</mark>${after}`;
+}
+
+function renderCityDropdownItems(query = "") {
+    const q = query.trim().toLowerCase();
+    let filtered = q
+        ? _cityItems.filter((item) => item.searchText.includes(q))
+        : _cityItems;
+
+    if (filtered.length === 0 && !q) {
+        cityDropdown.innerHTML = `<div class="city-empty-msg">${currentLocale === "ko" ? "등록된 도시가 없습니다" : "No cities available"}</div>`;
+        return;
+    }
+
+    let html = "";
+    const hasRegions = filtered.some((item) => item.region);
+
+    if (hasRegions) {
+        // Group by region
+        const groups = new Map();
+        filtered.forEach((item) => {
+            const key = item.region || "";
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(item);
+        });
+        let idx = 0;
+        for (const [region, items] of groups) {
+            if (region) html += `<div class="city-group-label">${escapeHtml(region)}</div>`;
+            items.forEach((item) => {
+                const selected = cityHiddenInput.value === item.value ? " selected" : "";
+                const popStr = item.pop ? formatPopulation(item.pop) : "";
+                html += `<div class="city-option${selected}" data-idx="${idx}" data-value="${escapeHtml(item.value)}">
+                    <span class="city-option-name">${highlightMatch(item.label, q)}</span>
+                    ${popStr ? `<span class="city-option-pop">${popStr}</span>` : ""}
+                </div>`;
+                idx++;
+            });
+        }
+    } else {
+        filtered.forEach((item, idx) => {
+            const selected = cityHiddenInput.value === item.value ? " selected" : "";
+            html += `<div class="city-option${selected}" data-idx="${idx}" data-value="${escapeHtml(item.value)}">
+                <span class="city-option-name">${highlightMatch(item.label, q)}</span>
+            </div>`;
+        });
+    }
+
+    // Custom search option — always show when user typed something
+    if (q) {
+        const searchLabel = currentLocale === "ko"
+            ? `"${escapeHtml(query.trim())}" 검색하기`
+            : `Search for "${escapeHtml(query.trim())}"`;
+        html += `<div class="city-option city-option--custom" data-value="${escapeHtml(query.trim())}" data-custom="1">
+            <span class="city-search-custom-icon"></span>
+            <span class="city-option-name">${searchLabel}</span>
+        </div>`;
+    }
+
+    cityDropdown.innerHTML = html;
+    _cityFocusIdx = -1;
+}
+
+function openCityDropdown() {
+    if (_cityDropdownOpen) return;
+    _cityDropdownOpen = true;
+    cityDropdown.classList.remove("hidden");
+    citySearchWrap.classList.add("open");
+    renderCityDropdownItems(citySearchInput.value);
+}
+
+function closeCityDropdown() {
+    _cityDropdownOpen = false;
+    _cityFocusIdx = -1;
+    cityDropdown.classList.add("hidden");
+    citySearchWrap.classList.remove("open");
+}
+
+function selectCity(value, label) {
+    cityHiddenInput.value = value;
+    citySearchInput.value = label || value;
+    citySearchWrap.classList.toggle("has-value", !!value);
+    closeCityDropdown();
+    // Trigger downstream updates
+    updateStatePreview();
+    if (value) {
+        updateStepInsight();
+        renderCityProfileCard();
+    } else {
+        // No city — show guide
+        ++latestStep2InsightRequest;
+        const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
+        if (selectedMarket && currentStep === 2) {
+            const country = resolveCountry(selectedMarket);
+            stepInsight.innerHTML = buildInsightMarkup(buildStep2CitySelectGuide(country.countryCode));
+        }
+        const profileCard = document.getElementById("city-profile-card");
+        if (profileCard) profileCard.classList.add("hidden");
+    }
+}
+
+function focusCityOption(idx) {
+    const options = cityDropdown.querySelectorAll(".city-option");
+    if (options.length === 0) return;
+    options.forEach((el) => el.classList.remove("focused"));
+    if (idx < 0) idx = options.length - 1;
+    if (idx >= options.length) idx = 0;
+    _cityFocusIdx = idx;
+    options[idx].classList.add("focused");
+    options[idx].scrollIntoView({ block: "nearest" });
+}
+
+function initCitySearchDropdown() {
+    // Focus → open dropdown
+    citySearchInput.addEventListener("focus", () => {
+        openCityDropdown();
+        // If has value, select text for easy re-search
+        if (cityHiddenInput.value) citySearchInput.select();
+    });
+
+    // Input → filter
+    citySearchInput.addEventListener("input", () => {
+        // Clear selection while typing (will be re-set on pick)
+        cityHiddenInput.value = "";
+        citySearchWrap.classList.remove("has-value");
+        openCityDropdown();
+        renderCityDropdownItems(citySearchInput.value);
+        updateStatePreview();
+    });
+
+    // Keyboard navigation
+    citySearchInput.addEventListener("keydown", (e) => {
+        if (!_cityDropdownOpen) {
+            if (e.key === "ArrowDown" || e.key === "Enter") {
+                e.preventDefault();
+                openCityDropdown();
+            }
+            return;
+        }
+        const options = cityDropdown.querySelectorAll(".city-option");
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            focusCityOption(_cityFocusIdx + 1);
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            focusCityOption(_cityFocusIdx - 1);
+        } else if (e.key === "Enter") {
+            e.preventDefault();
+            if (_cityFocusIdx >= 0 && options[_cityFocusIdx]) {
+                const opt = options[_cityFocusIdx];
+                selectCity(opt.dataset.value, opt.querySelector(".city-option-name")?.textContent || opt.dataset.value);
+            } else {
+                // Enter with typed text → use as custom city
+                const val = citySearchInput.value.trim();
+                if (val) selectCity(val, val);
+            }
+        } else if (e.key === "Escape") {
+            e.preventDefault();
+            closeCityDropdown();
+            citySearchInput.blur();
+        }
+    });
+
+    // Click on dropdown item
+    cityDropdown.addEventListener("click", (e) => {
+        const opt = e.target.closest(".city-option");
+        if (!opt) return;
+        const val = opt.dataset.value;
+        const label = opt.querySelector(".city-option-name")?.textContent || val;
+        selectCity(val, opt.dataset.custom ? val : label);
+    });
+
+    // Click outside → close
+    document.addEventListener("mousedown", (e) => {
+        if (_cityDropdownOpen && !citySearchWrap.contains(e.target)) {
+            // Restore previous value if nothing selected
+            if (!cityHiddenInput.value && citySearchInput.value.trim()) {
+                citySearchInput.value = "";
+            } else if (cityHiddenInput.value) {
+                // Restore display label
+                const item = _cityItems.find((i) => i.value === cityHiddenInput.value);
+                citySearchInput.value = item ? item.label : cityHiddenInput.value;
+            }
+            closeCityDropdown();
+        }
+    });
+
+    // X button → clear
+    citySearchIcon.addEventListener("click", (e) => {
+        if (citySearchWrap.classList.contains("has-value")) {
+            e.stopPropagation();
+            selectCity("", "");
+            citySearchInput.value = "";
+            citySearchInput.focus();
+        }
+    });
+}
+
+function toggleCityCustomInput() {
+    // No-op — kept for backward compat
 }
 
 function normalizeRoleId(value) {
@@ -6643,7 +6946,9 @@ function applyLocale() {
     purposeInput.placeholder = t("purposeExtraPlaceholder");
     segmentCustomInput.placeholder = "";
     deviceCustomInput.placeholder = t("deviceCustomPlaceholder");
-    cityCustomInput.placeholder = t("cityCustomPlaceholder");
+    citySearchInput.placeholder = currentLocale === "ko" ? "도시 검색 또는 입력"
+        : currentLocale === "de" ? "Stadt suchen oder eingeben"
+        : "Search or type a city";
     updateQuestionHelpers();
     prevBtn.textContent = t("prev");
     nextBtn.textContent = t("next");
