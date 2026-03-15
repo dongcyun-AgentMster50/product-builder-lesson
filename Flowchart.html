@@ -104,6 +104,21 @@
         .stat-card p{font-size:.85em;color:rgba(255,255,255,.7)}
 
         @media(max-width:900px){.slide{padding:20px 16px 70px}.compare-grid{grid-template-columns:1fr}h1{font-size:1.9em}h2{font-size:1.3em}.stat-grid{grid-template-columns:1fr 1fr}}
+
+        /* ── PDF / Print 스타일 — 슬라이드별 페이지 분리 ── */
+        @media print {
+            @page { size: landscape; margin: 0; }
+            body { overflow: visible; height: auto; background: #fff; }
+            .deck { display: block; transform: none !important; width: auto; height: auto; }
+            .slide { min-width: auto; width: 100%; height: auto; min-height: 100vh; page-break-after: always; page-break-inside: avoid; overflow: visible; }
+            .slide:last-child { page-break-after: auto; }
+            .slide.cover, .slide.summary { background: #1a1a2e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .nav { display: none !important; }
+            .page-num { display: none; }
+            .fbox, .badge, .detail-card, .compare-box, .effect, .problem, .step-row, .stat-card {
+                -webkit-print-color-adjust: exact; print-color-adjust: exact;
+            }
+        }
     </style>
 </head>
 <body>
@@ -884,8 +899,9 @@ document.addEventListener('click', function(e) {
 
 <div class="nav">
     <button id="prev-btn" disabled>← 이전</button>
-    <span class="counter" id="counter">1 / 16</span>
+    <span class="counter" id="counter">1 / 18</span>
     <button id="next-btn">다음 →</button>
+    <button id="pdf-btn" style="margin-left:16px;background:#001a6e;border-color:#001a6e">PDF 다운로드</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
@@ -898,6 +914,11 @@ document.getElementById('next-btn').addEventListener('click',()=>go(cur+1));
 document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1)}if(e.key==='ArrowLeft'){e.preventDefault();go(cur-1)}});
 let tx=0;deck.addEventListener('touchstart',e=>{tx=e.touches[0].clientX});deck.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>60)go(cur+(dx<0?1:-1))});
 go(0);
+
+// PDF 다운로드 — 모든 슬라이드를 한 페이지씩 인쇄
+document.getElementById('pdf-btn').addEventListener('click', function() {
+    window.print();
+});
 </script>
 </body>
 </html>
