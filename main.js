@@ -311,6 +311,28 @@ function bindEvents() {
     });
     q4Presets?.addEventListener("click", handleQ4PresetClick);
     q4AllChips?.addEventListener("click", handleQ4QuickChipClick);
+    document.getElementById("q4-auto-btn")?.addEventListener("click", handleQ4AutoSelect);
+}
+
+function handleQ4AutoSelect() {
+    // 모든 기기 해제 → "auto" 모드 플래그 설정
+    Q4_ALL_QUICK_IDS.forEach((optionId) => setDeviceOptionChecked(optionId, false));
+    // deviceCustom에 auto 마커 설정
+    const customInput = document.getElementById("device-custom");
+    if (customInput) customInput.value = "__auto__";
+    renderQ4Composer();
+    updateStatePreview();
+    updateStepInsight();
+    // 버튼 활성 표시
+    const btn = document.getElementById("q4-auto-btn");
+    if (btn) btn.classList.add("active");
+}
+// auto 모드 해제: 기기 수동 선택 시
+function clearQ4AutoMode() {
+    const customInput = document.getElementById("device-custom");
+    if (customInput?.value === "__auto__") customInput.value = "";
+    const btn = document.getElementById("q4-auto-btn");
+    if (btn) btn.classList.remove("active");
 }
 
 function shouldBypassAccessForLocal() {
@@ -616,8 +638,7 @@ function renderQ4Composer() {
 
     q4Presets.innerHTML = Q4_PRESETS.map((preset) => {
         const copy = getQ4PresetCopy(preset.id);
-        const isActive = preset.deviceIds.length === selectedDeviceIds.size &&
-            preset.deviceIds.every((id) => selectedDeviceIds.has(id));
+        const isActive = preset.deviceIds.every((id) => selectedDeviceIds.has(id));
         const chips = preset.deviceIds.map((optionId) => {
             const input = deviceGrid?.querySelector(`input[data-node-type="child"][value="${optionId}"]`);
             const label = input?.dataset.label || optionId;
@@ -659,8 +680,26 @@ function handleQ4PresetClick(event) {
     const preset = Q4_PRESETS.find((item) => item.id === button.dataset.presetId);
     if (!preset) return;
 
-    const allQuickIds = new Set([...Q4_ALL_QUICK_IDS, ...preset.deviceIds]);
-    allQuickIds.forEach((optionId) => setDeviceOptionChecked(optionId, preset.deviceIds.includes(optionId)));
+    // 중복 선택: 이미 활성화된 프리셋 → 해당 기기 OFF, 아니면 → 해당 기기 ON (기존 선택 유지)
+    const isActive = button.classList.contains("active");
+    if (isActive) {
+        // 이 프리셋의 고유 기기만 해제 (다른 프리셋과 겹치는 기기는 유지)
+        const otherPresetDevices = new Set();
+        Q4_PRESETS.forEach((p) => {
+            if (p.id !== preset.id) {
+                const btn = q4Presets?.querySelector(`[data-preset-id="${p.id}"]`);
+                if (btn?.classList.contains("active")) {
+                    p.deviceIds.forEach((id) => otherPresetDevices.add(id));
+                }
+            }
+        });
+        preset.deviceIds.forEach((optionId) => {
+            if (!otherPresetDevices.has(optionId)) setDeviceOptionChecked(optionId, false);
+        });
+    } else {
+        // 이 프리셋 기기 추가 (기존 선택 유지 = 중복 선택)
+        preset.deviceIds.forEach((optionId) => setDeviceOptionChecked(optionId, true));
+    }
     renderQ4Composer();
     updateStatePreview();
     updateStepInsight();
@@ -672,6 +711,7 @@ function handleQ4QuickChipClick(event) {
     const optionId = button.dataset.optionId;
     const input = deviceGrid?.querySelector(`input[data-node-type="child"][value="${optionId}"]`);
     if (!input) return;
+    clearQ4AutoMode();
     setDeviceOptionChecked(optionId, !input.checked);
     renderQ4Composer();
     updateStatePreview();

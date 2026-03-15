@@ -795,6 +795,50 @@ textarea {
     color: var(--accent-strong);
 }
 
+/* ── AI 자동 구성 버튼 ── */
+.q4-auto-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 20px;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1a237e, #0d47a1, #01579b);
+    color: #fff;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 250ms ease;
+    box-shadow: 0 4px 16px rgba(13, 71, 161, 0.25);
+    margin-bottom: 6px;
+}
+.q4-auto-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(13, 71, 161, 0.35);
+}
+.q4-auto-btn.active {
+    background: linear-gradient(135deg, #0d47a1, #01579b, #006064);
+    border-color: rgba(255,255,255,0.3);
+    box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.2), 0 8px 24px rgba(13, 71, 161, 0.3);
+}
+.q4-auto-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+.q4-auto-text {
+    text-align: left;
+    line-height: 1.4;
+}
+
+/* ── 카테고리별 상세 기기 보기 — 각진 네모 + 진한 회색 그라데이션 ── */
+.q4-details {
+    border-radius: 6px !important;
+    background: linear-gradient(180deg, #4a4a4a, #2d2d2d) !important;
+    border: 1px solid #555 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
 .q4-details summary {
     cursor: pointer;
     font-weight: 800;
@@ -803,12 +847,14 @@ textarea {
     display: flex;
     align-items: center;
     gap: 6px;
+    color: #e0e0e0;
 }
 
 .q4-details summary::before {
     content: "▸";
     font-size: 0.82rem;
     transition: transform 200ms ease;
+    color: #aaa;
 }
 
 .q4-details[open] summary::before {
@@ -821,11 +867,27 @@ textarea {
 
 .q4-details[open] summary {
     margin-bottom: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+}
+
+.q4-details .device-grid {
+    color: #ddd;
+}
+
+.q4-details input[type="text"] {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.15);
+    color: #eee;
+}
+.q4-details input[type="text"]::placeholder {
+    color: rgba(255,255,255,0.4);
 }
 
 .q4-summary-card {
     position: sticky;
     top: 18px;
+    align-self: stretch;
     background: linear-gradient(135deg, rgba(0, 51, 102, 0.04) 0%, rgba(0, 80, 200, 0.07) 100%);
     border: 1.5px solid rgba(0, 51, 102, 0.15);
 }
