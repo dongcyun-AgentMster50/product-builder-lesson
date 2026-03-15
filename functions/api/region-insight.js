@@ -162,23 +162,20 @@ async function fetchJson(url, options = {}) {
 }
 
 async function buildLiveRegionInsight({ country, city, cityLocal, locale, role, env }) {
-    const geocode = await withTimeout((signal) => fetchOpenMeteoGeocode(city || country, country, signal), TIMEOUT_MS);
-    const lat = Number(geocode?.latitude || 0);
-    const lon = Number(geocode?.longitude || 0);
-
+    // geocode + 모든 데이터 소스 + GPT 웹검색을 전부 병렬 실행
     const tasks = [
+        withTimeout((signal) => fetchOpenMeteoGeocode(city || country, country, signal), TIMEOUT_MS),
         withTimeout((signal) => fetchWorldBank(country, "NY.GDP.PCAP.CD", signal), TIMEOUT_MS),
         withTimeout((signal) => fetchWorldBank(country, "SP.URB.TOTL.IN.ZS", signal), TIMEOUT_MS),
         withTimeout((signal) => fetchCountryProfile(country, signal), TIMEOUT_MS)
     ];
 
-    if (lat && lon) tasks.push(withTimeout((signal) => fetchOpenMeteo(lat, lon, signal), TIMEOUT_MS));
     if (city) tasks.push(withTimeout((signal) => fetchNominatim(city, country, signal), TIMEOUT_MS));
     if (city) tasks.push(withTimeout((signal) => fetchCityLandmarkImage(city, country, signal), TIMEOUT_MS));
 
-    // Fetch live trends via GPT-4o-mini (non-blocking — won't delay other data)
+    // GPT-4o 웹검색 — 가장 중요하고 가장 느림, 병렬로 바로 시작
     const apiKey = String(env?.OPENAI_API_KEY || "").trim();
-    let liveStatus = "skipped"; // 진단: no_key / pending / ok / error
+    let liveStatus = "skipped";
     if (!apiKey) {
         liveStatus = "no_key";
     } else if (city) {
@@ -188,14 +185,24 @@ async function buildLiveRegionInsight({ country, city, cityLocal, locale, role, 
 
     const settled = await Promise.allSettled(tasks);
     const values = settled.filter((entry) => entry.status === "fulfilled").map((entry) => entry.value);
-    const rejected = settled.filter((entry) => entry.status === "rejected");
     if (!values.length) {
         throw Object.assign(new Error("All live insight sources failed."), { code: "REGION_INSIGHT_ALL_SOURCES_FAILED" });
     }
 
+    const geocode = values.find((value) => value.type === "geocode") || null;
+    const lat = Number(geocode?.latitude || 0);
+    const lon = Number(geocode?.longitude || 0);
+
+    // geocode 결과로 날씨 추가 조회 (빠름, 직렬 OK)
+    let climate = null;
+    if (lat && lon) {
+        try {
+            climate = await withTimeout((signal) => fetchOpenMeteo(lat, lon, signal), TIMEOUT_MS);
+        } catch { /* 날씨 실패해도 진행 */ }
+    }
+
     const gdp = values.find((value) => value.type === "gdp");
     const urban = values.find((value) => value.type === "urban");
-    const climate = values.find((value) => value.type === "climate");
     const place = values.find((value) => value.type === "place");
     const countryProfile = values.find((value) => value.type === "country_profile");
     const landmark = values.find((value) => value.type === "city_landmark");
@@ -241,7 +248,7 @@ Return ONLY valid JSON — no markdown:
 - Korean city names only for Korean locale.`;
 
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 25000);
+    const timer = setTimeout(() => controller.abort(), 40000);
 
     try {
         const response = await fetch("https://api.openai.com/v1/responses", {
@@ -481,7 +488,8 @@ async function fetchOpenMeteoGeocode(query, country, signal) {
         `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&countryCode=${country}&format=json`,
         { signal }
     );
-    return Array.isArray(payload?.results) && payload.results.length ? payload.results[0] : null;
+    const result = Array.isArray(payload?.results) && payload.results.length ? payload.results[0] : null;
+    return result ? { type: "geocode", ...result } : { type: "geocode" };
 }
 
 async function fetchOpenMeteo(lat, lon, signal) {

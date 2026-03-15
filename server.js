@@ -1254,7 +1254,7 @@ Return ONLY valid JSON — no markdown:
             });
             if (!res.ok) throw new Error(`OpenAI Responses API ${res.status}`);
             return res.json();
-        }, 25000);
+        }, 40000);
 
         // Responses API 출력 파싱
         const messageItem = (response?.output || []).find((item) => item.type === "message");
@@ -1278,22 +1278,18 @@ Return ONLY valid JSON — no markdown:
 
 async function buildLiveRegionInsight({ country, city, locale, role }) {
     const cityQuery = city || country;
-    const geocode = await fetchOpenMeteoGeocode(cityQuery, country);
-    const lat = Number(geocode?.latitude || 0);
-    const lon = Number(geocode?.longitude || 0);
 
+    // geocode + 모든 데이터 소스 + GPT 웹검색을 전부 병렬 실행
     const sources = [
+        fetchOpenMeteoGeocode(cityQuery, country),
         fetchWorldBankCountrySignals(country),
         fetchWorldBankUrbanSignals(country),
         fetchCountryProfile(country)
     ];
-    if (lat && lon) {
-        sources.push(fetchOpenMeteoSignals(lat, lon));
-    }
     if (city) {
         sources.push(fetchNominatimCitySignals(city, country));
     }
-    // AI 기반 도시별 실시간 트렌드/이벤트/고민/솔루션 생성
+
     console.log(`[buildLiveRegionInsight] Calling fetchCityLiveContent for city="${city}"`);
     const cityLivePromise = fetchCityLiveContent({ country, city, role, locale });
 
@@ -1303,9 +1299,18 @@ async function buildLiveRegionInsight({ country, city, locale, role }) {
         throw Object.assign(new Error("All live insight sources failed."), { code: "REGION_INSIGHT_ALL_SOURCES_FAILED" });
     }
 
+    const geocode = fulfilled.find((item) => item.type === "openmeteo_geocode") || null;
+    const lat = Number(geocode?.latitude || 0);
+    const lon = Number(geocode?.longitude || 0);
+
+    // geocode 결과로 날씨 추가 조회 (빠름, 직렬 OK)
+    let climate = null;
+    if (lat && lon) {
+        try { climate = await withTimeout(() => fetchOpenMeteoSignals(lat, lon), REGION_INSIGHT_TIMEOUT_MS); } catch { /* 날씨 실패해도 진행 */ }
+    }
+
     const worldBankMarket = fulfilled.find((item) => item.type === "worldbank_market");
     const worldBankUrban = fulfilled.find((item) => item.type === "worldbank_urban");
-    const climate = fulfilled.find((item) => item.type === "openmeteo");
     const citySignal = fulfilled.find((item) => item.type === "nominatim_city");
     const countryProfile = fulfilled.find((item) => item.type === "country_profile");
 
@@ -1469,7 +1474,8 @@ async function fetchWorldBankUrbanSignals(country) {
 async function fetchOpenMeteoGeocode(cityQuery, country) {
     const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityQuery)}&count=8&language=en&countryCode=${country}&format=json`;
     const payload = await fetchJsonWithTimeout(url);
-    return pickBestGeocodeResult(payload?.results, cityQuery);
+    const result = pickBestGeocodeResult(payload?.results, cityQuery);
+    return result ? { type: "openmeteo_geocode", ...result } : { type: "openmeteo_geocode" };
 }
 
 async function fetchOpenMeteoSignals(lat, lon) {
