@@ -905,6 +905,13 @@ function p3click(nodeId) {
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>
 mermaid.initialize({startOnLoad:true,securityLevel:'loose',theme:'base',themeVariables:{primaryColor:'#e8eaf6',primaryTextColor:'#1a1a2e',primaryBorderColor:'#001a6e',lineColor:'#001a6e',fontSize:'12px'}});
+// Mermaid click이 <a href>로 페이지 이동하는 것을 방지
+setTimeout(function(){
+    document.querySelectorAll('.mermaid a[href]').forEach(function(a){
+        a.removeAttribute('href');
+        a.style.cursor='pointer';
+    });
+},1500);
 const deck=document.getElementById('deck'),slides=deck.querySelectorAll('.slide'),total=slides.length;let cur=0;
 function go(n){cur=Math.max(0,Math.min(total-1,n));deck.style.transform=`translateX(-${cur*100}vw)`;document.getElementById('prev-btn').disabled=cur===0;document.getElementById('next-btn').disabled=cur===total-1;document.getElementById('counter').textContent=`${cur+1} / ${total}`}
 document.getElementById('prev-btn').addEventListener('click',()=>go(cur-1));
