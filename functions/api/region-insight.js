@@ -253,8 +253,18 @@ Return ONLY valid JSON — no markdown, no explanation.
   "events": [
     {"name": "event name", "when": "YYYY-MM-DD", "hook": "one-line Samsung marketing angle"}
   ],
-  "pains": ["specific pain tied to a trend above — mention ${city} context"],
-  "solutions": ["specific Samsung SmartThings tactic tied to ${city} situation"]
+  "pains": [
+    {
+      "text": "pain headline — realistic quote from a ${role} marketer in ${city}",
+      "insight": "1-2 sentences explaining WHY this is a pain, referencing a specific trend above and ${city} demographics/market data"
+    }
+  ],
+  "solutions": [
+    {
+      "text": "actionable tactic headline",
+      "insight": "1-2 sentences explaining HOW to execute this in ${city}, referencing specific Samsung products, local partnerships, or channel strategies with expected impact"
+    }
+  ]
 }
 
 Field requirements:
@@ -266,8 +276,12 @@ Field requirements:
   * "source_date": YYYY-MM-DD (best estimate if exact date unknown)
   * "source_url": a real URL from the source org's domain. If unsure of exact path, use the org's homepage URL.
 - events: 2-3 upcoming events in or near ${city} within 3 months of ${todayIso}. Omit if not confident about dates.
-- pains: 3 pain points a Samsung ${role} marketer faces in ${city}, each directly tied to one of the trends above. Be specific — reference ${city} demographics or local market conditions.
-- solutions: 3 actionable Samsung SmartThings tactics specific to ${city}. Reference specific products, local partnerships, or channel strategies.
+- pains: EXACTLY 3 objects. Each pain MUST:
+  * "text": a realistic first-person quote/concern from a ${role} marketer working in ${city}. BAD: "인식이 낮다" (vague). GOOD: "수지구 신규 입주 단지에서 '이거 월 전기세 얼마나 올라요?' 질문이 시연 10건 중 8건 — 답변 스크립트가 없어서 상담 전환율이 15%에 그치고 있다"
+  * "insight": connect this pain to a specific trend above + ${city} data. Why does this matter HERE specifically?
+- solutions: EXACTLY 3 objects. Each solution MUST:
+  * "text": concrete tactic headline (not vague advice). BAD: "체험 프로그램 운영" (generic). GOOD: "기흥구 롯데몰 체험존에서 'AI 절전 30초 시연' → 비포/애프터 전기요금 비교 태블릿 배치"
+  * "insight": explain HOW to execute in ${city} — mention specific Samsung products (SmartThings Energy, AI Hub, Jet Bot), local retail locations, or partnership opportunities + expected impact metric.
 - Do NOT use dates before ${todayIso}.
 - Write ALL content in ${lang}. For Korean: use Korean city/district names (강남구, 송도, 청라) — NEVER English transliterations.`;
 
@@ -326,12 +340,22 @@ Field requirements:
                 return { text: String(item || "").trim(), evidence: "", source_title: "", source_org: "", source_date: "", source_url: "" };
             }).filter((t) => t.text).slice(0, 4);
 
+            // pains/solutions: 객체 배열({text, insight}) 또는 문자열 배열 모두 지원
+            const normalizePainSolution = (item) => {
+                if (typeof item === "object" && item !== null) {
+                    const text = String(item.text || "").trim();
+                    const insight = String(item.insight || "").trim();
+                    return insight ? `${text}\n💡 ${insight}` : text;
+                }
+                return String(item || "").trim();
+            };
+
             const result = {
                 type: "live_trends",
                 trends,
                 events: Array.isArray(parsed?.events) ? parsed.events.slice(0, 3) : [],
-                pains: Array.isArray(parsed?.pains) ? parsed.pains.slice(0, 3) : [],
-                solutions: Array.isArray(parsed?.solutions) ? parsed.solutions.slice(0, 3) : []
+                pains: Array.isArray(parsed?.pains) ? parsed.pains.map(normalizePainSolution).filter(Boolean).slice(0, 3) : [],
+                solutions: Array.isArray(parsed?.solutions) ? parsed.solutions.map(normalizePainSolution).filter(Boolean).slice(0, 3) : []
             };
 
             if (!result.trends.length && !result.pains.length) {

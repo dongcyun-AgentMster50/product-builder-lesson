@@ -1960,6 +1960,12 @@ function buildInsightMarkup(insight) {
                         : "";
                     return `<li>${label}${evidenceHtml}</li>`;
                 }
+                // pains/solutions: "text\n💡 insight" 형태 지원
+                if (typeof item === "string" && item.includes("\n💡")) {
+                    const [mainText, ...insightParts] = item.split("\n💡");
+                    const insightText = insightParts.join("\n💡").trim();
+                    return `<li>${escapeHtml(mainText)}${insightText ? `<span class="trend-evidence">💡 ${escapeHtml(insightText)}</span>` : ""}</li>`;
+                }
                 return `<li>${escapeHtml(item)}</li>`;
             }).join("")}</ul>`
             : "";

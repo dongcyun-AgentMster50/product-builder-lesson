@@ -1097,11 +1097,33 @@ function sanitizeCityLiveContent(payload) {
         })
         .slice(0, 4);
 
+    // pains/solutions: 객체({text, insight}) 또는 문자열 모두 지원
+    const asInsightList = (value, limit) => {
+        const seen = new Set();
+        return (Array.isArray(value) ? value : [])
+            .map((item) => {
+                if (typeof item === "object" && item !== null) {
+                    const text = normalizeLooseText(item.text || "");
+                    const insight = normalizeLooseText(item.insight || "");
+                    return insight ? `${text}\n💡 ${insight}` : text;
+                }
+                return normalizeLooseText(item);
+            })
+            .filter(Boolean)
+            .filter((item) => {
+                const key = item.toLowerCase().slice(0, 40);
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            })
+            .slice(0, limit);
+    };
+
     return {
         live_trends: liveTrends,
         live_events: liveEvents,
-        live_pains: asList(payload.live_pains, 3),
-        live_solutions: asList(payload.live_solutions, 3)
+        live_pains: asInsightList(payload.live_pains, 3),
+        live_solutions: asInsightList(payload.live_solutions, 3)
     };
 }
 
@@ -1228,8 +1250,18 @@ Return ONLY valid JSON — no markdown, no explanation.
   "live_events": [
     {"name": "event name", "when": "YYYY-MM-DD", "hook": "one-line Samsung marketing angle"}
   ],
-  "live_pains": ["specific pain tied to a trend above — mention ${city} context"],
-  "live_solutions": ["specific Samsung SmartThings tactic tied to ${city} situation"]
+  "live_pains": [
+    {
+      "text": "pain headline — realistic quote from a ${role} marketer in ${city}",
+      "insight": "1-2 sentences explaining WHY this is a pain, referencing a specific trend above and ${city} demographics/market data"
+    }
+  ],
+  "live_solutions": [
+    {
+      "text": "actionable tactic headline",
+      "insight": "1-2 sentences explaining HOW to execute this in ${city}, referencing specific Samsung products, local partnerships, or channel strategies with expected impact"
+    }
+  ]
 }
 
 Field requirements:
@@ -1241,8 +1273,12 @@ Field requirements:
   * "source_date": YYYY-MM-DD (best estimate if exact date unknown)
   * "source_url": a real URL from the source org's domain. If unsure of exact path, use the org's homepage URL.
 - live_events: 2-3 upcoming events in or near ${city} within 3 months of ${todayIso}. Omit if not confident about dates.
-- live_pains: 3 pain points a Samsung ${role} marketer faces in ${city}, each directly tied to one of the live_trends above. Be specific — reference ${city} demographics or local market conditions.
-- live_solutions: 3 actionable Samsung SmartThings tactics specific to ${city}. Reference specific products, local partnerships, or channel strategies.
+- live_pains: EXACTLY 3 objects. Each pain MUST:
+  * "text": a realistic first-person quote/concern from a ${role} marketer working in ${city}. BAD: "인식이 낮다" (vague). GOOD: "수지구 신규 입주 단지에서 '이거 월 전기세 얼마나 올라요?' 질문이 시연 10건 중 8건 — 답변 스크립트가 없어서 상담 전환율이 15%에 그치고 있다"
+  * "insight": connect this pain to a specific trend above + ${city} data. Why does this matter HERE specifically?
+- live_solutions: EXACTLY 3 objects. Each solution MUST:
+  * "text": concrete tactic headline (not vague advice). BAD: "체험 프로그램 운영" (generic). GOOD: "기흥구 롯데몰 체험존에서 'AI 절전 30초 시연' → 비포/애프터 전기요금 비교 태블릿 배치"
+  * "insight": explain HOW to execute in ${city} — mention specific Samsung products (SmartThings Energy, AI Hub, Jet Bot), local retail locations, or partnership opportunities + expected impact metric.
 - Do NOT use dates before ${todayIso}.
 - Write ALL content in ${lang}. For Korean: use Korean city/district names (인천, 송도, 청라) — NEVER English transliterations.`;
 
