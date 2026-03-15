@@ -298,31 +298,6 @@ graph LR
     M1 --> L8["⑧ trends + URLs"] --> RI
     M2 --> L9["⑨ 11 sections"] --> GN
     DEPLOY -.-> LD["동일 로직"] -.-> LOCAL
-    click C1 p3click
-    click C2 p3click
-    click RI p3click
-    click GN p3click
-    click RF p3click
-    click AU p3click
-    click SV p3click
-    click E1 p3click
-    click E2 p3click
-    click E3 p3click
-    click E4 p3click
-    click E5 p3click
-    click M1 p3click
-    click M2 p3click
-    click L0 p3click
-    click L1 p3click
-    click L2 p3click
-    click L3 p3click
-    click L4 p3click
-    click L5 p3click
-    click L6 p3click
-    click L7 p3click
-    click L8 p3click
-    click L9 p3click
-    click LD p3click
     style CLIENT fill:#f0f2f8,stroke:#001a6e,stroke-width:2px
     style DEPLOY fill:#fff,stroke:#1a1a2e,stroke-width:2px
     style LOCAL fill:#f5f5f5,stroke:#aaa,stroke-dasharray:5
@@ -392,9 +367,20 @@ const P3_DATA = {
     L9: { title:"⑨ 11 sections — 시나리오 반환", desc:"AI가 생성한 11개 섹션(01 제목/Summary ~ 09 시장성, 선택적 10 Add-on, 11 Reflection)이 SSE 청크로 generate.js를 경유하여 클라이언트에 전달됩니다. 클라이언트의 renderAIResult()가 마크다운을 파싱하여 슬라이드형 카드 UI로 렌더링합니다.", next:"→ 클라이언트 화면에 11섹션 카드 표시 완료" },
     LD: { title:"동일 로직 — 이중 코드 구조", desc:"server.js(로컬 개발용)와 functions/api/(Cloudflare 배포용)는 동일한 비즈니스 로직을 가지고 있습니다. API 수정 시 반드시 양쪽을 동기화해야 합니다. server.js는 로컬 테스트 전용이며, 실제 프로덕션 트래픽은 Cloudflare Functions가 처리합니다.", next:"⚠ 수정 시 양쪽 파일 동기화 필수" }
 };
-function p3click(nodeId) {
+// Mermaid SVG 노드 클릭 → P3_DATA에서 설명 표시 (이벤트 위임)
+document.addEventListener('click', function(e) {
+    // Mermaid SVG 내부 노드 찾기: <g> 태그의 id가 "flowchart-{nodeId}-숫자" 패턴
+    const gNode = e.target.closest('g[id]');
+    if (!gNode) return;
+    const id = gNode.id || '';
+    // Mermaid는 "flowchart-C2-123" 형태로 ID 생성
+    const match = id.match(/flowchart-(\w+)-\d+/);
+    if (!match) return;
+    const nodeId = match[1];
     const data = P3_DATA[nodeId];
     if (!data) return;
+    e.preventDefault();
+    e.stopPropagation();
     const panel = document.getElementById('p3-panel');
     if (!panel) return;
     panel.innerHTML = `
@@ -406,7 +392,7 @@ function p3click(nodeId) {
             <p style="margin:0;font-size:.82em;color:#fff;font-weight:700">${data.next}</p>
         </div>
     `;
-}
+});
 </script>
         <div style="background:#f5f5f5;border-top:3px solid #aaa;padding:10px;border-radius:4px;border:1px dashed #ccc">
             <p style="font-weight:800;color:#888;margin-bottom:4px">❺ LOCAL DEV</p>
@@ -904,14 +890,7 @@ function p3click(nodeId) {
 
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>
-mermaid.initialize({startOnLoad:true,securityLevel:'loose',theme:'base',themeVariables:{primaryColor:'#e8eaf6',primaryTextColor:'#1a1a2e',primaryBorderColor:'#001a6e',lineColor:'#001a6e',fontSize:'12px'}});
-// Mermaid click이 <a href>로 페이지 이동하는 것을 방지
-setTimeout(function(){
-    document.querySelectorAll('.mermaid a[href]').forEach(function(a){
-        a.removeAttribute('href');
-        a.style.cursor='pointer';
-    });
-},1500);
+mermaid.initialize({startOnLoad:true,theme:'base',themeVariables:{primaryColor:'#e8eaf6',primaryTextColor:'#1a1a2e',primaryBorderColor:'#001a6e',lineColor:'#001a6e',fontSize:'12px'}});
 const deck=document.getElementById('deck'),slides=deck.querySelectorAll('.slide'),total=slides.length;let cur=0;
 function go(n){cur=Math.max(0,Math.min(total-1,n));deck.style.transform=`translateX(-${cur*100}vw)`;document.getElementById('prev-btn').disabled=cur===0;document.getElementById('next-btn').disabled=cur===total-1;document.getElementById('counter').textContent=`${cur+1} / ${total}`}
 document.getElementById('prev-btn').addEventListener('click',()=>go(cur-1));
