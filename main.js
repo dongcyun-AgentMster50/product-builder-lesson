@@ -3595,8 +3595,21 @@ function buildStreamingUI(context) {
     `;
 }
 
+function stripMetaPrompts(text) {
+    // AI가 끝에 붙이는 메타 텍스트 제거
+    return text
+        .replace(/어떤 부분을 수정하거나.*$/gm, "")
+        .replace(/Which section to refine.*$/gim, "")
+        .replace(/\(Which section.*?\)/gi, "")
+        .replace(/수정하거나 더 자세히 보고 싶으신가요\?.*$/gm, "")
+        .replace(/request section 10.*$/gim, "")
+        .replace(/request 10[-–]11.*$/gim, "")
+        .trim();
+}
+
 function renderAIResult(markdown, context) {
-    const html = parseSourceCitations(markdownToHtml(markdown));
+    const cleaned = stripMetaPrompts(markdown);
+    const html = parseSourceCitations(markdownToHtml(cleaned));
     resultDiv.innerHTML = `
         <article class="scenario-output ai-result">
             <div class="ai-result-meta">
@@ -3613,7 +3626,7 @@ function renderAIResult(markdown, context) {
     const copyBtn = resultDiv.querySelector("#ai-copy-btn");
     if (copyBtn) {
         copyBtn.addEventListener("click", () => {
-            navigator.clipboard.writeText(markdown).then(() => {
+            navigator.clipboard.writeText(cleaned).then(() => {
                 copyBtn.textContent = currentLocale === "ko" ? "복사됨!" : "Copied!";
                 setTimeout(() => { copyBtn.textContent = currentLocale === "ko" ? "복사" : "Copy"; }, 2000);
             }).catch(() => {});
@@ -3725,6 +3738,10 @@ function bindRefinementPrompt(previousOutput, context) {
         aiGenerating = false;
         askBtn.disabled = false;
         input.value = "";
+        // 메타 텍스트 제거
+        if (answer.textContent) {
+            answer.textContent = stripMetaPrompts(answer.textContent);
+        }
     };
 
     askBtn.addEventListener("click", ask);

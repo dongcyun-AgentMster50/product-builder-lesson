@@ -3339,95 +3339,157 @@ pre {
 }
 
 .ai-result-body {
-    padding: 24px 28px;
+    padding: 28px 32px;
     line-height: 1.75;
     color: var(--text);
 }
 
+/* ── 섹션 헤딩: (01), (02) 등 → 카드 분리 효과 ── */
 .ai-result-body h1,
 .ai-result-body h2 {
-    margin: 28px 0 10px;
+    margin: 36px 0 14px;
     font-family: "SamsungOne", "Segoe UI", Arial, sans-serif;
-    font-weight: 700;
-    color: var(--accent-strong, #003366);
-    border-bottom: 2px solid rgba(0, 51, 102, 0.12);
-    padding-bottom: 6px;
+    font-weight: 800;
+    font-size: 1.25em;
+    color: #fff;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 14px 20px;
+    border-radius: 10px;
+    border: none;
+    letter-spacing: -0.01em;
+}
+
+.ai-result-body h2 + p,
+.ai-result-body h2 + ul,
+.ai-result-body h2 + ol,
+.ai-result-body h2 + table,
+.ai-result-body h1 + p {
+    background: #fff;
+    border: 1px solid rgba(0, 51, 102, 0.1);
+    border-radius: 0 0 10px 10px;
+    padding: 16px 20px;
+    margin-top: -4px;
 }
 
 .ai-result-body h3 {
-    margin: 22px 0 8px;
+    margin: 24px 0 10px;
     font-weight: 700;
-    color: var(--ink);
+    font-size: 1.05em;
+    color: var(--accent-strong, #003366);
+    padding-left: 12px;
+    border-left: 4px solid var(--accent, #1428a0);
 }
 
 .ai-result-body h4 {
-    margin: 16px 0 6px;
-    font-weight: 600;
+    margin: 18px 0 8px;
+    font-weight: 700;
+    font-size: 0.95em;
     color: var(--ink);
 }
 
+/* ── 표 스타일 — Samsung corporate ── */
 .ai-result-body table {
     width: 100%;
     border-collapse: collapse;
     margin: 16px 0;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 51, 102, 0.12);
 }
 
 .ai-result-body th,
 .ai-result-body td {
-    border: 1px solid rgba(0, 51, 102, 0.15);
-    padding: 8px 12px;
+    border: 1px solid rgba(0, 51, 102, 0.1);
+    padding: 10px 14px;
     text-align: left;
     vertical-align: top;
 }
 
 .ai-result-body th {
-    background: rgba(0, 51, 102, 0.06);
-    font-weight: 600;
+    background: linear-gradient(180deg, #1a1a2e, #16213e);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.84em;
+    letter-spacing: 0.02em;
 }
 
+.ai-result-body tr:nth-child(even) td {
+    background: rgba(0, 51, 102, 0.025);
+}
+
+.ai-result-body tr:hover td {
+    background: rgba(0, 51, 102, 0.05);
+}
+
+/* ── 코드 블록 ── */
 .ai-result-body pre {
-    background: rgba(0, 0, 0, 0.04);
-    border-radius: 8px;
-    padding: 14px 16px;
+    background: #161b22;
+    color: #c9d1d9;
+    border-radius: 10px;
+    padding: 16px 18px;
     overflow-x: auto;
-    font-size: 0.84rem;
-    margin: 12px 0;
+    font-size: 0.82rem;
+    margin: 14px 0;
+    border: 1px solid #30363d;
 }
 
 .ai-result-body code {
     font-family: "SFMono-Regular", "Consolas", monospace;
     font-size: 0.84em;
-    background: rgba(0, 51, 102, 0.06);
-    padding: 2px 5px;
+    background: rgba(0, 51, 102, 0.07);
+    padding: 2px 6px;
     border-radius: 4px;
+    color: var(--accent-strong, #003366);
 }
 
 .ai-result-body pre code {
     background: none;
     padding: 0;
+    color: inherit;
 }
 
+/* ── 리스트 ── */
 .ai-result-body ul,
 .ai-result-body ol {
-    padding-left: 24px;
-    margin: 8px 0;
+    padding-left: 22px;
+    margin: 10px 0;
 }
 
 .ai-result-body li {
-    margin-bottom: 6px;
-    line-height: 1.7;
+    margin-bottom: 7px;
+    line-height: 1.75;
+    padding-left: 4px;
 }
 
+.ai-result-body li::marker {
+    color: var(--accent, #1428a0);
+}
+
+/* ── 본문 ── */
 .ai-result-body p {
     margin: 10px 0;
-    line-height: 1.8;
+    line-height: 1.85;
 }
 
+/* ── 구분선 ── */
 .ai-result-body hr {
     border: none;
-    border-top: 1px solid rgba(0, 51, 102, 0.15);
-    margin: 24px 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(0, 51, 102, 0.15), transparent);
+    margin: 32px 0;
+}
+
+/* ── [Source] 출처 라인 스타일 ── */
+.ai-result-body p:has(.source-tag),
+.ai-result-body li:has(.source-tag) {
+    font-size: 0.84em;
+    color: #5a7a9a;
+}
+
+/* ── 강조 블록 — Pain Point, Benefit 등 ── */
+.ai-result-body strong {
+    color: var(--ink, #1a1a2e);
 }
 
 .ai-refine-answer {
