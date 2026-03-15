@@ -120,7 +120,7 @@
 
 <!-- ===== PAGE 2: FLOW OVERVIEW ===== -->
 <div class="slide flow">
-    <span class="page-num">2/17</span>
+    <span class="page-num">2/18</span>
     <span class="badge blue">Part A — Flow</span>
     <h2>전체 시스템 플로우</h2>
     <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:24px;margin-top:8px">
@@ -177,9 +177,70 @@
     </div>
 </div>
 
-<!-- ===== PAGE 3: Q2 DETAIL ===== -->
+<!-- ===== PAGE 3: ARCHITECTURE DIAGRAM ===== -->
 <div class="slide flow">
-    <span class="page-num">3/17</span>
+    <span class="page-num">3/18</span>
+    <span class="badge blue">Part A — Architecture</span>
+    <h2>Server · Function · API — Containment & Communication</h2>
+    <div class="mermaid" style="margin-top:4px">
+graph LR
+    subgraph CLIENT["CLIENT · Browser"]
+        direction TB
+        C1["index.html + style.css"]
+        C2["main.js<br/>───────────<br/>selectCity · renderStep2Insight<br/>fetchLiveStep2Insight<br/>generateScenario<br/>renderAIResult<br/>mapLiveStep2Insight"]
+    end
+    subgraph DEPLOY["CLOUDFLARE PAGES · Functions"]
+        direction TB
+        RI["region-insight.js<br/>───────────<br/>buildLiveRegionInsight<br/>fetchLiveTrends<br/>buildRoleLens"]
+        GN["generate.js<br/>───────────<br/>callAIStream<br/>prompt.txt v8.2"]
+        RF["refine.js<br/>───────────<br/>messages history"]
+        AU["access/ verify · session"]
+    end
+    subgraph LOCAL["LOCAL · server.js"]
+        SV["handleRegionInsight<br/>handleGenerate<br/>fetchCityLiveContent"]
+    end
+    subgraph EXT["EXTERNAL APIs · Parallel"]
+        E1["WorldBank<br/>GDP · Urban"]
+        E2["Open-Meteo<br/>Weather · Geo"]
+        E3["Nominatim<br/>City Class"]
+        E4["RestCountries<br/>Population"]
+        E5["Wikipedia<br/>Landmark"]
+    end
+    subgraph AI["AI MODELS"]
+        M1["GPT-4o<br/>Responses API<br/>+ web_search"]
+        M2["GPT-4o / Claude<br/>SSE Streaming"]
+    end
+    C2 -->|"GET /region-insight"| RI
+    C2 -->|"POST /generate"| GN
+    C2 -->|"POST /refine"| RF
+    C2 -->|"POST /access/*"| AU
+    RI -->|fetch| E1
+    RI -->|fetch| E2
+    RI -->|fetch| E3
+    RI -->|fetch| E4
+    RI -->|fetch| E5
+    RI -->|"POST /v1/responses"| M1
+    GN -->|"SSE stream"| M2
+    RF -->|"SSE stream"| M2
+    M1 -->|"trends+URLs"| RI
+    M2 -->|"11 sections"| GN
+    DEPLOY -.->|"same logic"| LOCAL
+    style CLIENT fill:#f0f2f8,stroke:#001a6e,stroke-width:2px
+    style DEPLOY fill:#fff,stroke:#1a1a2e,stroke-width:2px
+    style LOCAL fill:#f5f5f5,stroke:#aaa,stroke-dasharray:5
+    style EXT fill:#fff,stroke:#2d2d3d,stroke-width:2px
+    style AI fill:#1a1a2e,stroke:#001a6e,stroke-width:2px,color:#fff
+    style M1 fill:#001a6e,color:#fff
+    style M2 fill:#001a6e,color:#fff
+    style RI fill:#e8eaf6,stroke:#001a6e
+    style GN fill:#e8eaf6,stroke:#001a6e
+    style RF fill:#e8eaf6,stroke:#001a6e
+    </div>
+</div>
+
+<!-- ===== PAGE 4: Q2 DETAIL ===== -->
+<div class="slide flow">
+    <span class="page-num">4/18</span>
     <span class="badge green">Part A — Q2 상세</span>
     <h2>Q2 라이브 트렌드 카드 — 함수별 상세</h2>
     <div class="detail-grid">
@@ -196,7 +257,7 @@
 
 <!-- ===== PAGE 4: API ENDPOINTS ===== -->
 <div class="slide flow">
-    <span class="page-num">4/17</span>
+    <span class="page-num">5/18</span>
     <span class="badge purple">Part A — API 전체</span>
     <h2>서버 API 엔드포인트 & 외부 호출</h2>
     <pre><code><span class="cm">// 인증</span>
@@ -226,7 +287,7 @@
 
 <!-- ===== PAGE 5: 10-STEP OVERVIEW ===== -->
 <div class="slide flow">
-    <span class="page-num">5/17</span>
+    <span class="page-num">6/18</span>
     <span class="badge blue">Part B — 한눈에 보기</span>
     <h2>GPT vs 웹앱 — 10단계 개선 요약</h2>
     <div class="step-overview">
@@ -285,7 +346,7 @@
 
 <!-- ===== PAGE 6: GPT STEP 1 — 접속/시작 ===== -->
 <div class="slide compare">
-    <span class="page-num">6/17</span>
+    <span class="page-num">7/18</span>
     <span class="badge step">STEP 1/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 1. 접속 및 시작</h2>
     <div class="compare-grid">
@@ -314,7 +375,7 @@
 
 <!-- ===== PAGE 6: GPT STEP 2 — 역할 설정 ===== -->
 <div class="slide compare">
-    <span class="page-num">7/17</span>
+    <span class="page-num">8/18</span>
     <span class="badge step">STEP 2/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 2. 역할/관점 설정 (Q1)</h2>
     <div class="compare-grid">
@@ -343,7 +404,7 @@
 
 <!-- ===== PAGE 7: GPT STEP 3 — 지역 선택 ===== -->
 <div class="slide compare">
-    <span class="page-num">8/17</span>
+    <span class="page-num">9/18</span>
     <span class="badge step">STEP 3/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 3. 지역/시장 선택 (Q2)</h2>
     <div class="compare-grid">
@@ -377,7 +438,7 @@
 
 <!-- ===== PAGE 8: GPT STEP 4 — 타겟 세그먼트 ===== -->
 <div class="slide compare">
-    <span class="page-num">9/17</span>
+    <span class="page-num">10/18</span>
     <span class="badge step">STEP 4/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 4. 타겟 세그먼트 설정 (Q3)</h2>
     <div class="compare-grid">
@@ -407,7 +468,7 @@
 
 <!-- ===== PAGE 9: GPT STEP 5 — 기기 선택 ===== -->
 <div class="slide compare">
-    <span class="page-num">10/17</span>
+    <span class="page-num">11/18</span>
     <span class="badge step">STEP 5/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 5. 기기/제품 선택 (Q4)</h2>
     <div class="compare-grid">
@@ -438,7 +499,7 @@
 
 <!-- ===== PAGE 10: GPT STEP 6 — 지역 데이터 수집 ===== -->
 <div class="slide compare">
-    <span class="page-num">11/17</span>
+    <span class="page-num">12/18</span>
     <span class="badge step">STEP 6/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 6. 지역 데이터 수집 (내부 처리)</h2>
     <div class="compare-grid">
@@ -472,7 +533,7 @@
 
 <!-- ===== PAGE 11: GPT STEP 7 — 시나리오 생성 ===== -->
 <div class="slide compare">
-    <span class="page-num">12/17</span>
+    <span class="page-num">13/18</span>
     <span class="badge step">STEP 7/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 7. CX 시나리오 생성</h2>
     <div class="compare-grid">
@@ -506,7 +567,7 @@
 
 <!-- ===== PAGE 12: GPT STEP 8 — 결과 수신 ===== -->
 <div class="slide compare">
-    <span class="page-num">13/17</span>
+    <span class="page-num">14/18</span>
     <span class="badge step">STEP 8/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 8. 결과 수신 방식</h2>
     <div class="compare-grid">
@@ -538,7 +599,7 @@
 
 <!-- ===== PAGE 13: GPT STEP 9 — 수정/반복 ===== -->
 <div class="slide compare">
-    <span class="page-num">14/17</span>
+    <span class="page-num">15/18</span>
     <span class="badge step">STEP 9/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 9. 수정 및 반복</h2>
     <div class="compare-grid">
@@ -569,7 +630,7 @@
 
 <!-- ===== PAGE 14: GPT STEP 10 — 결과 활용 ===== -->
 <div class="slide compare">
-    <span class="page-num">15/17</span>
+    <span class="page-num">16/18</span>
     <span class="badge step">STEP 10/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 10. 결과물 활용 & 공유</h2>
     <div class="compare-grid">
@@ -602,7 +663,7 @@
 
 <!-- ===== PAGE 15: ARCHITECTURE DIFF ===== -->
 <div class="slide compare">
-    <span class="page-num">16/17</span>
+    <span class="page-num">17/18</span>
     <span class="badge red">아키텍처 근본 차이</span>
     <h2>근본적 아키텍처 차이: 대화형 vs 파이프라인형</h2>
     <div class="compare-grid">
@@ -640,7 +701,7 @@
 
 <!-- ===== PAGE 16: SUMMARY ===== -->
 <div class="slide summary" style="justify-content:center;align-items:center;text-align:center">
-    <span class="page-num">17/17</span>
+    <span class="page-num">18/18</span>
     <span class="badge blue">Summary</span>
     <h1>핵심 개선 효과 요약</h1>
     <div class="stat-grid" style="margin:auto">
@@ -663,7 +724,9 @@
     <button id="next-btn">다음 →</button>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>
+mermaid.initialize({startOnLoad:true,theme:'base',themeVariables:{primaryColor:'#e8eaf6',primaryTextColor:'#1a1a2e',primaryBorderColor:'#001a6e',lineColor:'#001a6e',fontSize:'12px'}});
 const deck=document.getElementById('deck'),slides=deck.querySelectorAll('.slide'),total=slides.length;let cur=0;
 function go(n){cur=Math.max(0,Math.min(total-1,n));deck.style.transform=`translateX(-${cur*100}vw)`;document.getElementById('prev-btn').disabled=cur===0;document.getElementById('next-btn').disabled=cur===total-1;document.getElementById('counter').textContent=`${cur+1} / ${total}`}
 document.getElementById('prev-btn').addEventListener('click',()=>go(cur-1));
