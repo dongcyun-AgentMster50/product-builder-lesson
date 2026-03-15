@@ -3301,146 +3301,219 @@ pre {
     overflow-y: auto;
 }
 
+/* ═══════════════════════════════════════════════════════
+   AI Result — Flowchart 팔레트 슬라이드 스타일
+   색상: #1a1a2e #2d2d3d #3a3a4a #f5f5f5 #fff #ddd #222
+   ═══════════════════════════════════════════════════════ */
 .scenario-output.ai-result {
     padding: 0;
+    background: #f5f5f5;
+    border-radius: 16px;
+    overflow: hidden;
 }
 
 .ai-result-meta {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 20px;
-    border-bottom: 1px solid rgba(0, 51, 102, 0.1);
-    background: rgba(0, 51, 102, 0.03);
-    border-radius: 16px 16px 0 0;
+    padding: 16px 24px;
+    background: #1a1a2e;
+    color: #fff;
     flex-wrap: wrap;
 }
 
 .ai-result-badge {
-    background: var(--accent-strong, #003366);
+    background: #3a3a4a;
     color: #fff;
     font-size: 0.75rem;
     font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 20px;
+    padding: 4px 12px;
+    border-radius: 3px;
     letter-spacing: 0.04em;
+    font-family: "SamsungOne", sans-serif;
 }
 
 .ai-result-context {
     font-size: 0.82rem;
-    color: var(--muted, #666);
+    color: rgba(255,255,255,.7);
     flex: 1;
 }
 
 .ai-copy-btn {
     margin-left: auto;
     font-size: 0.8rem;
-    padding: 4px 14px;
+    padding: 5px 16px;
+    background: rgba(255,255,255,.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 4px;
+}
+.ai-copy-btn:hover {
+    background: rgba(255,255,255,.2);
 }
 
 .ai-result-body {
-    padding: 28px 32px;
+    padding: 32px 36px;
     line-height: 1.75;
-    color: var(--text);
+    color: #222;
 }
 
-/* ── 섹션 헤딩: (01), (02) 등 → 카드 분리 효과 ── */
+/* ── 섹션 대제목 (01), (02) → 다크 네이비 슬라이드 헤더 ── */
 .ai-result-body h1,
 .ai-result-body h2 {
-    margin: 36px 0 14px;
-    font-family: "SamsungOne", "Segoe UI", Arial, sans-serif;
+    margin: 40px -36px 0;
+    font-family: "SamsungOne", "Noto Sans KR", sans-serif;
     font-weight: 800;
-    font-size: 1.25em;
+    font-size: 1.2em;
     color: #fff;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    padding: 14px 20px;
-    border-radius: 10px;
+    background: #1a1a2e;
+    padding: 16px 36px;
     border: none;
     letter-spacing: -0.01em;
 }
 
+/* h2 첫 번째는 margin-top 줄임 */
+.ai-result-body h2:first-child {
+    margin-top: 0;
+}
+
+/* 헤더 바로 다음 콘텐츠 → 흰 카드 */
 .ai-result-body h2 + p,
 .ai-result-body h2 + ul,
 .ai-result-body h2 + ol,
-.ai-result-body h2 + table,
 .ai-result-body h1 + p {
     background: #fff;
-    border: 1px solid rgba(0, 51, 102, 0.1);
-    border-radius: 0 0 10px 10px;
-    padding: 16px 20px;
-    margin-top: -4px;
+    border: 1px solid #ddd;
+    border-top: none;
+    margin: 0 -36px;
+    padding: 20px 36px;
 }
 
+/* ── 소제목 h3 → 좌측 보더 + 연회색 밴드 ── */
 .ai-result-body h3 {
-    margin: 24px 0 10px;
+    margin: 28px -36px 0;
+    padding: 12px 36px 12px 32px;
+    font-family: "SamsungOne", "Noto Sans KR", sans-serif;
     font-weight: 700;
-    font-size: 1.05em;
-    color: var(--accent-strong, #003366);
-    padding-left: 12px;
-    border-left: 4px solid var(--accent, #1428a0);
+    font-size: 1.02em;
+    color: #1a1a2e;
+    background: #f5f5f5;
+    border-left: 5px solid #1a1a2e;
+    border-bottom: 1px solid #ddd;
 }
 
+/* ── h4 → 중간 다크 텍스트 ── */
 .ai-result-body h4 {
-    margin: 18px 0 8px;
+    margin: 20px 0 8px;
+    font-family: "SamsungOne", "Noto Sans KR", sans-serif;
     font-weight: 700;
     font-size: 0.95em;
-    color: var(--ink);
+    color: #2d2d3d;
 }
 
-/* ── 표 스타일 — Samsung corporate ── */
+/* ── 본문 단락 → 흰 카드 안에서 ── */
+.ai-result-body p {
+    margin: 12px 0;
+    line-height: 1.85;
+    color: #333;
+}
+
+/* ── 리스트 → 카드 내 패딩 ── */
+.ai-result-body ul,
+.ai-result-body ol {
+    padding-left: 22px;
+    margin: 10px 0;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    padding-right: 14px;
+}
+
+.ai-result-body li {
+    margin-bottom: 8px;
+    line-height: 1.75;
+    padding-left: 6px;
+    color: #333;
+}
+
+.ai-result-body li::marker {
+    color: #1a1a2e;
+    font-weight: 700;
+}
+
+/* h2/h3 바로 뒤 리스트는 카드 연결 */
+.ai-result-body h2 + ul,
+.ai-result-body h2 + ol,
+.ai-result-body h3 + ul,
+.ai-result-body h3 + ol {
+    margin: 0 -36px;
+    padding: 20px 36px 20px 56px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+}
+
+/* ── 표 — 다크 헤더 + 스트라이프 ── */
 .ai-result-body table {
     width: 100%;
     border-collapse: collapse;
     margin: 16px 0;
     font-size: 0.86rem;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid rgba(0, 51, 102, 0.12);
+    border: 1px solid #ddd;
 }
 
 .ai-result-body th,
 .ai-result-body td {
-    border: 1px solid rgba(0, 51, 102, 0.1);
+    border: 1px solid #ddd;
     padding: 10px 14px;
     text-align: left;
     vertical-align: top;
 }
 
 .ai-result-body th {
-    background: linear-gradient(180deg, #1a1a2e, #16213e);
+    background: #1a1a2e;
     color: #fff;
+    font-family: "SamsungOne", sans-serif;
     font-weight: 700;
     font-size: 0.84em;
-    letter-spacing: 0.02em;
 }
 
 .ai-result-body tr:nth-child(even) td {
-    background: rgba(0, 51, 102, 0.025);
+    background: #f5f5f5;
 }
 
 .ai-result-body tr:hover td {
-    background: rgba(0, 51, 102, 0.05);
+    background: #eee;
+}
+
+/* h2 다음 테이블은 전폭 */
+.ai-result-body h2 + table {
+    margin: 0 -36px;
+    width: calc(100% + 72px);
+    border-top: none;
 }
 
 /* ── 코드 블록 ── */
 .ai-result-body pre {
-    background: #161b22;
-    color: #c9d1d9;
-    border-radius: 10px;
+    background: #2d2d3d;
+    color: #e0e0e0;
+    border-radius: 6px;
     padding: 16px 18px;
     overflow-x: auto;
     font-size: 0.82rem;
     margin: 14px 0;
-    border: 1px solid #30363d;
+    border: none;
 }
 
 .ai-result-body code {
-    font-family: "SFMono-Regular", "Consolas", monospace;
+    font-family: "JetBrains Mono", "SFMono-Regular", "Consolas", monospace;
     font-size: 0.84em;
-    background: rgba(0, 51, 102, 0.07);
+    background: #f5f5f5;
     padding: 2px 6px;
-    border-radius: 4px;
-    color: var(--accent-strong, #003366);
+    border-radius: 3px;
+    color: #2d2d3d;
 }
 
 .ai-result-body pre code {
@@ -3449,47 +3522,36 @@ pre {
     color: inherit;
 }
 
-/* ── 리스트 ── */
-.ai-result-body ul,
-.ai-result-body ol {
-    padding-left: 22px;
-    margin: 10px 0;
-}
-
-.ai-result-body li {
-    margin-bottom: 7px;
-    line-height: 1.75;
-    padding-left: 4px;
-}
-
-.ai-result-body li::marker {
-    color: var(--accent, #1428a0);
-}
-
-/* ── 본문 ── */
-.ai-result-body p {
-    margin: 10px 0;
-    line-height: 1.85;
-}
-
-/* ── 구분선 ── */
+/* ── 구분선 → 슬라이드 구분 ── */
 .ai-result-body hr {
     border: none;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(0, 51, 102, 0.15), transparent);
-    margin: 32px 0;
+    height: 3px;
+    background: #1a1a2e;
+    margin: 36px -36px;
+    opacity: 0.15;
 }
 
-/* ── [Source] 출처 라인 스타일 ── */
+/* ── [Source] 출처 ── */
 .ai-result-body p:has(.source-tag),
 .ai-result-body li:has(.source-tag) {
-    font-size: 0.84em;
-    color: #5a7a9a;
+    font-size: 0.82em;
+    color: #666;
 }
 
-/* ── 강조 블록 — Pain Point, Benefit 등 ── */
+/* ── strong 강조 ── */
 .ai-result-body strong {
-    color: var(--ink, #1a1a2e);
+    color: #1a1a2e;
+    font-weight: 700;
+}
+
+/* ── blockquote (있을 경우) ── */
+.ai-result-body blockquote {
+    margin: 14px 0;
+    padding: 14px 20px;
+    background: #f5f5f5;
+    border-left: 4px solid #3a3a4a;
+    color: #333;
+    font-style: normal;
 }
 
 .ai-refine-answer {
