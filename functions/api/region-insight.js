@@ -223,62 +223,61 @@ async function buildLiveRegionInsight({ country, city, cityLocal, locale, role, 
 async function fetchLiveTrends(city, country, locale, role, apiKey) {
     const isKo = locale === "ko";
     const lang = isKo ? "Korean" : "English";
-    const now = new Date();
-    const monthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const todayIso = new Date().toISOString().slice(0, 10);
 
-    const roleContext = {
-        retail: isKo
-            ? "리테일 매장 담당자 — 매장에서 고객에게 제품 가치를 직접 시연하고 설득해야 하는 역할"
-            : "Retail store lead — demonstrates and persuades customers on product value in-store",
-        dotcom: isKo
-            ? "온라인 커머스 담당자 — 상세페이지, 랜딩, 전환율 최적화를 담당하는 역할"
-            : "E-commerce lead — owns PDP copy, landing pages, and conversion optimization",
-        brand: isKo
-            ? "브랜드 마케터 — 캠페인 스토리텔링, 감성 메시지, 브랜드 회상을 담당하는 역할"
-            : "Brand marketer — owns campaign storytelling, emotional messaging, and brand recall"
-    };
-    const roleLine = roleContext[role] || roleContext.retail;
+    const systemPrompt = `You are a hyper-local Samsung SmartThings marketing research analyst who specializes in city-level market intelligence. STRICT RULES: (1) Every trend MUST be specific to the requested city — generic national trends are REJECTED. Mention local districts, municipal policies, or city-specific statistics. (2) live_trends is ALWAYS an array of OBJECTS with ALL fields: text, evidence, source_title, source_org, source_date, source_url. NEVER return trends as plain strings. (3) The evidence field MUST contain 2-3 sentences with concrete numbers (%, ₩, population, budgets, year-over-year). (4) Sources must reference real organizations with real domain URLs.`;
 
-    const systemPrompt = `You are a local market intelligence analyst for Samsung smart home and appliance marketing.
-Given a city, country, and marketer role, return a JSON object with exactly 4 fields.
-The logic MUST flow: trends → pains (problems caused by these trends) → solutions (how to address those pains).
+    const userPrompt = `You are researching REAL, SPECIFIC trends for "${city}" (country: ${country}) as of ${todayIso}.
+Role context: Samsung SmartThings ${role} marketer. Language: ${lang}.
 
-1. "trends": exactly 4 current lifestyle/consumer trends specific to THIS city as of ${monthYear}.
-   Focus on housing, consumer behavior, technology adoption, wellness, energy, or lifestyle shifts relevant to smart home products.
+CRITICAL RULES — read before generating:
+1. Every trend MUST be UNIQUE to "${city}" — not generic national trends. Mention ${city}-specific districts, neighborhoods, local government policies, infrastructure projects, demographic shifts, or local consumer behaviors.
+2. BAD example (too generic): "스마트 홈 기기 수요 증가" — this applies to ANY city.
+   GOOD example (hyper-local): "인천 송도국제도시 스마트시티 2단계 사업으로 IoT 인프라 확충, 신규 아파트 85%에 홈IoT 사전설치 의무화"
+3. Each trend's "evidence" MUST contain specific numbers: %, ₩/$ amounts, population figures, year-over-year changes, policy numbers, or project budgets.
+4. Each trend's source MUST be a real, verifiable organization. Use government (.go.kr, .gov), statistics agencies, research institutes, or major news outlets.
 
-2. "events": exactly 3 upcoming or ongoing local events, festivals, or seasonal occasions in or near this city (within 2-3 months from ${monthYear}).
+Return ONLY valid JSON — no markdown, no explanation.
 
-3. "pains": exactly 3 pain points that THIS role would face given these trends.
-   Each pain must clearly reference or stem from one of the trends above.
-   Format: a realistic quote or concern from this role's perspective.
-
-4. "solutions": exactly 3 actionable suggestions matching each pain above (same order).
-   Each solution should be a concrete, executable tactic — not a vague recommendation.
-
-Output ONLY valid JSON — no markdown, no explanation:
 {
-  "trends": ["trend1", "trend2", "trend3", "trend4"],
-  "events": [{"name": "...", "when": "...", "hook": "..."}],
-  "pains": ["pain1", "pain2", "pain3"],
-  "solutions": ["solution1", "solution2", "solution3"]
+  "trends": [
+    {
+      "text": "hyper-local trend headline mentioning ${city}-specific details",
+      "evidence": "3 sentences with concrete statistics, budget figures, policy names.",
+      "source_title": "specific report or article title",
+      "source_org": "publishing organization",
+      "source_date": "YYYY-MM-DD",
+      "source_url": "https://real-organization-domain/path"
+    }
+  ],
+  "events": [
+    {"name": "event name", "when": "YYYY-MM-DD", "hook": "one-line Samsung marketing angle"}
+  ],
+  "pains": ["specific pain tied to a trend above — mention ${city} context"],
+  "solutions": ["specific Samsung SmartThings tactic tied to ${city} situation"]
 }
 
-Rules:
-- Each trend: under 50 characters.
-- Each event hook: under 60 characters.
-- Each pain: under 80 characters, written as a realistic concern/quote.
-- Each solution: under 100 characters, written as an actionable tactic.
-- Be hyper-specific to the city — nothing generic.
-- Use the latest knowledge you have about this city.
-- Write in ${lang}.`;
+Field requirements:
+- trends: EXACTLY 4 objects. Each MUST reference ${city}-specific data (district names, local stats, municipal policies).
+  * "text": 1-2 sentence headline. MUST mention a ${city}-specific detail (neighborhood, project name, local stat).
+  * "evidence": 2-3 sentences packed with numbers. This is the MOST IMPORTANT field. Include specific figures like budgets, percentages, population counts, policy IDs, or year-over-year comparisons.
+  * "source_title": exact article/report/dataset title
+  * "source_org": the publishing organization (government agency, statistical office, research institute, news outlet)
+  * "source_date": YYYY-MM-DD (best estimate if exact date unknown)
+  * "source_url": a real URL from the source org's domain. If unsure of exact path, use the org's homepage URL.
+- events: 2-3 upcoming events in or near ${city} within 3 months of ${todayIso}. Omit if not confident about dates.
+- pains: 3 pain points a Samsung ${role} marketer faces in ${city}, each directly tied to one of the trends above. Be specific — reference ${city} demographics or local market conditions.
+- solutions: 3 actionable Samsung SmartThings tactics specific to ${city}. Reference specific products, local partnerships, or channel strategies.
+- Do NOT use dates before ${todayIso}.
+- Write ALL content in ${lang}. For Korean: use Korean city/district names (강남구, 송도, 청라) — NEVER English transliterations.`;
 
     const messages = [
         { role: "system", content: systemPrompt },
-        { role: "user", content: `City: ${city}\nCountry: ${country}\nRole: ${roleLine}` }
+        { role: "user", content: userPrompt }
     ];
 
-    // 1차 시도 (5초) → 실패 시 2차 재시도 (8초)
-    const ATTEMPT_TIMEOUTS = [5000, 8000];
+    // 1차 시도 (8초) → 실패 시 2차 재시도 (12초)
+    const ATTEMPT_TIMEOUTS = [8000, 12000];
 
     for (let attempt = 0; attempt < ATTEMPT_TIMEOUTS.length; attempt++) {
         const controller = new AbortController();
@@ -293,7 +292,7 @@ Rules:
                 },
                 body: JSON.stringify({
                     model: "gpt-4o-mini",
-                    max_tokens: 900,
+                    max_tokens: 3000,
                     temperature: 0.7,
                     messages
                 }),
@@ -303,22 +302,38 @@ Rules:
             if (!response.ok) {
                 console.error(`[fetchLiveTrends] Attempt ${attempt + 1}: OpenAI API returned ${response.status} for ${city}, ${country}`);
                 clearTimeout(timer);
-                continue; // 재시도
+                continue;
             }
 
             const data = await response.json();
             let content = data?.choices?.[0]?.message?.content || "";
-            // GPT가 ```json ... ``` 마크다운으로 감쌀 수 있으므로 제거
             content = content.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
             const parsed = JSON.parse(content);
+
+            // trends: 객체 배열 또는 문자열 배열 모두 지원
+            const rawTrends = Array.isArray(parsed?.trends) ? parsed.trends : [];
+            const trends = rawTrends.map((item) => {
+                if (typeof item === "object" && item !== null) {
+                    return {
+                        text: String(item.text || "").trim(),
+                        evidence: String(item.evidence || "").trim(),
+                        source_title: String(item.source_title || "").trim(),
+                        source_org: String(item.source_org || "").trim(),
+                        source_date: String(item.source_date || "").trim(),
+                        source_url: String(item.source_url || "").trim()
+                    };
+                }
+                return { text: String(item || "").trim(), evidence: "", source_title: "", source_org: "", source_date: "", source_url: "" };
+            }).filter((t) => t.text).slice(0, 4);
+
             const result = {
                 type: "live_trends",
-                trends: Array.isArray(parsed?.trends) ? parsed.trends.slice(0, 4) : [],
+                trends,
                 events: Array.isArray(parsed?.events) ? parsed.events.slice(0, 3) : [],
                 pains: Array.isArray(parsed?.pains) ? parsed.pains.slice(0, 3) : [],
                 solutions: Array.isArray(parsed?.solutions) ? parsed.solutions.slice(0, 3) : []
             };
-            // 파싱 성공했지만 내용이 비어있으면 재시도
+
             if (!result.trends.length && !result.pains.length) {
                 console.error(`[fetchLiveTrends] Attempt ${attempt + 1}: Empty result for ${city}, ${country}`);
                 clearTimeout(timer);
@@ -330,11 +345,9 @@ Rules:
         } catch (err) {
             clearTimeout(timer);
             console.error(`[fetchLiveTrends] Attempt ${attempt + 1} failed for ${city}, ${country}:`, err?.message || err);
-            // 마지막 시도가 아니면 루프가 다음 시도로 넘어감
         }
     }
 
-    // 모든 시도 실패
     console.error(`[fetchLiveTrends] All attempts exhausted for ${city}, ${country}`);
     return { type: "live_trends", trends: [], events: [] };
 }
