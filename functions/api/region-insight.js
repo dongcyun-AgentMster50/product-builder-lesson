@@ -225,140 +225,143 @@ async function fetchLiveTrends(city, country, locale, role, apiKey) {
     const lang = isKo ? "Korean" : "English";
     const todayIso = new Date().toISOString().slice(0, 10);
 
-    const systemPrompt = `You are a hyper-local Samsung SmartThings marketing analyst. Return ONLY valid JSON. All trends must be city-specific (not generic national). Write in ${lang}.`;
+    const instructions = `You are a hyper-local Samsung SmartThings marketing analyst. Use web search to find REAL, CURRENT data. Return ONLY valid JSON. Write in ${lang}.`;
 
-    const userPrompt = `${city} (${country}), ${todayIso}, ${role} marketer.
+    const input = `Search the web for current (2025-2026) real data about "${city}" (${country}) relevant to Samsung SmartThings ${role} marketing as of ${todayIso}.
 
-BAD trend: "스마트 홈 기기 수요 증가" (generic). GOOD: "인천 송도 스마트시티 2단계 — 신규 아파트 85% 홈IoT 사전설치 의무화"
+Find: local government smart city policies, IoT/smart home adoption, housing developments, energy initiatives, upcoming events near ${city}.
 
-Return JSON:
-{"trends":[{"text":"${city}-specific headline with district/policy","evidence":"2-3 sentences, concrete numbers (%, ₩, population, YoY)","source_title":"report title","source_org":"org","source_date":"YYYY-MM-DD","source_url":"https://org-domain/path"}],"events":[{"name":"event","when":"YYYY-MM-DD","hook":"Samsung angle"}],"pains":[{"text":"realistic ${role} pain quote mentioning ${city} context","insight":"WHY this hurts — link to a trend + local data"}],"solutions":[{"text":"concrete tactic with Samsung product name + ${city} location","insight":"HOW to execute + expected impact metric"}]}
+Return ONLY valid JSON — no markdown:
+{"trends":[{"text":"${city}-specific headline","evidence":"2-3 sentences with real numbers from your search","source_title":"actual article title","source_org":"publisher","source_url":"real URL from search results"}],"events":[{"name":"real event","when":"YYYY-MM-DD","hook":"Samsung angle"}],"pains":[{"text":"${role} marketer pain in ${city}","insight":"why, linked to trend + data"}],"solutions":[{"text":"Samsung product tactic in ${city}","insight":"how to execute + impact"}]}
 
-Rules:
-- trends: 4 objects. ${city} districts/policies/stats required. evidence=most important field.
-- events: 2-3 within 3 months of ${todayIso}. Skip if unsure.
-- pains: 3 objects. Each tied to a trend. Quote style, specific to ${city}.
-- solutions: 3 objects. Name Samsung products (SmartThings Energy, AI Hub, Jet Bot etc.) + local retail/channel.
-- Korean city names only (강남구, 송도) — never English transliterations.`;
+- trends: 4 objects. Use REAL search results — real URLs, real article titles, real numbers. ${city} districts/policies required.
+- events: 2-3 real upcoming events near ${city}.
+- pains: 3 objects. Each tied to a trend.
+- solutions: 3 objects. Name Samsung products (SmartThings Energy, AI Hub, Jet Bot etc.).
+- Korean city names only for Korean locale.`;
 
-    const messages = [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-    ];
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 25000);
 
-    // 단일 시도 — 프롬프트가 길어 GPT 응답에 10-15초 소요
-    const ATTEMPT_TIMEOUTS = [18000];
+    try {
+        const response = await fetch("https://api.openai.com/v1/responses", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: "gpt-4o",
+                tools: [{ type: "web_search_preview" }],
+                instructions,
+                input
+            }),
+            signal: controller.signal
+        });
 
-    for (let attempt = 0; attempt < ATTEMPT_TIMEOUTS.length; attempt++) {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), ATTEMPT_TIMEOUTS[attempt]);
-
-        try {
-            const response = await fetch("https://api.openai.com/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: "gpt-4o-mini",
-                    max_tokens: 2000,
-                    temperature: 0.7,
-                    messages
-                }),
-                signal: controller.signal
-            });
-
-            if (!response.ok) {
-                console.error(`[fetchLiveTrends] Attempt ${attempt + 1}: OpenAI API returned ${response.status} for ${city}, ${country}`);
-                clearTimeout(timer);
-                continue;
-            }
-
-            const data = await response.json();
-            let content = data?.choices?.[0]?.message?.content || "";
-            content = content.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
-            // JSON이 잘려있을 수 있으므로 가장 큰 { } 블록 추출
-            const jsonMatch = content.match(/\{[\s\S]*\}/);
-            if (!jsonMatch) {
-                console.error(`[fetchLiveTrends] No JSON found in GPT response for ${city}`);
-                clearTimeout(timer);
-                continue;
-            }
-            let parsed;
-            try {
-                parsed = JSON.parse(jsonMatch[0]);
-            } catch {
-                // 잘린 JSON 복구 시도: 닫히지 않은 괄호 보정
-                let fixedJson = jsonMatch[0];
-                const openBraces = (fixedJson.match(/\{/g) || []).length;
-                const closeBraces = (fixedJson.match(/\}/g) || []).length;
-                const openBrackets = (fixedJson.match(/\[/g) || []).length;
-                const closeBrackets = (fixedJson.match(/\]/g) || []).length;
-                // 마지막 완전한 항목까지 잘라내고 괄호 닫기
-                fixedJson = fixedJson.replace(/,\s*(?:"[^"]*":\s*)?(?:\{[^}]*)?$/, "");
-                fixedJson += "]".repeat(Math.max(0, openBrackets - closeBrackets));
-                fixedJson += "}".repeat(Math.max(0, openBraces - closeBraces));
-                try {
-                    parsed = JSON.parse(fixedJson);
-                    console.log(`[fetchLiveTrends] Recovered truncated JSON for ${city}`);
-                } catch {
-                    console.error(`[fetchLiveTrends] JSON parse failed even after recovery for ${city}`);
-                    clearTimeout(timer);
-                    continue;
-                }
-            }
-
-            // trends: 객체 배열 또는 문자열 배열 모두 지원
-            const rawTrends = Array.isArray(parsed?.trends) ? parsed.trends : [];
-            const trends = rawTrends.map((item) => {
-                if (typeof item === "object" && item !== null) {
-                    return {
-                        text: String(item.text || "").trim(),
-                        evidence: String(item.evidence || "").trim(),
-                        source_title: String(item.source_title || "").trim(),
-                        source_org: String(item.source_org || "").trim(),
-                        source_date: String(item.source_date || "").trim(),
-                        source_url: String(item.source_url || "").trim()
-                    };
-                }
-                return { text: String(item || "").trim(), evidence: "", source_title: "", source_org: "", source_date: "", source_url: "" };
-            }).filter((t) => t.text).slice(0, 4);
-
-            // pains/solutions: 객체 배열({text, insight}) 또는 문자열 배열 모두 지원
-            const normalizePainSolution = (item) => {
-                if (typeof item === "object" && item !== null) {
-                    const text = String(item.text || "").trim();
-                    const insight = String(item.insight || "").trim();
-                    return insight ? `${text}\n💡 ${insight}` : text;
-                }
-                return String(item || "").trim();
-            };
-
-            const result = {
-                type: "live_trends",
-                trends,
-                events: Array.isArray(parsed?.events) ? parsed.events.slice(0, 3) : [],
-                pains: Array.isArray(parsed?.pains) ? parsed.pains.map(normalizePainSolution).filter(Boolean).slice(0, 3) : [],
-                solutions: Array.isArray(parsed?.solutions) ? parsed.solutions.map(normalizePainSolution).filter(Boolean).slice(0, 3) : []
-            };
-
-            if (!result.trends.length && !result.pains.length) {
-                console.error(`[fetchLiveTrends] Attempt ${attempt + 1}: Empty result for ${city}, ${country}`);
-                clearTimeout(timer);
-                continue;
-            }
+        if (!response.ok) {
+            const errText = await response.text().catch(() => "");
+            console.error(`[fetchLiveTrends] Responses API ${response.status} for ${city}: ${errText.slice(0, 200)}`);
             clearTimeout(timer);
-            if (attempt > 0) console.log(`[fetchLiveTrends] Succeeded on retry (attempt ${attempt + 1}) for ${city}, ${country}`);
-            return result;
-        } catch (err) {
-            clearTimeout(timer);
-            console.error(`[fetchLiveTrends] Attempt ${attempt + 1} failed for ${city}, ${country}:`, err?.message || err);
+            return { type: "live_trends", trends: [], events: [] };
         }
-    }
 
-    console.error(`[fetchLiveTrends] All attempts exhausted for ${city}, ${country}`);
-    return { type: "live_trends", trends: [], events: [] };
+        const data = await response.json();
+
+        // Responses API 출력 구조: output[].type === "message" → content[].type === "output_text"
+        const messageItem = (data?.output || []).find((item) => item.type === "message");
+        const textContent = (messageItem?.content || []).find((c) => c.type === "output_text");
+        const rawText = textContent?.text || "";
+        const annotations = Array.isArray(textContent?.annotations) ? textContent.annotations : [];
+
+        // 실제 웹 검색 결과에서 URL 수집
+        const citedUrls = annotations
+            .filter((a) => a.type === "url_citation" && a.url)
+            .map((a) => ({ url: a.url, title: String(a.title || "").trim() }));
+
+        // JSON 추출
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+            console.error(`[fetchLiveTrends] No JSON in Responses API output for ${city}`);
+            clearTimeout(timer);
+            return { type: "live_trends", trends: [], events: [] };
+        }
+
+        let parsed;
+        try {
+            parsed = JSON.parse(jsonMatch[0]);
+        } catch {
+            // 잘린 JSON 복구
+            let fixed = jsonMatch[0].replace(/,\s*(?:"[^"]*":\s*)?(?:\{[^}]*)?$/, "");
+            const ob = (fixed.match(/\{/g) || []).length;
+            const cb = (fixed.match(/\}/g) || []).length;
+            const oq = (fixed.match(/\[/g) || []).length;
+            const cq = (fixed.match(/\]/g) || []).length;
+            fixed += "]".repeat(Math.max(0, oq - cq));
+            fixed += "}".repeat(Math.max(0, ob - cb));
+            try {
+                parsed = JSON.parse(fixed);
+                console.log(`[fetchLiveTrends] Recovered truncated JSON for ${city}`);
+            } catch {
+                console.error(`[fetchLiveTrends] JSON parse failed for ${city}`);
+                clearTimeout(timer);
+                return { type: "live_trends", trends: [], events: [] };
+            }
+        }
+
+        // 트렌드 파싱 + 웹 검색 annotation에서 실제 URL 보강
+        const findCitedUrl = (sourceTitle, sourceOrg) => {
+            const title = String(sourceTitle || "").toLowerCase();
+            const org = String(sourceOrg || "").toLowerCase();
+            // 1) JSON에 이미 URL이 있으면 그대로 사용
+            // 2) annotation에서 매칭
+            for (const c of citedUrls) {
+                const ct = c.title.toLowerCase();
+                if (title && ct.includes(title.slice(0, 15))) return c.url;
+                if (org && ct.includes(org.slice(0, 10))) return c.url;
+            }
+            return "";
+        };
+
+        const rawTrends = Array.isArray(parsed?.trends) ? parsed.trends : [];
+        const trends = rawTrends.map((item) => {
+            if (typeof item === "object" && item !== null) {
+                const sourceUrl = String(item.source_url || "").trim();
+                return {
+                    text: String(item.text || "").trim(),
+                    evidence: String(item.evidence || "").trim(),
+                    source_title: String(item.source_title || "").trim(),
+                    source_org: String(item.source_org || "").trim(),
+                    source_date: String(item.source_date || "").trim(),
+                    source_url: sourceUrl || findCitedUrl(item.source_title, item.source_org)
+                };
+            }
+            return { text: String(item || "").trim(), evidence: "", source_title: "", source_org: "", source_date: "", source_url: "" };
+        }).filter((t) => t.text).slice(0, 4);
+
+        const normalizePainSolution = (item) => {
+            if (typeof item === "object" && item !== null) {
+                const text = String(item.text || "").trim();
+                const insight = String(item.insight || "").trim();
+                return insight ? `${text}\n💡 ${insight}` : text;
+            }
+            return String(item || "").trim();
+        };
+
+        clearTimeout(timer);
+        console.log(`[fetchLiveTrends] OK for ${city}: ${trends.length} trends, ${citedUrls.length} cited URLs`);
+        return {
+            type: "live_trends",
+            trends,
+            events: Array.isArray(parsed?.events) ? parsed.events.slice(0, 3) : [],
+            pains: Array.isArray(parsed?.pains) ? parsed.pains.map(normalizePainSolution).filter(Boolean).slice(0, 3) : [],
+            solutions: Array.isArray(parsed?.solutions) ? parsed.solutions.map(normalizePainSolution).filter(Boolean).slice(0, 3) : []
+        };
+    } catch (err) {
+        clearTimeout(timer);
+        console.error(`[fetchLiveTrends] Failed for ${city}:`, err?.message || err);
+        return { type: "live_trends", trends: [], events: [] };
+    }
 }
 
 function buildRoleLens(locale, role, country, city) {

@@ -1224,43 +1224,44 @@ async function fetchCityLiveContent({ country, city, role, locale }) {
     const localeMap = { ko: "Korean", en: "English", de: "German", fr: "French", es: "Spanish", pt: "Portuguese", it: "Italian", nl: "Dutch", ar: "Arabic" };
     const lang = localeMap[locale] || "English";
     const todayIso = new Date().toISOString().slice(0, 10);
-    const prompt = `${city} (${country}), ${todayIso}, ${role} marketer. Language: ${lang}.
 
-BAD trend: "스마트 홈 기기 수요 증가" (generic). GOOD: "인천 송도 스마트시티 2단계 — 신규 아파트 85% 홈IoT 사전설치 의무화"
+    const instructions = `You are a hyper-local Samsung SmartThings marketing analyst. Use web search to find REAL, CURRENT data. Return ONLY valid JSON. Write in ${lang}.`;
 
-Return ONLY valid JSON:
-{"live_trends":[{"text":"${city}-specific headline with district/policy","evidence":"2-3 sentences, concrete numbers (%, ₩, population, YoY)","source_title":"report title","source_org":"org","source_date":"YYYY-MM-DD","source_url":"https://org-domain/path"}],"live_events":[{"name":"event","when":"YYYY-MM-DD","hook":"Samsung angle"}],"live_pains":[{"text":"realistic ${role} pain quote mentioning ${city} context","insight":"WHY this hurts — link to a trend + local data"}],"live_solutions":[{"text":"concrete tactic with Samsung product name + ${city} location","insight":"HOW to execute + expected impact metric"}]}
+    const input = `Search the web for current (2025-2026) real data about "${city}" (${country}) relevant to Samsung SmartThings ${role} marketing as of ${todayIso}.
 
-Rules:
-- live_trends: 4 objects. ${city} districts/policies/stats required. evidence=most important field.
-- live_events: 2-3 within 3 months of ${todayIso}. Skip if unsure.
-- live_pains: 3 objects. Each tied to a trend. Quote style, specific to ${city}.
-- live_solutions: 3 objects. Name Samsung products (SmartThings Energy, AI Hub, Jet Bot etc.) + local retail/channel.
-- Korean city names only (강남구, 송도) — never English transliterations.`;
+Find: local government smart city policies, IoT/smart home adoption, housing developments, energy initiatives, upcoming events near ${city}.
+
+Return ONLY valid JSON — no markdown:
+{"live_trends":[{"text":"${city}-specific headline","evidence":"2-3 sentences with real numbers from search","source_title":"actual article title","source_org":"publisher","source_url":"real URL from search"}],"live_events":[{"name":"real event","when":"YYYY-MM-DD","hook":"Samsung angle"}],"live_pains":[{"text":"${role} pain in ${city}","insight":"why, linked to trend"}],"live_solutions":[{"text":"Samsung product tactic in ${city}","insight":"how to execute + impact"}]}
+
+- live_trends: 4 objects with REAL search results. ${city} districts/policies required.
+- live_events: 2-3 real upcoming events near ${city}.
+- live_pains: 3 objects tied to trends.
+- live_solutions: 3 objects naming Samsung products.
+- Korean city names only for Korean locale.`;
 
     try {
-        const body = JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [
-                { role: "system", content: "You are a hyper-local Samsung SmartThings marketing analyst. Return ONLY valid JSON. All trends must be city-specific (not generic national). Write in the requested language." },
-                { role: "user", content: prompt }
-            ],
-            max_tokens: 2000,
-            temperature: 0.7
-        });
-
         const response = await withTimeout(async () => {
-            const res = await fetch("https://api.openai.com/v1/chat/completions", {
+            const res = await fetch("https://api.openai.com/v1/responses", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
-                body
+                body: JSON.stringify({
+                    model: "gpt-4o",
+                    tools: [{ type: "web_search_preview" }],
+                    instructions,
+                    input
+                })
             });
-            if (!res.ok) throw new Error(`OpenAI ${res.status}`);
+            if (!res.ok) throw new Error(`OpenAI Responses API ${res.status}`);
             return res.json();
-        }, 15000);
+        }, 25000);
 
-        const text = response?.choices?.[0]?.message?.content || "";
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        // Responses API 출력 파싱
+        const messageItem = (response?.output || []).find((item) => item.type === "message");
+        const textContent = (messageItem?.content || []).find((c) => c.type === "output_text");
+        const rawText = textContent?.text || "";
+
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
         if (!jsonMatch) return null;
         const parsed = JSON.parse(jsonMatch[0]);
         const sanitized = sanitizeCityLiveContent(parsed);
