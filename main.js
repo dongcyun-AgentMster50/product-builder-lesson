@@ -2371,16 +2371,11 @@ function mapLiveStep2Insight(data, countryCode, city) {
 
     // 4) CX 시나리오 힌트 섹션 (SUB — 트렌드 기반 세그먼트/기기/시나리오 방향 제안)
     if (realSolutions.length) {
-        const roleMetric = roleLens.primary_metric || "";
-        const solutionItems = [...realSolutions];
-        if (roleMetric) {
-            solutionItems.push(formatQ2MetricHint(roleMetric));
-        }
         sections.push({
             title: currentLocale === "ko"
                 ? `이 트렌드로 만들 수 있는 CX 시나리오 힌트`
                 : `CX scenario hints from these trends`,
-            items: solutionItems
+            items: realSolutions
         });
     }
 
