@@ -56,12 +56,20 @@ const CITY_CUSTOM_VALUE = "__custom__";
 
 /* ── 한국 도시 마스터 데이터 (행정안전부 2024.04 주민등록인구) ── */
 const KR_CITY_MASTER = {
-    "수도권": [
-        { en: "Seoul", ko: "서울", pop: 9411453 },
-        { en: "Incheon", ko: "인천", pop: 2960000 },
+    "특별시·광역시·특별자치시": [
+        { en: "Seoul", ko: "서울특별시", pop: 9411453 },
+        { en: "Busan", ko: "부산광역시", pop: 3350000 },
+        { en: "Incheon", ko: "인천광역시", pop: 2960000 },
+        { en: "Daegu", ko: "대구광역시", pop: 2380000 },
+        { en: "Daejeon", ko: "대전광역시", pop: 1450000 },
+        { en: "Gwangju Metro", ko: "광주광역시", pop: 1430000 },
+        { en: "Ulsan", ko: "울산광역시", pop: 1100000 },
+        { en: "Sejong", ko: "세종특별자치시", pop: 380000 }
+    ],
+    "경기도": [
         { en: "Suwon", ko: "수원시", pop: 1223598 },
-        { en: "Goyang", ko: "고양시", pop: 1072217 },
         { en: "Yongin", ko: "용인시", pop: 1077883 },
+        { en: "Goyang", ko: "고양시", pop: 1072217 },
         { en: "Hwaseong", ko: "화성시", pop: 948934 },
         { en: "Seongnam", ko: "성남시", pop: 918122 },
         { en: "Bucheon", ko: "부천시", pop: 785394 },
@@ -88,20 +96,46 @@ const KR_CITY_MASTER = {
         { en: "Dongducheon", ko: "동두천시", pop: 88605 },
         { en: "Gwacheon", ko: "과천시", pop: 78561 }
     ],
-    "부산·울산·경남": [
-        { en: "Busan", ko: "부산", pop: 3350000 },
-        { en: "Ulsan", ko: "울산", pop: 1100000 },
-        { en: "Changwon", ko: "창원시", pop: 1006692 },
-        { en: "Gimhae", ko: "김해시", pop: 531911 },
-        { en: "Yangsan", ko: "양산시", pop: 355519 },
-        { en: "Jinju", ko: "진주시", pop: 340736 },
-        { en: "Geoje", ko: "거제시", pop: 234310 },
-        { en: "Tongyeong", ko: "통영시", pop: 120419 },
-        { en: "Sacheon", ko: "사천시", pop: 109692 },
-        { en: "Miryang", ko: "밀양시", pop: 102689 }
+    "강원도": [
+        { en: "Wonju", ko: "원주시", pop: 362074 },
+        { en: "Chuncheon", ko: "춘천시", pop: 286812 },
+        { en: "Gangneung", ko: "강릉시", pop: 210037 },
+        { en: "Donghae", ko: "동해시", pop: 88574 },
+        { en: "Sokcho", ko: "속초시", pop: 82311 },
+        { en: "Samcheok", ko: "삼척시", pop: 62607 },
+        { en: "Taebaek", ko: "태백시", pop: 38710 }
     ],
-    "대구·경북": [
-        { en: "Daegu", ko: "대구", pop: 2380000 },
+    "충청북도": [
+        { en: "Cheongju", ko: "청주시", pop: 849531 },
+        { en: "Chungju", ko: "충주시", pop: 208454 },
+        { en: "Jecheon", ko: "제천시", pop: 130937 }
+    ],
+    "충청남도": [
+        { en: "Cheonan", ko: "천안시", pop: 659471 },
+        { en: "Asan", ko: "아산시", pop: 385827 },
+        { en: "Seosan", ko: "서산시", pop: 177690 },
+        { en: "Dangjin", ko: "당진시", pop: 171159 },
+        { en: "Nonsan", ko: "논산시", pop: 110653 },
+        { en: "Gongju", ko: "공주시", pop: 101617 },
+        { en: "Boryeong", ko: "보령시", pop: 95903 },
+        { en: "Gyeryong", ko: "계룡시", pop: 47065 }
+    ],
+    "전라북도": [
+        { en: "Jeonju", ko: "전주시", pop: 644146 },
+        { en: "Iksan", ko: "익산시", pop: 270129 },
+        { en: "Gunsan", ko: "군산시", pop: 260865 },
+        { en: "Jeongeup", ko: "정읍시", pop: 103048 },
+        { en: "Gimje", ko: "김제시", pop: 80729 },
+        { en: "Namwon", ko: "남원시", pop: 76462 }
+    ],
+    "전라남도": [
+        { en: "Suncheon", ko: "순천시", pop: 278085 },
+        { en: "Yeosu", ko: "여수시", pop: 271061 },
+        { en: "Mokpo", ko: "목포시", pop: 211878 },
+        { en: "Gwangyang", ko: "광양시", pop: 152001 },
+        { en: "Naju", ko: "나주시", pop: 114142 }
+    ],
+    "경상북도": [
         { en: "Pohang", ko: "포항시", pop: 492021 },
         { en: "Gumi", ko: "구미시", pop: 406260 },
         { en: "Gyeongsan", ko: "경산시", pop: 267823 },
@@ -113,45 +147,17 @@ const KR_CITY_MASTER = {
         { en: "Sangju", ko: "상주시", pop: 93607 },
         { en: "Mungyeong", ko: "문경시", pop: 68914 }
     ],
-    "대전·세종·충청": [
-        { en: "Daejeon", ko: "대전", pop: 1450000 },
-        { en: "Sejong", ko: "세종", pop: 380000 },
-        { en: "Cheongju", ko: "청주시", pop: 849531 },
-        { en: "Cheonan", ko: "천안시", pop: 659471 },
-        { en: "Asan", ko: "아산시", pop: 385827 },
-        { en: "Chungju", ko: "충주시", pop: 208454 },
-        { en: "Seosan", ko: "서산시", pop: 177690 },
-        { en: "Dangjin", ko: "당진시", pop: 171159 },
-        { en: "Jecheon", ko: "제천시", pop: 130937 },
-        { en: "Nonsan", ko: "논산시", pop: 110653 },
-        { en: "Gongju", ko: "공주시", pop: 101617 },
-        { en: "Boryeong", ko: "보령시", pop: 95903 },
-        { en: "Gyeryong", ko: "계룡시", pop: 47065 }
+    "경상남도": [
+        { en: "Changwon", ko: "창원시", pop: 1006692 },
+        { en: "Gimhae", ko: "김해시", pop: 531911 },
+        { en: "Yangsan", ko: "양산시", pop: 355519 },
+        { en: "Jinju", ko: "진주시", pop: 340736 },
+        { en: "Geoje", ko: "거제시", pop: 234310 },
+        { en: "Tongyeong", ko: "통영시", pop: 120419 },
+        { en: "Sacheon", ko: "사천시", pop: 109692 },
+        { en: "Miryang", ko: "밀양시", pop: 102689 }
     ],
-    "광주·전라": [
-        { en: "Gwangju", ko: "광주", pop: 1430000, isMeta: true },
-        { en: "Jeonju", ko: "전주시", pop: 644146 },
-        { en: "Suncheon", ko: "순천시", pop: 278085 },
-        { en: "Iksan", ko: "익산시", pop: 270129 },
-        { en: "Yeosu", ko: "여수시", pop: 271061 },
-        { en: "Gunsan", ko: "군산시", pop: 260865 },
-        { en: "Mokpo", ko: "목포시", pop: 211878 },
-        { en: "Gwangyang", ko: "광양시", pop: 152001 },
-        { en: "Naju", ko: "나주시", pop: 114142 },
-        { en: "Jeongeup", ko: "정읍시", pop: 103048 },
-        { en: "Gimje", ko: "김제시", pop: 80729 },
-        { en: "Namwon", ko: "남원시", pop: 76462 }
-    ],
-    "강원": [
-        { en: "Chuncheon", ko: "춘천시", pop: 286812 },
-        { en: "Wonju", ko: "원주시", pop: 362074 },
-        { en: "Gangneung", ko: "강릉시", pop: 210037 },
-        { en: "Donghae", ko: "동해시", pop: 88574 },
-        { en: "Sokcho", ko: "속초시", pop: 82311 },
-        { en: "Samcheok", ko: "삼척시", pop: 62607 },
-        { en: "Taebaek", ko: "태백시", pop: 38710 }
-    ],
-    "제주": [
+    "제주특별자치도": [
         { en: "Jeju", ko: "제주시", pop: 493178 },
         { en: "Seogwipo", ko: "서귀포시", pop: 184818 }
     ]
