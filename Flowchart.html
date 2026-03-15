@@ -18,61 +18,64 @@
         .slide.compare{background:#fff}
         .slide.summary{background:#1a1a2e;color:#fff}
 
-        /* ── Typography — SamsungOne 기반 ── */
+        /* ── Typography — SamsungOne + blue 포인트 ── */
         h1{font-family:'SamsungOne','Noto Sans KR',sans-serif;font-size:2.6em;font-weight:900;color:#1a1a2e;margin-bottom:12px}
         .slide.cover h1,.slide.summary h1{color:#fff}
-        h2{font-family:'SamsungOne','Noto Sans KR',sans-serif;font-size:1.7em;font-weight:700;color:#1a1a2e;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #1a1a2e}
-        h3{font-family:'SamsungOne','Noto Sans KR',sans-serif;font-size:1.15em;color:#1a1a2e;margin-bottom:10px;font-weight:700}
+        h2{font-family:'SamsungOne','Noto Sans KR',sans-serif;font-size:1.7em;font-weight:700;color:#1a1a2e;margin-bottom:14px;padding-bottom:8px;border-bottom:3px solid #0000ff}
+        h3{font-family:'SamsungOne','Noto Sans KR',sans-serif;font-size:1.15em;color:#0000ff;margin-bottom:10px;font-weight:700}
         .subtitle{font-size:1.1em;color:#666;margin-bottom:8px}
 
-        /* ── Badges — 단색 (다크 네이비 / 명도 변형) ── */
-        .badge{display:inline-block;padding:4px 14px;border-radius:3px;font-size:.75em;font-weight:700;margin-bottom:12px;font-family:'SamsungOne','Noto Sans KR',sans-serif}
-        .badge.blue{background:#1a1a2e;color:#fff}
-        .badge.green{background:#2d2d3d;color:#fff}
-        .badge.orange{background:#3a3a4a;color:#fff}
-        .badge.red{background:#1a1a2e;color:#fff}
-        .badge.purple{background:#2d2d3d;color:#fff}
-        .badge.step{background:#3a3a4a;color:#fff;font-size:.7em;margin-right:6px;border-radius:3px}
+        /* ── Badges — #0000ff 포인트 + 다크 네이비 ── */
+        .badge{display:inline-block;padding:4px 14px;border-radius:3px;font-size:.75em;font-weight:700;margin-bottom:12px;font-family:'SamsungOne','Noto Sans KR',sans-serif;color:#fff}
+        .badge.blue{background:#0000ff}
+        .badge.green{background:#1a1a2e}
+        .badge.orange{background:#0000cc}
+        .badge.red{background:#1a1a2e}
+        .badge.purple{background:#0000aa}
+        .badge.step{background:#0000ff;font-size:.7em;margin-right:6px;border-radius:3px}
 
         /* ── Body text ── */
         p{font-size:.9em;line-height:1.65;color:#333;margin-bottom:8px}
         .slide.cover p,.slide.summary p{color:rgba(255,255,255,.75)}
 
-        /* ── Flow chain boxes — 흰 카드 + 좌측 다크 보더 ── */
+        /* ── Flow chain boxes — #0000ff 포인트 + 다크 계열 ── */
         .flow-chain{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
         .fbox{padding:7px 14px;border-radius:4px;font-size:.78em;font-weight:700;white-space:nowrap;background:#fff;color:#1a1a2e;border:1px solid #ddd;border-left:4px solid #1a1a2e}
-        .fbox.client{border-left-color:#1a1a2e}
-        .fbox.server{border-left-color:#2d2d3d;color:#2d2d3d}
-        .fbox.api{border-left-color:#3a3a4a;color:#3a3a4a}
-        .fbox.ai{border-left-color:#1a1a2e;color:#1a1a2e;background:#f5f5f5}
-        .fbox.data{border-left-color:#2d2d3d;color:#2d2d3d;background:#f5f5f5}
-        .arrow{color:#1a1a2e;font-size:1.1em;font-weight:900}
+        .fbox.client{border-left-color:#0000ff;color:#0000cc}
+        .fbox.server{border-left-color:#1a1a2e;color:#1a1a2e}
+        .fbox.api{border-left-color:#0000cc;color:#0000aa}
+        .fbox.ai{border-left-color:#0000ff;color:#fff;background:#1a1a2e;font-weight:700}
+        .fbox.data{border-left-color:#0000cc;color:#fff;background:#2d2d3d;font-weight:700}
+        .arrow{color:#0000ff;font-size:1.2em;font-weight:900}
 
         /* ── Code blocks ── */
         pre{background:#f5f5f5;border:1px solid #ddd;border-radius:6px;padding:14px 18px;overflow-x:auto;margin:10px 0;font-size:.78em;line-height:1.55;color:#222}
-        pre .kw{color:#1a1a2e;font-weight:700} pre .fn{color:#3a3a4a} pre .str{color:#2d2d3d} pre .cm{color:#999}
+        pre .kw{color:#0000ff;font-weight:700} pre .fn{color:#0000aa} pre .str{color:#1a1a2e} pre .cm{color:#999}
 
         /* ── Compare grid ── */
         .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:12px;flex:1}
         .compare-box{padding:20px;border-radius:6px;border:1px solid #ddd}
         .compare-box.old{background:#f5f5f5;border-left:4px solid #1a1a2e}
-        .compare-box.new{background:#fff;border-left:4px solid #3a3a4a;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+        .compare-box.new{background:#fff;border-left:4px solid #0000ff;box-shadow:0 2px 8px rgba(0,0,255,.08)}
         .compare-box h3{margin-bottom:8px;border-bottom:none;padding-bottom:0;font-family:'SamsungOne','Noto Sans KR',sans-serif}
+        .compare-box.old h3{color:#1a1a2e}
+        .compare-box.new h3{color:#0000cc}
         .compare-box ul{padding-left:16px;font-size:.84em;line-height:1.7;color:#333}
         .compare-box li{margin-bottom:3px}
+        .compare-box.new li strong{color:#0000cc}
 
         /* ── Effect / Problem callouts ── */
-        .effect{background:#f5f5f5;border-left:4px solid #2d2d3d;border-radius:3px;padding:10px 14px;margin-top:10px;font-size:.82em;color:#1a1a2e;font-weight:600}
-        .effect::before{content:"Effect → ";font-weight:800}
-        .problem{background:#f5f5f5;border-left:4px solid #1a1a2e;border-radius:3px;padding:10px 14px;margin-top:8px;font-size:.82em;color:#333}
+        .effect{background:#eef;border-left:4px solid #0000ff;border-radius:3px;padding:10px 14px;margin-top:10px;font-size:.82em;color:#0000cc;font-weight:700}
+        .effect::before{content:"Effect → ";font-weight:800;color:#0000ff}
+        .problem{background:#f5f5f5;border-left:4px solid #1a1a2e;border-radius:3px;padding:10px 14px;margin-top:8px;font-size:.82em;color:#333;font-weight:600}
         .problem::before{content:"Problem → ";font-weight:800;color:#1a1a2e}
 
         /* ── Detail cards ── */
         .detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:12px 0}
-        .detail-card{background:#fff;border:1px solid #ddd;border-radius:6px;padding:14px;border-top:3px solid #1a1a2e}
-        .detail-card h4{color:#1a1a2e;font-size:.85em;margin-bottom:5px;font-family:'SamsungOne','Noto Sans KR',sans-serif}
-        .detail-card p{font-size:.8em;margin-bottom:3px;color:#444}
-        .detail-card code{background:#f5f5f5;padding:2px 5px;border-radius:3px;font-size:.82em;color:#2d2d3d}
+        .detail-card{background:#fff;border:1px solid #ddd;border-radius:6px;padding:14px;border-top:3px solid #0000ff}
+        .detail-card h4{color:#0000cc;font-size:.85em;margin-bottom:5px;font-family:'SamsungOne','Noto Sans KR',sans-serif;font-weight:700}
+        .detail-card p{font-size:.8em;margin-bottom:3px;color:#333}
+        .detail-card code{background:#eef;padding:2px 5px;border-radius:3px;font-size:.82em;color:#0000aa;font-weight:600}
 
         /* ── Navigation bar ── */
         .nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:12px 48px;background:#1a1a2e;z-index:100}
