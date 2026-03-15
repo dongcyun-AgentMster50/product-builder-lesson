@@ -1071,7 +1071,7 @@ function sanitizeCityLiveContent(payload) {
         .filter((item) => item.name && item.hook && isWithinUpcomingWindow(item.when))
         .slice(0, 3);
 
-    // live_trends: 객체({text, evidence}) 또는 문자열 모두 지원
+    // live_trends: 객체({text, evidence, source_*}) 또는 문자열 모두 지원
     const rawTrends = Array.isArray(payload.live_trends) ? payload.live_trends : [];
     const seen = new Set();
     const liveTrends = rawTrends
@@ -1079,10 +1079,14 @@ function sanitizeCityLiveContent(payload) {
             if (typeof item === "object" && item !== null) {
                 return {
                     text: normalizeLooseText(item.text || item.trend || ""),
-                    evidence: normalizeLooseText(item.evidence || item.source || "")
+                    evidence: normalizeLooseText(item.evidence || item.source || ""),
+                    source_title: normalizeLooseText(item.source_title || ""),
+                    source_org: normalizeLooseText(item.source_org || ""),
+                    source_date: normalizeLooseText(item.source_date || ""),
+                    source_url: String(item.source_url || "").trim()
                 };
             }
-            return { text: normalizeLooseText(item), evidence: "" };
+            return { text: normalizeLooseText(item), evidence: "", source_title: "", source_org: "", source_date: "", source_url: "" };
         })
         .filter((item) => {
             if (!item.text) return false;
@@ -1204,7 +1208,7 @@ Today (UTC): ${todayIso}
 Return ONLY valid JSON — no markdown, no explanation:
 {
   "live_trends": [
-    {"text": "trend headline", "evidence": "1-2 sentence factual basis with specific numbers, policy names, or data sources"}
+    {"text": "trend headline", "evidence": "1-2 sentence factual basis with specific numbers", "source_title": "article or report title", "source_org": "Publisher or Organization", "source_date": "YYYY-MM-DD", "source_url": "https://example.com"}
   ],
   "live_events": [
     {"name": "event name", "when": "YYYY-MM-DD", "hook": "one-line marketing angle"}
@@ -1214,7 +1218,7 @@ Return ONLY valid JSON — no markdown, no explanation:
 }
 
 Rules:
-- live_trends: 4 current market/lifestyle trends specific to this EXACT city (not the country). Be hyper-local. Each trend MUST include an "evidence" field with a factual, verifiable basis — cite specific statistics, government policies, industry reports, local news, or institutional data. The evidence should read like a brief footnote, not a generic claim.
+- live_trends: 4 current market/lifestyle trends specific to this EXACT city (not the country). Be hyper-local. Each trend MUST include: "evidence" (1-2 sentence factual basis with specific numbers), "source_title" (the article/report/data title), "source_org" (publisher or organization name), "source_date" (publication date as YYYY-MM-DD, best estimate if exact date unknown), "source_url" (a real, verifiable URL to the source — use the actual domain, e.g. https://kostat.go.kr, https://www.chungnam.go.kr). Do NOT invent fake URLs.
 - live_events: 2-3 upcoming local events, festivals, or seasonal moments in or near this city within the next 3 months from ${todayIso}. Include realistic dates.
 - live_pains: 3 consumer pain points a ${role} marketer would face in this city, tied to the trends.
 - live_solutions: 3 actionable tactics for Samsung SmartThings marketing, specific to this city.

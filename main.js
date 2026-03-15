@@ -1920,35 +1920,25 @@ function buildInsightMarkup(insight) {
                 <p>${escapeHtml(row.value)}</p>
             </div>
         `).join("");
-    const buildEvidenceSourceTag = (evidenceText) => {
-        if (!evidenceText) return "";
-        // 한국어 기관/보고서명 패턴 추출
-        const koPatterns = [
-            /([가-힣]+(?:부|청|원|처|위원회|연구원|협회|진흥원|공사|센터|연구소|통계청|환경청|시청|도청))/,
-            /([가-힣]+(?:보고서|통계|조사|백서|연감))/,
-            /([가-힣]+ ?[가-힣]*(?:연구|분석|발표))/
-        ];
-        // 영문 기관명 패턴
-        const enPatterns = [
-            /(?:according to |by |from |per |— )([\w\s&.'-]{3,40}?)(?:\.|,|$)/i,
-            /((?:Ministry|Department|Bureau|Institute|Association|Agency|Council|Board|Center|Commission)[\w\s.'-]{0,30})/i
-        ];
-        let sourceName = "";
-        for (const pat of koPatterns) {
-            const m = evidenceText.match(pat);
-            if (m) { sourceName = m[1]; break; }
-        }
-        if (!sourceName) {
-            for (const pat of enPatterns) {
-                const m = evidenceText.match(pat);
-                if (m) { sourceName = m[1].trim(); break; }
-            }
-        }
-        if (!sourceName || sourceName.length < 2) return "";
-        const searchQuery = `${sourceName} ${evidenceText.match(/\d{4}/)?.[0] || ""}`.trim();
-        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
-        const shortLabel = sourceName.length > 16 ? sourceName.slice(0, 15) + "…" : sourceName;
-        return ` <a class="evidence-source-tag" href="${escapeHtml(searchUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(shortLabel)}</a>`;
+    // [Source] {Title} — {Publisher/Org}, {YYYY-MM-DD}. {짧은 도메인 URL}
+    const formatSourceCitation = (item) => {
+        const title = String(item.source_title || "").trim();
+        const org = String(item.source_org || "").trim();
+        const date = String(item.source_date || "").trim();
+        const rawUrl = String(item.source_url || "").trim();
+        // 구조화된 출처 필드가 하나라도 있으면 인라인 형식 사용
+        if (!title && !org) return "";
+        const shortDomain = rawUrl ? rawUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "") : "";
+        const linkUrl = rawUrl || `https://www.google.com/search?q=${encodeURIComponent([title, org, date].filter(Boolean).join(" "))}`;
+        const parts = [];
+        if (title) parts.push(title);
+        if (org) parts.push(`— ${org}`);
+        if (date) parts.push(date);
+        const citation = parts.join(", ");
+        const domainTag = shortDomain
+            ? ` <a class="evidence-source-tag" href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(shortDomain)}</a>`
+            : ` <a class="evidence-source-tag" href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(org || "source")}</a>`;
+        return `<span class="trend-source-line">[Source] ${escapeHtml(citation)}${domainTag}</span>`;
     };
 
     const renderSection = (section) => {
@@ -1958,8 +1948,9 @@ function buildInsightMarkup(insight) {
                 if (item && typeof item === "object") {
                     const label = escapeHtml(item.text || "");
                     const evidenceText = String(item.evidence || "").trim();
-                    const evidenceHtml = evidenceText
-                        ? `<span class="trend-evidence">${escapeHtml(evidenceText)}${buildEvidenceSourceTag(evidenceText)}</span>`
+                    const sourceLine = formatSourceCitation(item);
+                    const evidenceHtml = (evidenceText || sourceLine)
+                        ? `<span class="trend-evidence">${evidenceText ? escapeHtml(evidenceText) : ""}${sourceLine ? `<br/>${sourceLine}` : ""}</span>`
                         : "";
                     return `<li>${label}${evidenceHtml}</li>`;
                 }
@@ -2288,8 +2279,15 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const rawLiveTrends = Array.isArray(data.live_trends) ? data.live_trends : [];
     const liveTrends = rawLiveTrends.map((t) =>
         typeof t === "object" && t !== null
-            ? { text: String(t.text || "").trim(), evidence: String(t.evidence || "").trim() }
-            : { text: String(t || "").trim(), evidence: "" }
+            ? {
+                text: String(t.text || "").trim(),
+                evidence: String(t.evidence || "").trim(),
+                source_title: String(t.source_title || "").trim(),
+                source_org: String(t.source_org || "").trim(),
+                source_date: String(t.source_date || "").trim(),
+                source_url: String(t.source_url || "").trim()
+            }
+            : { text: String(t || "").trim(), evidence: "", source_title: "", source_org: "", source_date: "", source_url: "" }
     ).filter((t) => t.text);
     const staticTrends = toList(cityContent?.trends).slice(0, 4);
 

@@ -1604,6 +1604,16 @@ textarea {
     border-radius: 0 8px 8px 0;
     font-style: normal;
 }
+.trend-source-line {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.72rem;
+    color: #7a8a9a;
+    letter-spacing: -0.01em;
+}
+.trend-source-line::before {
+    content: none;
+}
 .evidence-source-tag {
     display: inline-block;
     margin-left: 6px;
