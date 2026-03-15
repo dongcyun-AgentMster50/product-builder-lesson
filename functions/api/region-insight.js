@@ -265,6 +265,8 @@ Rules:
   * Explore scenario direction keyword (Save energy / Keep air fresh / Control lights / Help with chores / Keep home safe / Sleep well / Enhanced mood / Care for seniors / Care for kids / Care for pet / Find belongings / Stay fit)
   These hints guide the marketer to build their own CX scenario in Q3-Q4, not push a ready-made answer.
 - 4-question filter: (1) common life moment? (2) clear pain? (3) SmartThings 2+ devices? (4) one campaign message?
+- STRICT DATE RULE: Today is ${todayIso}. ALL events, weather forecasts, and time-sensitive data MUST be AFTER ${todayIso}. NEVER include past dates. Past events and old weather data are useless.
+- Trends: prefer recent/current data (2025-2026). Exclude anything older than 2024.
 - Korean city/district names for Korean locale.`;
 
     const controller = new AbortController();
@@ -380,7 +382,10 @@ Rules:
         return {
             type: "live_trends",
             trends,
-            events: Array.isArray(parsed?.events) ? parsed.events.slice(0, 3) : [],
+            events: Array.isArray(parsed?.events) ? parsed.events.filter((ev) => {
+                const when = String(ev?.when || "").trim();
+                return when >= todayIso; // 과거 이벤트 제거
+            }).slice(0, 3) : [],
             pains: Array.isArray(parsed?.pains) ? parsed.pains.map(normalizePainSolution).filter(Boolean).slice(0, 3) : [],
             solutions: Array.isArray(parsed?.solutions) ? parsed.solutions.map(normalizePainSolution).filter(Boolean).slice(0, 3) : []
         };
