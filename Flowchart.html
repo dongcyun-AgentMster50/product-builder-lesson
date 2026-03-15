@@ -293,53 +293,53 @@ graph LR
     <div class="step-overview">
         <div class="step-row">
             <div class="step-num">1</div>
-            <div class="step-label"><strong>접속/시작</strong>ChatGPT Plus 구독 → 빈 채팅창</div>
-            <div class="step-diff">무료 전용 URL + 액세스 코드 + 단계별 가이드 위자드</div>
+            <div class="step-label"><strong>접속 및 시작</strong>GPT: ChatGPT Plus 구독 필수 ($20/월/인). 접속하면 빈 채팅창만 보임. 뭘 입력해야 할지 모르는 상태에서 시작.</div>
+            <div class="step-diff"><strong>웹앱:</strong> 전용 URL + 액세스 코드로 무료 접속. 접속 즉시 4단계 가이드 위자드가 표시되어 첫 사용자도 바로 시작 가능. 접근 제어 + 세션 관리로 보안 확보.</div>
         </div>
         <div class="step-row">
             <div class="step-num">2</div>
-            <div class="step-label"><strong>역할 설정 (Q1)</strong>텍스트로 역할 설명 → 누락 빈번</div>
-            <div class="step-diff">3장 역할 카드 클릭 → 인사이트 카드 + 3 Role-Lens 자동 분기</div>
+            <div class="step-label"><strong>역할/관점 설정 (Q1)</strong>GPT: "리테일 관점에서" 텍스트 입력. 역할을 안 쓰면 AI가 범용 관점으로 생성. Retail/Dotcom/Brand 구분 약함.</div>
+            <div class="step-diff"><strong>웹앱:</strong> 3장 역할 카드 클릭 선택. 선택 즉시 인사이트 카드("이 역할에서는 이런 흐름이 유리합니다") 표시. 이후 모든 출력에 3 Role-Lens 자동 분기.</div>
         </div>
         <div class="step-row">
             <div class="step-num">3</div>
-            <div class="step-label"><strong>지역 선택 (Q2)</strong>텍스트 입력 → AI 추측 → 가짜 URL</div>
-            <div class="step-diff">드롭다운 + GPT-4o 웹검색 + 7개 API 병렬 → 진짜 출처</div>
+            <div class="step-label"><strong>지역/시장 선택 (Q2)</strong>GPT: "한국 서울에서" 텍스트 입력. 학습 데이터 기반 추측 → 가짜 URL 생성. 어떤 도시를 넣어도 비슷한 일반론.</div>
+            <div class="step-diff"><strong>웹앱:</strong> 국가 드롭다운 + 도시 검색. GPT-4o 웹검색 + 7개 외부 API 병렬 호출. 실제 URL 출처 + 10개 생활 카테고리 프레임워크. 도시마다 완전히 다른 결과.</div>
         </div>
         <div class="step-row">
             <div class="step-num">4</div>
-            <div class="step-label"><strong>세그먼트 (Q3)</strong>자유 텍스트 → 모호한 타겟</div>
-            <div class="step-diff">MECE 21항목 체크리스트 + AI 자동 구성 + 넛지 카드</div>
+            <div class="step-label"><strong>타겟 세그먼트 (Q3)</strong>GPT: "30대 맞벌이 대상" 자유 텍스트. 세그먼트 기준 없음. 가구 형태, 기술 수용도 등 누락 빈번. 의도(intent) 별도 안 물어봄.</div>
+            <div class="step-diff"><strong>웹앱:</strong> MECE 21항목 체크리스트 (생애단계·가구·라이프스타일·기술수용도). AI 자동 구성 버튼. Q3 넛지 카드로 선택 가이드. 중복/누락 원천 차단.</div>
         </div>
         <div class="step-row">
             <div class="step-num">5</div>
-            <div class="step-label"><strong>기기 선택 (Q4)</strong>텍스트 나열 → 존재 안 하는 기기 가능</div>
-            <div class="step-diff">7개 프리셋 중복선택 + 22개 칩 + AI 자동 구성</div>
+            <div class="step-label"><strong>기기/제품 선택 (Q4)</strong>GPT: "냉장고, 세탁기" 텍스트 나열. 존재하지 않는 기기 입력 가능. 기기 조합 효과 예측 불가. "알아서 넣어줘" → AI 임의 선택.</div>
+            <div class="step-diff"><strong>웹앱:</strong> 7개 스타일별 프리셋 중복 선택 (에너지/케어/무드/시큐리티 등) + 22개 기기 직접 토글 + AI 자동 구성. 실시간 "현재 조합 요약" 패널에서 가능 범위 즉시 확인.</div>
         </div>
         <div class="step-row">
             <div class="step-num">6</div>
-            <div class="step-label"><strong>데이터 수집</strong>외부 API 없음 → AI 상상</div>
-            <div class="step-diff">7개 실시간 API 병렬 (WorldBank, 날씨, 좌표, 웹검색)</div>
+            <div class="step-label"><strong>지역 데이터 수집 (내부)</strong>GPT: 외부 API 호출 없음. 학습 데이터(~2024) 기반 추측. GDP, 날씨, 인구 실시간 접근 불가. 출처 = 지어낸 URL.</div>
+            <div class="step-diff"><strong>웹앱:</strong> 7개 외부 API 병렬 호출 — WorldBank(GDP/도시화율), Open-Meteo(날씨/좌표), Nominatim(도시분류), RestCountries(인구), Wikipedia(이미지), GPT-4o(웹검색). 모든 데이터 검증 가능.</div>
         </div>
         <div class="step-row">
             <div class="step-num">7</div>
-            <div class="step-label"><strong>시나리오 생성</strong>200줄 프롬프트 → 포맷 불일치</div>
-            <div class="step-diff">550줄 prompt.txt v8.2 + regionInsight + Explore 매핑 + Gate 검증</div>
+            <div class="step-label"><strong>CX 시나리오 생성</strong>GPT: ~200줄 프롬프트 + 사용자 메시지 1개. 지역 데이터 없이 생성. 출력 섹션 수/순서 매번 다름. Explore 매핑 없음. Gate 검증 없음.</div>
+            <div class="step-diff"><strong>웹앱:</strong> 550줄 prompt.txt v8.2 + Q2 regionInsight 삽입. 11섹션 고정 스키마. Explore v2.0 12키워드 자동 매핑. Gate System v2.0 (Hard/Soft) 자동 검증. GPT-4o 또는 Claude 선택.</div>
         </div>
         <div class="step-row">
             <div class="step-num">8</div>
-            <div class="step-label"><strong>결과 수신</strong>전체 완성까지 30-90초 대기</div>
-            <div class="step-diff">SSE 스트리밍 → 즉시 표시, 체감 80% 감소</div>
+            <div class="step-label"><strong>결과 수신 방식</strong>GPT: 전체 완성까지 30~90초 빈 화면 대기. 토큰 초과 시 "Continue" 클릭 필요. 결과 = 긴 마크다운 텍스트 블록.</div>
+            <div class="step-diff"><strong>웹앱:</strong> SSE(Server-Sent Events) 실시간 스트리밍 → 생성 즉시 한 글자씩 표시. 체감 대기 80% 감소. 토큰 제한 사전 방지. 섹션별 카드 UI로 자동 파싱.</div>
         </div>
         <div class="step-row">
             <div class="step-num">9</div>
-            <div class="step-label"><strong>수정/반복</strong>대화식 → 맥락 유실 → 품질 하락</div>
-            <div class="step-diff">Refine API → 섹션별 정밀 수정 + 자동 품질 재검증</div>
+            <div class="step-label"><strong>수정 및 반복</strong>GPT: "02번 다시 써줘" 대화식. 대화 이력 길어지면 컨텍스트 잘림 → 이전 결과 까먹음. 전체/부분 수정 구분 없음. 품질 하락.</div>
+            <div class="step-diff"><strong>웹앱:</strong> POST /api/refine — 전용 수정 API. 이전 결과 + 수정 지시를 구조화된 messages[]로 전달. 해당 섹션만 타겟 업데이트. 수정 후 자동 품질 재검증(Gate).</div>
         </div>
         <div class="step-row">
             <div class="step-num">10</div>
-            <div class="step-label"><strong>결과 활용</strong>복사붙여넣기 → 포맷 깨짐</div>
-            <div class="step-diff">11섹션 카드 UI + 9개 언어 + 프롬프트 중앙 관리</div>
+            <div class="step-label"><strong>결과물 활용 & 공유</strong>GPT: 채팅창 마크다운 복사 → 붙여넣기. 표/JSON 깨짐 빈번. 한국어 전용. 공유 = ChatGPT 링크 (편집 불가).</div>
+            <div class="step-diff"><strong>웹앱:</strong> 11섹션 구조화 카드 UI. 섹션별/전체 복사. 표·JSON 정확 렌더링. 9개 로케일 자동 전환. URL 공유 → 팀원 즉시 사용. git push = 프롬프트 중앙 관리.</div>
         </div>
     </div>
 </div>
