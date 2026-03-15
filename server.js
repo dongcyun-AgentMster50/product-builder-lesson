@@ -1253,8 +1253,10 @@ Rules:
 - live_events: 2-3 real upcoming events near ${city} within 3 months.
 - live_pains: 3 objects. Flow: trend → life problem → customer friction.
 - live_solutions: 3 CX scenario HINTS. Each: target segment + device combo + Explore keyword direction.
-- STRICT DATE RULE: Today is ${todayIso}. ALL events, weather, time-sensitive data MUST be AFTER ${todayIso}. NEVER include past dates.
-- Trends: prefer recent/current data (2025-2026). Exclude anything older than 2024.
+- DATE & RELEVANCE RULE: Today is ${todayIso}.
+  * Events: MUST be upcoming (after ${todayIso}).
+  * Trends: MUST have active, ongoing impact RIGHT NOW. Past news with no current effect = exclude.
+  * Prefer current year data. Older data only if it still actively impacts residents today.
 - Korean city/district names for Korean locale.`;
 
     try {

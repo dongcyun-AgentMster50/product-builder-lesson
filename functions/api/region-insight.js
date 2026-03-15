@@ -265,8 +265,15 @@ Rules:
   * Explore scenario direction keyword (Save energy / Keep air fresh / Control lights / Help with chores / Keep home safe / Sleep well / Enhanced mood / Care for seniors / Care for kids / Care for pet / Find belongings / Stay fit)
   These hints guide the marketer to build their own CX scenario in Q3-Q4, not push a ready-made answer.
 - 4-question filter: (1) common life moment? (2) clear pain? (3) SmartThings 2+ devices? (4) one campaign message?
-- STRICT DATE RULE: Today is ${todayIso}. ALL events, weather forecasts, and time-sensitive data MUST be AFTER ${todayIso}. NEVER include past dates. Past events and old weather data are useless.
-- Trends: prefer recent/current data (2025-2026). Exclude anything older than 2024.
+- DATE & RELEVANCE RULE: Today is ${todayIso}.
+  * Events/festivals: MUST be upcoming (after ${todayIso}). Past events are useless.
+  * Trends: MUST have active, ongoing impact on residents as of ${todayIso}. Ask yourself: "Does this still affect how people live, buy, or behave in ${city} RIGHT NOW?"
+    - OK: A 2026 law that is currently in effect → still impacts residents
+    - OK: A 2025 policy that created lasting market conditions still felt today
+    - NOT OK: "2025년 8월 전기요금 누진제" if rates have since changed → outdated
+    - NOT OK: "2025년 전세대란" if the crisis has resolved → no current impact
+    - NOT OK: Past news articles reporting old events with no ongoing effect
+  * Prefer data from ${todayIso.slice(0,4)} (current year). If citing older data, explain why it still matters NOW.
 - Korean city/district names for Korean locale.`;
 
     const controller = new AbortController();
