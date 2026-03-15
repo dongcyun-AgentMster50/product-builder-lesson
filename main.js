@@ -2255,33 +2255,15 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const local = data.local || null;
     const evidence = Array.isArray(data.evidence) ? data.evidence : [];
 
-    // 라이브 트렌드 기반 고민/솔루션 우선 → 정적 city_signals 연결 → 정적 role_lens fallback
+    // 라이브 데이터만 사용 — 정적 city_signals fallback 제거
     const livePains = toList(data.live_pains).slice(0, 3);
     const liveSolutions = toList(data.live_solutions).slice(0, 3);
-    const cityContent = getExactCitySignalContent(countryCode, queryCity);
-    const cityPains = toList(cityContent?.pains).slice(0, 3);
-    const citySolutions = toList(cityContent?.solutions).slice(0, 3);
     const staticPains = toList(roleLens.pain_points).slice(0, 3);
     const staticSolutions = toList(roleLens.solutions).slice(0, 3);
     const mustKnow = toList(roleLens.must_know).slice(0, 3);
     const executionPoints = toList(roleLens.execution_points).slice(0, 3);
-    const hasExactCityData = Boolean(cityContent);
 
-    const mergeUniqueItems = (primary, secondary, limit) => {
-        const seen = new Set();
-        return [...primary, ...secondary]
-            .map((item) => String(item || "").trim())
-            .filter(Boolean)
-            .filter((item) => {
-                const key = item.toLowerCase();
-                if (seen.has(key)) return false;
-                seen.add(key);
-                return true;
-            })
-            .slice(0, limit);
-    };
-
-    // live_trends: 객체 배열({text, evidence}) 또는 문자열 배열 모두 지원
+    // live_trends: 객체 배열({text, evidence, source_*}) 또는 문자열 배열 모두 지원
     const rawLiveTrends = Array.isArray(data.live_trends) ? data.live_trends : [];
     const liveTrends = rawLiveTrends.map((t) =>
         typeof t === "object" && t !== null
@@ -2295,23 +2277,18 @@ function mapLiveStep2Insight(data, countryCode, city) {
             }
             : { text: String(t || "").trim(), evidence: "", source_title: "", source_org: "", source_date: "", source_url: "" }
     ).filter((t) => t.text);
-    const staticTrends = toList(cityContent?.trends).slice(0, 4);
 
-    if (!liveTrends.length && !hasExactCityData) {
+    if (!liveTrends.length) {
         return buildStep2ErrorInsight(
             currentLocale === "ko"
-                ? `"${queryCity || city}" 기준의 실시간 지역 트렌드를 아직 확인하지 못했습니다. 정적 도시 데이터를 섞지 않고 다시 시도해 주세요.`
-                : `Live city-specific trends for "${queryCity || city}" were not confirmed yet. Retry without mixing static city data.`
+                ? `"${localCity || queryCity || city}" 실시간 트렌드를 가져오지 못했습니다. 다시 시도해 주세요.`
+                : `Could not fetch live trends for "${localCity || queryCity || city}". Please retry.`
         );
     }
 
-    // 라이브 AI 결과를 항상 우선, 정적 데이터는 보강용 fallback
-    const realPains = livePains.length
-        ? mergeUniqueItems(livePains, cityPains.length ? cityPains : staticPains, 3)
-        : (cityPains.length ? cityPains : (staticPains.length ? staticPains : mustKnow));
-    const realSolutions = liveSolutions.length
-        ? mergeUniqueItems(liveSolutions, citySolutions.length ? citySolutions : staticSolutions, 3)
-        : (citySolutions.length ? citySolutions : (staticSolutions.length ? staticSolutions : executionPoints));
+    // 라이브 AI 결과만 사용 — role_lens는 pains/solutions 부재 시에만 보강
+    const realPains = livePains.length ? livePains : (staticPains.length ? staticPains : mustKnow);
+    const realSolutions = liveSolutions.length ? liveSolutions : (staticSolutions.length ? staticSolutions : executionPoints);
     const formatQ2MetricHint = (metric) => {
         const normalizedMetric = String(metric || "").trim();
         if (!normalizedMetric) return "";
@@ -2329,8 +2306,8 @@ function mapLiveStep2Insight(data, countryCode, city) {
 
     const sections = [];
 
-    // 1) 지역 트렌드 섹션: 실시간 API + 근거 인용 인라인 표시
-    const trendItems = liveTrends.length ? liveTrends : staticTrends.map((t) => ({ text: t, evidence: "" }));
+    // 1) 지역 트렌드 섹션: 라이브 API 전용 (정적 fallback 없음)
+    const trendItems = liveTrends;
     if (trendItems.length) {
         sections.push({
             title: currentLocale === "ko"
