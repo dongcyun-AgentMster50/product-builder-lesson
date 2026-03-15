@@ -796,6 +796,43 @@ textarea {
 }
 
 /* ── AI 자동 구성 버튼 ── */
+/* ── Q3 자동 세그먼트 버튼 ── */
+.q3-auto-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 20px;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #1a237e, #0d47a1, #01579b);
+    color: #fff;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 250ms ease;
+    box-shadow: 0 4px 16px rgba(13, 71, 161, 0.25);
+    margin-bottom: 14px;
+}
+.q3-auto-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(13, 71, 161, 0.35);
+}
+.q3-auto-btn.active {
+    background: linear-gradient(135deg, #0d47a1, #01579b, #006064);
+    border-color: rgba(255,255,255,0.3);
+    box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.2), 0 8px 24px rgba(13, 71, 161, 0.3);
+}
+.q3-auto-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+.q3-auto-text {
+    text-align: left;
+    line-height: 1.4;
+}
+
+/* ── Q4 자동 기기 버튼 ── */
 .q4-auto-btn {
     display: flex;
     align-items: center;

@@ -279,6 +279,7 @@ function bindEvents() {
     // ── Searchable City Dropdown 이벤트 ──
     initCitySearchDropdown();
     personaGroups.addEventListener("change", (event) => {
+        clearQ3AutoMode();
         handleChecklistChange(event, personaGroups);
         updateStatePreview();
         updateStepInsight();
@@ -312,6 +313,36 @@ function bindEvents() {
     q4Presets?.addEventListener("click", handleQ4PresetClick);
     q4AllChips?.addEventListener("click", handleQ4QuickChipClick);
     document.getElementById("q4-auto-btn")?.addEventListener("click", handleQ4AutoSelect);
+    document.getElementById("q3-auto-btn")?.addEventListener("click", handleQ3AutoSelect);
+}
+
+function handleQ3AutoSelect() {
+    // Q3 모든 체크박스/라디오 해제 → auto 마커 설정
+    const groups = document.getElementById("persona-groups");
+    if (groups) {
+        groups.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach((input) => { input.checked = false; });
+    }
+    const customInput = document.getElementById("segment-custom");
+    if (customInput) customInput.value = "__auto__";
+    // purpose에 auto 안내 삽입
+    const purposeInput = document.getElementById("purpose");
+    if (purposeInput && !purposeInput.value.trim()) {
+        purposeInput.value = currentLocale === "ko"
+            ? "AI가 지역 트렌드 기반으로 최적 타겟 세그먼트를 자동 구성합니다."
+            : "AI will auto-configure the optimal target segment based on regional trends.";
+    }
+    updateStatePreview();
+    updateStepInsight();
+    // 버튼 활성 표시
+    const btn = document.getElementById("q3-auto-btn");
+    if (btn) btn.classList.add("active");
+}
+// Q3 auto 모드 해제: 수동 선택 시
+function clearQ3AutoMode() {
+    const customInput = document.getElementById("segment-custom");
+    if (customInput?.value === "__auto__") customInput.value = "";
+    const btn = document.getElementById("q3-auto-btn");
+    if (btn) btn.classList.remove("active");
 }
 
 function handleQ4AutoSelect() {
