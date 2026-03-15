@@ -2995,32 +2995,38 @@ pre {
 }
 
 .role-hover-detail {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: max-height 350ms ease, opacity 300ms ease, margin-top 300ms ease;
-    margin-top: 0;
-    padding: 0 4px;
+    max-height: none;
+    opacity: 1;
+    overflow: visible;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: rgba(240, 244, 250, 0.7);
+    border-radius: 10px;
+    border-left: 3px solid rgba(0, 51, 102, 0.18);
 }
 
 .role-hover-detail p {
     margin: 0 0 6px;
-    font-size: 0.84rem;
-    line-height: 1.6;
-    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.65;
+    color: #5a6878;
+    font-style: italic;
+}
+.role-hover-detail p::before {
+    content: "\201C";
+    font-weight: 700;
+    color: rgba(0, 51, 102, 0.3);
+    margin-right: 2px;
+}
+.role-hover-detail p::after {
+    content: "\201D";
+    font-weight: 700;
+    color: rgba(0, 51, 102, 0.3);
+    margin-left: 1px;
 }
 
 .role-hover-detail p:last-child {
     margin-bottom: 0;
-}
-
-.role-card:hover .role-hover-detail,
-.role-card:focus-within .role-hover-detail {
-    max-height: 200px;
-    opacity: 1;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid var(--line);
 }
 
 @media (max-width: 1040px) {
