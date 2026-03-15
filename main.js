@@ -945,15 +945,8 @@ function renderCityProfileCard() {
     const countryName = selectedMarket?.label || country.countryCode;
     const role = normalizeRoleId(roleSelect.value) || "retail";
 
-    // 도시명 로케일 변환
-    const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
-    const normCity = normalizeCityValue(cityName);
-    const matchedEntry = cityEntries.find((e) =>
-        e.countryCode === country.countryCode &&
-        (normalizeCityValue(e.displayName) === normCity ||
-         (e.aliases || []).some((a) => normalizeCityValue(a) === normCity))
-    );
-    const localDisplayCity = matchedEntry ? getLocalizedCityName(matchedEntry) : cityName;
+    // 도시명 로케일 변환 — getCityDisplayValue가 city_signals + KR_CITY_MASTER 모두 검색
+    const localDisplayCity = getCityDisplayValue(country.countryCode, cityName) || cityName;
 
     // 항상 라이브 넛지 API로 최신 트렌드 정보를 가져옴
     profileCard.innerHTML = buildNudgeCardHTML({
@@ -2164,15 +2157,8 @@ async function renderStep2Insight(forceRefresh = false) {
 }
 
 async function fetchLiveStep2Insight(countryCode, city, role, forceRefresh = false) {
-    // 로케일 기반 도시명 조회 (서버에 전달하여 콘텐츠 본문에 반영)
-    const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
-    const normCity = normalizeCityValue(city);
-    const matchedEntry = city ? cityEntries.find((e) =>
-        e.countryCode === countryCode &&
-        (normalizeCityValue(e.displayName) === normCity ||
-         (e.aliases || []).some((a) => normalizeCityValue(a) === normCity))
-    ) : null;
-    const cityLocal = matchedEntry ? getLocalizedCityName(matchedEntry) : city;
+    // 로케일 기반 도시명 조회 — getCityDisplayValue가 city_signals + KR_CITY_MASTER 모두 검색
+    const cityLocal = city ? (getCityDisplayValue(countryCode, city) || city) : city;
 
     const params = new URLSearchParams({
         country: countryCode,
@@ -2235,17 +2221,9 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const roleTitle = selectedRoleId ? getRoleTitle(selectedRoleId) : (currentLocale === "ko" ? "마케터" : "Marketer");
     const queryCity = String(data?.meta?.query_city || city || "").trim();
 
-    // 도시명 로케일 변환: city_signals에서 한글/현지어 이름 찾기
-    const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
-    const normalizedCityVal = normalizeCityValue(queryCity);
-    const cityEntry = queryCity ? cityEntries.find((e) =>
-        e.countryCode === countryCode &&
-        (normalizeCityValue(e.displayName) === normalizedCityVal ||
-         (e.aliases || []).some((a) => normalizeCityValue(a) === normalizedCityVal))
-    ) : null;
-    const localCity = cityEntry
-        ? getLocalizedCityName(cityEntry)
-        : String(data?.local?.city_display || queryCity || city || "").trim();
+    // 도시명 로케일 변환: getCityDisplayValue가 city_signals + KR_CITY_MASTER 모두 검색
+    const resolvedDisplay = queryCity ? getCityDisplayValue(countryCode, queryCity) : "";
+    const localCity = resolvedDisplay || String(data?.local?.city_display || queryCity || city || "").trim();
     const marketLabel = localCity ? `${getCountryName(countryCode)} ${localCity}` : getCountryName(countryCode);
     const local = data.local || null;
     const evidence = Array.isArray(data.evidence) ? data.evidence : [];
