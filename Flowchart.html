@@ -122,60 +122,179 @@
 <div class="slide flow">
     <span class="page-num">2/18</span>
     <span class="badge blue">Part A — Flow</span>
-    <h2>전체 시스템 플로우</h2>
+    <h2>전체 시스템 플로우 <span style="font-size:.55em;color:#666;font-weight:400">— 각 항목 클릭 시 R&R 설명</span></h2>
     <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:24px;margin-top:8px">
-        <!-- 왼쪽: 플로우 박스 -->
+        <!-- 왼쪽: 플로우 박스 (클릭 가능) -->
         <div>
             <h3>1. 사용자 입력 (Client — main.js)</h3>
             <div class="flow-chain">
-                <span class="fbox client">Q1 역할 선택</span><span class="arrow">→</span>
-                <span class="fbox client">Q2 국가/도시</span><span class="arrow">→</span>
-                <span class="fbox client">Q3 세그먼트</span><span class="arrow">→</span>
-                <span class="fbox client">Q4 기기 조합</span>
+                <span class="fbox client rnr-click" data-rnr="q1">Q1 역할 선택</span><span class="arrow">→</span>
+                <span class="fbox client rnr-click" data-rnr="q2">Q2 국가/도시</span><span class="arrow">→</span>
+                <span class="fbox client rnr-click" data-rnr="q3">Q3 세그먼트</span><span class="arrow">→</span>
+                <span class="fbox client rnr-click" data-rnr="q4">Q4 기기 조합</span>
             </div>
             <h3>2. Q2 도시 선택 → 라이브 트렌드</h3>
             <div class="flow-chain">
-                <span class="fbox client">selectCity()</span><span class="arrow">→</span>
-                <span class="fbox client">renderStep2Insight()</span><span class="arrow">→</span>
-                <span class="fbox client">fetchLiveStep2Insight()</span><span class="arrow">→</span>
-                <span class="fbox api">GET /api/region-insight</span>
+                <span class="fbox client rnr-click" data-rnr="selectCity">selectCity()</span><span class="arrow">→</span>
+                <span class="fbox client rnr-click" data-rnr="renderStep2">renderStep2Insight()</span><span class="arrow">→</span>
+                <span class="fbox client rnr-click" data-rnr="fetchLive">fetchLiveStep2Insight()</span><span class="arrow">→</span>
+                <span class="fbox api rnr-click" data-rnr="apiRegion">GET /api/region-insight</span>
             </div>
             <div class="flow-chain">
-                <span class="fbox server">buildLiveRegionInsight()</span><span class="arrow">→</span>
-                <span class="fbox ai">fetchLiveTrends() — GPT-4o + web_search</span>
+                <span class="fbox server rnr-click" data-rnr="buildLive">buildLiveRegionInsight()</span><span class="arrow">→</span>
+                <span class="fbox ai rnr-click" data-rnr="fetchTrends">fetchLiveTrends() — GPT-4o + web_search</span>
                 <span class="arrow">+</span>
-                <span class="fbox data">7개 외부 API (병렬)</span>
+                <span class="fbox data rnr-click" data-rnr="extApis">7개 외부 API (병렬)</span>
             </div>
             <h3>3. Generate 버튼 → CX 시나리오</h3>
             <div class="flow-chain">
-                <span class="fbox client">generateScenario()</span><span class="arrow">→</span>
-                <span class="fbox api">POST /api/generate</span><span class="arrow">→</span>
-                <span class="fbox server">prompt.txt + context</span><span class="arrow">→</span>
-                <span class="fbox ai">GPT-4o / Claude (SSE)</span>
+                <span class="fbox client rnr-click" data-rnr="genScenario">generateScenario()</span><span class="arrow">→</span>
+                <span class="fbox api rnr-click" data-rnr="apiGenerate">POST /api/generate</span><span class="arrow">→</span>
+                <span class="fbox server rnr-click" data-rnr="promptCtx">prompt.txt + context</span><span class="arrow">→</span>
+                <span class="fbox ai rnr-click" data-rnr="aiStream">GPT-4o / Claude (SSE)</span>
             </div>
             <h3>4. 결과 → 11섹션 렌더링</h3>
             <div class="flow-chain">
-                <span class="fbox ai">SSE chunks</span><span class="arrow">→</span>
-                <span class="fbox client">실시간 타이핑 → 섹션별 HTML</span><span class="arrow">→</span>
-                <span class="fbox client">Refine (POST /api/refine)</span>
+                <span class="fbox ai rnr-click" data-rnr="sseChunks">SSE chunks</span><span class="arrow">→</span>
+                <span class="fbox client rnr-click" data-rnr="renderResult">실시간 타이핑 → 섹션별 HTML</span><span class="arrow">→</span>
+                <span class="fbox client rnr-click" data-rnr="refine">Refine (POST /api/refine)</span>
             </div>
         </div>
-        <!-- 오른쪽: 단계별 설명 -->
-        <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:20px;font-size:.84em;line-height:1.7;color:#333">
-            <p style="margin-bottom:12px"><strong style="color:#1a1a2e;font-size:1em">① 사용자 입력</strong></p>
-            <p style="margin-bottom:14px">마케터가 4단계 위자드를 통해 <strong>역할(Q1)</strong>, <strong>국가·도시(Q2)</strong>, <strong>타겟 세그먼트(Q3)</strong>, <strong>기기 조합(Q4)</strong>을 순서대로 선택합니다. 각 단계마다 인사이트 카드가 즉시 표시되어 다음 선택을 가이드합니다.</p>
-
-            <p style="margin-bottom:12px"><strong style="color:#1a1a2e;font-size:1em">② Q2 라이브 트렌드</strong></p>
-            <p style="margin-bottom:14px">도시를 선택하는 순간, 클라이언트가 서버 API를 호출합니다. 서버는 <strong>GPT-4o 웹 검색</strong>과 <strong>7개 외부 API</strong>(WorldBank, 날씨, 좌표, 인구 등)를 <strong>동시에 병렬</strong>로 호출하여, 해당 도시의 실시간 트렌드·행사·고민·CX 시나리오 힌트를 생성합니다.</p>
-
-            <p style="margin-bottom:12px"><strong style="color:#1a1a2e;font-size:1em">③ 시나리오 생성</strong></p>
-            <p style="margin-bottom:14px">'생성' 버튼 클릭 시, Q1~Q4 입력 + Q2에서 수집한 지역 데이터를 합쳐 <strong>550줄 시스템 프롬프트(prompt.txt v8.2)</strong>와 함께 AI에 전달합니다. Explore v2.0 시나리오를 자동 매핑하고, <strong>SSE 스트리밍</strong>으로 실시간 출력합니다.</p>
-
-            <p style="margin-bottom:12px"><strong style="color:#1a1a2e;font-size:1em">④ 결과 렌더링 & 수정</strong></p>
-            <p>AI 응답이 한 글자씩 도착하며 <strong>11개 섹션 카드</strong>로 즉시 렌더링됩니다. 완료 후 Refine API를 통해 특정 섹션만 정밀 수정할 수 있으며, 수정 시 자동으로 품질 검증(Gate Check)이 재실행됩니다.</p>
+        <!-- 오른쪽: R&R 설명 패널 -->
+        <div id="rnr-panel" style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:20px;font-size:.84em;line-height:1.7;color:#333;transition:all .3s">
+            <p style="color:#999;font-style:italic">← 왼쪽 항목을 클릭하면 해당 모듈의 R&R이 여기에 표시됩니다.</p>
+            <div style="margin-top:16px;padding-top:14px;border-top:1px solid #eee">
+                <p style="margin-bottom:12px"><strong style="color:#1a1a2e;font-size:1em">① 사용자 입력</strong></p>
+                <p style="margin-bottom:14px">마케터가 4단계 위자드를 통해 <strong>역할(Q1)</strong>, <strong>국가·도시(Q2)</strong>, <strong>타겟 세그먼트(Q3)</strong>, <strong>기기 조합(Q4)</strong>을 순서대로 선택합니다.</p>
+                <p style="margin-bottom:12px"><strong style="color:#1a1a2e;font-size:1em">② Q2 라이브 트렌드</strong></p>
+                <p style="margin-bottom:14px">도시 선택 시 서버가 <strong>GPT-4o 웹 검색 + 7개 외부 API</strong>를 병렬 호출하여 실시간 트렌드를 생성합니다.</p>
+                <p style="margin-bottom:12px"><strong style="color:#1a1a2e;font-size:1em">③ 시나리오 생성</strong></p>
+                <p style="margin-bottom:14px"><strong>550줄 시스템 프롬프트 + 지역 데이터</strong>를 합쳐 AI에 전달, SSE 스트리밍으로 실시간 출력합니다.</p>
+                <p style="margin-bottom:12px"><strong style="color:#1a1a2e;font-size:1em">④ 결과 & 수정</strong></p>
+                <p><strong>11개 섹션 카드</strong>로 렌더링 → Refine API로 섹션별 정밀 수정 가능.</p>
+            </div>
         </div>
     </div>
 </div>
+<!-- R&R 데이터 (전문 + 쉬운설명) -->
+<script>
+const RNR_DATA = {
+    q1: {
+        title: "Q1 — 역할 선택 (Role Selection)",
+        pro: "시나리오 출력 구조의 관점(Lens)을 결정하는 최상위 분기점입니다. Retail/Dotcom/Brand 3가지 역할에 따라 마케팅 메시지 톤, KPI 기준, 캠페인 채널 우선순위가 자동으로 분기됩니다. 이후 모든 출력의 3 Role-Lens(매장용/닷컴용/브랜드용) 메시지가 이 선택에 의해 결정됩니다.",
+        easy: "쉽게 말하면, '나는 매장 직원이야' vs '나는 온라인 담당이야' vs '나는 브랜드 마케터야'를 고르는 겁니다. 이걸 고르면 시나리오가 그 사람 입장에 맞게 자동으로 바뀌어요."
+    },
+    q2: {
+        title: "Q2 — 국가/도시 선택 (Market Selection)",
+        pro: "타겟 시장의 지리적 컨텍스트를 확정합니다. 국가 선택 시 로케일(언어)이 자동 전환되고, 도시 선택 시 실시간 라이브 트렌드 카드가 생성됩니다. 내부적으로 city_signals, KR_CITY_MASTER 등 참조 데이터와 매칭하여 로케일별 도시명 변환(예: Incheon→인천)을 수행합니다.",
+        easy: "어느 나라, 어느 도시에서 쓸 시나리오인지 고르는 겁니다. 도시를 고르면 그 도시의 최신 뉴스·트렌드·행사 정보를 자동으로 가져와서 카드로 보여줍니다."
+    },
+    q3: {
+        title: "Q3 — 타겟 세그먼트 (Target Segment)",
+        pro: "MECE 원칙 기반 21개 항목(생애단계, 가구형태, 라이프스타일, 기술수용도, 사용의도 등)의 체크리스트로 타겟 고객을 정의합니다. 이 조합이 시나리오의 페르소나, JTBD(Jobs to Be Done), 캠페인 타이밍, 기기 추천에 직접 영향을 줍니다.",
+        easy: "'어떤 사람한테 보여줄 시나리오인지' 고르는 겁니다. 예를 들어 '30대 맞벌이 부부 + 아이 있음 + 아파트'를 체크하면, 그 가족에 딱 맞는 시나리오가 나와요."
+    },
+    q4: {
+        title: "Q4 — 기기 조합 (Device Composition)",
+        pro: "시나리오에 포함될 SmartThings 기기 세트를 확정합니다. 7개 스타일별 프리셋(에너지/케어/무드/시큐리티 등)을 중복 선택하거나, 22개 기기를 직접 토글하거나, AI 자동 구성을 사용할 수 있습니다. 선택된 기기 조합은 Explore v2.0 12키워드 매핑, Automation JSON 생성, 기기 설정 가이드에 반영됩니다.",
+        easy: "시나리오에 어떤 삼성 가전을 넣을지 고르는 겁니다. '에너지 절약형' 같은 세트를 클릭하면 관련 기기가 한 번에 선택되고, 귀찮으면 AI가 알아서 골라주는 버튼도 있어요."
+    },
+    selectCity: {
+        title: "selectCity() — 도시 값 설정",
+        pro: "사용자가 드롭다운에서 도시를 선택하면 호출됩니다. cityHiddenInput.value에 도시명을 저장하고, updateStepInsight()와 renderCityProfileCard()를 트리거하여 Q2 인사이트 카드와 도시 프로필 카드를 갱신합니다.",
+        easy: "도시를 고르면 이 함수가 '어떤 도시를 골랐는지' 기억해두고, 바로 그 도시 정보를 보여주라고 다음 함수를 호출합니다."
+    },
+    renderStep2: {
+        title: "renderStep2Insight() — Q2 인사이트 카드 렌더링",
+        pro: "로딩 UI를 먼저 표시한 뒤, getCityValue()로 도시 값을 확인하고, fetchLiveStep2Insight()를 호출하여 서버에서 라이브 데이터를 가져옵니다. 응답이 오면 mapLiveStep2Insight()로 4개 섹션(트렌드/행사/고민/CX힌트) 카드를 렌더링합니다.",
+        easy: "'잠깐만요, 데이터 가져오는 중...' 로딩 화면을 보여주고, 서버에서 그 도시 트렌드를 받아오면 예쁜 카드로 바꿔서 화면에 보여줍니다."
+    },
+    fetchLive: {
+        title: "fetchLiveStep2Insight() — 서버 API 호출",
+        pro: "클라이언트에서 GET /api/region-insight 엔드포인트를 호출합니다. 파라미터로 country, city, locale, role, force=1을 전송하며, 60초 타임아웃이 설정되어 있습니다. 응답 JSON에서 live_trends, live_events, live_pains, live_solutions를 추출합니다.",
+        easy: "서버에 '이 도시의 최신 트렌드 알려줘!'라고 요청을 보내는 함수입니다. 최대 60초까지 기다리고, 서버가 보내준 트렌드·행사·고민·솔루션 데이터를 받아옵니다."
+    },
+    apiRegion: {
+        title: "GET /api/region-insight — 라이브 트렌드 API",
+        pro: "Cloudflare Pages Function으로 배포된 서버리스 엔드포인트입니다. 인증 세션을 확인하고, 캐시(15분 TTL)를 검사한 뒤, buildLiveRegionInsight()를 호출하여 7개 외부 API + GPT-4o 웹 검색을 병렬로 실행합니다.",
+        easy: "서버의 '트렌드 담당 창구'입니다. 클라이언트가 요청하면, 여러 데이터 소스에서 정보를 동시에 가져와서 정리한 뒤 돌려줍니다. 같은 도시를 15분 안에 다시 물으면 캐시된 결과를 바로 줍니다."
+    },
+    buildLive: {
+        title: "buildLiveRegionInsight() — 데이터 수집 오케스트레이터",
+        pro: "서버 내부에서 모든 데이터 소스를 병렬로 호출하는 핵심 함수입니다. geocode, WorldBank×2, CountryProfile, Nominatim, Landmark 이미지, fetchLiveTrends(GPT-4o)를 Promise.allSettled로 동시 실행하고, 결과를 role_lens, macro, local, evidence, visual, live_trends 등으로 조립합니다.",
+        easy: "여러 정보원에 동시에 전화를 걸어서 — GDP, 날씨, 도시 정보, AI 트렌드 분석 — 다 모은 다음, 하나의 깔끔한 데이터 패키지로 만들어주는 '총괄 매니저' 역할입니다."
+    },
+    fetchTrends: {
+        title: "fetchLiveTrends() — GPT-4o + 웹 검색",
+        pro: "OpenAI Responses API(POST /v1/responses)를 호출하며, web_search_preview 도구를 활성화하여 실제 인터넷을 검색합니다. 10개 생활 맥락 카테고리(기후/주거/가족/에너지 등) 프레임워크로 도시별 트렌드를 생성하고, annotations에서 실제 URL을 추출합니다. 40초 타임아웃.",
+        easy: "AI가 실제로 인터넷을 검색해서 그 도시의 최신 뉴스와 통계를 찾아옵니다. 가짜 URL이 아니라 진짜 기사 링크를 가져오기 때문에, 클릭하면 실제 페이지로 이동합니다."
+    },
+    extApis: {
+        title: "7개 외부 API — 병렬 실시간 데이터",
+        pro: "WorldBank(GDP/도시화율), Open-Meteo(7일 날씨 예보 + 위도/경도), Nominatim(OSM 도시 분류/중요도), RestCountries(인구/면적/국경), Wikipedia(랜드마크 이미지)를 병렬로 호출합니다. 각각 12초 타임아웃이며, 일부가 실패해도 나머지 데이터로 계속 진행합니다.",
+        easy: "세계은행에서 경제 데이터, 날씨 서비스에서 일기예보, 지도 서비스에서 도시 정보, 위키피디아에서 도시 사진을 한꺼번에 가져옵니다. 하나가 느려도 나머지는 먼저 도착합니다."
+    },
+    genScenario: {
+        title: "generateScenario() — 시나리오 생성 시작",
+        pro: "Q1~Q4 입력값을 수집하여 context 객체를 구성합니다. analyzeIntent()로 사용 의도를 분석하고, findRelevantServices()로 관련 서비스를 매칭하고, buildExploreGrounding()으로 Explore v2.0 시나리오를 매핑합니다. AI 모드라면 streamGenerateScenario()를 호출합니다.",
+        easy: "'생성' 버튼을 누르면 이 함수가 지금까지 고른 모든 선택(역할, 도시, 타겟, 기기)을 모아서 정리한 뒤, AI에게 '이 조건으로 시나리오 만들어줘'라고 요청합니다."
+    },
+    apiGenerate: {
+        title: "POST /api/generate — 시나리오 생성 API",
+        pro: "서버리스 함수로, prompt.txt(v8.2, 550줄)를 읽어 시스템 프롬프트로 설정하고, 클라이언트가 보낸 context + regionInsight를 사용자 메시지로 조립합니다. GPT-4o 또는 Claude를 선택하여 SSE 스트리밍으로 응답합니다. 월간 예산 제한이 적용됩니다.",
+        easy: "서버의 '시나리오 제작소'입니다. 550줄짜리 전문가 지시서(프롬프트)와 사용자가 고른 조건을 합쳐서 AI에게 전달하고, AI가 만드는 결과를 실시간으로 클라이언트에 흘려보냅니다."
+    },
+    promptCtx: {
+        title: "prompt.txt + context — AI 입력 구성",
+        pro: "prompt.txt v8.2는 Part 0~8까지 구성된 550줄 시스템 프롬프트로, Reasoning Spine, 5차원 지역 분석, Explore v2.0 매핑, 11섹션 출력 스키마, Gate System, Hard Constraints를 포함합니다. context에는 Q1~Q4 선택값 + Q2 regionInsight(라이브 지역 데이터)가 포함됩니다.",
+        easy: "AI에게 보내는 '전문가 매뉴얼'과 '주문서'입니다. 매뉴얼에는 삼성 브랜드 규칙, 출력 형식, 품질 체크리스트가 들어있고, 주문서에는 사용자가 고른 조건과 실시간 도시 데이터가 들어있습니다."
+    },
+    aiStream: {
+        title: "GPT-4o / Claude — AI 시나리오 생성",
+        pro: "OpenAI Chat Completions API 또는 Anthropic Messages API를 SSE(Server-Sent Events) 스트리밍 모드로 호출합니다. 11개 섹션(제목/상세시나리오/지역데이터/마케팅메시지/베네핏/타겟/타이밍/기기가이드/시장성/Add-on/Reflection)을 순서대로 생성하며, 각 청크가 실시간으로 클라이언트에 전달됩니다.",
+        easy: "AI가 시나리오를 만들기 시작하면, 완성을 기다리지 않고 한 글자씩 바로바로 화면에 보여줍니다. 마치 AI가 눈앞에서 타이핑하는 것처럼 보입니다."
+    },
+    sseChunks: {
+        title: "SSE chunks — 실시간 스트리밍 데이터",
+        pro: "Server-Sent Events 프로토콜로 전송되는 JSON 청크입니다. 각 청크는 {type:'chunk', text:'...'} 형태로, 서버 → 클라이언트 단방향으로 실시간 전달됩니다. type:'done'이면 스트리밍 종료, type:'error'이면 에러 처리됩니다.",
+        easy: "AI가 만든 결과가 택배처럼 한 조각씩 도착합니다. 전체가 완성되기 전에도 도착한 부분은 바로 화면에 보여주기 때문에 기다리는 느낌이 훨씬 적습니다."
+    },
+    renderResult: {
+        title: "실시간 렌더링 — 섹션별 카드 UI",
+        pro: "renderAIResult()가 마크다운을 HTML로 변환하고, stripMetaPrompts()로 내부 메타텍스트를 제거하며, parseSourceCitations()으로 [Source] 출처를 클릭 가능한 태그로 변환합니다. 섹션 헤딩(h2)은 다크 네이비 바, h3는 좌측 보더, 표는 스트라이프 스타일의 슬라이드형 카드 UI로 렌더링됩니다.",
+        easy: "AI가 보내준 텍스트를 예쁜 카드 형태로 바꿔서 보여줍니다. 제목은 검은 바, 내용은 흰 카드, 표는 줄무늬 — 마치 프레젠테이션 슬라이드처럼 정돈된 모습으로 나옵니다."
+    },
+    refine: {
+        title: "Refine — 섹션별 정밀 수정",
+        pro: "POST /api/refine 엔드포인트를 호출하여, 이전 출력(previousOutput) + 수정 요청(refinementRequest)을 구조화된 messages[]로 전달합니다. AI가 해당 섹션만 타겟으로 재생성하며, 수정 후 자동으로 품질 검증(Reflection Check)이 재실행됩니다.",
+        easy: "결과가 나온 후 '이 부분만 바꿔줘'라고 요청할 수 있습니다. 전체를 다시 만들지 않고, 수정이 필요한 부분만 AI가 고쳐줍니다. 수정 후에는 자동으로 품질 체크도 다시 돌립니다."
+    }
+};
+// 클릭 이벤트
+document.addEventListener('click', function(e) {
+    const el = e.target.closest('.rnr-click');
+    if (!el) return;
+    const key = el.dataset.rnr;
+    const data = RNR_DATA[key];
+    if (!data) return;
+    const panel = document.getElementById('rnr-panel');
+    if (!panel) return;
+    // 선택 강조
+    document.querySelectorAll('.rnr-click').forEach(b => b.style.outline = '');
+    el.style.outline = '3px solid #001a6e';
+    panel.innerHTML = `
+        <p style="margin-bottom:6px"><strong style="color:#001a6e;font-size:1.05em">${data.title}</strong></p>
+        <div style="background:#f0f2f8;border-left:4px solid #001a6e;padding:12px 16px;border-radius:4px;margin:10px 0">
+            <p style="margin-bottom:4px;font-size:.78em;color:#001a6e;font-weight:700">전문 설명</p>
+            <p style="font-size:.84em;color:#222;margin:0">${data.pro}</p>
+        </div>
+        <div style="background:#fff;border-left:4px solid #3a3a4a;padding:12px 16px;border-radius:4px;margin:10px 0;border:1px solid #eee">
+            <p style="margin-bottom:4px;font-size:.78em;color:#3a3a4a;font-weight:700">쉬운 설명</p>
+            <p style="font-size:.84em;color:#333;margin:0">${data.easy}</p>
+        </div>
+    `;
+});
+</script>
 
 <!-- ===== PAGE 3: ARCHITECTURE DIAGRAM ===== -->
 <div class="slide flow">
