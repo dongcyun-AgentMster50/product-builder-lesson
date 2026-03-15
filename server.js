@@ -1225,20 +1225,35 @@ async function fetchCityLiveContent({ country, city, role, locale }) {
     const lang = localeMap[locale] || "English";
     const todayIso = new Date().toISOString().slice(0, 10);
 
-    const instructions = `You are a hyper-local Samsung SmartThings marketing analyst. Use web search to find REAL, CURRENT data. Return ONLY valid JSON. Write in ${lang}.`;
+    const instructions = `You are a Samsung SmartThings CX scenario analyst. Use web search to find REAL, CURRENT data about the requested city. Return ONLY valid JSON. Write in ${lang}.
 
-    const input = `Search the web for current (2025-2026) real data about "${city}" (${country}) relevant to Samsung SmartThings ${role} marketing as of ${todayIso}.
+Your analysis framework — search for trends in these 10 life-context categories:
+1. 기후·계절 (climate, heatwave, cold, monsoon, air quality)
+2. 주거 형태 (housing type, apartment vs house, new developments)
+3. 가족·돌봄 (family structure, childcare, elderly care, single households)
+4. 일상 리듬 (commute, remote work, daily patterns)
+5. 안전·보안 (crime concerns, night safety, empty home anxiety)
+6. 에너지 비용 (electricity rates, energy policy, savings demand)
+7. 건강·웰니스 (sleep, air quality sensitivity, wellness culture)
+8. 펫 라이프 (pet ownership, pet care while away)
+9. 이동·부재 (travel, long commute, extended absence)
+10. 문화 행사 (local festivals, holidays, seasonal events)
 
-Find: local government smart city policies, IoT/smart home adoption, housing developments, energy initiatives, upcoming events near ${city}.
+Flow: Regional trend → Life problem/desire → SmartThings scenario → Campaign message`;
+
+    const input = `Search the web for current (2025-2026) real data about "${city}" (${country}) for Samsung SmartThings ${role} marketing as of ${todayIso}.
+
+Search across the 10 life-context categories. Find ${city}-specific data: local policies, district-level stats, housing trends, energy costs, demographics, upcoming events.
 
 Return ONLY valid JSON — no markdown:
-{"live_trends":[{"text":"${city}-specific headline","evidence":"2-3 sentences with real numbers from search","source_title":"actual article title","source_org":"publisher","source_url":"real URL from search"}],"live_events":[{"name":"real event","when":"YYYY-MM-DD","hook":"Samsung angle"}],"live_pains":[{"text":"${role} pain in ${city}","insight":"why, linked to trend"}],"live_solutions":[{"text":"Samsung product tactic in ${city}","insight":"how to execute + impact"}]}
+{"live_trends":[{"text":"${city}-specific trend headline","category":"one of: climate|housing|family|routine|security|energy|wellness|pet|mobility|events","evidence":"2-3 sentences with real numbers from search","source_title":"article title","source_org":"publisher","source_url":"real URL"}],"live_events":[{"name":"real event","when":"YYYY-MM-DD","hook":"Samsung SmartThings marketing angle"}],"live_pains":[{"text":"life problem/desire this trend creates for ${city} residents — written as realistic ${role} marketer concern","insight":"WHY: connect trend → life moment → customer friction. Be specific to ${city}."}],"live_solutions":[{"text":"SmartThings CX scenario that solves this pain","insight":"HOW: specific Samsung products/services + ${city} execution channel + expected impact."}]}
 
-- live_trends: 4 objects with REAL search results. ${city} districts/policies required.
-- live_events: 2-3 real upcoming events near ${city}.
-- live_pains: 3 objects tied to trends.
-- live_solutions: 3 objects naming Samsung products.
-- Korean city names only for Korean locale.`;
+Rules:
+- live_trends: 4 objects from DIFFERENT categories. Use REAL search results with real URLs.
+- live_events: 2-3 real upcoming events near ${city} within 3 months.
+- live_pains: 3 objects. Flow: trend → life problem → customer friction.
+- live_solutions: 3 objects. Flow: pain → SmartThings scenario → campaign message. Name specific Samsung products.
+- Korean city/district names for Korean locale.`;
 
     try {
         const response = await withTimeout(async () => {

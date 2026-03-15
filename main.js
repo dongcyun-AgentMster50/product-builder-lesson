@@ -2269,20 +2269,36 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const mustKnow = toList(roleLens.must_know).slice(0, 3);
     const executionPoints = toList(roleLens.execution_points).slice(0, 3);
 
-    // live_trends: 객체 배열({text, evidence, source_*}) 또는 문자열 배열 모두 지원
+    // live_trends: 객체 배열({text, evidence, category, source_*}) 또는 문자열 배열 모두 지원
+    const CATEGORY_LABELS = {
+        climate: currentLocale === "ko" ? "기후·계절" : "Climate",
+        housing: currentLocale === "ko" ? "주거 형태" : "Housing",
+        family: currentLocale === "ko" ? "가족·돌봄" : "Family",
+        routine: currentLocale === "ko" ? "일상 리듬" : "Routine",
+        security: currentLocale === "ko" ? "안전·보안" : "Security",
+        energy: currentLocale === "ko" ? "에너지" : "Energy",
+        wellness: currentLocale === "ko" ? "건강·웰니스" : "Wellness",
+        pet: currentLocale === "ko" ? "펫 라이프" : "Pet",
+        mobility: currentLocale === "ko" ? "이동·부재" : "Mobility",
+        events: currentLocale === "ko" ? "문화 행사" : "Events"
+    };
     const rawLiveTrends = Array.isArray(data.live_trends) ? data.live_trends : [];
-    const liveTrends = rawLiveTrends.map((t) =>
-        typeof t === "object" && t !== null
-            ? {
-                text: String(t.text || "").trim(),
+    const liveTrends = rawLiveTrends.map((t) => {
+        if (typeof t === "object" && t !== null) {
+            const category = String(t.category || "").trim().toLowerCase();
+            const categoryLabel = CATEGORY_LABELS[category] || "";
+            const text = String(t.text || "").trim();
+            return {
+                text: categoryLabel ? `[${categoryLabel}] ${text}` : text,
                 evidence: String(t.evidence || "").trim(),
                 source_title: String(t.source_title || "").trim(),
                 source_org: String(t.source_org || "").trim(),
                 source_date: String(t.source_date || "").trim(),
                 source_url: String(t.source_url || "").trim()
-            }
-            : { text: String(t || "").trim(), evidence: "", source_title: "", source_org: "", source_date: "", source_url: "" }
-    ).filter((t) => t.text);
+            };
+        }
+        return { text: String(t || "").trim(), evidence: "", source_title: "", source_org: "", source_date: "", source_url: "" };
+    }).filter((t) => t.text);
 
     if (!liveTrends.length) {
         return buildStep2ErrorInsight(
