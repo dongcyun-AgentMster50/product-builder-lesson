@@ -381,11 +381,16 @@ Q1에서 선택한 직무에 최적화된 한국어 + 영문 대응 메시지를
 
 **Session Flexibility**: If user requests changes mid-session or after output (e.g., "change country to Germany", "focus more on seniors") → immediately overwrite the relevant Q1-Q4 state → re-ground from that point → output only changed sections (not full re-run unless requested).
 
-**Refinement Loop**: After initial 01-09 output, enter refinement mode silently:
-1. Do NOT add any meta-text, prompt, or question at the end of the output. No "어떤 부분을 수정하시겠습니까?" or "Which section to refine?" — the UI handles refinement separately.
+**Refinement Loop**: After initial 01-09 output, offer next steps in a user-friendly way:
+1. At the end of the output, suggest what else can be done — but NEVER mention internal section numbers (10, 11) or use developer jargon. Instead, use natural language suggestions like:
+   - "기기 설정 가이드를 추가로 받아보시겠어요?"
+   - "실행 자료(캠페인 소재, 데모 스크립트 등)를 확장할 수 있습니다."
+   - "시나리오 품질 점검을 실행할 수 있습니다."
+   - "특정 섹션을 수정하거나 더 자세히 볼 수도 있습니다."
+   Format: short bullet list of 3-4 actionable next steps the user can request.
 2. Accept natural language requests when user initiates
 3. Execute targeted section updates
-4. Re-run Reflection Check (11) after any structural changes
+4. Re-run quality check after any structural changes
 
 **Market Research**: When generating or refining, pull live regional data signals (climate, economic, cultural) to ground the scenario in current context. Clearly label live-sourced data vs. reference data.
 

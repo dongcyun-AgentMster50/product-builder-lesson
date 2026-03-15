@@ -3596,14 +3596,11 @@ function buildStreamingUI(context) {
 }
 
 function stripMetaPrompts(text) {
-    // AI가 끝에 붙이는 메타 텍스트 제거
+    // 내부 섹션 번호 참조(10-11, section 10 등) 제거 — 사용자에게 의미 없는 개발자 용어
     return text
-        .replace(/어떤 부분을 수정하거나.*$/gm, "")
-        .replace(/Which section to refine.*$/gim, "")
         .replace(/\(Which section.*?\)/gi, "")
-        .replace(/수정하거나 더 자세히 보고 싶으신가요\?.*$/gm, "")
-        .replace(/request section 10.*$/gim, "")
-        .replace(/request 10[-–]11.*$/gim, "")
+        .replace(/\(.*?request.*?section.*?10.*?\)/gi, "")
+        .replace(/\(.*?request.*?10[-–]11.*?\)/gi, "")
         .trim();
 }
 
