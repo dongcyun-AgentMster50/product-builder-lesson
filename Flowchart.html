@@ -89,6 +89,14 @@
         .slide::-webkit-scrollbar{width:5px}
         .slide::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
 
+        /* ── 10-step overview grid ── */
+        .step-overview{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+        .step-row{display:grid;grid-template-columns:44px 1fr 1fr;gap:0;border:1px solid #ddd;border-radius:6px;overflow:hidden;background:#fff}
+        .step-num{background:#1a1a2e;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'SamsungOne',sans-serif;font-weight:900;font-size:.85em;padding:8px 0}
+        .step-label{padding:8px 12px;font-size:.75em;line-height:1.45;color:#333;border-right:1px solid #eee}
+        .step-label strong{display:block;font-size:.9em;color:#1a1a2e;margin-bottom:2px}
+        .step-diff{padding:8px 12px;font-size:.72em;line-height:1.45;color:#001a6e;font-weight:600;background:#f0f2f8}
+
         /* ── Summary stat cards ── */
         .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px;max-width:860px}
         .stat-card{background:rgba(255,255,255,.08);border-radius:6px;padding:20px;border:1px solid rgba(255,255,255,.12);text-align:center}
@@ -112,7 +120,7 @@
 
 <!-- ===== PAGE 2: FLOW OVERVIEW ===== -->
 <div class="slide flow">
-    <span class="page-num">2/16</span>
+    <span class="page-num">2/17</span>
     <span class="badge blue">Part A — Flow</span>
     <h2>전체 시스템 플로우</h2>
     <h3>1. 사용자 입력 (Client — main.js)</h3>
@@ -152,7 +160,7 @@
 
 <!-- ===== PAGE 3: Q2 DETAIL ===== -->
 <div class="slide flow">
-    <span class="page-num">3/16</span>
+    <span class="page-num">3/17</span>
     <span class="badge green">Part A — Q2 상세</span>
     <h2>Q2 라이브 트렌드 카드 — 함수별 상세</h2>
     <div class="detail-grid">
@@ -169,7 +177,7 @@
 
 <!-- ===== PAGE 4: API ENDPOINTS ===== -->
 <div class="slide flow">
-    <span class="page-num">4/16</span>
+    <span class="page-num">4/17</span>
     <span class="badge purple">Part A — API 전체</span>
     <h2>서버 API 엔드포인트 & 외부 호출</h2>
     <pre><code><span class="cm">// 인증</span>
@@ -197,9 +205,68 @@
 <span class="fn">server.js</span>              Node.js 로컬 개발용</code></pre>
 </div>
 
-<!-- ===== PAGE 5: GPT STEP 1 — 접속/시작 ===== -->
+<!-- ===== PAGE 5: 10-STEP OVERVIEW ===== -->
+<div class="slide flow">
+    <span class="page-num">5/17</span>
+    <span class="badge blue">Part B — 한눈에 보기</span>
+    <h2>GPT vs 웹앱 — 10단계 개선 요약</h2>
+    <div class="step-overview">
+        <div class="step-row">
+            <div class="step-num">1</div>
+            <div class="step-label"><strong>접속/시작</strong>ChatGPT Plus 구독 → 빈 채팅창</div>
+            <div class="step-diff">무료 전용 URL + 액세스 코드 + 단계별 가이드 위자드</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">2</div>
+            <div class="step-label"><strong>역할 설정 (Q1)</strong>텍스트로 역할 설명 → 누락 빈번</div>
+            <div class="step-diff">3장 역할 카드 클릭 → 인사이트 카드 + 3 Role-Lens 자동 분기</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">3</div>
+            <div class="step-label"><strong>지역 선택 (Q2)</strong>텍스트 입력 → AI 추측 → 가짜 URL</div>
+            <div class="step-diff">드롭다운 + GPT-4o 웹검색 + 7개 API 병렬 → 진짜 출처</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">4</div>
+            <div class="step-label"><strong>세그먼트 (Q3)</strong>자유 텍스트 → 모호한 타겟</div>
+            <div class="step-diff">MECE 21항목 체크리스트 + AI 자동 구성 + 넛지 카드</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">5</div>
+            <div class="step-label"><strong>기기 선택 (Q4)</strong>텍스트 나열 → 존재 안 하는 기기 가능</div>
+            <div class="step-diff">7개 프리셋 중복선택 + 22개 칩 + AI 자동 구성</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">6</div>
+            <div class="step-label"><strong>데이터 수집</strong>외부 API 없음 → AI 상상</div>
+            <div class="step-diff">7개 실시간 API 병렬 (WorldBank, 날씨, 좌표, 웹검색)</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">7</div>
+            <div class="step-label"><strong>시나리오 생성</strong>200줄 프롬프트 → 포맷 불일치</div>
+            <div class="step-diff">550줄 prompt.txt v8.2 + regionInsight + Explore 매핑 + Gate 검증</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">8</div>
+            <div class="step-label"><strong>결과 수신</strong>전체 완성까지 30-90초 대기</div>
+            <div class="step-diff">SSE 스트리밍 → 즉시 표시, 체감 80% 감소</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">9</div>
+            <div class="step-label"><strong>수정/반복</strong>대화식 → 맥락 유실 → 품질 하락</div>
+            <div class="step-diff">Refine API → 섹션별 정밀 수정 + 자동 품질 재검증</div>
+        </div>
+        <div class="step-row">
+            <div class="step-num">10</div>
+            <div class="step-label"><strong>결과 활용</strong>복사붙여넣기 → 포맷 깨짐</div>
+            <div class="step-diff">11섹션 카드 UI + 9개 언어 + 프롬프트 중앙 관리</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PAGE 6: GPT STEP 1 — 접속/시작 ===== -->
 <div class="slide compare">
-    <span class="page-num">5/16</span>
+    <span class="page-num">6/17</span>
     <span class="badge step">STEP 1/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 1. 접속 및 시작</h2>
     <div class="compare-grid">
@@ -228,7 +295,7 @@
 
 <!-- ===== PAGE 6: GPT STEP 2 — 역할 설정 ===== -->
 <div class="slide compare">
-    <span class="page-num">6/16</span>
+    <span class="page-num">7/17</span>
     <span class="badge step">STEP 2/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 2. 역할/관점 설정 (Q1)</h2>
     <div class="compare-grid">
@@ -257,7 +324,7 @@
 
 <!-- ===== PAGE 7: GPT STEP 3 — 지역 선택 ===== -->
 <div class="slide compare">
-    <span class="page-num">7/16</span>
+    <span class="page-num">8/17</span>
     <span class="badge step">STEP 3/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 3. 지역/시장 선택 (Q2)</h2>
     <div class="compare-grid">
@@ -291,7 +358,7 @@
 
 <!-- ===== PAGE 8: GPT STEP 4 — 타겟 세그먼트 ===== -->
 <div class="slide compare">
-    <span class="page-num">8/16</span>
+    <span class="page-num">9/17</span>
     <span class="badge step">STEP 4/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 4. 타겟 세그먼트 설정 (Q3)</h2>
     <div class="compare-grid">
@@ -321,7 +388,7 @@
 
 <!-- ===== PAGE 9: GPT STEP 5 — 기기 선택 ===== -->
 <div class="slide compare">
-    <span class="page-num">9/16</span>
+    <span class="page-num">10/17</span>
     <span class="badge step">STEP 5/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 5. 기기/제품 선택 (Q4)</h2>
     <div class="compare-grid">
@@ -352,7 +419,7 @@
 
 <!-- ===== PAGE 10: GPT STEP 6 — 지역 데이터 수집 ===== -->
 <div class="slide compare">
-    <span class="page-num">10/16</span>
+    <span class="page-num">11/17</span>
     <span class="badge step">STEP 6/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 6. 지역 데이터 수집 (내부 처리)</h2>
     <div class="compare-grid">
@@ -386,7 +453,7 @@
 
 <!-- ===== PAGE 11: GPT STEP 7 — 시나리오 생성 ===== -->
 <div class="slide compare">
-    <span class="page-num">11/16</span>
+    <span class="page-num">12/17</span>
     <span class="badge step">STEP 7/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 7. CX 시나리오 생성</h2>
     <div class="compare-grid">
@@ -420,7 +487,7 @@
 
 <!-- ===== PAGE 12: GPT STEP 8 — 결과 수신 ===== -->
 <div class="slide compare">
-    <span class="page-num">12/16</span>
+    <span class="page-num">13/17</span>
     <span class="badge step">STEP 8/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 8. 결과 수신 방식</h2>
     <div class="compare-grid">
@@ -452,7 +519,7 @@
 
 <!-- ===== PAGE 13: GPT STEP 9 — 수정/반복 ===== -->
 <div class="slide compare">
-    <span class="page-num">13/16</span>
+    <span class="page-num">14/17</span>
     <span class="badge step">STEP 9/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 9. 수정 및 반복</h2>
     <div class="compare-grid">
@@ -483,7 +550,7 @@
 
 <!-- ===== PAGE 14: GPT STEP 10 — 결과 활용 ===== -->
 <div class="slide compare">
-    <span class="page-num">14/16</span>
+    <span class="page-num">15/17</span>
     <span class="badge step">STEP 10/10</span><span class="badge orange">GPT 단계별 비교</span>
     <h2>Step 10. 결과물 활용 & 공유</h2>
     <div class="compare-grid">
@@ -516,7 +583,7 @@
 
 <!-- ===== PAGE 15: ARCHITECTURE DIFF ===== -->
 <div class="slide compare">
-    <span class="page-num">15/16</span>
+    <span class="page-num">16/17</span>
     <span class="badge red">아키텍처 근본 차이</span>
     <h2>근본적 아키텍처 차이: 대화형 vs 파이프라인형</h2>
     <div class="compare-grid">
@@ -554,7 +621,7 @@
 
 <!-- ===== PAGE 16: SUMMARY ===== -->
 <div class="slide summary" style="justify-content:center;align-items:center;text-align:center">
-    <span class="page-num">16/16</span>
+    <span class="page-num">17/17</span>
     <span class="badge blue">Summary</span>
     <h1>핵심 개선 효과 요약</h1>
     <div class="stat-grid" style="margin:auto">
