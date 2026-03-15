@@ -1591,6 +1591,20 @@ textarea {
     color: var(--accent);
 }
 
+/* ── Trend Evidence (근거 인용) ── */
+.trend-evidence {
+    display: block;
+    margin-top: 4px;
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: #5a6a7a;
+    background: rgba(33,137,255,0.05);
+    border-left: 2px solid rgba(33,137,255,0.3);
+    border-radius: 0 8px 8px 0;
+    font-style: normal;
+}
+
 .insight-evidence {
     display: flex;
     flex-wrap: wrap;

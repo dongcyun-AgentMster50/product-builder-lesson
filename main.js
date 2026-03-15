@@ -1926,12 +1926,11 @@ function buildInsightMarkup(insight) {
             ? `<ul>${section.items.map((item) => {
                 if (item && typeof item === "object") {
                     const label = escapeHtml(item.text || "");
-                    const sourceUrl = String(item.sourceUrl || "").trim();
-                    const sourceLabel = escapeHtml(item.sourceLabel || (currentLocale === "ko" ? "웹검색" : "Web search"));
-                    const link = sourceUrl
-                        ? ` <a class="insight-inline-link" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">${sourceLabel}</a>`
+                    const evidenceText = String(item.evidence || "").trim();
+                    const evidenceHtml = evidenceText
+                        ? `<span class="trend-evidence">${escapeHtml(evidenceText)}</span>`
                         : "";
-                    return `<li>${label}${link}</li>`;
+                    return `<li>${label}${evidenceHtml}</li>`;
                 }
                 return `<li>${escapeHtml(item)}</li>`;
             }).join("")}</ul>`
@@ -2254,17 +2253,15 @@ function mapLiveStep2Insight(data, countryCode, city) {
             .slice(0, limit);
     };
 
-    const buildTrendSearchUrl = (trendText) => {
-        const query = [queryCity || localCity, getCountryName(countryCode), trendText].filter(Boolean).join(" ");
-        const params = new URLSearchParams({
-            q: query,
-            hl: currentLocale === "ko" ? "ko" : "en"
-        });
-        return `https://www.google.com/search?${params.toString()}`;
-    };
-
-    const liveTrends = toList(data.live_trends).slice(0, 4);
+    // live_trends: 객체 배열({text, evidence}) 또는 문자열 배열 모두 지원
+    const rawLiveTrends = Array.isArray(data.live_trends) ? data.live_trends : [];
+    const liveTrends = rawLiveTrends.map((t) =>
+        typeof t === "object" && t !== null
+            ? { text: String(t.text || "").trim(), evidence: String(t.evidence || "").trim() }
+            : { text: String(t || "").trim(), evidence: "" }
+    ).filter((t) => t.text);
     const staticTrends = toList(cityContent?.trends).slice(0, 4);
+
     if (!liveTrends.length && !hasExactCityData) {
         return buildStep2ErrorInsight(
             currentLocale === "ko"
@@ -2297,19 +2294,16 @@ function mapLiveStep2Insight(data, countryCode, city) {
 
     const sections = [];
 
-    // 1) 지역 트렌드 섹션: 실시간 API 우선, 정적 데이터 fallback
-    const trends = liveTrends.length
-        ? mergeUniqueItems(liveTrends, staticTrends, 4)
-        : staticTrends;
-    if (trends.length) {
+    // 1) 지역 트렌드 섹션: 실시간 API + 근거 인용 인라인 표시
+    const trendItems = liveTrends.length ? liveTrends : staticTrends.map((t) => ({ text: t, evidence: "" }));
+    if (trendItems.length) {
         sections.push({
             title: currentLocale === "ko"
                 ? `<strong class="city-accent">${localCity || marketLabel}</strong> 지역 트렌드`
                 : `<strong class="city-accent">${localCity || marketLabel}</strong> local trends`,
-            items: trends.map((trend) => ({
-                text: trend,
-                sourceUrl: buildTrendSearchUrl(trend),
-                sourceLabel: currentLocale === "ko" ? "검색 링크" : "Search link"
+            items: trendItems.map((trend) => ({
+                text: trend.text,
+                evidence: trend.evidence || ""
             }))
         });
     }

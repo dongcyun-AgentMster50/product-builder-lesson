@@ -1071,8 +1071,30 @@ function sanitizeCityLiveContent(payload) {
         .filter((item) => item.name && item.hook && isWithinUpcomingWindow(item.when))
         .slice(0, 3);
 
+    // live_trends: 객체({text, evidence}) 또는 문자열 모두 지원
+    const rawTrends = Array.isArray(payload.live_trends) ? payload.live_trends : [];
+    const seen = new Set();
+    const liveTrends = rawTrends
+        .map((item) => {
+            if (typeof item === "object" && item !== null) {
+                return {
+                    text: normalizeLooseText(item.text || item.trend || ""),
+                    evidence: normalizeLooseText(item.evidence || item.source || "")
+                };
+            }
+            return { text: normalizeLooseText(item), evidence: "" };
+        })
+        .filter((item) => {
+            if (!item.text) return false;
+            const key = item.text.toLowerCase();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        })
+        .slice(0, 4);
+
     return {
-        live_trends: asList(payload.live_trends, 4),
+        live_trends: liveTrends,
         live_events: liveEvents,
         live_pains: asList(payload.live_pains, 3),
         live_solutions: asList(payload.live_solutions, 3)
@@ -1181,7 +1203,9 @@ Today (UTC): ${todayIso}
 
 Return ONLY valid JSON — no markdown, no explanation:
 {
-  "live_trends": ["trend1", "trend2", "trend3", "trend4"],
+  "live_trends": [
+    {"text": "trend headline", "evidence": "1-2 sentence factual basis with specific numbers, policy names, or data sources"}
+  ],
   "live_events": [
     {"name": "event name", "when": "YYYY-MM-DD", "hook": "one-line marketing angle"}
   ],
@@ -1190,7 +1214,7 @@ Return ONLY valid JSON — no markdown, no explanation:
 }
 
 Rules:
-- live_trends: 4 current market/lifestyle trends specific to this EXACT city (not the country). Be hyper-local.
+- live_trends: 4 current market/lifestyle trends specific to this EXACT city (not the country). Be hyper-local. Each trend MUST include an "evidence" field with a factual, verifiable basis — cite specific statistics, government policies, industry reports, local news, or institutional data. The evidence should read like a brief footnote, not a generic claim.
 - live_events: 2-3 upcoming local events, festivals, or seasonal moments in or near this city within the next 3 months from ${todayIso}. Include realistic dates.
 - live_pains: 3 consumer pain points a ${role} marketer would face in this city, tied to the trends.
 - live_solutions: 3 actionable tactics for Samsung SmartThings marketing, specific to this city.
