@@ -398,3 +398,165 @@ Q1에서 선택한 직무에 최적화된 한국어 + 영문 대응 메시지를
 5. Section order 01→11 is fixed (no reordering, no skipping 01-09)
 6. Samsung Wallet only (never "Samsung Pay")
 7. Samsung Find only (never "Find My Mobile" or "SmartThings Find" separately)
+
+---
+
+## Part 9. 앱 기술 구현 현황 (2026-03-15 기준)
+
+이 섹션은 현재 웹앱의 실제 작동 방식, 서버 설정, AI 모델 구성을 기술합니다.
+prompt.txt 내용이 배포 환경변수에 반영되어야 실제 서비스에 적용됩니다.
+
+### 9-1. 시스템 아키텍처
+
+```
+[Client: Vanilla JS + HTML/CSS]
+     ↓ (HTTPS)
+[Server: Node.js HTTP — server.js]
+     ├─ /api/access/*       → 인증 (세션 쿠키)
+     ├─ /api/region-insight  → Q2 라이브 지역 인사이트
+     ├─ /api/nudge           → 도시 넛지 카드 (Now/Need/Opportunity)
+     ├─ /api/generate        → 시나리오 생성 (SSE 스트리밍)
+     └─ /api/refine          → 시나리오 수정/확장 (SSE 스트리밍)
+           ↓
+     [External APIs]
+     ├─ OpenAI (GPT-4o-mini): 라이브 트렌드, 넛지
+     ├─ OpenAI (GPT-5.4) / Claude (claude-sonnet-4): 시나리오 생성
+     ├─ World Bank: GDP, 도시화율
+     ├─ Open-Meteo: 지오코딩, 7일 기상
+     ├─ Nominatim (OpenStreetMap): 도시 메타데이터
+     └─ REST Countries: 국가 프로필
+```
+
+### 9-2. AI 모델 구성
+
+| 용도 | 모델 | max_tokens | temperature | timeout |
+|------|------|-----------|-------------|---------|
+| 시나리오 생성 | GPT-5.4 (env: `OPENAI_MODEL`) | 8,000 | — | 클라이언트 SSE |
+| 시나리오 수정 | GPT-5.4 또는 Claude Sonnet 4 | 4,000 | — | 클라이언트 SSE |
+| 라이브 트렌드 (Q2) | gpt-4o-mini (하드코딩) | 2,000 | 0.6 | 15초 |
+| 넛지 카드 (Q2) | gpt-4o-mini (하드코딩) | 1,000 | default | SSE |
+
+- 시나리오 생성 시 `prompt.txt` 전체를 시스템 프롬프트로 전달
+- provider 선택: 클라이언트에서 `"openai"` 또는 `"claude"` 지정
+
+### 9-3. API 엔드포인트 상세
+
+#### `/api/region-insight` (GET) — Q2 라이브 인사이트
+- **파라미터**: `country` (필수), `city`, `locale`, `role`, `force=1` (캐시 우회)
+- **캐시**: 키=`{country}|{city}|{locale}|{role}`, TTL=15분 (서버 인메모리)
+- **전체 타임아웃**: 20초 (`REGION_INSIGHT_TIMEOUT_MS`)
+- **데이터 수집 흐름**:
+  1. Open-Meteo 지오코딩 → 위경도 확인
+  2. 병렬 fetch (Promise.allSettled, 1개 이상 성공 시 진행):
+     - World Bank GDP + 도시화율
+     - Open-Meteo 7일 기상
+     - Nominatim 도시 메타
+     - REST Countries 국가 프로필
+  3. GPT-4o-mini 호출 (별도 15초 타임아웃):
+     - `live_trends` 4개 (각각 evidence + source_title/org/date/url 포함)
+     - `live_events` 2~3개
+     - `live_pains` 3개, `live_solutions` 3개
+  4. 결과 합성: `role_lens` + `macro` + `local` + `evidence` + `live_*`
+- **응답 구조**:
+  ```json
+  {
+    "ok": true,
+    "data": {
+      "role_lens": { "pain_points": [], "solutions": [], "primary_metric": "" },
+      "live_trends": [{ "text": "", "evidence": "", "source_title": "", "source_org": "", "source_date": "", "source_url": "" }],
+      "live_events": [{ "name": "", "when": "", "hook": "" }],
+      "live_pains": [], "live_solutions": [],
+      "_live_status": "ok" | "fallback",
+      "meta": { "query_city": "", "latency_ms": 0, "cache_hit": false }
+    }
+  }
+  ```
+
+#### `/api/nudge` (POST) — 도시 넛지 카드
+- **파라미터**: `country`, `city`, `role`, `locale`
+- **응답**: SSE 스트림 → JSON `{ situation, need, opportunity }`
+- **모델**: gpt-4o-mini, max_tokens=1000
+
+#### `/api/generate` (POST) — 시나리오 생성
+- **파라미터**: Q1~Q4 입력값, regionInsight (선택), provider, apiKey
+- **시스템 프롬프트**: `prompt.txt` 파일 전체
+- **응답**: SSE 스트림 (`{ type: "chunk", text: "..." }`)
+- **max_tokens**: 8,000 (env: `OPENAI_MAX_TOKENS`)
+
+### 9-4. Q2 도시 선택 시스템
+
+#### Searchable Dropdown (검색형 드롭다운)
+- **HTML**: `#city-search-input` (검색/입력), `#city-value` (선택값), `#city-dropdown` (목록)
+- **기능**: 타이핑 시 한글/영문 실시간 필터링, 키보드 탐색 (↑↓ Enter Esc)
+- **커스텀 도시**: 목록에 없으면 직접 입력 → "검색하기" 옵션 → 라이브 API 호출
+
+#### 한국 도시 마스터 데이터 (`KR_CITY_MASTER`)
+- **출처**: 행정안전부 2024년 4월 주민등록인구 통계
+- **구조**: 도(Province)별 그룹, 특별시/광역시 최상단
+- **총 85개 도시**, 중복 없음
+- **그룹**: 특별시·광역시·특별자치시 (8) → 경기도 (28) → 강원도 (7) → 충청북도 (3) → 충청남도 (8) → 전라북도 (6) → 전라남도 (5) → 경상북도 (10) → 경상남도 (8) → 제주특별자치도 (2)
+- **광주 구분**: 광주광역시 vs 광주시(경기) 명확 분리
+- **표시**: 도시명 + 인구수 (만 단위)
+
+#### 다른 국가 도시
+- `city_signals.json`의 기존 데이터 활용 (약 300+ 도시)
+- 로케일에 따라 도시명 자동 변환 (`getLocalizedCityName`)
+
+### 9-5. 출처 표기 시스템
+
+#### 인라인 표기 형식 (고정, Q2 + OUTPUT 공통)
+```
+[Source] {Title} — {Publisher/Org}, {YYYY-MM-DD}. {짧은 도메인 URL}
+```
+
+#### Q2 트렌드 출처 렌더링
+- GPT-4o-mini가 각 트렌드에 `source_title`, `source_org`, `source_date`, `source_url` 반환
+- 클라이언트: evidence 블록 아래에 `[Source]` 라인 + 도메인 태그 (클릭 시 원문 이동)
+- 정적 데이터 fallback 없음 — 오직 라이브 API 결과만 표시
+
+#### 도시명 로케일 변환
+- `getCityDisplayValue()`: `city_signals.json` + `KR_CITY_MASTER` 양쪽 검색
+- 한국어 로케일 시 한글 도시명 강제 (GPT 프롬프트에도 명시)
+
+### 9-6. 로케일 시스템
+
+- **지원 로케일**: ko, en, de, fr, es, pt, it, nl, ar (9개)
+- **자동 전환**: 국가 선택 시 `COUNTRY_LOCALES` 매핑으로 로케일 자동 변경
+- **수동 전환**: 사용자가 로케일 드롭다운으로 오버라이드 가능
+- **RTL 지원**: ar (아랍어) 선택 시 `dir="rtl"` 적용
+
+### 9-7. 인증 시스템
+
+- **액세스 코드**: `access-codes.json` 파일 기반
+- **세션**: 서버 인메모리 Map, TTL=8시간, HttpOnly 쿠키 (`scenario_agent_session`)
+- **실패 제한**: 3회 실패 시 60초 잠금
+- **로컬 바이패스**: `?skipAccess=1` 또는 localhost 접속 시 자동 우회
+
+### 9-8. 환경변수 (.env)
+
+| 변수 | 기본값 | 용도 |
+|------|--------|------|
+| `HOST` | 127.0.0.1 | 서버 바인드 주소 |
+| `PORT` | 8000 | 서버 포트 |
+| `OPENAI_API_KEY` | (필수) | OpenAI API 키 |
+| `OPENAI_MODEL` | gpt-5.4 | 시나리오 생성 모델 |
+| `OPENAI_MAX_TOKENS` | 8000 | 생성 max_tokens |
+| `ANTHROPIC_API_KEY` | (필수) | Claude API 키 |
+| `CLAUDE_MODEL` | claude-sonnet-4-20250514 | Claude 모델 |
+| `REGION_INSIGHT_TIMEOUT_MS` | 20000 | 지역 인사이트 타임아웃 |
+| `REGION_INSIGHT_CACHE_TTL_MS` | 900000 (15분) | 인사이트 캐시 TTL |
+| `SESSION_TTL_MS` | 28800000 (8시간) | 세션 유효기간 |
+
+### 9-9. 레퍼런스 데이터 (`references/`)
+
+| 파일 | 용도 |
+|------|------|
+| `fact_pack.json` | Samsung 제품 기능, 사용 사례 (Source of Truth) |
+| `explore_matrix.json` | 12-keyword 시나리오 매핑 매트릭스 |
+| `source_data.json` | 검증된 통계, 지역 데이터 템플릿 |
+| `country_trends.json` | 국가별 매크로 트렌드 |
+| `city_signals.json` | 도시별 신호 (기후, 도시 지표 등) |
+| `dotcom_mapping.json` | 이커머스/닷컴 시장 데이터 |
+| `product_feature_matrix.json` | 제품 기능-베네핏 매핑 |
+| `service_support_matrix.json` | 서비스 티어 정의 |
+| `verbal_guideline.json` | 삼성 브랜드 보이스 가이드라인 |
