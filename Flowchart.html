@@ -248,53 +248,70 @@ document.addEventListener('click', function(e) {
 </script>
 
 <!-- ===== PAGE 3: ARCHITECTURE DIAGRAM ===== -->
-<div class="slide flow">
+<div class="slide flow" style="position:relative">
     <span class="page-num">3/18</span>
     <span class="badge blue">Part A — Architecture</span>
-    <h2>Server · Function · API — Containment & Communication</h2>
-    <div class="mermaid" style="margin-top:4px">
+    <h2>Server · Function · API <span style="font-size:.55em;color:#666;font-weight:400">— 각 항목 클릭 시 설명 팝업</span></h2>
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:4px;flex:1;min-height:0">
+        <!-- 왼쪽: Mermaid 다이어그램 -->
+        <div style="overflow:auto">
+            <div class="mermaid" style="font-size:.8em">
 graph LR
-    subgraph CLIENT["CLIENT · Browser"]
+    subgraph CLIENT["❶ CLIENT · Browser"]
         direction TB
         C1["index.html + style.css"]
-        C2["main.js<br/>───────────<br/>selectCity · renderStep2Insight<br/>fetchLiveStep2Insight<br/>generateScenario<br/>renderAIResult<br/>mapLiveStep2Insight"]
+        C2["main.js"]
     end
-    subgraph DEPLOY["CLOUDFLARE PAGES · Functions"]
+    subgraph DEPLOY["❷ CLOUDFLARE · Functions"]
         direction TB
-        RI["region-insight.js<br/>───────────<br/>buildLiveRegionInsight<br/>fetchLiveTrends<br/>buildRoleLens"]
-        GN["generate.js<br/>───────────<br/>callAIStream<br/>prompt.txt v8.2"]
-        RF["refine.js<br/>───────────<br/>messages history"]
-        AU["access/ verify · session"]
+        RI["region-insight.js"]
+        GN["generate.js"]
+        RF["refine.js"]
+        AU["access/ verify·session"]
     end
-    subgraph LOCAL["LOCAL · server.js"]
-        SV["handleRegionInsight<br/>handleGenerate<br/>fetchCityLiveContent"]
+    subgraph LOCAL["❺ LOCAL · server.js"]
+        SV["server.js"]
     end
-    subgraph EXT["EXTERNAL APIs · Parallel"]
-        E1["WorldBank<br/>GDP · Urban"]
-        E2["Open-Meteo<br/>Weather · Geo"]
-        E3["Nominatim<br/>City Class"]
-        E4["RestCountries<br/>Population"]
-        E5["Wikipedia<br/>Landmark"]
+    subgraph EXT["❸ EXTERNAL APIs"]
+        E1["WorldBank"]
+        E2["Open-Meteo"]
+        E3["Nominatim"]
+        E4["RestCountries"]
+        E5["Wikipedia"]
     end
-    subgraph AI["AI MODELS"]
-        M1["GPT-4o<br/>Responses API<br/>+ web_search"]
-        M2["GPT-4o / Claude<br/>SSE Streaming"]
+    subgraph AI["❹ AI MODELS"]
+        M1["GPT-4o + web_search"]
+        M2["GPT-4o / Claude SSE"]
     end
-    C2 -->|"GET /region-insight"| RI
-    C2 -->|"POST /generate"| GN
-    C2 -->|"POST /refine"| RF
+    C2 -->|"① GET /region-insight"| RI
+    C2 -->|"② POST /generate"| GN
+    C2 -->|"③ POST /refine"| RF
     C2 -->|"POST /access/*"| AU
-    RI -->|fetch| E1
-    RI -->|fetch| E2
-    RI -->|fetch| E3
-    RI -->|fetch| E4
-    RI -->|fetch| E5
-    RI -->|"POST /v1/responses"| M1
-    GN -->|"SSE stream"| M2
-    RF -->|"SSE stream"| M2
-    M1 -->|"trends+URLs"| RI
-    M2 -->|"11 sections"| GN
-    DEPLOY -.->|"same logic"| LOCAL
+    RI -->|"④ parallel fetch"| E1
+    RI -->|"④"| E2
+    RI -->|"④"| E3
+    RI -->|"④"| E4
+    RI -->|"④"| E5
+    RI -->|"⑤ POST /v1/responses"| M1
+    GN -->|"⑥ SSE stream"| M2
+    RF -->|"⑦ SSE stream"| M2
+    M1 -->|"⑧ trends+URLs"| RI
+    M2 -->|"⑨ 11 sections"| GN
+    DEPLOY -.->|"동일 로직"| LOCAL
+    click C1 p3click
+    click C2 p3click
+    click RI p3click
+    click GN p3click
+    click RF p3click
+    click AU p3click
+    click SV p3click
+    click E1 p3click
+    click E2 p3click
+    click E3 p3click
+    click E4 p3click
+    click E5 p3click
+    click M1 p3click
+    click M2 p3click
     style CLIENT fill:#f0f2f8,stroke:#001a6e,stroke-width:2px
     style DEPLOY fill:#fff,stroke:#1a1a2e,stroke-width:2px
     style LOCAL fill:#f5f5f5,stroke:#aaa,stroke-dasharray:5
@@ -305,29 +322,59 @@ graph LR
     style RI fill:#e8eaf6,stroke:#001a6e
     style GN fill:#e8eaf6,stroke:#001a6e
     style RF fill:#e8eaf6,stroke:#001a6e
+            </div>
+        </div>
+        <!-- 오른쪽: 클릭 시 설명 패널 -->
+        <div id="p3-panel" style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:16px;font-size:.82em;line-height:1.65;color:#333;overflow-y:auto">
+            <p style="color:#999;font-style:italic;margin-bottom:12px">← 다이어그램의 항목을 클릭하면 설명이 표시됩니다.</p>
+            <div style="font-size:.78em;color:#666;border-top:1px solid #eee;padding-top:10px">
+                <p><strong>통신 흐름 순서:</strong></p>
+                <p>① 클라이언트 → region-insight API 호출</p>
+                <p>② 클라이언트 → generate API 호출</p>
+                <p>③ 클라이언트 → refine API 호출</p>
+                <p>④ region-insight → 5개 외부 API 병렬</p>
+                <p>⑤ region-insight → GPT-4o 웹검색</p>
+                <p>⑥ generate → AI SSE 스트리밍</p>
+                <p>⑦ refine → AI SSE 스트리밍</p>
+                <p>⑧ GPT-4o → 트렌드+URL 반환</p>
+                <p>⑨ AI → 11섹션 시나리오 반환</p>
+            </div>
+        </div>
     </div>
-    <!-- 다이어그램 아래: 각 모듈 설명 (번호 순서 + 화살표) -->
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px;font-size:.75em;line-height:1.5">
-        <div style="background:#f0f2f8;border-top:3px solid #001a6e;padding:10px;border-radius:4px">
-            <p style="font-weight:800;color:#001a6e;margin-bottom:4px">❶ CLIENT</p>
-            <p style="color:#333;margin:0">사용자가 직접 보는 웹 브라우저 화면입니다. main.js가 4단계 입력을 받고, 서버 API를 호출하고, 결과를 화면에 그립니다.</p>
-            <p style="color:#001a6e;font-weight:700;margin:6px 0 0">↓ API 호출</p>
+</div>
+<script>
+const P3_DATA = {
+    C1: { title:"index.html + style.css", desc:"웹앱의 HTML 뼈대와 Samsung 디자인 시스템 기반 CSS입니다. 4단계 위자드 구조, Q2 인사이트 카드, 시나리오 결과물 슬라이드 스타일 등 모든 UI 레이아웃을 정의합니다.", next:"→ main.js가 이 HTML 위에서 동작합니다" },
+    C2: { title:"main.js — 클라이언트 핵심 로직", desc:"브라우저에서 실행되는 전체 앱 로직(~7000줄)입니다. Q1~Q4 입력 처리, 도시 선택 시 라이브 트렌드 API 호출, Generate 버튼 클릭 시 시나리오 생성 요청, SSE 스트리밍 수신 및 11섹션 카드 렌더링, Refine 수정 요청을 모두 담당합니다.", next:"→ ① GET /api/region-insight 또는 ② POST /api/generate 호출" },
+    RI: { title:"region-insight.js — 라이브 트렌드 서버 함수", desc:"Cloudflare Pages Function으로 배포됩니다. 도시 선택 시 호출되어, buildLiveRegionInsight()에서 7개 외부 API와 GPT-4o 웹 검색을 병렬로 실행합니다. 결과를 캐시(15분)하고, 트렌드·행사·고민·CX 힌트를 JSON으로 반환합니다.", next:"→ ④ 5개 외부 API 병렬 호출 + ⑤ GPT-4o 웹검색" },
+    GN: { title:"generate.js — 시나리오 생성 서버 함수", desc:"prompt.txt v8.2(550줄 시스템 프롬프트)를 읽고, 클라이언트가 보낸 context + regionInsight를 사용자 메시지로 조립합니다. GPT-4o 또는 Claude를 SSE 스트리밍 모드로 호출하여 11개 섹션 시나리오를 실시간 생성합니다.", next:"→ ⑥ AI에 SSE 스트리밍 요청" },
+    RF: { title:"refine.js — 시나리오 수정 서버 함수", desc:"이전 출력(previousOutput)과 수정 요청(refinementRequest)을 구조화된 messages[] 배열로 조립하여 AI에 전달합니다. 해당 섹션만 타겟으로 재생성하며, 대화 이력이 구조화되어 맥락이 유실되지 않습니다.", next:"→ ⑦ AI에 SSE 스트리밍 요청" },
+    AU: { title:"access/ — 인증 서버 함수", desc:"verify.js는 액세스 코드를 검증하고 세션 토큰을 발급합니다. session.js는 현재 세션 상태를 확인하고, logout.js는 세션을 무효화합니다. 5회 실패 시 임시 잠금됩니다.", next:"→ 인증 성공 후 위자드 진입" },
+    SV: { title:"server.js — 로컬 개발용 서버", desc:"Cloudflare Functions와 동일한 로직을 Node.js로 구현한 로컬 개발 전용 서버입니다. 배포에는 사용되지 않지만, 로컬에서 테스트할 때 사용합니다. API 수정 시 functions/와 함께 동기화해야 합니다.", next:"≈ Cloudflare Functions와 동일 로직" },
+    E1: { title:"WorldBank API — 경제 지표", desc:"1인당 GDP(NY.GDP.PCAP.CD)와 도시화율(SP.URB.TOTL.IN.ZS)을 조회합니다. 해당 국가의 경제 수준과 도시 생활권 특성을 파악하여, 시나리오의 가격 소구점과 타겟 메시지 톤을 결정하는 데 사용됩니다.", next:"→ ⑧ region-insight에 데이터 반환" },
+    E2: { title:"Open-Meteo — 날씨 + 좌표", desc:"Geocoding API로 도시의 위도/경도를 조회하고, Forecast API로 7일간 최고/최저 기온과 강수량을 가져옵니다. 기후 카테고리 트렌드와 계절별 시나리오 타이밍 결정에 사용됩니다.", next:"→ ⑧ region-insight에 데이터 반환" },
+    E3: { title:"Nominatim (OSM) — 도시 분류", desc:"OpenStreetMap 기반으로 도시의 중요도(importance), 분류(class/type), 표시명(display_name)을 조회합니다. 중요도 0.7 이상이면 '핵심 대도시 허브', 미만이면 '성장형 생활권'으로 분류됩니다.", next:"→ ⑧ region-insight에 데이터 반환" },
+    E4: { title:"RestCountries — 인구/면적", desc:"국가의 인구, 면적(km²), 국경 인접국, 좌표를 조회합니다. 지도 이미지 생성 시 줌 레벨 결정과, 도시 인구 비중 계산에 사용됩니다.", next:"→ ⑧ region-insight에 데이터 반환" },
+    E5: { title:"Wikipedia API — 랜드마크 이미지", desc:"도시명으로 위키피디아 페이지를 검색하여 대표 이미지(thumbnail)를 가져옵니다. Q2 인사이트 카드의 도시 시각화에 사용됩니다.", next:"→ ⑧ region-insight에 데이터 반환" },
+    M1: { title:"GPT-4o + web_search_preview — 실시간 트렌드", desc:"OpenAI Responses API를 호출하며, web_search_preview 도구로 실제 인터넷을 검색합니다. 10개 생활 맥락 카테고리(기후/주거/가족/에너지 등)로 도시별 트렌드를 생성하고, annotations에서 실제 URL을 추출합니다. 40초 타임아웃.", next:"→ ⑧ 트렌드 + 실제 URL을 region-insight에 반환" },
+    M2: { title:"GPT-4o / Claude — SSE 시나리오 생성", desc:"Chat Completions API 또는 Anthropic Messages API를 SSE 스트리밍 모드로 호출합니다. 550줄 시스템 프롬프트 + context + regionInsight를 기반으로 11개 섹션(제목~Reflection)을 순서대로 생성합니다. 각 청크가 실시간으로 클라이언트에 전달됩니다.", next:"→ ⑨ 11섹션 시나리오를 generate.js → 클라이언트에 반환" }
+};
+function p3click(nodeId) {
+    const data = P3_DATA[nodeId];
+    if (!data) return;
+    const panel = document.getElementById('p3-panel');
+    if (!panel) return;
+    panel.innerHTML = `
+        <p style="margin:0 0 8px"><strong style="color:#001a6e;font-size:1.05em">${data.title}</strong></p>
+        <div style="background:#f0f2f8;border-left:4px solid #001a6e;padding:12px 14px;border-radius:4px;margin:8px 0">
+            <p style="margin:0;font-size:.84em;color:#222">${data.desc}</p>
         </div>
-        <div style="background:#fff;border-top:3px solid #1a1a2e;padding:10px;border-radius:4px;border:1px solid #ddd">
-            <p style="font-weight:800;color:#1a1a2e;margin-bottom:4px">❷ CLOUDFLARE</p>
-            <p style="color:#333;margin:0">실제 배포된 서버리스 함수들입니다. region-insight(트렌드), generate(시나리오), refine(수정), access(인증)를 처리합니다.</p>
-            <p style="color:#001a6e;font-weight:700;margin:6px 0 0">↓ 외부 API + AI 호출</p>
+        <div style="background:#1a1a2e;padding:10px 14px;border-radius:4px;margin:8px 0">
+            <p style="margin:0;font-size:.82em;color:#fff;font-weight:700">${data.next}</p>
         </div>
-        <div style="background:#fff;border-top:3px solid #2d2d3d;padding:10px;border-radius:4px;border:1px solid #ddd">
-            <p style="font-weight:800;color:#2d2d3d;margin-bottom:4px">❸ EXTERNAL APIs</p>
-            <p style="color:#333;margin:0">WorldBank(경제), Open-Meteo(날씨), Nominatim(도시), RestCountries(인구), Wikipedia(이미지)를 병렬로 호출합니다.</p>
-            <p style="color:#001a6e;font-weight:700;margin:6px 0 0">→ 데이터 반환</p>
-        </div>
-        <div style="background:#1a1a2e;border-top:3px solid #001a6e;padding:10px;border-radius:4px">
-            <p style="font-weight:800;color:#fff;margin-bottom:4px">❹ AI MODELS</p>
-            <p style="color:rgba(255,255,255,.85);margin:0">GPT-4o(웹검색으로 트렌드 생성) + GPT-4o/Claude(SSE 스트리밍으로 11섹션 시나리오 생성).</p>
-            <p style="color:#88f;font-weight:700;margin:6px 0 0">→ 결과 반환</p>
-        </div>
+    `;
+}
+</script>
         <div style="background:#f5f5f5;border-top:3px solid #aaa;padding:10px;border-radius:4px;border:1px dashed #ccc">
             <p style="font-weight:800;color:#888;margin-bottom:4px">❺ LOCAL DEV</p>
             <p style="color:#666;margin:0">server.js는 로컬 개발용으로, Cloudflare 함수와 동일한 로직을 가집니다. 배포에는 사용되지 않습니다.</p>
@@ -824,7 +871,7 @@ graph LR
 
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>
-mermaid.initialize({startOnLoad:true,theme:'base',themeVariables:{primaryColor:'#e8eaf6',primaryTextColor:'#1a1a2e',primaryBorderColor:'#001a6e',lineColor:'#001a6e',fontSize:'12px'}});
+mermaid.initialize({startOnLoad:true,securityLevel:'loose',theme:'base',themeVariables:{primaryColor:'#e8eaf6',primaryTextColor:'#1a1a2e',primaryBorderColor:'#001a6e',lineColor:'#001a6e',fontSize:'12px'}});
 const deck=document.getElementById('deck'),slides=deck.querySelectorAll('.slide'),total=slides.length;let cur=0;
 function go(n){cur=Math.max(0,Math.min(total-1,n));deck.style.transform=`translateX(-${cur*100}vw)`;document.getElementById('prev-btn').disabled=cur===0;document.getElementById('next-btn').disabled=cur===total-1;document.getElementById('counter').textContent=`${cur+1} / ${total}`}
 document.getElementById('prev-btn').addEventListener('click',()=>go(cur-1));
