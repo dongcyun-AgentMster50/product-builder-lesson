@@ -7,66 +7,91 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Noto Sans KR',sans-serif;background:#f5f5f5;color:#222;overflow:hidden;height:100vh}
+        body{font-family:'SamsungOne','Noto Sans KR',sans-serif;background:#f5f5f5;color:#222;overflow:hidden;height:100vh}
         code,.mono{font-family:'JetBrains Mono',monospace}
+
+        /* ── Layout ── */
         .deck{width:100vw;height:100vh;display:flex;transition:transform .45s cubic-bezier(.4,0,.2,1)}
         .slide{min-width:100vw;height:100vh;padding:40px 56px 80px;overflow-y:auto;display:flex;flex-direction:column;background:#fff}
-        .slide.cover{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);justify-content:center;align-items:center;text-align:center;color:#fff}
-        .slide.flow{background:#f8f9fa}
+        .slide.cover{background:#1a1a2e;justify-content:center;align-items:center;text-align:center;color:#fff}
+        .slide.flow{background:#f5f5f5}
         .slide.compare{background:#fff}
-        .slide.summary{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff}
-        h1{font-size:2.6em;font-weight:900;color:#1a1a2e;margin-bottom:12px}
+        .slide.summary{background:#1a1a2e;color:#fff}
+
+        /* ── Typography — SamsungOne 기반 ── */
+        h1{font-family:'SamsungOne','Noto Sans KR',sans-serif;font-size:2.6em;font-weight:900;color:#1a1a2e;margin-bottom:12px}
         .slide.cover h1,.slide.summary h1{color:#fff}
-        h2{font-size:1.7em;font-weight:700;color:#1a1a2e;margin-bottom:14px;padding-bottom:8px;border-bottom:3px solid #1428a0}
-        h3{font-size:1.15em;color:#1428a0;margin-bottom:10px}
-        .subtitle{font-size:1.1em;color:#888;margin-bottom:8px}
-        .badge{display:inline-block;padding:4px 14px;border-radius:4px;font-size:.75em;font-weight:700;margin-bottom:12px}
-        .badge.blue{background:#1428a0;color:#fff;border:none}
-        .badge.green{background:#0b6e2f;color:#fff;border:none}
-        .badge.orange{background:#c45500;color:#fff;border:none}
-        .badge.red{background:#b91c1c;color:#fff;border:none}
-        .badge.purple{background:#6b21a8;color:#fff;border:none}
-        .badge.step{background:#1a1a2e;color:#fff;border:none;font-size:.7em;margin-right:6px;border-radius:4px}
+        h2{font-family:'SamsungOne','Noto Sans KR',sans-serif;font-size:1.7em;font-weight:700;color:#1a1a2e;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #1a1a2e}
+        h3{font-family:'SamsungOne','Noto Sans KR',sans-serif;font-size:1.15em;color:#1a1a2e;margin-bottom:10px;font-weight:700}
+        .subtitle{font-size:1.1em;color:#666;margin-bottom:8px}
+
+        /* ── Badges — 단색 (다크 네이비 / 명도 변형) ── */
+        .badge{display:inline-block;padding:4px 14px;border-radius:3px;font-size:.75em;font-weight:700;margin-bottom:12px;font-family:'SamsungOne','Noto Sans KR',sans-serif}
+        .badge.blue{background:#1a1a2e;color:#fff}
+        .badge.green{background:#2d2d3d;color:#fff}
+        .badge.orange{background:#3a3a4a;color:#fff}
+        .badge.red{background:#1a1a2e;color:#fff}
+        .badge.purple{background:#2d2d3d;color:#fff}
+        .badge.step{background:#3a3a4a;color:#fff;font-size:.7em;margin-right:6px;border-radius:3px}
+
+        /* ── Body text ── */
         p{font-size:.9em;line-height:1.65;color:#333;margin-bottom:8px}
-        .slide.cover p,.slide.summary p{color:rgba(255,255,255,.8)}
-        .flow-chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0}
-        .fbox{padding:6px 14px;border-radius:6px;font-size:.78em;font-weight:700;white-space:nowrap;background:#fff}
-        .fbox.client{color:#1428a0;border-left:4px solid #1428a0;border-top:1px solid #e0e0e0;border-right:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0}
-        .fbox.server{color:#0b6e2f;border-left:4px solid #0b6e2f;border-top:1px solid #e0e0e0;border-right:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0}
-        .fbox.api{color:#c45500;border-left:4px solid #c45500;border-top:1px solid #e0e0e0;border-right:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0}
-        .fbox.ai{color:#b91c1c;border-left:4px solid #b91c1c;border-top:1px solid #e0e0e0;border-right:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0}
-        .fbox.data{color:#6b21a8;border-left:4px solid #6b21a8;border-top:1px solid #e0e0e0;border-right:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0}
-        .arrow{color:#999;font-size:1em;font-weight:700}
-        pre{background:#fff;border:1px solid #ddd;border-radius:8px;padding:14px 18px;overflow-x:auto;margin:10px 0;font-size:.78em;line-height:1.55;color:#333}
-        pre .kw{color:#b91c1c} pre .fn{color:#6b21a8} pre .str{color:#1428a0} pre .cm{color:#888}
+        .slide.cover p,.slide.summary p{color:rgba(255,255,255,.75)}
+
+        /* ── Flow chain boxes — 흰 카드 + 좌측 다크 보더 ── */
+        .flow-chain{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+        .fbox{padding:7px 14px;border-radius:4px;font-size:.78em;font-weight:700;white-space:nowrap;background:#fff;color:#1a1a2e;border:1px solid #ddd;border-left:4px solid #1a1a2e}
+        .fbox.client{border-left-color:#1a1a2e}
+        .fbox.server{border-left-color:#2d2d3d;color:#2d2d3d}
+        .fbox.api{border-left-color:#3a3a4a;color:#3a3a4a}
+        .fbox.ai{border-left-color:#1a1a2e;color:#1a1a2e;background:#f5f5f5}
+        .fbox.data{border-left-color:#2d2d3d;color:#2d2d3d;background:#f5f5f5}
+        .arrow{color:#1a1a2e;font-size:1.1em;font-weight:900}
+
+        /* ── Code blocks ── */
+        pre{background:#f5f5f5;border:1px solid #ddd;border-radius:6px;padding:14px 18px;overflow-x:auto;margin:10px 0;font-size:.78em;line-height:1.55;color:#222}
+        pre .kw{color:#1a1a2e;font-weight:700} pre .fn{color:#3a3a4a} pre .str{color:#2d2d3d} pre .cm{color:#999}
+
+        /* ── Compare grid ── */
         .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:12px;flex:1}
-        .compare-box{padding:20px;border-radius:8px;border:1px solid #e0e0e0}
-        .compare-box.old{background:#fff5f5;border-left:4px solid #b91c1c}
-        .compare-box.new{background:#f0fdf4;border-left:4px solid #0b6e2f}
-        .compare-box h3{margin-bottom:8px;border-bottom:none;padding-bottom:0}
-        .compare-box ul{padding-left:16px;font-size:.84em;line-height:1.7;color:#444}
+        .compare-box{padding:20px;border-radius:6px;border:1px solid #ddd}
+        .compare-box.old{background:#f5f5f5;border-left:4px solid #1a1a2e}
+        .compare-box.new{background:#fff;border-left:4px solid #3a3a4a;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+        .compare-box h3{margin-bottom:8px;border-bottom:none;padding-bottom:0;font-family:'SamsungOne','Noto Sans KR',sans-serif}
+        .compare-box ul{padding-left:16px;font-size:.84em;line-height:1.7;color:#333}
         .compare-box li{margin-bottom:3px}
-        .effect{background:#f0fdf4;border-left:4px solid #0b6e2f;border-radius:4px;padding:10px 14px;margin-top:10px;font-size:.82em;color:#0b6e2f}
-        .effect::before{content:"Effect → ";font-weight:700}
-        .problem{background:#fff5f5;border-left:4px solid #b91c1c;border-radius:4px;padding:10px 14px;margin-top:8px;font-size:.82em;color:#b91c1c}
-        .problem::before{content:"Problem → ";font-weight:700}
+
+        /* ── Effect / Problem callouts ── */
+        .effect{background:#f5f5f5;border-left:4px solid #2d2d3d;border-radius:3px;padding:10px 14px;margin-top:10px;font-size:.82em;color:#1a1a2e;font-weight:600}
+        .effect::before{content:"Effect → ";font-weight:800}
+        .problem{background:#f5f5f5;border-left:4px solid #1a1a2e;border-radius:3px;padding:10px 14px;margin-top:8px;font-size:.82em;color:#333}
+        .problem::before{content:"Problem → ";font-weight:800;color:#1a1a2e}
+
+        /* ── Detail cards ── */
         .detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:12px 0}
-        .detail-card{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-        .detail-card h4{color:#1428a0;font-size:.85em;margin-bottom:5px}
+        .detail-card{background:#fff;border:1px solid #ddd;border-radius:6px;padding:14px;border-top:3px solid #1a1a2e}
+        .detail-card h4{color:#1a1a2e;font-size:.85em;margin-bottom:5px;font-family:'SamsungOne','Noto Sans KR',sans-serif}
         .detail-card p{font-size:.8em;margin-bottom:3px;color:#444}
-        .detail-card code{background:#f0f0f5;padding:2px 5px;border-radius:4px;font-size:.82em;color:#6b21a8}
-        .nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:12px 48px;background:#1a1a2e;border-top:none;z-index:100}
-        .nav button{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);padding:9px 22px;border-radius:6px;cursor:pointer;font-size:.88em;font-weight:700;transition:all .2s}
-        .nav button:hover:not(:disabled){background:rgba(255,255,255,.22);color:#fff}
+        .detail-card code{background:#f5f5f5;padding:2px 5px;border-radius:3px;font-size:.82em;color:#2d2d3d}
+
+        /* ── Navigation bar ── */
+        .nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:12px 48px;background:#1a1a2e;z-index:100}
+        .nav button{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);padding:9px 22px;border-radius:4px;cursor:pointer;font-size:.88em;font-weight:700;font-family:'SamsungOne','Noto Sans KR',sans-serif;transition:all .2s}
+        .nav button:hover:not(:disabled){background:rgba(255,255,255,.2)}
         .nav button:disabled{opacity:.3;cursor:not-allowed}
-        .nav .counter{color:rgba(255,255,255,.7);font-size:.9em;font-weight:700}
-        .page-num{position:absolute;top:16px;right:28px;color:#aaa;font-size:.75em}
+        .nav .counter{color:rgba(255,255,255,.6);font-size:.9em;font-weight:700}
+        .page-num{position:absolute;top:16px;right:28px;color:#999;font-size:.75em}
+
+        /* ── Scrollbar ── */
         .slide::-webkit-scrollbar{width:5px}
         .slide::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+
+        /* ── Summary stat cards ── */
         .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px;max-width:860px}
-        .stat-card{background:rgba(255,255,255,.12);border-radius:10px;padding:20px;border:1px solid rgba(255,255,255,.15);text-align:center}
-        .stat-card h3{font-size:1.8em;margin-bottom:6px;color:#fff}
-        .stat-card p{font-size:.85em;color:rgba(255,255,255,.8)}
+        .stat-card{background:rgba(255,255,255,.08);border-radius:6px;padding:20px;border:1px solid rgba(255,255,255,.12);text-align:center}
+        .stat-card h3{font-size:1.8em;margin-bottom:6px;color:#fff;font-family:'SamsungOne','Noto Sans KR',sans-serif}
+        .stat-card p{font-size:.85em;color:rgba(255,255,255,.7)}
+
         @media(max-width:900px){.slide{padding:20px 16px 70px}.compare-grid{grid-template-columns:1fr}h1{font-size:1.9em}h2{font-size:1.3em}.stat-grid{grid-template-columns:1fr 1fr}}
     </style>
 </head>
@@ -176,7 +201,7 @@
     <h2>Step 1. 접속 및 시작</h2>
     <div class="compare-grid">
         <div class="compare-box old">
-            <h3 style="color:#b91c1c">기존 GPT</h3>
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
             <ul>
                 <li>ChatGPT 접속 → "나의 GPT" 검색/클릭</li>
                 <li>ChatGPT Plus 구독 필수 ($20/월/인)</li>
@@ -186,7 +211,7 @@
             <div class="problem">비구독자 사용 불가. 처음 접속한 마케터는 뭘 입력해야 할지 모름.</div>
         </div>
         <div class="compare-box new">
-            <h3 style="color:#0b6e2f">웹앱</h3>
+            <h3 style="color:#2d2d3d">웹앱</h3>
             <ul>
                 <li>전용 URL 접속 → 액세스 코드 입력</li>
                 <li>Cloudflare Pages 무료 호스팅 — 구독 불필요</li>
@@ -205,7 +230,7 @@
     <h2>Step 2. 역할/관점 설정 (Q1)</h2>
     <div class="compare-grid">
         <div class="compare-box old">
-            <h3 style="color:#b91c1c">기존 GPT</h3>
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
             <ul>
                 <li>"리테일 담당자 관점에서 시나리오 만들어줘"</li>
                 <li>역할을 안 쓰면 → AI가 범용 관점으로 생성</li>
@@ -215,7 +240,7 @@
             <div class="problem">역할 미입력 시 초점 없는 범용 시나리오. 3가지 역할의 차이를 사용자가 직접 이해해야 함.</div>
         </div>
         <div class="compare-box new">
-            <h3 style="color:#0b6e2f">웹앱 Q1</h3>
+            <h3 style="color:#2d2d3d">웹앱 Q1</h3>
             <ul>
                 <li>3장의 역할 카드 중 <strong>클릭</strong>으로 선택</li>
                 <li>각 카드에 역할 설명 + 포커스 영역 명시</li>
@@ -234,7 +259,7 @@
     <h2>Step 3. 지역/시장 선택 (Q2)</h2>
     <div class="compare-grid">
         <div class="compare-box old">
-            <h3 style="color:#b91c1c">기존 GPT</h3>
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
             <ul>
                 <li>"한국 서울에서" 텍스트로 입력</li>
                 <li>국가/도시 스펠링 오류 → AI 오해석</li>
@@ -246,7 +271,7 @@
             <div class="problem">가짜 출처. 2023년 데이터. 도시별 차이 없음. 클릭해도 "페이지 없음".</div>
         </div>
         <div class="compare-box new">
-            <h3 style="color:#0b6e2f">웹앱 Q2</h3>
+            <h3 style="color:#2d2d3d">웹앱 Q2</h3>
             <ul>
                 <li>국가 드롭다운 (9개 로케일) + 도시 검색/자동완성</li>
                 <li>선택 즉시 <strong>라이브 트렌드 카드</strong> 자동 생성</li>
@@ -268,7 +293,7 @@
     <h2>Step 4. 타겟 세그먼트 설정 (Q3)</h2>
     <div class="compare-grid">
         <div class="compare-box old">
-            <h3 style="color:#b91c1c">기존 GPT</h3>
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
             <ul>
                 <li>"30대 맞벌이 가구 대상으로" 텍스트 입력</li>
                 <li>세그먼트 분류 기준 없음 — 사용자 자의적</li>
@@ -278,7 +303,7 @@
             <div class="problem">세그먼트 정의가 모호하거나 불완전. AI가 추측으로 보충하여 의도와 다른 시나리오 생성.</div>
         </div>
         <div class="compare-box new">
-            <h3 style="color:#0b6e2f">웹앱 Q3</h3>
+            <h3 style="color:#2d2d3d">웹앱 Q3</h3>
             <ul>
                 <li><strong>MECE 21항목</strong> 체크리스트 (생애 단계, 가구, 라이프스타일, 기술 수용도 등)</li>
                 <li>radio (단일 선택) + checkbox (복수 선택) 혼합</li>
@@ -298,7 +323,7 @@
     <h2>Step 5. 기기/제품 선택 (Q4)</h2>
     <div class="compare-grid">
         <div class="compare-box old">
-            <h3 style="color:#b91c1c">기존 GPT</h3>
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
             <ul>
                 <li>"냉장고, 세탁기, 에어컨" 텍스트로 나열</li>
                 <li>SmartThings 생태계 기기 목록을 사용자가 외워야 함</li>
@@ -308,7 +333,7 @@
             <div class="problem">존재하지 않는 기기 입력 가능. 조합 효과 예측 불가. 결과의 기기 일관성 없음.</div>
         </div>
         <div class="compare-box new">
-            <h3 style="color:#0b6e2f">웹앱 Q4</h3>
+            <h3 style="color:#2d2d3d">웹앱 Q4</h3>
             <ul>
                 <li><strong>7개 스타일별 프리셋</strong> (기본/에너지/케어/무드/시큐리티/가사/쾌적)</li>
                 <li>프리셋 <strong>중복 선택</strong> → 기기 자동 합산 (겹침 제거)</li>
@@ -329,7 +354,7 @@
     <h2>Step 6. 지역 데이터 수집 (내부 처리)</h2>
     <div class="compare-grid">
         <div class="compare-box old">
-            <h3 style="color:#b91c1c">기존 GPT</h3>
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
             <ul>
                 <li>외부 API 호출 <strong>없음</strong></li>
                 <li>학습 데이터(~2024.04) 기반 추측</li>
@@ -340,7 +365,7 @@
             <div class="problem">모든 "데이터"가 AI 상상. 검증 불가. 보고서 신뢰도 하락.</div>
         </div>
         <div class="compare-box new">
-            <h3 style="color:#0b6e2f">웹앱</h3>
+            <h3 style="color:#2d2d3d">웹앱</h3>
             <ul>
                 <li><strong>7개 외부 API 병렬 호출:</strong></li>
                 <li>WorldBank (GDP, 도시화율) — 공식 통계</li>
@@ -363,7 +388,7 @@
     <h2>Step 7. CX 시나리오 생성</h2>
     <div class="compare-grid">
         <div class="compare-box old">
-            <h3 style="color:#b91c1c">기존 GPT</h3>
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
             <ul>
                 <li>시스템 프롬프트 (~200줄) + 사용자 메시지 1개</li>
                 <li>지역 데이터 없이 생성</li>
@@ -375,7 +400,7 @@
             <div class="problem">포맷 불일치. 지역 현실과 괴리. Explore 시나리오와 연결 안 됨.</div>
         </div>
         <div class="compare-box new">
-            <h3 style="color:#0b6e2f">웹앱</h3>
+            <h3 style="color:#2d2d3d">웹앱</h3>
             <ul>
                 <li><strong>prompt.txt v8.2</strong> (550줄 시스템 프롬프트)</li>
                 <li>Q2 regionInsight 데이터 → 프롬프트에 삽입</li>
@@ -397,7 +422,7 @@
     <h2>Step 8. 결과 수신 방식</h2>
     <div class="compare-grid">
         <div class="compare-box old">
-            <h3 style="color:#b91c1c">기존 GPT</h3>
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
             <ul>
                 <li>한 글자씩 채팅창에 표시 (ChatGPT 자체 스트리밍)</li>
                 <li>전체 완성까지 30~90초</li>
@@ -408,7 +433,7 @@
             <div class="problem">긴 대기. 토큰 잘림. 결과물이 긴 텍스트 블록이라 섹션별 활용 어려움.</div>
         </div>
         <div class="compare-box new">
-            <h3 style="color:#0b6e2f">웹앱</h3>
+            <h3 style="color:#2d2d3d">웹앱</h3>
             <ul>
                 <li><strong>SSE(Server-Sent Events)</strong> 실시간 스트리밍</li>
                 <li>생성 즉시 한 글자씩 UI에 표시</li>
@@ -429,7 +454,7 @@
     <h2>Step 9. 수정 및 반복</h2>
     <div class="compare-grid">
         <div class="compare-box old">
-            <h3 style="color:#b91c1c">기존 GPT</h3>
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
             <ul>
                 <li>"위에서 02번 상세 시나리오만 다시 써줘" 대화식 요청</li>
                 <li>대화 이력이 길어지면 → 컨텍스트 잘림</li>
@@ -440,7 +465,7 @@
             <div class="problem">대화 길어질수록 품질 하락. 이전 맥락 유실. 부분 수정 불가.</div>
         </div>
         <div class="compare-box new">
-            <h3 style="color:#0b6e2f">웹앱</h3>
+            <h3 style="color:#2d2d3d">웹앱</h3>
             <ul>
                 <li><strong>POST /api/refine</strong> — 전용 수정 API</li>
                 <li>이전 결과 + 수정 지시를 구조화된 messages[]로 전달</li>
@@ -460,7 +485,7 @@
     <h2>Step 10. 결과물 활용 & 공유</h2>
     <div class="compare-grid">
         <div class="compare-box old">
-            <h3 style="color:#b91c1c">기존 GPT</h3>
+            <h3 style="color:#1a1a2e">기존 GPT</h3>
             <ul>
                 <li>결과 = 채팅창 마크다운 텍스트</li>
                 <li>활용: 전체 선택 → 복사 → 문서에 붙여넣기</li>
@@ -472,7 +497,7 @@
             <div class="problem">수동 복사붙여넣기. 포맷 깨짐. 다국어 불가. 결과물 재활용 어려움.</div>
         </div>
         <div class="compare-box new">
-            <h3 style="color:#0b6e2f">웹앱</h3>
+            <h3 style="color:#2d2d3d">웹앱</h3>
             <ul>
                 <li>결과 = 구조화된 <strong>11섹션 카드 UI</strong></li>
                 <li>섹션별 복사 / 전체 내보내기</li>
@@ -493,7 +518,7 @@
     <h2>근본적 아키텍처 차이: 대화형 vs 파이프라인형</h2>
     <div class="compare-grid">
         <div class="compare-box old">
-            <h3 style="color:#b91c1c">GPT: 대화형 (Conversational)</h3>
+            <h3 style="color:#1a1a2e">GPT: 대화형 (Conversational)</h3>
             <pre style="font-size:.75em;background:#1a1a1a">사용자 → [자유 텍스트]
          ↓
     ChatGPT (단일 LLM)
@@ -504,7 +529,7 @@
             <p style="font-size:.82em">단일 모델, 단일 호출, 단일 출력. 모든 것이 LLM의 상상에 의존.</p>
         </div>
         <div class="compare-box new">
-            <h3 style="color:#0b6e2f">웹앱: 파이프라인형 (Orchestrated)</h3>
+            <h3 style="color:#2d2d3d">웹앱: 파이프라인형 (Orchestrated)</h3>
             <pre style="font-size:.75em;background:#0d1117">사용자 → [구조화 4단계 입력]
          ↓
     ┌─ WorldBank API ──┐
