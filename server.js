@@ -1246,13 +1246,13 @@ Flow: Regional trend → Life problem/desire → SmartThings scenario → Campai
 Search across the 10 life-context categories. Find ${city}-specific data: local policies, district-level stats, housing trends, energy costs, demographics, upcoming events.
 
 Return ONLY valid JSON — no markdown:
-{"live_trends":[{"text":"${city}-specific trend headline","category":"one of: climate|housing|family|routine|security|energy|wellness|pet|mobility|events","evidence":"2-3 sentences with real numbers from search","source_title":"article title","source_org":"publisher","source_url":"real URL"}],"live_events":[{"name":"real event","when":"YYYY-MM-DD","hook":"Samsung SmartThings marketing angle"}],"live_pains":[{"text":"life problem/desire this trend creates for ${city} residents — written as realistic ${role} marketer concern","insight":"WHY: connect trend → life moment → customer friction. Be specific to ${city}."}],"live_solutions":[{"text":"SmartThings CX scenario that solves this pain","insight":"HOW: specific Samsung products/services + ${city} execution channel + expected impact."}]}
+{"live_trends":[{"text":"${city}-specific trend headline","category":"one of: climate|housing|family|routine|security|energy|wellness|pet|mobility|events","evidence":"2-3 sentences with real numbers from search","source_title":"article title","source_org":"publisher","source_url":"real URL"}],"live_events":[{"name":"real event","when":"YYYY-MM-DD","hook":"Samsung SmartThings marketing angle"}],"live_pains":[{"text":"life problem/desire this trend creates for ${city} residents — written as realistic ${role} marketer concern","insight":"WHY: connect trend → life moment → customer friction. Be specific to ${city}."}],"live_solutions":[{"text":"CX scenario hint: [target segment] + [device combo] → [Explore keyword]","insight":"SUB hint: target segment (e.g. 맞벌이 30대, 1인가구 MZ) + SmartThings devices (e.g. 에어컨+공기청정기+스마트플러그) + Explore direction (Save energy, Keep home safe, Care for seniors etc.). Guides marketer to build CX scenario in Q3-Q4."}]}
 
 Rules:
 - live_trends: 4 objects from DIFFERENT categories. Use REAL search results with real URLs.
 - live_events: 2-3 real upcoming events near ${city} within 3 months.
 - live_pains: 3 objects. Flow: trend → life problem → customer friction.
-- live_solutions: 3 objects. Flow: pain → SmartThings scenario → campaign message. Name specific Samsung products.
+- live_solutions: 3 CX scenario HINTS. Each: target segment + device combo + Explore keyword direction.
 - Korean city/district names for Korean locale.`;
 
     try {

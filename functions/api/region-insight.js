@@ -253,14 +253,18 @@ Flow: Regional trend → Life problem/desire → SmartThings scenario → Campai
 Search across the 10 life-context categories. Find ${city}-specific data: local policies, district-level stats, housing trends, energy costs, demographics, upcoming events.
 
 Return ONLY valid JSON — no markdown:
-{"trends":[{"text":"${city}-specific trend headline","category":"one of: climate|housing|family|routine|security|energy|wellness|pet|mobility|events","evidence":"2-3 sentences with real numbers from search","source_title":"article title","source_org":"publisher","source_url":"real URL"}],"events":[{"name":"real event","when":"YYYY-MM-DD","hook":"Samsung SmartThings marketing angle"}],"pains":[{"text":"life problem/desire this trend creates for ${city} residents — written as realistic ${role} marketer concern","insight":"WHY: connect trend → life moment → customer friction. Be specific to ${city}."}],"solutions":[{"text":"SmartThings CX scenario that solves this pain","insight":"HOW: specific Samsung products/services + ${city} execution channel + expected impact. E.g. 'SmartThings Energy 월 절감 리포트를 수지구 삼성스토어 시연에 활용 → 에너지 질문 선제 차단'"}]}
+{"trends":[{"text":"${city}-specific trend headline","category":"one of: climate|housing|family|routine|security|energy|wellness|pet|mobility|events","evidence":"2-3 sentences with real numbers from search","source_title":"article title","source_org":"publisher","source_url":"real URL"}],"events":[{"name":"real event","when":"YYYY-MM-DD","hook":"Samsung SmartThings marketing angle"}],"pains":[{"text":"life problem/desire this trend creates for ${city} residents — written as realistic ${role} marketer concern","insight":"WHY: connect trend → life moment → customer friction. Be specific to ${city}."}],"solutions":[{"text":"CX scenario hint: [target segment] + [device combo] → [Explore keyword direction]","insight":"SUB hint: which target segment (e.g. 맞벌이 30대, 1인가구 MZ, 시니어 부부) + which SmartThings devices (e.g. 에어컨+공기청정기+스마트플러그) + which Explore scenario direction (e.g. Save energy, Keep home safe, Care for seniors). This helps the marketer build a full CX scenario in Q3-Q4."}]}
 
 Rules:
 - trends: 4 objects from DIFFERENT categories. Use REAL search results with real URLs.
 - events: 2-3 real upcoming events near ${city} within 3 months.
 - pains: 3 objects. Flow: trend → life problem → customer friction. Each must reference a specific trend.
-- solutions: 3 objects. Flow: pain → SmartThings scenario → campaign message. Name specific Samsung products/services.
-- 4-question filter for each trend: (1) common life moment? (2) clear pain/desire? (3) SmartThings can solve with 2+ devices? (4) fits in one campaign message?
+- solutions: 3 CX scenario HINTS (not direct solutions). Each must specify:
+  * Target segment derived from the trend (demographics, lifestyle)
+  * Device combination (2+ Samsung/SmartThings devices)
+  * Explore scenario direction keyword (Save energy / Keep air fresh / Control lights / Help with chores / Keep home safe / Sleep well / Enhanced mood / Care for seniors / Care for kids / Care for pet / Find belongings / Stay fit)
+  These hints guide the marketer to build their own CX scenario in Q3-Q4, not push a ready-made answer.
+- 4-question filter: (1) common life moment? (2) clear pain? (3) SmartThings 2+ devices? (4) one campaign message?
 - Korean city/district names for Korean locale.`;
 
     const controller = new AbortController();
