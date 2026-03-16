@@ -10,6 +10,21 @@
     --accent-strong: #003366;
     --warn: #a33b16;
     --shadow: 0 22px 48px rgba(8, 28, 60, 0.12);
+
+    /* ── Design Tokens ── */
+    --heading-font: "SamsungOne", "Noto Sans KR", "Segoe UI", Arial, Helvetica, sans-serif;
+    --body-font: "SamsungOne", "Segoe UI", Arial, Helvetica, sans-serif;
+    --heading-lg: 16pt;
+    --heading-md: 14pt;
+    --body-size: 11pt;
+    --source-size: 9pt;
+    --section-bg: var(--surface);
+    --section-title-bg: var(--accent-strong);
+    --section-title-color: #ffffff;
+    --card-radius: 16px;
+    --card-gap: 16px;
+    --section-gap: 20px;
+    --min-card-height: 120px;
 }
 
 * {
@@ -2950,6 +2965,8 @@ pre {
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 860px) {
     .hero,
     .output-grid,
     .what-you-get-grid,
@@ -3840,4 +3857,623 @@ a.source-tag-link:hover {
 .source-detail-row .source-detail {
     margin: 0;
     border-radius: 0 0 10px 10px;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   UI/CSS 개선 — 가시성·밀도·위계·일관성 강화
+   ═════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Result Frame & Output 전체 개선 ── */
+.result-frame {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--line);
+}
+
+.result-frame .report-head {
+    padding-bottom: 16px;
+    margin-bottom: 8px;
+    border-bottom: 2px solid var(--accent-strong);
+}
+
+.result-frame .report-head .step {
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+}
+
+.result-frame .report-head h2 {
+    font-family: var(--heading-font);
+    font-size: var(--heading-lg);
+    color: var(--ink);
+}
+
+/* ── Output Block 섹션 구분 강화 ── */
+.output-block {
+    position: relative;
+    padding: 24px;
+    border-radius: var(--card-radius);
+    border: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: 0 2px 12px rgba(0, 27, 71, 0.04);
+}
+
+.output-block + .output-block {
+    margin-top: 4px;
+}
+
+.output-block .block-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 8px;
+    background: var(--section-title-bg);
+    color: var(--section-title-color);
+    font-family: var(--heading-font);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.output-block h4 {
+    font-family: var(--heading-font);
+    font-size: var(--heading-md);
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin: 8px 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+}
+
+.output-block p,
+.output-block li {
+    font-family: var(--body-font);
+    font-size: var(--body-size);
+    line-height: 1.75;
+}
+
+.output-stack {
+    display: grid;
+    gap: var(--section-gap);
+}
+
+/* ── 2. Brief Card 미세 개선 ── */
+.brief-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 27, 71, 0.12);
+}
+
+.brief-card-header h3 {
+    font-family: var(--heading-font);
+    font-size: var(--heading-lg);
+}
+
+/* ── 3. 공통 Source/Citation 스타일 ── */
+.trend-footnotes,
+.source-refs-summary,
+.output-source-bar {
+    font-family: var(--body-font);
+}
+
+.trend-footnote-item,
+.trend-source-line,
+.source-refs-summary ul li {
+    font-size: var(--source-size);
+    font-style: italic;
+    color: #666;
+    line-height: 1.6;
+}
+
+.trend-footnote-ref {
+    font-size: 0.65em;
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.source-tag {
+    font-size: var(--source-size);
+}
+
+.evidence-source-tag {
+    font-size: var(--source-size);
+}
+
+/* Source 있을 때/없을 때 레이아웃 안정 */
+.trend-footnotes:empty,
+.output-source-bar:empty {
+    display: none;
+}
+
+.source-refs-summary:has(.output-source-bar:empty) {
+    min-height: 0;
+    padding: 0;
+    border: none;
+    margin: 0;
+}
+
+/* ── 4. Q3 선택 UI 밀도 강화 ── */
+.persona-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.persona-groups .tree-group {
+    padding: 16px;
+    border-radius: var(--card-radius);
+    gap: 8px;
+    min-height: var(--min-card-height);
+    box-shadow: 0 4px 16px rgba(0, 27, 71, 0.06);
+}
+
+.persona-groups .tree-parent {
+    padding-bottom: 10px;
+}
+
+.persona-groups .tree-parent-title {
+    font-size: 0.84rem;
+    min-height: 30px;
+    padding: 0 10px;
+}
+
+.persona-groups .tree-children {
+    gap: 6px;
+}
+
+.persona-groups .tree-child {
+    min-height: 54px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
+
+.persona-groups .tree-child span {
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.persona-groups .tree-sub-children {
+    gap: 4px;
+}
+
+.persona-groups .tree-sub-child {
+    padding: 6px 10px;
+    border-radius: 10px;
+}
+
+.persona-groups .tree-sub-child span {
+    font-size: 0.82rem;
+}
+
+/* Q3 가이드 텍스트 정돈 */
+.q3-guide {
+    margin: 0 0 12px;
+    padding: 8px 12px;
+    font-size: 0.82rem;
+    border-radius: 8px;
+}
+
+/* Q3 커스텀 입력란 최소 높이 */
+#purpose {
+    min-height: 80px;
+}
+
+/* ── 5. Q4 선택 UI 밀도 강화 ── */
+.q4-shell {
+    gap: 14px;
+}
+
+.q4-top-row {
+    gap: 14px;
+}
+
+.q4-card {
+    padding: 16px;
+    border-radius: var(--card-radius);
+    min-height: var(--min-card-height);
+}
+
+.q4-summary-card {
+    min-height: var(--min-card-height);
+    padding: 16px;
+}
+
+.q4-preset-grid {
+    gap: 8px;
+}
+
+.q4-preset-btn {
+    padding: 12px;
+    border-radius: 14px;
+    gap: 6px;
+    min-height: 80px;
+}
+
+.q4-preset-btn strong {
+    font-size: 0.84rem;
+}
+
+.q4-chip-grid {
+    gap: 8px;
+}
+
+.q4-chip-btn {
+    padding: 10px 12px;
+    font-size: 0.84rem;
+    min-height: 40px;
+}
+
+.q4-section-head {
+    margin-bottom: 10px;
+}
+
+.q4-section-head h3 {
+    font-family: var(--heading-font);
+    font-size: 0.96rem;
+}
+
+.q4-summary-empty {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Q4 직접 선택 섹션 */
+.q4-direct-select {
+    min-height: var(--min-card-height);
+}
+
+.q4-chip-group {
+    margin-bottom: 8px;
+}
+
+.q4-chip-group-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--accent-strong);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* ── 6. Q1 Role Card 미세 조정 ── */
+.role-card {
+    padding: 20px;
+    border-radius: 20px;
+    min-height: 160px;
+}
+
+.role-card h3 {
+    font-family: var(--heading-font);
+    font-size: 1.4rem;
+}
+
+.role-card .role-desc {
+    font-size: 0.86rem;
+    line-height: 1.6;
+}
+
+/* ── 7. Q2 개선 ── */
+.city-profile-card {
+    border-radius: var(--card-radius);
+}
+
+.city-nudge {
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+
+/* ── 8. Wizard Progress 정돈 ── */
+.progress-pill {
+    font-size: 0.82rem;
+    padding: 11px 12px;
+    font-family: var(--heading-font);
+}
+
+/* ── 9. Insight Card (Step-Insight) 개선 ── */
+.insight-card {
+    border-radius: 20px;
+    padding: 16px 18px;
+    min-height: 80px;
+}
+
+.insight-section {
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.insight-section h4 {
+    font-family: var(--heading-font);
+    font-size: 0.9rem;
+}
+
+/* ── 10. Table 스타일 통일 ── */
+.result-table thead th,
+.fact-table thead th {
+    background: var(--section-title-bg);
+    color: var(--section-title-color);
+    font-family: var(--heading-font);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.result-table,
+.fact-table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* ── 11. AI Result Body 개선 ── */
+.ai-result-body {
+    padding: 28px 32px;
+    font-family: var(--body-font);
+    font-size: var(--body-size);
+}
+
+.ai-result-body h1,
+.ai-result-body h2 {
+    font-family: var(--heading-font);
+    font-size: var(--heading-md);
+    background: var(--section-title-bg);
+    padding: 12px 18px;
+    border-radius: 6px;
+    margin: 28px 0 14px;
+}
+.ai-result-body h2:first-child {
+    margin-top: 0;
+}
+
+.ai-result-body h3 {
+    font-family: var(--heading-font);
+    font-size: 1rem;
+    padding: 10px 28px 10px 24px;
+}
+
+.ai-result-body p {
+    font-size: var(--body-size);
+    line-height: 1.8;
+}
+
+.ai-result-body li {
+    font-size: var(--body-size);
+    line-height: 1.7;
+}
+
+/* AI result source 정돈 */
+.ai-result-body .source-tag {
+    font-size: var(--source-size);
+}
+
+.ai-result-body p:has(.source-tag),
+.ai-result-body li:has(.source-tag) {
+    font-size: var(--source-size);
+    color: #666;
+    font-style: italic;
+}
+
+/* ── 12. Subhead / Label 통일 ── */
+.subhead {
+    font-family: var(--heading-font);
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: var(--accent-strong);
+    margin: 16px 0 8px;
+    letter-spacing: -0.01em;
+}
+
+/* ── 13. Scenario Case Grid 개선 ── */
+.scenario-case-grid {
+    gap: 12px;
+}
+
+.case-block {
+    padding: 20px;
+    border-radius: 20px;
+    min-height: 140px;
+}
+
+/* ── 14. Marketing Lens 개선 ── */
+.marketing-lens-grid {
+    gap: 12px;
+}
+
+.marketing-lens-card {
+    padding: 16px;
+    border-radius: var(--card-radius);
+    min-height: var(--min-card-height);
+}
+
+.marketing-lens-card p {
+    font-size: var(--body-size);
+    line-height: 1.7;
+}
+
+.marketing-lens-label {
+    font-family: var(--heading-font);
+}
+
+/* ── 15. Post Output Prompt 개선 ── */
+.post-output-prompt {
+    border: 1px dashed rgba(0, 51, 102, 0.18);
+    background: rgba(248, 251, 255, 0.6);
+}
+
+.post-output-answer {
+    min-height: 60px;
+    font-size: var(--body-size);
+}
+
+/* ── 16. Fact / Process 개선 ── */
+.fact-separation {
+    gap: 14px;
+}
+
+.fact-box {
+    border-radius: var(--card-radius);
+    min-height: var(--min-card-height);
+}
+
+.process-item {
+    border-radius: var(--card-radius);
+    min-height: 100px;
+}
+
+.process-item strong {
+    font-family: var(--heading-font);
+}
+
+/* ── 17. Storyboard 개선 ── */
+.storyboard-webtoon {
+    border-radius: 20px;
+}
+
+.webtoon-panel {
+    min-height: 100px;
+}
+
+.webtoon-img-placeholder {
+    border-radius: 12px;
+}
+
+/* ── 18. Export Actions 개선 ── */
+.export-tile {
+    border-radius: 12px;
+    min-height: 76px;
+    padding: 10px 12px;
+}
+
+.export-tile strong {
+    font-family: var(--heading-font);
+    font-size: 0.88rem;
+}
+
+/* ── 19. 반응형 보완 ── */
+@media (max-width: 980px) {
+    .q4-top-row {
+        grid-template-columns: 1fr;
+    }
+
+    .q4-preset-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .persona-groups {
+        grid-template-columns: 1fr;
+    }
+
+    .scenario-case-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .marketing-lens-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fact-separation {
+        grid-template-columns: 1fr;
+    }
+
+    .insight-process {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .output-block {
+        padding: 16px;
+    }
+
+    .ai-result-body {
+        padding: 18px 16px;
+    }
+
+    .brief-card {
+        padding: 20px 18px 18px;
+    }
+
+    .q4-preset-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .role-selection-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── 20. 빈 상태 플레이스홀더 개선 ── */
+.placeholder {
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.placeholder-preview {
+    min-height: 200px;
+}
+
+/* ── 21. Access / Guide 카드 통일 ── */
+.access-card,
+.guide-card {
+    border-radius: var(--card-radius);
+}
+
+/* ── 22. 선택형 UI hover/focus 시각 피드백 강화 ── */
+.tree-child:hover,
+.q4-preset-btn:hover,
+.q4-chip-btn:hover,
+.role-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 27, 71, 0.1);
+}
+
+.tree-child:has(input:checked),
+.q4-preset-btn.active,
+.q4-chip-btn.selected,
+.role-card.selected {
+    border-width: 2px;
+    border-color: var(--accent);
+}
+
+/* ── 23. Wizard Step 내부 간격 ── */
+.wizard-step.active {
+    padding: 20px;
+    border-radius: 20px;
+    gap: 12px;
+}
+
+/* ── 24. Section Head 통일 ── */
+.section-head h2 {
+    font-family: var(--heading-font);
+}
+
+.section-head .step {
+    font-family: var(--heading-font);
+}
+
+/* ── 25. Summary Sub Grid 개선 ── */
+.summary-sub-grid {
+    gap: 14px;
+}
+
+.summary-sub-item {
+    border-radius: var(--card-radius);
+    padding: 14px;
+    min-height: 80px;
+}
+
+/* ── 26. Selection Summary Card (AI Result 내) ── */
+.ai-selection-card {
+    border-radius: var(--card-radius);
+}
+
+/* ── 27. Refine UI ── */
+.ai-refine-answer {
+    border-radius: 12px;
+    font-size: var(--body-size);
 }

@@ -1,0 +1,153 @@
+# VIP NOTE — 수정 후 필수 점검 체크리스트
+# 이 파일은 AI 에이전트가 코드 수정 시 반드시 참조해야 하는 점검 항목입니다.
+# 수정이 완료되면 아래 체크리스트를 순서대로 확인하세요.
+# 최종 갱신: 2026-03-16
+
+---
+
+## 1. 이중 코드 동기화 (CRITICAL)
+
+이 프로젝트는 동일 API를 두 곳에서 구현합니다:
+- `server.js` — 로컬 개발용 (Node.js HTTP)
+- `functions/api/` — 배포용 (Cloudflare Pages Functions)
+
+점검:
+- [ ] server.js에 추가/수정한 엔드포인트가 functions/api/에도 반영되었는가
+- [ ] functions/api/에 추가/수정한 로직이 server.js에도 반영되었는가
+- [ ] 양쪽의 프롬프트 텍스트, 모델명, max_tokens, temperature 등 파라미터가 일치하는가
+- [ ] 새 엔드포인트 추가 시 양쪽 모두 구현했는가
+
+현재 엔드포인트 목록 (양쪽 동기화 필수):
+- /api/access/* (verify, session, logout)
+- /api/region-insight
+- /api/generate
+- /api/refine
+- /api/nudge
+
+---
+
+## 2. prompt.txt ↔ 코드 정합성 (CRITICAL)
+
+prompt.txt는 두 가지 역할을 합니다:
+1. AI 시스템 프롬프트 (시나리오 생성 시 전체 전달)
+2. 기술 문서 (Part 9: 앱 구현 현황)
+
+점검:
+- [ ] Part 5(출력 규칙)와 Part 9(기술 현황)가 서로 모순되지 않는가
+- [ ] Part 9에 기술된 API 엔드포인트 목록이 실제 구현과 일치하는가
+- [ ] Part 9에 기술된 모델명/파라미터가 코드의 실제 값과 일치하는가
+- [ ] 출처 표기 규칙: 위첨자 각주 방식(¹²³)으로 통일되어 있는가 ([Source] 인라인 금지)
+- [ ] Part 9 기준일이 최신 수정일로 업데이트되었는가
+- [ ] 새 환경변수 추가 시 Part 9-8 표에 기재되었는가
+
+주의: prompt.txt 수정 후 Cloudflare 환경변수 SYSTEM_PROMPT에도 반영해야 배포 환경에 적용됨.
+
+---
+
+## 3. 프론트엔드 연결 (HTML ↔ JS ↔ CSS)
+
+점검:
+- [ ] main.js에서 사용하는 CSS 클래스명이 style.css에 정의되어 있는가
+- [ ] index.html의 CSS/JS 캐시 버스팅 버전(?v=)이 갱신되었는가
+- [ ] 새로 추가한 HTML 요소의 id/class가 main.js 셀렉터와 맞는가
+- [ ] style.css에서 @media 쿼리 안에 있어야 할 셀렉터가 바깥에 있지 않은가
+
+반응형 breakpoint 기준:
+- 1040px: 테이블/그리드 1열 전환
+- 980px: Q4 top-row, persona-groups 1열
+- 860px: hero, output-grid 등 주요 레이아웃 1열
+- 720px: persona-groups, device-grid 1열
+- 640px: 모바일 — padding 축소, 모든 그리드 1열
+
+---
+
+## 4. 로케일 / 다국어
+
+지원 로케일: ko, en, de, fr, es, pt, it, nl, ar (9개)
+
+점검:
+- [ ] 새로 추가한 UI 텍스트가 js/ui-text.js에 9개 로케일 모두 반영되었는가
+- [ ] 도시명 로케일 변환(getCityDisplayValue)이 새 데이터와 호환되는가
+- [ ] RTL(ar) 레이아웃에서 새 UI가 깨지지 않는가
+
+---
+
+## 5. 출처/Citation 일관성
+
+규칙: 위첨자 각주(¹²³) + 섹션 끝 각주 블록. [Source] 인라인 태그 금지.
+
+점검:
+- [ ] Q2 인사이트: footnote 시스템(addFootnote + renderFootnoteBlock) 정상 동작
+- [ ] AI 생성 출력: 위첨자 각주 형식으로 생성되는가
+- [ ] parseSourceCitations() fallback이 예외 없이 동작하는가
+- [ ] Output 섹션(renderOverview)의 source-tag/source-detail 바인딩 정상 동작
+- [ ] Source가 없을 때 빈 공간이 불필요하게 생기지 않는가
+
+관련 CSS 클래스:
+- .trend-footnote-ref, .trend-footnote-item, .trend-footnotes
+- .trend-source-line, .evidence-source-tag
+- .source-tag, .source-detail, .source-refs-summary
+
+---
+
+## 6. 환경변수 / 배포
+
+점검:
+- [ ] 새로 추가한 환경변수가 prompt.txt 9-8 표에 기재되었는가
+- [ ] Cloudflare Pages 환경변수에 실제로 설정되었는가
+- [ ] SYSTEM_PROMPT 환경변수에 최신 prompt.txt 내용이 반영되었는가
+
+현재 필수 환경변수:
+- OPENAI_API_KEY, OPENAI_MODEL (gpt-5.4), OPENAI_MAX_TOKENS (8000)
+- ANTHROPIC_API_KEY, CLAUDE_MODEL (claude-sonnet-4-20250514)
+- ACCESS_HMAC_SECRET, ACCESS_CODE_HASHES
+- SYSTEM_PROMPT (prompt.txt 전체 내용)
+
+---
+
+## 7. 레퍼런스 데이터 (references/)
+
+점검:
+- [ ] references/ 폴더의 JSON 파일 변경 시, loadReferenceData에서 정상 로드되는가
+- [ ] 새 JSON 필드 추가 시 main.js의 참조 코드가 업데이트되었는가
+- [ ] JSON 파싱 실패 시 개별 파일만 실패하고 전체가 크래시하지 않는가 (resilient loading)
+
+파일 목록:
+- fact_pack.json, explore_matrix.json, source_data.json
+- country_trends.json, city_signals.json
+- dotcom_mapping.json, product_feature_matrix.json
+- service_support_matrix.json, verbal_guideline.json
+
+---
+
+## 8. 기능 회귀 테스트
+
+수정 후 아래 흐름을 최소 1회 테스트:
+- [ ] 접근 코드 입력 → 인증 성공
+- [ ] Q1 역할 선택 → Q2 국가/도시 선택 → 넛지 카드 표시
+- [ ] Q3 세그먼트 선택 (자동 구성 포함) → Q4 기기 선택 (프리셋 포함)
+- [ ] 시나리오 생성 (GPT) → SSE 스트리밍 완료 → 출력 표시
+- [ ] 시나리오 생성 (Claude) → SSE 스트리밍 완료 → 출력 표시
+- [ ] Refine(추가 요청) → 응답 표시
+- [ ] 로그아웃 → 세션 종료
+
+---
+
+## 디자인 스펙 (CSS 수정 시 참조)
+
+색상:
+- 표/박스 제목 영역: #003366
+- 박스 배경: #F8F8F8 (테두리선 없음)
+- 강조 파랑: #0000FF
+
+타이포그래피:
+- 제목 폰트: SamsungOne (headline 계열)
+- 제목 크기: 16pt (대), 14pt (중) — 계층적 사용
+- 본문: SamsungOne 11pt
+- 출처: italic, #666, 9pt
+
+CSS Design Tokens (style.css :root):
+- --heading-font, --body-font
+- --heading-lg (16pt), --heading-md (14pt), --body-size (11pt), --source-size (9pt)
+- --section-title-bg (#003366), --section-title-color (#fff)
+- --card-radius (16px), --card-gap (16px), --section-gap (20px), --min-card-height (120px)
