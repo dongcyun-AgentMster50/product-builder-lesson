@@ -1293,9 +1293,21 @@ Rules:
         const textContent = (messageItem?.content || []).find((c) => c.type === "output_text");
         const rawText = textContent?.text || "";
 
-        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        // GPT 응답에 ```json 마크다운 + [text](url) 인라인 링크 포함 가능 → 정리
+        const cleanText = rawText
+            .replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "")
+            .replace(/\[([^\]]*)\]\(([^)]*)\)/g, "$1")
+            .trim();
+        const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
         if (!jsonMatch) return null;
-        const parsed = JSON.parse(jsonMatch[0]);
+        let parsed;
+        try { parsed = JSON.parse(jsonMatch[0]); } catch {
+            let fixed = jsonMatch[0].replace(/,\s*$/, "");
+            const ob = (fixed.match(/\{/g) || []).length - (fixed.match(/\}/g) || []).length;
+            const oq = (fixed.match(/\[/g) || []).length - (fixed.match(/\]/g) || []).length;
+            fixed += "]".repeat(Math.max(0, oq)) + "}".repeat(Math.max(0, ob));
+            try { parsed = JSON.parse(fixed); } catch { return null; }
+        }
         const sanitized = sanitizeCityLiveContent(parsed);
         if (!sanitized) return null;
         if (!sanitized.live_trends.length && !sanitized.live_events.length) {

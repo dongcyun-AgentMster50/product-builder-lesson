@@ -330,10 +330,14 @@ Rules:
             .filter((a) => a.type === "url_citation" && a.url)
             .map((a) => ({ url: a.url, title: String(a.title || "").trim() }));
 
-        // JSON 추출
-        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        // JSON 추출 — GPT가 ```json 마크다운 + 인라인 링크([text](url))를 포함할 수 있음
+        let cleanText = rawText
+            .replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "")  // 마크다운 코드블록 제거
+            .replace(/\[([^\]]*)\]\(([^)]*)\)/g, "$1")  // [text](url) → text 로 평탄화
+            .trim();
+        const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
-            console.error(`[fetchLiveTrends] No JSON in Responses API output for ${city}`);
+            console.error(`[fetchLiveTrends] No JSON in Responses API output for ${city}. Raw length: ${rawText.length}`);
             clearTimeout(timer);
             return { type: "live_trends", trends: [], events: [] };
         }
@@ -343,7 +347,9 @@ Rules:
             parsed = JSON.parse(jsonMatch[0]);
         } catch {
             // 잘린 JSON 복구
-            let fixed = jsonMatch[0].replace(/,\s*(?:"[^"]*":\s*)?(?:\{[^}]*)?$/, "");
+            let fixed = jsonMatch[0]
+                .replace(/,\s*(?:"[^"]*":\s*)?(?:\{[^}]*)?$/, "")
+                .replace(/,\s*$/, "");
             const ob = (fixed.match(/\{/g) || []).length;
             const cb = (fixed.match(/\}/g) || []).length;
             const oq = (fixed.match(/\[/g) || []).length;
@@ -353,8 +359,9 @@ Rules:
             try {
                 parsed = JSON.parse(fixed);
                 console.log(`[fetchLiveTrends] Recovered truncated JSON for ${city}`);
-            } catch {
-                console.error(`[fetchLiveTrends] JSON parse failed for ${city}`);
+            } catch (parseErr) {
+                console.error(`[fetchLiveTrends] JSON parse failed for ${city}:`, parseErr.message?.slice(0, 100));
+                console.error(`[fetchLiveTrends] Raw text sample:`, rawText.slice(0, 300));
                 clearTimeout(timer);
                 return { type: "live_trends", trends: [], events: [] };
             }
