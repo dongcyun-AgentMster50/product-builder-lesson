@@ -29,9 +29,15 @@ function buildGeneratePrompt(body) {
         `- Output Language: ${locale === "ko" ? "Korean-primary (English for Section 01-IV Storyboard and Section 04 marketing hooks)" : "English-primary"}`,
         regionCtx ? `\n## Live Regional Data\n\`\`\`json\n${regionCtx}\n\`\`\`` : "",
         "\n## Task",
-        "Generate a Samsung SmartThings CX scenario following the 11-section output schema from Part 5 of the system prompt.",
-        "Output sections (01) through (09) in full. Then end with the refinement prompt:",
-        "\"어떤 부분을 수정하거나 더 자세히 보고 싶으신가요? (Which section to refine, or request section 10-11?)\""
+        "Generate a Samsung SmartThings CX scenario following the output schema in the system prompt.",
+        "Output sections (01) through (07) only. Then suggest next steps in natural language — do NOT mention section numbers like 10 or 11.",
+        "IMPORTANT FORMAT RULES:",
+        "- (01): title 1 line + summary 1 line ONLY. No '참조 시나리오', no '핵심 요약', no '우선 검토 이유'.",
+        "- (02): NO labels like '① Pain Point', '② 기능/해결책', '③ 고객 Benefit'. Write as flowing story paragraphs.",
+        "- (03): 3-4 sentences max. Regional data as footnotes only, not in body.",
+        "- (04): Each copy option must include tone guide inline, not as separate section.",
+        "- Citations: NEVER use [Source] tags. Use superscript numbers ¹²³ with footnote block at section end.",
+        "- No [Assumption] tags."
     ].filter(Boolean).join("\n");
 }
 
