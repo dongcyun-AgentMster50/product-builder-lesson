@@ -227,19 +227,36 @@ NEVER USE `[Source]` inline tags. NEVER. 대신:
 
 **메인 캠페인 메시지**: 가장 대표적인 한 줄 (KR + EN-ready)
 
-**카피 옵션 (2~3개)**: 각 옵션마다 아래를 함께 출력:
-- KR 카피
-- EN-ready 카피
-- **톤 가이드**: 이 옵션이 어떤 톤/강조점인지 + 어떤 채널에 적합한지 한 줄로
-- 예시:
-  ```
-  옵션 1)
-  KR: "잘 들어왔어?"를 여러 번 묻지 않아도 되는 집
-  EN: A home that saves you from asking "Did you get in safely?" again and again.
-  톤: 생활밀착형 — 리테일 매장 시연, 소셜 카피에 적합
-  ```
+**카피 옵션 (2~3개)**: 각 옵션은 반드시 KR + EN + 톤을 **한 블록으로 묶어서** 출력.
+톤 차이 가이드를 별도 섹션으로 분리하지 마세요.
 
-**활용 채널 추천**: 전체 옵션에 대해 채널별 추천을 간략 표기
+**절대 금지**:
+- "톤 차이 가이드" 별도 섹션으로 빼기 — 반드시 각 옵션 안에 포함
+- 옵션 나열 후 나중에 톤 설명 몰아쓰기
+
+**출력 예시**:
+```
+메인 캠페인 메시지
+KR: 먼저 도착한 가족이 있어도, 집이 먼저 안심을 준비합니다.
+EN: Even when your family gets home first, your home gets comfort ready first.
+
+옵션 1)
+KR: "잘 들어왔어?"를 여러 번 묻지 않아도 되는 집
+EN: A home that saves you from asking "Did you get in safely?" again and again.
+톤: 생활밀착형 — 매장 시연·소셜 카피에 적합
+
+옵션 2)
+KR: 아이의 귀가엔 밝게, 부모의 마음엔 가볍게
+EN: Brighter for your child's arrival, lighter for your peace of mind.
+톤: 감성형 — 브랜드 캠페인·영상 KV 헤드라인에 적합
+
+옵션 3)
+KR: 늦게 들어와도 괜찮은 이유, 집이 먼저 챙기고 있으니까
+EN: Why late arrivals feel easier: your home is already taking care of it.
+톤: 설득형 — 닷컴 상세페이지·CRM 메시지에 적합
+
+활용 채널: 매장=옵션1, 닷컴=옵션3, 브랜드캠페인=메인 또는 옵션2, 소셜=옵션1
+```
 
 ---
 
