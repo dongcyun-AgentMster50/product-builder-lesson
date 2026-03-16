@@ -845,6 +845,47 @@ function renderQ4Summary() {
             <ul class="q4-summary-list">${recommendMarkup}</ul>
         </section>` : ""}
     `;
+    renderQ4DotcomProducts();
+}
+
+function renderQ4DotcomProducts() {
+    const container = document.getElementById("q4-dotcom-products");
+    if (!container) return;
+    const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
+    if (!selectedMarket) { container.innerHTML = ""; return; }
+    const baseCode = normalizeSiteCode(selectedMarket.siteCode);
+    const dotcom = (dotcomMapping?.markets || []).find((m) => normalizeSiteCode(m.siteCode) === baseCode);
+    const baseUrl = dotcom?.fullUrl || `https://www.samsung.com/${baseCode.toLowerCase()}`;
+
+    const categories = [
+        { key: "tv", label: "TV", icon: "📺", path: "/tvs/all-tvs/" },
+        { key: "refrigerator", label: currentLocale === "ko" ? "냉장고" : "Refrigerator", icon: "🧊", path: "/refrigerators/all-refrigerators/" },
+        { key: "washer", label: currentLocale === "ko" ? "세탁기" : "Washer", icon: "🫧", path: "/washers/all-washers/" },
+        { key: "dryer", label: currentLocale === "ko" ? "건조기" : "Dryer", icon: "💨", path: "/dryers/all-dryers/" },
+        { key: "ac", label: currentLocale === "ko" ? "에어컨" : "Air Conditioner", icon: "❄️", path: "/air-conditioners/all-air-conditioners/" },
+        { key: "air-purifier", label: currentLocale === "ko" ? "공기청정기" : "Air Purifier", icon: "🌬️", path: "/air-purifiers/all-air-purifiers/" },
+        { key: "vacuum", label: currentLocale === "ko" ? "로봇청소기" : "Robot Vacuum", icon: "🤖", path: "/vacuum-cleaners/all-vacuum-cleaners/" },
+        { key: "dishwasher", label: currentLocale === "ko" ? "식기세척기" : "Dishwasher", icon: "🍽️", path: "/dishwashers/all-dishwashers/" },
+        { key: "smartthings", label: "SmartThings", icon: "🏠", path: "/smartthings/all-smartthings/" }
+    ];
+
+    const title = currentLocale === "ko" ? "Samsung.com 제품 보기" : "View on Samsung.com";
+    container.innerHTML = `
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line,#e0e0e0)">
+            <p style="font-size:.78rem;font-weight:700;color:var(--accent-strong,#003366);margin-bottom:8px">${escapeHtml(title)} — ${escapeHtml(baseUrl.replace("https://",""))}</p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+                ${categories.map((cat) => `
+                    <a href="${escapeHtml(baseUrl + cat.path)}" target="_blank" rel="noopener noreferrer"
+                       style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;border:1px solid #e8e8e8;background:#fff;text-decoration:none;color:#222;font-size:.72rem;font-weight:600;transition:all .15s"
+                       onmouseover="this.style.background='#f0f2f8';this.style.borderColor='#001a6e'"
+                       onmouseout="this.style.background='#fff';this.style.borderColor='#e8e8e8'">
+                        <span style="font-size:1rem">${cat.icon}</span>
+                        <span>${escapeHtml(cat.label)}</span>
+                    </a>
+                `).join("")}
+            </div>
+        </div>
+    `;
 }
 
 function handleChecklistChange(event, container) {
