@@ -86,7 +86,7 @@ const PERSONA_CATEGORY_GROUPS = [
     {
         id: "housing",
         title: "C. 거주지 유형",
-        mode: "radio",
+        mode: "checkbox",
         options: [
             { id: "apt_high", label: "아파트 고층 (15층+)" },
             { id: "apt_low", label: "아파트·빌라 저중층" },
