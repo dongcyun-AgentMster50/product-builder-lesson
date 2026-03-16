@@ -134,7 +134,13 @@ const UI_TEXT = {
         stateSituation: "상황설명", stateDevice: "반영기기",
         notSelected: "미선택", notEntered: "미입력",
         guideSessionNote: "Logout은 현재 인증 세션을 종료하고, 접근 코드 입력 화면으로 돌아갑니다.",
-        nudgeNow: "지금 상황", nudgeNeed: "예상 니즈", nudgeOpportunity: "기회 포인트"
+        nudgeNow: "지금 상황", nudgeNeed: "예상 니즈", nudgeOpportunity: "기회 포인트",
+        q3AutoBtn: "지역 트렌드 기반 자동 구성 — AI가 국가·도시에 맞는 타겟 세그먼트를 선택합니다",
+        q4AutoBtn: "트렌드 기반 자동 구성 — AI가 지역·세그먼트에 맞는 최적 기기를 선택합니다",
+        q4PresetTitle: "반영 기기 스타일별 조합",
+        q4DirectTitle: "기기 직접 선택",
+        q4DetailSummary: "카테고리별 상세 기기 보기",
+        q4SummaryTitle: "현재 조합 요약"
     },
     en: {
         enterAgent: "Enter Agent",
@@ -271,7 +277,13 @@ const UI_TEXT = {
         stateSituation: "Situation", stateDevice: "Device",
         notSelected: "Not selected", notEntered: "Not entered",
         guideSessionNote: "Logout ends the current session and returns to the access code screen.",
-        nudgeNow: "Now", nudgeNeed: "Likely need", nudgeOpportunity: "Opportunity"
+        nudgeNow: "Now", nudgeNeed: "Likely need", nudgeOpportunity: "Opportunity",
+        q3AutoBtn: "Auto-configure by regional trends — AI selects the best target segment for your country and city",
+        q4AutoBtn: "Auto-configure by trends — AI selects optimal devices for your region and segment",
+        q4PresetTitle: "Device style presets",
+        q4DirectTitle: "Select devices directly",
+        q4DetailSummary: "View devices by category",
+        q4SummaryTitle: "Current mix summary"
     },
     de: {
         enterAgent: "Agent Starten",
@@ -408,7 +420,11 @@ const UI_TEXT = {
         stateSituation: "Situation", stateDevice: "Gerät",
         notSelected: "Nicht gewählt", notEntered: "Nicht eingegeben",
         guideSessionNote: "Abmelden beendet die aktuelle Sitzung und kehrt zum Zugangscode-Bildschirm zurück.",
-        nudgeNow: "Aktuell", nudgeNeed: "Wahrscheinlicher Bedarf", nudgeOpportunity: "Chance"
+        nudgeNow: "Aktuell", nudgeNeed: "Wahrscheinlicher Bedarf", nudgeOpportunity: "Chance",
+        q3AutoBtn: "Automatische Konfiguration nach regionalen Trends — KI wählt das beste Zielsegment",
+        q4AutoBtn: "Automatische Konfiguration — KI wählt optimale Geräte für Ihre Region",
+        q4PresetTitle: "Geräte-Stilpresets", q4DirectTitle: "Geräte direkt auswählen",
+        q4DetailSummary: "Geräte nach Kategorie anzeigen", q4SummaryTitle: "Aktuelle Zusammenfassung"
     },
     fr: {
         enterAgent: "Entrer dans l'agent",
@@ -542,7 +558,11 @@ const UI_TEXT = {
         stateSituation: "Situation", stateDevice: "Appareil",
         notSelected: "Non sélectionné", notEntered: "Non saisi",
         guideSessionNote: "La déconnexion met fin à la session et retourne à l'écran du code d'accès.",
-        nudgeNow: "Situation actuelle", nudgeNeed: "Besoin probable", nudgeOpportunity: "Opportunité"
+        nudgeNow: "Situation actuelle", nudgeNeed: "Besoin probable", nudgeOpportunity: "Opportunité",
+        q3AutoBtn: "Configuration auto par tendances régionales — l'IA sélectionne le meilleur segment cible",
+        q4AutoBtn: "Configuration auto — l'IA sélectionne les appareils optimaux pour votre région",
+        q4PresetTitle: "Préréglages par style", q4DirectTitle: "Sélection directe",
+        q4DetailSummary: "Voir par catégorie", q4SummaryTitle: "Résumé actuel"
     },
     es: {
         enterAgent: "Entrar al agente",
@@ -676,7 +696,11 @@ const UI_TEXT = {
         stateSituation: "Situación", stateDevice: "Dispositivo",
         notSelected: "No seleccionado", notEntered: "No ingresado",
         guideSessionNote: "Cerrar sesión finaliza la sesión actual y vuelve a la pantalla del código de acceso.",
-        nudgeNow: "Situación actual", nudgeNeed: "Necesidad probable", nudgeOpportunity: "Oportunidad"
+        nudgeNow: "Situación actual", nudgeNeed: "Necesidad probable", nudgeOpportunity: "Oportunidad",
+        q3AutoBtn: "Configuración automática por tendencias — la IA selecciona el mejor segmento objetivo",
+        q4AutoBtn: "Configuración automática — la IA selecciona los dispositivos óptimos para su región",
+        q4PresetTitle: "Presets por estilo", q4DirectTitle: "Selección directa",
+        q4DetailSummary: "Ver por categoría", q4SummaryTitle: "Resumen actual"
     },
     pt: {
         enterAgent: "Entrar no agente",
@@ -810,7 +834,11 @@ const UI_TEXT = {
         stateSituation: "Situação", stateDevice: "Dispositivo",
         notSelected: "Não selecionado", notEntered: "Não inserido",
         guideSessionNote: "Sair termina a sessão atual e volta ao ecrã do código de acesso.",
-        nudgeNow: "Situação atual", nudgeNeed: "Necessidade provável", nudgeOpportunity: "Oportunidade"
+        nudgeNow: "Situação atual", nudgeNeed: "Necessidade provável", nudgeOpportunity: "Oportunidade",
+        q3AutoBtn: "Configuração automática por tendências — a IA seleciona o melhor segmento-alvo",
+        q4AutoBtn: "Configuração automática — a IA seleciona os dispositivos ideais para sua região",
+        q4PresetTitle: "Presets por estilo", q4DirectTitle: "Seleção direta",
+        q4DetailSummary: "Ver por categoria", q4SummaryTitle: "Resumo atual"
     },
     it: {
         enterAgent: "Entra nell'agente",
@@ -944,7 +972,11 @@ const UI_TEXT = {
         stateSituation: "Situazione", stateDevice: "Dispositivo",
         notSelected: "Non selezionato", notEntered: "Non inserito",
         guideSessionNote: "Esci termina la sessione corrente e torna alla schermata del codice di accesso.",
-        nudgeNow: "Situazione attuale", nudgeNeed: "Esigenza probabile", nudgeOpportunity: "Opportunità"
+        nudgeNow: "Situazione attuale", nudgeNeed: "Esigenza probabile", nudgeOpportunity: "Opportunità",
+        q3AutoBtn: "Configurazione automatica per tendenze — l'IA seleziona il segmento target migliore",
+        q4AutoBtn: "Configurazione automatica — l'IA seleziona i dispositivi ottimali per la tua regione",
+        q4PresetTitle: "Preset per stile", q4DirectTitle: "Selezione diretta",
+        q4DetailSummary: "Visualizza per categoria", q4SummaryTitle: "Riepilogo attuale"
     },
     nl: {
         enterAgent: "Agent openen",
@@ -1078,7 +1110,11 @@ const UI_TEXT = {
         stateSituation: "Situatie", stateDevice: "Apparaat",
         notSelected: "Niet geselecteerd", notEntered: "Niet ingevoerd",
         guideSessionNote: "Uitloggen beëindigt de huidige sessie en keert terug naar het toegangscode-scherm.",
-        nudgeNow: "Huidige situatie", nudgeNeed: "Waarschijnlijke behoefte", nudgeOpportunity: "Kans"
+        nudgeNow: "Huidige situatie", nudgeNeed: "Waarschijnlijke behoefte", nudgeOpportunity: "Kans",
+        q3AutoBtn: "Automatische configuratie op basis van trends — AI selecteert het beste doelsegment",
+        q4AutoBtn: "Automatische configuratie — AI selecteert optimale apparaten voor uw regio",
+        q4PresetTitle: "Apparaatstijl-presets", q4DirectTitle: "Directe selectie",
+        q4DetailSummary: "Per categorie bekijken", q4SummaryTitle: "Huidig overzicht"
     },
     ar: {
         enterAgent: "دخول الوكيل",
@@ -1215,6 +1251,10 @@ const UI_TEXT = {
         stateSituation: "الموقف", stateDevice: "الجهاز",
         notSelected: "غير محدد", notEntered: "غير مُدخل",
         guideSessionNote: "تسجيل الخروج ينهي الجلسة الحالية ويعود إلى شاشة رمز الوصول.",
-        nudgeNow: "الوضع الحالي", nudgeNeed: "الاحتياج المحتمل", nudgeOpportunity: "الفرصة"
+        nudgeNow: "الوضع الحالي", nudgeNeed: "الاحتياج المحتمل", nudgeOpportunity: "الفرصة",
+        q3AutoBtn: "تكوين تلقائي حسب الاتجاهات — يختار الذكاء الاصطناعي أفضل شريحة مستهدفة",
+        q4AutoBtn: "تكوين تلقائي — يختار الذكاء الاصطناعي الأجهزة المثالية لمنطقتك",
+        q4PresetTitle: "إعدادات مسبقة بالنمط", q4DirectTitle: "اختيار مباشر",
+        q4DetailSummary: "عرض حسب الفئة", q4SummaryTitle: "ملخص الحالي"
     }
 };

@@ -7088,6 +7088,19 @@ function applyLocale() {
     if (!latestPayload) renderOutputPreview();
     document.querySelector(".report-head h2").textContent = t("output");
     renderExportActions();
+    // Q3/Q4 자동 버튼 및 섹션 제목 로케일 교체
+    const q3AutoText = document.querySelector(".q3-auto-text");
+    if (q3AutoText) q3AutoText.textContent = t("q3AutoBtn");
+    const q4AutoText = document.querySelector(".q4-auto-text");
+    if (q4AutoText) q4AutoText.textContent = t("q4AutoBtn");
+    const q4PresetHead = document.querySelector(".q4-presets .q4-section-head h3");
+    if (q4PresetHead) q4PresetHead.textContent = t("q4PresetTitle");
+    const q4DirectHead = document.querySelector(".q4-card:not(.q4-presets) .q4-section-head h3");
+    if (q4DirectHead) q4DirectHead.textContent = t("q4DirectTitle");
+    const q4DetailSum = document.querySelector(".q4-details summary");
+    if (q4DetailSum) q4DetailSum.textContent = t("q4DetailSummary");
+    const q4SummaryHead = document.querySelector(".q4-summary-card .q4-section-head h3");
+    if (q4SummaryHead) q4SummaryHead.textContent = t("q4SummaryTitle");
     updateEnglishToggleVisibility();
 }
 
