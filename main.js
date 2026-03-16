@@ -7433,7 +7433,7 @@ function getRoleBrief(id) {
 function validateQ3Groups() {
     const requiredGroups = ["household", "interest", "housing"];
     const groupLabels = currentLocale === "ko"
-        ? { household: "A. 우리 집 구성원", interest: "B. 요즘 관심사", housing: "C. 거주지 유형" }
+        ? { household: "A. 타겟 고객 가구 구성", interest: "B. 요즘 관심사", housing: "C. 거주지 유형" }
         : { household: "A. Household members", interest: "B. Interests", housing: "C. Housing type" };
     const missing = [];
     requiredGroups.forEach((gid) => {
