@@ -443,6 +443,22 @@
       cursor: pointer;
       box-shadow: 0 10px 20px rgba(17,17,17,0.12);
     }
+    .controls button.pdf-btn {
+      font-size: 12px;
+      font-weight: 700;
+      width: auto;
+      padding: 0 16px;
+      font-family: var(--bodyfont);
+      letter-spacing: 0.02em;
+    }
+    .controls button.pdf-btn:hover {
+      background: var(--navy);
+      color: #fff;
+    }
+    .controls button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
     .progress-shell {
       position: fixed;
       left: 24px;
@@ -805,9 +821,13 @@
   <div class="controls">
     <button id="prev" aria-label="Previous slide">←</button>
     <button id="next" aria-label="Next slide">→</button>
+    <button id="pdf-slide" class="pdf-btn" aria-label="Download current slide as PDF">PDF</button>
+    <button id="pdf-all" class="pdf-btn" aria-label="Download all slides as PDF">ALL PDF</button>
   </div>
   <div class="progress-shell"><div id="bar"></div></div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
   <script>
     const slides = [...document.querySelectorAll('.slide')];
     const bar = document.getElementById('bar');
@@ -830,6 +850,71 @@
     });
 
     show(0);
+
+    async function captureSlide(slide) {
+      const canvas = await html2canvas(slide, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#FFFFFF',
+        logging: false
+      });
+      return canvas;
+    }
+
+    function canvasToPdfPage(pdf, canvas) {
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
+      const imgW = canvas.width * ratio;
+      const imgH = canvas.height * ratio;
+      const x = (pageW - imgW) / 2;
+      const y = (pageH - imgH) / 2;
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', x, y, imgW, imgH);
+    }
+
+    document.getElementById('pdf-slide').addEventListener('click', async function() {
+      const btn = this;
+      btn.disabled = true;
+      btn.textContent = '...';
+      try {
+        const slide = slides[current];
+        const canvas = await captureSlide(slide);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width, canvas.height] });
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.save(`slide-${current + 1}.pdf`);
+      } catch (e) {
+        alert('PDF 생성 실패: ' + e.message);
+      }
+      btn.disabled = false;
+      btn.textContent = 'PDF';
+    });
+
+    document.getElementById('pdf-all').addEventListener('click', async function() {
+      const btn = this;
+      btn.disabled = true;
+      btn.textContent = '...';
+      const saved = current;
+      try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+        for (let i = 0; i < slides.length; i++) {
+          show(i);
+          await new Promise(r => setTimeout(r, 100));
+          const canvas = await captureSlide(slides[i]);
+          if (i > 0) pdf.addPage();
+          canvasToPdfPage(pdf, canvas);
+        }
+
+        pdf.save('firebase-make-n8n-comparison-all.pdf');
+      } catch (e) {
+        alert('PDF 생성 실패: ' + e.message);
+      }
+      show(saved);
+      btn.disabled = false;
+      btn.textContent = 'ALL PDF';
+    });
   </script>
 </body>
 </html>
