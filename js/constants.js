@@ -29,7 +29,7 @@ const ROLE_LENSES = [
 const PERSONA_CATEGORY_GROUPS = [
     {
         id: "household",
-        title: "A. 우리 집 구성원",
+        title: "A. 타겟 고객 가구 구성",
         mode: "checkbox",
         options: [
             { id: "solo", label: "나 혼자" },

@@ -865,27 +865,8 @@ function handleChecklistChange(event, container) {
         if (customInput) customInput.value = "";
     }
 
-    if (
-        container === personaGroups &&
-        groupId === "household" &&
-        target.dataset.nodeType === "child" &&
-        target.checked
-    ) {
-        const householdChildren = [...group.querySelectorAll('input[data-node-type="child"]')];
-        if (target.value === "solo") {
-            householdChildren.forEach((child) => {
-                if (child === target) return;
-                child.checked = false;
-                toggleSubChildren(group, child.value, false);
-            });
-        } else {
-            const soloInput = group.querySelector('input[data-node-type="child"][value="solo"]');
-            if (soloInput) {
-                soloInput.checked = false;
-                toggleSubChildren(group, "solo", false);
-            }
-        }
-    }
+    // "나 혼자(solo)" 배타 로직 제거 — 마케터가 "1인가구+반려동물" 등 복합 세그먼트 가능하도록
+    // 모든 household 옵션은 자유롭게 복수 선택 가능
 
     // Legacy checkbox-parent behaviour (device groups)
     if (!mode || mode === "checkbox") {
