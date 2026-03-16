@@ -413,6 +413,19 @@
     .source-item a { color: var(--navy); text-decoration: none; }
     .source-item a:hover { text-decoration: underline; }
 
+    .ex {
+      display: block;
+      margin-top: 3px;
+      padding: 4px 8px;
+      background: rgba(0, 51, 102, 0.05);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      font-size: 10px;
+      line-height: 1.5;
+      color: var(--navy);
+      font-style: italic;
+    }
+
     .footer {
       display: flex;
       align-items: center;
@@ -518,16 +531,19 @@
             <article class="card">
               <div class="card-header"><h3>Firebase</h3><span class="subtle">App backend / infra</span></div>
               <p class="body-copy">Google 계열의 앱 개발 플랫폼. 인증, DB, 함수, 호스팅, 앱 배포를 한 생태계에서 묶기 좋다.</p>
+              <span class="ex">예: 회원가입 → Firestore에 프로필 저장 → Cloud Functions로 환영 이메일 발송 → Hosting으로 배포</span>
               <div class="pill-row"><span class="pill">Auth</span><span class="pill">Firestore</span><span class="pill">Functions</span><span class="pill">Hosting</span></div>
             </article>
             <article class="card">
               <div class="card-header"><h3>Make</h3><span class="subtle">Visual-first automation</span></div>
               <p class="body-copy">SaaS 업무 자동화를 빠르게 붙이는 no-code 도구. 운영팀, 마케팅팀, 비개발자 접근성이 높다.</p>
+              <span class="ex">예: Google Form 제출 → Slack 알림 → Google Sheets 기록 → CRM 리드 생성을 드래그만으로 연결</span>
               <div class="pill-row"><span class="pill">3,000+ Apps</span><span class="pill">Scenarios</span><span class="pill">AI Automation</span></div>
             </article>
             <article class="card">
               <div class="card-header"><h3>n8n</h3><span class="subtle">Low-code / self-hosted</span></div>
               <p class="body-copy">개발자 친화적 자동화 플랫폼. API 지향 플로우, 커스텀 로직, self-hosted 통제권이 강점이다.</p>
+              <span class="ex">예: Webhook 수신 → 자체 DB 조회 → GPT API로 분류 → 조건 분기 → 내부 시스템 API 호출까지 하나의 플로우</span>
               <div class="pill-row"><span class="pill">Self-hosted</span><span class="pill">AI Workflows</span><span class="pill">Low-code</span></div>
             </article>
           </div>
@@ -596,18 +612,18 @@
           <article class="card">
             <div class="card-header"><h3>장점</h3><span class="subtle">Why teams choose it</span></div>
             <ul>
-              <li>Authentication, Firestore, Cloud Functions, Hosting/App Hosting 등 앱 개발 핵심 구성요소가 한 생태계에 모여 있다.</li>
-              <li>실시간 데이터 처리와 SDK 연동이 강해 웹/모바일 앱 경험을 빠르게 구현하기 좋다.</li>
-              <li>GitHub 연동형 배포 흐름이 비교적 단순하고, 서버리스 운영 모델과 잘 맞는다.</li>
-              <li>Extensions와 Google 생태계 연결성이 있어 기능 확장 속도를 높이기 쉽다.</li>
+              <li>Authentication, Firestore, Cloud Functions, Hosting 등 앱 개발 핵심 구성요소가 한 생태계에 모여 있다.<span class="ex">예: 로그인(Auth) → 사용자 데이터(Firestore) → 결제 처리(Functions) → 배포(Hosting)를 한 콘솔에서 관리</span></li>
+              <li>실시간 데이터 처리와 SDK 연동이 강해 웹/모바일 앱 경험을 빠르게 구현하기 좋다.<span class="ex">예: 채팅 앱에서 메시지 입력 즉시 상대방 화면에 반영 — Firestore 실시간 리스너</span></li>
+              <li>GitHub 연동형 배포 흐름이 비교적 단순하고, 서버리스 운영 모델과 잘 맞는다.<span class="ex">예: git push → GitHub Actions → Firebase Hosting 자동 배포, 서버 관리 불필요</span></li>
+              <li>Extensions와 Google 생태계 연결성이 있어 기능 확장 속도를 높이기 쉽다.<span class="ex">예: "Stripe 결제 연동" Extension 설치 → 3분 내 결제 기능 추가</span></li>
             </ul>
           </article>
           <article class="card">
             <div class="card-header"><h3>단점</h3><span class="subtle">Trade-offs to watch</span></div>
             <ul>
-              <li>코드, 데이터 모델, 보안 규칙, 함수 구조를 설계해야 해서 비개발자 중심 팀에는 진입장벽이 있다.</li>
-              <li>설계를 잘못하면 쿼리 구조와 네트워크 사용량 때문에 비용 예측이 어려워질 수 있다.</li>
-              <li>외부 SaaS 업무 자동화는 기본 강점이 아니어서 별도 API 연동이나 함수 구현이 필요한 경우가 많다.</li>
+              <li>코드, 데이터 모델, 보안 규칙, 함수 구조를 설계해야 해서 비개발자 중심 팀에는 진입장벽이 있다.<span class="ex">예: Firestore 보안 규칙을 잘못 쓰면 데이터가 전체 공개되거나, 반대로 앱이 동작하지 않음</span></li>
+              <li>설계를 잘못하면 쿼리 구조와 네트워크 사용량 때문에 비용 예측이 어려워질 수 있다.<span class="ex">예: 문서 수 1만 개를 매번 전체 읽으면 월 비용이 $5 → $500으로 급증 가능</span></li>
+              <li>외부 SaaS 업무 자동화는 기본 강점이 아니어서 별도 API 연동이나 함수 구현이 필요한 경우가 많다.<span class="ex">예: "Slack 알림 보내기" 하나에도 Cloud Functions에서 직접 Slack API 코드를 작성해야 함</span></li>
             </ul>
           </article>
         </div>
@@ -636,18 +652,18 @@
           <article class="card">
             <div class="card-header"><h3>장점</h3><span class="subtle">Why teams choose it</span></div>
             <ul>
-              <li>Visual-first no-code 구조라 운영/마케팅팀이 빠르게 자동화를 만들 수 있다.</li>
-              <li>대규모 앱 연동 생태계와 HTTP/API 모듈 덕분에 SaaS 연결 범위가 넓다.</li>
-              <li>폼 제출, 이메일, Slack, Sheets, CRM, 보고 자동화 등 운영성 시나리오 구현 속도가 매우 빠르다.</li>
-              <li>AI automation과 agent 시나리오를 업무 플로우에 붙이기 쉬운 편이다.</li>
+              <li>Visual-first no-code 구조라 운영/마케팅팀이 빠르게 자동화를 만들 수 있다.<span class="ex">예: 마케팅 담당자가 코드 없이 드래그&드롭으로 리드 수집 자동화를 30분 만에 완성</span></li>
+              <li>대규모 앱 연동 생태계와 HTTP/API 모듈 덕분에 SaaS 연결 범위가 넓다.<span class="ex">예: HubSpot + Mailchimp + Notion + Slack을 하나의 시나리오로 연결 — 모듈 검색만으로 가능</span></li>
+              <li>폼 제출, 이메일, Slack, Sheets, CRM, 보고 자동화 등 운영성 시나리오 구현 속도가 매우 빠르다.<span class="ex">예: 고객 문의 접수 → Slack 채널 알림 → Sheets 로그 → 담당자 자동 배정까지 5개 노드로 완성</span></li>
+              <li>AI automation과 agent 시나리오를 업무 플로우에 붙이기 쉬운 편이다.<span class="ex">예: 이메일 수신 → GPT로 감정 분석 → 긍정이면 감사 회신 / 부정이면 CS팀 에스컬레이션</span></li>
             </ul>
           </article>
           <article class="card">
             <div class="card-header"><h3>단점</h3><span class="subtle">Trade-offs to watch</span></div>
             <ul>
-              <li>앱 자체의 인증, 실시간 DB, SDK, 사용자 중심 백엔드를 제공하는 도구는 아니다.</li>
-              <li>시나리오가 늘어날수록 분기, 예외 처리, 운영 가시성 관리가 중요해진다.</li>
-              <li>자동화가 자주 돌거나 데이터량이 많으면 작업량 기반 과금이 부담이 될 수 있다.</li>
+              <li>앱 자체의 인증, 실시간 DB, SDK, 사용자 중심 백엔드를 제공하는 도구는 아니다.<span class="ex">예: "회원가입 → 로그인 → 마이페이지" 같은 앱 본체는 Make로 만들 수 없음</span></li>
+              <li>시나리오가 늘어날수록 분기, 예외 처리, 운영 가시성 관리가 중요해진다.<span class="ex">예: 시나리오 50개 운영 시 어디서 에러가 났는지 추적이 복잡해짐 → 모니터링 체계 필요</span></li>
+              <li>자동화가 자주 돌거나 데이터량이 많으면 작업량 기반 과금이 부담이 될 수 있다.<span class="ex">예: 월 10만 건 처리 시 Free 플랜(1,000 ops) 초과 → Pro 플랜 $9/월+ 추가 ops 비용</span></li>
             </ul>
           </article>
         </div>
@@ -676,18 +692,18 @@
           <article class="card">
             <div class="card-header"><h3>장점</h3><span class="subtle">Why teams choose it</span></div>
             <ul>
-              <li>Visual canvas와 code를 함께 써서 기술팀이 복잡한 로직을 자동화하기 좋다.</li>
-              <li>Cloud와 self-hosted를 모두 제공해 보안/운영 통제권 선택지가 넓다.</li>
-              <li>API 중심 플로우, 커스텀 처리, AI workflow 구성에 유연하다.</li>
-              <li>기존 SaaS 자동화 툴보다 개발 자유도가 높은 편이라 엔지니어링 팀 선호도가 높다.</li>
+              <li>Visual canvas와 code를 함께 써서 기술팀이 복잡한 로직을 자동화하기 좋다.<span class="ex">예: 드래그로 플로우 구성 + 중간에 JavaScript 노드로 커스텀 데이터 변환 삽입</span></li>
+              <li>Cloud와 self-hosted를 모두 제공해 보안/운영 통제권 선택지가 넓다.<span class="ex">예: 금융/의료 팀이 사내 서버에 Docker로 배포 → 민감 데이터가 외부로 나가지 않음</span></li>
+              <li>API 중심 플로우, 커스텀 처리, AI workflow 구성에 유연하다.<span class="ex">예: 사내 REST API 호출 → 응답 파싱 → LLM에 전달 → 결과를 DB에 저장하는 파이프라인</span></li>
+              <li>기존 SaaS 자동화 툴보다 개발 자유도가 높은 편이라 엔지니어링 팀 선호도가 높다.<span class="ex">예: 커스텀 노드를 TypeScript로 직접 만들어 사내 전용 통합 모듈로 배포 가능</span></li>
             </ul>
           </article>
           <article class="card">
             <div class="card-header"><h3>단점</h3><span class="subtle">Trade-offs to watch</span></div>
             <ul>
-              <li>self-hosting에는 서버, 보안, 컨테이너, 스케일링 지식이 필요하다.</li>
-              <li>비개발자 기준으로는 Make보다 학습 곡선이 더 높다.</li>
-              <li>커뮤니티 에디션에는 일부 엔터프라이즈 기능이 빠져 있어 운영 정책에 따라 제약이 생길 수 있다.</li>
+              <li>self-hosting에는 서버, 보안, 컨테이너, 스케일링 지식이 필요하다.<span class="ex">예: Docker Compose 설정, SSL 인증서, PostgreSQL 백업, 업데이트 관리를 직접 해야 함</span></li>
+              <li>비개발자 기준으로는 Make보다 학습 곡선이 더 높다.<span class="ex">예: JSON 구조, HTTP 메서드, 인증 토큰 개념을 이해해야 첫 워크플로우를 만들 수 있음</span></li>
+              <li>커뮤니티 에디션에는 일부 엔터프라이즈 기능이 빠져 있어 운영 정책에 따라 제약이 생길 수 있다.<span class="ex">예: SSO, 환경 분리(dev/prod), 고급 실행 로그는 유료 플랜에서만 제공</span></li>
             </ul>
           </article>
         </div>
@@ -792,16 +808,19 @@
             <div class="decision-card">
               <div class="decision-title">Firebase를 고를 때</div>
               <div class="body-copy">웹앱/모바일앱 자체를 만들고, 인증·DB·서버리스·배포를 한 플랫폼에서 연결하고 싶을 때.</div>
+              <span class="ex">예: 고객용 대시보드 웹앱을 만들어 로그인·데이터 저장·실시간 알림까지 구현하려는 스타트업</span>
               <div class="tag-row"><span class="tag">서비스 본체</span><span class="tag">Real-time</span></div>
             </div>
             <div class="decision-card">
               <div class="decision-title">Make를 고를 때</div>
               <div class="body-copy">마케팅/운영팀이 CRM, 폼, 이메일, Sheets, Slack 같은 SaaS를 빠르게 연결해야 할 때.</div>
+              <span class="ex">예: 세미나 등록 폼 → 참가자 Sheets 기록 → 확인 이메일 → Slack 팀 알림을 오늘 안에 완성</span>
               <div class="tag-row"><span class="tag">운영 자동화</span><span class="tag">No-code</span></div>
             </div>
             <div class="decision-card">
               <div class="decision-title">n8n을 고를 때</div>
               <div class="body-copy">개발팀이 API 중심 자동화, self-hosted 통제권, 복잡한 로직과 AI workflow를 함께 다뤄야 할 때.</div>
+              <span class="ex">예: 사내 보안 정책상 외부 SaaS 불가 → 자체 서버에서 AI 문서 분류 + ERP 연동 파이프라인 구축</span>
               <div class="tag-row"><span class="tag">Tech-led</span><span class="tag">Hosting control</span></div>
             </div>
           </div>
