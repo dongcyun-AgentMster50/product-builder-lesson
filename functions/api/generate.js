@@ -32,12 +32,14 @@ function buildGeneratePrompt(body) {
         "Generate a Samsung SmartThings CX scenario following the output schema in the system prompt.",
         "Output sections (01) through (07) only. Then suggest next steps in natural language — do NOT mention section numbers like 10 or 11.",
         "IMPORTANT FORMAT RULES:",
+        "- MARKDOWN HEADINGS: Each section title MUST use ## markdown heading. Example: '## (01) CX 시나리오 제목 및 요약'. Sub-sections use ### heading.",
         "- (01): title 1 line + summary 1 line ONLY. No '참조 시나리오', no '핵심 요약', no '우선 검토 이유'.",
         "- (02): NO labels like '① Pain Point', '② 기능/해결책', '③ 고객 Benefit'. Write as flowing story paragraphs.",
         "- (03): 3-4 sentences max. Regional data as footnotes only, not in body.",
         "- (04): Each copy option must include tone guide inline, not as separate section.",
         "- Citations: NEVER use [Source] tags. Use superscript numbers ¹²³ with footnote block at section end.",
-        "- No [Assumption] tags."
+        "- No [Assumption] tags.",
+        "- Use --- (horizontal rule) between sections."
     ].filter(Boolean).join("\n");
 }
 
