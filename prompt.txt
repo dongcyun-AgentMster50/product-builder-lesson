@@ -130,115 +130,70 @@ Each scenario should map to 1–4 of these keywords (multiple OK):
 
 ---
 
-### (01) CX 시나리오 제목 및 Summary
-• 제목:
-- 반영된 가치 태그(Care / Secure / Save / Play) 1~2개를 결합한, 감성적이고 발표에 바로 쓸 수 있는 헤드라인
+### (01) CX 시나리오 제목 및 요약
 
-• 참조 시나리오 (Explore 기반):
-- 참조된 Explore 시나리오의 번호, 제목, 링크를 명시
-- 예시: "참조 시나리오: #5 Keep your home safe — 부재 중 안심 모니터링"
-- 해당 지역/맥락에 맞게 어떤 부분을 현지화했는지 한 줄로 설명
+**제목**:
+- 가치 태그(Care / Secure / Save / Play) 1~2개를 포함한 감성적 헤드라인
 
-• 핵심 요약:
-- 6줄 이내로, 누구를 위한 시나리오인지, 어떤 상황에서, 어떤 솔루션으로, 고객이 느끼는 변화가 무엇인지 설명
-- 각 항목 사이에 줄바꿈을 넣어 가독성 확보
-
-• 우선 검토 이유:
-- 마케터가 이 시나리오를 지금 우선 검토해야 하는 이유를 한 줄로 추가
-
-• 시각 자료 확장 (선택):
-- 기본 01~07 버전에서는 스토리보드, 웹툰, 이미지 프롬프트를 출력하지 않음
-- 사용자가 별도로 요청할 때만 제공
+**요약 한 줄**:
+- 마케터가 바로 이해할 수 있는 한 문장 요약
+- 형식: "누구를 위해 / 어떤 생활 순간에 / 어떤 가치를 만드는 시나리오"
+- 예시: "맞벌이 부부가 아이 귀가 시 느끼는 확인 불안을, 자동 조명+가족 알림으로 안심 귀가 경험으로 바꾸는 시나리오"
 
 ---
 
 ### (02) 상세 시나리오
 
-**Purpose**: Show the user experience concretely in a structured storyboard-like format. Use Explore 2.0 logic, but organize this section as mini-scenarios built from ① Customer Pain Point ② Function / Resolution ③ Customer Benefit.
+2~3개의 미니 시나리오를 카드 형태로 작성합니다.
 
-**Required blocks**:
+**상세 스토리 (2~3 Cases)**:
+- 각 케이스는 `[Care]`, `[Secure]`, `[Save]`, `[Play]` 가치 태그로 시작
+- 각 케이스 안에 자연스러운 스토리텔링으로 작성하되, 내부적으로 다음 3요소를 반드시 포함:
+  - 고객이 겪는 생활 불편/불안 (Pain)
+  - SmartThings가 어떻게 해결하는지 (Solution)
+  - 고객이 느끼는 변화 (Benefit)
+- **"① Pain Point", "② 기능/해결책", "③ 고객 Benefit" 같은 메타데이터 라벨은 출력하지 말 것**
+- 대신 자연스러운 문단 흐름으로 Pain→Solution→Benefit이 읽히도록 작성
+- 각 케이스는 슬라이드 한 장에 들어갈 수 있는 분량
 
-**2-1. Target Customer**
-- One line only
-- Format: `[Country/City] / [Segment] / [Lifestyle context]`
+**적용 서비스**: 케이스 아래에 한 줄로 표기
+- Format: `적용 서비스: SmartThings / Family Care / Samsung Find`
 
-**2-2. Applied SmartThings Service Scenario**
-- One line only
-- Format: `[Service A] / [Service B] / [Service C] service scenario`
-- Use 2–3 services max
-
-**2-3. Scenario Cases (2–3 cases)**
-- Build 2 or 3 mini-scenarios
-- Each case title must reflect one of the actual values selected or inferred for this scenario
-- Use 1–2 values only when that is what the scenario truly reflects; do not force all four values
-- Recommended title format:
-  - `[Care] ...`
-  - `[Secure] ...`
-  - `[Save] ...`
-  - `[Play] ...`
-
-For each case, output exactly these 3 blocks in order:
-
-**① Pain Point**
-- A concrete daily-life discomfort, anxiety, or unmet need
-
-**② 기능/해결책**
-- Explain how SmartThings / AI Home / connected devices solve that situation
-- Use practical feature language, not abstract product marketing
-- Conditional wording if support is unverified
-
-**③ 고객 Benefit**
-- What improves for the customer in plain language
-- Focus on the felt result, not feature repetition
-
-**Writing rules**
-- Make each case easy to scan and presentation-ready
-- No JSON, no JTBD sentence, no table in this section
-- Keep the scenario grounded in lived behavior and visible benefit
-- Each case should feel like one compact story card that can be shown in a slide
-- This section replaces the old time-sequence-heavy detailed scenario. Prioritize situation-based value proposition over chronological journey mapping.
-- Cases should still imply how the user moves toward real use, not remain at an idea-only level
+**참조 Explore 스토리**: 케이스 아래에 한 줄로 표기
+- Format: `참조: #5 Keep your home safe, #9 Care for kids`
 
 ---
 
-### (03) 지역 특성 및 데이터 근거
-O-I-Imp 구조로 작성하며, 시장 기획에 바로 활용 가능하도록 유지합니다.
+### (03) 지역 특성, 인사이트 추론 과정
 
-**[지역 현황]**
-- 기후, 주거 형태, 정책, 관세, 생활 리듬, 인프라 등 객관적인 현지 사실을 정리
-- 가능한 한 공공 데이터나 공식 발표 자료를 근거로 사용
+**핵심 3~4문장으로만 작성**:
+- "왜 이 지역의 이 고객이 이 니즈를 갖는가?" → "SmartThings가 왜 여기서 먹히는가?"만 서술
+- 관찰(Observation) → 인사이트(Insight) → 함의(Implication) 흐름을 3~4문장에 압축
+- 예시: "수원 영통구의 맞벌이 비율은 68%이며, 자녀 귀가~부모 퇴근 사이 평균 1.5시간 공백이 발생한다. → 이 공백 시간의 '확인 피로'가 반복되면 보호자 스트레스가 누적된다. → 자동 조명+도착 알림으로 확인 연락 횟수를 줄이면 안심 체감이 즉각적이다."
 
-**[핵심 도출]**
-- 현지 조건이 행동, 불안, 비용 민감도, 인지 부담에 어떤 영향을 미치는지 설명
-- "왜 이 지역의 이 고객이 이 니즈를 갖게 되는가?"에 집중
-
-**[CX 적용]**
-- SmartThings / AI Home 시나리오가 해당 문제를 어떻게 간소화하거나 해결하는지 명확히 서술
-- 마케팅이나 서비스 기획에 바로 쓸 수 있는 문체로 작성
-
-**기기/서비스 준비 상태**
-- 기기/서비스 지원이 조건부인 경우 보수적 문구 + 대안 흐름 함께 언급
+**지역 현황 데이터**는 본문에 직접 쓰지 않고, 출처 마커로만 참조:
+- 각 문장 끝에 `[Source]` 인라인 출처를 붙여서 클릭 시 근거 확인 가능하게
+- 길게 나열하지 말 것 — 마케터는 핵심 인사이트만 필요
 
 ---
 
 ### (04) 마케팅 메시지
-Q1에서 선택한 직무에 최적화된 한국어 + 영문 대응 메시지를 제공합니다.
-- 톤: 자신감 있는 탐험가
-- 고객 대면 문구는 반드시 언어 가이드라인에 맞출 것
-- 리테일 / 닷컴 / 브랜드별로 구분되게 작성 (범용적이면 안 됨)
-- 이 섹션은 기본 01~07 출력에 반드시 포함
 
-필수 구성:
-- **메인 캠페인 메시지**: 가장 대표적인 한 줄 메시지 (KR + EN-ready)
-- **대안 카피 옵션 (2~3개)**: 각각 KR + EN-ready
-- **톤 차이 가이드**: 각 옵션이 어떤 톤이나 강조점에서 다른지 간략 설명
-- **활용 채널 추천**: 매장 / 닷컴 / 브랜드 캠페인 / 소셜 / KV 헤드라인 등
+**메인 캠페인 메시지**: 가장 대표적인 한 줄 (KR + EN-ready)
 
-**소제목 규칙**: 로케일이 한국어이면 소제목도 반드시 한국어로 출력할 것.
-- "Primary campaign message" → "메인 캠페인 메시지"
-- "Alternative copy options" → "대안 카피 옵션"
-- "Nuance guide" → "톤 차이 가이드"
-- "Recommended use" → "활용 채널 추천"
+**카피 옵션 (2~3개)**: 각 옵션마다 아래를 함께 출력:
+- KR 카피
+- EN-ready 카피
+- **톤 가이드**: 이 옵션이 어떤 톤/강조점인지 + 어떤 채널에 적합한지 한 줄로
+- 예시:
+  ```
+  옵션 1)
+  KR: "잘 들어왔어?"를 여러 번 묻지 않아도 되는 집
+  EN: A home that saves you from asking "Did you get in safely?" again and again.
+  톤: 생활밀착형 — 리테일 매장 시연, 소셜 카피에 적합
+  ```
+
+**활용 채널 추천**: 전체 옵션에 대해 채널별 추천을 간략 표기
 
 ---
 
