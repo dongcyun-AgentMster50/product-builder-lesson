@@ -203,7 +203,16 @@ let selectedProvider = sessionStorage.getItem("aiProvider") || "openai";
 let userOverrideLocale = null;
 
 const SUPPORTED_UI_LOCALES = ["ko", "en", "de", "fr", "es", "pt", "it", "nl", "ar"];
-const Q4_ALL_QUICK_IDS = ["tv-premium", "refrigerator", "washer", "air-conditioner", "air-purifier", "ventilation", "robot-vacuum", "dryer", "dishwasher", "smart-plug", "eco-aircon", "camera", "door-lock", "hub", "care-camera", "activity-sensor", "speaker", "soundbar", "wearable-care", "lighting", "sleep-sensor", "energy-monitor"];
+const Q4_ALL_QUICK_IDS = ["tv-premium", "refrigerator", "washer", "air-conditioner", "air-purifier", "ventilation", "robot-vacuum", "dryer", "dishwasher", "smart-plug", "eco-aircon", "camera", "door-lock", "hub", "care-camera", "activity-sensor", "speaker", "soundbar", "wearable-care", "lighting", "sleep-sensor", "energy-monitor", "galaxy-phone", "galaxy-watch", "galaxy-buds", "galaxy-tab"];
+const Q4_QUICK_GROUPS = [
+    { label: "스마트폰·웨어러블", labelEn: "Phone & Wearable", ids: ["galaxy-phone", "galaxy-watch", "galaxy-buds", "galaxy-tab"] },
+    { label: "영상·음향", labelEn: "TV & Audio", ids: ["tv-premium", "speaker", "soundbar"] },
+    { label: "주방·생활가전", labelEn: "Kitchen & Living", ids: ["refrigerator", "washer", "dryer", "dishwasher"] },
+    { label: "공기·쾌적", labelEn: "Air & Comfort", ids: ["air-conditioner", "eco-aircon", "air-purifier", "ventilation"] },
+    { label: "청소·가사", labelEn: "Cleaning", ids: ["robot-vacuum"] },
+    { label: "보안·센서", labelEn: "Security & Sensor", ids: ["camera", "care-camera", "door-lock", "activity-sensor", "smart-plug"] },
+    { label: "스마트홈 허브", labelEn: "Smart Home Hub", ids: ["hub", "lighting", "sleep-sensor", "energy-monitor", "wearable-care"] }
+];
 const Q4_PRESETS = [
     { id: "baseline", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner"] },
     { id: "energy", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "smart-plug", "eco-aircon"] },
@@ -685,7 +694,14 @@ function renderQ4Composer() {
 
     const allChipsEl = document.getElementById("q4-all-chips");
     if (allChipsEl) {
-        allChipsEl.innerHTML = renderQ4QuickChipButtons(Q4_ALL_QUICK_IDS, "all");
+        allChipsEl.innerHTML = Q4_QUICK_GROUPS.map((group) => {
+            const groupLabel = currentLocale === "ko" ? group.label : group.labelEn;
+            const chips = renderQ4QuickChipButtons(group.ids, "all");
+            return `<div class="q4-chip-group">
+                <span class="q4-chip-group-label">${escapeHtml(groupLabel)}</span>
+                <div class="q4-chip-group-items">${chips}</div>
+            </div>`;
+        }).join("");
     }
     syncQ4QuickChipSelection();
     renderQ4Summary();

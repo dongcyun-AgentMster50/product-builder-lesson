@@ -399,6 +399,16 @@ function getLocalizedDeviceGroups(locale) {
 
 const DEVICE_CATEGORY_GROUPS = [
     {
+        id: "mobile-wearable",
+        title: "스마트폰·웨어러블",
+        options: [
+            { id: "galaxy-phone", label: "Galaxy 스마트폰", normalized: "스마트폰" },
+            { id: "galaxy-watch", label: "Galaxy Watch", normalized: "웨어러블" },
+            { id: "galaxy-buds", label: "Galaxy Buds", normalized: "웨어러블" },
+            { id: "galaxy-tab", label: "Galaxy Tab", normalized: "태블릿" }
+        ]
+    },
+    {
         id: "air-fresh",
         title: "쾌적한 공기 관리",
         options: [

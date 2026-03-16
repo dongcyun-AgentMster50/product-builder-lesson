@@ -163,12 +163,14 @@
                             <div class="field q4-field">
                                 <label>Q4. 어떤 기기들을 반영할까요?</label>
                                 <div class="q4-shell">
-                                    <div class="q4-main">
-                                        <button type="button" id="q4-auto-btn" class="q4-auto-btn">
-                                            <span class="q4-auto-icon">&#x2728;</span>
-                                            <span class="q4-auto-text">트렌드 기반 자동 구성 — AI가 지역·세그먼트에 맞는 최적 기기를 선택합니다</span>
-                                        </button>
+                                    <!-- 자동 구성 버튼 (전폭) -->
+                                    <button type="button" id="q4-auto-btn" class="q4-auto-btn">
+                                        <span class="q4-auto-icon">&#x2728;</span>
+                                        <span class="q4-auto-text">트렌드 기반 자동 구성 — AI가 지역·세그먼트에 맞는 최적 기기를 선택합니다</span>
+                                    </button>
 
+                                    <!-- 상단: 프리셋 + 조합 요약 (나란히) -->
+                                    <div class="q4-top-row">
                                         <section class="q4-card q4-presets">
                                             <div class="q4-section-head">
                                                 <h3>반영 기기 스타일별 조합</h3>
@@ -176,27 +178,29 @@
                                             <div id="q4-presets" class="q4-preset-grid"></div>
                                         </section>
 
-                                        <section class="q4-card">
+                                        <aside class="q4-summary-card" id="q4-summary-card">
                                             <div class="q4-section-head">
-                                                <h3>기기 직접 선택</h3>
+                                                <h3>현재 조합 요약</h3>
                                             </div>
-                                            <div id="q4-all-chips" class="q4-chip-grid"></div>
-                                        </section>
-
-                                        <details class="q4-details">
-                                            <summary>카테고리별 상세 기기 보기</summary>
-                                            <div id="device-grid" class="device-grid"></div>
-                                            <input type="text" id="device-custom" name="device-custom" placeholder="추가 기기나 세부 모델을 직접 입력">
-                                        </details>
+                                            <div id="q4-summary" class="q4-summary"></div>
+                                            <div id="q4-dotcom-products" class="q4-dotcom-products"></div>
+                                        </aside>
                                     </div>
 
-                                    <aside class="q4-summary-card" id="q4-summary-card">
+                                    <!-- 기기 직접 선택 (전폭) -->
+                                    <section class="q4-card q4-direct-select">
                                         <div class="q4-section-head">
-                                            <h3>현재 조합 요약</h3>
+                                            <h3>기기 직접 선택</h3>
                                         </div>
-                                        <div id="q4-summary" class="q4-summary"></div>
-                                        <div id="q4-dotcom-products" class="q4-dotcom-products"></div>
-                                    </aside>
+                                        <div id="q4-all-chips" class="q4-chip-grid"></div>
+                                    </section>
+
+                                    <!-- 카테고리별 상세 (전폭, 가운데) -->
+                                    <details class="q4-details">
+                                        <summary>카테고리별 상세 기기 보기</summary>
+                                        <div id="device-grid" class="device-grid"></div>
+                                        <input type="text" id="device-custom" name="device-custom" placeholder="추가 기기나 세부 모델을 직접 입력">
+                                    </details>
                                 </div>
                             </div>
                         </section>
