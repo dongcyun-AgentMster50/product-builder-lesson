@@ -1742,20 +1742,22 @@ textarea {
     cursor: default;
 }
 .trend-footnotes {
-    margin-top: 10px;
-    padding-top: 8px;
-    border-top: 1px solid rgba(0,0,0,.08);
+    margin-top: 14px;
+    padding-top: 0;
+    border-top: none;
 }
 .trend-footnote-item {
     font-size: 0.7rem;
     line-height: 1.5;
-    color: #7a8a9a;
+    color: rgba(0,0,0,.45);
+    font-style: italic;
     margin-bottom: 3px;
 }
 .trend-footnote-item sup {
-    color: var(--accent, #001a6e);
+    color: rgba(0,0,0,.5);
     font-weight: 700;
     margin-right: 4px;
+    font-style: normal;
 }
 .evidence-source-tag {
     display: inline-block;
@@ -3442,37 +3444,27 @@ pre {
 /* ── 섹션 대제목 (01), (02) → 다크 네이비 슬라이드 헤더 ── */
 .ai-result-body h1,
 .ai-result-body h2 {
-    margin: 40px -36px 0;
+    margin: 36px 0 14px;
     font-family: "SamsungOne", "Noto Sans KR", sans-serif;
-    font-weight: 800;
-    font-size: 1.2em;
-    color: #fff;
-    background: #1a1a2e;
-    padding: 16px 36px;
-    border: none;
-    letter-spacing: -0.01em;
+    font-weight: 900;
+    font-size: 1.5em;
+    color: #1a1a2e;
+    background: none;
+    padding: 0 0 10px 0;
+    border-bottom: 1px solid #ddd;
+    letter-spacing: -0.02em;
 }
 
-/* h2 첫 번째는 margin-top 줄임 */
 .ai-result-body h2:first-child {
     margin-top: 0;
 }
 
 /* 헤더 바로 다음 콘텐츠 → 흰 카드 */
-.ai-result-body h2 + p,
-.ai-result-body h2 + ul,
-.ai-result-body h2 + ol,
-.ai-result-body h1 + p {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-top: none;
-    margin: 0 -36px;
-    padding: 20px 36px;
-}
+/* h2 다음 콘텐츠 — 일반 흐름 (카드 래핑 없음) */
 
 /* ── 소제목 h3 → 좌측 보더 + 연회색 밴드 ── */
 .ai-result-body h3 {
-    margin: 28px -36px 0;
+    margin: 28px 0 0;
     padding: 12px 36px 12px 32px;
     font-family: "SamsungOne", "Noto Sans KR", sans-serif;
     font-weight: 700;
@@ -3529,8 +3521,8 @@ pre {
 .ai-result-body h2 + ol,
 .ai-result-body h3 + ul,
 .ai-result-body h3 + ol {
-    margin: 0 -36px;
-    padding: 20px 36px 20px 56px;
+    margin: 0;
+    padding: 14px 0 14px 22px;
     border-radius: 0;
     border-left: none;
     border-right: none;
@@ -3571,7 +3563,7 @@ pre {
 
 /* h2 다음 테이블은 전폭 */
 .ai-result-body h2 + table {
-    margin: 0 -36px;
+    margin: 0;
     width: calc(100% + 72px);
     border-top: none;
 }
@@ -3606,10 +3598,8 @@ pre {
 /* ── 구분선 → 슬라이드 구분 ── */
 .ai-result-body hr {
     border: none;
-    height: 3px;
-    background: #1a1a2e;
-    margin: 36px -36px;
-    opacity: 0.15;
+    height: 0;
+    margin: 24px 0 8px;
 }
 
 /* ── [Source] 출처 ── */
