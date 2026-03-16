@@ -854,32 +854,39 @@ function renderQ4DotcomProducts() {
     const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
     if (!selectedMarket) { container.innerHTML = ""; return; }
     const baseCode = normalizeSiteCode(selectedMarket.siteCode);
+    const siteCode = selectedMarket.siteCode.toLowerCase();
     const dotcom = (dotcomMapping?.markets || []).find((m) => normalizeSiteCode(m.siteCode) === baseCode);
-    const baseUrl = dotcom?.fullUrl || `https://www.samsung.com/${baseCode.toLowerCase()}`;
+    const baseUrl = dotcom?.fullUrl || `https://www.samsung.com/${siteCode}`;
 
+    // Samsung.com 표준 카테고리 경로 — 대부분 국가에서 동일 패턴 사용
+    // 링크가 404인 경우 Samsung.com이 자체 리다이렉트 처리함
+    const i = (ko, en) => currentLocale === "ko" ? ko : en;
     const categories = [
-        { key: "tv", label: "TV", icon: "📺", path: "/tvs/all-tvs/" },
-        { key: "refrigerator", label: currentLocale === "ko" ? "냉장고" : "Refrigerator", icon: "🧊", path: "/refrigerators/all-refrigerators/" },
-        { key: "washer", label: currentLocale === "ko" ? "세탁기" : "Washer", icon: "🫧", path: "/washers/all-washers/" },
-        { key: "dryer", label: currentLocale === "ko" ? "건조기" : "Dryer", icon: "💨", path: "/dryers/all-dryers/" },
-        { key: "ac", label: currentLocale === "ko" ? "에어컨" : "Air Conditioner", icon: "❄️", path: "/air-conditioners/all-air-conditioners/" },
-        { key: "air-purifier", label: currentLocale === "ko" ? "공기청정기" : "Air Purifier", icon: "🌬️", path: "/air-purifiers/all-air-purifiers/" },
-        { key: "vacuum", label: currentLocale === "ko" ? "로봇청소기" : "Robot Vacuum", icon: "🤖", path: "/vacuum-cleaners/all-vacuum-cleaners/" },
-        { key: "dishwasher", label: currentLocale === "ko" ? "식기세척기" : "Dishwasher", icon: "🍽️", path: "/dishwashers/all-dishwashers/" },
-        { key: "smartthings", label: "SmartThings", icon: "🏠", path: "/smartthings/all-smartthings/" }
+        { label: "TV", icon: "📺", path: "/tvs/all-tvs/" },
+        { label: i("냉장고", "Refrigerators"), icon: "🧊", path: "/refrigerators/all-refrigerators/" },
+        { label: i("세탁·건조", "Washers & Dryers"), icon: "🫧", path: "/washers-and-dryers/all-washers-and-dryers/" },
+        { label: i("에어컨", "Air Conditioners"), icon: "❄️", path: "/air-conditioners/all-air-conditioners/" },
+        { label: i("공기청정기", "Air Care"), icon: "🌬️", path: "/air-care/all-air-care/" },
+        { label: i("청소기", "Vacuums"), icon: "🤖", path: "/vacuum-cleaners/all-vacuum-cleaners/" },
+        { label: i("식기세척기", "Dishwashers"), icon: "🍽️", path: "/dishwashers/all-dishwashers/" },
+        { label: "SmartThings", icon: "🏠", path: "/smartthings/all-smartthings/" },
+        { label: i("eStore 전체", "eStore"), icon: "🛒", path: "/offer/" }
     ];
 
-    const title = currentLocale === "ko" ? "Samsung.com 제품 보기" : "View on Samsung.com";
+    const title = i("Samsung eStore 제품 보기", "Browse Samsung eStore");
+    const domain = baseUrl.replace("https://", "");
+
     container.innerHTML = `
         <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line,#e0e0e0)">
-            <p style="font-size:.78rem;font-weight:700;color:var(--accent-strong,#003366);margin-bottom:8px">${escapeHtml(title)} — ${escapeHtml(baseUrl.replace("https://",""))}</p>
+            <p style="font-size:.78rem;font-weight:700;color:var(--accent-strong,#003366);margin-bottom:4px">${escapeHtml(title)} ${verified}</p>
+            <p style="font-size:.68rem;color:#888;margin-bottom:8px">${escapeHtml(domain)}</p>
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
                 ${categories.map((cat) => `
                     <a href="${escapeHtml(baseUrl + cat.path)}" target="_blank" rel="noopener noreferrer"
-                       style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;border:1px solid #e8e8e8;background:#fff;text-decoration:none;color:#222;font-size:.72rem;font-weight:600;transition:all .15s"
+                       style="display:flex;align-items:center;gap:6px;padding:7px 8px;border-radius:6px;border:1px solid #e8e8e8;background:#fff;text-decoration:none;color:#222;font-size:.72rem;font-weight:600;transition:all .15s"
                        onmouseover="this.style.background='#f0f2f8';this.style.borderColor='#001a6e'"
                        onmouseout="this.style.background='#fff';this.style.borderColor='#e8e8e8'">
-                        <span style="font-size:1rem">${cat.icon}</span>
+                        <span style="font-size:.95rem">${cat.icon}</span>
                         <span>${escapeHtml(cat.label)}</span>
                     </a>
                 `).join("")}
