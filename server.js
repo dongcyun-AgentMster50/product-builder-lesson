@@ -1243,34 +1243,16 @@ Your analysis framework — find trends that answer "Why would a regular person 
 
 Flow: Everyday life friction → "I wish my home could..." → SmartThings solves this`;
 
-    const input = `Search the web for current (2025-2026) real data about "${city}" (${country}) for Samsung SmartThings ${role} marketing as of ${todayIso}.
+    const input = `${city} (${country}), ${todayIso}, ${role} marketer, ${lang}.
 
-Find what REGULAR RESIDENTS of ${city} actually struggle with in daily home life. NOT government policies or macro economics — find consumer-level frustrations, lifestyle patterns, and household pain points that smart home devices can solve.
-Search for: local community complaints, consumer survey data, household energy bills, commute times, family demographics, apartment living issues, seasonal discomfort, safety concerns in residential areas.
+Search for real consumer frustrations in ${city} that smart home devices solve. Focus on daily life problems, NOT government policy or industry stats.
 
-REJECT these types of trends — too abstract for customers:
-- Government policy / legislation / smart city projects
-- Industry market growth statistics
-- "디지털 전환", "IoT 시장 성장" — buzzwords, not real problems
+Return ONLY valid JSON (no markdown, no \`\`\`):
+{"live_trends":[{"text":"daily frustration","category":"climate|housing|family|routine|security|energy|wellness|pet|mobility|events","evidence":"2-3 sentences with numbers","source_title":"title","source_org":"org","source_url":"URL"}],"live_events":[{"name":"event","when":"YYYY-MM-DD","hook":"angle"}],"live_pains":[{"text":"first-person frustration","insight":"which SmartThings device solves this"}],"live_solutions":[{"text":"[segment]+[devices]→[Explore keyword]","insight":"execution hint"}]}
 
-GOOD trends — consumer-level daily frustrations:
-- "여름 전기요금 월 15만원 돌파 → 절전 스트레스"
-- "아이 혼자 귀가 후 30분간 연락 불안"
-- "반려견 혼자 있을 때 실내 온도 35도 초과"
-
-Return ONLY valid JSON — no markdown:
-{"live_trends":[{"text":"consumer-level frustration — what a real ${city} resident feels, NOT policy","category":"one of: climate|housing|family|routine|security|energy|wellness|pet|mobility|events","evidence":"2-3 sentences: % of residents affected, cost/time impact, frequency","source_title":"title","source_org":"org","source_url":"URL"}],"live_events":[{"name":"event","when":"YYYY-MM-DD","hook":"SmartThings angle"}],"live_pains":[{"text":"first-person frustration from a ${city} resident — as if overheard at a café","insight":"WHY this is a SmartThings opportunity: which device + automation solves this"}],"live_solutions":[{"text":"CX hint: [segment] + [devices] → [Explore keyword]","insight":"target segment + devices + Explore direction"}]}
-
-Rules:
-- live_trends: 4 objects from DIFFERENT categories. Each MUST be a consumer daily-life problem, NOT policy. Use REAL search results.
-- live_events: 2-3 real upcoming events near ${city} within 3 months.
-- live_pains: 3 objects. Flow: trend → life problem → customer friction.
-- live_solutions: 3 CX scenario HINTS. Each: target segment + device combo + Explore keyword direction.
-- DATE & RELEVANCE RULE: Today is ${todayIso}.
-  * Events: MUST be upcoming (after ${todayIso}).
-  * Trends: MUST have active, ongoing impact RIGHT NOW. Past news with no current effect = exclude.
-  * Prefer current year data. Older data only if it still actively impacts residents today.
-- Korean city/district names for Korean locale.`;
+- live_trends: 4, different categories, consumer problems only. Real URLs.
+- live_events: 2-3 upcoming (after ${todayIso}). live_pains: 3. live_solutions: 3.
+- No past events, no policy trends. ${lang} output.`;
 
     try {
         const response = await withTimeout(async () => {

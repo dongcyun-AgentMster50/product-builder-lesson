@@ -250,46 +250,17 @@ Your analysis framework — find trends that answer "Why would a regular person 
 
 Flow: Everyday life friction → "I wish my home could..." → SmartThings solves this`;
 
-    const input = `Search the web for current (2025-2026) real data about "${city}" (${country}) for Samsung SmartThings ${role} marketing as of ${todayIso}.
+    const input = `${city} (${country}), ${todayIso}, ${role} marketer, ${lang}.
 
-Find what REGULAR RESIDENTS of ${city} actually struggle with in daily home life. NOT government policies or macro economics — find consumer-level frustrations, lifestyle patterns, and household pain points that smart home devices can solve.
-Search for: local community complaints, consumer survey data, household energy bills, commute times, family demographics, apartment living issues, seasonal discomfort, safety concerns in residential areas.
+Search for real consumer frustrations in ${city} that smart home devices solve. Focus on daily life problems, NOT government policy or industry stats.
 
-REJECT these types of trends — they are too abstract for customers:
-- "스마트시티 정책 추진" → government policy, not consumer pain
-- "모듈러 건축법 시행" → legislation, not daily life
-- "IoT 시장 성장률 15%" → industry stat, not personal frustration
-- "디지털 전환 가속화" → buzzword, not a real problem
+Return ONLY valid JSON (no markdown, no \`\`\`):
+{"trends":[{"text":"daily frustration headline","category":"climate|housing|family|routine|security|energy|wellness|pet|mobility|events","evidence":"2-3 sentences with numbers","source_title":"title","source_org":"org","source_url":"URL"}],"events":[{"name":"event","when":"YYYY-MM-DD","hook":"angle"}],"pains":[{"text":"first-person frustration","insight":"which SmartThings device solves this"}],"solutions":[{"text":"[segment]+[devices]→[Explore keyword]","insight":"execution hint"}]}
 
-GOOD trend examples that customers actually feel:
-- "수원 영통구 아파트 주민, 여름 전기요금 월 15만원 돌파 → 절전 스트레스"
-- "안양 평촌 맞벌이 가구, 아이 혼자 귀가 후 30분간 연락 불안"
-- "서울 강남 1인가구 반려견, 여름 외출 시 실내 온도 35도 초과 걱정"
-- "인천 송도 신혼부부, 공기질 나쁜 날 환기 타이밍 모르겠다는 불만"
-
-Return ONLY valid JSON — no markdown:
-{"trends":[{"text":"consumer-level life frustration headline — something a real ${city} resident would say or feel, NOT a policy/industry headline","category":"one of: climate|housing|family|routine|security|energy|wellness|pet|mobility|events","evidence":"2-3 sentences: what % of residents face this, how much money/time it costs, how often it happens","source_title":"article title","source_org":"publisher","source_url":"real URL"}],"events":[{"name":"real event","when":"YYYY-MM-DD","hook":"Samsung SmartThings marketing angle"}],"pains":[{"text":"a realistic first-person frustration from a ${city} resident — written as if overheard at a café. E.g. '퇴근하고 집에 오면 이미 아이가 에어컨 안 켜고 더위에 지쳐 있어요'","insight":"WHY this is a SmartThings opportunity: which specific device + automation could solve this moment"}],"solutions":[{"text":"CX scenario hint: [target segment] + [device combo] → [Explore keyword direction]","insight":"SUB hint: target segment + SmartThings devices + Explore direction. Guides marketer to build CX scenario in Q3-Q4."}]}
-
-Rules:
-- trends: 4 objects from DIFFERENT categories. Each MUST describe a consumer-level daily life problem, NOT a government policy or industry statistic. Use REAL search results with real URLs.
-- events: 2-3 real upcoming events near ${city} within 3 months.
-- pains: 3 objects. Flow: trend → life problem → customer friction. Each must reference a specific trend.
-- solutions: 3 CX scenario HINTS (not direct solutions). Each must specify:
-  * Target segment derived from the trend (demographics, lifestyle)
-  * Device combination (2+ Samsung/SmartThings devices)
-  * Explore scenario direction keyword (Save energy / Keep air fresh / Control lights / Help with chores / Keep home safe / Sleep well / Enhanced mood / Care for seniors / Care for kids / Care for pet / Find belongings / Stay fit)
-  These hints guide the marketer to build their own CX scenario in Q3-Q4, not push a ready-made answer.
-- 4-question filter: (1) common life moment? (2) clear pain? (3) SmartThings 2+ devices? (4) one campaign message?
-- DATE & RELEVANCE RULE: Today is ${todayIso}.
-  * Events/festivals: MUST be upcoming (after ${todayIso}). Past events are useless.
-  * Trends: MUST have active, ongoing impact on residents as of ${todayIso}. Ask yourself: "Does this still affect how people live, buy, or behave in ${city} RIGHT NOW?"
-    - OK: A 2026 law that is currently in effect → still impacts residents
-    - OK: A 2025 policy that created lasting market conditions still felt today
-    - NOT OK: "2025년 8월 전기요금 누진제" if rates have since changed → outdated
-    - NOT OK: "2025년 전세대란" if the crisis has resolved → no current impact
-    - NOT OK: Past news articles reporting old events with no ongoing effect
-  * Prefer data from ${todayIso.slice(0,4)} (current year). If citing older data, explain why it still matters NOW.
-- Korean city/district names for Korean locale.`;
+- trends: 4, different categories, consumer daily-life problems only. Real URLs.
+- events: 2-3 upcoming (after ${todayIso}). pains: 3. solutions: 3.
+- No past events, no outdated data, no government policy trends.
+- ${lang} output. Korean city names for Korean locale.`;
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 40000);

@@ -2440,11 +2440,13 @@ function mapLiveStep2Insight(data, countryCode, city) {
         return { text: String(t || "").trim(), evidence: "", source_title: "", source_org: "", source_date: "", source_url: "" };
     }).filter((t) => t.text);
 
-    if (!liveTrends.length) {
+    // 트렌드가 없어도 pains/events/role_lens가 있으면 카드를 보여줌 (에러 대신 partial 표시)
+    const hasSomeData = liveTrends.length || livePains.length || liveSolutions.length || staticPains.length;
+    if (!hasSomeData) {
         return buildStep2ErrorInsight(
             currentLocale === "ko"
-                ? `"${localCity || queryCity || city}" 실시간 트렌드를 가져오지 못했습니다. 다시 시도해 주세요.`
-                : `Could not fetch live trends for "${localCity || queryCity || city}". Please retry.`
+                ? `"${localCity || queryCity || city}" 지역 데이터를 가져오지 못했습니다. 다시 시도해 주세요.`
+                : `Could not fetch regional data for "${localCity || queryCity || city}". Please retry.`
         );
     }
 
