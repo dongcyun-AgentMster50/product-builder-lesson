@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Firebase vs Make vs n8n — Samsung-style deck</title>
+  <style>
+    :root {
+      --navy: #003366;
+      --accent: #0000FF;
+      --panel: #F8F8F8;
+      --canvas: #ECEFF3;
+      --white: #FFFFFF;
+      --ink: #111111;
+      --muted: #5E6572;
+      --line: #D9DEE6;
+      --black: #000000;
+      --success: #DDF5E8;
+      --warn: #FFF1D6;
+      --danger: #FBE1E6;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow: 0 28px 60px rgba(17,17,17,0.10);
+      --slide-w: min(92vw, calc(100vh * 16 / 9 - 4vh));
+      --slide-h: calc(var(--slide-w) * 9 / 16);
+      --headline: "SamsungSharpSans", "Samsung One", "SamsungOne", "Noto Sans KR", Arial, sans-serif;
+      --bodyfont: "Samsung One", "SamsungOne", "Noto Sans KR", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--canvas); color: var(--ink); font-family: var(--bodyfont); }
+    body { overflow: hidden; }
+
+    .deck-shell {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2vh 2vw 6vh;
+      position: relative;
+    }
+
+    .deck {
+      width: var(--slide-w);
+      height: var(--slide-h);
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      background: var(--white);
+      border: 2px solid var(--black);
+      box-shadow: var(--shadow);
+      padding: 30px 34px 26px;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 16px;
+    }
+    .slide.active { display: grid; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--navy);
+    }
+    .brand-dot {
+      width: 11px;
+      height: 11px;
+      background: var(--accent);
+      border-radius: 999px;
+    }
+    .pagebox {
+      min-width: 94px;
+      padding: 8px 14px;
+      border: 1px solid var(--black);
+      border-radius: 999px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      background: #fff;
+    }
+
+    .title-wrap {
+      display: grid;
+      gap: 10px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 7px 12px;
+      background: var(--navy);
+      color: #fff;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, h4 { margin: 0; }
+    h1 {
+      font-family: var(--headline);
+      font-size: 31px;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+    h2 {
+      font-family: var(--headline);
+      font-size: 24px;
+      line-height: 1.14;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .lead {
+      max-width: 92%;
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.62;
+      color: #2b3240;
+    }
+
+    .content {
+      min-height: 0;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .grid-2 { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 14px; }
+    .grid-2-eq { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .stack { display: grid; gap: 12px; }
+
+    .card,
+    .panel,
+    .mini {
+      background: var(--panel);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 16px 16px 15px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before,
+    .panel::before,
+    .mini::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      background: var(--accent);
+    }
+
+    .card-header,
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: -16px -16px 12px;
+      padding: 10px 14px;
+      background: var(--navy);
+      color: #fff;
+    }
+    .card-header h3,
+    .panel-header h3 {
+      font-family: var(--headline);
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .subtle {
+      font-size: 11px;
+      line-height: 1.5;
+      color: #D9E5F4;
+    }
+
+    .body-copy,
+    li,
+    td,
+    th,
+    .mini p,
+    .kpi-text,
+    .caption {
+      font-size: 11.5px;
+      line-height: 1.56;
+      color: #232A36;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .tag-row,
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .tag,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 29px;
+      padding: 6px 10px;
+      border: 1px solid rgba(0, 0, 255, 0.18);
+      background: rgba(0, 0, 255, 0.05);
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .quote-band {
+      display: grid;
+      grid-template-columns: 12px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 14px 16px;
+      background: linear-gradient(90deg, rgba(0,51,102,0.08), rgba(0,0,255,0.02));
+      border-radius: var(--radius-md);
+    }
+    .quote-band::before {
+      content: "";
+      width: 12px;
+      height: 100%;
+      background: var(--navy);
+      border-radius: 99px;
+    }
+    .quote {
+      font-family: var(--headline);
+      font-size: 18px;
+      line-height: 1.42;
+      letter-spacing: -0.02em;
+    }
+
+    .matrix {
+      display: grid;
+      gap: 10px;
+    }
+    .metric-row {
+      display: grid;
+      grid-template-columns: 108px repeat(3, 1fr);
+      gap: 8px;
+      align-items: stretch;
+    }
+    .metric-head,
+    .metric-cell,
+    .metric-label {
+      border-radius: 14px;
+      padding: 10px 12px;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+    }
+    .metric-head {
+      background: var(--navy);
+      color: #fff;
+      font-family: var(--headline);
+      font-size: 13px;
+      justify-content: center;
+      text-align: center;
+    }
+    .metric-label {
+      background: #EEF2F7;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .metric-cell {
+      background: var(--panel);
+      border-left: 4px solid var(--accent);
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 4px;
+    }
+    .metric-cell strong { font-size: 12px; color: var(--navy); }
+    .metric-cell span { font-size: 10.5px; color: var(--muted); line-height: 1.45; }
+
+    .table-wrap {
+      background: var(--panel);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    th {
+      background: var(--navy);
+      color: #fff;
+      text-align: left;
+      font-family: var(--headline);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      padding: 10px 12px;
+      border-right: 1px solid rgba(255,255,255,0.14);
+    }
+    th:last-child { border-right: 0; }
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid #E7EBF0;
+      vertical-align: top;
+      background: #fff;
+    }
+    tr:nth-child(even) td { background: #FAFBFC; }
+    td:last-child { border-right: 0; }
+    .rowhead { font-weight: 700; color: var(--navy); }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .strong { background: var(--success); color: #0C6A44; }
+    .middle { background: var(--warn); color: #8B5C00; }
+    .low { background: var(--danger); color: #9F2743; }
+
+    .kpi-list { display: grid; gap: 10px; }
+    .kpi {
+      display: grid;
+      grid-template-columns: 104px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #E3E8EF;
+    }
+    .kpi-label {
+      font-family: var(--headline);
+      font-size: 12px;
+      color: var(--navy);
+    }
+    .bar {
+      height: 10px;
+      background: #DEE6F2;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+    .fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      background: linear-gradient(90deg, var(--navy), var(--accent));
+      border-radius: inherit;
+    }
+
+    .decision-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .decision-card {
+      background: var(--panel);
+      border-radius: var(--radius-md);
+      padding: 14px 14px 12px;
+      display: grid;
+      gap: 10px;
+      min-height: 180px;
+      position: relative;
+    }
+    .decision-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 6px;
+      background: var(--navy);
+    }
+    .decision-title {
+      font-family: var(--headline);
+      font-size: 16px;
+      color: var(--navy);
+      padding-top: 8px;
+    }
+
+    .source-block {
+      background: #fff;
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      display: grid;
+      gap: 7px;
+    }
+    .source-item {
+      font-size: 9.6px;
+      line-height: 1.55;
+      color: #4D5563;
+      font-style: italic;
+    }
+    .source-item a { color: var(--navy); text-decoration: none; }
+    .source-item a:hover { text-decoration: underline; }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      font-size: 10.5px;
+      color: var(--muted);
+    }
+
+    .controls {
+      position: fixed;
+      right: 18px;
+      bottom: 16px;
+      display: inline-flex;
+      gap: 10px;
+      z-index: 30;
+    }
+    .controls button {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      border: 1px solid var(--black);
+      background: #fff;
+      color: var(--navy);
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(17,17,17,0.12);
+    }
+    .progress-shell {
+      position: fixed;
+      left: 24px;
+      right: 24px;
+      bottom: 18px;
+      height: 6px;
+      background: rgba(0,0,0,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-shell > div {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--navy), var(--accent));
+    }
+
+    @media (max-width: 1200px), (max-height: 760px) {
+      body { overflow: auto; }
+      .deck-shell { align-items: flex-start; }
+      .deck {
+        width: min(96vw, 1240px);
+        height: auto;
+        display: grid;
+        gap: 20px;
+      }
+      .slide {
+        position: relative;
+        display: grid;
+        width: 100%;
+        height: auto;
+        min-height: unset;
+      }
+      .slide:not(.active) { display: none; }
+      .grid-3, .grid-2, .grid-2-eq, .decision-grid { grid-template-columns: 1fr; }
+      .metric-row { grid-template-columns: 1fr; }
+      .controls, .progress-shell { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-shell">
+    <div class="deck">
+      <section class="slide active">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Platform Evaluation Deck</div>
+          <div class="pagebox">1 / 7</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Executive Summary</span>
+          <h1>Firebase vs Make vs n8n</h1>
+          <p class="lead">세 플랫폼은 서로 대체재라기보다 역할이 다르다. 제품/서비스 본체를 직접 구축하려는지, 운영 자동화를 빠르게 연결하려는지, 아니면 개발자 중심으로 self-hosted 자동화 통제권까지 확보하려는지에 따라 우선순위가 갈린다.</p>
+        </div>
+        <div class="content stack">
+          <div class="grid-3">
+            <article class="card">
+              <div class="card-header"><h3>Firebase</h3><span class="subtle">App backend / infra</span></div>
+              <p class="body-copy">Google 계열의 앱 개발 플랫폼. 인증, DB, 함수, 호스팅, 앱 배포를 한 생태계에서 묶기 좋다.</p>
+              <div class="pill-row"><span class="pill">Auth</span><span class="pill">Firestore</span><span class="pill">Functions</span><span class="pill">Hosting</span></div>
+            </article>
+            <article class="card">
+              <div class="card-header"><h3>Make</h3><span class="subtle">Visual-first automation</span></div>
+              <p class="body-copy">SaaS 업무 자동화를 빠르게 붙이는 no-code 도구. 운영팀, 마케팅팀, 비개발자 접근성이 높다.</p>
+              <div class="pill-row"><span class="pill">3,000+ Apps</span><span class="pill">Scenarios</span><span class="pill">AI Automation</span></div>
+            </article>
+            <article class="card">
+              <div class="card-header"><h3>n8n</h3><span class="subtle">Low-code / self-hosted</span></div>
+              <p class="body-copy">개발자 친화적 자동화 플랫폼. API 지향 플로우, 커스텀 로직, self-hosted 통제권이 강점이다.</p>
+              <div class="pill-row"><span class="pill">Self-hosted</span><span class="pill">AI Workflows</span><span class="pill">Low-code</span></div>
+            </article>
+          </div>
+          <div class="quote-band">
+            <div class="quote">요약하면 <strong>Firebase = 서비스 본체</strong>, <strong>Make = 운영 자동화 허브</strong>, <strong>n8n = 기술팀용 자동화 엔진</strong>으로 이해하는 것이 가장 실무적이다.</div>
+          </div>
+        </div>
+        <div class="footer"><span>Samsung-style readable layout · bright canvas · navy section headers</span><span>Arrow keys / buttons available</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Positioning</div>
+          <div class="pagebox">2 / 7</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Decision Lens</span>
+          <h2>세 도구의 출발점부터 다르다</h2>
+          <p class="lead">툴 비교는 기능 수보다 역할 정의가 먼저다. “앱을 만들 것인가”와 “툴들을 연결할 것인가”를 먼저 분리하면 선택이 쉬워진다.</p>
+        </div>
+        <div class="content grid-2">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:18%">구분</th>
+                  <th style="width:30%">핵심 역할</th>
+                  <th>가장 잘 맞는 문제</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="rowhead">Firebase</td><td>앱 백엔드 + 인증 + 데이터 + 배포</td><td>웹앱/모바일앱의 서비스 본체 구축</td></tr>
+                <tr><td class="rowhead">Make</td><td>SaaS 간 시각적 자동화</td><td>폼 → 이메일 → 시트 → CRM → 알림 자동화</td></tr>
+                <tr><td class="rowhead">n8n</td><td>개발자 친화적 워크플로 자동화</td><td>API 중심 자동화, self-hosted, 복잡한 데이터 처리</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel stack">
+            <div class="panel-header"><h3>빠른 체감 포지셔닝</h3><span class="subtle">Where each one feels strongest</span></div>
+            <div class="kpi-list">
+              <div class="kpi"><div class="kpi-label">앱 백엔드 적합성</div><div><div class="bar"><div class="fill" style="width:92%"></div></div><div class="kpi-text">Firebase 우위</div></div></div>
+              <div class="kpi"><div class="kpi-label">SaaS 연결 속도</div><div><div class="bar"><div class="fill" style="width:96%"></div></div><div class="kpi-text">Make 우위</div></div></div>
+              <div class="kpi"><div class="kpi-label">통제권 / Self-hosting</div><div><div class="bar"><div class="fill" style="width:90%"></div></div><div class="kpi-text">n8n 우위</div></div></div>
+            </div>
+            <div class="grid-3">
+              <div class="mini"><h4>Firebase</h4><p class="caption">사용자 계정, DB, API, 배포까지 제품 내부 엔진을 설계할 때</p></div>
+              <div class="mini"><h4>Make</h4><p class="caption">운영팀이 가장 빠르게 자동화를 시작해야 할 때</p></div>
+              <div class="mini"><h4>n8n</h4><p class="caption">기술팀이 자동화를 깊게 커스터마이즈해야 할 때</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span>First question: build the product itself, or connect many tools around it?</span><span>Slide 2</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Firebase</div>
+          <div class="pagebox">3 / 7</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Deep Dive</span>
+          <h2>Firebase 장단점</h2>
+          <p class="lead">앱 백엔드 중심 관점에서는 가장 직접적인 선택지다. 대신 no-code 자동화 도구처럼 바로 연결만으로 끝나는 구조는 아니다.</p>
+        </div>
+        <div class="content grid-2-eq">
+          <article class="card">
+            <div class="card-header"><h3>장점</h3><span class="subtle">Why teams choose it</span></div>
+            <ul>
+              <li>Authentication, Firestore, Cloud Functions, Hosting/App Hosting 등 앱 개발 핵심 구성요소가 한 생태계에 모여 있다.</li>
+              <li>실시간 데이터 처리와 SDK 연동이 강해 웹/모바일 앱 경험을 빠르게 구현하기 좋다.</li>
+              <li>GitHub 연동형 배포 흐름이 비교적 단순하고, 서버리스 운영 모델과 잘 맞는다.</li>
+              <li>Extensions와 Google 생태계 연결성이 있어 기능 확장 속도를 높이기 쉽다.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="card-header"><h3>단점</h3><span class="subtle">Trade-offs to watch</span></div>
+            <ul>
+              <li>코드, 데이터 모델, 보안 규칙, 함수 구조를 설계해야 해서 비개발자 중심 팀에는 진입장벽이 있다.</li>
+              <li>설계를 잘못하면 쿼리 구조와 네트워크 사용량 때문에 비용 예측이 어려워질 수 있다.</li>
+              <li>외부 SaaS 업무 자동화는 기본 강점이 아니어서 별도 API 연동이나 함수 구현이 필요한 경우가 많다.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="content">
+          <div class="metric-row">
+            <div class="metric-head">추천도</div>
+            <div class="metric-cell"><strong>Strong fit</strong><span>로그인, 사용자 데이터, 실시간 반영, API, 배포가 모두 필요한 서비스 본체</span></div>
+            <div class="metric-cell"><strong>주의 포인트</strong><span>운영 자동화만 원하는 경우에는 과한 선택일 수 있음</span></div>
+            <div class="metric-cell"><strong>실무 한 줄</strong><span>“제품 자체를 만든다”에 가장 자연스럽다</span></div>
+          </div>
+        </div>
+        <div class="footer"><span>Best when the core job is building the service itself</span><span>Slide 3</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Make</div>
+          <div class="pagebox">4 / 7</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Deep Dive</span>
+          <h2>Make 장단점</h2>
+          <p class="lead">업무 자동화 속도와 진입장벽 면에서는 가장 빠른 축이다. 다만 앱 내부 백엔드를 대신하는 플랫폼은 아니다.</p>
+        </div>
+        <div class="content grid-2-eq">
+          <article class="card">
+            <div class="card-header"><h3>장점</h3><span class="subtle">Why teams choose it</span></div>
+            <ul>
+              <li>Visual-first no-code 구조라 운영/마케팅팀이 빠르게 자동화를 만들 수 있다.</li>
+              <li>대규모 앱 연동 생태계와 HTTP/API 모듈 덕분에 SaaS 연결 범위가 넓다.</li>
+              <li>폼 제출, 이메일, Slack, Sheets, CRM, 보고 자동화 등 운영성 시나리오 구현 속도가 매우 빠르다.</li>
+              <li>AI automation과 agent 시나리오를 업무 플로우에 붙이기 쉬운 편이다.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="card-header"><h3>단점</h3><span class="subtle">Trade-offs to watch</span></div>
+            <ul>
+              <li>앱 자체의 인증, 실시간 DB, SDK, 사용자 중심 백엔드를 제공하는 도구는 아니다.</li>
+              <li>시나리오가 늘어날수록 분기, 예외 처리, 운영 가시성 관리가 중요해진다.</li>
+              <li>자동화가 자주 돌거나 데이터량이 많으면 작업량 기반 과금이 부담이 될 수 있다.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="content">
+          <div class="metric-row">
+            <div class="metric-head">추천도</div>
+            <div class="metric-cell"><strong>Strong fit</strong><span>운영 자동화, 리드 수집, 보고, 알림, CRM/Sheets/메일 연동</span></div>
+            <div class="metric-cell"><strong>주의 포인트</strong><span>제품 내부 로직까지 Make로 해결하려 하면 구조가 불안해질 수 있음</span></div>
+            <div class="metric-cell"><strong>실무 한 줄</strong><span>“도구들을 연결해서 일하게 만든다”에 가장 적합</span></div>
+          </div>
+        </div>
+        <div class="footer"><span>Best when the core job is orchestrating operational workflows</span><span>Slide 4</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> n8n</div>
+          <div class="pagebox">5 / 7</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Deep Dive</span>
+          <h2>n8n 장단점</h2>
+          <p class="lead">Make보다 개발자 친화적이고, self-hosted 통제권이 강하다. 대신 초보자에게는 운영 부담이 커질 수 있다.</p>
+        </div>
+        <div class="content grid-2-eq">
+          <article class="card">
+            <div class="card-header"><h3>장점</h3><span class="subtle">Why teams choose it</span></div>
+            <ul>
+              <li>Visual canvas와 code를 함께 써서 기술팀이 복잡한 로직을 자동화하기 좋다.</li>
+              <li>Cloud와 self-hosted를 모두 제공해 보안/운영 통제권 선택지가 넓다.</li>
+              <li>API 중심 플로우, 커스텀 처리, AI workflow 구성에 유연하다.</li>
+              <li>기존 SaaS 자동화 툴보다 개발 자유도가 높은 편이라 엔지니어링 팀 선호도가 높다.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="card-header"><h3>단점</h3><span class="subtle">Trade-offs to watch</span></div>
+            <ul>
+              <li>self-hosting에는 서버, 보안, 컨테이너, 스케일링 지식이 필요하다.</li>
+              <li>비개발자 기준으로는 Make보다 학습 곡선이 더 높다.</li>
+              <li>커뮤니티 에디션에는 일부 엔터프라이즈 기능이 빠져 있어 운영 정책에 따라 제약이 생길 수 있다.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="content">
+          <div class="metric-row">
+            <div class="metric-head">추천도</div>
+            <div class="metric-cell"><strong>Strong fit</strong><span>API 지향 자동화, self-hosted 요구, 복잡한 데이터/AI workflow</span></div>
+            <div class="metric-cell"><strong>주의 포인트</strong><span>운영 통제권은 높지만 그만큼 운영 책임도 커짐</span></div>
+            <div class="metric-cell"><strong>실무 한 줄</strong><span>“자동화 엔진을 엔지니어링한다”에 가깝다</span></div>
+          </div>
+        </div>
+        <div class="footer"><span>Best when technical flexibility and hosting control matter most</span><span>Slide 5</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Side-by-side matrix</div>
+          <div class="pagebox">6 / 7</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Comparison Matrix</span>
+          <h2>핵심 항목별 3자 비교</h2>
+          <p class="lead">실무 의사결정용으로는 “누가 쓰는가, 어디에 쓰는가, 어떤 자유도를 원하는가” 세 줄만 봐도 충분하다.</p>
+        </div>
+        <div class="content table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:17%">비교 항목</th>
+                <th style="width:27%">Firebase</th>
+                <th style="width:28%">Make</th>
+                <th>n8n</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="rowhead">핵심 성격</td>
+                <td>앱 백엔드 / 인프라</td>
+                <td>SaaS 자동화 허브</td>
+                <td>개발자 중심 자동화 엔진</td>
+              </tr>
+              <tr>
+                <td class="rowhead">주 사용자</td>
+                <td>프론트엔드 / 모바일 개발자</td>
+                <td>운영 / 마케팅 / 비개발팀</td>
+                <td>개발자 / 솔루션 엔지니어 / 기술팀</td>
+              </tr>
+              <tr>
+                <td class="rowhead">호스팅 모델</td>
+                <td>Managed 중심</td>
+                <td>Managed SaaS 중심</td>
+                <td>Cloud + self-hosted 선택지</td>
+              </tr>
+              <tr>
+                <td class="rowhead">실시간 앱 데이터</td>
+                <td><span class="status strong">매우 강함</span></td>
+                <td><span class="status low">핵심 아님</span></td>
+                <td><span class="status low">핵심 아님</span></td>
+              </tr>
+              <tr>
+                <td class="rowhead">외부 앱 연동성</td>
+                <td><span class="status middle">직접 구현 필요</span></td>
+                <td><span class="status strong">매우 강함</span></td>
+                <td><span class="status strong">강함</span></td>
+              </tr>
+              <tr>
+                <td class="rowhead">개발 자유도</td>
+                <td><span class="status strong">강함</span></td>
+                <td><span class="status middle">중간</span></td>
+                <td><span class="status strong">매우 강함</span></td>
+              </tr>
+              <tr>
+                <td class="rowhead">비개발자 접근성</td>
+                <td><span class="status low">낮음</span></td>
+                <td><span class="status strong">높음</span></td>
+                <td><span class="status middle">중간</span></td>
+              </tr>
+              <tr>
+                <td class="rowhead">추천 포지션</td>
+                <td>서비스 본체</td>
+                <td>운영 자동화 허브</td>
+                <td>기술팀 자동화 코어</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="footer"><span>Common practical combos: Firebase + Make / Firebase + n8n</span><span>Slide 6</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Recommendation</div>
+          <div class="pagebox">7 / 7</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Recommendation & Sources</span>
+          <h2>어떤 팀에 무엇이 맞는가</h2>
+          <p class="lead">발표 마지막에는 제품 선택보다 “왜 그 선택이 우리 팀 구조에 맞는가”를 남겨야 한다. 아래 문장을 그대로 발표용 결론으로 써도 무리 없다.</p>
+        </div>
+        <div class="content stack">
+          <div class="decision-grid">
+            <div class="decision-card">
+              <div class="decision-title">Firebase를 고를 때</div>
+              <div class="body-copy">웹앱/모바일앱 자체를 만들고, 인증·DB·서버리스·배포를 한 플랫폼에서 연결하고 싶을 때.</div>
+              <div class="tag-row"><span class="tag">서비스 본체</span><span class="tag">Real-time</span></div>
+            </div>
+            <div class="decision-card">
+              <div class="decision-title">Make를 고를 때</div>
+              <div class="body-copy">마케팅/운영팀이 CRM, 폼, 이메일, Sheets, Slack 같은 SaaS를 빠르게 연결해야 할 때.</div>
+              <div class="tag-row"><span class="tag">운영 자동화</span><span class="tag">No-code</span></div>
+            </div>
+            <div class="decision-card">
+              <div class="decision-title">n8n을 고를 때</div>
+              <div class="body-copy">개발팀이 API 중심 자동화, self-hosted 통제권, 복잡한 로직과 AI workflow를 함께 다뤄야 할 때.</div>
+              <div class="tag-row"><span class="tag">Tech-led</span><span class="tag">Hosting control</span></div>
+            </div>
+          </div>
+          <div class="panel stack">
+            <div class="panel-header"><h3>Official source set</h3><span class="subtle">Summarized from official product pages and docs</span></div>
+            <div class="source-block">
+              <div class="source-item">Firebase: <a href="https://firebase.google.com/products-build" target="_blank" rel="noreferrer">Products for building apps</a> · <a href="https://firebase.google.com/docs/firestore" target="_blank" rel="noreferrer">Firestore docs</a> · <a href="https://firebase.google.com/docs/auth" target="_blank" rel="noreferrer">Authentication docs</a> · <a href="https://firebase.google.com/pricing" target="_blank" rel="noreferrer">Pricing</a></div>
+              <div class="source-item">Make: <a href="https://www.make.com/en/product" target="_blank" rel="noreferrer">Product</a> · <a href="https://www.make.com/en/integrations" target="_blank" rel="noreferrer">Integrations</a> · <a href="https://www.make.com/en/pricing" target="_blank" rel="noreferrer">Pricing</a></div>
+              <div class="source-item">n8n: <a href="https://n8n.io/" target="_blank" rel="noreferrer">Product overview</a> · <a href="https://docs.n8n.io/hosting/" target="_blank" rel="noreferrer">Hosting docs</a> · <a href="https://n8n.io/pricing/" target="_blank" rel="noreferrer">Pricing</a> · <a href="https://docs.n8n.io/source-control-environments/" target="_blank" rel="noreferrer">Source control / environments</a></div>
+              <div class="source-item">Design inspiration reference: <a href="https://www.samsung.com/sec/" target="_blank" rel="noreferrer">Samsung Korea main site</a></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span>Use this as HTML deck or as the visual basis for a PPT rebuild</span><span>End</span></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="prev" aria-label="Previous slide">←</button>
+    <button id="next" aria-label="Next slide">→</button>
+  </div>
+  <div class="progress-shell"><div id="bar"></div></div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const bar = document.getElementById('bar');
+    let current = 0;
+
+    function show(index) {
+      current = (index + slides.length) % slides.length;
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+      bar.style.width = `${((current + 1) / slides.length) * 100}%`;
+    }
+
+    document.getElementById('prev').addEventListener('click', () => show(current - 1));
+    document.getElementById('next').addEventListener('click', () => show(current + 1));
+
+    window.addEventListener('keydown', (event) => {
+      if (["ArrowRight", "PageDown", " "].includes(event.key)) show(current + 1);
+      if (["ArrowLeft", "PageUp"].includes(event.key)) show(current - 1);
+      if (event.key === 'Home') show(0);
+      if (event.key === 'End') show(slides.length - 1);
+    });
+
+    show(0);
+  </script>
+</body>
+</html>
