@@ -1160,6 +1160,14 @@ let _cityItems = [];          // current items for dropdown
 let _cityFocusIdx = -1;       // keyboard navigation index
 let _cityDropdownOpen = false;
 
+function getCityMasterFlat(master, useLocal) {
+    const result = [];
+    for (const [region, cities] of Object.entries(master)) {
+        cities.forEach((c) => result.push({ ...c, region, local: c.local || "" }));
+    }
+    return result;
+}
+
 function getAvailableCitiesByCountry(countryCode) {
     if (!countryCode) return [];
 
@@ -1171,6 +1179,38 @@ function getAvailableCitiesByCountry(countryCode) {
             pop: c.pop,
             region: c.region,
             searchText: `${c.en} ${c.ko}`.toLowerCase()
+        }));
+    }
+
+    // Countries with CITY_MASTER data — region-grouped dropdown
+    const CITY_MASTERS = {
+        US: typeof US_CITY_MASTER !== "undefined" ? US_CITY_MASTER : null,
+        DE: typeof DE_CITY_MASTER !== "undefined" ? DE_CITY_MASTER : null,
+        GB: typeof GB_CITY_MASTER !== "undefined" ? GB_CITY_MASTER : null,
+        FR: typeof FR_CITY_MASTER !== "undefined" ? FR_CITY_MASTER : null,
+        IT: typeof IT_CITY_MASTER !== "undefined" ? IT_CITY_MASTER : null,
+        ES: typeof ES_CITY_MASTER !== "undefined" ? ES_CITY_MASTER : null,
+        NL: typeof NL_CITY_MASTER !== "undefined" ? NL_CITY_MASTER : null,
+        PL: typeof PL_CITY_MASTER !== "undefined" ? PL_CITY_MASTER : null,
+        AU: typeof AU_CITY_MASTER !== "undefined" ? AU_CITY_MASTER : null,
+        CA: typeof CA_CITY_MASTER !== "undefined" ? CA_CITY_MASTER : null,
+        BR: typeof BR_CITY_MASTER !== "undefined" ? BR_CITY_MASTER : null,
+        IN: typeof IN_CITY_MASTER !== "undefined" ? IN_CITY_MASTER : null,
+        MX: typeof MX_CITY_MASTER !== "undefined" ? MX_CITY_MASTER : null,
+        TR: typeof TR_CITY_MASTER !== "undefined" ? TR_CITY_MASTER : null,
+        CO: typeof CO_CITY_MASTER !== "undefined" ? CO_CITY_MASTER : null,
+        ID: typeof ID_CITY_MASTER !== "undefined" ? ID_CITY_MASTER : null,
+        RU: typeof RU_CITY_MASTER !== "undefined" ? RU_CITY_MASTER : null
+    };
+
+    const master = CITY_MASTERS[countryCode];
+    if (master) {
+        return getCityMasterFlat(master).map((c) => ({
+            value: c.en,
+            label: c.local || c.en,
+            pop: c.pop,
+            region: c.region,
+            searchText: `${c.en} ${c.local || ""}`.toLowerCase()
         }));
     }
 
