@@ -901,7 +901,7 @@ function renderQ4DotcomProducts() {
 
     container.innerHTML = `
         <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line,#e0e0e0)">
-            <p style="font-size:.78rem;font-weight:700;color:var(--accent-strong,#003366);margin-bottom:4px">${escapeHtml(title)} ${verified}</p>
+            <p style="font-size:.78rem;font-weight:700;color:var(--accent-strong,#003366);margin-bottom:4px">${escapeHtml(title)}</p>
             <p style="font-size:.68rem;color:#888;margin-bottom:8px">${escapeHtml(domain)}</p>
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
                 ${categories.map((cat) => `
