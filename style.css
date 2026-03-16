@@ -3441,26 +3441,25 @@ pre {
     color: #222;
 }
 
-/* ── 섹션 대제목 (01), (02) → 다크 네이비 슬라이드 헤더 ── */
+/* ── 섹션 대제목 (01), (02) → #003366 배경 박스 + 14pt 흰색 ── */
 .ai-result-body h1,
 .ai-result-body h2 {
-    margin: 36px 0 14px;
+    margin: 32px 0 16px;
     font-family: "SamsungOne", "Noto Sans KR", sans-serif;
-    font-weight: 900;
-    font-size: 1.5em;
-    color: #1a1a2e;
-    background: none;
-    padding: 0 0 10px 0;
-    border-bottom: 1px solid #ddd;
-    letter-spacing: -0.02em;
+    font-weight: 800;
+    font-size: 14pt;
+    color: #fff;
+    background: #003366;
+    padding: 14px 20px;
+    border-radius: 6px;
+    border: none;
+    letter-spacing: -0.01em;
 }
-
 .ai-result-body h2:first-child {
     margin-top: 0;
 }
 
-/* 헤더 바로 다음 콘텐츠 → 흰 카드 */
-/* h2 다음 콘텐츠 — 일반 흐름 (카드 래핑 없음) */
+/* h2 다음 콘텐츠 — 일반 흐름 */
 
 /* ── 소제목 h3 → 좌측 보더 + 연회색 밴드 ── */
 .ai-result-body h3 {
