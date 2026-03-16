@@ -1732,6 +1732,31 @@ textarea {
 .trend-source-line::before {
     content: none;
 }
+/* ── 위첨자 각주 시스템 ── */
+.trend-footnote-ref {
+    font-size: 0.65em;
+    color: var(--accent, #001a6e);
+    font-weight: 700;
+    vertical-align: super;
+    margin-left: 1px;
+    cursor: default;
+}
+.trend-footnotes {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0,0,0,.08);
+}
+.trend-footnote-item {
+    font-size: 0.7rem;
+    line-height: 1.5;
+    color: #7a8a9a;
+    margin-bottom: 3px;
+}
+.trend-footnote-item sup {
+    color: var(--accent, #001a6e);
+    font-weight: 700;
+    margin-right: 4px;
+}
 .evidence-source-tag {
     display: inline-block;
     margin-left: 6px;

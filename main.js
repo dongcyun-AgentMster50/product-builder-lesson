@@ -2103,6 +2103,38 @@ function buildInsightMarkup(insight) {
         return `<span class="trend-source-line">[Source] ${escapeHtml(citation)} ${domainTag}</span>`;
     };
 
+    // 섹션별 각주 수집기
+    let _footnotes = [];
+    let _footnoteIdx = 0;
+
+    const addFootnote = (item) => {
+        const title = String(item.source_title || "").trim();
+        const org = String(item.source_org || "").trim();
+        const date = String(item.source_date || "").trim();
+        const rawUrl = String(item.source_url || "").trim();
+        if (!title && !org) return "";
+        _footnoteIdx++;
+        const parts = [];
+        if (title) parts.push(title);
+        if (org) parts.push(`— ${org}`);
+        if (date) parts.push(date);
+        const shortDomain = rawUrl ? rawUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "") : "";
+        const linkUrl = rawUrl || `https://www.google.com/search?q=${encodeURIComponent([title, org].filter(Boolean).join(" "))}`;
+        const domainTag = `<a class="evidence-source-tag" href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(shortDomain || org || "source")}</a>`;
+        _footnotes.push({ idx: _footnoteIdx, text: parts.join(", "), domainTag });
+        return `<sup class="trend-footnote-ref">${_footnoteIdx}</sup>`;
+    };
+
+    const renderFootnoteBlock = () => {
+        if (!_footnotes.length) return "";
+        const block = `<div class="trend-footnotes">${_footnotes.map((f) =>
+            `<p class="trend-footnote-item"><sup>${f.idx}</sup> ${escapeHtml(f.text)} ${f.domainTag}</p>`
+        ).join("")}</div>`;
+        _footnotes = [];
+        _footnoteIdx = 0;
+        return block;
+    };
+
     const renderSection = (section) => {
         const text = section.text ? `<p>${escapeHtml(section.text)}</p>` : "";
         const items = Array.isArray(section.items) && section.items.length
@@ -2110,11 +2142,11 @@ function buildInsightMarkup(insight) {
                 if (item && typeof item === "object") {
                     const label = escapeHtml(item.text || "");
                     const evidenceText = String(item.evidence || "").trim();
-                    const sourceLine = formatSourceCitation(item);
-                    const evidenceHtml = (evidenceText || sourceLine)
-                        ? `<span class="trend-evidence">${evidenceText ? escapeHtml(evidenceText) : ""}${sourceLine ? `<br/>${sourceLine}` : ""}</span>`
+                    const footnoteRef = addFootnote(item);
+                    const evidenceHtml = evidenceText
+                        ? `<span class="trend-evidence">${escapeHtml(evidenceText)}</span>`
                         : "";
-                    return `<li>${label}${evidenceHtml}</li>`;
+                    return `<li>${label}${footnoteRef}${evidenceHtml}</li>`;
                 }
                 // pains/solutions: "text\n💡 insight" 형태 지원
                 if (typeof item === "string" && item.includes("\n💡")) {
@@ -2125,11 +2157,13 @@ function buildInsightMarkup(insight) {
                 return `<li>${escapeHtml(item)}</li>`;
             }).join("")}</ul>`
             : "";
+        const footnotes = renderFootnoteBlock();
         return `
             <section class="insight-section">
                 <h4>${section.title || ""}</h4>
                 ${text}
                 ${items}
+                ${footnotes}
             </section>
         `;
     };
