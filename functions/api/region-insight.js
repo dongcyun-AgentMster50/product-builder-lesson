@@ -232,31 +232,46 @@ async function fetchLiveTrends(city, country, locale, role, apiKey) {
     const lang = isKo ? "Korean" : "English";
     const todayIso = new Date().toISOString().slice(0, 10);
 
-    const instructions = `You are a Samsung SmartThings CX scenario analyst. Use web search to find REAL, CURRENT data about the requested city. Return ONLY valid JSON. Write in ${lang}.
+    const instructions = `You are a Samsung SmartThings consumer insight analyst. Use web search to find REAL, CURRENT data about the requested city. Return ONLY valid JSON. Write in ${lang}.
 
-Your analysis framework — search for trends in these 10 life-context categories:
-1. 기후·계절 (climate, heatwave, cold, monsoon, air quality)
-2. 주거 형태 (housing type, apartment vs house, new developments)
-3. 가족·돌봄 (family structure, childcare, elderly care, single households)
-4. 일상 리듬 (commute, remote work, daily patterns)
-5. 안전·보안 (crime concerns, night safety, empty home anxiety)
-6. 에너지 비용 (electricity rates, energy policy, savings demand)
-7. 건강·웰니스 (sleep, air quality sensitivity, wellness culture)
-8. 펫 라이프 (pet ownership, pet care while away)
-9. 이동·부재 (travel, long commute, extended absence)
-10. 문화 행사 (local festivals, holidays, seasonal events)
+IMPORTANT: You are NOT looking for macro policy or government statistics. You are looking for EVERYDAY LIFE PROBLEMS that real residents of this city face — problems that smart home devices can actually solve.
 
-Flow: Regional trend → Life problem/desire → SmartThings scenario → Campaign message`;
+Your analysis framework — find trends that answer "Why would a regular person in ${city} WANT smart home devices?":
+1. 기후 불편 (too hot/cold/humid/dusty → need auto climate control at home)
+2. 주거 불만 (small apartment noise, old house insulation, new apartment IoT-ready but unused)
+3. 가족 걱정 (kid comes home alone, elderly parent lives alone, pet alone all day)
+4. 바쁜 일상 (long commute = empty home, both parents work = no time for chores)
+5. 안전 불안 (package theft, break-in worry, dark hallway at night)
+6. 전기요금 부담 (high bills in summer/winter, wasted standby power)
+7. 건강 민감 (allergies, fine dust, poor sleep, indoor air quality worry)
+8. 반려동물 (pet alone at home → temperature/feeding/monitoring needs)
+9. 잦은 외출 (business trips, weekend getaways → empty home management)
+10. 시즌 생활 (back-to-school routines, holiday hosting, seasonal cleaning)
+
+Flow: Everyday life friction → "I wish my home could..." → SmartThings solves this`;
 
     const input = `Search the web for current (2025-2026) real data about "${city}" (${country}) for Samsung SmartThings ${role} marketing as of ${todayIso}.
 
-Search across the 10 life-context categories. Find ${city}-specific data: local policies, district-level stats, housing trends, energy costs, demographics, upcoming events.
+Find what REGULAR RESIDENTS of ${city} actually struggle with in daily home life. NOT government policies or macro economics — find consumer-level frustrations, lifestyle patterns, and household pain points that smart home devices can solve.
+Search for: local community complaints, consumer survey data, household energy bills, commute times, family demographics, apartment living issues, seasonal discomfort, safety concerns in residential areas.
+
+REJECT these types of trends — they are too abstract for customers:
+- "스마트시티 정책 추진" → government policy, not consumer pain
+- "모듈러 건축법 시행" → legislation, not daily life
+- "IoT 시장 성장률 15%" → industry stat, not personal frustration
+- "디지털 전환 가속화" → buzzword, not a real problem
+
+GOOD trend examples that customers actually feel:
+- "수원 영통구 아파트 주민, 여름 전기요금 월 15만원 돌파 → 절전 스트레스"
+- "안양 평촌 맞벌이 가구, 아이 혼자 귀가 후 30분간 연락 불안"
+- "서울 강남 1인가구 반려견, 여름 외출 시 실내 온도 35도 초과 걱정"
+- "인천 송도 신혼부부, 공기질 나쁜 날 환기 타이밍 모르겠다는 불만"
 
 Return ONLY valid JSON — no markdown:
-{"trends":[{"text":"${city}-specific trend headline","category":"one of: climate|housing|family|routine|security|energy|wellness|pet|mobility|events","evidence":"2-3 sentences with real numbers from search","source_title":"article title","source_org":"publisher","source_url":"real URL"}],"events":[{"name":"real event","when":"YYYY-MM-DD","hook":"Samsung SmartThings marketing angle"}],"pains":[{"text":"life problem/desire this trend creates for ${city} residents — written as realistic ${role} marketer concern","insight":"WHY: connect trend → life moment → customer friction. Be specific to ${city}."}],"solutions":[{"text":"CX scenario hint: [target segment] + [device combo] → [Explore keyword direction]","insight":"SUB hint: which target segment (e.g. 맞벌이 30대, 1인가구 MZ, 시니어 부부) + which SmartThings devices (e.g. 에어컨+공기청정기+스마트플러그) + which Explore scenario direction (e.g. Save energy, Keep home safe, Care for seniors). This helps the marketer build a full CX scenario in Q3-Q4."}]}
+{"trends":[{"text":"consumer-level life frustration headline — something a real ${city} resident would say or feel, NOT a policy/industry headline","category":"one of: climate|housing|family|routine|security|energy|wellness|pet|mobility|events","evidence":"2-3 sentences: what % of residents face this, how much money/time it costs, how often it happens","source_title":"article title","source_org":"publisher","source_url":"real URL"}],"events":[{"name":"real event","when":"YYYY-MM-DD","hook":"Samsung SmartThings marketing angle"}],"pains":[{"text":"a realistic first-person frustration from a ${city} resident — written as if overheard at a café. E.g. '퇴근하고 집에 오면 이미 아이가 에어컨 안 켜고 더위에 지쳐 있어요'","insight":"WHY this is a SmartThings opportunity: which specific device + automation could solve this moment"}],"solutions":[{"text":"CX scenario hint: [target segment] + [device combo] → [Explore keyword direction]","insight":"SUB hint: target segment + SmartThings devices + Explore direction. Guides marketer to build CX scenario in Q3-Q4."}]}
 
 Rules:
-- trends: 4 objects from DIFFERENT categories. Use REAL search results with real URLs.
+- trends: 4 objects from DIFFERENT categories. Each MUST describe a consumer-level daily life problem, NOT a government policy or industry statistic. Use REAL search results with real URLs.
 - events: 2-3 real upcoming events near ${city} within 3 months.
 - pains: 3 objects. Flow: trend → life problem → customer friction. Each must reference a specific trend.
 - solutions: 3 CX scenario HINTS (not direct solutions). Each must specify:
