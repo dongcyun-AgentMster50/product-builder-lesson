@@ -150,19 +150,8 @@
     .mini {
       background: var(--panel);
       border: none;
-      border-radius: var(--radius-md);
+      border-radius: 4px;
       padding: 16px 16px 15px;
-      position: relative;
-      overflow: hidden;
-    }
-    .card::before,
-    .panel::before,
-    .mini::before {
-      content: "";
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 5px;
-      background: var(--accent);
     }
 
     .card-header,
@@ -236,7 +225,7 @@
       align-items: start;
       padding: 14px 16px;
       background: linear-gradient(90deg, rgba(0,51,102,0.08), rgba(0,0,255,0.02));
-      border-radius: var(--radius-md);
+      border-radius: 4px;
     }
     .quote-band::before {
       content: "";
@@ -265,7 +254,7 @@
     .metric-head,
     .metric-cell,
     .metric-label {
-      border-radius: 14px;
+      border-radius: 4px;
       padding: 10px 12px;
       min-height: 56px;
       display: flex;
@@ -286,7 +275,7 @@
     }
     .metric-cell {
       background: var(--panel);
-      border-left: 4px solid var(--accent);
+      border-left: none;
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
@@ -297,7 +286,7 @@
 
     .table-wrap {
       background: var(--panel);
-      border-radius: var(--radius-md);
+      border-radius: 4px;
       overflow: hidden;
     }
     table {
@@ -350,7 +339,7 @@
       align-items: center;
       padding: 10px 12px;
       background: #fff;
-      border-radius: 14px;
+      border-radius: 4px;
       border: 1px solid #E3E8EF;
     }
     .kpi-label {
@@ -375,7 +364,7 @@
     .decision-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
     .decision-card {
       background: var(--panel);
-      border-radius: var(--radius-md);
+      border-radius: 4px;
       padding: 14px 14px 12px;
       display: grid;
       gap: 10px;
@@ -398,7 +387,7 @@
 
     .source-block {
       background: #fff;
-      border-radius: var(--radius-md);
+      border-radius: 4px;
       padding: 12px 14px;
       border: 1px solid var(--line);
       display: grid;
