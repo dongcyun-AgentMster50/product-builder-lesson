@@ -462,19 +462,26 @@ function hydrateStaticUi() {
 
 async function loadReferenceData() {
     try {
-        const [factPackRes, exploreMatrixRes, sourceDataRes, countryTrendsRes, citySignalsRes] = await Promise.all([
-            fetch("references/fact_pack.json"),
-            fetch("references/explore_matrix.json"),
-            fetch("references/source_data.json"),
-            fetch("references/country_trends.json"),
-            fetch("references/city_signals.json")
+        const safeFetchJson = async (url, fallback) => {
+            try {
+                const res = await fetch(url);
+                return res.ok ? await res.json() : fallback;
+            } catch { return fallback; }
+        };
+
+        const [factPackData, exploreMatrixData, sourceDataData, countryTrendsData, citySignalsData] = await Promise.all([
+            safeFetchJson("references/fact_pack.json", []),
+            safeFetchJson("references/explore_matrix.json", {}),
+            safeFetchJson("references/source_data.json", {}),
+            safeFetchJson("references/country_trends.json", {}),
+            safeFetchJson("references/city_signals.json", { cities: [] })
         ]);
 
-        factPack = await factPackRes.json();
-        exploreMatrix = await exploreMatrixRes.json();
-        sourceData = await sourceDataRes.json();
-        countryTrends = await countryTrendsRes.json();
-        citySignals = await citySignalsRes.json();
+        factPack = factPackData;
+        exploreMatrix = exploreMatrixData;
+        sourceData = sourceDataData;
+        countryTrends = countryTrendsData;
+        citySignals = citySignalsData;
 
         // Optional reference: keep app usable even if this file is missing in a deployment.
         try {
