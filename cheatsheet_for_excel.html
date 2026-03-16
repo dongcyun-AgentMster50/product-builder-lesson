@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Prompt Cheatsheet for Excel</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; }
+        table { border-collapse: collapse; width: 100%; border: 1px solid #777; }
+        th, td { border: 1px solid #a9a9a9; padding: 8px; vertical-align: top; }
+        th { background-color: #e9e9e9; text-align: center; font-weight: bold; }
+        .section-header {
+            background-color: #4F81BD;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Claude Code 프롬프트 치트시트</h1>
+    <p>"이렇게 말하면, 이렇게 해줍니다" — 자주 쓰는 명령어 가이드</p>
+
+    <br>
+
+    <table>
+        <thead>
+            <tr>
+                <th width="5%">#</th>
+                <th width="25%">명령어 ('~해줘')</th>
+                <th width="30%">의미</th>
+                <th width="40%">실제 진행 사항</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td colspan="4" class="section-header">1. 파일 보기 / 읽기</td></tr>
+            <tr><td>1-1</td><td>"이 파일 읽어줘" / "파일 내용 보여줘"</td><td>특정 파일의 코드/텍스트를 화면에 출력</td><td>**Read Tool** 실행 → 파일 시스템(File System)에서 해당 경로의 파일을 읽어 텍스트로 반환</td></tr>
+            <tr><td>1-2</td><td>"프로젝트 구조 보여줘" / "폴더 구조 알려줘"</td><td>프로젝트의 디렉토리/파일 트리 확인</td><td>**Bash(`ls`, `tree`)** 또는 **Glob Tool** 실행 → 디렉토리 트리(Directory Tree)를 탐색하여 계층 구조 출력</td></tr>
+            <tr><td>1-3</td><td>"이 함수 찾아줘" / "어디서 쓰이는지 찾아줘"</td><td>코드 내 특정 키워드/함수 검색</td><td>**Grep Tool** 실행 → 정규표현식(Regex) 기반 전문 검색(Full-text Search)으로 파일 내용을 탐색</td></tr>
+            <tr><td>1-4</td><td>"*.js 파일 다 찾아줘"</td><td>특정 확장자/패턴의 파일 목록 조회</td><td>**Glob Tool** 실행 → 글로브 패턴(Glob Pattern, 예: `**/*.js`)으로 파일 시스템을 매칭 탐색</td></tr>
+            
+            <tr><td colspan="4" class="section-header">2. 파일 수정 / 생성</td></tr>
+            <tr><td>2-1</td><td>"이 부분 수정해줘" / "바꿔줘"</td><td>기존 파일의 특정 코드를 변경</td><td>**Edit Tool** 실행 → 문자열 치환(String Replacement)으로 `old_string`을 `new_string`으로 교체</td></tr>
+            <tr><td>2-2</td><td>"새 파일 만들어줘"</td><td>새로운 파일 생성</td><td>**Write Tool** 실행 → 지정 경로에 파일 생성(File Write) 후 내용 기록</td></tr>
+            <tr><td>2-3</td><td>"이 파일 삭제해줘"</td><td>파일 제거</td><td>**Bash(`rm`)** 실행 → 파일 시스템에서 해당 파일을 삭제 (확인 후 진행)</td></tr>
+            <tr><td>2-4</td><td>"이름 바꿔줘" / "리네임해줘"</td><td>파일/변수명 변경</td><td>**Bash(`mv`)** 또는 **Edit Tool(`replace_all`)** → 파일명 변경 또는 코드 내 식별자(Identifier) 일괄 치환</td></tr>
+
+            <tr><td colspan="4" class="section-header">3. 서버 / 브라우저 실행</td></tr>
+            <tr><td>3-1</td><td>"서버 띄워줘" / "실행해줘"</td><td>개발 서버를 시작하여 브라우저에서 확인</td><td>**Bash** → `node server.js` 또는 `npm start` 등 서버 프로세스(Server Process)를 백그라운드(Background)로 실행</td></tr>
+            <tr><td>3-2</td><td>"브라우저로 열어줘" / "웹에서 보여줘"</td><td>HTML 파일을 웹 브라우저에서 확인</td><td>**Bash** → 로컬 서버(Local Server)를 구동하거나 `npx serve` 같은 정적 파일 서버(Static File Server)를 실행</td></tr>
+            <tr><td>3-3</td><td>"포트 바꿔줘" / "3000번으로 띄워줘"</td><td>서버 포트 번호 변경</td><td>**Bash** → 서버 실행 시 포트(Port) 옵션을 지정 (예: `--port 3000`)</td></tr>
+            <tr><td>3-4</td><td>"서버 꺼줘" / "종료해줘"</td><td>실행 중인 서버 프로세스 중지</td><td>**Bash** → `kill` 명령어로 해당 PID(Process ID)의 프로세스를 종료</td></tr>
+
+            <tr><td colspan="4" class="section-header">4. Git / 버전 관리</td></tr>
+            <tr><td>4-1</td><td>"커밋해줘"</td><td>변경된 내용을 Git에 저장</td><td>**Bash** → `git add` (스테이징, Staging) + `git commit -m "메시지"` (커밋, Commit) 실행</td></tr>
+            <tr><td>4-2</td><td>"푸시해줘"</td><td>원격 저장소에 업로드</td><td>**Bash** → `git push origin <브랜치명>` → 리모트(Remote) 저장소에 커밋 내용을 전송</td></tr>
+            <tr><td>4-3</td><td>"브랜치 만들어줘"</td><td>새로운 작업 분기 생성</td><td>**Bash** → `git checkout -b <브랜치명>` → 새 브랜치(Branch) 생성 후 전환</td></tr>
+            <tr><td>4-4</td><td>"PR 만들어줘"</td><td>풀 리퀘스트 생성</td><td>**Bash** → `gh pr create` → GitHub CLI를 통해 Pull Request 생성 (제목, 본문 자동 작성)</td></tr>
+            <tr><td>4-5</td><td>"변경사항 보여줘" / "뭐가 바뀌었어?"</td><td>현재 수정 내역 확인</td><td>**Bash** → `git status` + `git diff` → 스테이지 상태와 변경 내용(Diff) 출력</td></tr>
+            <tr><td>4-6</td><td>"되돌려줘" / "롤백해줘"</td><td>이전 상태로 복구</td><td>**Bash** → `git checkout -- <파일>` 또는 `git revert` → 변경사항을 취소 (확인 후 진행)</td></tr>
+
+            <tr><td colspan="4" class="section-header">5. 코드 작성 / 개발</td></tr>
+            <tr><td>5-1</td><td>"이 기능 추가해줘"</td><td>새로운 기능 코드 작성</td><td>관련 파일을 **Read**로 분석 → **Edit/Write Tool**로 코드 삽입 → 기존 아키텍처(Architecture)에 맞게 통합</td></tr>
+            <tr><td>5-2</td><td>"버그 고쳐줘" / "에러 해결해줘"</td><td>오류 원인 파악 및 수정</td><td>에러 로그 분석 → **Grep**으로 원인 추적 → **Edit**으로 디버깅(Debugging) 및 패치(Patch) 적용</td></tr>
+            <tr><td>5-3</td><td>"리팩토링해줘"</td><td>기능은 유지하면서 코드 구조 개선</td><td>코드를 읽고 중복/비효율 파악 → **Edit**으로 리팩토링(Refactoring) — 함수 분리, 변수명 개선 등</td></tr>
+            <tr><td>5-4</td><td>"주석 달아줘" / "설명 추가해줘"</td><td>코드에 설명 주석 추가</td><td>**Edit Tool** → 코드 라인 위에 주석(Comment) 삽입 (`//`, `/* */`, `<!-- -->` 등)</td></tr>
+            <tr><td>5-5</td><td>"타입스크립트로 바꿔줘"</td><td>언어/문법 변환</td><td>파일을 읽고 → **Write Tool**로 새 확장자 파일 생성 → 타입 어노테이션(Type Annotation) 추가</td></tr>
+
+            <tr><td colspan="4" class="section-header">6. 패키지 / 의존성 관리</td></tr>
+            <tr><td>6-1</td><td>"패키지 설치해줘" / "npm install 해줘"</td><td>필요한 라이브러리 설치</td><td>**Bash** → `npm install <패키지명>` → node_modules에 의존성(Dependency) 다운로드 + package.json 업데이트</td></tr>
+            <tr><td>6-2</td><td>"빌드해줘"</td><td>프로덕션용 코드 생성</td><td>**Bash** → `npm run build` → 번들러(Bundler, 예: Webpack/Vite)가 코드를 압축(Minify) + 최적화</td></tr>
+            <tr><td>6-3</td><td>"테스트 돌려줘"</td><td>자동화된 테스트 실행</td><td>**Bash** → `npm test` → 테스트 러너(Test Runner, 예: Jest/Vitest)가 테스트 케이스(Test Case) 실행</td></tr>
+
+            <tr><td colspan="4" class="section-header">7. 배포 / 호스팅</td></tr>
+            <tr><td>7-1</td><td>"배포해줘" / "디플로이해줘"</td><td>웹사이트를 인터넷에 공개</td><td>**Bash** → `firebase deploy` 등 → 호스팅 서비스(Hosting Service)에 빌드 결과물을 업로드</td></tr>
+            <tr><td>7-2</td><td>"Firebase 설정해줘"</td><td>Firebase 프로젝트 초기화</td><td>**Bash** → `firebase init` → Firebase CLI로 프로젝트 설정 파일(`firebase.json`) 생성</td></tr>
+
+            <tr><td colspan="4" class="section-header">8. 조사 / 분석</td></tr>
+            <tr><td>8-1</td><td>"이 코드 분석해줘" / "설명해줘"</td><td>코드의 동작 원리 파악</td><td>**Read Tool**로 파일을 읽고 → 코드 로직(Logic), 데이터 흐름(Data Flow)을 분석하여 한국어로 설명</td></tr>
+            <tr><td>8-2</td><td>"비교해줘"</td><td>두 파일/방식의 차이점 비교</td><td>두 파일을 **Read** → 차이점(Diff)을 분석하여 표로 정리</td></tr>
+            <tr><td>8-3</td><td>"검색해줘" / "찾아봐줘"</td><td>웹에서 정보 검색</td><td>**WebSearch Tool** → 웹 검색 엔진을 통해 최신 정보를 조회하여 요약</td></tr>
+            <tr><td>8-4</td><td>"이 URL 내용 알려줘"</td><td>특정 웹페이지 내용 확인</td><td>**WebFetch Tool** → 해당 URL의 HTML/텍스트를 가져와서(Fetch) 내용 요약</td></tr>
+
+            <tr><td colspan="4" class="section-header">9. 문서 / 산출물</td></tr>
+            <tr><td>9-1</td><td>"MD 파일로 정리해줘"</td><td>마크다운 문서 생성</td><td>**Write Tool** → `.md` 파일 생성, 마크다운(Markdown) 문법으로 구조화된 문서 작성</td></tr>
+            <tr><td>9-2</td><td>"PDF로 만들어줘"</td><td>PDF 파일 생성</td><td>**Bash** → Puppeteer/html-pdf 등 라이브러리로 HTML을 PDF로 렌더링(Rendering) 후 파일 저장</td></tr>
+            <tr><td>9-3</td><td>"PPT/발표자료 만들어줘"</td><td>프레젠테이션 제작</td><td>**Write Tool** → HTML 기반 슬라이드 파일 생성 (CSS로 레이아웃 + JS로 네비게이션)</td></tr>
+            <tr><td>9-4</td><td>"표로 정리해줘"</td><td>정보를 표 형태로 구조화</td><td>텍스트 출력 또는 **Edit Tool** → 마크다운 테이블(`| 열1 | 열2 |`) 또는 HTML `<table>` 생성</td></tr>
+
+            <tr><td colspan="4" class="section-header">10. 프로젝트 관리 / 기타</td></tr>
+            <tr><td>10-1</td><td>"기억해줘" / "메모해줘"</td><td>다음 대화에서도 기억할 정보 저장</td><td>**Write/Edit Tool** → 메모리 디렉토리(`~/.claude/.../memory/`)에 `.md` 파일로 영구 저장(Persistent Storage)</td></tr>
+            <tr><td>10-2</td><td>"계획 세워줘" / "플랜 짜줘"</td><td>작업 순서와 방향 설계</td><td>**Plan Agent** 실행 → 작업을 단계별로 분해(Decomposition)하고 의존성(Dependency)을 고려한 실행 계획 수립</td></tr>
+            <tr><td>10-3</td><td>"동시에 해줘" / "병렬로 진행해줘"</td><td>여러 작업을 동시 실행</td><td>**Agent Tool (병렬)** → 여러 서브에이전트(Sub-agent)를 동시에 생성하여 독립 작업을 병렬(Parallel) 처리</td></tr>
+            <tr><td>10-4</td><td>"이전 거 취소해줘" / "원래대로 돌려줘"</td><td>직전 작업 되돌리기</td><td>**Edit Tool** → 변경 전 내용으로 재치환, 또는 **Bash** → `git checkout`으로 파일 복원</td></tr>
+        </tbody>
+    </table>
+
+    <br>
+
+    <h2>자주 쓰는 조합 패턴</h2>
+    <table>
+        <thead>
+            <tr>
+                <th width="5%">#</th>
+                <th width="35%">패턴</th>
+                <th width="60%">예시</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>A</td><td>분석 → 수정</td><td>"이 파일 읽고, 버그 있으면 고쳐줘"</td></tr>
+            <tr><td>B</td><td>생성 → 실행</td><td>"서버 코드 만들고 바로 띄워줘"</td></tr>
+            <tr><td>C</td><td>수정 → 커밋</td><td>"이거 수정하고 커밋까지 해줘"</td></tr>
+            <tr><td>D</td><td>검색 → 적용</td><td>"최신 방법 찾아서 적용해줘"</td></tr>
+            <tr><td>E</td><td>전체 → 부분</td><td>"전체 구조 보여주고, main.js 설명해줘"</td></tr>
+        </tbody>
+    </table>
+    
+    <br>
+
+    <h2>용어 사전 (빠른 참조)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th width="30%">기술 용어</th>
+                <th width="70%">뜻</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>File System</td><td>운영체제의 파일/폴더 관리 체계</td></tr>
+            <tr><td>Glob Pattern</td><td>`*.js`, `**/*.html` 같은 파일명 매칭 패턴</td></tr>
+            <tr><td>Regex (정규표현식)</td><td>텍스트에서 패턴을 찾는 검색 문법</td></tr>
+            <tr><td>Staging (스테이징)</td><td>Git에서 커밋 전 변경사항을 준비하는 단계</td></tr>
+            <tr><td>Commit (커밋)</td><td>변경사항을 Git 히스토리에 영구 저장하는 행위</td></tr>
+            <tr><td>Branch (브랜치)</td><td>독립적인 작업 흐름을 만드는 Git의 분기 기능</td></tr>
+            <tr><td>Pull Request (PR)</td><td>코드 변경을 검토 요청하는 GitHub 기능</td></tr>
+            <tr><td>Diff</td><td>두 버전 간의 차이점을 보여주는 비교 결과</td></tr>
+            <tr><td>Port (포트)</td><td>서버가 요청을 받아들이는 네트워크 통신 번호 (예: 3000, 8080)</td></tr>
+            <tr><td>PID (Process ID)</td><td>실행 중인 프로그램을 식별하는 고유 번호</td></tr>
+            <tr><td>Dependency (의존성)</td><td>프로젝트가 작동하기 위해 필요한 외부 라이브러리</td></tr>
+            <tr><td>Bundler (번들러)</td><td>여러 파일을 하나로 묶어 최적화하는 도구</td></tr>
+            <tr><td>Minify (압축)</td><td>공백/주석을 제거해 파일 크기를 줄이는 과정</td></tr>
+            <tr><td>Rendering (렌더링)</td><td>코드를 화면에 보이는 결과물로 변환하는 과정</td></tr>
+            <tr><td>Deploy (배포)</td><td>완성된 코드를 서버에 올려 사용자가 접근 가능하게 하는 것</td></tr>
+            <tr><td>Background (백그라운드)</td><td>화면 뒤에서 보이지 않게 실행되는 프로세스</td></tr>
+            <tr><td>Refactoring (리팩토링)</td><td>기능은 그대로 두고 코드 구조/가독성만 개선하는 작업</td></tr>
+            <tr><td>Debugging (디버깅)</td><td>코드의 오류(Bug)를 찾아 수정하는 과정</td></tr>
+            <tr><td>Persistent Storage</td><td>프로그램 종료 후에도 데이터가 유지되는 저장 방식</td></tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
