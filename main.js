@@ -7132,7 +7132,7 @@ function applyLocale() {
     const heroMetricLabels = document.querySelectorAll(".hero-metric span");
 
     document.querySelector(".eyebrow").textContent = t("heroEyebrow");
-    document.querySelector(".hero-text").textContent = t("heroText");
+    document.querySelector(".hero-text").innerHTML = escapeHtml(t("heroText")).replace(/\n/g, "<br>");
     if (heroChips[0]) heroChips[0].textContent = t("heroChip1");
     if (heroChips[1]) heroChips[1].textContent = t("heroChip2");
     if (heroChips[2]) heroChips[2].textContent = t("heroChip3");

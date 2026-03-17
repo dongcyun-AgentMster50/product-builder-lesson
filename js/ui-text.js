@@ -2,7 +2,7 @@ const UI_TEXT = {
     ko: {
         enterAgent: "Enter Agent",
         heroEyebrow: "Interactive Scenario Builder",
-        heroText: "핵심 입력만 선택하면 메시지부터 활용안까지 완성도 높은 시나리오로 정리됩니다.",
+        heroText: "몇 가지 핵심 조건만 입력하면, 상황에 맞는 시나리오와 메시지 방향을 자동으로 정리해줍니다.\n캠페인 기획, 고객 커뮤니케이션, 활용안 도출까지 연결해 마케터가 더 빠르게 판단할 수 있도록 돕습니다.",
         heroChip1: "맥락 중심 설계",
         heroChip2: "4단계 guided flow",
         heroChip3: "바로 검토 가능한 결과",
