@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My GPT vs Gems — Global Marketer Comparison</title>
+  <style>
+    :root {
+      --navy:#003366;
+      --accent:#0000FF;
+      --panel:#F8F8F8;
+      --canvas:#ECEFF3;
+      --white:#FFFFFF;
+      --ink:#111111;
+      --muted:#5E6572;
+      --line:#D9DEE6;
+      --black:#000000;
+      --good:#DFF4E7;
+      --warn:#FFF0D6;
+      --risk:#FBE1E6;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --shadow:0 28px 60px rgba(17,17,17,.10);
+      --headline:"SamsungSharpSans","Samsung One","SamsungOne","Noto Sans KR",Arial,sans-serif;
+      --body:"Samsung One","SamsungOne","Noto Sans KR",Arial,sans-serif;
+      --slide-w:min(92vw, calc(100vh * 16 / 9 - 4vh));
+      --slide-h:calc(var(--slide-w) * 9 / 16);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin:0; min-height:100%; background:var(--canvas); color:var(--ink); font-family:var(--body); }
+    body { overflow:hidden; }
+    .shell { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2vh 2vw 7vh; }
+    .deck { width:var(--slide-w); height:var(--slide-h); position:relative; }
+    .slide {
+      position:absolute; inset:0; display:none; background:var(--white); border:2px solid var(--black); box-shadow:var(--shadow);
+      padding:28px 32px 22px; grid-template-rows:auto auto 1fr auto; gap:14px;
+    }
+    .slide.active { display:grid; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; }
+    .brand { display:inline-flex; align-items:center; gap:10px; color:var(--navy); font-size:12px; letter-spacing:.11em; text-transform:uppercase; font-weight:700; }
+    .dot { width:11px; height:11px; border-radius:999px; background:var(--accent); }
+    .page { min-width:92px; padding:8px 12px; border:1px solid var(--black); border-radius:999px; text-align:center; color:var(--navy); font-size:12px; font-weight:700; background:#fff; }
+    .eyebrow { display:inline-flex; width:fit-content; padding:7px 12px; border-radius:999px; background:var(--navy); color:#fff; font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+    h1,h2,h3,h4,p { margin:0; }
+    h1 { font-family:var(--headline); font-size:30px; line-height:1.08; letter-spacing:-.03em; }
+    h2 { font-family:var(--headline); font-size:24px; line-height:1.15; letter-spacing:-.02em; }
+    h3 { font-family:var(--headline); font-size:15px; line-height:1.25; }
+    .lead { font-size:14px; color:#2A3340; line-height:1.6; max-width:92%; }
+    .content { display:grid; gap:12px; align-content:start; min-height:0; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
+    .stack { display:grid; gap:12px; }
+    .card, .panel, .mini {
+      background:var(--panel); border-radius:4px; padding:14px 14px 13px;
+    }
+    .cardhead, .panelhead {
+      display:flex; align-items:center; justify-content:space-between; gap:8px; margin:-14px -14px 11px; padding:10px 14px; background:var(--navy); color:#fff;
+    }
+    .subtle { font-size:10.5px; line-height:1.45; color:#D7E4F3; }
+    .bodycopy, li, td, th, .caption, .small, .scoretext { font-size:11.2px; line-height:1.56; color:#232A36; }
+    ul { margin:0; padding-left:18px; display:grid; gap:6px; }
+    .hero-band {
+      display:grid; grid-template-columns:12px 1fr; gap:12px; align-items:start; padding:13px 15px; border-radius:var(--radius-md);
+      background:linear-gradient(90deg, rgba(0,51,102,.08), rgba(0,0,255,.02));
+    }
+    .hero-band::before { content:""; width:12px; height:100%; border-radius:99px; background:var(--navy); }
+    .hero-band strong { color:var(--navy); }
+    .quote { font-family:var(--headline); font-size:18px; line-height:1.42; letter-spacing:-.02em; }
+    .screenshot { background:#fff; border:1px solid var(--line); border-radius:4px; overflow:hidden; }
+    .screenshot img { width:100%; height:220px; object-fit:cover; display:block; }
+    .screenshot figcaption { padding:10px 12px 11px; font-size:10.5px; color:#394250; line-height:1.45; }
+    .steps { display:grid; gap:9px; }
+    .step { display:grid; grid-template-columns:22px 1fr; gap:10px; align-items:start; }
+    .stepnum {
+      width:22px; height:22px; border-radius:999px; background:var(--navy); color:#fff; display:grid; place-items:center; font-size:11px; font-weight:700;
+    }
+    .pillrow { display:flex; flex-wrap:wrap; gap:8px; }
+    .pill { display:inline-flex; align-items:center; padding:6px 10px; border-radius:999px; font-size:10px; font-weight:700; color:var(--navy); background:rgba(0,0,255,.05); border:1px solid rgba(0,0,255,.16); }
+    .tablewrap { border-radius:4px; overflow:hidden; background:var(--panel); }
+    table { width:100%; border-collapse:collapse; table-layout:fixed; }
+    th { background:var(--navy); color:#fff; text-align:left; padding:9px 11px; font-size:10.8px; border-right:1px solid rgba(255,255,255,.15); }
+    th:last-child { border-right:0; }
+    td { padding:9px 11px; border-bottom:1px solid var(--line); border-right:1px solid #E8ECF2; vertical-align:top; background:#fff; }
+    tr:nth-child(even) td { background:#FAFBFC; }
+    td:last-child { border-right:0; }
+    .rowhead { font-weight:700; color:var(--navy); }
+    .badge { display:inline-flex; align-items:center; justify-content:center; padding:4px 8px; border-radius:999px; font-size:10px; font-weight:800; white-space:nowrap; }
+    .good { background:var(--good); color:#0B6D43; }
+    .warn { background:var(--warn); color:#8B5D00; }
+    .risk { background:var(--risk); color:#A32A47; }
+    .scores { display:grid; gap:8px; }
+    .score { display:grid; grid-template-columns:126px 1fr 34px; gap:8px; align-items:center; background:#fff; border-radius:4px; padding:9px 10px; border:1px solid #E4E8EF; }
+    .scorelabel { font-family:var(--headline); font-size:11px; color:var(--navy); }
+    .bar { height:10px; background:#DEE6F2; border-radius:999px; overflow:hidden; position:relative; }
+    .fill { position:absolute; inset:0 auto 0 0; border-radius:inherit; background:linear-gradient(90deg, var(--navy), var(--accent)); }
+    .scorevalue { font-size:10px; font-weight:800; color:var(--navy); text-align:right; }
+    .compare-block { display:grid; gap:10px; }
+    .compare-row { display:grid; grid-template-columns:145px 1fr 1fr; gap:10px; }
+    .compare-label, .compare-cell { border-radius:4px; padding:10px 12px; }
+    .compare-label { background:#EEF2F7; font-weight:700; color:var(--ink); }
+    .compare-cell { background:var(--panel); }
+    .compare-cell strong { display:block; font-size:11px; color:var(--navy); margin-bottom:3px; }
+    .sourcebox { border-radius:4px; background:#fff; border:1px solid var(--line); padding:10px 12px; display:grid; gap:6px; }
+    .sourceitem { font-size:9.4px; line-height:1.55; color:#4F5765; font-style:italic; }
+    .sourceitem a { color:var(--navy); text-decoration:none; }
+    .sourceitem a:hover { text-decoration:underline; }
+    .footer { display:flex; align-items:center; justify-content:space-between; gap:14px; padding-top:11px; border-top:1px solid var(--line); font-size:10px; color:var(--muted); }
+    .controls { position:fixed; right:18px; bottom:16px; display:flex; gap:10px; z-index:50; }
+    .controls button { width:48px; height:48px; border-radius:999px; border:1px solid var(--black); background:#fff; color:var(--navy); font-size:18px; cursor:pointer; box-shadow:0 10px 20px rgba(17,17,17,.12); }
+    .controls button.pdf-btn { font-size:12px; font-weight:700; width:auto; padding:0 16px; font-family:var(--body); letter-spacing:.02em; }
+    .controls button.pdf-btn:hover { background:var(--navy); color:#fff; }
+    .controls button:disabled { opacity:.4; cursor:not-allowed; }
+    .progress { position:fixed; left:24px; right:24px; bottom:18px; height:6px; background:rgba(0,0,0,.08); border-radius:999px; overflow:hidden; }
+    .progress > div { height:100%; width:0; background:linear-gradient(90deg, var(--navy), var(--accent)); }
+    a.inline { color:var(--navy); }
+    @media (max-width:1200px), (max-height:760px) {
+      body { overflow:auto; }
+      .shell { align-items:flex-start; }
+      .deck { width:min(96vw, 1240px); height:auto; display:grid; gap:18px; }
+      .slide { position:relative; display:grid; height:auto; }
+      .slide:not(.active) { display:none; }
+      .grid-2, .grid-3, .compare-row { grid-template-columns:1fr; }
+      .progress { display:none; }
+      .controls { bottom:10px; right:10px; }
+      .controls #prev, .controls #next { display:none; }
+      .screenshot img { height:auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="deck">
+
+      <section class="slide active">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Product Comparison Deck</div>
+          <div class="page">1 / 8</div>
+        </div>
+        <div class="content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:24px">
+          <span class="eyebrow">Product Comparison Deck · 2026</span>
+          <h1 style="font-size:clamp(2.2rem,4.5vw,3.4rem);line-height:1.06;letter-spacing:-.04em">My GPT vs Gems</h1>
+          <p class="lead" style="max-width:72%;text-align:center;font-size:15px;line-height:1.7;color:var(--muted)">Global marketer 관점에서 Scenario Self Generation Agent를 각 플랫폼에 구현했을 때의 사용성을 비교합니다.</p>
+          <div class="pillrow" style="justify-content:center">
+            <span class="pill">ChatGPT Custom GPTs</span>
+            <span class="pill">Google Gemini Gems</span>
+            <span class="pill">Marketer Scenario Agent</span>
+          </div>
+          <p style="font-size:11px;color:var(--muted);margin-top:12px">Samsung Global Marketing · Internal Use Only</p>
+        </div>
+        <div class="footer"><span>Press → or click Next to begin</span><span>Cover</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Product Comparison Deck</div>
+          <div class="page">2 / 8</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">My GPT vs Gems</span>
+          <h1>Global marketer 관점의<br>Scenario Self Generation Agent 비교</h1>
+          <p class="lead">알고 싶은 포인트를 기준으로 다시 정리했다. 단순 기능표가 아니라 <strong>접속 경로</strong>, <strong>보이는 UI/UX</strong>, <strong>실사용 불편성</strong>, 그리고 <strong>글로벌 마케터가 Scenario Self Generation Agent를 각 플랫폼에서 구현했을 때의 사용성</strong>을 함께 본다.</p>
+        </div>
+        <div class="content stack">
+          <div class="grid-2">
+            <article class="card">
+              <div class="cardhead"><h3>한 줄 결론</h3><span class="subtle">Executive readout</span></div>
+              <div class="bodycopy">**My GPT**는 “에이전트 앱처럼 보이고 동작하는 전용 도착점”에 강하다. 반면 **Gems**는 Google Docs / Drive / Workspace 안에서 바로 쓰는 “문맥 내 보조자”에 강하다.</div>
+              <div class="pillrow" style="margin-top:10px"><span class="pill">My GPT = destination app</span><span class="pill">Gems = in-flow assistant</span></div>
+            </article>
+            <article class="card">
+              <div class="cardhead"><h3>마케터 시나리오 정의</h3><span class="subtle">What the agent should do</span></div>
+              <ul>
+                <li>시장/국가별 캠페인 시나리오 자동 생성</li>
+                <li>포지셔닝·메시지 아키텍처·채널별 아이디어 산출</li>
+                <li>브리프/가이드/과거 성과자료를 반영한 반복 작업 단축</li>
+                <li>글로벌 팀이 재사용 가능한 일관된 output 확보</li>
+              </ul>
+            </article>
+          </div>
+          <div class="hero-band"><div class="quote">채택 관점에서 보면, <strong>My GPT는 “전용 툴화”</strong>에, <strong>Gems는 “문서 작업 흐름 속 침투”</strong>에 더 유리하다.</div></div>
+        </div>
+        <div class="footer"><span>Comparison scope: access path · UI/UX · friction · marketer scenario fit</span><span>Use arrows or buttons to navigate</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Access path & entry point</div>
+          <div class="page">3 / 8</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">Where users enter</span>
+          <h2>접속 경로와 첫 진입 화면</h2>
+          <p class="lead">첫 진입점은 adoption에 직접 영향을 준다. My GPT는 ChatGPT 안의 별도 제작/배포 공간이고, Gems는 Gemini web app에서 만들고 이후 모바일/Workspace side panel로 확장된다.</p>
+        </div>
+        <div class="content grid-2">
+          <div class="stack">
+            <figure class="screenshot">
+              <img src="mygpt_builder_small.jpg" alt="GPT Builder screenshot">
+              <figcaption><strong>My GPT builder</strong> — Create / Configure 구조로 시작. 공식 Help Center의 GPT Builder UI 예시.</figcaption>
+            </figure>
+            <article class="card">
+              <div class="cardhead"><h3>My GPT 접속 경로</h3><span class="subtle">OpenAI official path</span></div>
+              <div class="steps">
+                <div class="step"><div class="stepnum">1</div><div class="bodycopy"><a class="inline" href="https://chatgpt.com/gpts/editor" target="_blank" rel="noreferrer">chatgpt.com/gpts/editor</a> 로 바로 진입하거나</div></div>
+                <div class="step"><div class="stepnum">2</div><div class="bodycopy"><a class="inline" href="https://chatgpt.com/gpts" target="_blank" rel="noreferrer">chatgpt.com/gpts</a> 에서 <strong>+ Create</strong> 선택</div></div>
+                <div class="step"><div class="stepnum">3</div><div class="bodycopy">Create 탭에서 GPT Builder와 대화하고, Configure 탭에서 설명·지시·도구·스타터를 세팅</div></div>
+              </div>
+            </article>
+          </div>
+          <div class="stack">
+            <figure class="screenshot">
+              <img src="gem_manager_small.jpg" alt="Gem manager screenshot">
+              <figcaption><strong>Gem manager view</strong> — Gems 목록과 New Gem 진입이 보이는 대표 캡처(공식 help step과 함께 해석용으로 사용).</figcaption>
+            </figure>
+            <article class="card">
+              <div class="cardhead"><h3>Gems 접속 경로</h3><span class="subtle">Google official path</span></div>
+              <div class="steps">
+                <div class="step"><div class="stepnum">1</div><div class="bodycopy"><a class="inline" href="https://gemini.google.com" target="_blank" rel="noreferrer">gemini.google.com</a> 접속</div></div>
+                <div class="step"><div class="stepnum">2</div><div class="bodycopy">왼쪽에서 <strong>Explore Gems</strong> → <strong>New Gem</strong></div></div>
+                <div class="step"><div class="stepnum">3</div><div class="bodycopy">Gem을 저장하면 Gemini mobile app 및 Google Workspace side panel에서도 사용 가능</div></div>
+              </div>
+            </article>
+          </div>
+        </div>
+        <div class="sourcebox">
+          <div class="sourceitem">OpenAI official: GPT creation path and builder tabs — <a href="https://help.openai.com/en/articles/8554397-creating-a-gpt" target="_blank" rel="noreferrer">Creating a GPT</a>, <a href="https://help.openai.com/en/articles/8798878-building-and-publishing-a-gpt" target="_blank" rel="noreferrer">Building and publishing a GPT</a></div>
+          <div class="sourceitem">Google official: Gems path and cross-surface availability — <a href="https://support.google.com/gemini/answer/15146780?hl=en" target="_blank" rel="noreferrer">Use Gems in Gemini Apps</a></div>
+          <div class="sourceitem">Representative Gem manager capture: <a href="https://www.testingcatalog.com/google-launches-gems-and-imagen3-for-gemini/" target="_blank" rel="noreferrer">TestingCatalog public article</a> (used only as visual reference for manager layout)</div>
+        </div>
+        <div class="footer"><span>Access path matters because lower friction usually wins inside global teams</span><span>Slide 2</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Visible UI / UX</div>
+          <div class="page">4 / 8</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">What users actually see</span>
+          <h2>보이는 화면과 UX 감각</h2>
+          <p class="lead">같은 “맞춤형 AI”여도 체감은 다르다. My GPT는 설정형 빌더이고, Gems는 Gemini + Workspace에 녹아드는 보조자 느낌이 강하다.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card stack">
+            <div class="cardhead"><h3>My GPT UI/UX 성격</h3><span class="subtle">Builder-first</span></div>
+            <ul>
+              <li><strong>Create</strong> 탭에서 GPT Builder와 대화하며 초안을 만들고, <strong>Configure</strong> 탭에서 수동 조정하는 구조</li>
+              <li>도구(예: 웹, 파일, 이미지, API actions/Apps)를 명시적으로 선택하는 “세팅형 UX”</li>
+              <li>conversation starters와 공개 범위 설정이 있어 “하나의 앱/에이전트”처럼 패키징하기 좋음</li>
+            </ul>
+            <div class="pillrow"><span class="pill">Builder feels like product setup</span><span class="pill">App-like launch point</span></div>
+          </article>
+          <div class="stack">
+            <figure class="screenshot">
+              <img src="gemini_docs_sidepanel_small.jpg" alt="Gemini side panel in Docs">
+              <figcaption><strong>Gemini in Docs side panel</strong> — 문서 우측 패널에서 바로 질문·수정·제안. Workspace 안에서 사용하는 감각이 강하다.</figcaption>
+            </figure>
+            <article class="card">
+              <div class="cardhead"><h3>Gems UI/UX 성격</h3><span class="subtle">Workflow-first</span></div>
+              <ul>
+                <li>Gemini web app에서 만들지만, 실제 사용은 Gemini app / mobile / Docs side panel 등 작업 맥락 안에서 이어짐</li>
+                <li>Gem 생성 시 오른쪽 preview 영역에서 바로 시험 가능</li>
+                <li>Docs에서는 <strong>Ask Gemini → Gems</strong> 경로로 문서 편집 흐름을 끊지 않고 사용 가능</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+        <div class="sourcebox">
+          <div class="sourceitem">OpenAI official: builder has Create and Configure tabs, lets you add instructions, knowledge, and capabilities — <a href="https://help.openai.com/en/articles/8554397-creating-a-gpt" target="_blank" rel="noreferrer">Creating a GPT</a></div>
+          <div class="sourceitem">Google official: create preview on the right, then save; use Gems in Docs side panel via Ask Gemini → Gems — <a href="https://support.google.com/gemini/answer/15235603?hl=en" target="_blank" rel="noreferrer">Tips for creating custom Gems</a>, <a href="https://support.google.com/docs/answer/14206696?hl=en" target="_blank" rel="noreferrer">Collaborate with Gemini in Google Docs</a></div>
+        </div>
+        <div class="footer"><span>My GPT = setup surface first · Gems = work surface first</span><span>Slide 3</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Pros & cons</div>
+          <div class="page">5 / 8</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">Strengths & weaknesses</span>
+          <h2>장점과 단점</h2>
+          <p class="lead">여기서는 “글로벌 마케터가 반복 가능한 시나리오 생성 에이전트를 실제로 쓰는 상황”에 맞춰 해석했다.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card">
+            <div class="cardhead"><h3>My GPT</h3><span class="subtle">ChatGPT custom GPTs</span></div>
+            <table>
+              <thead><tr><th style="width:18%">구분</th><th>내용</th></tr></thead>
+              <tbody>
+                <tr><td class="rowhead">장점</td><td>전용 에이전트처럼 브랜딩·설명·스타터를 구성하기 좋고, 도구/액션을 포함한 명시적 세팅이 가능하다. 공유/퍼블리시 옵션도 비교적 분명하다.</td></tr>
+                <tr><td class="rowhead">장점</td><td>지식 파일, 도구, 링크 공유, 스토어 공개 등 “에이전트 배포” 느낌이 강해 내부 팀용 앱처럼 보이게 만들기 쉽다.</td></tr>
+                <tr><td class="rowhead">단점</td><td>작업 중인 Docs/Sheets/Drive 문맥 안에서 바로 쓰는 도구는 아니라, 마케터 입장에선 ChatGPT로 이동하는 컨텍스트 전환이 생긴다.</td></tr>
+                <tr><td class="rowhead">단점</td><td>공개 스토어까지 생각하면 Builder Profile/도메인 검증 같은 운영 요소가 추가된다.</td></tr>
+              </tbody>
+            </table>
+          </article>
+          <article class="card">
+            <div class="cardhead"><h3>Gems</h3><span class="subtle">Google Gemini custom Gems</span></div>
+            <table>
+              <thead><tr><th style="width:18%">구분</th><th>내용</th></tr></thead>
+              <tbody>
+                <tr><td class="rowhead">장점</td><td>Gemini web app, mobile app, Google Workspace side panel로 이어지는 흐름이 강해서 문서 기반 협업에서 adoption이 빠르다.</td></tr>
+                <tr><td class="rowhead">장점</td><td>Drive 파일을 붙이고 문서 안에서 바로 수정·요약·재작성하는 용도에 자연스럽다. 글로벌 마케터가 브리프 문서를 열어둔 채 쓰기 좋다.</td></tr>
+                <tr><td class="rowhead">단점</td><td>공식 문서 기준으로는 instructions + files + preview 중심이며, 저장/공유 시 파일/지시사항 노출과 Drive 권한을 신경 써야 한다.</td></tr>
+                <tr><td class="rowhead">단점</td><td>일부 제약이 분명하다. 예를 들면 현재 Gems는 Gemini Live와 함께 쓸 수 없고, preview만으로는 자동 저장되지 않는다.</td></tr>
+              </tbody>
+            </table>
+          </article>
+        </div>
+        <div class="sourcebox">
+          <div class="sourceitem">OpenAI official: GPT creation, tools/actions, visibility options, analytics — <a href="https://help.openai.com/en/articles/8554407-gpts-faq" target="_blank" rel="noreferrer">GPTs FAQ</a>, <a href="https://help.openai.com/en/articles/8798878-building-and-publishing-a-gpt" target="_blank" rel="noreferrer">Building and publishing a GPT</a></div>
+          <div class="sourceitem">Google official: Gems in app/mobile/Workspace, preview/save behavior, file knowledge, Live limitation — <a href="https://support.google.com/gemini/answer/15146780?hl=en" target="_blank" rel="noreferrer">Use Gems in Gemini Apps</a>, <a href="https://support.google.com/gemini/answer/15235603?hl=en" target="_blank" rel="noreferrer">Tips for creating custom Gems</a></div>
+        </div>
+        <div class="footer"><span>Both can work — but they optimize for different habits</span><span>Slide 4</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> User friction</div>
+          <div class="page">6 / 8</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">Usability pain points</span>
+          <h2>사용상 불편성 / friction point</h2>
+          <p class="lead">단기 데모보다 장기 사용성이 중요하다. 실제로 팀이 계속 쓰게 하려면 “불편한 순간”을 줄이는 쪽이 유리하다.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card">
+            <div class="cardhead"><h3>My GPT 쪽 불편성</h3><span class="subtle">What may slow marketers down</span></div>
+            <ul>
+              <li><strong>컨텍스트 전환</strong>: 브리프/시트/드라이브 자료를 보다가 ChatGPT로 옮겨가는 흐름이 생기기 쉽다.</li>
+              <li><strong>설정 피로</strong>: GPT Builder + Configure + 도구/액션 + 공유 범위까지 고려하면 “잘 만든 한 개”는 쉬워도 운영은 점점 제품화 과제가 된다.</li>
+              <li><strong>퍼블리시 운영 요소</strong>: public store 수준으로 가면 Builder Profile, 도메인 검증, privacy policy 같은 항목이 따라온다.</li>
+              <li><strong>플랜 의존성</strong>: GPT 생성은 유료/조직형 플랜 중심이고, free 사용자는 생성이 아니라 사용/탐색 중심이다.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="cardhead"><h3>Gems 쪽 불편성</h3><span class="subtle">What may slow marketers down</span></div>
+            <ul>
+              <li><strong>저장 실수</strong>: preview 해도 자동 저장되지 않아서 “만든 줄 알았는데 저장 안 됨”이 발생하기 쉽다.</li>
+              <li><strong>기능 제약</strong>: 현재 Gems는 Gemini Live와 함께 쓸 수 없다.</li>
+              <li><strong>공유 주의</strong>: 공유된 Gem은 열고 상호작용해야 내 Gem manager에 나타나며, 업로드한 파일과 지시사항이 보일 수 있다.</li>
+              <li><strong>관리자/권한 변수</strong>: Workspace 계정에서는 공유/Drive/side panel 사용성이 조직 설정에 따라 달라질 수 있다.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="content grid-2">
+          <article class="panel">
+            <div class="panelhead"><h3>마케터 관점 해석</h3><span class="subtle">Plain-language takeaway</span></div>
+            <div class="bodycopy">My GPT의 friction은 <strong>“도구 밖으로 나가야 하는 것”</strong>이고, Gems의 friction은 <strong>“권한/저장/제약을 이해해야 하는 것”</strong>에 가깝다. 즉, My GPT는 adoption friction, Gems는 governance friction 쪽이 더 강하다.</div>
+          </article>
+          <article class="panel">
+            <div class="panelhead"><h3>실무 팁</h3><span class="subtle">If you deploy this internally</span></div>
+            <div class="bodycopy">My GPT는 런칭 가이드와 prompt starter 교육이 필요하고, Gems는 저장/공유/Drive 파일 권한 가이드를 같이 배포해야 팀 혼선을 줄일 수 있다.</div>
+          </article>
+        </div>
+        <div class="sourcebox">
+          <div class="sourceitem">OpenAI official: creator eligibility, builder location, publishing/privacy/domain details — <a href="https://help.openai.com/en/articles/8554407-gpts-faq" target="_blank" rel="noreferrer">GPTs FAQ</a>, <a href="https://help.openai.com/en/articles/8798878-building-and-publishing-a-gpt" target="_blank" rel="noreferrer">Building and publishing a GPT</a></div>
+          <div class="sourceitem">Google official: preview does not auto-save, Gems can’t be used with Gemini Live, shared Gems behavior, file visibility and sharing — <a href="https://support.google.com/gemini/answer/15235603?hl=en" target="_blank" rel="noreferrer">Tips for creating custom Gems</a>, <a href="https://support.google.com/gemini/answer/15146780?hl=en" target="_blank" rel="noreferrer">Use Gems in Gemini Apps</a>, <a href="https://support.google.com/gemini/answer/16504957?hl=en" target="_blank" rel="noreferrer">Share a Gem</a></div>
+        </div>
+        <div class="footer"><span>Adoption friction vs governance friction is the key distinction</span><span>Slide 5</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Scenario agent fit</div>
+          <div class="page">7 / 8</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">Global marketer lens</span>
+          <h2>Scenario Self Generation Agent를 구현했을 때의 사용성 비교</h2>
+          <p class="lead">가정하는 앱: 시장/국가, 타깃, 채널, 제품 정보, 과거 캠페인 자료를 받아서 시나리오·메시지·카피 방향·실행 아이디어를 자동 생성하는 에이전트.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card stack">
+            <div class="cardhead"><h3>핵심 요구사항</h3><span class="subtle">What matters for your app</span></div>
+            <div class="compare-block">
+              <div class="compare-row"><div class="compare-label">브리프 문맥</div><div class="compare-cell"><strong>My GPT</strong><span>업로드 파일과 명시적 지식 기반은 가능하지만, 문서 작업 중 앱 전환이 잦을 수 있음</span></div><div class="compare-cell"><strong>Gems</strong><span>Docs / Drive / Workspace side panel 활용 시 인라인 사용성 우위</span></div></div>
+              <div class="compare-row"><div class="compare-label">앱 같은 느낌</div><div class="compare-cell"><strong>My GPT</strong><span>설명·스타터·도구 조합으로 전용 agent destination 구성에 유리</span></div><div class="compare-cell"><strong>Gems</strong><span>독립 앱보다는 Gemini 안의 custom helper 느낌이 강함</span></div></div>
+              <div class="compare-row"><div class="compare-label">재사용/배포</div><div class="compare-cell"><strong>My GPT</strong><span>private / link / store 수준 공유가 명확해 재배포 설계가 편함</span></div><div class="compare-cell"><strong>Gems</strong><span>공유 가능하지만 계정/조직/Drive 공유 설정 영향을 받음</span></div></div>
+              <div class="compare-row"><div class="compare-label">협업 문서 편집</div><div class="compare-cell"><strong>My GPT</strong><span>출력은 강하지만 Docs 안에서 이어쓰기 UX는 약함</span></div><div class="compare-cell"><strong>Gems</strong><span>문서 수정, 요약, 재작성 흐름이 자연스러움</span></div></div>
+            </div>
+          </article>
+          <article class="card stack">
+            <div class="cardhead"><h3>마케터 체감 점수</h3><span class="subtle">1–5 score for your scenario</span></div>
+            <div class="scores">
+              <div class="score"><div class="scorelabel">Standalone agent feel</div><div class="bar"><div class="fill" style="width:96%"></div></div><div class="scorevalue">5.0</div></div>
+              <div class="score"><div class="scorelabel">Workspace in-flow use</div><div class="bar"><div class="fill" style="width:60%"></div></div><div class="scorevalue">3.0</div></div>
+              <div class="score"><div class="scorelabel">External workflow depth</div><div class="bar"><div class="fill" style="width:92%"></div></div><div class="scorevalue">4.8</div></div>
+              <div class="score"><div class="scorelabel">Share/publish clarity</div><div class="bar"><div class="fill" style="width:84%"></div></div><div class="scorevalue">4.2</div></div>
+            </div>
+            <div class="scores">
+              <div class="score"><div class="scorelabel">Standalone agent feel</div><div class="bar"><div class="fill" style="width:66%"></div></div><div class="scorevalue">3.3</div></div>
+              <div class="score"><div class="scorelabel">Workspace in-flow use</div><div class="bar"><div class="fill" style="width:98%"></div></div><div class="scorevalue">4.9</div></div>
+              <div class="score"><div class="scorelabel">External workflow depth</div><div class="bar"><div class="fill" style="width:58%"></div></div><div class="scorevalue">2.9</div></div>
+              <div class="score"><div class="scorelabel">Share/publish clarity</div><div class="bar"><div class="fill" style="width:72%"></div></div><div class="scorevalue">3.6</div></div>
+            </div>
+            <div class="small"><strong>읽는 법:</strong> 위 4개는 My GPT, 아래 4개는 Gems에 대한 점수다. 점수는 공식 문서에 드러난 기능 + 실제 사용 흐름을 기반으로 한 실무 해석이다.</div>
+          </article>
+        </div>
+        <div class="hero-band"><div class="quote">네 <strong>Scenario Self Generation Agent</strong>가 <strong>“하나의 전용 앱처럼 보이는 경험”</strong>이 중요하면 My GPT가 더 낫고, <strong>“Docs/Drive 속에서 바로 시나리오를 뽑아 쓰는 경험”</strong>이 중요하면 Gems가 더 낫다.</div></div>
+        <div class="footer"><span>This slide mixes official feature evidence with practical UX interpretation</span><span>Slide 6</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Recommendation & sources</div>
+          <div class="page">8 / 8</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">Final recommendation</span>
+          <h2>추천안</h2>
+          <p class="lead">둘 중 하나만 고르기보다, “어디에서 쓰이게 할 것인가”를 먼저 정하는 편이 맞다.</p>
+        </div>
+        <div class="content grid-3">
+          <article class="card">
+            <div class="cardhead"><h3>My GPT 우선 추천</h3><span class="subtle">When to choose first</span></div>
+            <ul>
+              <li>Scenario agent를 하나의 제품처럼 보이게 하고 싶을 때</li>
+              <li>링크 공유·명시적 도구·배포 구조가 중요할 때</li>
+              <li>향후 외부 시스템/API 연계를 더 강하게 고려할 때</li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="cardhead"><h3>Gems 우선 추천</h3><span class="subtle">When to choose first</span></div>
+            <ul>
+              <li>팀의 일상이 Google Docs / Drive / Workspace 중심일 때</li>
+              <li>브리프 문서를 열어둔 채 바로 시나리오를 얻는 흐름이 중요할 때</li>
+              <li>글로벌 마케팅 협업에서 문서 기반 adoption 속도가 우선일 때</li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="cardhead"><h3>현실적인 하이브리드</h3><span class="subtle">Best practical setup</span></div>
+            <ul>
+              <li><strong>My GPT</strong>를 core scenario engine으로 두고</li>
+              <li><strong>Gems</strong>를 Docs/Drive drafting companion으로 둔다</li>
+              <li>팀이 어느 surface에서 가장 오래 머무는지에 따라 front door를 결정한다</li>
+            </ul>
+          </article>
+        </div>
+        <div class="content stack">
+          <article class="panel">
+            <div class="panelhead"><h3>Sources used in this HTML</h3><span class="subtle">Official sources first, representative UI where needed</span></div>
+            <div class="sourcebox">
+              <div class="sourceitem">OpenAI — <a href="https://help.openai.com/en/articles/8554397-creating-a-gpt" target="_blank" rel="noreferrer">Creating a GPT</a>; <a href="https://help.openai.com/en/articles/8554407-gpts-faq" target="_blank" rel="noreferrer">GPTs FAQ</a>; <a href="https://help.openai.com/en/articles/8798878-building-and-publishing-a-gpt" target="_blank" rel="noreferrer">Building and publishing a GPT</a></div>
+              <div class="sourceitem">Google — <a href="https://support.google.com/gemini/answer/15146780?hl=en" target="_blank" rel="noreferrer">Use Gems in Gemini Apps</a>; <a href="https://support.google.com/gemini/answer/15235603?hl=en" target="_blank" rel="noreferrer">Tips for creating custom Gems</a>; <a href="https://support.google.com/docs/answer/14206696?hl=en" target="_blank" rel="noreferrer">Collaborate with Gemini in Google Docs</a>; <a href="https://support.google.com/gemini/answer/16504957?hl=en" target="_blank" rel="noreferrer">Share a Gem from Gemini Apps</a></div>
+              <div class="sourceitem">Google product update — <a href="https://blog.google/products-and-platforms/products/gemini/gemini-drop-september-2025/" target="_blank" rel="noreferrer">Gemini Drops: custom Gems sharing update</a></div>
+              <div class="sourceitem">Representative public UI capture for Gem manager — <a href="https://www.testingcatalog.com/google-launches-gems-and-imagen3-for-gemini/" target="_blank" rel="noreferrer">TestingCatalog article</a> (used only to visualize manager layout)</div>
+            </div>
+          </article>
+        </div>
+        <div class="footer"><span>Recommended next step: choose the primary surface first, then design the agent around that surface</span><span>End</span></div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="prev" aria-label="Previous slide">←</button>
+    <button id="next" aria-label="Next slide">→</button>
+    <button id="pdf-slide" class="pdf-btn" aria-label="Download current slide as PDF">PDF</button>
+    <button id="pdf-all" class="pdf-btn" aria-label="Download all slides as PDF">ALL PDF</button>
+  </div>
+  <div class="progress"><div id="bar"></div></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const bar = document.getElementById('bar');
+    let current = 0;
+    function show(index) {
+      current = (index + slides.length) % slides.length;
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+      bar.style.width = `${((current + 1) / slides.length) * 100}%`;
+    }
+    document.getElementById('prev').addEventListener('click', () => show(current - 1));
+    document.getElementById('next').addEventListener('click', () => show(current + 1));
+    window.addEventListener('keydown', (event) => {
+      if (["ArrowRight","PageDown"," "].includes(event.key)) show(current + 1);
+      if (["ArrowLeft","PageUp"].includes(event.key)) show(current - 1);
+      if (event.key === 'Home') show(0);
+      if (event.key === 'End') show(slides.length - 1);
+    });
+    show(0);
+
+    async function captureSlide(slide) {
+      return html2canvas(slide, { scale:2, useCORS:true, backgroundColor:'#FFFFFF', logging:false });
+    }
+    function canvasToPdfPage(pdf, canvas) {
+      const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
+      const r = Math.min(pw / canvas.width, ph / canvas.height);
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', (pw - canvas.width*r)/2, (ph - canvas.height*r)/2, canvas.width*r, canvas.height*r);
+    }
+    document.getElementById('pdf-slide').addEventListener('click', async function() {
+      const btn = this; btn.disabled = true; btn.textContent = '...';
+      try {
+        const c = await captureSlide(slides[current]);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation:'landscape', unit:'px', format:[c.width, c.height] });
+        pdf.addImage(c.toDataURL('image/png'), 'PNG', 0, 0, c.width, c.height);
+        pdf.save(`mygpt-gems-slide-${current+1}.pdf`);
+      } catch(e) { alert('PDF 생성 실패: '+e.message); }
+      btn.disabled = false; btn.textContent = 'PDF';
+    });
+    document.getElementById('pdf-all').addEventListener('click', async function() {
+      const btn = this; btn.disabled = true; btn.textContent = '...';
+      const saved = current;
+      try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+        for (let i = 0; i < slides.length; i++) {
+          show(i); await new Promise(r => setTimeout(r, 100));
+          const c = await captureSlide(slides[i]);
+          if (i > 0) pdf.addPage();
+          canvasToPdfPage(pdf, c);
+        }
+        pdf.save('mygpt-vs-gems-comparison-all.pdf');
+      } catch(e) { alert('PDF 생성 실패: '+e.message); }
+      show(saved); btn.disabled = false; btn.textContent = 'ALL PDF';
+    });
+  </script>
+</body>
+</html>
