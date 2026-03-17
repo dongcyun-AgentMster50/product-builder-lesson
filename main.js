@@ -5830,13 +5830,13 @@ function renderOutputPreview() {
     resultDiv.innerHTML = `
         <section class="placeholder-preview">
             <p class="placeholder-title">${escapeHtml(title)}</p>
-            <div class="preview-cards">
+            <div class="preview-list">
                 ${cards.map((card) => `
-                    <article class="preview-expect-card">
-                        <span class="preview-expect-icon">${card.icon}</span>
-                        <h4>${escapeHtml(card.title)}</h4>
-                        <p>${escapeHtml(card.desc)}</p>
-                    </article>
+                    <div class="preview-list-item">
+                        <span class="preview-list-num">${card.icon}</span>
+                        <span class="preview-list-title">${escapeHtml(card.title)}</span>
+                        <span class="preview-list-desc">${escapeHtml(card.desc)}</span>
+                    </div>
                 `).join("")}
             </div>
         </section>

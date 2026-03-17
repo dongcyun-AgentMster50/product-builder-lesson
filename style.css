@@ -49,8 +49,8 @@ body {
     width: min(1320px, calc(100vw - 32px));
     margin: 2px auto;
     min-height: calc(100vh - 4px);
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
 }
 
 .hero,
@@ -2188,10 +2188,9 @@ pre {
     margin-top: 6px;
     padding: 12px;
     border-radius: 20px;
-    flex: 0 1 33vh;
+    flex: none;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
 }
 
 .result-frame .report-head {
@@ -2217,24 +2216,17 @@ pre {
     color: var(--muted);
     text-align: center;
     background: rgba(248, 250, 252, 0.82);
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .placeholder-preview {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-    justify-content: center;
+    display: grid;
+    gap: 6px;
 }
 
 .placeholder-title {
     margin: 0;
-    padding: 10px 14px;
-    font-size: 1.1rem;
+    padding: 6px 10px;
+    font-size: 0.82rem;
     text-align: center;
     font-weight: 600;
     color: var(--accent-strong);
@@ -4557,4 +4549,67 @@ a.source-tag-link:hover {
 .ai-refine-answer {
     border-radius: 12px;
     font-size: var(--body-size);
+}
+
+/* ── 28. Preview List (compact output preview) ── */
+.preview-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+}
+
+.preview-list-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    border: 1px solid rgba(0, 51, 102, 0.08);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.preview-list-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: var(--accent-strong);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.preview-list-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ink);
+    white-space: nowrap;
+}
+
+.preview-list-desc {
+    font-size: 0.62rem;
+    color: var(--muted);
+    line-height: 1.3;
+    display: none;
+}
+
+@media (min-width: 1100px) {
+    .preview-list-desc {
+        display: inline;
+    }
+}
+
+@media (max-width: 900px) {
+    .preview-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .preview-list {
+        grid-template-columns: 1fr;
+    }
 }
