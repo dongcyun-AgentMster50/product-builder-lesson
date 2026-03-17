@@ -508,7 +508,7 @@
       <section class="slide active">
         <div class="topbar">
           <div class="brand"><span class="brand-dot"></span> Platform Evaluation Deck</div>
-          <div class="pagebox">1 / 8</div>
+          <div class="pagebox">1 / 10</div>
         </div>
         <div class="content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:24px">
           <span class="eyebrow">Platform Evaluation Deck · 2026</span>
@@ -527,7 +527,7 @@
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="brand-dot"></span> Platform Evaluation Deck</div>
-          <div class="pagebox">2 / 8</div>
+          <div class="pagebox">2 / 10</div>
         </div>
         <div class="title-wrap">
           <span class="eyebrow">Executive Summary</span>
@@ -565,7 +565,7 @@
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="brand-dot"></span> Positioning</div>
-          <div class="pagebox">3 / 8</div>
+          <div class="pagebox">3 / 10</div>
         </div>
         <div class="title-wrap">
           <span class="eyebrow">Decision Lens</span>
@@ -609,7 +609,7 @@
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="brand-dot"></span> Firebase</div>
-          <div class="pagebox">4 / 8</div>
+          <div class="pagebox">4 / 10</div>
         </div>
         <div class="title-wrap">
           <span class="eyebrow">Deep Dive</span>
@@ -649,7 +649,7 @@
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="brand-dot"></span> Make</div>
-          <div class="pagebox">5 / 8</div>
+          <div class="pagebox">5 / 10</div>
         </div>
         <div class="title-wrap">
           <span class="eyebrow">Deep Dive</span>
@@ -689,7 +689,7 @@
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="brand-dot"></span> n8n</div>
-          <div class="pagebox">6 / 8</div>
+          <div class="pagebox">6 / 10</div>
         </div>
         <div class="title-wrap">
           <span class="eyebrow">Deep Dive</span>
@@ -729,7 +729,7 @@
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="brand-dot"></span> Side-by-side matrix</div>
-          <div class="pagebox">7 / 8</div>
+          <div class="pagebox">7 / 10</div>
         </div>
         <div class="title-wrap">
           <span class="eyebrow">Comparison Matrix</span>
@@ -803,8 +803,131 @@
 
       <section class="slide">
         <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Cost comparison</div>
+          <div class="pagebox">8 / 10</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Operating Cost</span>
+          <h2>운영 비용 비교 — 과금 구조가 전혀 다르다</h2>
+          <p class="lead">세 플랫폼은 과금 단위부터 다르다. 시작 비용은 비슷해 보여도, 확장 시 비용 패턴이 크게 갈린다.</p>
+        </div>
+        <div class="content table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:11%">플랫폼</th>
+                <th style="width:16%">과금 방식</th>
+                <th style="width:16%">시작 비용</th>
+                <th style="width:19%">비용 커지는 방식</th>
+                <th style="width:19%">주요 비용 리스크</th>
+                <th style="width:19%">앱 적합성</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="rowhead">Firebase</td>
+                <td>Spark=무료, Blaze=종량제</td>
+                <td>Spark $0; Blaze 사용량 기반</td>
+                <td>읽기/쓰기, Functions, Hosting, Storage, 대역폭이 동시에 증가</td>
+                <td>여러 과금 항목이 동시에 커져 <strong>예측이 가장 어렵다</strong></td>
+                <td><span class="status strong">앱 코어 최적</span></td>
+              </tr>
+              <tr>
+                <td class="rowhead">Make</td>
+                <td>월간 플랜 + 크레딧제</td>
+                <td>Free 월 1,000 credits; Core $9/월</td>
+                <td>모듈 수, 폴링, 분기, 번들 수에 따라 크레딧 소모 증가</td>
+                <td>긴 워크플로에서 크레딧이 <strong>빠르게 소모</strong></td>
+                <td><span class="status middle">자동화 사이드카</span></td>
+              </tr>
+              <tr>
+                <td class="rowhead">n8n</td>
+                <td>워크플로 실행 수 기반</td>
+                <td>Community self-hosted 가능; Cloud €20/월</td>
+                <td>실행 수에 따라 증가, step 수는 무관</td>
+                <td>소프트웨어는 저렴해도 <strong>self-hosting 운영비</strong> 추가</td>
+                <td><span class="status middle">오케스트레이션 엔진</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="content grid-3">
+          <article class="card">
+            <div class="card-header"><h3>Firebase 핵심 가격</h3><span class="subtle">Spark / Blaze</span></div>
+            <ul>
+              <li>Auth: 월 5만 MAU 무료 <span class="ex">Spark는 일 3,000 DAU 제한</span></li>
+              <li>Functions: 월 200만 호출 무료, 이후 $0.40/백만 <span class="ex">GB-sec, CPU-sec 추가 과금</span></li>
+              <li>Firestore: 저장 1GiB, 일 5만 reads 무료 <span class="ex">초과 시 종량제</span></li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="card-header"><h3>Make 핵심 가격</h3><span class="subtle">Free → Enterprise</span></div>
+            <ul>
+              <li>Free: 월 1,000 credits (15분 간격) <span class="ex">1 operation = 1 credit 기본</span></li>
+              <li>Core $9 / Pro $16 / Teams $29 <span class="ex">각 월 1만 credits 기준</span></li>
+              <li>AI provider 사용 시 외부 비용 별도 <span class="ex">토큰 기준 credits + provider 비용</span></li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="card-header"><h3>n8n 핵심 가격</h3><span class="subtle">Community → Enterprise</span></div>
+            <ul>
+              <li>Community: self-hosted 가능 <span class="ex">서버/보안/운영 직접 관리</span></li>
+              <li>Cloud Starter €20/월, 2.5K executions <span class="ex">step 무제한, users 무제한</span></li>
+              <li>Pro €50/월, Business €667/월 <span class="ex">SSO/SAML, Git version control 포함</span></li>
+            </ul>
+          </article>
+        </div>
+        <div class="sourcebox">
+          <div class="source-item">Firebase — <a href="https://firebase.google.com/pricing" target="_blank" rel="noreferrer">Pricing</a> · <a href="https://firebase.google.com/docs/projects/billing/firebase-pricing-plans" target="_blank" rel="noreferrer">Billing plans</a></div>
+          <div class="source-item">Make — <a href="https://www.make.com/en/pricing" target="_blank" rel="noreferrer">Pricing</a> · <a href="https://help.make.com/how-features-use-credits" target="_blank" rel="noreferrer">Credit logic</a></div>
+          <div class="source-item">n8n — <a href="https://n8n.io/pricing/" target="_blank" rel="noreferrer">Pricing</a> · <a href="https://docs.n8n.io/choose-n8n/" target="_blank" rel="noreferrer">Choose n8n</a></div>
+        </div>
+        <div class="footer"><span>Cost structure matters more than sticker price — monitor as you scale</span><span>Slide 7</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Cost for your agent</div>
+          <div class="pagebox">9 / 10</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Agent Cost Lens</span>
+          <h2>Scenario Agent를 만들 때 비용은 어떻게 되나</h2>
+          <p class="lead">에이전트 앱 관점에서 비용 질문 4개에 대한 실무 해석.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card">
+            <div class="card-header"><h3>가장 싸게 시작하는 방법</h3><span class="subtle">Lowest entry cost</span></div>
+            <p class="body-copy">Make Free 또는 Firebase Spark가 가장 가벼운 진입점. n8n Community는 self-hosting이 가능하다면 소프트웨어 비용만 보면 매우 저렴.</p>
+            <div class="pill-row"><span class="pill">Make Free $0</span><span class="pill">Firebase Spark $0</span><span class="pill">n8n Community self-hosted</span></div>
+          </article>
+          <article class="card">
+            <div class="card-header"><h3>긴 멀티스텝에서 예측 쉬운 쪽</h3><span class="subtle">Predictable at scale</span></div>
+            <p class="body-copy">n8n은 step/module 수가 아니라 workflow executions 기준이라 비용 예측이 더 쉽다. Make는 모듈마다 크레딧이 쌓여 예측이 어려워진다.</p>
+            <div class="pill-row"><span class="pill">n8n 실행 수 기반</span><span class="pill">Make 크레딧 누적</span></div>
+          </article>
+          <article class="card">
+            <div class="card-header"><h3>앱 코어에 가장 적합한 쪽</h3><span class="subtle">Best for app backbone</span></div>
+            <p class="body-copy">Firebase는 로그인 + 저장된 결과물 + 앱 UI + 백엔드 조합에 가장 강하지만, 여러 과금 지표가 함께 붙어 모니터링이 필요하다.</p>
+            <div class="pill-row"><span class="pill">Firebase = 앱 본체</span><span class="pill">모니터링 필수</span></div>
+          </article>
+          <article class="card">
+            <div class="card-header"><h3>가장 큰 숨은 비용 리스크</h3><span class="subtle">Hidden cost traps</span></div>
+            <ul>
+              <li><strong>Make</strong>: 긴 워크플로에서 크레딧 빠르게 소모 <span class="ex">예: 10단계 시나리오 × 일 100회 = 월 3만+ credits</span></li>
+              <li><strong>Firebase</strong>: 여러 서비스에서 동시에 비용 누적 <span class="ex">예: Functions + Firestore + Storage가 각각 과금</span></li>
+              <li><strong>n8n</strong>: 소프트웨어 저렴해도 운영비 추가 <span class="ex">예: 서버 $20/월 + 모니터링 + 백업 시간</span></li>
+            </ul>
+          </article>
+        </div>
+        <div class="quote-band"><div class="quote">에이전트 비용 핵심: <strong>Firebase는 제품형 앱에 최적이지만 비용 예측이 어렵고</strong>, <strong>Make는 시작이 쉽지만 크레딧이 빠르게 소모</strong>되며, <strong>n8n은 긴 워크플로 비용 예측은 쉽지만 self-hosting 운영비가 추가</strong>된다.</div></div>
+        <div class="footer"><span>Match your cost model to your usage pattern, not just the sticker price</span><span>Slide 8</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
           <div class="brand"><span class="brand-dot"></span> Recommendation</div>
-          <div class="pagebox">8 / 8</div>
+          <div class="pagebox">10 / 10</div>
         </div>
         <div class="title-wrap">
           <span class="eyebrow">Recommendation & Sources</span>
