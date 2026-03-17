@@ -134,7 +134,7 @@
       <section class="slide active">
         <div class="topbar">
           <div class="brand"><span class="dot"></span> Product Comparison Deck</div>
-          <div class="page">1 / 8</div>
+          <div class="page">1 / 11</div>
         </div>
         <div class="content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:24px">
           <span class="eyebrow">Product Comparison Deck · 2026</span>
@@ -153,7 +153,7 @@
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="dot"></span> Product Comparison Deck</div>
-          <div class="page">2 / 8</div>
+          <div class="page">2 / 11</div>
         </div>
         <div class="stack">
           <span class="eyebrow">My GPT vs Gems</span>
@@ -185,7 +185,7 @@
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="dot"></span> Access path & entry point</div>
-          <div class="page">3 / 8</div>
+          <div class="page">3 / 11</div>
         </div>
         <div class="stack">
           <span class="eyebrow">Where users enter</span>
@@ -233,7 +233,7 @@
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="dot"></span> Visible UI / UX</div>
-          <div class="page">4 / 8</div>
+          <div class="page">4 / 11</div>
         </div>
         <div class="stack">
           <span class="eyebrow">What users actually see</span>
@@ -275,7 +275,7 @@
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="dot"></span> Pros & cons</div>
-          <div class="page">5 / 8</div>
+          <div class="page">5 / 11</div>
         </div>
         <div class="stack">
           <span class="eyebrow">Strengths & weaknesses</span>
@@ -318,7 +318,7 @@
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="dot"></span> User friction</div>
-          <div class="page">6 / 8</div>
+          <div class="page">6 / 11</div>
         </div>
         <div class="stack">
           <span class="eyebrow">Usability pain points</span>
@@ -365,7 +365,7 @@
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="dot"></span> Scenario agent fit</div>
-          <div class="page">7 / 8</div>
+          <div class="page">7 / 11</div>
         </div>
         <div class="stack">
           <span class="eyebrow">Global marketer lens</span>
@@ -400,13 +400,125 @@
           </article>
         </div>
         <div class="hero-band"><div class="quote">네 <strong>Scenario Self Generation Agent</strong>가 <strong>“하나의 전용 앱처럼 보이는 경험”</strong>이 중요하면 My GPT가 더 낫고, <strong>“Docs/Drive 속에서 바로 시나리오를 뽑아 쓰는 경험”</strong>이 중요하면 Gems가 더 낫다.</div></div>
-        <div class="footer"><span>This slide mixes official feature evidence with practical UX interpretation</span><span>Slide 6</span></div>
+        <div class="footer"><span>This slide mixes official feature evidence with practical UX interpretation</span><span>Slide 7</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Hallucination reality</div>
+          <div class="page">8 / 11</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">Factual reliability</span>
+          <h2>할루시네이션 — 둘 다 만든다, 다만 양상이 다르다</h2>
+          <p class="lead">Vectara 2026 leaderboard 기준 GPT-5.4와 Gemini 2.5 Pro는 동일한 7.0% hallucination rate / 93.0% factual consistency. 벤치마크마다 승자가 다르고, 과업별 편차가 크다.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card">
+            <div class="cardhead"><h3>ChatGPT 할루시네이션 양상</h3><span class="subtle">"매끈하게 틀리는" 쪽</span></div>
+            <ul>
+              <li>존재하지 않는 논문, 링크, 인용문을 자연스럽게 꾸며냄 <span class="ex">예: 없는 Harvard Business Review 기사를 정확한 날짜·저자와 함께 인용</span></li>
+              <li>논리 흐름은 깔끔한데 핵심 사실 한두 개가 틀림 → 읽는 사람이 더 쉽게 속음 <span class="ex">예: 시장 점유율 수치가 그럴듯하지만 실제로는 2년 전 데이터를 현재로 변환</span></li>
+              <li>최신 이슈를 도구 없이 물으면, 오래된 지식을 매끈하게 섞어 답함 <span class="ex">예: 2026년 정책을 2024년 법안 기준으로 답변하되 "현재"라고 표현</span></li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="cardhead"><h3>Gemini 할루시네이션 양상</h3><span class="subtle">"문맥 혼합형 오류" 쪽</span></div>
+            <ul>
+              <li>검색/Workspace 문맥을 잘 끌어오지만, 주변 문서를 과잉 연결하거나 한 단계 더 나간 추정을 붙임 <span class="ex">예: 이메일 A의 수치와 문서 B의 맥락을 합쳐 원문에 없는 결론 생성</span></li>
+              <li>앱/사이드패널에서 "원문 요약"처럼 보이지만 요약·추론·재작성이 섞여 있을 수 있음 <span class="ex">예: 회의록 요약 시 실제 발언하지 않은 합의 사항을 추가</span></li>
+              <li>Search grounding을 켜면 최신 사실성은 크게 개선됨 <span class="ex">예: grounding ON 시 factual accuracy가 눈에 띄게 향상 — Google 공식 설명</span></li>
+            </ul>
+          </article>
+        </div>
+        <div class="hero-band"><div class="quote"><strong>ChatGPT</strong>는 "문장 완성도와 설득력" 때문에 잘못이 덜 눈에 띄고, <strong>Gemini</strong>는 "검색/워크스페이스 연결성" 때문에 최신성은 강하지만 문맥 혼합형 오류를 조심해야 한다.</div></div>
+        <div class="sourcebox">
+          <div class="sourceitem">Vectara 2026 Hallucination Leaderboard — <a href="https://github.com/vectara/hallucination-leaderboard" target="_blank" rel="noreferrer">GitHub</a></div>
+          <div class="sourceitem">OpenAI — <a href="https://help.openai.com/en/articles/8313428-does-chatgpt-tell-the-truth" target="_blank" rel="noreferrer">Does ChatGPT tell the truth?</a> · <a href="https://openai.com/index/why-language-models-hallucinate/" target="_blank" rel="noreferrer">Why language models hallucinate</a></div>
+          <div class="sourceitem">Google — <a href="https://support.google.com/a/users/answer/15146419?hl=en" target="_blank" rel="noreferrer">Gemini side panel</a> · <a href="https://ai.google.dev/gemini-api/docs/google-search" target="_blank" rel="noreferrer">Grounding with Google Search</a></div>
+        </div>
+        <div class="footer"><span>Both hallucinate — the pattern differs, not the rate</span><span>Slide 8</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Hallucination triggers</div>
+          <div class="page">9 / 11</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">When it goes wrong</span>
+          <h2>할루시네이션이 잘 생기는 공통 상황과 완화 전략</h2>
+          <p class="lead">질문이 모호할 때, 최신 정보에 grounding이 없을 때, 주어진 자료 빈칸을 모델이 메우려 할 때, 긴 문맥에서 제약이 흐려질 때 위험이 커진다.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card stack">
+            <div class="cardhead"><h3>공통 완화 전략 (6가지)</h3><span class="subtle">Both platforms</span></div>
+            <ul>
+              <li><strong>질문을 좁혀라</strong> — "설명해줘"보다 "2025년 이후 공식 문서만 근거로, 확실/추정을 분리해서 답해줘" <span class="ex">예: 프롬프트에 "confirmed facts / uncertain / estimation" 3구역 분리 지시</span></li>
+              <li><strong>최신 정보는 반드시 grounding/search를 켜라</strong> — 수치, 정책, 가격, 일정은 도구 없이 묻지 않기 <span class="ex">예: ChatGPT 웹 검색 모드 ON / Gemini Search grounding ON</span></li>
+              <li><strong>"모르면 모른다고 말해라"를 룰로 넣어라</strong> — Google Vertex 문서가 직접 예시로 제시 <span class="ex">예: "Never make up facts; if not 100% sure, say why you cannot answer truthfully"</span></li>
+              <li><strong>출처를 요구하되, 출처 자체를 검증하라</strong> — 특히 ChatGPT에서 존재하지 않는 참고문헌 주의 <span class="ex">예: 출처 제목+발행처+날짜+링크를 요구 후 실제 열어보기</span></li>
+              <li><strong>단계 분리하라</strong> — "자료 추출 → 사실 목록 → 해석 → 권고안" 순서로 나누기 <span class="ex">예: 한 번에 긴 보고서 대신 4단계 체인으로 분할</span></li>
+              <li><strong>자동 검증 레이어를 둬라</strong> — 요약 후 원문 대조, LLM-as-a-judge, fact-check pass <span class="ex">예: OpenAI cookbook의 hallucination guardrails 패턴 적용</span></li>
+            </ul>
+          </article>
+          <div class="stack">
+            <article class="card">
+              <div class="cardhead"><h3>ChatGPT 특화 팁</h3><span class="subtle">Reduce "smooth fabrication"</span></div>
+              <ul>
+                <li>최신 사실 질문이면 <strong>반드시 웹 검색 모드</strong> 사용</li>
+                <li>"확실 / 불확실 / 추정" 세 구역으로 나눠 답하게 하기</li>
+                <li>"없는 출처는 만들지 말고, 확인 불가 시 명시하라" 넣기</li>
+                <li>긴 문서 작업은 원문 업로드 후 <strong>"이 문서 내부 근거만 사용"</strong>으로 제한</li>
+              </ul>
+            </article>
+            <article class="card">
+              <div class="cardhead"><h3>Gemini 특화 팁</h3><span class="subtle">Reduce "context mixing"</span></div>
+              <ul>
+                <li><strong>Google Search grounding</strong> 또는 <strong>Vertex grounding</strong> 켜기</li>
+                <li>Workspace side panel에서 "이 메일/이 문서만 근거로 답하라" 범위 좁히기</li>
+                <li>API/Vertex 사용 시 <strong>temperature를 낮추기</strong></li>
+                <li>요약 결과를 바로 신뢰하지 말고 <strong>원문 위치 같이 확인</strong></li>
+              </ul>
+            </article>
+          </div>
+        </div>
+        <div class="sourcebox">
+          <div class="sourceitem">OpenAI — <a href="https://help.openai.com/en/articles/10032626-prompt-engineering-best-practices-for-chatgpt" target="_blank" rel="noreferrer">Prompt engineering best practices</a> · <a href="https://developers.openai.com/cookbook/examples/developing_hallucination_guardrails/" target="_blank" rel="noreferrer">Hallucination guardrails cookbook</a></div>
+          <div class="sourceitem">Google — <a href="https://docs.cloud.google.com/vertex-ai/generative-ai/docs/chat/chat-prompts" target="_blank" rel="noreferrer">Vertex chat prompts</a> · <a href="https://docs.cloud.google.com/vertex-ai/generative-ai/docs/grounding/overview" target="_blank" rel="noreferrer">Grounding overview</a> · <a href="https://docs.cloud.google.com/vertex-ai/generative-ai/docs/multimodal/design-multimodal-prompts" target="_blank" rel="noreferrer">Design multimodal prompts</a></div>
+        </div>
+        <div class="footer"><span>"모델을 믿게 만드는 법"이 아니라 "함부로 추정하지 못하게 구조를 바꾸는 것"이 핵심</span><span>Slide 9</span></div>
+      </section>
+
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Practical verdict</div>
+          <div class="page">10 / 11</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">Bottom line</span>
+          <h2>실무 관점 — 언제 누구를 어떻게 써야 하나</h2>
+          <p class="lead">현재의 ChatGPT와 Gemini는 모두 "그냥 믿는 도구"가 아니라 "근거를 끌어와서 검토하면서 쓰는 도구"다.</p>
+        </div>
+        <div class="content">
+          <div class="compare-block">
+            <div class="compare-row"><div class="compare-label">정확한 최신 사실 확인</div><div class="compare-cell"><strong>ChatGPT</strong><span>반드시 웹 검색 모드 ON. 출처 검증 필수.</span></div><div class="compare-cell"><strong>Gemini</strong><span>Search grounding ON이 기본. 최신성 우위 가능.</span></div></div>
+            <div class="compare-row"><div class="compare-label">문서 정리 / 초안 작성</div><div class="compare-cell"><strong>ChatGPT</strong><span>표현·설득력 높아 생산성 좋음. 단, 출처 검증 더 엄격히.</span></div><div class="compare-cell"><strong>Gemini</strong><span>Docs/Drive 인라인 편집 편리. 문맥 혼합 주의.</span></div></div>
+            <div class="compare-row"><div class="compare-label">Google Workspace 활용</div><div class="compare-cell"><strong>ChatGPT</strong><span>별도 앱 전환 필요. Workspace 통합 약함.</span></div><div class="compare-cell"><strong>Gemini</strong><span>Side panel 네이티브. 범위 제한 프롬프트 권장.</span></div></div>
+            <div class="compare-row"><div class="compare-label">할루시네이션 성격</div><div class="compare-cell"><strong>ChatGPT</strong><span>"매끈한 허구" — 없는 출처를 자연스럽게 생성</span></div><div class="compare-cell"><strong>Gemini</strong><span>"문맥 혼합" — 여러 소스를 섞어 원문에 없는 결론</span></div></div>
+          </div>
+        </div>
+        <div class="hero-band"><div class="quote">"누가 환각을 더 적게 하느냐"보다 <strong>질문 구조, grounding 사용 여부, 출처 검증 습관</strong>이 실제 품질을 더 크게 좌우한다.</div></div>
+        <div class="sourcebox">
+          <div class="sourceitem">Vectara hallucination leaderboard — <a href="https://github.com/vectara/hallucination-leaderboard" target="_blank" rel="noreferrer">GitHub</a> · OpenAI — <a href="https://help.openai.com/en/articles/8313428-does-chatgpt-tell-the-truth" target="_blank" rel="noreferrer">Truth article</a> · Google — <a href="https://support.google.com/gemini/answer/13594961?hl=en" target="_blank" rel="noreferrer">Gemini limitations</a></div>
+        </div>
+        <div class="footer"><span>Both models are "verify-then-trust" tools, not "trust-by-default" tools</span><span>Slide 10</span></div>
       </section>
 
       <section class="slide">
         <div class="topbar">
           <div class="brand"><span class="dot"></span> Recommendation & sources</div>
-          <div class="page">8 / 8</div>
+          <div class="page">11 / 11</div>
         </div>
         <div class="stack">
           <span class="eyebrow">Final recommendation</span>
@@ -447,6 +559,7 @@
               <div class="sourceitem">Google — <a href="https://support.google.com/gemini/answer/15146780?hl=en" target="_blank" rel="noreferrer">Use Gems in Gemini Apps</a>; <a href="https://support.google.com/gemini/answer/15235603?hl=en" target="_blank" rel="noreferrer">Tips for creating custom Gems</a>; <a href="https://support.google.com/docs/answer/14206696?hl=en" target="_blank" rel="noreferrer">Collaborate with Gemini in Google Docs</a>; <a href="https://support.google.com/gemini/answer/16504957?hl=en" target="_blank" rel="noreferrer">Share a Gem from Gemini Apps</a></div>
               <div class="sourceitem">Google product update — <a href="https://blog.google/products-and-platforms/products/gemini/gemini-drop-september-2025/" target="_blank" rel="noreferrer">Gemini Drops: custom Gems sharing update</a></div>
               <div class="sourceitem">Representative public UI capture for Gem manager — <a href="https://www.testingcatalog.com/google-launches-gems-and-imagen3-for-gemini/" target="_blank" rel="noreferrer">TestingCatalog article</a> (used only to visualize manager layout)</div>
+              <div class="sourceitem">Hallucination — Vectara <a href="https://github.com/vectara/hallucination-leaderboard" target="_blank" rel="noreferrer">Leaderboard</a>; OpenAI <a href="https://help.openai.com/en/articles/8313428-does-chatgpt-tell-the-truth" target="_blank" rel="noreferrer">Truth</a> · <a href="https://openai.com/index/why-language-models-hallucinate/" target="_blank" rel="noreferrer">Why hallucinate</a> · <a href="https://developers.openai.com/cookbook/examples/developing_hallucination_guardrails/" target="_blank" rel="noreferrer">Guardrails</a>; Google <a href="https://ai.google.dev/gemini-api/docs/google-search" target="_blank" rel="noreferrer">Grounding</a> · <a href="https://docs.cloud.google.com/vertex-ai/generative-ai/docs/grounding/overview" target="_blank" rel="noreferrer">Vertex grounding</a></div>
             </div>
           </article>
         </div>
