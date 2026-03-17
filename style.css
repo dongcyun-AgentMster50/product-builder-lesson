@@ -757,9 +757,14 @@ textarea {
     color: var(--muted);
 }
 
-.q4-preset-grid {
+.q4-left-stack {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.q4-preset-grid {
+    display: flex;
+    flex-wrap: wrap;
     gap: 6px;
 }
 
@@ -781,10 +786,12 @@ textarea {
 
 .q4-preset-btn {
     display: grid;
-    gap: 4px;
-    padding: 10px;
-    border-radius: 12px;
+    gap: 3px;
+    padding: 8px 12px;
+    border-radius: 10px;
     text-align: left;
+    min-width: 0;
+    flex: 0 0 auto;
 }
 
 .q4-preset-btn.active {

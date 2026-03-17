@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scenario Self Generation Agent</title>
-    <link rel="stylesheet" href="style.css?v=20260317-1545">
+    <link rel="stylesheet" href="style.css?v=20260317-1600">
 </head>
 <body>
     <div class="shell">
@@ -170,14 +170,23 @@
                                         <span class="q4-auto-text">트렌드 기반 자동 구성 — AI가 지역·세그먼트에 맞는 최적 기기를 선택합니다</span>
                                     </button>
 
-                                    <!-- 상단: 프리셋 + 조합 요약 (나란히) -->
+                                    <!-- 프리셋 + 직접선택(좌) / 조합요약(우) -->
                                     <div class="q4-top-row">
-                                        <section class="q4-card q4-presets">
-                                            <div class="q4-section-head">
-                                                <h3>반영 기기 스타일별 조합</h3>
-                                            </div>
-                                            <div id="q4-presets" class="q4-preset-grid"></div>
-                                        </section>
+                                        <div class="q4-left-stack">
+                                            <section class="q4-card q4-presets">
+                                                <div class="q4-section-head">
+                                                    <h3>반영 기기 스타일별 조합</h3>
+                                                </div>
+                                                <div id="q4-presets" class="q4-preset-grid"></div>
+                                            </section>
+
+                                            <section class="q4-card q4-direct-select">
+                                                <div class="q4-section-head">
+                                                    <h3>기기 직접 선택</h3>
+                                                </div>
+                                                <div id="q4-all-chips" class="q4-chip-grid"></div>
+                                            </section>
+                                        </div>
 
                                         <aside class="q4-summary-card" id="q4-summary-card">
                                             <div class="q4-section-head">
@@ -187,14 +196,6 @@
                                             <div id="q4-dotcom-products" class="q4-dotcom-products"></div>
                                         </aside>
                                     </div>
-
-                                    <!-- 기기 직접 선택 (전폭) -->
-                                    <section class="q4-card q4-direct-select">
-                                        <div class="q4-section-head">
-                                            <h3>기기 직접 선택</h3>
-                                        </div>
-                                        <div id="q4-all-chips" class="q4-chip-grid"></div>
-                                    </section>
 
                                     <!-- 카테고리별 상세 (전폭, 가운데) -->
                                     <details class="q4-details">
