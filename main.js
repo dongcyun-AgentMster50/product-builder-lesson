@@ -903,10 +903,10 @@ function renderQ4DotcomProducts() {
         <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line,#e0e0e0)">
             <p style="font-size:.78rem;font-weight:700;color:var(--accent-strong,#003366);margin-bottom:4px">${escapeHtml(title)}</p>
             <p style="font-size:.68rem;color:#888;margin-bottom:8px">${escapeHtml(domain)}</p>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px">
                 ${categories.map((cat) => `
                     <a href="${escapeHtml(baseUrl + cat.path)}" target="_blank" rel="noopener noreferrer"
-                       style="display:flex;align-items:center;gap:6px;padding:7px 8px;border-radius:6px;border:1px solid #e8e8e8;background:#fff;text-decoration:none;color:#222;font-size:.72rem;font-weight:600;transition:all .15s"
+                       style="display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:6px;border:1px solid #e8e8e8;background:#fff;text-decoration:none;color:#222;font-size:.72rem;font-weight:600;transition:all .15s;white-space:nowrap"
                        onmouseover="this.style.background='#f0f2f8';this.style.borderColor='#001a6e'"
                        onmouseout="this.style.background='#fff';this.style.borderColor='#e8e8e8'">
                         <span style="font-size:.95rem">${cat.icon}</span>

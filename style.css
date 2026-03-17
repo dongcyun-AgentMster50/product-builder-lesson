@@ -717,7 +717,7 @@ textarea {
 }
 .q4-top-row {
     display: grid;
-    grid-template-columns: 1fr minmax(260px, 320px);
+    grid-template-columns: 1fr minmax(300px, 380px);
     gap: 10px;
     align-items: start;
 }
