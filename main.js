@@ -269,7 +269,7 @@ function bindEvents() {
     wizardLogoutBtn.addEventListener("click", handleLogout);
     guideYesBtn.addEventListener("click", openWizard);
     guideNoBtn.addEventListener("click", showGuideCopy);
-    guideContinueBtn.addEventListener("click", openWizard);
+    if (guideContinueBtn) guideContinueBtn.addEventListener("click", openWizard);
     prevBtn.addEventListener("click", () => moveStep(-1));
     nextBtn.addEventListener("click", () => moveStep(1));
     generateBtn.addEventListener("click", generateScenario);
@@ -1759,11 +1759,10 @@ function showGuideCopy() {
     setGuideChoice("no");
     guideCopy.innerHTML = buildGuideMarkup();
     guideCopy.classList.remove("hidden");
-    guideContinueBtn.classList.remove("hidden");
 
     const footerStartBtn = document.getElementById("guide-footer-start-btn");
     if (footerStartBtn) {
-        footerStartBtn.addEventListener("click", () => guideContinueBtn.click());
+        footerStartBtn.addEventListener("click", openWizard);
     }
 
     guideCopy.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1863,7 +1862,7 @@ function resetToAccessScreen() {
     sessionStorage.removeItem("aiApiKey");
     selectedProvider = "openai";
     guideCopy.classList.add("hidden");
-    guideContinueBtn.classList.add("hidden");
+    if (guideContinueBtn) guideContinueBtn.classList.add("hidden");
     setGuideChoice("");
     accessScreen.classList.remove("hidden");
     logoutBtn.classList.add("hidden");
@@ -7156,7 +7155,7 @@ function applyLocale() {
     document.querySelector("#guide-screen h2").textContent = t("guideTitle");
     guideYesBtn.textContent = t("guideYes");
     guideNoBtn.textContent = t("guideNo");
-    guideContinueBtn.textContent = t("guideStart");
+    if (guideContinueBtn) guideContinueBtn.textContent = t("guideStart");
     const guideSessionNote = document.querySelector(".guide-session-note");
     if (guideSessionNote) guideSessionNote.textContent = t("guideSessionNote");
     if (!guideCopy.classList.contains("hidden")) {
