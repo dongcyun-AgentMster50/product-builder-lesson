@@ -12,8 +12,8 @@
     --shadow: 0 22px 48px rgba(8, 28, 60, 0.12);
 
     /* ── Design Tokens ── */
-    --heading-font: "SamsungOne", "Noto Sans KR", "Segoe UI", Arial, Helvetica, sans-serif;
-    --body-font: "SamsungOne", "Segoe UI", Arial, Helvetica, sans-serif;
+    --heading-font: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    --body-font: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
     --heading-lg: 16pt;
     --heading-md: 14pt;
     --body-size: 11pt;
@@ -39,7 +39,7 @@ body {
         linear-gradient(135deg, rgba(0, 31, 64, 0.98), rgba(0, 51, 102, 0.94) 44%, rgba(6, 84, 140, 0.74)),
         var(--bg);
     color: var(--ink);
-    font-family: "SamsungOne", "Segoe UI", Arial, Helvetica, sans-serif;
+    font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
     min-height: 100vh;
     word-break: keep-all;
     overflow-wrap: break-word;
@@ -47,7 +47,10 @@ body {
 
 .shell {
     width: min(1320px, calc(100vw - 32px));
-    margin: 6px auto 16px;
+    margin: 2px auto;
+    min-height: calc(100vh - 4px);
+    display: flex;
+    flex-direction: column;
 }
 
 .hero,
@@ -142,7 +145,7 @@ body {
 .panel-label,
 .block-index {
     margin: 0;
-    font-family: "SamsungOne", "Segoe UI", Arial, Helvetica, sans-serif;
+    font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.14em;
     font-size: 0.7rem;
@@ -220,8 +223,8 @@ body {
 
 .workspace {
     display: block;
-    padding: 12px;
-    margin-top: 8px;
+    padding: 10px;
+    margin-top: 6px;
     border-radius: 20px;
     background: rgba(255, 255, 255, 0.78);
 }
@@ -292,7 +295,7 @@ body {
     border: 1px solid var(--line);
     background: rgba(255, 255, 255, 0.96);
     text-align: center;
-    font-family: "SamsungOne", "Segoe UI", Arial, Helvetica, sans-serif;
+    font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
     font-size: 0.86rem;
     font-weight: 700;
 }
@@ -459,7 +462,7 @@ body {
 }
 
 label {
-    font-family: "SamsungOne", "Segoe UI", Arial, Helvetica, sans-serif;
+    font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
     font-size: 0.95rem;
     font-weight: 800;
 }
@@ -2168,9 +2171,21 @@ pre {
 }
 
 .result-frame {
-    margin-top: 8px;
+    margin-top: 6px;
     padding: 12px;
     border-radius: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.result-frame .report-head {
+    flex-shrink: 0;
+}
+
+.result-frame #result {
+    flex: 1;
+    min-height: 0;
 }
 
 .report-head {
@@ -2491,7 +2506,7 @@ pre {
 
 .subhead {
     margin: 12px 0 6px;
-    font-family: "SamsungOne", "Segoe UI", Arial, Helvetica, sans-serif;
+    font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
     font-weight: 700;
     color: var(--accent-strong);
 }
@@ -3403,7 +3418,7 @@ pre {
 .ai-stream-output {
     white-space: pre-wrap;
     word-break: break-word;
-    font-family: "SamsungOne", "Segoe UI", Arial, sans-serif;
+    font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
     font-size: 0.88rem;
     line-height: 1.6;
     color: var(--text);
@@ -3444,7 +3459,7 @@ pre {
     padding: 4px 12px;
     border-radius: 3px;
     letter-spacing: 0.04em;
-    font-family: "SamsungOne", sans-serif;
+    font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
 }
 
 .ai-result-context {
@@ -3476,7 +3491,7 @@ pre {
 .ai-result-body h1,
 .ai-result-body h2 {
     margin: 32px 0 16px;
-    font-family: "SamsungOne", "Noto Sans KR", sans-serif;
+    font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
     font-weight: 800;
     font-size: 14pt;
     color: #fff;
@@ -3496,7 +3511,7 @@ pre {
 .ai-result-body h3 {
     margin: 28px 0 0;
     padding: 12px 36px 12px 32px;
-    font-family: "SamsungOne", "Noto Sans KR", sans-serif;
+    font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
     font-weight: 700;
     font-size: 1.02em;
     color: #1a1a2e;
@@ -3508,7 +3523,7 @@ pre {
 /* ── h4 → 중간 다크 텍스트 ── */
 .ai-result-body h4 {
     margin: 20px 0 8px;
-    font-family: "SamsungOne", "Noto Sans KR", sans-serif;
+    font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
     font-weight: 700;
     font-size: 0.95em;
     color: #2d2d3d;
@@ -3578,7 +3593,7 @@ pre {
 .ai-result-body th {
     background: #1a1a2e;
     color: #fff;
-    font-family: "SamsungOne", sans-serif;
+    font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
     font-weight: 700;
     font-size: 0.84em;
 }
