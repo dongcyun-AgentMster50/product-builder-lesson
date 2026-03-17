@@ -2186,6 +2186,8 @@ pre {
 .result-frame #result {
     flex: 1;
     min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .report-head {
@@ -2200,17 +2202,25 @@ pre {
     color: var(--muted);
     text-align: center;
     background: rgba(248, 250, 252, 0.82);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .placeholder-preview {
-    display: grid;
-    gap: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
 }
 
 .placeholder-title {
     margin: 0;
-    padding: 8px 12px;
-    font-size: 0.78rem;
+    padding: 10px 14px;
+    font-size: 1.1rem;
+    text-align: center;
     font-weight: 600;
     color: var(--accent-strong);
     border-radius: 10px;
@@ -2222,6 +2232,8 @@ pre {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 6px;
+    flex: 1;
+    align-content: center;
 }
 
 .preview-expect-card {
