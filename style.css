@@ -662,28 +662,30 @@ textarea {
     gap: 14px;
 }
 
-.persona-groups,
+.persona-groups {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 .device-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .persona-groups .tree-children {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
 }
 
 .persona-groups .tree-group {
-    gap: 10px;
+    gap: 6px;
 }
 
 .persona-groups .tree-child {
-    min-height: 66px;
-    padding: 10px 12px;
+    min-height: 0;
+    padding: 6px 8px;
 }
 
 .persona-groups .tree-sub-children {
     grid-column: 1 / -1;
-    margin-left: 0;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-left: 20px;
+    grid-template-columns: 1fr;
 }
 
 .q4-field {
@@ -3663,9 +3665,12 @@ pre {
 
 @media (max-width: 980px) {
     .q4-shell,
-    .q4-top-row,
-    .persona-groups .tree-children {
+    .q4-top-row {
         grid-template-columns: 1fr;
+    }
+
+    .persona-groups {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .q4-preset-grid {
@@ -4006,57 +4011,79 @@ a.source-tag-link:hover {
     margin: 0;
 }
 
-/* ── 4. Q3 선택 UI 밀도 강화 ── */
+/* ── 4. Q3 선택 UI — 가로 3열 레이아웃 ── */
 .persona-groups {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    align-items: start;
 }
 
 .persona-groups .tree-group {
-    padding: 16px;
+    padding: 14px;
     border-radius: var(--card-radius);
-    gap: 8px;
-    min-height: var(--min-card-height);
-    box-shadow: 0 4px 16px rgba(0, 27, 71, 0.06);
+    gap: 6px;
+    min-height: 0;
+    box-shadow: 0 2px 10px rgba(0, 27, 71, 0.05);
 }
 
 .persona-groups .tree-parent {
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 }
 
 .persona-groups .tree-parent-title {
-    font-size: 0.84rem;
-    min-height: 30px;
-    padding: 0 10px;
+    font-size: 0.78rem;
+    min-height: 26px;
+    padding: 0 8px;
 }
 
 .persona-groups .tree-children {
-    gap: 6px;
-}
-
-.persona-groups .tree-child {
-    min-height: 54px;
-    padding: 8px 10px;
-    border-radius: 12px;
-    font-size: 0.9rem;
-}
-
-.persona-groups .tree-child span {
-    font-size: 0.88rem;
-    line-height: 1.45;
-}
-
-.persona-groups .tree-sub-children {
+    grid-template-columns: 1fr;
     gap: 4px;
 }
 
+.persona-groups .tree-child {
+    min-height: 0;
+    padding: 6px 8px;
+    border-radius: 8px;
+    gap: 6px;
+}
+
+.persona-groups .tree-child span {
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.persona-groups .tree-child input {
+    width: 15px;
+    height: 15px;
+}
+
+.persona-groups .tree-sub-children {
+    grid-template-columns: 1fr;
+    gap: 3px;
+    margin-left: 20px;
+    grid-column: 1 / -1;
+}
+
 .persona-groups .tree-sub-child {
-    padding: 6px 10px;
-    border-radius: 10px;
+    padding: 4px 8px;
+    border-radius: 6px;
 }
 
 .persona-groups .tree-sub-child span {
-    font-size: 0.82rem;
+    font-size: 0.74rem;
+}
+
+.persona-groups .tree-sub-child input {
+    width: 13px;
+    height: 13px;
+}
+
+.persona-groups .tree-custom-input {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    border-radius: 8px;
+    min-height: 0;
 }
 
 /* Q3 가이드 텍스트 정돈 */
@@ -4376,7 +4403,7 @@ a.source-tag-link:hover {
     }
 
     .persona-groups {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .scenario-case-grid {
