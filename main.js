@@ -1760,6 +1760,12 @@ function showGuideCopy() {
     guideCopy.innerHTML = buildGuideMarkup();
     guideCopy.classList.remove("hidden");
     guideContinueBtn.classList.remove("hidden");
+
+    const footerStartBtn = document.getElementById("guide-footer-start-btn");
+    if (footerStartBtn) {
+        footerStartBtn.addEventListener("click", () => guideContinueBtn.click());
+    }
+
     guideCopy.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -1798,6 +1804,7 @@ function buildGuideMarkup() {
         </div>
         <div class="guide-footer">
             <p class="guide-note">${escapeHtml(t("guideNote"))}</p>
+            <button type="button" class="generate-btn guide-footer-start-btn" id="guide-footer-start-btn">${currentLocale === "ko" ? "시작" : "Start"}</button>
         </div>
     `;
 }

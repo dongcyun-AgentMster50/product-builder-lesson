@@ -2004,9 +2004,21 @@ textarea {
 }
 
 .guide-footer {
-    display: grid;
-    gap: 14px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
     padding: 24px 22px 22px;
+}
+
+.guide-footer .guide-note {
+    flex: 1;
+    min-width: 0;
+}
+
+.guide-footer-start-btn {
+    flex-shrink: 0;
+    min-width: 100px;
+    white-space: nowrap;
 }
 
 .guide-note {
