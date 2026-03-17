@@ -50,7 +50,7 @@ body {
     margin: 2px auto;
     min-height: calc(100vh - 4px);
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: 1fr auto auto;
 }
 
 .hero,
@@ -66,8 +66,8 @@ body {
     position: relative;
     display: grid;
     grid-template-columns: 1.6fr 0.8fr;
-    gap: 14px;
-    padding: 16px 24px 12px;
+    gap: 16px;
+    padding: 28px 28px 22px;
     border-radius: 20px;
     background:
         radial-gradient(circle at 86% 16%, rgba(58, 159, 220, 0.24), transparent 20%),
@@ -146,8 +146,8 @@ body {
 }
 
 .hero-copy h1 {
-    margin: 2px 0 4px;
-    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    margin: 6px 0 8px;
+    font-size: clamp(1.6rem, 2.8vw, 2.2rem);
     line-height: 1.08;
     letter-spacing: -0.04em;
     font-weight: 900;
@@ -173,15 +173,15 @@ body {
 
 .hero-text {
     max-width: 720px;
-    font-size: 0.86rem;
-    line-height: 1.65;
+    font-size: 0.88rem;
+    line-height: 1.7;
     color: rgba(247, 251, 255, 0.86);
 }
 
 .hero-panel {
-    padding: 10px 14px 8px;
+    padding: 14px 16px 10px;
     border-radius: 14px;
-    margin-top: 28px;
+    margin-top: 32px;
     border: 1px solid rgba(255, 255, 255, 0.18);
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08)),
@@ -192,8 +192,8 @@ body {
 .hero-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 10px;
+    gap: 8px;
+    margin-top: 14px;
 }
 
 .hero-chip {
@@ -211,14 +211,14 @@ body {
 
 .hero-metrics {
     display: grid;
-    gap: 4px;
-    margin-top: 6px;
+    gap: 6px;
+    margin-top: 8px;
 }
 
 .hero-metric {
     display: grid;
-    gap: 1px;
-    padding: 6px 10px;
+    gap: 2px;
+    padding: 8px 12px;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.1);
 }
@@ -237,14 +237,14 @@ body {
 
 .workspace {
     display: block;
-    padding: 10px;
+    padding: 8px 10px;
     margin-top: 6px;
-    border-radius: 20px;
+    border-radius: 16px;
     background: rgba(255, 255, 255, 0.78);
 }
 
 .control-panel {
-    padding: 4px;
+    padding: 2px;
 }
 
 .section-head {
@@ -252,7 +252,7 @@ body {
     align-items: end;
     justify-content: space-between;
     gap: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .section-head.compact {
@@ -271,8 +271,8 @@ body {
 .wizard-step.active,
 .output-block,
 .lens-output-card {
-    padding: 14px;
-    border-radius: 14px;
+    padding: 12px;
+    border-radius: 12px;
     border: 1px solid var(--line);
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 248, 248, 0.98));
 }
@@ -326,7 +326,7 @@ body {
 
 .field {
     display: grid;
-    gap: 8px;
+    gap: 4px;
 }
 
 .split-field {
@@ -486,9 +486,9 @@ input[type="password"],
 textarea,
 select {
     width: 100%;
-    padding: 10px 14px;
+    padding: 8px 12px;
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.98);
     color: var(--ink);
     font-size: 1rem;
@@ -2078,7 +2078,7 @@ textarea {
 .tab-btn {
     border: 1px solid var(--line);
     border-radius: 999px;
-    padding: 9px 14px;
+    padding: 7px 14px;
     background: rgba(255, 255, 255, 0.98);
     color: var(--ink);
     font-weight: 800;
