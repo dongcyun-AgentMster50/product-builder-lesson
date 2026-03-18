@@ -313,13 +313,13 @@ function bindEvents() {
         updateStatePreview();
         updateStepInsight();
         renderQ4Composer();
-        if (currentStep === 4) runCuration();
+        // curation은 Build 버튼 클릭 시에만 실행
     });
     deviceCustomInput.addEventListener("input", () => {
         updateStatePreview();
         updateStepInsight();
         renderQ4Summary();
-        if (currentStep === 4) runCuration();
+        // curation은 Build 버튼 클릭 시에만 실행
     });
     q4Presets?.addEventListener("click", handleQ4PresetClick);
     q4AllChips?.addEventListener("click", handleQ4QuickChipClick);
@@ -3463,6 +3463,9 @@ function inferMissionBucket(purpose, selectedDeviceGroups = []) {
 
 function generateScenario() {
     if (!validateCurrentStep()) return;
+
+    // Build 시 큐레이션 먼저 실행
+    runCuration();
 
     const role = ROLE_LENSES.find((item) => item.id === roleSelect.value);
     const rawPurpose = purposeInput.value.trim();
@@ -7971,7 +7974,53 @@ function runCuration() {
 
     const results = curateScenarios(input, curationDbV1.scenarios, curationDbV2.scenarios, { maxResults: 5, minScore: 5 });
 
+    // 입력 정보 요약 렌더링
+    renderCurationInputSummary(personaIds, devices, purpose, results);
+
     renderCurationResults(results, devices);
+}
+
+function renderCurationInputSummary(personaIds, devices, purpose, results) {
+    const summaryEl = document.getElementById("curation-input-summary");
+    if (!summaryEl) return;
+
+    const selectedMarket = marketOptions.find(m => m.siteCode === countrySelect.value);
+    const city = getCityValue();
+    const isKo = currentLocale === "ko";
+
+    // 선택된 항목들의 라벨 수집
+    const labels = personaIds.map(id => {
+        const el = document.querySelector(`input[value="${id}"]`);
+        return el?.dataset?.label || id;
+    }).filter(Boolean);
+
+    const deviceLabels = [...new Set(devices)].slice(0, 6);
+    const country = selectedMarket?.label || "";
+
+    const tagHtml = [
+        country, city,
+        ...labels.slice(0, 8),
+        ...deviceLabels
+    ].filter(Boolean).map(t => `<span class="input-tag">${escapeHtml(t)}</span>`).join("");
+
+    // 매칭 이유 생성
+    const topTags = results.length > 0
+        ? [...new Set(results.slice(0, 3).flatMap(r => r._matchedTags?.map(t => t.tag) || r.tags || []))].slice(0, 4)
+        : [];
+
+    const reasonText = isKo
+        ? topTags.length
+            ? `위 입력 조합에서 <strong>${topTags.join(", ")}</strong> 키워드가 도출되어, 해당 키워드를 포함한 ${results.length}개 시나리오가 매칭되었습니다.`
+            : "입력된 조건으로 매칭 가능한 시나리오를 검색했습니다."
+        : topTags.length
+            ? `Keywords <strong>${topTags.join(", ")}</strong> derived from your input matched ${results.length} scenario(s).`
+            : "Searched for scenarios matching your input conditions.";
+
+    summaryEl.innerHTML = `
+        <div>${isKo ? "선택한 입력 정보" : "Your selections"}: ${tagHtml}</div>
+        ${purpose ? `<div style="margin-top:4px">${isKo ? "추가 설명" : "Context"}: ${escapeHtml(purpose)}</div>` : ""}
+        <div class="match-reason">${reasonText}</div>
+    `;
 }
 
 function renderCurationResults(results, selectedDevices) {
