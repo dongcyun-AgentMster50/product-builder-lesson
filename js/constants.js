@@ -100,7 +100,7 @@ const PERSONA_CATEGORY_GROUPS = [
     },
     {
         id: "interest",
-        title: "E. 생활맥락 — Explore Contents",
+        title: "E. 생활맥락",
         helper: "시나리오에 반영할 생활 테마를 골라 주세요",
         mode: "chip",
         scrollable: true,
@@ -127,7 +127,7 @@ const PERSONA_GROUP_TITLE_EN = {
     household: "B. Household",
     lifestage: "C. Life stage",
     tags: "D. Home characteristics",
-    interest: "E. Life context — Explore Contents"
+    interest: "E. Life context"
 };
 
 const PERSONA_GROUP_HELPER_EN = {
