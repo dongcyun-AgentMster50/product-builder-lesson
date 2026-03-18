@@ -1453,7 +1453,7 @@ function selectCity(value, label) {
     updateStatePreview();
     if (value) {
         updateStepInsight();
-        renderCityProfileCard();
+        // renderCityProfileCard(); — 넛지 3카드 스킵, 리전 인사이트로 바로 이동
     } else {
         // No city — show guide
         ++latestStep2InsightRequest;
