@@ -1,0 +1,175 @@
+{
+  "version": "2026-03-18",
+  "description": "시나리오 기기명 → 삼성닷컴 카테고리 경로 매핑. URL 패턴: {baseUrl}{path}",
+  "note": "카테고리 레벨 링크만 사용. 특정 SKU/가격 포함 안 함. 404 시 삼성닷컴 자체 리다이렉트.",
+  "mappings": [
+    {
+      "deviceAliases": ["TV", "삼성 TV", "삼성 스마트 TV", "Neo QLED", "OLED TV", "Smart TV", "Samsung TV"],
+      "productType": "Smart TV",
+      "icon": "📺",
+      "path": "/tvs/all-tvs/",
+      "category": "TV"
+    },
+    {
+      "deviceAliases": ["냉장고", "비스포크 냉장고", "Bespoke 냉장고", "Refrigerator", "Family Hub"],
+      "productType": "Refrigerator",
+      "icon": "🧊",
+      "path": "/refrigerators/all-refrigerators/",
+      "category": "Refrigerator"
+    },
+    {
+      "deviceAliases": ["세탁기", "건조기", "세탁기/건조기", "Washer", "Dryer", "세탁 건조기", "Bespoke 세탁기"],
+      "productType": "Washer & Dryer",
+      "icon": "🫧",
+      "path": "/washers-and-dryers/all-washers-and-dryers/",
+      "category": "Laundry"
+    },
+    {
+      "deviceAliases": ["에어컨", "무풍 에어컨", "무풍에어컨", "Air Conditioner", "WindFree"],
+      "productType": "Air Conditioner",
+      "icon": "❄️",
+      "path": "/air-conditioners/all-air-conditioners/",
+      "category": "Air Conditioner"
+    },
+    {
+      "deviceAliases": ["공기청정기", "에어 모니터", "Air Purifier", "Air Care", "에어드레서"],
+      "productType": "Air Care",
+      "icon": "🌬️",
+      "path": "/air-care/all-air-care/",
+      "category": "Air Care"
+    },
+    {
+      "deviceAliases": ["로봇청소기", "Jet Bot", "Jet Bot AI+", "Robot Vacuum", "청소기", "Vacuum"],
+      "productType": "Vacuum Cleaner",
+      "icon": "🤖",
+      "path": "/vacuum-cleaners/all-vacuum-cleaners/",
+      "category": "Vacuum"
+    },
+    {
+      "deviceAliases": ["식기세척기", "Dishwasher"],
+      "productType": "Dishwasher",
+      "icon": "🍽️",
+      "path": "/dishwashers/all-dishwashers/",
+      "category": "Dishwasher"
+    },
+    {
+      "deviceAliases": ["Galaxy 스마트폰", "갤럭시 스마트폰", "Galaxy Phone", "스마트폰", "Galaxy S", "Galaxy Z"],
+      "productType": "Galaxy Smartphone",
+      "icon": "📱",
+      "path": "/smartphones/all-smartphones/",
+      "category": "Smartphone"
+    },
+    {
+      "deviceAliases": ["Galaxy Tab", "갤럭시 탭", "Galaxy Tablet", "태블릿"],
+      "productType": "Galaxy Tablet",
+      "icon": "📋",
+      "path": "/tablets/all-tablets/",
+      "category": "Tablet"
+    },
+    {
+      "deviceAliases": ["Galaxy Watch", "갤럭시 워치", "Galaxy Wearable", "웨어러블", "웨어러블 기기"],
+      "productType": "Galaxy Watch",
+      "icon": "⌚",
+      "path": "/watches/all-watches/",
+      "category": "Wearable"
+    },
+    {
+      "deviceAliases": ["Galaxy Buds", "갤럭시 버즈", "이어폰"],
+      "productType": "Galaxy Buds",
+      "icon": "🎧",
+      "path": "/buds/all-buds/",
+      "category": "Audio"
+    },
+    {
+      "deviceAliases": ["SmartTag", "갤럭시 SmartTag", "Galaxy SmartTag", "스마트태그"],
+      "productType": "SmartTag",
+      "icon": "📍",
+      "path": "/smartthings/all-smartthings/",
+      "category": "SmartThings"
+    },
+    {
+      "deviceAliases": ["카메라", "IP 카메라", "실내 카메라", "보안 카메라", "CCTV", "홈카메라", "Indoor Camera", "Outdoor Camera"],
+      "productType": "Smart Camera",
+      "icon": "📷",
+      "path": "/smartthings/all-smartthings/",
+      "category": "SmartThings"
+    },
+    {
+      "deviceAliases": ["센서", "동작 센서", "문열림 센서", "온습도 센서", "Presence Sensor", "재실 감지 센서", "연기 감지기", "Multipurpose Sensor", "Motion Sensor"],
+      "productType": "Smart Sensor",
+      "icon": "📡",
+      "path": "/smartthings/all-smartthings/",
+      "category": "SmartThings"
+    },
+    {
+      "deviceAliases": ["도어벨", "비디오 도어벨", "Video Doorbell", "스마트 도어벨"],
+      "productType": "Video Doorbell",
+      "icon": "🔔",
+      "path": "/smartthings/all-smartthings/",
+      "category": "SmartThings"
+    },
+    {
+      "deviceAliases": ["도어락", "스마트 도어락", "Smart Lock", "스마트 잠금장치"],
+      "productType": "Smart Lock",
+      "icon": "🔐",
+      "path": "/smartthings/all-smartthings/",
+      "category": "SmartThings"
+    },
+    {
+      "deviceAliases": ["Hub", "SmartThings Hub", "SmartThings Station", "허브", "스마트싱스 허브", "허브 내장"],
+      "productType": "SmartThings Hub",
+      "icon": "🏠",
+      "path": "/smartthings/all-smartthings/",
+      "category": "SmartThings"
+    },
+    {
+      "deviceAliases": ["조명", "스마트 전구", "스마트 조명", "라이트 스트립", "Light Strip", "Smart Bulb", "Philips Hue", "스마트 라이트"],
+      "productType": "Smart Lighting",
+      "icon": "💡",
+      "path": "/smartthings/all-smartthings/",
+      "category": "SmartThings"
+    },
+    {
+      "deviceAliases": ["스마트 플러그", "Smart Plug", "플러그"],
+      "productType": "Smart Plug",
+      "icon": "🔌",
+      "path": "/smartthings/all-smartthings/",
+      "category": "SmartThings"
+    },
+    {
+      "deviceAliases": ["블라인드", "스마트 블라인드", "Smart Blinds", "커튼"],
+      "productType": "Smart Blinds",
+      "icon": "🪟",
+      "path": "/smartthings/all-smartthings/",
+      "category": "SmartThings"
+    },
+    {
+      "deviceAliases": ["스피커", "사운드바", "뮤직 프레임", "Music Frame", "Soundbar", "AI 스피커"],
+      "productType": "Speaker / Soundbar",
+      "icon": "🔊",
+      "path": "/soundbars/all-soundbars/",
+      "category": "Audio"
+    },
+    {
+      "deviceAliases": ["모니터", "게이밍 모니터", "Gaming Monitor", "Smart Monitor"],
+      "productType": "Monitor",
+      "icon": "🖥️",
+      "path": "/monitors/all-monitors/",
+      "category": "Monitor"
+    },
+    {
+      "deviceAliases": ["오븐", "쿠커", "전자레인지", "인덕션"],
+      "productType": "Cooking Appliance",
+      "icon": "🍳",
+      "path": "/cooking-appliances/all-cooking-appliances/",
+      "category": "Cooking"
+    },
+    {
+      "deviceAliases": ["자동 급식기", "급수기"],
+      "productType": "Pet Accessory (Third-party)",
+      "icon": "🐾",
+      "path": "/smartthings/all-smartthings/",
+      "category": "SmartThings"
+    }
+  ]
+}

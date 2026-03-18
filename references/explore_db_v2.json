@@ -1,0 +1,3765 @@
+{
+  "version": "v2.0",
+  "total_keywords": 12,
+  "keywords": [
+    "Save energy",
+    "Keep the air fresh",
+    "Easily control your lights",
+    "Help with chores",
+    "Keep your home safe",
+    "Sleep well",
+    "Enhanced mood",
+    "Care for seniors",
+    "Care for kids",
+    "Care for your pet",
+    "Find your belongings",
+    "Stay fit & healthy"
+  ],
+  "scenario_matrix": [
+    {
+      "article_title": "Tips for saving energy at home",
+      "tags": [
+        "Save energy",
+        "Keep your home safe"
+      ],
+      "value_proposition": "보안을 유지하면서 불필요한 전력을 차단하는 외출 모드 최적화."
+    },
+    {
+      "article_title": "Your lights can alert you",
+      "tags": [
+        "Help with chores",
+        "Keep the air fresh",
+        "Sleep well"
+      ],
+      "value_proposition": "조명을 시각적 알림 도구로 활용(예: 세탁 완료 시 녹색 점멸, 공기질 나쁨 시 적색)."
+    },
+    {
+      "article_title": "Locate lost items easily",
+      "tags": [
+        "Find your belongings"
+      ],
+      "value_proposition": "SmartTag와 UWB(Ultra-Wideband) 기술을 활용한 정밀 위치 추적."
+    },
+    {
+      "article_title": "A magic button for extra convenience",
+      "tags": [
+        "Keep your home safe",
+        "Easily control your lights",
+        "Enhanced mood"
+      ],
+      "value_proposition": "물리 버튼(SmartTag, 버튼)을 활용해 스마트폰 없이 복잡한 루틴 실행."
+    },
+    {
+      "article_title": "Welcome to Scandinavia",
+      "tags": [
+        "Keep the air fresh",
+        "Save energy",
+        "Help with chores"
+      ],
+      "value_proposition": "북유럽 라이프스타일(Hygge)을 테마로 한 쾌적한 공기질과 효율적 난방 관리."
+    },
+    {
+      "article_title": "Upgrade your listening experience",
+      "tags": [
+        "Enhanced mood"
+      ],
+      "value_proposition": "멀티룸 오디오 구성 및 조명과 음악의 동기화(Music Sync)."
+    },
+    {
+      "article_title": "Keep your home safe anytime, anywhere",
+      "tags": [
+        "Keep your home safe"
+      ],
+      "value_proposition": "언제 어디서나 집안 상황을 확인하는 원격 보안 모니터링."
+    },
+    {
+      "article_title": "Hosting a smart home party",
+      "tags": [
+        "Help with chores",
+        "Enhanced mood"
+      ],
+      "value_proposition": "파티 모드(조명+음악) 자동화 및 파티 후 로봇청소기 자동 실행."
+    },
+    {
+      "article_title": "Your own home security guard",
+      "tags": [
+        "Keep your home safe",
+        "Care for your pet"
+      ],
+      "value_proposition": "센서와 로봇청소기를 결합하여 움직이는 보안 요원처럼 활용."
+    },
+    {
+      "article_title": "Purrfect pet care",
+      "tags": [
+        "Care for your pet",
+        "Keep your home safe",
+        "Help with chores"
+      ],
+      "value_proposition": "반려동물을 위한 완벽한 환경 조성(온도, 조명, 소리) 및 모니터링."
+    },
+    {
+      "article_title": "Our smart butler",
+      "tags": [
+        "Help with chores",
+        "Keep your home safe"
+      ],
+      "value_proposition": "현관 제어 및 방문자 관리를 통한 집사(Butler) 서비스 구현."
+    },
+    {
+      "article_title": "Seamlessly save energy",
+      "tags": [
+        "Save energy",
+        "Easily control your lights"
+      ],
+      "value_proposition": "사용자가 인지하지 못하는 사이 수행되는 자동 에너지 절감(AI 절약 모드)."
+    },
+    {
+      "article_title": "Your own in-house sleep specialist",
+      "tags": [
+        "Sleep well",
+        "Keep the air fresh",
+        "Easily control your lights"
+      ],
+      "value_proposition": "수면 단계에 맞춘 조명, 온도, 공기질의 자동 조절."
+    },
+    {
+      "article_title": "The ultimate gaming environment",
+      "tags": [
+        "Enhanced mood",
+        "Keep the air fresh",
+        "Easily control your lights"
+      ],
+      "value_proposition": "게임 몰입도를 극대화하는 조명 및 쾌적한 게이밍 룸 환경 조성."
+    },
+    {
+      "article_title": "Keep your children comfortable and safe",
+      "tags": [
+        "Care for kids",
+        "Keep the air fresh",
+        "Keep your home safe"
+      ],
+      "value_proposition": "자녀의 귀가 확인 및 건강한 실내 환경 자동 유지."
+    },
+    {
+      "article_title": "Be worry-free even when apart",
+      "tags": [
+        "Care for seniors"
+      ],
+      "value_proposition": "멀리 떨어져 사는 부모님의 안부를 센서 데이터로 확인(패밀리 케어)."
+    },
+    {
+      "article_title": "Eco-friendly laundry",
+      "tags": [
+        "Save energy",
+        "Help with chores"
+      ],
+      "value_proposition": "미세 플라스틱 저감 코스 및 에너지 효율적 세탁 가이드."
+    },
+    {
+      "article_title": "Hey TV! Show me what you can do!",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe",
+        "Enhanced mood"
+      ],
+      "value_proposition": "TV를 집안의 제어 허브로 활용하는 대화면 경험."
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "v2-A-safe-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Keep your home safe anytime, anywhere",
+      "article_code": "A",
+      "tags": [
+        "Keep your home safe"
+      ],
+      "target_persona": "잦은 출장이나 여행으로 집을 비우는 사용자, 보안에 민감한 1인 가구.",
+      "story_num": 1,
+      "story_title": "Monitor the front door",
+      "narrative": "상황: 택배 분실 사고가 빈번하거나, 낯선 방문자가 걱정되는 상황.\n메커니즘: 비디오 도어벨이 움직임을 감지하거나 벨이 눌리면, 스마트폰과 삼성 TV에 실시간 알림과 영상을 팝업(PiP)으로 띄운다. 사용자는 TV 시청 중에도 방문자를 확인하고 음성으로 응대할 수 있다.\n기술적 특징: Matter 1.5 표준을 지원하여 다양한 서드파티 도어벨과의 호환성이 강화되었다.",
+      "original_text": "",
+      "devices": [
+        "비디오 도어벨",
+        "Galaxy 스마트폰",
+        "삼성 TV"
+      ],
+      "related_products": [
+        "센서/카메라: 비디오 도어벨, 실내/외 IP 카메라, 문열림 센서.",
+        "제어 기기: 갤럭시 탭(멀티뷰 용), 삼성 스마트 TV(알림 및 모니터링), 갤럭시 스마트폰.",
+        "인프라: SmartThings Hub (또는 허브 내장형 TV/냉장고/사운드바)."
+      ],
+      "value_tags": [
+        "Secure",
+        "Monitoring"
+      ],
+      "tech_highlights": [
+        "Matter 1.5",
+        "PiP 알림",
+        "실시간 영상 스트리밍"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Video Doorbell",
+          "icon": "🔔",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        }
+      ]
+    },
+    {
+      "id": "v2-A-safe-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Keep your home safe anytime, anywhere",
+      "article_code": "A",
+      "tags": [
+        "Keep your home safe"
+      ],
+      "target_persona": "잦은 출장이나 여행으로 집을 비우는 사용자, 보안에 민감한 1인 가구.",
+      "story_num": 2,
+      "story_title": "Monitor every corner",
+      "narrative": "상황: 집안 내부 상황이 궁금하지만, 카메라 해킹이나 사생활 침해가 우려됨.\n메커니즘: 여러 대의 IP 카메라를 연결하여 집안 곳곳을 모니터링한다. 핵심은 'Knox Matrix' 보안 기술과 연동된 프라이버시 모드다. 사용자의 스마트폰이나 웨어러블 기기가 집안 내 위치(Geofencing)를 감지하면, 실내 카메라는 자동으로 전원이 차단되거나 렌즈가 가려져 해킹 우려를 원천 봉쇄한다.",
+      "original_text": "",
+      "devices": [
+        "IP 카메라",
+        "Galaxy 스마트폰",
+        "웨어러블 기기"
+      ],
+      "related_products": [
+        "센서/카메라: 비디오 도어벨, 실내/외 IP 카메라, 문열림 센서.",
+        "제어 기기: 갤럭시 탭(멀티뷰 용), 삼성 스마트 TV(알림 및 모니터링), 갤럭시 스마트폰.",
+        "인프라: SmartThings Hub (또는 허브 내장형 TV/냉장고/사운드바)."
+      ],
+      "value_tags": [
+        "Secure",
+        "Privacy"
+      ],
+      "tech_highlights": [
+        "Knox Matrix",
+        "Geofencing",
+        "프라이버시 모드"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Camera",
+          "icon": "📷",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        },
+        {
+          "productType": "Galaxy Watch",
+          "icon": "⌚",
+          "path": "/watches/all-watches/",
+          "category": "Wearable"
+        }
+      ]
+    },
+    {
+      "id": "v2-A-safe-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Keep your home safe anytime, anywhere",
+      "article_code": "A",
+      "tags": [
+        "Keep your home safe"
+      ],
+      "target_persona": "잦은 출장이나 여행으로 집을 비우는 사용자, 보안에 민감한 1인 가구.",
+      "story_num": 3,
+      "story_title": "Monitor multiple cameras at once",
+      "narrative": "상황: 넓은 집이나 여러 층을 한 번에 확인하고 싶음.\n메커니즘: 갤럭시 탭이나 삼성 스마트 TV의 대화면을 활용하여, 연결된 모든 카메라의 피드를 그리드(Grid) 형태로 동시에 띄운다. 보안 관제실과 같은 경험을 제공하며, 특정 피드를 선택하면 전체 화면으로 확대된다.",
+      "original_text": "",
+      "devices": [
+        "갤럭시 탭",
+        "삼성 스마트 TV",
+        "IP 카메라"
+      ],
+      "related_products": [
+        "센서/카메라: 비디오 도어벨, 실내/외 IP 카메라, 문열림 센서.",
+        "제어 기기: 갤럭시 탭(멀티뷰 용), 삼성 스마트 TV(알림 및 모니터링), 갤럭시 스마트폰.",
+        "인프라: SmartThings Hub (또는 허브 내장형 TV/냉장고/사운드바)."
+      ],
+      "value_tags": [
+        "Secure",
+        "Monitoring",
+        "Multi-view"
+      ],
+      "tech_highlights": [
+        "멀티뷰 그리드",
+        "대화면 모니터링"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Tablet",
+          "icon": "📋",
+          "path": "/tablets/all-tablets/",
+          "category": "Tablet"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Smart Camera",
+          "icon": "📷",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-B-gaming-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "The ultimate gaming environment",
+      "article_code": "B",
+      "tags": [
+        "Enhanced mood",
+        "Keep the air fresh",
+        "Easily control your lights"
+      ],
+      "target_persona": "게임 몰입도를 중시하는 게이머, PC 및 콘솔 사용자.",
+      "story_num": 1,
+      "story_title": "Level-up your gaming vibe",
+      "narrative": "상황: 밝은 거실에서 게임을 시작하려 할 때 분위기가 깨지는 문제.\n메커니즘: 게임 콘솔을 켜거나 삼성 TV에서 '게이밍 허브(Gaming Hub)'를 실행하면, SmartThings가 이를 트리거로 인식한다. 천장 조명은 어두워지고(Dimming), TV 뒤편의 라이트 스트립(Hue Sync 등)은 게임 화면의 색상과 실시간으로 동기화되어 벽면을 물들인다. 스마트 블라인드는 자동으로 내려가 화면 반사를 차단한다.\n사용자 이점: 별도의 조작 없이 게임 시작과 동시에 몰입 환경이 완성된다.",
+      "original_text": "",
+      "devices": [
+        "삼성 TV",
+        "게임 콘솔",
+        "스마트 전구/라이트 스트립",
+        "스마트 블라인드"
+      ],
+      "related_products": [
+        "엔터테인먼트: 삼성 Neo QLED/OLED TV, 게이밍 모니터, 뮤직 프레임.",
+        "환경 제어: 스마트 전구/스트립(Philips Hue, Nanoleaf), 스마트 블라인드, 무풍 에어컨."
+      ],
+      "value_tags": [
+        "Immersive",
+        "Mood",
+        "Gaming"
+      ],
+      "tech_highlights": [
+        "Gaming Hub 트리거",
+        "조명 동기화(Hue Sync)",
+        "자동 블라인드"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Smart Lighting",
+          "icon": "💡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-B-gaming-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "The ultimate gaming environment",
+      "article_code": "B",
+      "tags": [
+        "Enhanced mood",
+        "Keep the air fresh",
+        "Easily control your lights"
+      ],
+      "target_persona": "게임 몰입도를 중시하는 게이머, PC 및 콘솔 사용자.",
+      "story_num": 2,
+      "story_title": "Keep yourself comfortable while gaming",
+      "narrative": "상황: 장시간 게임으로 인해 PC/콘솔 발열과 체온 상승으로 방이 더워짐.\n메커니즘: 에어컨이나 공기청정기가 실내 온도를 모니터링하다가, 설정된 온도(예: 24도) 이상으로 올라가면 자동으로 '무풍 모드'로 작동한다. 이는 바람이 직접 닿아 게임 집중력을 방해하는 것을 막으면서 쾌적함을 유지한다.",
+      "original_text": "",
+      "devices": [
+        "무풍 에어컨",
+        "공기청정기"
+      ],
+      "related_products": [
+        "엔터테인먼트: 삼성 Neo QLED/OLED TV, 게이밍 모니터, 뮤직 프레임.",
+        "환경 제어: 스마트 전구/스트립(Philips Hue, Nanoleaf), 스마트 블라인드, 무풍 에어컨."
+      ],
+      "value_tags": [
+        "Comfort",
+        "Gaming"
+      ],
+      "tech_highlights": [
+        "무풍 모드",
+        "자동 온도 모니터링"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        },
+        {
+          "productType": "Air Care",
+          "icon": "🌬️",
+          "path": "/air-care/all-air-care/",
+          "category": "Air Care"
+        }
+      ]
+    },
+    {
+      "id": "v2-B-gaming-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "The ultimate gaming environment",
+      "article_code": "B",
+      "tags": [
+        "Enhanced mood",
+        "Keep the air fresh",
+        "Easily control your lights"
+      ],
+      "target_persona": "게임 몰입도를 중시하는 게이머, PC 및 콘솔 사용자.",
+      "story_num": 3,
+      "story_title": "Tidying up is easy",
+      "narrative": "상황: 게임 종료 후 지쳐서 뒷정리가 귀찮음.\n메커니즘: TV나 콘솔이 꺼지면, 조명은 다시 일상적인 백색광으로 돌아오고, 블라인드가 올라가며, 에어컨은 절전 모드로 전환된다.",
+      "original_text": "",
+      "devices": [
+        "삼성 TV",
+        "스마트 전구",
+        "스마트 블라인드",
+        "에어컨"
+      ],
+      "related_products": [
+        "엔터테인먼트: 삼성 Neo QLED/OLED TV, 게이밍 모니터, 뮤직 프레임.",
+        "환경 제어: 스마트 전구/스트립(Philips Hue, Nanoleaf), 스마트 블라인드, 무풍 에어컨."
+      ],
+      "value_tags": [
+        "Convenience",
+        "Auto-restore"
+      ],
+      "tech_highlights": [
+        "자동 복귀 루틴",
+        "절전 모드 전환"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Smart Lighting",
+          "icon": "💡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        },
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        }
+      ]
+    },
+    {
+      "id": "v2-C-family-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Be worry-free even when apart",
+      "article_code": "C",
+      "tags": [
+        "Care for seniors",
+        "Care for kids"
+      ],
+      "target_persona": "멀리 사는 부모님을 둔 자녀, 맞벌이 부부.",
+      "story_num": 1,
+      "story_title": "Check their daily routine",
+      "narrative": "상황: 부모님이 전화를 받지 않아 불안한 상황.\n메커니즘: SmartThings Family Care 서비스는 부모님 댁의 가전 사용 이력을 분석한다. 아침에 일어나서 정수기를 사용했는지, 냉장고 문이 열렸는지, TV가 켜졌는지 등의 데이터를 통해 활동성을 감지한다. 만약 평소와 달리 일정 시간 동안 활동이 감지되지 않으면 보호자에게 알림을 보낸다.",
+      "original_text": "With Family Care, you can check whether your loved ones are using their refrigerator, TV, washing machine, oven, and phone as usual. You can also see if they are getting enough physical activity by checking their step count, and manage important appointments in advance, allowing you to remotely assist your loved ones in their daily life.",
+      "devices": [
+        "정수기",
+        "Bespoke AI 냉장고",
+        "삼성 TV",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [
+        "가전: Bespoke AI 냉장고(도어 센서), 삼성 TV(시청 감지), 정수기.",
+        "웨어러블/모바일: 갤럭시 워치(낙상 감지), 갤럭시 스마트폰.",
+        "서비스: SmartThings Family Care (앱 내 기능)."
+      ],
+      "value_tags": [
+        "Care",
+        "Senior",
+        "Non-intrusive monitoring"
+      ],
+      "tech_highlights": [
+        "가전 사용 패턴 분석",
+        "비침해적 모니터링",
+        "Family Care 서비스"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Refrigerator",
+          "icon": "🧊",
+          "path": "/refrigerators/all-refrigerators/",
+          "category": "Refrigerator"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-C-family-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Be worry-free even when apart",
+      "article_code": "C",
+      "tags": [
+        "Care for seniors"
+      ],
+      "target_persona": "멀리 사는 부모님을 둔 자녀, 맞벌이 부부.",
+      "story_num": 2,
+      "story_title": "Medication Reminders",
+      "narrative": "상황: 부모님이 약 먹는 시간을 깜빡하는 경우.\n메커니즘: 정해진 시간에 부모님이 가장 자주 사용하는 기기(예: 보고 있는 삼성 TV 화면, 혹은 갤럭시 워치)로 복약 알림 팝업을 띄운다. 부모님이 알림을 확인하면 보호자 앱에 '복약 완료' 로그가 남는다.",
+      "original_text": "",
+      "devices": [
+        "삼성 TV",
+        "갤럭시 워치",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [
+        "가전: Bespoke AI 냉장고(도어 센서), 삼성 TV(시청 감지), 정수기.",
+        "웨어러블/모바일: 갤럭시 워치(낙상 감지), 갤럭시 스마트폰.",
+        "서비스: SmartThings Family Care (앱 내 기능)."
+      ],
+      "value_tags": [
+        "Care",
+        "Senior",
+        "Health"
+      ],
+      "tech_highlights": [
+        "복약 알림 팝업",
+        "복약 완료 로그"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Galaxy Watch",
+          "icon": "⌚",
+          "path": "/watches/all-watches/",
+          "category": "Wearable"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-C-family-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Be worry-free even when apart",
+      "article_code": "C",
+      "tags": [
+        "Care for kids"
+      ],
+      "target_persona": "멀리 사는 부모님을 둔 자녀, 맞벌이 부부.",
+      "story_num": 3,
+      "story_title": "Location-based Care",
+      "narrative": "상황: 자녀가 학교나 학원에 잘 도착했는지 확인.\n메커니즘: 자녀의 갤럭시 스마트폰 위치 정보를 활용해, 지정된 장소(집, 학교)에 진입하거나 이탈할 때 보호자에게 알림을 전송한다.",
+      "original_text": "",
+      "devices": [
+        "갤럭시 스마트폰"
+      ],
+      "related_products": [
+        "가전: Bespoke AI 냉장고(도어 센서), 삼성 TV(시청 감지), 정수기.",
+        "웨어러블/모바일: 갤럭시 워치(낙상 감지), 갤럭시 스마트폰.",
+        "서비스: SmartThings Family Care (앱 내 기능)."
+      ],
+      "value_tags": [
+        "Care",
+        "Kids",
+        "Location"
+      ],
+      "tech_highlights": [
+        "Geofencing",
+        "위치 기반 알림"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-D-energy-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Seamlessly save energy",
+      "article_code": "D",
+      "tags": [
+        "Save energy",
+        "Easily control your lights"
+      ],
+      "target_persona": "환경 문제에 관심이 많거나 전기요금을 절약하고 싶은 사용자.",
+      "story_num": 1,
+      "story_title": "Power down, savings up",
+      "narrative": "상황: 전기요금 누진세 구간 진입이 걱정되는 월말.\n메커니즘: 'AI Energy Mode'는 사용자가 설정한 월간 목표 요금에 맞춰 가전의 성능을 미세 조정한다. 예를 들어, 냉장고의 압축기 속도를 조절하거나, 세탁기의 물 온도를 낮추고 시간을 늘려 에너지 소비를 최대 70%까지 줄인다. TV는 주변 조도에 맞춰 화면 밝기를 자동으로 최적화한다.",
+      "original_text": "Just turn on SmartThings AI Energy Mode and you can help save energy without worrying about each device in your home. Just set your monthly energy use goals and AI will automatically track your progress.",
+      "devices": [
+        "Bespoke 냉장고",
+        "세탁기",
+        "삼성 TV"
+      ],
+      "related_products": [
+        "가전: Bespoke AI 세탁기/건조기, Bespoke 냉장고, SmartThings Energy 서비스.",
+        "인프라: 스마트 플러그(대기전력 차단), 스마트 미터기."
+      ],
+      "value_tags": [
+        "Energy",
+        "Savings",
+        "AI"
+      ],
+      "tech_highlights": [
+        "AI Energy Mode",
+        "월간 목표 요금 설정",
+        "에너지 최대 70% 절감"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Refrigerator",
+          "icon": "🧊",
+          "path": "/refrigerators/all-refrigerators/",
+          "category": "Refrigerator"
+        },
+        {
+          "productType": "Washer & Dryer",
+          "icon": "🫧",
+          "path": "/washers-and-dryers/all-washers-and-dryers/",
+          "category": "Laundry"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        }
+      ]
+    },
+    {
+      "id": "v2-D-energy-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Eco-friendly laundry",
+      "article_code": "D",
+      "tags": [
+        "Save energy",
+        "Help with chores"
+      ],
+      "target_persona": "환경 문제에 관심이 많거나 전기요금을 절약하고 싶은 사용자.",
+      "story_num": 2,
+      "story_title": "Eco-friendly Laundry",
+      "narrative": "상황: 옷감 손상과 환경 오염을 최소화하고 싶음.\n메커니즘: 파타고니아(Patagonia)와 협력 개발한 '미세 플라스틱 저감 코스'를 활용한다. 세탁기의 모터 회전을 조절하고 에코버블 기술을 활용해 옷감 마찰을 줄여 미세 플라스틱 발생량을 획기적으로 낮춘다.",
+      "original_text": "",
+      "devices": [
+        "Bespoke AI 세탁기"
+      ],
+      "related_products": [
+        "가전: Bespoke AI 세탁기/건조기, Bespoke 냉장고, SmartThings Energy 서비스.",
+        "인프라: 스마트 플러그(대기전력 차단), 스마트 미터기."
+      ],
+      "value_tags": [
+        "Eco-friendly",
+        "Sustainability"
+      ],
+      "tech_highlights": [
+        "미세 플라스틱 저감 코스",
+        "에코버블",
+        "파타고니아 협력"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Washer & Dryer",
+          "icon": "🫧",
+          "path": "/washers-and-dryers/all-washers-and-dryers/",
+          "category": "Laundry"
+        }
+      ]
+    },
+    {
+      "id": "v2-D-energy-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Seamlessly save energy",
+      "article_code": "D",
+      "tags": [
+        "Save energy"
+      ],
+      "target_persona": "환경 문제에 관심이 많거나 전기요금을 절약하고 싶은 사용자.",
+      "story_num": 3,
+      "story_title": "Away Mode",
+      "narrative": "상황: 급하게 외출하느라 불이나 에어컨을 켜두고 나옴.\n메커니즘: 사용자의 위치가 집에서 멀어지면(Geofencing), SmartThings가 켜져 있는 기기(조명, TV, 에어컨)를 감지하고 알림을 보낸다. 사용자는 \"모두 끄기\" 버튼 하나로 집안의 에너지를 차단할 수 있다.",
+      "original_text": "SmartThings helps take care of your home when your family is away. It helps you save energy by automatically turning off any devices that have been left on unnecessarily. You can also use smart plugs to manage devices that cannot be connected directly to SmartThings and control them through your smartphone or TV.",
+      "devices": [
+        "조명",
+        "삼성 TV",
+        "에어컨",
+        "스마트 플러그",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [
+        "가전: Bespoke AI 세탁기/건조기, Bespoke 냉장고, SmartThings Energy 서비스.",
+        "인프라: 스마트 플러그(대기전력 차단), 스마트 미터기."
+      ],
+      "value_tags": [
+        "Energy",
+        "Away mode",
+        "Convenience"
+      ],
+      "tech_highlights": [
+        "Geofencing",
+        "모두 끄기 원터치",
+        "대기전력 차단"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Lighting",
+          "icon": "💡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-E-pet-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Purrfect pet care",
+      "article_code": "E",
+      "tags": [
+        "Care for your pet",
+        "Keep your home safe",
+        "Help with chores"
+      ],
+      "target_persona": "출근 후 혼자 있는 반려동물이 걱정되는 1인 가구.",
+      "story_num": 1,
+      "story_title": "Check up on them",
+      "narrative": "상황: 반려동물이 보이지 않거나 사고를 쳤는지 확인하고 싶음.\n메커니즘: Jet Bot AI+ 로봇청소기를 원격 조종하여 집안을 순찰한다. AI 사물 인식 기능이 반려동물(개, 고양이)을 인식하면 자동으로 사진이나 영상을 찍어 사용자에게 전송한다. 심지어 짖음 소리를 감지하면 알림을 보낸다.",
+      "original_text": "Give your pet customised care! Start Pet Care with just a photo. Take a picture of your pet's face, and Pet Care will automatically identify the breed in order to create a profile. You can check how your pet is doing by reviewing the daily activity level, and you can even compare its health status with other pets of the same breed.",
+      "devices": [
+        "Jet Bot AI+ 로봇청소기",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [
+        "청소/모니터링: Jet Bot AI+ (카메라 및 순찰 기능).",
+        "주변기기: 스마트 급식기(파트너사 제품), 홈 카메라.",
+        "환경: 무풍 에어컨, 삼성 스마트 TV/뮤직 프레임."
+      ],
+      "value_tags": [
+        "Pet care",
+        "Monitoring",
+        "AI recognition"
+      ],
+      "tech_highlights": [
+        "AI 사물 인식",
+        "원격 순찰",
+        "짖음 감지"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Vacuum Cleaner",
+          "icon": "🤖",
+          "path": "/vacuum-cleaners/all-vacuum-cleaners/",
+          "category": "Vacuum"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-E-pet-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Purrfect pet care",
+      "article_code": "E",
+      "tags": [
+        "Care for your pet"
+      ],
+      "target_persona": "출근 후 혼자 있는 반려동물이 걱정되는 1인 가구.",
+      "story_num": 2,
+      "story_title": "Feed on time, every time",
+      "narrative": "상황: 야근으로 귀가가 늦어지는 상황.\n메커니즘: 스마트 급식기와 연동하여 원격으로 사료를 급여한다. 반려동물이 밥을 얼마나 먹었는지 섭취량을 기록하여 건강 데이터를 관리한다.",
+      "original_text": "Help your pet enjoy its time alone. While you're away, use the automatic feeder to ensure your pet has regular meals. You can set the perfect temperature and atmosphere, and you can also play TV shows that your pet enjoys. When barking is detected, the robot vacuum cleaner will check the situation and send you a video of your dog to give you peace of mind.",
+      "devices": [
+        "스마트 급식기"
+      ],
+      "related_products": [
+        "청소/모니터링: Jet Bot AI+ (카메라 및 순찰 기능).",
+        "주변기기: 스마트 급식기(파트너사 제품), 홈 카메라.",
+        "환경: 무풍 에어컨, 삼성 스마트 TV/뮤직 프레임."
+      ],
+      "value_tags": [
+        "Pet care",
+        "Auto-feeding",
+        "Health data"
+      ],
+      "tech_highlights": [
+        "원격 급여",
+        "섭취량 기록"
+      ]
+    },
+    {
+      "id": "v2-E-pet-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Purrfect pet care",
+      "article_code": "E",
+      "tags": [
+        "Care for your pet"
+      ],
+      "target_persona": "출근 후 혼자 있는 반려동물이 걱정되는 1인 가구.",
+      "story_num": 3,
+      "story_title": "Comfort from afar",
+      "narrative": "상황: 천둥 번개가 치거나 날씨가 갑자기 더워짐.\n메커니즘: 짖음이 감지되거나 온도가 올라가면, TV나 오디오에서 반려동물이 안정을 취할 수 있는 음악/영상(Calming content)을 재생하고, 에어컨을 가동해 쾌적한 환경을 만들어준다.",
+      "original_text": "",
+      "devices": [
+        "삼성 스마트 TV",
+        "뮤직 프레임",
+        "무풍 에어컨"
+      ],
+      "related_products": [
+        "청소/모니터링: Jet Bot AI+ (카메라 및 순찰 기능).",
+        "주변기기: 스마트 급식기(파트너사 제품), 홈 카메라.",
+        "환경: 무풍 에어컨, 삼성 스마트 TV/뮤직 프레임."
+      ],
+      "value_tags": [
+        "Pet care",
+        "Comfort",
+        "Calming"
+      ],
+      "tech_highlights": [
+        "짖음 감지 트리거",
+        "Calming content 재생",
+        "자동 에어컨 가동"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Speaker / Soundbar",
+          "icon": "🔊",
+          "path": "/soundbars/all-soundbars/",
+          "category": "Audio"
+        },
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        }
+      ]
+    },
+    {
+      "id": "v2-F-mapview-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Your home at a glance (Map View)",
+      "article_code": "F",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe"
+      ],
+      "target_persona": "직관적인 제어를 선호하는 사용자, IoT 기기가 많은 헤비 유저.",
+      "story_num": 1,
+      "story_title": "Create a digital twin",
+      "narrative": "메커니즘: 집 평면도를 구하거나 그릴 필요 없이, LiDAR 센서가 장착된 갤럭시 스마트폰이나 Jet Bot 청소기로 집안을 돌아다니면 자동으로 3D 평면도(Map View)가 생성된다. 여기에 연결된 스마트 기기들이 실제 위치에 맞게 아이콘으로 배치된다.",
+      "original_text": "There's a few ways to create a Map View of your home to view so you can monitor your home at a glance. You can select your home on the map to load its floor plan, upload a photo of your floor layout, or even use a hand drawn sketch. Or, even easier, if you own a robot vacuum, you can use its existing map data to create a Map View.",
+      "devices": [
+        "LiDAR 탑재 갤럭시 스마트폰",
+        "Jet Bot AI+"
+      ],
+      "related_products": [
+        "생성 기기: LiDAR 탑재 갤럭시 S 시리즈, Jet Bot AI+.",
+        "뷰어 기기: 삼성 스마트 TV(대화면 제어), 패밀리허브 냉장고, 갤럭시 탭."
+      ],
+      "value_tags": [
+        "Spatial AI",
+        "Digital twin",
+        "Intuitive control"
+      ],
+      "tech_highlights": [
+        "LiDAR 3D 스캐닝",
+        "자동 평면도 생성",
+        "기기 아이콘 자동 배치"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        },
+        {
+          "productType": "Vacuum Cleaner",
+          "icon": "🤖",
+          "path": "/vacuum-cleaners/all-vacuum-cleaners/",
+          "category": "Vacuum"
+        }
+      ]
+    },
+    {
+      "id": "v2-F-mapview-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Your home at a glance (Map View)",
+      "article_code": "F",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe"
+      ],
+      "target_persona": "직관적인 제어를 선호하는 사용자, IoT 기기가 많은 헤비 유저.",
+      "story_num": 2,
+      "story_title": "Control at a glance",
+      "narrative": "사용자 이점: 텍스트 리스트로 된 기기 목록을 스크롤할 필요 없이, TV나 냉장고, 태블릿 화면에 띄워진 집 지도를 보며 \"거실 불이 켜져 있네?\"라고 인지하고 해당 아이콘을 터치해 끈다. 공간적 맥락을 통해 기기 상태를 한눈에 파악한다.",
+      "original_text": "Map View puts a world of control at your fingertips. You can check the indoor temperature, air quality and even energy consumption of your connected appliances. Keep things cosy and adjust the air conditioner from Map View and turn off devices that have been left on unnecessarily. With your home's status visible at a glance, it's easier to manage your smart home.",
+      "devices": [
+        "삼성 스마트 TV",
+        "패밀리허브 냉장고",
+        "갤럭시 탭"
+      ],
+      "related_products": [
+        "생성 기기: LiDAR 탑재 갤럭시 S 시리즈, Jet Bot AI+.",
+        "뷰어 기기: 삼성 스마트 TV(대화면 제어), 패밀리허브 냉장고, 갤럭시 탭."
+      ],
+      "value_tags": [
+        "Intuitive control",
+        "Spatial awareness"
+      ],
+      "tech_highlights": [
+        "공간 기반 UI",
+        "터치 제어",
+        "대화면 Map View"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Refrigerator",
+          "icon": "🧊",
+          "path": "/refrigerators/all-refrigerators/",
+          "category": "Refrigerator"
+        },
+        {
+          "productType": "Galaxy Tablet",
+          "icon": "📋",
+          "path": "/tablets/all-tablets/",
+          "category": "Tablet"
+        }
+      ]
+    },
+    {
+      "id": "v2-F-mapview-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Your home at a glance (Map View)",
+      "article_code": "F",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe"
+      ],
+      "target_persona": "직관적인 제어를 선호하는 사용자, IoT 기기가 많은 헤비 유저.",
+      "story_num": 3,
+      "story_title": "Real-time status overlay",
+      "narrative": "기능: 맵 뷰 상에서 공기질이 나쁜 방은 붉은색으로, 온도가 높은 방은 주황색으로 표시되는 등 센서 데이터가 공간 위에 오버레이되어 직관적인 환경 모니터링이 가능하다.",
+      "original_text": "View your home's map not just on your smartphone but also on your TV's large screen. You can see every room at once and control all your devices more comfortably on a large screen. Map View is also available on Bespoke AI Family Hub and Bespoke AI Combo with built in screens, letting you manage your home conveniently from anywhere inside your home.",
+      "devices": [
+        "삼성 스마트 TV",
+        "Bespoke AI Family Hub",
+        "Bespoke AI Combo"
+      ],
+      "related_products": [
+        "생성 기기: LiDAR 탑재 갤럭시 S 시리즈, Jet Bot AI+.",
+        "뷰어 기기: 삼성 스마트 TV(대화면 제어), 패밀리허브 냉장고, 갤럭시 탭."
+      ],
+      "value_tags": [
+        "Environmental monitoring",
+        "Visual overlay"
+      ],
+      "tech_highlights": [
+        "센서 데이터 오버레이",
+        "색상 코드 환경 표시"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Refrigerator",
+          "icon": "🧊",
+          "path": "/refrigerators/all-refrigerators/",
+          "category": "Refrigerator"
+        }
+      ]
+    },
+    {
+      "id": "v2-G-privacy-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Help keep your home private and protected",
+      "article_code": "G",
+      "tags": [
+        "Keep your home safe"
+      ],
+      "target_persona": "개인정보 보호와 보안에 민감한 사용자.",
+      "story_num": 1,
+      "story_title": "Samsung Knox protects your data",
+      "narrative": "Samsung Knox Vault keeps your passwords, biometric data, and other sensitive personal information securely stored in a separate hardware security chip. It's built to withstand hacking attempts and physical attacks.",
+      "original_text": "Are you worried about your personal information being exposed? You no longer need to—Samsung devices will protect your sensitive data with advanced security. Samsung Knox Vault keeps your passwords, biometric data, and other sensitive personal information securely stored in a separate hardware security chip. It's built to withstand hacking attempts and physical attacks, so you will always feel safe.",
+      "devices": [
+        "Samsung 기기 전반"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Security",
+        "Privacy",
+        "Knox"
+      ],
+      "tech_highlights": [
+        "Knox Vault",
+        "하드웨어 보안 칩",
+        "생체 데이터 보호"
+      ]
+    },
+    {
+      "id": "v2-G-privacy-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Help keep your home private and protected",
+      "article_code": "G",
+      "tags": [
+        "Keep your home safe"
+      ],
+      "target_persona": "개인정보 보호와 보안에 민감한 사용자.",
+      "story_num": 2,
+      "story_title": "Samsung Knox: connected for protection",
+      "narrative": "Samsung Knox Matrix continuously monitors your connected devices to detect any security threat. If a risk is identified, it immediately isolates the affected device to keep your home safe.",
+      "original_text": "Samsung Knox Matrix continuously monitors your connected devices to detect any security threat. If a risk is identified, it immediately isolates the affected device to keep your home safe. View your real time security status on your smartphone and receive recommended actions for quick responses so you can stay protected anytime, anywhere.",
+      "devices": [
+        "Galaxy 스마트폰",
+        "연결된 모든 기기"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Security",
+        "Knox Matrix",
+        "Real-time monitoring"
+      ],
+      "tech_highlights": [
+        "Knox Matrix",
+        "기기 격리",
+        "실시간 보안 상태"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-G-privacy-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Help keep your home private and protected",
+      "article_code": "G",
+      "tags": [
+        "Keep your home safe"
+      ],
+      "target_persona": "개인정보 보호와 보안에 민감한 사용자.",
+      "story_num": 3,
+      "story_title": "Stronger security for a safer home",
+      "narrative": "Samsung's AI appliances have earned UL Solutions' highest Diamond rated security rating. Samsung Smart TVs have maintained CC certification for 10 years in a row. Galaxy smartphones equipped with EAL 5+ grade security chipsets.",
+      "original_text": "Enjoy SmartThings alongside Samsung AI appliances and Samsung Smart TVs without worrying about security. Samsung's AI appliances have earned UL Solutions' highest Diamond rated security rating, a first in the global home appliance industry, and Samsung Smart TVs have maintained CC certification for 10 years in a row. With Galaxy smartphones equipped with EAL 5+ grade security chipsets, you can enjoy SmartThings free from security concerns with trusted protection whether you're home or away.",
+      "devices": [
+        "Samsung AI 가전",
+        "Samsung Smart TV",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Security",
+        "Certification"
+      ],
+      "tech_highlights": [
+        "UL Diamond 등급",
+        "CC 인증 10년",
+        "EAL 5+ 보안 칩셋"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-H-chores-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Let AI handle the housework",
+      "article_code": "H",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "가사 노동을 줄이고 싶은 사용자.",
+      "story_num": 1,
+      "story_title": "AI customised courses for washing and drying",
+      "narrative": "AI will check the type, weight, and dirtiness of your laundry and customise the process from washing to drying. All you need to do is put the laundry into the washing machine, and the right amount of detergent will be dispensed based on the weight.",
+      "original_text": "With the laundry changing every day in your house, let AI take care of washing and drying. AI will check the type, weight, and dirtiness of your laundry and customise the process from washing to drying. All you need to do is put the laundry into the washing machine, and the right amount of detergent will be dispensed based on the weight.",
+      "devices": [
+        "Bespoke AI 세탁기/건조기"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Chores",
+        "AI",
+        "Laundry"
+      ],
+      "tech_highlights": [
+        "AI 세탁 커스터마이즈",
+        "자동 세제 투입",
+        "무게/오염도 감지"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Washer & Dryer",
+          "icon": "🫧",
+          "path": "/washers-and-dryers/all-washers-and-dryers/",
+          "category": "Laundry"
+        }
+      ]
+    },
+    {
+      "id": "v2-H-chores-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Let AI handle the housework",
+      "article_code": "H",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "가사 노동을 줄이고 싶은 사용자.",
+      "story_num": 2,
+      "story_title": "Easy control with touch and voice",
+      "narrative": "You can check and control various kinds of information on washing and drying with the Bespoke AI Combo touchscreen. You can also call Bixby for voice control.",
+      "original_text": "You can check and control various kinds of information on washing and drying with the Bespoke AI Combo touchscreen. You can also call Bixby if you're having difficulty in operating it manually. \"Hi Bixby, set the towel cycle and add one rinse cycle.\" Bixby will start the desired cycle intelligently.",
+      "devices": [
+        "Bespoke AI Combo"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Chores",
+        "Voice control",
+        "Bixby"
+      ],
+      "tech_highlights": [
+        "터치스크린 제어",
+        "Bixby 음성 제어"
+      ]
+    },
+    {
+      "id": "v2-H-chores-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Let AI handle the housework",
+      "article_code": "H",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "가사 노동을 줄이고 싶은 사용자.",
+      "story_num": 3,
+      "story_title": "Ask Bixby how to use the device",
+      "narrative": "You can ask Bixby questions like \"How do I clean the drain filter on my washing machine?\" or \"Can I put oil in the refrigerator?\" anytime.",
+      "original_text": "If you have any questions, don't hesitate to call Bixby. You can ask it things like, \"Hi Bixby, how do I clean the drain filter on my washing machine?\" \"Can I put oil in the refrigerator?\" or \"How do I wash the mop on my robot vacuum cleaner?\" anytime, and check the answer in order to use your products properly.",
+      "devices": [
+        "Bixby 지원 Samsung 기기"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Chores",
+        "Voice assistant",
+        "Support"
+      ],
+      "tech_highlights": [
+        "Bixby Q&A",
+        "제품 사용법 안내"
+      ]
+    },
+    {
+      "id": "v2-I-fridge-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Effortless management and suggestions",
+      "article_code": "I",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "식재료 관리와 요리에 관심 있는 사용자.",
+      "story_num": 1,
+      "story_title": "What's in your refrigerator?",
+      "narrative": "AI Vision Inside recognizes the food ingredients entering and leaving your refrigerator and creates a list automatically. You can check your ingredient status on the refrigerator door screen, or use your smartphone while you are away.",
+      "original_text": "Check your ingredients anytime, anywhere without opening the refrigerator door. AI Vision Inside recognizes the food ingredients entering and leaving your refrigerator and creates a list automatically. You can check your ingredient status on the refrigerator door screen, or use your smartphone while you are away to check inside the refrigerator.",
+      "devices": [
+        "Bespoke AI 냉장고",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Food management",
+        "AI Vision"
+      ],
+      "tech_highlights": [
+        "AI Vision Inside",
+        "자동 식재료 인식"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Refrigerator",
+          "icon": "🧊",
+          "path": "/refrigerators/all-refrigerators/",
+          "category": "Refrigerator"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-I-fridge-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Effortless management and suggestions",
+      "article_code": "I",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "식재료 관리와 요리에 관심 있는 사용자.",
+      "story_num": 2,
+      "story_title": "Enjoy fresh food at all times",
+      "narrative": "Your refrigerator tracks how many days are left for each ingredient, and alerts you when an ingredient is nearing its expiry date. You can check by asking Bixby and search for recipes.",
+      "original_text": "The ingredients in your refrigerator, including their storage periods, can be managed intelligently. Your refrigerator tracks how many days are left for each ingredient, and alerts you when an ingredient is nearing its expiry date. You can check easily by asking, \"Hi Bixby, what's about to expire?\" and even search for recipes you can try cooking with those ingredients.",
+      "devices": [
+        "Bespoke AI 냉장고"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Food management",
+        "Freshness"
+      ],
+      "tech_highlights": [
+        "유통기한 추적",
+        "Bixby 음성 확인"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Refrigerator",
+          "icon": "🧊",
+          "path": "/refrigerators/all-refrigerators/",
+          "category": "Refrigerator"
+        }
+      ]
+    },
+    {
+      "id": "v2-I-fridge-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Effortless management and suggestions",
+      "article_code": "I",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "식재료 관리와 요리에 관심 있는 사용자.",
+      "story_num": 3,
+      "story_title": "Get recipe recommendations that suit your schedule",
+      "narrative": "SmartThings analyzes your calendar to suggest a recipe tailored to your mood and situation for the day.",
+      "original_text": "Get personalized recipe recommendations from SmartThings to make special moments like birthday parties even more memorable. Simply say, \"Hi Bixby, tell me today's schedule and recommend a recipe\" and it will analyze your calendar to suggest a recipe tailored to your mood and situation for the day.",
+      "devices": [
+        "Bespoke AI 냉장고",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Food management",
+        "Personalization"
+      ],
+      "tech_highlights": [
+        "캘린더 연동 레시피 추천",
+        "SmartThings Food"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Refrigerator",
+          "icon": "🧊",
+          "path": "/refrigerators/all-refrigerators/",
+          "category": "Refrigerator"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-J-mapview-orig-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Home management with Map View",
+      "article_code": "J",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe"
+      ],
+      "target_persona": "스마트 홈 기기를 다수 보유한 사용자.",
+      "story_num": 1,
+      "story_title": "How to create your Home Map View",
+      "narrative": "You can select your home on the map to load its floor plan, upload a photo of your floor layout, or use a hand drawn sketch. If you own a robot vacuum, you can use its existing map data.",
+      "original_text": "There's a few ways to create a Map View of your home to view so you can monitor your home at a glance. You can select your home on the map to load its floor plan, upload a photo of your floor layout, or even use a hand drawn sketch. Or, even easier, if you own a robot vacuum, you can use its existing map data to create a Map View.",
+      "devices": [
+        "로봇청소기",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Map View",
+        "Setup"
+      ],
+      "tech_highlights": [
+        "다양한 맵 생성 방식",
+        "로봇청소기 맵 데이터 연동"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Vacuum Cleaner",
+          "icon": "🤖",
+          "path": "/vacuum-cleaners/all-vacuum-cleaners/",
+          "category": "Vacuum"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-J-mapview-orig-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Home management with Map View",
+      "article_code": "J",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe"
+      ],
+      "target_persona": "스마트 홈 기기를 다수 보유한 사용자.",
+      "story_num": 2,
+      "story_title": "Monitor and control it all from Map View",
+      "narrative": "You can check the indoor temperature, air quality and even energy consumption of your connected appliances. Keep things cosy and adjust the air conditioner from Map View.",
+      "original_text": "Map View puts a world of control at your fingertips. You can check the indoor temperature, air quality and even energy consumption of your connected appliances. Keep things cosy and adjust the air conditioner from Map View and turn off devices that have been left on unnecessarily. With your home's status visible at a glance, it's easier to manage your smart home.",
+      "devices": [
+        "에어컨",
+        "연결된 모든 가전"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Map View",
+        "Control",
+        "Monitoring"
+      ],
+      "tech_highlights": [
+        "온도/공기질/에너지 소비 확인",
+        "Map View 제어"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        }
+      ]
+    },
+    {
+      "id": "v2-J-mapview-orig-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Home management with Map View",
+      "article_code": "J",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe"
+      ],
+      "target_persona": "스마트 홈 기기를 다수 보유한 사용자.",
+      "story_num": 3,
+      "story_title": "Access Map View from anywhere in your home",
+      "narrative": "View your home's map not just on your smartphone but also on your TV's large screen. Map View is also available on Bespoke AI Family Hub and Bespoke AI Combo with built in screens.",
+      "original_text": "View your home's map not just on your smartphone but also on your TV's large screen. You can see every room at once and control all your devices more comfortably on a large screen. Map View is also available on Bespoke AI Family Hub and Bespoke AI Combo with built in screens, letting you manage your home conveniently from anywhere inside your home.",
+      "devices": [
+        "삼성 스마트 TV",
+        "Bespoke AI Family Hub",
+        "Bespoke AI Combo",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Map View",
+        "Multi-screen"
+      ],
+      "tech_highlights": [
+        "대화면 Map View",
+        "Family Hub/Combo 내장 스크린"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Refrigerator",
+          "icon": "🧊",
+          "path": "/refrigerators/all-refrigerators/",
+          "category": "Refrigerator"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-K-workout-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Let SmartThings take care of your workouts from start to finish",
+      "article_code": "K",
+      "tags": [
+        "Stay fit & healthy"
+      ],
+      "target_persona": "홈 트레이닝을 즐기는 사용자.",
+      "story_num": 1,
+      "story_title": "Instantly create the perfect workout environment",
+      "narrative": "Turn on the air conditioner and air purifier at once for a comfortable workout environment. Set the illuminance and brightness of the lighting for the perfect workout mood.",
+      "original_text": "SmartThings will provide convenience for today's hardworking exercisers. Turn on the air conditioner and air purifier at once for a comfortable workout environment. You can set the illuminance and brightness of the lighting for the perfect workout mood, and even create an energising atmosphere instantly.",
+      "devices": [
+        "에어컨",
+        "공기청정기",
+        "스마트 조명"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Fitness",
+        "Environment"
+      ],
+      "tech_highlights": [
+        "운동 환경 자동 조성",
+        "조명 밝기 조절"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        },
+        {
+          "productType": "Air Care",
+          "icon": "🌬️",
+          "path": "/air-care/all-air-care/",
+          "category": "Air Care"
+        },
+        {
+          "productType": "Smart Lighting",
+          "icon": "💡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-K-workout-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Let SmartThings take care of your workouts from start to finish",
+      "article_code": "K",
+      "tags": [
+        "Stay fit & healthy"
+      ],
+      "target_persona": "홈 트레이닝을 즐기는 사용자.",
+      "story_num": 2,
+      "story_title": "View your workout info on your TV",
+      "narrative": "Exercise time, calorie consumption, and vital signs such as heart rate can be checked conveniently in real time on your TV.",
+      "original_text": "The exercise information provided on your Galaxy Watch can also be checked on your TV. Exercise time, calorie consumption, and vital signs such as heart rate can be checked conveniently in real time. You can enjoy your favourite contents and even check your exercise information, so you can focus on exercising pleasantly and effectively.",
+      "devices": [
+        "Galaxy Watch",
+        "삼성 TV"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Fitness",
+        "Health data",
+        "Multi-screen"
+      ],
+      "tech_highlights": [
+        "Galaxy Watch 연동",
+        "TV 실시간 운동 데이터"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Watch",
+          "icon": "⌚",
+          "path": "/watches/all-watches/",
+          "category": "Wearable"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        }
+      ]
+    },
+    {
+      "id": "v2-K-workout-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Let SmartThings take care of your workouts from start to finish",
+      "article_code": "K",
+      "tags": [
+        "Stay fit & healthy",
+        "Help with chores"
+      ],
+      "target_persona": "홈 트레이닝을 즐기는 사용자.",
+      "story_num": 3,
+      "story_title": "Custom laundry for sportswear in one go!",
+      "narrative": "Take a photo of the laundry label on your sportswear with your camera, and it will set the optimal wash cycle.",
+      "original_text": "Are you wondering which wash cycle to choose for your sportswear? Get the best recommendations with Scan care labels. Take a photo of the laundry label on your sportswear with your camera, and it will set the optimal wash cycle. Now, you can wash your sportswear easily and gently.",
+      "devices": [
+        "Galaxy 스마트폰",
+        "Bespoke AI 세탁기"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Fitness",
+        "Laundry",
+        "Smart scan"
+      ],
+      "tech_highlights": [
+        "Scan care labels",
+        "최적 세탁 코스 자동 설정"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        },
+        {
+          "productType": "Washer & Dryer",
+          "icon": "🫧",
+          "path": "/washers-and-dryers/all-washers-and-dryers/",
+          "category": "Laundry"
+        }
+      ]
+    },
+    {
+      "id": "v2-L-sharing-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Use SmartThings with your family",
+      "article_code": "L",
+      "tags": [
+        "Care for seniors",
+        "Care for kids"
+      ],
+      "target_persona": "가족과 함께 스마트 홈을 사용하는 사용자.",
+      "story_num": 1,
+      "story_title": "Inviting others to use SmartThings is simple!",
+      "narrative": "Invite your family members to use SmartThings in your home so that they can control their devices and receive notifications. You can connect immediately by sharing the link or scanning the QR code.",
+      "original_text": "SmartThings is too good to use alone—share it with your family. Invite your family members to use SmartThings in your home so that they can control their devices and receive notifications. Sending an invitation is simple. You can connect immediately by sharing the link or scanning the QR code.",
+      "devices": [
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Family sharing",
+        "Setup"
+      ],
+      "tech_highlights": [
+        "QR 코드 초대",
+        "링크 공유"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-L-sharing-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Use SmartThings with your family",
+      "article_code": "L",
+      "tags": [
+        "Care for seniors",
+        "Care for kids"
+      ],
+      "target_persona": "가족과 함께 스마트 홈을 사용하는 사용자.",
+      "story_num": 2,
+      "story_title": "Control and receive notifications as needed",
+      "narrative": "SmartThings lets you set which devices specific family members can control, ensuring each member only controls the devices they need.",
+      "original_text": "SmartThings lets you set which devices specific family members can control, ensuring each member only controls the devices they need. Plus, you can also choose which device notifications to receive, so you only see important alerts.",
+      "devices": [
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Family sharing",
+        "Access control"
+      ],
+      "tech_highlights": [
+        "기기별 접근 권한 설정",
+        "알림 커스터마이즈"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-L-sharing-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Use SmartThings with your family",
+      "article_code": "L",
+      "tags": [
+        "Keep your home safe"
+      ],
+      "target_persona": "게스트를 자주 초대하는 사용자.",
+      "story_num": 3,
+      "story_title": "Customised SmartThings for guests",
+      "narrative": "When guests visit, you can grant them access to SmartThings. When your guests leave, access rights are automatically revoked to ensure security.",
+      "original_text": "When guests visit, you can grant them access to SmartThings to ensure they have a more comfortable stay. Select the necessary devices and grant control access so they can use them conveniently, even in unfamiliar spaces. When your guests leave, access rights are automatically revoked to ensure security.",
+      "devices": [
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Guest access",
+        "Security"
+      ],
+      "tech_highlights": [
+        "게스트 접근 권한",
+        "자동 권한 해제"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-M-quicklife-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Our smart life, faster than ever",
+      "article_code": "M",
+      "tags": [
+        "Easily control your lights",
+        "Help with chores"
+      ],
+      "target_persona": "빠르고 간편한 제어를 원하는 사용자.",
+      "story_num": 1,
+      "story_title": "Control directly from the Galaxy Z Flip cover",
+      "narrative": "Use the SmartThings Widget directly from your Galaxy Z Flip's cover screen. Execute SmartThings Routines and turn devices on/off without opening your phone.",
+      "original_text": "You can use the SmartThings Widget directly from your Galaxy Z Flip's cover screen. You can use it to execute the SmartThings Routine that you use frequently, and even turn your home devices on and off conveniently without having to open your Galaxy Z Flip cover. Now, your Galaxy Z Flip becomes your own portable universal shortcut key.",
+      "devices": [
+        "Galaxy Z Flip"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Quick control",
+        "Mobile"
+      ],
+      "tech_highlights": [
+        "Z Flip 커버 위젯",
+        "루틴 원터치 실행"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-M-quicklife-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Our smart life, faster than ever",
+      "article_code": "M",
+      "tags": [
+        "Easily control your lights",
+        "Help with chores"
+      ],
+      "target_persona": "빠르고 간편한 제어를 원하는 사용자.",
+      "story_num": 2,
+      "story_title": "Control directly from your Galaxy Tab",
+      "narrative": "Use the SmartThings Widget on your Galaxy Tab. With the Home Insight widget, check the overall status of your home conveniently.",
+      "original_text": "Try using the SmartThings Widget on your Galaxy Tab. If you have a regular routine, you can execute it immediately whenever necessary, and you can conveniently control Samsung screen devices like TVs with the widget. With the Home Insight widget, you can check the overall status of your home conveniently.",
+      "devices": [
+        "Galaxy Tab"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Quick control",
+        "Tablet"
+      ],
+      "tech_highlights": [
+        "Galaxy Tab 위젯",
+        "Home Insight 위젯"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Tablet",
+          "icon": "📋",
+          "path": "/tablets/all-tablets/",
+          "category": "Tablet"
+        }
+      ]
+    },
+    {
+      "id": "v2-M-quicklife-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Our smart life, faster than ever",
+      "article_code": "M",
+      "tags": [
+        "Easily control your lights",
+        "Help with chores"
+      ],
+      "target_persona": "빠르고 간편한 제어를 원하는 사용자.",
+      "story_num": 3,
+      "story_title": "Control directly from your Galaxy Watch",
+      "narrative": "Use the SmartThings Tile on your Galaxy Watch. Control home devices and execute routines from your wrist even when exercising outside.",
+      "original_text": "Try using the SmartThings Tile on your Galaxy Watch. Even when you're exercising outside or you don't have your smartphone nearby, you can control your home devices and execute routines from your wrist. You can use your watch as a remote control to control frequently used devices such as the TV and lights, and power can also be turned on and off conveniently.",
+      "devices": [
+        "Galaxy Watch"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Quick control",
+        "Wearable"
+      ],
+      "tech_highlights": [
+        "Galaxy Watch Tile",
+        "손목 원격 제어"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Watch",
+          "icon": "⌚",
+          "path": "/watches/all-watches/",
+          "category": "Wearable"
+        }
+      ]
+    },
+    {
+      "id": "v2-M-quicklife-s4",
+      "source": "Explore Contents v2.0",
+      "article_title": "Our smart life, faster than ever",
+      "article_code": "M",
+      "tags": [
+        "Enhanced mood"
+      ],
+      "target_persona": "TV 리모컨 없이 편리한 제어를 원하는 사용자.",
+      "story_num": 4,
+      "story_title": "Control your TV with Galaxy Watch",
+      "narrative": "Tap your Galaxy Watch to start controlling your TV. Use finger gestures to select the menu you want.",
+      "original_text": "Simply tap your Galaxy Watch to start controlling your TV. Select the TV card you want to control on your watch, and you can control your TV without using the remote control. You can move your hand to control the TV, and use finger gestures to select the menu you want. Experience even more convenient TV control with your Galaxy Watch!",
+      "devices": [
+        "Galaxy Watch",
+        "삼성 TV"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Quick control",
+        "Gesture"
+      ],
+      "tech_highlights": [
+        "제스처 제어",
+        "Galaxy Watch TV 리모컨"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Watch",
+          "icon": "⌚",
+          "path": "/watches/all-watches/",
+          "category": "Wearable"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        }
+      ]
+    },
+    {
+      "id": "v2-N-remote-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "The universal remote for your home",
+      "article_code": "N",
+      "tags": [
+        "Easily control your lights",
+        "Help with chores"
+      ],
+      "target_persona": "리모컨 분실이 잦은 사용자.",
+      "story_num": 1,
+      "story_title": "Remote control that appears near the TV",
+      "narrative": "As you approach your TV the 'Quick remote' will be displayed automatically on your smartphone. You can turn the TV on and off and share content from your phone to your TV.",
+      "original_text": "You'll never have to worry about losing track of your remote control again, as you can now control your TV with the remote built into your smartphone. As you approach your TV the \"Quick remote\" will be displayed automatically. You can turn the TV on and off and conveniently share content from your phone to your TV.",
+      "devices": [
+        "Galaxy 스마트폰",
+        "삼성 TV"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Convenience",
+        "Quick remote"
+      ],
+      "tech_highlights": [
+        "근접 감지 Quick remote",
+        "콘텐츠 공유"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        }
+      ]
+    },
+    {
+      "id": "v2-N-remote-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "The universal remote for your home",
+      "article_code": "N",
+      "tags": [
+        "Easily control your lights",
+        "Help with chores"
+      ],
+      "target_persona": "리모컨 분실이 잦은 사용자.",
+      "story_num": 2,
+      "story_title": "A remote control that appears when necessary",
+      "narrative": "Get close to your air conditioner, air purifier, or robot vacuum cleaner and a remote control will appear on your smartphone.",
+      "original_text": "You no longer need to leave remote controls lying around in the living room. Just get close to your air conditioner, air purifier, or robot vacuum cleaner and a remote control will appear on your smartphone! You can use your preferred functions in the palm of your hand, without having to search for your remote control.",
+      "devices": [
+        "Galaxy 스마트폰",
+        "에어컨",
+        "공기청정기",
+        "로봇청소기"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Convenience",
+        "Quick remote"
+      ],
+      "tech_highlights": [
+        "근접 감지 리모컨",
+        "다중 기기 제어"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        },
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        },
+        {
+          "productType": "Air Care",
+          "icon": "🌬️",
+          "path": "/air-care/all-air-care/",
+          "category": "Air Care"
+        },
+        {
+          "productType": "Vacuum Cleaner",
+          "icon": "🤖",
+          "path": "/vacuum-cleaners/all-vacuum-cleaners/",
+          "category": "Vacuum"
+        }
+      ]
+    },
+    {
+      "id": "v2-N-remote-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "The universal remote for your home",
+      "article_code": "N",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "주방에서 멀티태스킹하는 사용자.",
+      "story_num": 3,
+      "story_title": "Quick remote can even help in the kitchen",
+      "narrative": "Check the remaining time on your washing machine and dishwasher, and check the temperature settings of your refrigerator at a glance.",
+      "original_text": "Use Quick remote in the kitchen as well. You can check the remaining time on your washing machine and dishwasher, and stop or restart them when necessary. You can also check the temperature settings of your refrigerator at a glance. Even when your hands are full, you can easily manage your kitchen with just your smartphone.",
+      "devices": [
+        "Galaxy 스마트폰",
+        "세탁기",
+        "식기세척기",
+        "냉장고"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Convenience",
+        "Kitchen"
+      ],
+      "tech_highlights": [
+        "주방 Quick remote",
+        "잔여 시간 확인"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        },
+        {
+          "productType": "Washer & Dryer",
+          "icon": "🫧",
+          "path": "/washers-and-dryers/all-washers-and-dryers/",
+          "category": "Laundry"
+        },
+        {
+          "productType": "Dishwasher",
+          "icon": "🍽️",
+          "path": "/dishwashers/all-dishwashers/",
+          "category": "Dishwasher"
+        },
+        {
+          "productType": "Refrigerator",
+          "icon": "🧊",
+          "path": "/refrigerators/all-refrigerators/",
+          "category": "Refrigerator"
+        }
+      ]
+    },
+    {
+      "id": "v2-O-homecare-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Reliable device care for your home",
+      "article_code": "O",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "가전 유지보수에 관심 있는 사용자.",
+      "story_num": 1,
+      "story_title": "Keep your devices running smoothly with SmartThings Home Care",
+      "narrative": "Check sensors, filters and consumables and quickly address issues with home repair guides if a fault is detected. Connect to a service centre or schedule an in home repair.",
+      "original_text": "Keep an eye on the status of all your Samsung home devices at a glance with SmartThings Home Care. Check sensors, filters and consumables and quickly address issues with home repair guides if a fault is detected. If you need more support, SmartThings makes it easy to connect to a service centre or schedule an in home repair.",
+      "devices": [
+        "Samsung 가전 전반"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Device care",
+        "Maintenance"
+      ],
+      "tech_highlights": [
+        "SmartThings Home Care",
+        "센서/필터/소모품 모니터링"
+      ]
+    },
+    {
+      "id": "v2-O-homecare-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Reliable device care for your home",
+      "article_code": "O",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "가전 유지보수에 관심 있는 사용자.",
+      "story_num": 2,
+      "story_title": "Effortless customer support reservations",
+      "narrative": "Instantly connect to customer service support services to reserve your repair. Check warranty periods and details, product manuals and more.",
+      "original_text": "SmartThings takes the stress out of getting your devices fixed. Skip the frustration and instantly connect to customer service support services to reserve your repair. Check warranty periods and details, product manuals and more, so you're prepared and the issue can be resolved fast.",
+      "devices": [
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Device care",
+        "Customer support"
+      ],
+      "tech_highlights": [
+        "수리 예약 연동",
+        "보증 기간 확인"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-O-homecare-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Reliable device care for your home",
+      "article_code": "O",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "가전 유지보수에 관심 있는 사용자.",
+      "story_num": 3,
+      "story_title": "View repair status and history all in one place",
+      "narrative": "Go to Samsung.com from SmartThings to view the repair status and history at a glance.",
+      "original_text": "Is your device being repaired? Go to Samsung.com from SmartThings to view the repair status and history at a glance. Use SmartThings to track ongoing and completed repairs all in one, convenient place.",
+      "devices": [
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Device care",
+        "Repair tracking"
+      ],
+      "tech_highlights": [
+        "Samsung.com 연동",
+        "수리 이력 통합 조회"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-P-carbon-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Energy habits for carbon emissions awareness",
+      "article_code": "P",
+      "tags": [
+        "Save energy"
+      ],
+      "target_persona": "탄소 배출 절감에 관심 있는 환경 의식 사용자.",
+      "story_num": 1,
+      "story_title": "Reduce carbon emissions with AI Energy Mode",
+      "narrative": "Select the Carbon aware saving option, and SmartThings will automatically start AI Energy Mode during periods when your devices are generating high carbon emissions.",
+      "original_text": "You can now focus on reducing your carbon emissions with AI Energy Mode. In the AI Energy Mode, select the Carbon aware saving option, and SmartThings will automatically start AI Energy Mode during periods when your devices are generating high carbon emissions. Manage your energy consumption intelligently to reduce your carbon emissions.",
+      "devices": [
+        "Samsung 가전 전반"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Energy",
+        "Carbon reduction",
+        "AI"
+      ],
+      "tech_highlights": [
+        "AI Energy Mode",
+        "Carbon aware saving",
+        "탄소 집약도 연동"
+      ]
+    },
+    {
+      "id": "v2-P-carbon-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Energy habits for carbon emissions awareness",
+      "article_code": "P",
+      "tags": [
+        "Save energy",
+        "Help with chores"
+      ],
+      "target_persona": "탄소 배출 절감에 관심 있는 환경 의식 사용자.",
+      "story_num": 2,
+      "story_title": "Easy ways to reduce carbon emissions",
+      "narrative": "With Optimal scheduling, avoid peak hours. With Optimal charging, charge your robot vacuum cleaner during hours when carbon emissions are low.",
+      "original_text": "Say goodbye to stress over electricity bills and start protecting the environment. With the Optimal scheduling feature in SmartThings Energy, you can avoid those peak hours when high electricity bills are racked up, and use your washing machine, dishwasher, and AI Combo smartly. With Optimal charging, you can charge your robot vacuum cleaner during hours when carbon emissions are low. Start saving on your electricity bills and reducing carbon emissions today!",
+      "devices": [
+        "세탁기",
+        "식기세척기",
+        "AI Combo",
+        "로봇청소기"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Energy",
+        "Optimal scheduling"
+      ],
+      "tech_highlights": [
+        "Optimal scheduling",
+        "Optimal charging",
+        "SmartThings Energy"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Washer & Dryer",
+          "icon": "🫧",
+          "path": "/washers-and-dryers/all-washers-and-dryers/",
+          "category": "Laundry"
+        },
+        {
+          "productType": "Dishwasher",
+          "icon": "🍽️",
+          "path": "/dishwashers/all-dishwashers/",
+          "category": "Dishwasher"
+        },
+        {
+          "productType": "Vacuum Cleaner",
+          "icon": "🤖",
+          "path": "/vacuum-cleaners/all-vacuum-cleaners/",
+          "category": "Vacuum"
+        }
+      ]
+    },
+    {
+      "id": "v2-P-carbon-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Energy habits for carbon emissions awareness",
+      "article_code": "P",
+      "tags": [
+        "Save energy"
+      ],
+      "target_persona": "탄소 배출 절감에 관심 있는 환경 의식 사용자.",
+      "story_num": 3,
+      "story_title": "Check your home's carbon reduction at a glance",
+      "narrative": "Monitor your home's carbon emissions through Carbon emissions awareness. With SmartThings Energy, you can easily see by how much your carbon emissions have been reduced.",
+      "original_text": "Monitor your home's carbon emissions through Carbon emissions awareness. With SmartThings Energy, you can easily see by how much your carbon emissions have been reduced at a glance.",
+      "devices": [
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Energy",
+        "Carbon monitoring"
+      ],
+      "tech_highlights": [
+        "Carbon emissions awareness 대시보드",
+        "SmartThings Energy"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-Q-familycare-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Keep your family safe and healthy with Family Care",
+      "article_code": "Q",
+      "tags": [
+        "Care for seniors"
+      ],
+      "target_persona": "멀리 사는 가족을 돌보는 사용자.",
+      "story_num": 1,
+      "story_title": "Look after your loved ones' daily life",
+      "narrative": "Check whether your loved ones are using their refrigerator, TV, washing machine, oven, and phone as usual. Check their step count and manage important appointments.",
+      "original_text": "With Family Care, you can check whether your loved ones are using their refrigerator, TV, washing machine, oven, and phone as usual. You can also see if they are getting enough physical activity by checking their step count, and manage important appointments in advance, allowing you to remotely assist your loved ones in their daily life.",
+      "devices": [
+        "냉장고",
+        "삼성 TV",
+        "세탁기",
+        "오븐",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Family Care",
+        "Senior",
+        "Daily monitoring"
+      ],
+      "tech_highlights": [
+        "가전 사용 패턴 분석",
+        "걸음 수 확인",
+        "일정 관리"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Refrigerator",
+          "icon": "🧊",
+          "path": "/refrigerators/all-refrigerators/",
+          "category": "Refrigerator"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Washer & Dryer",
+          "icon": "🫧",
+          "path": "/washers-and-dryers/all-washers-and-dryers/",
+          "category": "Laundry"
+        },
+        {
+          "productType": "Cooking Appliance",
+          "icon": "🍳",
+          "path": "/cooking-appliances/all-cooking-appliances/",
+          "category": "Cooking"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-Q-familycare-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Keep your family safe and healthy with Family Care",
+      "article_code": "Q",
+      "tags": [
+        "Care for seniors"
+      ],
+      "target_persona": "멀리 사는 가족을 돌보는 사용자.",
+      "story_num": 2,
+      "story_title": "Keep an eye on the little things",
+      "narrative": "Family Care sends notifications when a family member doesn't show any signs of activity for an unusually long period of time.",
+      "original_text": "Family Care sends notifications when a family member living far away doesn't show any signs of activity for an unusually long period of time. You can give them a call to see if they aren't feeling well or if they have simply fallen asleep.",
+      "devices": [
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Family Care",
+        "Alert",
+        "Safety"
+      ],
+      "tech_highlights": [
+        "비활동 감지 알림"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-Q-familycare-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Keep your family safe and healthy with Family Care",
+      "article_code": "Q",
+      "tags": [
+        "Care for seniors"
+      ],
+      "target_persona": "멀리 사는 가족을 돌보는 사용자.",
+      "story_num": 3,
+      "story_title": "Set up Family care with ease",
+      "narrative": "Get started right away with just one invitation link. You can select the information you wish to share directly.",
+      "original_text": "Our feelings for our family remain the same even when we live far away. Look after the health and well being of your family with Family Care. You can get started right away with just one invitation link, and you can even select the information you wish to share directly. You can share only as much as you need to, so start conveniently and hassle free.",
+      "devices": [
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Family Care",
+        "Easy setup"
+      ],
+      "tech_highlights": [
+        "초대 링크 원클릭",
+        "공유 정보 선택"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-R-started-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Getting started with SmartThings",
+      "article_code": "R",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe"
+      ],
+      "target_persona": "SmartThings 입문자.",
+      "story_num": 1,
+      "story_title": "Control your home devices anytime, anywhere",
+      "narrative": "Check on the air purifier, see if your robot vacuum cleaner is working correctly, and make sure your living room lights and TV are off, all remotely.",
+      "original_text": "You can control smart devices in your home anywhere when using the SmartThings app. Check on the air purifier, see if your robot vacuum cleaner is working correctly, and make sure your living room lights and TV are off, all remotely. SmartThings gives you full control of your devices and helps you relax and enjoy your time away from home.",
+      "devices": [
+        "공기청정기",
+        "로봇청소기",
+        "스마트 조명",
+        "삼성 TV",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Getting started",
+        "Remote control"
+      ],
+      "tech_highlights": [
+        "SmartThings 앱 원격 제어"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Air Care",
+          "icon": "🌬️",
+          "path": "/air-care/all-air-care/",
+          "category": "Air Care"
+        },
+        {
+          "productType": "Vacuum Cleaner",
+          "icon": "🤖",
+          "path": "/vacuum-cleaners/all-vacuum-cleaners/",
+          "category": "Vacuum"
+        },
+        {
+          "productType": "Smart Lighting",
+          "icon": "💡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-R-started-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Getting started with SmartThings",
+      "article_code": "R",
+      "tags": [
+        "Keep your home safe"
+      ],
+      "target_persona": "SmartThings 입문자.",
+      "story_num": 2,
+      "story_title": "Never miss a beat with notifications on your TV",
+      "narrative": "Check important notifications in your home on your TV screen, from laundry finished to urgent situations such as food overheating in the oven.",
+      "original_text": "Don't miss important notifications even when you're engrossed in watching TV. You can check important notifications in your home on your TV screen, from notifications that the laundry is finished to urgent situations such as food overheating in the oven. Since you can check and take quick action even while watching TV, you don't have to worry about not hearing the notification sounds.",
+      "devices": [
+        "삼성 TV"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Getting started",
+        "Notifications"
+      ],
+      "tech_highlights": [
+        "TV 알림 팝업"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        }
+      ]
+    },
+    {
+      "id": "v2-R-started-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Getting started with SmartThings",
+      "article_code": "R",
+      "tags": [
+        "Help with chores",
+        "Easily control your lights"
+      ],
+      "target_persona": "SmartThings 입문자.",
+      "story_num": 3,
+      "story_title": "Control your smart devices more conveniently with automation",
+      "narrative": "Routines function allows you to control multiple smart devices at once. Automatic routines respond to times, weather, and room occupancy. Manual routines with a single touch. AI routine creation assistant.",
+      "original_text": "The \"Routines\" function allows you to control multiple smart devices in your home at once. Enable your devices to respond to specific times, weather, and room occupancy with Automatic routines. For more hands on control, Manual routines enable your devices to be operated with a single touch. Creating routines is easier with AI and the routine creation assistant. A quick chat will help create the right routine for you.",
+      "devices": [
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Getting started",
+        "Automation",
+        "Routines"
+      ],
+      "tech_highlights": [
+        "자동 루틴",
+        "수동 루틴",
+        "AI 루틴 생성 어시스턴트"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-S-kids-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Safe steps for your little one",
+      "article_code": "S",
+      "tags": [
+        "Care for kids"
+      ],
+      "target_persona": "어린 자녀를 둔 부모.",
+      "story_num": 1,
+      "story_title": "A warm voice to welcome your child home",
+      "narrative": "You will be notified when your child arrives home. You can greet your child with a warm voice through the speaker in your home.",
+      "original_text": "You will be notified when your child arrives home so you can give them a warm welcome. With SmartThings, you can greet your child with a warm voice through the speaker in your home. Your child will feel comforted by your loving tone.",
+      "devices": [
+        "Galaxy 스마트폰",
+        "스마트 스피커"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Kids",
+        "Safety",
+        "Welcome"
+      ],
+      "tech_highlights": [
+        "귀가 알림",
+        "원격 음성 인사"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        },
+        {
+          "productType": "Speaker / Soundbar",
+          "icon": "🔊",
+          "path": "/soundbars/all-soundbars/",
+          "category": "Audio"
+        }
+      ]
+    },
+    {
+      "id": "v2-S-kids-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Safe steps for your little one",
+      "article_code": "S",
+      "tags": [
+        "Care for kids",
+        "Keep the air fresh"
+      ],
+      "target_persona": "어린 자녀를 둔 부모.",
+      "story_num": 2,
+      "story_title": "Welcoming your child with comfort and safety",
+      "narrative": "On hot days, SmartThings automatically turns on the air conditioner. On days with poor air quality, turns on the air purifier.",
+      "original_text": "On hot days, SmartThings automatically turns on the air conditioner to cool your home when your child arrives. On days with poor air quality, SmartThings will turn on the air purifier, ensuring that your child can rest comfortably and breathe pure, clean air.",
+      "devices": [
+        "에어컨",
+        "공기청정기"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Kids",
+        "Comfort",
+        "Air quality"
+      ],
+      "tech_highlights": [
+        "귀가 연동 자동 에어컨/공기청정기"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        },
+        {
+          "productType": "Air Care",
+          "icon": "🌬️",
+          "path": "/air-care/all-air-care/",
+          "category": "Air Care"
+        }
+      ]
+    },
+    {
+      "id": "v2-S-kids-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Safe steps for your little one",
+      "article_code": "S",
+      "tags": [
+        "Care for kids",
+        "Keep your home safe"
+      ],
+      "target_persona": "어린 자녀를 둔 부모.",
+      "story_num": 3,
+      "story_title": "Preparing for kitchen safety",
+      "narrative": "When the induction cooker is turned on, AI boiling detection adjusts the heat automatically to prevent liquids from boiling over. If the induction is activated while you're away, SmartThings notifies you.",
+      "original_text": "Using heating appliances in the kitchen always requires caution. When the induction cooker is turned on, AI boiling detection adjusts the heat automatically to prevent liquids from boiling over. If the induction cooker is activated while you're away, SmartThings will immediately notify you, so you can rest easy knowing your child is safe at home.",
+      "devices": [
+        "인덕션 쿠커",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Kids",
+        "Kitchen safety"
+      ],
+      "tech_highlights": [
+        "AI boiling detection",
+        "원격 인덕션 알림"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Cooking Appliance",
+          "icon": "🍳",
+          "path": "/cooking-appliances/all-cooking-appliances/",
+          "category": "Cooking"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-T-sleep-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Helps you fall asleep and wake up recharged",
+      "article_code": "T",
+      "tags": [
+        "Sleep well",
+        "Easily control your lights"
+      ],
+      "target_persona": "수면 품질 개선을 원하는 사용자.",
+      "story_num": 1,
+      "story_title": "Set the mood to help you fall asleep",
+      "narrative": "When you fall asleep, the lights turn off naturally and the curtains close. The air conditioner and air purifier start operating quietly. Galaxy Watch or Galaxy Ring automatically recognizes when you fall asleep.",
+      "original_text": "SmartThings creates your own optimal sleeping environment. When you fall asleep, the lights in your bedroom will turn off naturally and the curtains will close, creating a comfortable atmosphere. The air conditioner and air purifier will also start operating quietly when you sleep to help you sleep comfortably. And if you wear a Galaxy Watch or Galaxy Ring, it automatically recognizes when you fall asleep, and ensures that all these changes occur seamlessly.",
+      "devices": [
+        "스마트 조명",
+        "스마트 커튼",
+        "에어컨",
+        "공기청정기",
+        "Galaxy Watch",
+        "Galaxy Ring"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Sleep",
+        "Automation"
+      ],
+      "tech_highlights": [
+        "Galaxy Watch/Ring 수면 감지",
+        "자동 수면 환경 조성"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Lighting",
+          "icon": "💡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        },
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        },
+        {
+          "productType": "Air Care",
+          "icon": "🌬️",
+          "path": "/air-care/all-air-care/",
+          "category": "Air Care"
+        },
+        {
+          "productType": "Galaxy Watch",
+          "icon": "⌚",
+          "path": "/watches/all-watches/",
+          "category": "Wearable"
+        }
+      ]
+    },
+    {
+      "id": "v2-T-sleep-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Helps you fall asleep and wake up recharged",
+      "article_code": "T",
+      "tags": [
+        "Sleep well",
+        "Easily control your lights"
+      ],
+      "target_persona": "수면 품질 개선을 원하는 사용자.",
+      "story_num": 2,
+      "story_title": "Wake up refreshed",
+      "narrative": "When you wake up, curtains open automatically, lights turn on, and your TV begins to play your preferred news channel.",
+      "original_text": "When you wake up in the morning, SmartThings brings your home to life. Curtains open automatically to let sunshine in, lights turn on, and your TV automatically begins to play. With SmartThings you can pick your preferred news channel to start your day.",
+      "devices": [
+        "스마트 커튼",
+        "스마트 조명",
+        "삼성 TV"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Sleep",
+        "Wake-up routine"
+      ],
+      "tech_highlights": [
+        "기상 자동 루틴",
+        "커튼/조명/TV 연동"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Blinds",
+          "icon": "🪟",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        }
+      ]
+    },
+    {
+      "id": "v2-T-sleep-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Helps you fall asleep and wake up recharged",
+      "article_code": "T",
+      "tags": [
+        "Sleep well",
+        "Keep the air fresh"
+      ],
+      "target_persona": "수면 품질 개선을 원하는 사용자.",
+      "story_num": 3,
+      "story_title": "Temperature and humidity control help optimize sleep",
+      "narrative": "Check bedroom temperature, humidity, CO2 concentration, and illuminance. Sleep environment report in SmartThings provides information on your sleep environment.",
+      "original_text": "Diverse factors can affect your sleep, such as bedroom temperature, humidity, CO₂ concentration, and illuminance. You can check out the information provided by Sleep environment report in SmartThings on your sleep environment the night before in order to determine whether any improvements can be made to make your sleep more comfortable.",
+      "devices": [
+        "환경 센서",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Sleep",
+        "Environment monitoring"
+      ],
+      "tech_highlights": [
+        "Sleep environment report",
+        "CO2/온도/습도/조도 모니터링"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Sensor",
+          "icon": "📡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-U-solar-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Energy saving for the planet",
+      "article_code": "U",
+      "tags": [
+        "Save energy"
+      ],
+      "target_persona": "태양광 패널을 보유한 친환경 사용자.",
+      "story_num": 1,
+      "story_title": "Efficient use of solar energy",
+      "narrative": "SmartThings analyzes the amount of solar energy produced by your solar panels and automatically adjusts your cooling and heating devices in the most efficient way.",
+      "original_text": "Generate clean energy with solar panels. SmartThings carefully analyzes the amount of solar energy produced by your solar panels and automatically adjusts your cooling and heating devices in the most efficient way for your home. In this way, you can protect the planet while reducing your electricity bills at home.",
+      "devices": [
+        "태양광 패널",
+        "냉난방 기기"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Energy",
+        "Solar",
+        "Green"
+      ],
+      "tech_highlights": [
+        "태양광 발전량 분석",
+        "냉난방 자동 최적화"
+      ]
+    },
+    {
+      "id": "v2-U-solar-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Energy saving for the planet",
+      "article_code": "U",
+      "tags": [
+        "Save energy"
+      ],
+      "target_persona": "에너지 효율에 관심 있는 사용자.",
+      "story_num": 2,
+      "story_title": "Save even small amounts of heat to keep warm!",
+      "narrative": "The EHS uses heat from the outdoor unit to generate indoor heating and hot water. Monitor the heating and cooling energy flow at a glance.",
+      "original_text": "The EHS uses heat from the outdoor unit to generate indoor heating and hot water. It saves small amounts of heat that would otherwise be wasted in order to generate indoor heating and hot water that you can use every day. With the EHS, you can easily monitor the heating and cooling energy flow of your home at a glance and control it conveniently based on the set space.",
+      "devices": [
+        "EHS (Eco Heating System)"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Energy",
+        "Heating",
+        "EHS"
+      ],
+      "tech_highlights": [
+        "EHS 폐열 활용",
+        "에너지 플로우 모니터링"
+      ]
+    },
+    {
+      "id": "v2-V-food-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "How to make today's meal more enjoyable",
+      "article_code": "V",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "요리를 즐기는 사용자.",
+      "story_num": 1,
+      "story_title": "Explore diverse recipes",
+      "narrative": "Transform stored ingredients into delicious meals with SmartThings Food. Explore seasonal dishes to baking recipes.",
+      "original_text": "Transform the ingredients you have kept stored in your refrigerator for a long time into delicious meals with SmartThings Food. You can easily check the various recipes you can make with the ingredients in your refrigerator. Explore a wide range of recipes, from seasonal dishes to baking, and experience the thrill of trying new meals every day.",
+      "devices": [
+        "Bespoke AI 냉장고",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Food",
+        "Recipe"
+      ],
+      "tech_highlights": [
+        "SmartThings Food",
+        "냉장고 식재료 기반 레시피"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Refrigerator",
+          "icon": "🧊",
+          "path": "/refrigerators/all-refrigerators/",
+          "category": "Refrigerator"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-V-food-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "How to make today's meal more enjoyable",
+      "article_code": "V",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "요리를 즐기는 사용자.",
+      "story_num": 2,
+      "story_title": "The oven even sets itself according to the recommended recipe!",
+      "narrative": "Place your ingredients in the oven, it recognises them and recommends the most suitable recipe. The oven automatically sets the perfect temperature and time.",
+      "original_text": "You don't need to worry about tricky oven cooking. Simply place your ingredients in the oven, and it will recognise the ingredients and recommend the most suitable recipe. Just select your favourite recipe and the oven will automatically set the perfect temperature and time. Simply wait for your delicious meal to be ready—that's it!",
+      "devices": [
+        "Samsung 오븐"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Food",
+        "Smart oven"
+      ],
+      "tech_highlights": [
+        "식재료 인식",
+        "자동 온도/시간 설정"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Cooking Appliance",
+          "icon": "🍳",
+          "path": "/cooking-appliances/all-cooking-appliances/",
+          "category": "Cooking"
+        }
+      ]
+    },
+    {
+      "id": "v2-V-food-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "How to make today's meal more enjoyable",
+      "article_code": "V",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "요리를 즐기는 사용자.",
+      "story_num": 3,
+      "story_title": "Smart and clean dishwashing",
+      "narrative": "The dishwasher analyses how dirty the dishes are and automatically sets the optimal washing temperature and time. AI algorithm determines the number of rinses needed.",
+      "original_text": "Thinking about washing all the dishes after a delicious meal can be rather tiresome. Simply place your used dishes in the dishwasher and it will analyse how dirty they are and automatically set the optimal washing temperature and time. The smart AI algorithm even determines the number of rinses needed to clean your dishes from start to finish.",
+      "devices": [
+        "식기세척기"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Food",
+        "Dishwashing",
+        "AI"
+      ],
+      "tech_highlights": [
+        "오염도 분석",
+        "AI 세척 알고리즘"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Dishwasher",
+          "icon": "🍽️",
+          "path": "/dishwashers/all-dishwashers/",
+          "category": "Dishwasher"
+        }
+      ]
+    },
+    {
+      "id": "v2-W-petcare-orig-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Take care of your pet while you're away",
+      "article_code": "W",
+      "tags": [
+        "Care for your pet"
+      ],
+      "target_persona": "반려동물을 키우는 사용자.",
+      "story_num": 1,
+      "story_title": "Give your pet customised care!",
+      "narrative": "Start Pet Care with just a photo. Pet Care will automatically identify the breed to create a profile. Check daily activity level and compare health status with other pets of the same breed.",
+      "original_text": "Start Pet Care with just a photo. Take a picture of your pet's face, and Pet Care will automatically identify the breed in order to create a profile. You can check how your pet is doing by reviewing the daily activity level, and you can even compare its health status with other pets of the same breed.",
+      "devices": [
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Pet care",
+        "Health profile"
+      ],
+      "tech_highlights": [
+        "AI 품종 인식",
+        "활동량 모니터링",
+        "품종별 건강 비교"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-W-petcare-orig-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Take care of your pet while you're away",
+      "article_code": "W",
+      "tags": [
+        "Care for your pet",
+        "Stay fit & healthy"
+      ],
+      "target_persona": "반려동물을 키우는 사용자.",
+      "story_num": 2,
+      "story_title": "Enjoy safe and healthy walks with your pet!",
+      "narrative": "Create a schedule and take your pet on regular walks. Distance, time, and route are automatically recorded. Check pet's location in real time with Galaxy SmartTag2.",
+      "original_text": "Create a schedule and take your pet on regular walks. The Pet Care feature will generate notifications based on your schedule to help you remember when to take your pet for a walk. The distance, time, and route of your walks are automatically recorded to help keep track of the time you spend exercising together. If your dog wanders off, you can even check its location in real time with the Galaxy SmartTag2.",
+      "devices": [
+        "Galaxy 스마트폰",
+        "Galaxy SmartTag2"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Pet care",
+        "Walking",
+        "Tracking"
+      ],
+      "tech_highlights": [
+        "산책 기록 자동화",
+        "SmartTag2 실시간 위치 추적"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-W-petcare-orig-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Take care of your pet while you're away",
+      "article_code": "W",
+      "tags": [
+        "Care for your pet",
+        "Help with chores"
+      ],
+      "target_persona": "반려동물을 키우는 사용자.",
+      "story_num": 3,
+      "story_title": "Take care of your pet even while you're away",
+      "narrative": "Use the automatic feeder for regular meals. Set the perfect temperature and atmosphere. Play TV shows that your pet enjoys. When barking is detected, the robot vacuum cleaner checks and sends you a video.",
+      "original_text": "Help your pet enjoy its time alone. While you're away, use the automatic feeder to ensure your pet has regular meals. You can set the perfect temperature and atmosphere, and you can also play TV shows that your pet enjoys. When barking is detected, the robot vacuum cleaner will check the situation and send you a video of your dog to give you peace of mind.",
+      "devices": [
+        "자동 급식기",
+        "삼성 TV",
+        "로봇청소기",
+        "에어컨"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Pet care",
+        "Remote care"
+      ],
+      "tech_highlights": [
+        "자동 급식",
+        "짖음 감지",
+        "로봇청소기 영상 전송"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Pet Accessory (Third-party)",
+          "icon": "🐾",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Vacuum Cleaner",
+          "icon": "🤖",
+          "path": "/vacuum-cleaners/all-vacuum-cleaners/",
+          "category": "Vacuum"
+        },
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        }
+      ]
+    },
+    {
+      "id": "v2-X-hub-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "It's now even easier to get started with smart home",
+      "article_code": "X",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe"
+      ],
+      "target_persona": "스마트 홈 초보자.",
+      "story_num": 1,
+      "story_title": "Start your smart home with Samsung Smart TV",
+      "narrative": "Samsung's Smart TV has a built in SmartThings hub feature. Connect lights, curtains, and sensors without separately installing a hub.",
+      "original_text": "If you want to start a smart home but you're concerned about the hub, take a look at the TV in your home first. Samsung's Smart TV has a built in SmartThings hub feature that allows you to easily turn your home into a smart home by connecting lights, curtains, and sensors, without having to separately install a hub.",
+      "devices": [
+        "삼성 Smart TV",
+        "스마트 조명",
+        "스마트 커튼",
+        "센서"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Getting started",
+        "Hub"
+      ],
+      "tech_highlights": [
+        "TV 내장 SmartThings Hub"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        },
+        {
+          "productType": "Smart Lighting",
+          "icon": "💡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-X-hub-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "It's now even easier to get started with smart home",
+      "article_code": "X",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe"
+      ],
+      "target_persona": "스마트 홈 초보자.",
+      "story_num": 2,
+      "story_title": "Samsung home appliances that double as smart hubs",
+      "narrative": "Samsung home appliances also serve as hubs that connect various smart devices. Connect and control devices like lights and occupancy sensors without a separate hub.",
+      "original_text": "Start your smart home more conveniently with Samsung home appliances. Samsung home appliances also serve as hubs that connect various smart devices to SmartThings. You can easily connect and control devices such as room lights and occupancy sensors without needing a separate hub.",
+      "devices": [
+        "Samsung 가전(허브 내장)",
+        "스마트 조명",
+        "재실 센서"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Getting started",
+        "Hub"
+      ],
+      "tech_highlights": [
+        "가전 내장 허브"
+      ],
+      "purchase_links": [
+        {
+          "productType": "SmartThings Hub",
+          "icon": "🏠",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-X-hub-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "It's now even easier to get started with smart home",
+      "article_code": "X",
+      "tags": [
+        "Help with chores"
+      ],
+      "target_persona": "삼성 제품을 새로 구매한 사용자.",
+      "story_num": 3,
+      "story_title": "From purchase to connection, all in one go!",
+      "narrative": "Purchase from Samsung.com, check order and delivery status. Once delivery is complete, connect to SmartThings by scanning the QR code.",
+      "original_text": "If you purchase a product from Samsung.com, then don't forget to check out SmartThings. You can check everything from order information to delivery status at a glance. Once delivery is complete, you will be notified of the devices that can be connected. You can also connect to SmartThings easily by scanning the QR code on the product.",
+      "devices": [
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Getting started",
+        "Onboarding"
+      ],
+      "tech_highlights": [
+        "Samsung.com 연동",
+        "QR 코드 기기 등록"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-Y-aircon-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Keep your home cool with smart air conditioning!",
+      "article_code": "Y",
+      "tags": [
+        "Keep the air fresh",
+        "Sleep well"
+      ],
+      "target_persona": "에어컨을 스마트하게 사용하고 싶은 사용자.",
+      "story_num": 1,
+      "story_title": "Cool and quiet air conditioning, even at night!",
+      "narrative": "Control the air conditioner precisely, including temperature, wind speed, schedule setting, display lights and sound effects for comfortable sleep.",
+      "original_text": "The air conditioner in your home helps you to sleep comfortably. You can control the air conditioner precisely, including the temperature, wind speed, schedule setting, and even the display lights and sound effects. Enjoy quiet, comfortable sleep even on a summer night.",
+      "devices": [
+        "에어컨"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Air conditioning",
+        "Sleep"
+      ],
+      "tech_highlights": [
+        "정밀 에어컨 제어",
+        "디스플레이/사운드 제어"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        }
+      ]
+    },
+    {
+      "id": "v2-Y-aircon-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Keep your home cool with smart air conditioning!",
+      "article_code": "Y",
+      "tags": [
+        "Keep the air fresh",
+        "Save energy"
+      ],
+      "target_persona": "에어컨을 스마트하게 사용하고 싶은 사용자.",
+      "story_num": 2,
+      "story_title": "Air conditioner that turns on and off based on your location",
+      "narrative": "Welcome air care mode turns on the air conditioner before you get home. AI comfort sets optimal temperature and humidity. When no one is nearby, switches to power saving mode.",
+      "original_text": "The Welcome air care mode in SmartThings welcomes you with cool air instead of hot air by turning on the air conditioner before you get home. With AI comfort, optimal temperature and humidity are set so you can enjoy clean air at all times. When it detects no one nearby, the air conditioner automatically switches to power saving mode and eventually turns off to save energy smartly.",
+      "devices": [
+        "에어컨",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Air conditioning",
+        "Location-based",
+        "Energy saving"
+      ],
+      "tech_highlights": [
+        "Welcome air care 모드",
+        "AI comfort",
+        "재실 감지 절전"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-Y-aircon-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Keep your home cool with smart air conditioning!",
+      "article_code": "Y",
+      "tags": [
+        "Keep the air fresh"
+      ],
+      "target_persona": "에어컨을 스마트하게 사용하고 싶은 사용자.",
+      "story_num": 3,
+      "story_title": "Improve the cooling effect with SmartThings",
+      "narrative": "If you forget to close the window, the door open sensor detects it and notifies you. Automatic blinds come down when you turn on the air conditioner to help cool down faster.",
+      "original_text": "Enjoy this summer with a flow of cool air. If you forget to close the window before turning on the air conditioner, the door open sensor will detect it and notify you through SmartThings. If it doesn't cool down quickly due to strong sunlight, try using Automatic blinds. The blinds will come down when you turn on the air conditioner, helping the room to cool down faster.",
+      "devices": [
+        "에어컨",
+        "문열림 센서",
+        "자동 블라인드"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Air conditioning",
+        "Smart cooling"
+      ],
+      "tech_highlights": [
+        "문열림 센서 연동",
+        "자동 블라인드 연동"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Air Conditioner",
+          "icon": "❄️",
+          "path": "/air-conditioners/all-air-conditioners/",
+          "category": "Air Conditioner"
+        },
+        {
+          "productType": "Smart Sensor",
+          "icon": "📡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-Z-smalldevice-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Smart changes starting with small devices",
+      "article_code": "Z",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe"
+      ],
+      "target_persona": "저비용으로 스마트 홈을 시작하려는 사용자.",
+      "story_num": 1,
+      "story_title": "Start your smart home hassle free",
+      "narrative": "A few affordable products such as smart buttons and plugs are all you need. Connect various smart products using a Smart Home Hub.",
+      "original_text": "A few affordable products such as smart buttons and plugs are all you need to start enjoying a smart experience. Connect various smart products to SmartThings using a Smart Home Hub. You can always check the status and remotely control your household devices easily and conveniently, wherever you are.",
+      "devices": [
+        "스마트 버튼",
+        "스마트 플러그",
+        "Smart Home Hub"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Getting started",
+        "Affordable"
+      ],
+      "tech_highlights": [
+        "저비용 스마트 홈 구성"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Plug",
+          "icon": "🔌",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-Z-smalldevice-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Smart changes starting with small devices",
+      "article_code": "Z",
+      "tags": [
+        "Enhanced mood",
+        "Easily control your lights"
+      ],
+      "target_persona": "저비용으로 스마트 홈을 시작하려는 사용자.",
+      "story_num": 2,
+      "story_title": "Enjoy the ambiance of a cinema with just one button!",
+      "narrative": "Press the smart button and the curtains close automatically and lights dim softly for a cinema mood. Press again to return to usual routine.",
+      "original_text": "If you want to watch a movie on a weekend evening, just press the smart button and the curtains will close automatically and the lights will dim softly to create an immersive movie theater mood. Press the button again, and you can instantly return to your usual routine.",
+      "devices": [
+        "스마트 버튼",
+        "스마트 커튼",
+        "스마트 조명"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Cinema mode",
+        "One-button"
+      ],
+      "tech_highlights": [
+        "원버튼 시네마 모드",
+        "토글 루틴"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Blinds",
+          "icon": "🪟",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-Z-smalldevice-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Smart changes starting with small devices",
+      "article_code": "Z",
+      "tags": [
+        "Easily control your lights",
+        "Help with chores"
+      ],
+      "target_persona": "저비용으로 스마트 홈을 시작하려는 사용자.",
+      "story_num": 3,
+      "story_title": "Using smart switches and plugs",
+      "narrative": "Connect the smart switch to existing lighting to control from anywhere. Manage appliances like a coffee maker with a smart plug.",
+      "original_text": "You don't need to replace all the lights in your home with smart lights. You can turn the lights on and off anytime, wherever you happen to be, simply by connecting the smart switch to your existing lighting. You can even manage electric appliances, such as a coffee maker, with a smart plug. You can also check if the power is turned off properly.",
+      "devices": [
+        "스마트 스위치",
+        "스마트 플러그",
+        "기존 조명"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Retrofit",
+        "Affordable"
+      ],
+      "tech_highlights": [
+        "기존 조명 스마트화",
+        "스마트 플러그 대기전력 관리"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Plug",
+          "icon": "🔌",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-AA-lighting-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Add convenience to your life with lighting!",
+      "article_code": "AA",
+      "tags": [
+        "Easily control your lights"
+      ],
+      "target_persona": "조명으로 분위기를 연출하고 싶은 사용자.",
+      "story_num": 1,
+      "story_title": "Control lighting anytime, anywhere",
+      "narrative": "In addition to turning lights on/off, adjust the brightness and colour to create the perfect ambience.",
+      "original_text": "Control your home lighting anytime, anywhere with SmartThings and smart lighting. In addition to turning the lights on and off, you can adjust the brightness and colour of the lighting to create the perfect ambience. Turn on the lights conveniently with SmartThings, and create the lighting you need right now.",
+      "devices": [
+        "스마트 조명",
+        "Galaxy 스마트폰"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Lighting",
+        "Remote control"
+      ],
+      "tech_highlights": [
+        "밝기/색상 조절",
+        "원격 조명 제어"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Lighting",
+          "icon": "💡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        }
+      ]
+    },
+    {
+      "id": "v2-AA-lighting-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Add convenience to your life with lighting!",
+      "article_code": "AA",
+      "tags": [
+        "Easily control your lights",
+        "Enhanced mood",
+        "Sleep well"
+      ],
+      "target_persona": "조명으로 분위기를 연출하고 싶은 사용자.",
+      "story_num": 2,
+      "story_title": "Lights? On! Mood? Up!",
+      "narrative": "AI Home automatically pumps up the energy when needed and winds it down when relaxing. Sleep light dims out when you're ready to sleep.",
+      "original_text": "Make sure your lighting always matches your mood. AI Home automatically pumps up the energy when you need it — and winds it down when you're ready to relax. Turn on the sleep light before getting cozy — and your lights will dim out when you're ready to sleep.",
+      "devices": [
+        "스마트 조명"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Lighting",
+        "Mood",
+        "AI"
+      ],
+      "tech_highlights": [
+        "AI Home 조명 자동화",
+        "수면 조명"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Lighting",
+          "icon": "💡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-AA-lighting-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Add convenience to your life with lighting!",
+      "article_code": "AA",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe"
+      ],
+      "target_persona": "야간 안전이 걱정되는 사용자.",
+      "story_num": 3,
+      "story_title": "Lighting that turns on when motion is detected",
+      "narrative": "The occupancy sensor and smart lighting detect movements and turn on the lights softly to help you go to the bathroom safely at night.",
+      "original_text": "We sometimes have to search for the light switch when we go to the bathroom in the middle of the night. In this case, try using the occupancy sensor and smart lighting together. It detects movements and turns on the lights softly to help you go to the bathroom safely. Now, you will no longer need to search for the light switch at night.",
+      "devices": [
+        "재실 센서",
+        "스마트 조명"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Lighting",
+        "Safety",
+        "Motion detection"
+      ],
+      "tech_highlights": [
+        "재실 센서 연동",
+        "모션 감지 조명"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Sensor",
+          "icon": "📡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-AB-lightalert-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Receive daily life notifications via your home's lighting",
+      "article_code": "AB",
+      "tags": [
+        "Easily control your lights",
+        "Help with chores"
+      ],
+      "target_persona": "알림을 놓치기 쉬운 사용자.",
+      "story_num": 1,
+      "story_title": "The light turns on when the laundry is complete",
+      "narrative": "The lights in the dining room or living room turn on or change color when the laundry is finished.",
+      "original_text": "Everyone has experienced smelly clothing due to a missed notification that the laundry cycle has finished. Now, SmartThings and smart lighting will ensure that you never miss the laundry notification. The lights in the dining room or living room will turn on or change color when the laundry is finished, so you can easily tell even if you don't hear the notification.",
+      "devices": [
+        "스마트 조명",
+        "세탁기"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Lighting",
+        "Notification",
+        "Laundry"
+      ],
+      "tech_highlights": [
+        "조명 색상 변경 알림"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Lighting",
+          "icon": "💡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        },
+        {
+          "productType": "Washer & Dryer",
+          "icon": "🫧",
+          "path": "/washers-and-dryers/all-washers-and-dryers/",
+          "category": "Laundry"
+        }
+      ]
+    },
+    {
+      "id": "v2-AB-lightalert-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Receive daily life notifications via your home's lighting",
+      "article_code": "AB",
+      "tags": [
+        "Easily control your lights",
+        "Keep the air fresh"
+      ],
+      "target_persona": "실내 공기질에 민감한 사용자.",
+      "story_num": 2,
+      "story_title": "The best ventilation timing indicated by lighting",
+      "narrative": "SmartThings Air Care analyzes outdoor air quality in real time and indicates through lighting color when it's a good time to ventilate.",
+      "original_text": "Checking the weather and air quality each time in order to determine when to ventilate is rather inconvenient. Now, SmartThings Air Care analyzes the outdoor air quality in real time and lets you know through the color of your home's lighting when it's a good time to ventilate.",
+      "devices": [
+        "스마트 조명"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Lighting",
+        "Air quality",
+        "Ventilation"
+      ],
+      "tech_highlights": [
+        "SmartThings Air Care",
+        "실시간 공기질 분석",
+        "조명 색상 환기 알림"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Lighting",
+          "icon": "💡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-AB-lightalert-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Receive daily life notifications via your home's lighting",
+      "article_code": "AB",
+      "tags": [
+        "Easily control your lights",
+        "Keep your home safe"
+      ],
+      "target_persona": "소리를 놓치기 쉬운 환경의 사용자.",
+      "story_num": 3,
+      "story_title": "Lighting also notifies you when the doorbell rings",
+      "narrative": "When the doorbell rings, you can see there's a visitor just by looking at the lights. You don't need to rely solely on sound.",
+      "original_text": "You might miss the sound of the doorbell while listening to music or concentrating on your work. Now, when the doorbell rings, you will be able to see that there's a visitor just by looking at the lights. You won't miss those important moments, since you don't need to rely solely on sound.",
+      "devices": [
+        "스마트 조명",
+        "도어벨"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Lighting",
+        "Notification",
+        "Doorbell"
+      ],
+      "tech_highlights": [
+        "도어벨 연동 조명 알림"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Lighting",
+          "icon": "💡",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        }
+      ]
+    },
+    {
+      "id": "v2-AC-energysave-s1",
+      "source": "Explore Contents v2.0",
+      "article_title": "Smart energy saving will help reduce your electricity bills!",
+      "article_code": "AC",
+      "tags": [
+        "Save energy"
+      ],
+      "target_persona": "전기요금 절약을 원하는 사용자.",
+      "story_num": 1,
+      "story_title": "AI will help pay the bills",
+      "narrative": "Turn on SmartThings AI Energy Mode and set monthly energy use goals. AI will automatically track your progress.",
+      "original_text": "Just turn on SmartThings AI Energy Mode and you can help save energy without worrying about each device in your home. Just set your monthly energy use goals and AI will automatically track your progress.",
+      "devices": [
+        "Samsung 가전 전반"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Energy",
+        "AI",
+        "Bills"
+      ],
+      "tech_highlights": [
+        "AI Energy Mode",
+        "월간 목표 추적"
+      ]
+    },
+    {
+      "id": "v2-AC-energysave-s2",
+      "source": "Explore Contents v2.0",
+      "article_title": "Smart energy saving will help reduce your electricity bills!",
+      "article_code": "AC",
+      "tags": [
+        "Save energy"
+      ],
+      "target_persona": "전기요금 절약을 원하는 사용자.",
+      "story_num": 2,
+      "story_title": "Help save energy with built in product features",
+      "narrative": "AI Energy Mode utilizes smart features to optimize energy consumption. Examples: reducing hot water temperature in washing, lowering dryer heat, controlling TV brightness.",
+      "original_text": "SmartThings AI Energy Mode utilizes the smart features of your household appliances and devices to optimize their energy consumption, thereby allowing you to maximize energy saving benefits. For example, you can save energy by adjusting certain product controls, such as reducing the hot water temperature in your washing cycle, lowering the heat setting of your dryer, or controlling the brightness of your TV screen.",
+      "devices": [
+        "세탁기",
+        "건조기",
+        "삼성 TV"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Energy",
+        "Optimization"
+      ],
+      "tech_highlights": [
+        "제품별 에너지 최적화",
+        "AI Energy Mode 세부 조절"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Washer & Dryer",
+          "icon": "🫧",
+          "path": "/washers-and-dryers/all-washers-and-dryers/",
+          "category": "Laundry"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        }
+      ]
+    },
+    {
+      "id": "v2-AC-energysave-s3",
+      "source": "Explore Contents v2.0",
+      "article_title": "Smart energy saving will help reduce your electricity bills!",
+      "article_code": "AC",
+      "tags": [
+        "Save energy"
+      ],
+      "target_persona": "전기요금 절약을 원하는 사용자.",
+      "story_num": 3,
+      "story_title": "Saves energy automatically while you're away",
+      "narrative": "Automatically turns off devices left on when family is away. Use smart plugs for devices not directly connected to SmartThings.",
+      "original_text": "SmartThings helps take care of your home when your family is away. It helps you save energy by automatically turning off any devices that have been left on unnecessarily. You can also use smart plugs to manage devices that cannot be connected directly to SmartThings and control them through your smartphone or TV.",
+      "devices": [
+        "스마트 플러그",
+        "Galaxy 스마트폰",
+        "삼성 TV"
+      ],
+      "related_products": [],
+      "value_tags": [
+        "Energy",
+        "Away mode"
+      ],
+      "tech_highlights": [
+        "외출 시 자동 차단",
+        "스마트 플러그 연동"
+      ],
+      "purchase_links": [
+        {
+          "productType": "Smart Plug",
+          "icon": "🔌",
+          "path": "/smartthings/all-smartthings/",
+          "category": "SmartThings"
+        },
+        {
+          "productType": "Galaxy Smartphone",
+          "icon": "📱",
+          "path": "/smartphones/all-smartphones/",
+          "category": "Smartphone"
+        },
+        {
+          "productType": "Smart TV",
+          "icon": "📺",
+          "path": "/tvs/all-tvs/",
+          "category": "TV"
+        }
+      ]
+    }
+  ]
+}

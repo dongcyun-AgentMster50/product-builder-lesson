@@ -1,0 +1,588 @@
+삼성 SmartThings 라이프스타일 에코시스템 심층 분석 보고서: 8대 키워드별 시나리오 및 기술 전략
+1. 서론 (Introduction)
+본 보고서는 삼성전자 SmartThings 플랫폼이 제시하는 8가지 핵심 라이프스타일 키워드(Security, Energy Saving, Easy to use, Time saving, Sleep, Health, Pet care, Family care)를 중심으로, 해당 플랫폼이 소비자에게 전달하고자 하는 사용자 경험(UX)과 기술적 가치를 심층 분석한다.
+사용자가 지정한 URL 구조와 원문 데이터를 기반으로, 각 카테고리 하위의 모든 **아티클(Article)**과 **스토리(Story)**의 원문(English)을 요약 없이 그대로 수록하였다. 단순한 텍스트 나열을 넘어, 각 시나리오가 작동하기 위해 필요한 백엔드 기술(Matter, Zigbee, Cloud-to-Cloud), 하드웨어 스펙, 보안 프로토콜(Knox), 그리고 AI 알고리즘의 역할을 전문가적 관점에서 해설한다.
+SmartThings는 단순한 사물인터넷(IoT) 제어 도구를 넘어, 'Intelligence of Things'로 진화하고 있다. 이는 사용자가 기기(Device)가 아닌 가치(Value)를 소비하도록 유도하는 전략이다. 본 보고서는 이 전략이 8가지 키워드를 통해 어떻게 구체화되는지, 그리고 각 시나리오가 시장 내 경쟁 플랫폼(Google Home, Amazon Alexa, Apple HomeKit) 대비 어떤 차별점을 갖는지를 면밀히 분석한다.
+________________________________________2. 라이프스타일 키워드 1: Security (보안)
+Security는 스마트홈 진입의 가장 강력한 동인(Driver)이다. 삼성은 카메라와 센서를 통한 물리적 감시뿐만 아니라, 데이터 프라이버시(Knox)와 가전기기를 활용한 침입 억제(Deterrence) 전략을 통합하여 '종합 보안 솔루션'을 제시한다.
+2.1 Article: Let your TV make your home more convenient
+기술적 배경: 이 아티클은 TV를 단순한 디스플레이가 아닌 '홈 허브(Home Hub)'로 재정의한다. Tizen OS의 멀티태스킹 기능과 SmartThings 클라우드 연동이 핵심이다.
+Story 1: Find your mobile phone with the TV
+Original Text:
+Can’t remember where you put your phone? Then, ask your TV!
+When you use your TV’s feature, you’ll hear your lost phone ring even if it’s hidden somewhere.
+Now, you don't have to worry about forgetting where you left it!
+[심층 분석]
+●	기술 메커니즘: 이 기능은 로컬 블루투스 연결이 아닌 **클라우드 기반 트리거(Cloud Trigger)**를 사용한다. 사용자가 TV UI에서 요청을 보내면, 삼성 계정(Samsung Account) 서버를 경유하여 FCM(Firebase Cloud Messaging) 또는 삼성 푸시 서비스를 통해 등록된 갤럭시 스마트폰으로 '벨소리 울리기' 명령을 전송한다. 따라서 TV와 폰이 같은 Wi-Fi에 있지 않아도 작동 가능하다는 강점이 있다.
+●	UX 전략: 스마트폰 분실은 일상적인 스트레스 요인(Pain Point)이다. 이를 TV 리모컨의 간단한 조작으로 해결함으로써, 사용자는 SmartThings 생태계의 편리함을 즉각적으로 체감하게 된다. 이는 고관여 기술(자동화 설정 등)로 넘어가기 전의 '미끼 기능(Hook Feature)' 역할을 한다.
+Story 2: Monitor your home with the TV
+Original Text:
+Discover an even better way to use your TV’s large screen – use your TV screen to view feeds from your security cameras throughout your home all on one screen.
+This allows you to keep an eye on not only what's happening inside your house but also outside.
+Create a safe home without any blind spots.
+[심층 분석]
+●	영상 처리 기술: 다중 카메라 피드(Multi-camera feed)를 TV의 대화면에 동시에 띄우는 것은 높은 대역폭과 프로세싱 파워를 요구한다. 삼성은 WebRTC 또는 RTSP 스트리밍 프로토콜을 최적화하여 지연 시간(Latency)을 최소화했다. 특히 PIP(Picture-in-Picture) 기능을 통해 TV 시청을 방해하지 않으면서 보안 확인이 가능하도록 설계되었다.
+●	생태계 확장: Ring, Arlo, Nest 등 타사 카메라와의 연동성을 강조하며, 'Works with SmartThings(WWST)' 인증 프로그램의 중요성을 보여주는 사례다.
+Story 3: Manage your home with the TV
+Original Text:
+Use your TV to see and manage everything that’s happening inside your home at a single glance.
+You can check various information, including urgent alerts, how much time is left for your laundry, the lighting in your rooms, and more.
+Monitor and control everything all at once!
+[심층 분석]
+●	Map View & Dashboard: 최신 삼성 TV는 집안의 평면도를 3D로 시각화한 Map View를 제공한다. 이는 텍스트나 리스트 기반의 제어보다 훨씬 직관적이다. 세탁기의 남은 시간을 TV 팝업으로 띄우는 기능은 가전 간 연결성(Appliance-to-Appliance Connectivity)의 대표적인 사례로, 타사 플랫폼이 쉽게 모방하기 힘든 '삼성 가전 생태계'만의 해자(Moat)이다.
+________________________________________2.2 Article: Keep your home safe anytime, anywhere
+기술적 배경: 다중 카메라와 센서를 활용한 심층 감시 시나리오다.
+Story 1: Monitor the front door
+Original Text:
+When no one is home, you might worry if an important parcel arrived or if anyone peeked through your home.
+However, the video doorbell allows you to monitor suspicious movements or visitors at the front door at any time.
+[심층 분석]
+●	Edge AI 분석: 최신 비디오 도어벨은 단순 녹화가 아닌, **온디바이스 AI(On-device AI)**를 통해 사람, 택배 상자, 동물, 차량을 구분한다. '택배 도착' 알림은 단순한 '동작 감지' 알림보다 사용자 가치가 훨씬 높다. 이를 통해 오알림(False Alarm) 피로도를 줄이는 것이 기술의 핵심이다.
+Story 2: Monitor every corner
+Original Text:
+SmartThings enables you to monitor your home in real time by connecting to security cameras installed in almost every corner.
+You will have an entire view of every space. If you're also worried about someone hacking your cameras, you can set them to always be turned off when you are home.
+[심층 분석]
+●	프라이버시 자동화: "집에 있을 때는 꺼진다"는 기능은 지오펜싱(Geofencing) 기술이나 **재실 감지 센서(Presence Sensor)**와 연동된다. 사용자의 폰이 집 Wi-Fi에 접속하거나 GPS상 집 위치에 도달하면, SmartThings 모드(Mode)가 'Home'으로 변경되고, 이에 따라 실내 카메라의 전원을 차단하거나 프라이버시 셔터를 닫는 자동화가 실행된다. 이는 해킹 공포를 기술적으로 완화하는 중요한 기능이다.
+Story 3: Monitor multiple cameras at once
+Original Text:
+If there are multiple security cameras installed, it is not easy to monitor them simultaneously.
+Take advantage of the large screen on Galaxy Tab to solve this.
+You can monitor every corner and also select a single camera to take a closer look at.
+[심층 분석]
+●	멀티뷰 최적화: 모바일 폰의 작은 화면과 달리, 태블릿(Galaxy Tab)은 CCTV 관제 센터와 같은 UX를 제공한다. 이는 SmartThings 앱이 기기 폼팩터(Form Factor)에 따라 반응형으로 UI를 재구성함을 의미한다.
+________________________________________2.3 Article: Our smart butler
+기술적 배경: 조명과 TV를 활용한 간접적 보안 및 알림 시나리오다.
+Story 1: Welcome guests through your TV
+Original Text:
+Want to watch your favorite TV shows without being interrupted? Now, you don't even need to go to the front door when the doorbell rings. Simply check the doorbell camera feed using your TV, and remotely open the door for your guests.
+Technical Note: Remote door opening requires a compatible smart lock.
+Story 2: You can tell by the light
+Original Text:
+There are times when you don't hear the doorbell. Now, you can check whether someone is at your door through the lighting in your home. Adjust the lighting settings so that they will change when someone rings the doorbell. This way, you'll know that someone's at the door, even if you don't hear the doorbell ring.
+[심층 분석]
+●	접근성(Accessibility) 확장: 청각 장애인이나 헤드폰을 착용하고 있는 사용자에게 '조명 깜빡임'은 필수적인 알림 수단이다. 이는 IFTTT(If This Then That) 로직을 SmartThings 자동화(Routine) 엔진 내에서 구현한 것으로, 도어벨(입력) -> 허브(처리) -> 조명(출력)으로 이어지는 기기 간 통신 속도가 사용자 경험을 좌우한다. 로컬 실행(Local Execution)이 가능한 디바이스 구성을 통해 클라우드 지연을 없애는 것이 중요하다.
+Story 3: We will keep your house safe
+Original Text:
+It's natural to have concerns about intruders entering your house while you are away, but SmartThings your doorbell, and the proper security system, help keep your home safe. If someone is snooping around, the lights and TV will turn on and off creating the illusion there are people inside your home.
+[심층 분석]
+●	모의 재실(Occupancy Simulation): 과거의 '타이머 콘센트' 방식을 지능화한 것이다. SmartThings는 사용자의 평소 생활 패턴을 학습하거나 무작위 알고리즘을 사용하여, 특정 시간에만 불을 켜는 것이 아니라 실제 사람이 있는 것처럼 불규칙하게 조명과 TV를 제어한다. 이는 외부 침입자가 집의 빈 패턴을 파악하기 어렵게 만든다.
+________________________________________2.4 Article: Safeguard personal data in your home
+기술적 배경: 하드웨어 레벨의 보안 기술인 Samsung Knox를 전면에 내세워 신뢰를 구축한다.
+Story 1: Protect your personal data with Samsung Knox
+Original Text:
+Worried about your personal information being leaked? With Samsung products, you can relax, knowing that your personal information is protected. Samsung's Knox Vault isolates and stores sensitive information, such as passwords and biometric data, in a dedicated hardware security chip. Designed to withstand hacking and physical attacks, it safeguards your data, giving you complete peace of mind.
+Story 2: Your appliances are all interconnected and protected under Samsung Knox
+Original Text:
+As our home devices become smarter, security is becoming even more crucial. Even when everyone is asleep, Samsung devices work together around the clock to protect each other. Powered by Samsung Knox Matrix, they continuously monitor the space for potential security threats, instantly isolating any compromised device to keep your home safe. Enjoy a home that becomes safer with every device you connect.
+Story 3: Enjoy peace of mind with strong security
+Original Text:
+Experience peace of mind and enjoy SmartThings with Samsung's AI appliances, the first in the global home appliance industry to achieve UL Solutions' highest security rating, the 'Diamond' grade, and Samsung Smart TVs, which have maintained CC certification for 10 consecutive years. Galaxy smartphones are equipped with industry-leading EAL-5+ grade security chipsets, to ensure security both in your home and on the go.
+[심층 분석]
+●	Knox Matrix & Blockchain: Knox Matrix는 프라이빗 블록체인 개념을 도입하여, 연결된 기기들이 서로의 무결성(Integrity)을 검증한다. 예를 들어, 해킹된 냉장고가 네트워크에 접속하려 하면, TV나 허브가 이를 감지하고 네트워크에서 격리(Isolate)시킨다. 이는 단일 기기 보안(Endpoint Security)을 넘어선 생태계 보안(Ecosystem Security) 전략이다.
+●	인증의 마케팅화: UL Diamond 등급이나 CC(Common Criteria) 인증을 강조하는 것은 보안을 추상적인 개념이 아닌 '검증된 스펙'으로 어필하려는 의도다.
+________________________________________2.5 Article: Make Christmas even more memorable with SmartThings
+기술적 배경: 계절적 이벤트를 통한 스마트 플러그 및 센서 활용법 제안.
+Story 1: Smartly prepare for Christmas
+Original Text:
+Try connecting a smart plug to your Christmas tree. The smart plug's remote control and automated settings makes it easy to manage your tree lights. You can also adjust your settings so that at night, the rest of your lights turn off, leaving your Christmas tree as the only beaming light source in your home.
+Story 2: Stay safe during Christmas
+Original Text:
+Tree lights that get too hot can easily start a fire. Set your tree lights so that they turn off when you leave the house or go to sleep, preventing potential fires. If there ever is a fire in your house, the smoke detectors and the Home Monitor in your house will make sure it's detected early so that you can quickly put it out.
+Story 3: Create a festive mood for Christmas
+Original Text:
+Just putting a simple Christmas tree in your living room will get you in the Christmas spirit. To give your home an even more festive feel, use SmartThings to change the color of the lights around your home. You can also use Music Sync to make the lights in your home sparkle in time with Christmas carols.
+[심층 분석]
+●	안전 자동화(Safety Automation): 스마트 플러그는 단순한 전원 제어를 넘어 화재 예방 도구가 된다. "외출 시 꺼짐" 루틴은 사용자의 위치 정보(GPS)와 연동된다.
+●	연기 감지기 연동: 화재 감지 시 스마트 플러그의 전원을 차단하는 로직(Rule: If Smoke Detected, Then Turn Off Plug)은 2차 피해를 막는 중요한 안전 시나리오다.
+●	Music Sync: 필립스 휴(Philips Hue)와 같은 조명과 삼성 갤럭시 기기의 마이크 또는 시스템 오디오를 동기화하는 기술이다. 비트 분석 알고리즘을 통해 실시간으로 조명 색상과 밝기를 변화시킨다.
+________________________________________3. 라이프스타일 키워드 2: Energy Saving (에너지 절약)
+에너지 비용 상승과 환경 규제에 대응하여, 하드웨어 효율을 소프트웨어(AI)로 극대화하는 전략이다.
+3.1 Article: Seamless energy conservation
+기술적 배경: SmartThings Energy 서비스와 AI Energy Mode가 핵심이다.
+Story 1: Say goodbye to electricity bill stress
+Original Text:
+Concerned about your monthly electricity bill? With the smart meter, you can monitor your energy usage, electricity costs, and tiered rates in real time. With this data, you can set monthly energy usage targets that suit your home. Also through [AI Energy Mode] you can minimize your electricity consumption and even lower your tiered rates.
+Story 2: Customized energy savings
+Original Text:
+Use [AI Energy Mode] to set specific energy-saving strategies that fit your needs. Not only maximize your savings but also set monthly usage targets. You can also reduce your energy usage during carbon-intensive hours, or set goals based on tiered rates.
+Story 3: Turn your house into a net zero home
+Original Text:
+If you are already practicing both energy management and conservation, it's now time to venture into energy generation. Generate energy with solar panels to reduce your electricity bills! If you add a heat pump, you can also save on the energy needed for your home's heating and air conditioning.
+[심층 분석]
+●	AI Energy Mode: 이 기능은 기기의 성능을 미세하게 조정하여 에너지를 절약한다. 예를 들어, 냉장고의 압축기 속도를 최적화하거나, 세탁기의 히터 가동을 줄이고 버블 기능을 강화하는 식이다. 삼성은 이를 통해 최대 70%까지 에너지를 절감할 수 있다고 주장한다.
+●	Net Zero Home (HEMS): 태양광 인버터(Qcells 등), ESS(에너지 저장 장치), 히트펌프(EHS)를 통합 관리하는 **가정용 에너지 관리 시스템(HEMS)**의 비전을 보여준다. SmartThings는 이들 이종 기기 간의 데이터 허브 역할을 하며, 발전량과 소비량을 실시간 그래프로 시각화하여 사용자의 행동 변화를 유도한다.
+●	Demand Response (DR): "탄소 집약적 시간대(carbon-intensive hours)에 사용을 줄인다"는 문구는 전력망의 부하에 따라 자동으로 가전 사용을 조절하는 자동 수요 반응(Auto-DR) 기술을 의미한다.
+________________________________________4. 라이프스타일 키워드 3: Easy to use (사용 편의성)
+복잡한 스마트홈 기술을 보이지 않게 처리하고(Invisible Tech), 사용자가 직관적으로 제어할 수 있게 돕는다.
+4.1 Article: The beginning of your smart home
+기술적 배경: 별도의 허브 구매 없이 기존 기기를 허브로 활용하는 'Hub Everywhere' 전략이다.
+Story 1: Say hi to your home’s hub, the Samsung Smart TV
+Original Text:
+If you are considering a hub for your smart home, you can look no further than your TV. Samsung Smart TVs are equipped with a SmartThings Hub function. By using the TV in your living room, you can easily connect and control various sensors. This setup allows you to detect open doors and manage all your lights and blinds.
+Story 2: Jack of all trades, the SmartThings Station
+Original Text:
+The SmartThings Station serves as a helpful hub for managing numerous smart devices. It functions as a charger and can be used to connect lights, smart plugs, and sensors. Users can configure connected devices to operate on a specific schedule or utilize the SmartThings Station's smart button to control multiple devices simultaneously.
+Story 3: Enjoy a full-fledged smart home with the SmartThings Hub
+Original Text:
+Want to build a full-fledged smart home? Then look no further than the SmartThings Hub. Supporting the most popular low-power connections, the SmartThings Hub lets you connect more devices than ever before for a fully smart home. Such devices not only include lights and blinds but also smaller smart devices such as doorbells and thermostats.
+[심층 분석]
+●	멀티 프로토콜 지원: TV와 스테이션에 내장된 허브는 Matter, Zigbee, Thread 프로토콜을 지원한다. 이는 사용자가 각기 다른 브랜드의 기기를 구매하더라도 별도의 전용 허브(브릿지) 없이 삼성 기기에 직접 연결할 수 있게 함으로써 진입 장벽을 획기적으로 낮춘다.
+●	SmartThings Station: 단순 무선 충전기에 허브 기능을 탑재한 이 제품은 '스마트홈은 어렵다'는 인식을 깨기 위한 전략적 기기다. 폰을 올려놓는 행위 자체가 루틴의 트리거가 되며, 물리 버튼을 통해 폰 없이도 제어가 가능하다.
+4.2 Article: A magic button for extra convenience
+기술적 배경: 물리적 인터페이스(Phygital)를 통한 편의성 제공.
+Story 1: One next to the bed
+Original Text:
+The moment you lie on bed after a long day, you realize that your TV and lights are still on. Of course, it's bothersome to get up to turn them off. Just reach out your hand to press the smart button, and ta-da! Experience the magic of turning off all your devices at the touch of a button.
+Story 2: One next to the sofa
+Original Text:
+On a lazy weekend, you sit on the sofa with your family to watch a movie together but that bright sunlight gets in the way. No worries—just press the smart button next to your sofa.
+Story 3: One next to the front door
+Original Text:
+When you are just about to leave your house, you realize that the bedroom light is on and feel anxious whether the straightener is still on. Just press the smart button next to the front door. At the touch of a button, everything will be turned off immediately.
+[심층 분석]
+●	Scene Controller: 스마트 버튼은 '장면(Scene)'을 실행한다. "현관 버튼 클릭"이라는 단일 입력이 "전등 Off + 고데기 플러그 Off + 로봇청소기 On + 방범 모드 활성화"라는 복합 명령을 병렬로 수행한다.
+●	로컬 실행(Local Execution): 버튼 반응 속도는 매우 중요하다. SmartThings는 이러한 기본 자동화를 클라우드가 아닌 허브 내에서 로컬로 처리하여 지연 시간을 0.1초 단위로 줄인다.
+4.3 Article: Lighting–an integral part of smart home
+기술적 배경: 조명 제어를 통한 공간 경험의 개인화.
+Story 1: Finetune your house lights in an instant
+Original Text:
+We need bright light when we are working, but also dim light before going to bed. By using SmartThings together with smart lighting, you can easily adjust the brightness, colour and temperature of the lights at any time. Use SmartThings to set the lighting depending on your situation and environment.
+Story 2: Turn the lights on and off from your bed
+Original Text:
+We've all experienced having to get out of bed again to turn off the lights. It's a real nuisance. However, you can easily take care of this with the smartphone at your bedside. Bixby allows you to turn off the lights with just your voice. Later, you'll probably forget where the light switches are.
+Story 3: Lights that follow you around
+Original Text:
+If you use lights together with motion sensors, they can be used in a more efficient way. Sometimes, it’s a struggle to find the light switch when you want to go to the bathroom in the middle of the night. However, the motion sensor detects your movement and turns on a subtle light. This means you no longer have to struggle to switch on a light in the dark.
+[심층 분석]
+●	Adaptive Lighting: 하루의 시간대에 따라 색온도(Kelvin)를 자동으로 조절하는 기능(낮에는 집중력을 위한 백색광, 밤에는 멜라토닌 분비를 위한 전구색)이 배경에 깔려 있다.
+●	센서 자동화: "Lights that follow you"는 동작 감지 센서(Motion Sensor)와 조명의 연동이다. 여기서 중요한 디테일은 'Subtle light(은은한 조명)'이다. 심야 시간에는 동작이 감지되어도 조명을 100%가 아닌 10~20% 밝기로 켜서 사용자의 잠을 깨우지 않는 조건부 로직(If Time is 2AM-6AM, Set Level 20%)이 적용된다.
+________________________________________5. 라이프스타일 키워드 4: Time saving (시간 절약)
+반복적인 일상을 자동화(Automation)하여 사용자에게 시간을 돌려준다.
+5.1 Article: Meet SmartThings Station, your all-in-one charger and smart hub
+기술적 배경: 충전이라는 일상 행위에 자동화를 결합.
+Story 1: Find your Galaxy phone with SmartThings Station
+Original Text:
+If you frequently forget where you put your smartphone, simply tap the SmartThings Station button twice. Your phone will be trigged by SmartThings to give a sound with which you'll be able to find it in no time. You won't have to ask your family members to call your phone anymore to help you find it.
+Story 2: Charge and get ready to sleep all in one step
+Original Text:
+Before you go to sleep, put your smartphone on the SmartThings Station next to your bed for it to be charged. When charging starts, the TV and lights are automatically turned off and your air purifier runs in sleep mode. You can do this even without charging by using the button on your SmartThings Station.
+Story 3: A dynamic hub for your home's smart devices
+Original Text:
+Just like SmartThings Hub and Dongle, use the SmartThings Station to connect all your smart home accessories to SmartThings. Make sure to connect all your lights, blinds, and sensors in your home for a new experience.
+[심층 분석]
+●	Event-Based Automation: "폰을 충전기에 올린다"는 하드웨어 이벤트를 소프트웨어 트리거로 변환한다. 이는 사용자가 별도로 앱을 켜거나 말을 할 필요 없이, 자연스러운 행동만으로 집안 상태를 '수면 모드'로 전환하는 **앰비언트 컴퓨팅(Ambient Computing)**의 좋은 예시다.
+●	역방향 찾기: 보통 폰으로 기기를 찾지만, 이 기능은 기기(Station)로 폰을 찾는다. 이는 폰이 무음 모드여도 강제로 소리를 울리게 하는 시스템 권한 통합이 필요하다(갤럭시 생태계).
+________________________________________6. 라이프스타일 키워드 5: Sleep (수면)
+수면의 질을 기술적으로 관리하는 'SleepTech' 분야다.
+6.1 Article: Your own in-house sleep specialist
+기술적 배경: 환경 제어와 웨어러블 데이터의 결합.
+Story 1: Get your home ready for a good night’s sleep
+Original Text:
+The first key to a good night's rest is creating a peaceful sleeping environment even before getting into bed. It is important to reduce visual stimulation before going to sleep. Set a timer so that your lights dim when the sun sets to create an environment conducive to sleeping. You'll be enjoying a deep sleep in no time.
+Story 2: Sleep in your home carefree
+Original Text:
+The second secret of a great night's sleep is creating a comfortable sleeping environment. Adjusting the temperature and humidity in your home can significantly help you get better sleep. On a hot day, set your room to maintain optimal temperature and humidity. You will never wake up in the middle of the night due to excessive heat.
+Story 3: Wake up in your home refreshed
+Original Text:
+The last secret to a good night's sleep is waking up feeling refreshed. If you wake up naturally, it shows that you've had a perfect night's sleep. Set your house to Smart Mode so that your blinds open before your alarm goes off, and your air purifier and air conditioner are automatically activated. SmartThings will help you wake up feeling great and ready to start the day.
+[심층 분석]
+●	생체 리듬 동기화: 갤럭시 워치의 수면 감지 센서(가속도, 심박수)가 사용자의 수면 단계(REM, 깊은 수면)를 파악하면, SmartThings가 이에 맞춰 에어컨을 무풍 모드로 전환하거나 온도를 조절한다.
+●	기상 시나리오: 알람이 울리기 전 블라인드를 올려 햇빛으로 기상을 유도하는 것은 멜라토닌 억제를 통한 과학적 기상법이다. 폰의 알람 앱 시간 정보가 블라인드 제어 루틴의 입력값으로 사용된다.
+________________________________________7. 라이프스타일 키워드 6: Health (건강)
+홈 피트니스와 웰니스 데이터를 TV와 가전으로 확장한다.
+7.1 Article: Practice yoga through your big screen TV
+기술적 배경: Samsung Health 서비스의 대화면 확장 및 주변 기기 연동.
+Story 1: Personal AI yoga trainer
+Original Text:
+Have a personal yoga trainer to guide you in your yoga practice. With the personal AI yoga trainer available on your big screen TV, you can practice yoga at home, whenever you want. The variety of yoga programs to choose from means that you can find one that's just right for you for yoga postures, breathing and meditation.
+Story 2: Your own yoga studio at home
+Original Text:
+Create your own yoga studio at home for the ideal yoga experience with SmartThings. Open the Yogifi app on your smart TV and connect it to your smart yoga mat to set the right ambience and mood for yoga. SmartThings will automatically adjust your air conditioner, air purifier and lights to your yoga settings.
+Story 3: Real-time vital signs and yoga posture
+Original Text:
+With the help of your Samsung Smart TV, smartwatch and a connected yoga mat, you can get real-time vital signs to track your health. The AI trainer will also provide you with real-time feedback, helping you improve your posture and prevent injuries.
+[심층 분석]
+●	Vision AI & Pose Estimation: TV에 연결된 USB 카메라나 스마트폰 카메라를 통해 사용자의 관절 포인트를 실시간으로 추적(Pose Estimation)하여, 화면 속 강사의 자세와 비교 분석한다.
+●	Biometric Overlay: 갤럭시 워치에서 측정된 실시간 심박수와 칼로리 소모량이 TV 화면 구석에 오버레이(Overlay)된다. 이는 운동 중 손목을 확인하는 불편함을 없애준다.
+●	주변 환경 동기화: 운동 모드 실행 시 공기청정기가 강력 모드로 전환되고, 조명이 집중 모드로 바뀌는 등 '운동에 최적화된 공간(Space-as-a-Service)'을 제공한다.
+________________________________________8. 라이프스타일 키워드 7: Pet care (반려동물 케어)
+급성장하는 펫테크(Pet-tech) 시장을 겨냥, 로봇청소기와 카메라를 활용한다.
+8.1 Article: Take care of your pets even when you’re not home
+기술적 배경: 사물 인식 AI와 자동화된 급여/놀이 시스템.
+Story 1: Helping your pets be less stressed
+Original Text:
+For pets who experience separation anxiety, it is important to create an environment that helps them feel less nervous. Set a routine for each time you go out, so that the blinds come down and the music plays automatically. You can minimize your pet's anxiety by blocking out outside light and noise.
+Story 2: Keep an eye on your pets from afar
+Original Text:
+Like most pet owners, you probably wonder what your pets are doing when you're not there. Now with your home cameras, you can check what your pets are doing in real time. If you can't see your pets, BESPOKE Jet Bot AI's [Look for pet] function will help you find them in no time.
+Story 3: Creating a healthy eating environment
+Original Text:
+Just like humans, regular eating habits have a huge impact on our pets' health. However, we sometimes lose track of time when we are outside or busy doing housework. You can create a regular eating schedule with an automatic feeder. Use the automatic feeder to give your pet a set amount of food at set times, and even record how much food your pets have eaten.
+[심층 분석]
+●	Jet Bot AI+의 역할: 인텔 AI 프로세서를 탑재한 로봇청소기는 '개'와 '고양이'를 객체로 인식한다. "반려동물 찾아줘" 명령을 내리면, 로봇이 집안을 순찰(Patrol)하며 반려동물을 찾아 영상을 전송한다. 또한, 배설물(Poop)을 인식하여 회피하는 기능도 포함되어 있다.
+●	Barking Detection: 집안의 오디오 센서가 '개 짖는 소리'를 감지하면, 이를 트리거로 하여 진정 음악을 재생하거나 주인에게 알림을 보내는 시나리오가 가능하다.
+________________________________________9. 라이프스타일 키워드 8: Family care (가족 케어)
+고령화 사회와 맞벌이 가구를 위한 '비침해적 모니터링' 솔루션이다.
+9.1 Article: Care for your family’s needs even when away
+기술적 배경: 가전 사용 패턴 분석을 통한 안부 확인(Elderly Care).
+Story 1: Check their activities
+Original Text:
+Check today's activities to see if your loved ones had a safe day. With their consent, you can monitor how active they were today, how many steps they took, and even review usage records of their refrigerator and TV. Help take care of their well-being by staying informed.
+Story 2: Check their daily routine
+Original Text:
+Has the daily routine of a family member suddenly changed? Family Care service will alert you if they show a significant decrease in Refrigerator, TV, or phone usage compared to their usual patterns. This helps you respond promptly to any potential emergencies.
+Story 3: Check if they took their medication
+Original Text:
+It can be easy for life to distract people from taking their prescriptions, especially later in life. Our Family Care service delivers reminders to your smartphone or TV, helping make sure your loved ones keep on track with their medication. It also records this activity for review, so you can check they are taking their medication as prescribed.
+[심층 분석]
+●	Passive Monitoring: 카메라 설치를 거부하는 부모님 세대를 위해, 프라이버시를 침해하지 않으면서 안전을 확인하는 방식이다. "냉장고 문이 오전 10시까지 한 번도 열리지 않음" 또는 "TV가 24시간 동안 켜지지 않음"과 같은 **비정상 패턴(Anomaly Detection)**을 감지하여 자녀에게 알림을 보낸다. 이는 가전기기가 생활 센서로 기능함을 보여준다.
+9.2 Article: Connect with Your Child Anytime, Anywhere!
+기술적 배경: 위치 추적과 TV를 활용한 커뮤니케이션.
+Story 1: Get notified when your child arrives home
+Original Text:
+Do you often find yourself wondering whether your child has arrived home safely? Even if your child isn't able to use a mobile phone or has it turned off, you don't need to worry. SmartTag and SmartThings Station will automatically notify you when they arrive home.
+Story 2: Wondering What Your Child Is Doing?
+Original Text:
+It seems your child is not answering the phone. Maybe they are too busy doing something and can't hear the phone ringing but you want to know for sure. If this is the case, simply check through the SmartThings devices in your home. Ah-ha! It looks like they are caught up in their favorite cartoon.
+Story 3: Talk to your child face-to-face from anywhere
+Original Text:
+If your child is not answering the phone because they are too busy watching TV, you can use ConnecTime to make a video call through the TV. This lets you have a face-to-face conversation with your child and check on them.
+[심층 분석]
+●	BLE Presence Detection: 자녀 가방에 달린 SmartTag(BLE 신호 발신)가 집안의 SmartThings Station(스캐너 역할) 범위 내로 들어오면, 클라우드를 통해 "귀가 확인" 알림을 보낸다. 폰이 꺼져 있어도 태그 자체의 신호로 감지하므로 신뢰성이 높다.
+●	ConnecTime (TV Video Call): 아이들이 전화를 받지 않는 가장 큰 이유인 'TV 시청'을 역이용한다. 부모는 스마트폰 앱으로 TV 화면에 강제로 영상 통화 팝업을 띄울 수 있다(Camera H/W 필요). 이는 디지털 시대의 새로운 소통 방식이다.
+________________________________________10. 결론 (Conclusion)
+본 보고서를 통해 분석한 삼성 SmartThings의 8대 라이프스타일 키워드는 기술의 발전 방향이 '연결성(Connectivity)'에서 '지능형 케어(Intelligent Care)'로 이동하고 있음을 명확히 보여준다.
+1.	시나리오 중심 접근: 사용자는 "카메라를 산다"가 아니라 "집을 안전하게 지킨다(Security)"는 목적을 위해 제품을 구매한다. SmartThings는 이 목적을 달성하기 위해 이종 기기(TV, 냉장고, 센서)를 하나의 시나리오로 묶는다.
+2.	기존 기기의 재발견: TV는 보안 모니터와 홈 트레이닝 허브가 되고, 냉장고는 부모님의 안부를 묻는 센서가 되며, 충전기는 스마트홈 허브가 된다. 이는 하드웨어 스펙 경쟁을 넘어선 소프트웨어적 가치 창출이다.
+3.	보안과 프라이버시: Knox Matrix와 같은 기술은 연결성이 증가할수록 커지는 보안 우려를 해소하는 핵심 인프라다.
+이 데이터베이스는 각 시나리오의 원문 텍스트와 그 이면의 기술적 맥락을 모두 제공하므로, 향후 서비스 기획 및 마케팅 전략 수립을 위한 기초 자료로 활용될 수 있다.
+[보고서 종료]
+
+ 
+[Explore Contents_v1.0 - 46 Scenarios 원문 내용]
+SmartThings Explore Stories
+이 문서는 SmartThings Explore 페이지에 있는 46개 시나리오(article)와 그 하위 스토리들을 정리한 것입니다. 각 시나리오는 원문에 있는 제목과 설명을 최대한 유지하여 구성하였습니다.
+1. Let SmartThings Easily Connect Your Devices
+Automatically Identify Devices for Your Smart Home
+When a new Samsung device enters your home, your smartphone immediately detects it with a Bluetooth pop‑up. The SmartThings app then asks whether you’d like to add the device, making setup simple and seamless.
+Let Your TV Connect Everything for You
+Your Samsung TV serves as the hub for your smart home. It automatically locates compatible devices on your home network and registers them to SmartThings, so your connected appliances and sensors are ready to use without any extra work.
+Automatically Locate Devices
+SmartThings can assign your devices to rooms for you. With Map View, devices are automatically located throughout your home, giving you a clear picture of where each connected product resides.
+2. Use SmartThings with Your Family
+Invite the Whole Family into Your Smart Home
+Share your smart home easily by sending a QR code or link to family members so they can join. Once accepted, they’ll have access to the SmartThings home you’ve created.
+Receive Only Essential Notifications
+Assign device permissions to individual family members and customize notifications for each person. This way, everyone receives only the alerts that matter to them.
+Housework Can Be Shared
+SmartThings provides guidance for chores—showing recipes on the TV, starting the robot vacuum, or setting the washing machine cycle—so everyone in the family can pitch in and keep the home running smoothly.
+3. The Ultimate Guide to Map View: Your Home at a Glance
+Creating a Map View Is Super Easy
+Upload your floor plan or use your robot vacuum’s mapping data to create a virtual map of your home. Map View displays your rooms and lets you place your devices visually.
+Everything About Your Home at a Glance
+Once your map is created, you can see temperature, air quality and energy usage by room. Icons show the status of your appliances so you can check everything at a glance.
+Map View, Wherever You Are
+Map View is accessible not just on your phone but also on your Samsung TV, refrigerator and even some appliances, so you can view and control your home from almost anywhere.
+4. Control Your TV with Your Phone
+Quickly Access Your TV Controls from Your Phone
+With the SmartThings TV plug‑in, your Galaxy phone becomes a remote control for your Samsung TV. When you need it, the remote appears on your phone’s screen—so you’re never hunting for the physical remote again.
+Customize Your Remote Control on Your Phone
+Personalize your virtual remote by adding your favourite apps, channels and quick settings. Whether it’s live TV or streaming services, you decide what appears on the remote.
+Navigate Your TV Settings with Your Phone
+The SmartThings TV plug‑in lets you change TV settings and browse menus directly from your phone, simplifying tasks like adjusting picture modes or switching inputs.
+5. Automatically Save Energy with AI
+Don’t Worry About Your Electricity Bill with AI Energy Mode
+AI Energy Mode monitors the energy usage of your compatible appliances and automatically switches them into power‑saving mode when consumption is high, helping to lower your bills without sacrificing comfort.
+Save Energy Even When You Are Away
+SmartThings detects when you’re out of the house and alerts you if appliances or lights are left on. You can turn them off remotely to avoid wasting energy.
+Save Energy with a Smart Plug
+Plug small appliances into a SmartThings‑compatible smart plug to monitor their energy consumption. You can set schedules and turn them off automatically to cut down on standby power.
+6. Achieve Your Dream Home with AI
+Receive Appropriate Summaries and Recommendations from Home Insight
+Home Insight monitors temperature, humidity and air quality throughout your home. It then recommends actions—such as turning on the air purifier or adjusting the thermostat—to maintain a comfortable environment.
+Get Alerts When Devices Are Left On
+If SmartThings detects that devices like the oven or lights have been left on, Home Insight sends a notification so you can switch them off from anywhere, saving energy and keeping your home safe.
+Get Personalized Recommendations for Your Daily Routine
+Home Insight learns your routines and suggests helpful automations, like turning on the range hood when cooking or enabling Relax Mode in the evening to set lighting and music for unwinding.
+7. Wash and Dry in One Go, Without Moving Your Laundry!
+Save Time by Washing & Drying Without Having to Transfer Loads
+The Bespoke AI Laundry Combo uses sensors to detect the load’s type, weight and dirtiness. It automatically dispenses the right amount of detergent and completes the wash and dry cycle without you having to transfer clothes between machines.
+Easy Control with Touch and Voice Commands
+Use the large touch screen to select cycles or ask Bixby to start the laundry for you. Voice control lets you manage the machine even when your hands are full.
+Have Questions About Devices? Ask Bixby
+If you’re unsure how to clean a filter or use a particular cycle, ask Bixby. The voice assistant provides step‑by‑step guidance and answers your appliance questions.
+8. Reduce Your Carbon Footprint with SmartThings Energy
+Reduce Your Carbon Footprint with AI Energy Mode
+AI Energy Mode factors in the local electricity grid’s carbon intensity. When emissions are high, it activates power‑saving features on your appliances to reduce your home’s carbon footprint.
+Simple Ways to Reduce Your Carbon Emissions
+Schedule your appliances to run during times when carbon intensity is lower, and use optimal charging to minimize emissions. SmartThings helps you plan ahead.
+You Can See Your Home’s Carbon Reduction at a Glance
+The SmartThings Energy dashboard shows your carbon emissions compared with your savings, so you can understand and improve your environmental impact.
+9. Make Your Laundry Routines More Eco‑Friendly
+A Wash Cycle That Reduces Microplastics
+The Microplastic Reduction Cycle washes synthetic fabrics more gently, reducing microplastics released into the water. It’s an easy way to lessen your environmental footprint.
+A Filter That Reduces Microplastics
+A dedicated microplastic filter traps up to 98 percent of microplastics from your washer’s wastewater. SmartThings notifies you when the filter needs cleaning.
+How to Save Energy When Doing Laundry
+Eco Bubble technology allows effective cleaning at lower temperatures, while AI Energy Mode can reduce the washing machine’s energy consumption by up to 70 percent without compromising performance.
+10. Get Quick Assistance for Your Parents When They Need It
+Ask Bixby for Help in Any Emergency
+If your parent says “Hi Bixby, help me!”, the Jet Bot AI robot vacuum or compatible device calls you and shares a video feed, so you can see what’s happening and provide assistance.
+Automatically Ask for Help After a Fall
+The Galaxy Watch’s fall detection can sense if your parent has fallen and will automatically call a predetermined contact or emergency services via SmartThings.
+Open Your Doors Remotely
+If your parent needs help, you can remotely unlock the front door through SmartThings to let neighbours or medical professionals inside.
+11. Create a Safe and Comfortable Home Environment for Your Kids
+Welcome Your Children Home
+When your children arrive, SmartThings turns on the lights and plays a friendly greeting through a speaker so they feel safe and welcome.
+How to Maintain a Pleasant Home for Your Children
+On hot days or when air quality is poor, SmartThings automatically turns on the air conditioner and air purifier to keep the home comfortable and healthy.
+Prevent Accidents and Keep Your Kids Safe
+If the oven or stove is turned on accidentally, SmartThings sends an immediate alert so parents can act quickly and prevent mishaps.
+12. Take Care of Your Pets, Even When You’re Not Home
+Helping Your Pets Avoid Stress
+SmartThings closes blinds and plays soothing music when you leave, helping pets with separation anxiety stay calm.
+Keep an Eye on Your Pets Remotely
+Use connected cameras or the robot vacuum’s “Look for pet” feature to check on your pets from anywhere, ensuring they’re safe and happy.
+Creating a Healthy Eating Environment
+Automatic feeders dispense the right portions at scheduled times, and SmartThings records feeding data so you know your pet’s dietary habits.
+13. Let SmartThings Help With Your Party, From Start to Finish
+Preparing Food in a Smart Way
+SmartThings Cooking recommends recipes, sends cooking settings to your appliances and even scans packaged meal kits for one‑touch cooking.
+Creating the Best Party Atmosphere
+Synchronize smart lights with your music to create a lively party vibe. Music Sync ensures lights pulse with the beat to get everyone in the mood.
+Clean Up Easily
+After the party, your Jet Bot AI vacuum starts cleaning automatically and the dishwasher sets the optimal cycle based on the recipes used.
+14. Get a Better Sleep With SmartThings
+Get Your Home Ready for a Good Night’s Sleep
+As the sun sets, SmartThings dims the lights gradually to signal your body it’s time to wind down.
+Set the Optimal Temperature and Humidity for Sleeping
+Before bedtime, SmartThings automatically adjusts the air conditioner and air purifier to create the perfect sleeping environment.
+Wake Up Feeling Refreshed
+In the morning, SmartThings opens the blinds and turns on the air devices before your alarm, helping you wake up naturally.
+15. Let SmartThings Take Care of Your Workouts From Start to Finish
+Create a Pleasant Workout Environment in One Step
+With one action, turn on the air conditioner, air purifier, TV and lights to set the ideal environment for exercising.
+Watch TV and See Your Workout Info at a Glance
+Your Galaxy Watch sends workout data to the TV so you can monitor duration, calories and heart rate while following along with your workout video.
+Customized Laundry for Your Clothes
+After exercising, scan your clothing’s care label and SmartThings will recommend the optimal wash cycle on your washing machine.
+16. Safeguard the Personal Data in Your Home
+Protect Your Personal Data With Samsung Knox
+Samsung Knox Vault stores passwords, biometrics and other sensitive data in a tamper‑resistant chip, protecting your information from hackers.
+Your Appliances Are All Interconnected and Protected Under Samsung Knox
+Knox Matrix creates a secure network among your Samsung devices, isolating any compromised device to keep the rest safe.
+Enjoy Peace of Mind With Strong Security
+Samsung TVs, appliances and phones are certified by independent security laboratories—such as UL Diamond grade and CC certifications—to ensure they are secure.
+17. Enjoy a Cool Home With SmartThings
+Keep Your Home Cool, No Matter Where You Are
+Turn on the air conditioner remotely via SmartThings so your home is comfortable by the time you arrive.
+Cool Your Home Before You Arrive Home
+Enable Welcome Cooling to automatically start the air conditioner when you’re almost home, ensuring the perfect temperature.
+Stay Cool More Quickly and for Longer
+Combine Automatic blinds with the air conditioner so that blinds close when the AC is running, allowing the room to cool faster and stay cool longer.
+18. Your Own Time‑Saver, the SmartThings Widget
+Instantly Control From the Cover Screen
+On your Galaxy Z Flip’s cover screen, run your favourite routines without opening the phone. One tap controls multiple devices.
+Instantly Control From the Galaxy Tab
+The SmartThings widget on your tablet shows home status, suggestions and Map View. Quickly check temperature, air quality and control devices.
+Directly Control From the Galaxy Watch
+SmartThings Tiles on your watch let you monitor and control your devices from your wrist—turn on lights, adjust the air purifier or start the robot vacuum.
+19. Keep Your Home Safe Anytime, Anywhere
+Wondering What’s Happening at Your Front Door?
+Use a video doorbell to see who’s at the door, even when you’re away. Answer visitors and check for packages in real time.
+Monitor Every Corner of Your Home
+SmartThings lets you view your security cameras remotely. Cameras automatically turn off when you’re home for privacy and turn on when you leave.
+Monitor Multiple Cameras at Once
+On a Galaxy tablet or TV, display several camera feeds simultaneously so you can keep an eye on every corner of your home at a glance.
+20. Make Your Life Even More Convenient With Lights
+Fine‑Tune Your House Lights to Match Your Taste
+Adjust the brightness, colour and colour temperature of your smart lights to suit every activity—bright white for work, warm for relaxing.
+Turn the Lights On and Off From Your Bed
+Use your phone or voice assistant to turn off all lights without having to get up. Just say “Good night” or tap a button.
+Turn On Lights Automatically
+Motion sensors can trigger a gentle light when you get up at night, so you can walk safely without turning on bright overhead lights.
+21. Enjoy Music With the Right Vibes
+Add Light to Your Experience
+Connect your Hue or other smart lights to Music Sync and watch them pulse with the beat of your music, enhancing your listening experience.
+Customise According to Your Taste
+Choose your own colours and intensity for the lights while syncing them with music, creating the perfect atmosphere for any genre.
+Added Convenience
+Start Music Sync and automatically connect your speaker and lower the blinds, creating an immersive environment with just one action.
+22. Create the Ultimate Gaming Environment
+Set Up the Ultimate Gaming Environment
+When you turn on your game console and TV, SmartThings dims the lights and lowers the blinds to immerse you in the game instantly.
+Stay Comfortable While Gaming
+If the room gets too warm, the air conditioner switches on automatically so you don’t have to pause the game to adjust the temperature.
+Make Tidying Up Easy After a Gaming Session
+When you turn off your console, lights and blinds return to their normal state automatically, leaving your room ready for the next activity.
+23. Enhance Your TV Viewing Experience
+Experience a Live Concert at Home
+Use Philips Hue Sync with your Samsung TV to extend the colours of live concert videos throughout the room, making it feel like you’re at the show.
+Immerse Yourself in Your Own Film at Home
+Hue Sync projects the colours of your movie onto the surrounding lights, drawing you deeper into the story.
+Get Into the Game
+For gaming, Hue Sync reacts to on‑screen action, increasing intensity and making gameplay more immersive than ever.
+24. Keep Your Valuables Safe
+Get Alerted When You’re Away From Your Valuables
+Attach a Galaxy SmartTag to important items and SmartThings will alert you if you leave without them—no more forgetting keys or bags.
+Make It Easier to Find Lost Items
+If you misplace your tagged item, other Galaxy devices in the Galaxy Find Network can update its location and guide you to it via your phone.
+Find Unknown Tags That Follow You
+SmartThings can scan for unknown trackers nearby and alert you if an unfamiliar SmartTag is moving with you, protecting you from unauthorized tracking.
+25. Never Lose Anything With SmartTag2
+Just Follow to Find Your Missing Item
+Use the Search Nearby feature to locate a SmartTag2 by measuring signal strength and showing direction and distance on your phone’s screen.
+Easily Attach the Tag Anywhere
+SmartTag2 comes with accessories so you can attach it to travel bags, keys or even pet collars, giving you peace of mind while on the go.
+Keep Your Pets Safe
+Clip a SmartTag2 to your dog’s harness to track walk time and distance. If your pet goes missing, Lost Mode displays your contact information when someone scans the tag.
+26. Care for Your Family’s Needs Even When You Are Away
+Check Their Activities
+Monitor your loved one’s daily activities—steps taken, lights and appliances used—to make sure they’re active and safe throughout the day.
+Check Their Daily Routine
+SmartThings analyzes patterns and alerts you if a sudden change (like the refrigerator not opening for long periods) suggests something might be wrong.
+Check If They Took Their Medication
+Set reminders for medication times and record whether the medicine box was opened. SmartThings tracks adherence and informs you if a dose was missed.
+27. Manage Your Home’s Energy
+Say Goodbye to Electricity Bill Stress
+Monitor real‑time energy usage and costs through a smart meter, and set monthly targets. AI Energy Mode helps minimize consumption when usage exceeds your target.
+Energy Savings Customized for Your Home
+Adjust AI Energy Mode strategies based on your specific appliances and goals—whether you want to reduce energy consumption or carbon footprint.
+Turn Your House Into a Net Zero Home
+Generate your own power with solar panels and heat pumps. SmartThings Energy tracks production and consumption to help you approach net‑zero energy.
+28. Galaxy, One Remote for All Your Devices
+Instantly Turn On the Air Conditioner With Your Phone
+From your phone’s lock screen, open the SmartThings remote panel to start the air conditioner or air purifier without looking for the remote.
+Instantly Turn On the Robot Vacuum With Your Phone
+Tap a button on your phone to begin cleaning with your robot vacuum whenever there’s a mess—no separate app required.
+Instantly Access Music and Videos With Your Phone
+Use your Galaxy phone as the control centre for your media: turn on the TV, play music or launch streaming apps with a single tap.
+29. Connect With Your Child Anytime, Anywhere
+Get Notified When Your Child Arrives Home
+Place a SmartTag2 in your child’s backpack and connect it to SmartThings Station. You’ll receive a notification when your child arrives home safely.
+Check on What Your Kids Are Doing
+See if your kids are watching TV, playing games or using other devices through SmartThings to ensure they’re following your rules.
+Talk to Your Children From Anywhere
+Use ConnecTime to video call your child on the TV if they aren’t answering their phone, allowing you to communicate face‑to‑face remotely.
+30. Experience Total Immersion With Galaxy Buds
+Enjoy a Personal Movie Theatre With Galaxy Buds
+Active Noise Cancellation and Dolby Atmos on Galaxy Buds create a rich, immersive audio experience so you can enjoy late‑night movies without disturbing others.
+Connect the Galaxy Buds to Your Devices in One Go
+Open the Buds case near your TV and they’ll automatically pair, letting you start watching quickly. There’s no need to dive into settings.
+Effortlessly Switch Between Your Devices With Galaxy Buds
+If a call comes in while watching TV, Auto Switch moves the Buds’ connection to your phone. After the call, the Buds reconnect to the TV, ensuring seamless transitions.
+31. Meet SmartThings Station, Your All‑in‑One Charger and Smart Hub
+Find Your Phone With the SmartThings Station
+Double‑press the button on SmartThings Station and your phone will ring, making it easy to locate even if it’s on silent.
+Charge and Sleep by the End of the Day
+Place your phone on the Station at night to charge it. This action can trigger a bedtime routine: turning off the TV, dimming lights and setting the air purifier to Sleep mode.
+A Brilliant All‑Rounder, From Hub to Sensor
+SmartThings Station acts as a hub connecting smart lights, blinds and sensors. Program the button to perform multiple actions with a single press.
+32. Get Started With SmartThings
+Control Everything in Your Home Remotely
+Use the Quick Panel in SmartThings to turn off lights, start the robot vacuum or adjust appliances from anywhere.
+Enjoy Greater Convenience With Routines
+Create automatic routines triggered by conditions (time, location), manual routines activated by a single tap and recommended routines suggested by SmartThings.
+Experience SmartThings With Your Family
+Share your home with family members by sending them a QR code. They’ll join your SmartThings home with the appropriate permissions you assign.
+33. Celebrate the Holidays With SmartThings
+Use Lights to Create a Holiday Atmosphere
+Plug your Christmas tree lights into a smart plug. SmartThings can turn off other lights at night so the tree shines bright.
+Stay Safe During the Holidays
+Schedule your tree lights to switch off automatically when you’re away or asleep. Combined with Home Monitor and smoke detectors, this helps prevent accidents.
+Create a Festive Mood for the Holidays
+Change light colours and use Music Sync to make your lights dance to holiday songs, creating a joyful atmosphere for family and friends.
+34. Save Energy With SmartThings
+Save Energy With a Single Touch
+Set up an Earth Day routine (or everyday energy‑saving routine) that turns off all lights and devices at once. Use it whenever you want to reduce consumption.
+Automatically Turn Off Devices When You’re Going Out
+Create an “Away” routine that shuts off lights and appliances whenever everyone leaves home, ensuring you never waste energy.
+Upcycle for an Even More Impactful Earth Day
+Reuse old Galaxy phones as sensors for sound, light or temperature, extending their life and expanding your smart home while reducing e‑waste.
+35. Boost Your Productivity When You Work From Home
+Improve Your Focus in Your Home Office
+At the start of your work day, SmartThings displays your schedule on a convenient screen, turns on the air purifier and sets the air conditioner to Wind‑Free mode for a quiet work environment.
+Prepare Lunch Instantly
+Send a recipe to your Samsung Qooker or oven using SmartThings Cooking, or scan meal kits so your oven knows the right settings—saving time during breaks.
+Streamline Your Workflow With SmartThings
+With SmartThings on Windows, control appliances, ring your phone or check who’s at the door without interrupting your work, keeping your workflow smooth.
+36. Get the Most Out of Your Video Doorbell
+Welcome Guests Through Your TV
+See who’s at the door on your Samsung TV and unlock the door remotely if it’s a friend or delivery driver, all while continuing your show.
+Get Notified With Lights When Your Doorbell Rings
+Connect your doorbell to smart lights so they flash or change colour when someone rings the bell, ensuring you never miss a visitor even if you can’t hear the chime.
+Make Your Home Look Occupied
+When you’re away, SmartThings can turn lights and TVs on and off at intervals when motion is detected outside, deterring potential intruders by making it seem like someone is home.
+37. The Beginning of Your Smart Home
+Say “Hi” to Your Home’s Hub, the Samsung Smart TV
+A Samsung TV can act as a SmartThings Hub, connecting sensors on doors and windows and controlling smart lights—making it an easy entry point to smart living.
+Jack of All Trades, the SmartThings Station
+SmartThings Station doubles as a wireless charger and smart button. It can trigger routines and connect many devices, giving your home more automation options.
+Start Your Smart Home With a Built‑In Hub
+For a fully fledged smart home, the standalone SmartThings Hub supports multiple protocols (Matter, Zigbee, Z‑Wave) so you can add a wider range of third‑party devices.
+38. Get Ready for Halloween
+Create Halloween Vibes With Smart Lightings
+Set your smart lights to spooky colours and flickering effects to create a haunted house atmosphere for trick‑or‑treaters.
+Make Your Doorbell Play Spooky Sounds
+Connect a smart doorbell to play eerie sounds when visitors press it, adding a fun surprise for Halloween night.
+Prepare for a Safe Halloween
+Install cameras and use SmartThings to monitor suspicious activity around your home, ensuring a safe and enjoyable holiday for everyone.
+39. Use Smart Lights for Alerts
+Get Notified With Lights When Your Laundry Is Complete
+When your washing machine finishes, your lights can change colour to notify you so you don’t forget to move your clothes to the dryer.
+Now Is the Best Time to Ventilate!
+Use a light indicator that turns blue when outdoor air quality is good, reminding you to open windows to ventilate your home.
+Wake Up Refreshed Every Morning
+Smart lights gradually brighten with your alarm, simulating sunrise to wake you gently and start your day positively.
+40. The Secret to Making Your Business Smarter, SmartThings Pro
+Set Up Your Retail Store Quickly and Easily
+SmartThings Pro automates opening and closing routines: lights and displays turn on at opening and switch to energy‑saving mode at closing, while AI optimizes air conditioning during business hours.
+Tailor Hotel Services to Match Your User Preferences
+Guests can scan a QR code to access a personalised web lounge where they control lights, temperature and TV in their room, and staff can manage devices centrally.
+Set Up Smart and Eco‑Friendly Meeting Rooms
+SmartThings Pro monitors occupancy and turns off unused devices, adjusts AC for comfort and provides a dashboard for facility managers to control multiple rooms efficiently.
+41. Let Your TV Make Your Home More Convenient
+Find Your Hand Phone With Your TV
+Can’t find your phone? Ask your Samsung TV to ring it and SmartThings will make it ring loudly so you can locate it quickly.
+Monitor Your Home With Your TV
+View live feeds from your security cameras directly on your TV screen, making it easy to check on different areas of your home while watching a show.
+Manage Your Home With Your TV
+Your TV displays alerts (like laundry completion or open windows) and device status, letting you monitor and control your smart home from the comfort of your couch.
+42. Simplify Your Life With a Samsung TV
+A TV That Creates an Optimal Viewing Environment
+Using its built‑in sensors, your Samsung TV can close blinds and adjust its brightness when sunlight fills the room, keeping glare away and saving energy.
+A TV That Detects When Your Dog Barks
+Your TV’s microphone can detect a dog barking and send you a notification via SmartThings so you can check on your pet when you’re not at home.
+A TV That Protects Your Home
+Integrated with SmartThings Home Monitor, your TV works with connected cameras and sensors to detect intruders and send alerts, providing peace of mind.
+43. Create the Perfect Environment for Prayer and Meditation
+Set Up a Distraction‑Free Environment
+Schedule a Do‑Not‑Disturb routine that turns off or silences TVs and music, enabling deep focus during prayer or meditation.
+Create Your Ideal Atmosphere for Concentration
+Dim the lights to calming tones, lower the blinds and turn on the air purifier to establish a quiet and serene space.
+Get Back to Your Routine With a Single Touch
+When you finish your practice, one button press brings the lights and blinds back to normal and restores your usual settings.
+44. Practice Yoga With Your Big Screen TV
+Practice Yoga With Your Personal AI Trainer
+Samsung TVs feature an AI Yoga trainer that offers posture guidance and breathing exercises, turning your living room into a private studio.
+Create Your Own Yoga Studio at Home
+Connect a yoga mat and equipment to the TV; SmartThings adjusts the room’s lights, temperature and air purifier to create an ideal yoga environment.
+Get Personalised Fitness Feedback in Real Time
+Link your Galaxy Watch to the TV and yoga mat to see heart rate and receive form corrections, ensuring safe and effective practice.
+45. Keep Your Home Safe Even When You’re Away
+Check on Your Home From Anywhere
+View camera feeds and check your home’s status from your phone to see that everything is in order, whether you’re at work or on vacation.
+Sense Suspicious Movements in Real Time
+Smart security cameras detect motion and send immediate alerts to your phone, even at night, so you can act quickly.
+Get Peace of Mind When You Leave Your Home
+SmartThings Home Monitor watches for leaks, fires and other issues while you’re away and notifies you instantly, helping you protect your property.
+46. A Smart Button Creates Extra Convenience
+Improve Your Sleep Environment With a Single Touch
+Place a smart button by your bed. Press it once to turn off lights and TV, set the air purifier and close the blinds—all without getting up.
+Create a Movie Theatre Experience With a Single Touch
+Keep a smart button by the sofa. Pressing it lowers the blinds and dims lights instantly, setting the scene for movie night.
+Turn Off All Your Devices at Once With a Single Touch
+Position a smart button by the front door. Tap it when leaving to shut off all devices, giving you peace of mind that nothing is left on.
+
