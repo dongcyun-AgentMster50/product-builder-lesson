@@ -320,15 +320,19 @@ function getLocalizedPersonaGroups(locale, countryCode) {
 }
 
 const DEVICE_GROUP_TITLE_EN = {
-    "air-fresh": "Air Comfort",
-    "lights-control": "Lighting Control",
-    "chores-help": "Home Chores",
-    "home-safe": "Home Security",
-    "sleep-well": "Sleep Environment",
-    "enhanced-mood": "Mood & Entertainment",
-    "care-scenarios": "Senior/Kids/Pet Care",
-    "save-energy": "Energy Saving",
-    "food-home": "Kitchen & Food Care"
+    "save-energy": "Save energy",
+    "air-fresh": "Keep the air fresh",
+    "lights-control": "Control your lights",
+    "chores-help": "Help with chores",
+    "home-safe": "Keep your home safe",
+    "sleep-well": "Sleep well",
+    "enhanced-mood": "Enhanced mood",
+    "care-senior": "Care for seniors",
+    "care-kids": "Care for kids",
+    "care-pet": "Care for your pet",
+    "find-things": "Find your belongings",
+    "stay-fit": "Stay fit & healthy",
+    "food-home": "Smart cooking"
 };
 
 const DEVICE_OPTION_LABEL_EN = {
@@ -377,11 +381,28 @@ const DEVICE_OPTION_LABEL_EN = {
     "smart-meter": "Power usage monitor",
     "hub-energy": "Energy automation hub",
     "eco-aircon": "AI energy-saving air conditioner",
+    "hub-energy": "SmartThings Hub",
     refrigerator: "Refrigerator",
-    "kimchi-fridge": "Kimchi refrigerator",
     oven: "Oven",
     microwave: "Microwave",
-    cooktop: "Induction / Cooktop"
+    cooktop: "Induction / Cooktop",
+    "dishwasher-kitchen": "Dishwasher",
+    "kids-camera": "Indoor camera",
+    "kids-sensor": "Door-open sensor",
+    "kids-tag": "SmartTag",
+    "kids-tablet": "Galaxy Tab",
+    "pet-camera": "Indoor camera",
+    "pet-robot": "Robot vacuum",
+    "pet-aircon": "Air conditioner (auto temp)",
+    "smart-tag": "SmartTag",
+    "galaxy-phone": "Galaxy Smartphone",
+    "galaxy-watch-find": "Galaxy Watch",
+    "galaxy-watch-fit": "Galaxy Watch",
+    "galaxy-buds": "Galaxy Buds",
+    "tv-fitness": "TV (home fitness)",
+    "body-scale": "Body composition scale",
+    "wearable-sleep": "Galaxy Watch",
+    "wearable-care": "Galaxy Watch"
 };
 
 function getLocalizedDeviceGroups(locale) {
@@ -397,32 +418,32 @@ function getLocalizedDeviceGroups(locale) {
     }));
 }
 
+/* ── Q3 Device Groups — Explore Contents 12-keyword aligned ── */
 const DEVICE_CATEGORY_GROUPS = [
     {
-        id: "mobile-wearable",
-        title: "스마트폰·웨어러블",
+        id: "save-energy",
+        title: "에너지 절약 Save energy",
         options: [
-            { id: "galaxy-phone", label: "Galaxy 스마트폰", normalized: "스마트폰" },
-            { id: "galaxy-watch", label: "Galaxy Watch", normalized: "웨어러블" },
-            { id: "galaxy-buds", label: "Galaxy Buds", normalized: "웨어러블" },
-            { id: "galaxy-tab", label: "Galaxy Tab", normalized: "태블릿" }
+            { id: "smart-plug", label: "스마트 플러그", normalized: "센서" },
+            { id: "energy-monitor", label: "에너지 모니터", normalized: "센서" },
+            { id: "eco-aircon", label: "AI 절약모드 에어컨", normalized: "에어컨" },
+            { id: "hub-energy", label: "SmartThings Hub", normalized: "센서" }
         ]
     },
     {
         id: "air-fresh",
-        title: "쾌적한 공기 관리",
+        title: "쾌적한 공기 Keep the air fresh",
         options: [
             { id: "air-conditioner", label: "에어컨", normalized: "에어컨" },
             { id: "air-purifier", label: "공기청정기", normalized: "에어컨" },
             { id: "ventilation", label: "환기 시스템", normalized: "에어컨" },
             { id: "dehumidifier", label: "제습기", normalized: "에어컨" },
-            { id: "air-monitor", label: "에어 모니터링", normalized: "센서" },
-            { id: "fan", label: "팬/서큘레이터", normalized: "에어컨" }
+            { id: "air-monitor", label: "에어 모니터", normalized: "센서" }
         ]
     },
     {
         id: "lights-control",
-        title: "간편한 조명 제어",
+        title: "조명 제어 Control your lights",
         options: [
             { id: "lighting", label: "조명", normalized: "조명" },
             { id: "mood-light", label: "무드 조명", normalized: "조명" },
@@ -433,83 +454,106 @@ const DEVICE_CATEGORY_GROUPS = [
     },
     {
         id: "chores-help",
-        title: "가사 보조",
+        title: "집안일 도우미 Help with chores",
         options: [
             { id: "robot-vacuum", label: "로봇청소기", normalized: "로봇청소기" },
-            { id: "vacuum", label: "청소기", normalized: "로봇청소기" },
             { id: "washer", label: "세탁기", normalized: "세탁기" },
             { id: "dryer", label: "건조기", normalized: "건조기" },
-            { id: "washer-dryer", label: "세탁기/건조기", normalized: "세탁기/건조기" },
             { id: "dishwasher", label: "식기세척기", normalized: "세탁기/건조기" }
         ]
     },
     {
         id: "home-safe",
-        title: "홈 시큐리티",
+        title: "안전한 집 Keep your home safe",
         options: [
             { id: "camera", label: "카메라/CCTV", normalized: "센서" },
             { id: "door-lock", label: "도어락", normalized: "센서" },
             { id: "doorbell", label: "비디오 도어벨", normalized: "센서" },
             { id: "open-sensor", label: "문열림 센서", normalized: "센서" },
-            { id: "leak-smoke", label: "누수/연기 감지기", normalized: "센서" },
-            { id: "hub", label: "SmartThings Hub", normalized: "센서" }
+            { id: "leak-smoke", label: "누수/연기 감지기", normalized: "센서" }
         ]
     },
     {
         id: "sleep-well",
-        title: "숙면 환경",
+        title: "숙면 환경 Sleep well",
         options: [
             { id: "sleep-sensor", label: "수면 센서", normalized: "센서" },
             { id: "bedside-light", label: "침실 조명", normalized: "조명" },
             { id: "bedroom-aircon", label: "침실 에어컨", normalized: "에어컨" },
             { id: "air-purifier-bed", label: "침실 공기청정기", normalized: "에어컨" },
-            { id: "wearable-sleep", label: "웨어러블", normalized: "센서" }
+            { id: "wearable-sleep", label: "Galaxy Watch", normalized: "웨어러블" }
         ]
     },
     {
         id: "enhanced-mood",
-        title: "무드 & 엔터테인먼트",
+        title: "분위기 향상 Enhanced mood",
         options: [
             { id: "tv-premium", label: "TV", normalized: "TV" },
             { id: "projector", label: "프로젝터", normalized: "TV" },
-            { id: "monitor", label: "모니터", normalized: "TV" },
             { id: "speaker", label: "스피커", normalized: "스피커" },
             { id: "soundbar", label: "사운드바", normalized: "스피커" },
             { id: "gaming-console", label: "게임 콘솔", normalized: "TV" }
         ]
     },
     {
-        id: "care-scenarios",
-        title: "시니어·키즈·펫 케어",
+        id: "care-senior",
+        title: "시니어 케어 Care for seniors",
         options: [
-            { id: "pet-feeder", label: "펫 피더", normalized: "센서" },
-            { id: "care-camera", label: "실내 카메라", normalized: "센서" },
             { id: "activity-sensor", label: "활동 감지 센서", normalized: "센서" },
             { id: "fall-sensor", label: "낙상 감지 센서", normalized: "센서" },
             { id: "care-button", label: "긴급 호출 버튼", normalized: "센서" },
-            { id: "wearable-care", label: "케어 웨어러블", normalized: "센서" }
+            { id: "care-camera", label: "실내 카메라", normalized: "센서" },
+            { id: "wearable-care", label: "Galaxy Watch", normalized: "웨어러블" }
         ]
     },
     {
-        id: "save-energy",
-        title: "에너지 절약",
+        id: "care-kids",
+        title: "키즈 케어 Care for kids",
         options: [
-            { id: "smart-plug", label: "스마트 플러그", normalized: "센서" },
-            { id: "energy-monitor", label: "에너지 모니터", normalized: "센서" },
-            { id: "smart-meter", label: "전력 사용량 모니터", normalized: "센서" },
-            { id: "hub-energy", label: "에너지 자동화 허브", normalized: "센서" },
-            { id: "eco-aircon", label: "AI 절약모드 에어컨", normalized: "에어컨" }
+            { id: "kids-camera", label: "실내 카메라", normalized: "센서" },
+            { id: "kids-sensor", label: "문열림 센서", normalized: "센서" },
+            { id: "kids-tag", label: "SmartTag", normalized: "센서" },
+            { id: "kids-tablet", label: "Galaxy Tab", normalized: "태블릿" }
+        ]
+    },
+    {
+        id: "care-pet",
+        title: "펫 케어 Care for your pet",
+        options: [
+            { id: "pet-feeder", label: "펫 피더", normalized: "센서" },
+            { id: "pet-camera", label: "실내 카메라", normalized: "센서" },
+            { id: "pet-robot", label: "로봇청소기", normalized: "로봇청소기" },
+            { id: "pet-aircon", label: "에어컨 (자동 온도)", normalized: "에어컨" }
+        ]
+    },
+    {
+        id: "find-things",
+        title: "물건 찾기 Find your belongings",
+        options: [
+            { id: "smart-tag", label: "SmartTag", normalized: "센서" },
+            { id: "galaxy-phone", label: "Galaxy 스마트폰", normalized: "스마트폰" },
+            { id: "galaxy-watch-find", label: "Galaxy Watch", normalized: "웨어러블" }
+        ]
+    },
+    {
+        id: "stay-fit",
+        title: "건강·피트니스 Stay fit & healthy",
+        options: [
+            { id: "galaxy-watch-fit", label: "Galaxy Watch", normalized: "웨어러블" },
+            { id: "galaxy-buds", label: "Galaxy Buds", normalized: "웨어러블" },
+            { id: "tv-fitness", label: "TV (홈트)", normalized: "TV" },
+            { id: "body-scale", label: "체성분 체중계", normalized: "센서" }
         ]
     },
     {
         id: "food-home",
-        title: "주방 & 푸드 케어",
+        title: "주방·푸드 케어 Smart cooking",
         options: [
             { id: "refrigerator", label: "냉장고", normalized: "냉장고" },
-            { id: "kimchi-fridge", label: "김치냉장고", normalized: "냉장고" },
             { id: "oven", label: "오븐", normalized: "오븐" },
             { id: "microwave", label: "전자레인지", normalized: "오븐" },
-            { id: "cooktop", label: "인덕션/쿡탑", normalized: "오븐" }
+            { id: "cooktop", label: "인덕션/쿡탑", normalized: "오븐" },
+            { id: "dishwasher-kitchen", label: "식기세척기", normalized: "세탁기/건조기" }
         ]
     }
 ];
