@@ -89,29 +89,35 @@ const PERSONA_CATEGORY_GROUPS = [
     },
     {
         id: "housing",
-        title: "C. 주요 생활 공간 — Explore Contents",
+        title: "C. 거주지 유형",
         mode: "checkbox",
         scrollable: true,
         options: [
-            { id: "space_living", label: "거실 (Living Room)" },
-            { id: "space_bedroom", label: "침실 (Bedroom)" },
-            { id: "space_kitchen", label: "주방 (Kitchen)" },
-            { id: "space_entrance", label: "현관·입구 (Entrance)" },
-            { id: "space_bathroom", label: "욕실 (Bathroom)" },
-            { id: "space_office", label: "홈오피스·서재 (Home Office)" },
-            { id: "space_balcony", label: "발코니·테라스 (Balcony)" },
-            { id: "space_multifloor", label: "다층 주거 — 계단·복도 (Multi-floor)" },
-            { id: "space_garage", label: "차고·창고 (Garage)" },
-            { id: "space_yard", label: "마당·정원 (Yard)" }
+            { id: "h_apt", label: "아파트형 주거 (아파트, 주상복합)" },
+            { id: "h_small", label: "소형 독립형 주거 (오피스텔, 원룸)" },
+            { id: "h_multi", label: "다세대·공동주택형 (빌라, 다세대, 연립)" },
+            { id: "h_detached", label: "단독·전원형 주거 (단독주택, 전원주택)" },
+            { id: "h_shared", label: "공유·기관형 주거 (기숙사, 사택, 셰어하우스)" },
+            { id: "h_care", label: "케어형 주거 (실버타운, assisted living)" },
+            { id: "_divider_space", divider: true, label: "구체적 장소를 원하시면 아래 고르시거나 기입해주세요" },
+            { id: "space_living", label: "거실" },
+            { id: "space_bedroom", label: "침실" },
+            { id: "space_kitchen", label: "주방" },
+            { id: "space_entrance", label: "현관·입구" },
+            { id: "space_bathroom", label: "욕실" },
+            { id: "space_office", label: "홈오피스·서재" },
+            { id: "space_multifloor", label: "다층 공간 (계단·복도)" },
+            { id: "space_balcony", label: "발코니·테라스" },
+            { id: "space_yard", label: "마당·정원" }
         ],
-        customPlaceholder: "위에 해당하지 않는 공간 직접 입력"
+        customPlaceholder: "위에 해당하지 않는 장소 직접 입력"
     }
 ];
 
 const PERSONA_GROUP_TITLE_EN = {
     household: "A. Household members",
     interest: "B. Life context — Explore Contents",
-    housing: "C. Living spaces — Explore Contents"
+    housing: "C. Housing type"
 };
 
 const PERSONA_OPTION_LABEL_EN = {
@@ -153,22 +159,28 @@ const PERSONA_OPTION_LABEL_EN = {
     int_pet: "Care for your pet",
     int_find: "Find your belongings",
     int_health: "Stay fit & healthy",
+    h_apt: "Apartment (high-rise, mixed-use)",
+    h_small: "Compact unit (officetel, studio)",
+    h_multi: "Multi-family (villa, row house)",
+    h_detached: "Detached / Rural home",
+    h_shared: "Shared / Institutional (dorm, company housing)",
+    h_care: "Care residence (senior town, assisted living)",
+    _divider_space: "Optional: select specific spaces or type below",
     space_living: "Living Room",
     space_bedroom: "Bedroom",
     space_kitchen: "Kitchen",
     space_entrance: "Entrance",
     space_bathroom: "Bathroom",
     space_office: "Home Office",
-    space_balcony: "Balcony / Terrace",
     space_multifloor: "Multi-floor (stairs & hallways)",
-    space_garage: "Garage / Storage",
+    space_balcony: "Balcony / Terrace",
     space_yard: "Yard / Garden"
 };
 
 const PERSONA_CUSTOM_PLACEHOLDER_EN = {
     household: "Other household member — type here",
     interest: "Other life context — type here",
-    housing: "Other living space — type here"
+    housing: "Other space — type here"
 };
 
 /* Locale-specific housing overrides — disabled: C group is now space-based (Explore Contents) */

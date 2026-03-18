@@ -580,6 +580,10 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
         ` : `<div class="tree-parent tree-parent--label"><span class="tree-parent-title">${escapeHtml(group.title)}</span></div>`;
 
         const optionsHtml = group.options.map((option) => {
+            // Divider — renders as a label separator, not a checkbox
+            if (option.divider) {
+                return `<div class="tree-divider">${escapeHtml(option.label)}</div>`;
+            }
             const childChecked = selected.has(option.id);
             // Legacy sub-children support (for device groups)
             const subHtml = option.sub ? `

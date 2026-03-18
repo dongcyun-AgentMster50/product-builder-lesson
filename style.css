@@ -1189,10 +1189,19 @@ textarea {
     gap: 10px;
 }
 .tree-children--scroll {
-    max-height: 220px;
+    max-height: 260px;
     overflow-y: auto;
     padding-right: 4px;
     scrollbar-width: thin;
+}
+.tree-divider {
+    margin: 8px 0 4px;
+    padding: 5px 0 4px;
+    border-top: 1px solid var(--line);
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 500;
+    line-height: 1.4;
 }
 
 .tree-child {
