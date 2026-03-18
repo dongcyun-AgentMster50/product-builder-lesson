@@ -3092,9 +3092,10 @@ function syncWizardUi() {
     renderWizardProgress();
     updateStepInsight();
 
-    // Step 4 진입 시 기기 선택이 있을 때만 큐레이션 실행
-    if (currentStep === 4 && getSelectedDevices().length > 0) {
-        setTimeout(() => runCuration(), 300);
+    // Step 4가 아니면 큐레이션 프레임 숨김
+    const curationFrame = document.getElementById("curation-frame");
+    if (curationFrame && currentStep !== 4) {
+        curationFrame.classList.add("hidden");
     }
 }
 
@@ -8031,7 +8032,6 @@ function renderCurationResults(results, selectedDevices) {
     });
 
     frame.classList.remove("hidden");
-    frame.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function triggerAiFromCuration(scenario) {
