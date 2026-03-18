@@ -313,11 +313,13 @@ function bindEvents() {
         updateStatePreview();
         updateStepInsight();
         renderQ4Composer();
+        if (currentStep === 4) runCuration();
     });
     deviceCustomInput.addEventListener("input", () => {
         updateStatePreview();
         updateStepInsight();
         renderQ4Summary();
+        if (currentStep === 4) runCuration();
     });
     q4Presets?.addEventListener("click", handleQ4PresetClick);
     q4AllChips?.addEventListener("click", handleQ4QuickChipClick);
@@ -757,6 +759,7 @@ function handleQ4PresetClick(event) {
     renderQ4Composer();
     updateStatePreview();
     updateStepInsight();
+    if (currentStep === 4) runCuration();
 }
 
 function handleQ4QuickChipClick(event) {
@@ -770,6 +773,7 @@ function handleQ4QuickChipClick(event) {
     renderQ4Composer();
     updateStatePreview();
     updateStepInsight();
+    if (currentStep === 4) runCuration();
 }
 
 function setDeviceOptionChecked(optionId, shouldCheck) {
@@ -3052,6 +3056,11 @@ function syncWizardUi() {
     generateBtn.classList.toggle("hidden", currentStep !== 4);
     renderWizardProgress();
     updateStepInsight();
+
+    // Step 4 진입 시 큐레이션 자동 실행
+    if (currentStep === 4) {
+        setTimeout(() => runCuration(), 300);
+    }
 }
 
 function alignWizardStepViewport() {
@@ -7819,4 +7828,137 @@ function localizeRoleText(key, value = "") {
         }
     };
     return map[key]?.[currentLocale] || map[key]?.en || map[key]?.ko || value;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   큐레이션 모드 — Explore Contents DB 매칭 + UI 렌더링
+   ══════════════════════════════════════════════════════════════════════ */
+
+let curationDbV1 = null;
+let curationDbV2 = null;
+let curationLoaded = false;
+
+async function loadCurationDb() {
+    if (curationLoaded) return;
+    try {
+        const [r1, r2] = await Promise.all([
+            fetch("references/explore_db_v1.json").then(r => r.json()),
+            fetch("references/explore_db_v2.json").then(r => r.json())
+        ]);
+        curationDbV1 = r1;
+        curationDbV2 = r2;
+        curationLoaded = true;
+    } catch (e) {
+        console.warn("Curation DB load failed:", e);
+    }
+}
+
+// 앱 시작 시 DB를 미리 로드 (비동기, 논블로킹)
+loadCurationDb();
+
+function runCuration() {
+    if (!curationLoaded || !curationDbV1 || !curationDbV2) return;
+
+    const personaIds = getSelectedPersonaOptionIds();
+    const segments = personaIds.filter(id => PERSONA_CATEGORY_GROUPS[0]?.options?.some(o => o.id === id) || personaIds.includes(id));
+    const interests = personaIds.filter(id => id.startsWith("int_"));
+    const housing = personaIds.filter(id => ["apt_high","apt_low","studio","detached","townhouse","suburban","rental","shared"].includes(id));
+    const devices = getSelectedDevices().map(d => getCategoryName ? getCategoryName(d) : d);
+    const purpose = purposeInput.value.trim();
+
+    const input = { segments, interests, housing, devices, purpose };
+
+    if (typeof curateScenarios !== "function") return;
+
+    const results = curateScenarios(input, curationDbV1.scenarios, curationDbV2.scenarios, { maxResults: 5, minScore: 5 });
+
+    renderCurationResults(results, devices);
+}
+
+function renderCurationResults(results, selectedDevices) {
+    const frame = document.getElementById("curation-frame");
+    const container = document.getElementById("curation-results");
+    if (!frame || !container) return;
+
+    if (results.length === 0) {
+        frame.classList.add("hidden");
+        return;
+    }
+
+    // dotcom base URL
+    const selectedMarket = marketOptions.find(m => m.siteCode === countrySelect.value);
+    const dotcomData = typeof dotcomMapping !== "undefined" ? dotcomMapping : null;
+    const baseCode = (selectedMarket?.siteCode || "us").toLowerCase().replace(/_.*/, "");
+    const dotcomEntry = dotcomData?.markets?.find(m => m.siteCode.toLowerCase() === baseCode);
+    const baseUrl = dotcomEntry?.fullUrl || `https://www.samsung.com/${(selectedMarket?.siteCode || "us").toLowerCase()}`;
+
+    const isKo = currentLocale === "ko";
+
+    container.innerHTML = results.map((scenario, idx) => {
+        const f = formatCurationResult(scenario);
+        const bodyText = f.originalText || f.narrative || "";
+        const truncated = bodyText.length > 250 ? bodyText.substring(0, 250) + "…" : bodyText;
+
+        const tagsHtml = f.matchedTags.map(tag =>
+            `<span class="curation-tag">${escapeHtml(tag)}</span>`
+        ).join("");
+
+        const devicesHtml = f.devices.map(d =>
+            `<span class="curation-device-chip">${escapeHtml(d)}</span>`
+        ).join("");
+
+        const linksHtml = (scenario.purchase_links || []).map(pl =>
+            `<a href="${escapeHtml(baseUrl + pl.path)}" target="_blank" rel="noopener noreferrer" class="curation-link">
+                <span class="curation-link-icon">${pl.icon}</span>
+                <span>${escapeHtml(pl.productType)}</span>
+            </a>`
+        ).join("");
+
+        return `
+            <article class="curation-card" data-curation-idx="${idx}">
+                <div class="curation-card-header">
+                    <span class="curation-card-rank">${idx + 1}</span>
+                    <span class="curation-card-title">${escapeHtml(f.title)}</span>
+                    <span class="curation-card-source">${escapeHtml(f.source)}</span>
+                </div>
+                ${f.article ? `<div style="font-size:0.76rem;color:var(--muted);margin-bottom:8px">📂 ${escapeHtml(f.article)}</div>` : ""}
+                <div class="curation-card-meta">${tagsHtml}</div>
+                <div class="curation-card-body">${escapeHtml(truncated)}</div>
+                ${devicesHtml ? `<div class="curation-card-devices">${devicesHtml}</div>` : ""}
+                ${linksHtml ? `<div class="curation-card-links">${linksHtml}</div>` : ""}
+                <div class="curation-card-actions">
+                    <button type="button" class="curation-ai-btn" data-curation-idx="${idx}">
+                        ${isKo ? "🤖 이 시나리오 기반으로 AI 확장 생성" : "🤖 Generate AI-expanded scenario from this"}
+                    </button>
+                </div>
+            </article>
+        `;
+    }).join("");
+
+    // "AI 확장" 버튼 이벤트
+    container.querySelectorAll(".curation-ai-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const idx = parseInt(btn.dataset.curationIdx, 10);
+            const scenario = results[idx];
+            if (scenario) triggerAiFromCuration(scenario);
+        });
+    });
+
+    frame.classList.remove("hidden");
+    frame.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function triggerAiFromCuration(scenario) {
+    const f = formatCurationResult(scenario);
+    const parentInfo = `[Parent Scenario: ${f.source}] ${f.article} > ${f.title}`;
+    const originalSnippet = (f.originalText || f.narrative || "").substring(0, 300);
+
+    // purpose에 큐레이션 컨텍스트 주입
+    const curatedContext = `${purposeInput.value.trim()}\n\n--- Curated Parent ---\n${parentInfo}\n${originalSnippet}`;
+
+    // 기존 purpose를 임시 보강 후 generateScenario 호출
+    const originalPurpose = purposeInput.value;
+    purposeInput.value = curatedContext;
+    generateScenario();
+    purposeInput.value = originalPurpose;
 }

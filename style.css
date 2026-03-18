@@ -3944,6 +3944,188 @@ a.source-tag-link:hover {
     color: var(--ink);
 }
 
+/* ── Curation Frame ── */
+.curation-frame {
+    margin-top: 6px;
+    padding: 16px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(0, 51, 102, 0.18);
+    background: linear-gradient(180deg, rgba(0, 51, 102, 0.03) 0%, rgba(255, 255, 255, 0.95) 100%);
+    box-shadow: 0 16px 40px rgba(0, 27, 71, 0.08);
+}
+.curation-frame.hidden { display: none; }
+
+.curation-head {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--accent-strong);
+}
+.curation-head .step {
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.curation-head h2 {
+    font-family: var(--heading-font);
+    font-size: var(--heading-lg);
+    color: var(--ink);
+    margin: 4px 0;
+}
+.curation-subtitle {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin: 0;
+}
+
+.curation-results {
+    display: grid;
+    gap: 14px;
+}
+
+/* 큐레이션 카드 */
+.curation-card {
+    padding: 18px;
+    border-radius: var(--card-radius);
+    border: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: 0 8px 20px rgba(0, 27, 71, 0.06);
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+.curation-card:hover {
+    box-shadow: 0 12px 30px rgba(0, 27, 71, 0.12);
+    border-color: rgba(0, 51, 102, 0.25);
+}
+
+.curation-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.curation-card-rank {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent-strong);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.curation-card-title {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.4;
+}
+.curation-card-source {
+    flex-shrink: 0;
+    font-size: 0.68rem;
+    color: var(--muted);
+    background: var(--surface);
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.curation-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+.curation-tag {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    font-weight: 600;
+}
+
+.curation-card-body {
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--ink);
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(0, 51, 102, 0.02);
+    border-left: 3px solid var(--accent-strong);
+}
+
+.curation-card-devices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+.curation-device-chip {
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #f0f2f8;
+    color: #333;
+    border: 1px solid #e0e4ee;
+}
+
+.curation-card-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 6px;
+}
+.curation-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: 1px solid #e8e8e8;
+    background: #fff;
+    text-decoration: none;
+    color: #222;
+    font-size: 0.72rem;
+    font-weight: 600;
+    transition: all 0.15s;
+}
+.curation-link:hover {
+    background: #f0f2f8;
+    border-color: var(--accent-strong);
+}
+.curation-link-icon { font-size: 0.9rem; }
+
+.curation-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+}
+.curation-ai-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border: 1.5px solid var(--accent-strong);
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent-strong), #004d99);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+.curation-ai-btn:hover {
+    background: linear-gradient(135deg, #004d99, #006acc);
+    box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
+}
+
 /* ── Output Block 섹션 구분 강화 ── */
 .output-block {
     position: relative;

@@ -226,6 +226,19 @@
             </section>
         </main>
 
+        <!-- 큐레이션 결과 (Q4 완료 시 즉시 표시) -->
+        <section id="curation-frame" class="curation-frame hidden">
+            <div class="section-head curation-head">
+                <div>
+                    <p class="step">Curation</p>
+                    <h2 id="curation-title">검증된 시나리오 매칭</h2>
+                    <p class="curation-subtitle">Explore Contents에서 입력 조건에 가장 적합한 시나리오를 찾았습니다. 원문 그대로 제공됩니다.</p>
+                </div>
+            </div>
+            <div id="curation-results" class="curation-results"></div>
+        </section>
+
+        <!-- AI 생성 결과 (기존) -->
         <section class="result-frame">
             <div class="section-head report-head">
                 <div>
@@ -243,6 +256,7 @@
         </section>
     </div>
 
+    <script src="js/curation-engine.js?v=20260318"></script>
     <script src="js/constants.js?v=20260312"></script>
     <script src="js/ui-text.js?v=20260314-1835"></script>
     <script src="city-masters/us-cities.js"></script>
