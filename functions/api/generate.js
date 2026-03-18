@@ -111,7 +111,13 @@ export async function onRequestPost(context) {
         return json({ ok: false, error: { code: "BAD_REQUEST", message: "Invalid JSON body." } }, 400);
     }
 
-    const systemPrompt = String(context.env.SYSTEM_PROMPT || "").trim();
+    // prompt.txt를 정적 파일에서 직접 읽음 — 환경변수 수동 복사 불필요
+    let systemPrompt = "";
+    try {
+        const promptRes = await context.env.ASSETS.fetch(new URL("/prompt.txt", context.request.url));
+        if (promptRes.ok) systemPrompt = (await promptRes.text()).trim();
+    } catch { /* fallback to env */ }
+    if (!systemPrompt) systemPrompt = String(context.env.SYSTEM_PROMPT || "").trim();
     if (!systemPrompt) {
         return json({ ok: false, error: { code: "PROMPT_NOT_FOUND", message: "System prompt not configured." } }, 500);
     }
