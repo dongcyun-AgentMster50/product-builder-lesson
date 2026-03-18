@@ -2542,8 +2542,8 @@ function mapLiveStep2Insight(data, countryCode, city) {
     if (trendItems.length) {
         sections.push({
             title: currentLocale === "ko"
-                ? `<strong class="city-accent">${localCity || marketLabel}</strong> 지역 트렌드`
-                : `<strong class="city-accent">${localCity || marketLabel}</strong> local trends`,
+                ? `🏠 <strong class="city-accent">${localCity || marketLabel}</strong> 생활 밀착 이슈`
+                : `🏠 Life context in <strong class="city-accent">${localCity || marketLabel}</strong>`,
             items: trendItems.map((trend) => ({
                 text: trend.text,
                 evidence: trend.evidence || "",
@@ -2560,8 +2560,8 @@ function mapLiveStep2Insight(data, countryCode, city) {
     if (liveEvents.length) {
         sections.push({
             title: currentLocale === "ko"
-                ? `<strong class="city-accent">${localCity || marketLabel}</strong> 근처 행사`
-                : `<strong class="city-accent">${localCity || marketLabel}</strong> nearby events`,
+                ? `📅 시즌/문화 참고 포인트`
+                : `📅 Season & culture signals`,
             items: liveEvents.map(ev =>
                 `${ev.name} (${ev.when}) — ${ev.hook}`
             )
@@ -2572,8 +2572,8 @@ function mapLiveStep2Insight(data, countryCode, city) {
     if (realPains.length) {
         sections.push({
             title: currentLocale === "ko"
-                ? `이 트렌드에서 예상되는 <strong class="city-accent">${localCity || marketLabel}</strong> 고민`
-                : `Trend-driven concerns in <strong class="city-accent">${localCity || marketLabel}</strong>`,
+                ? `😟 고객이 느끼는 불편과 기대`
+                : `😟 Customer pain points & expectations`,
             items: realPains
         });
     }
@@ -2582,8 +2582,8 @@ function mapLiveStep2Insight(data, countryCode, city) {
     if (realSolutions.length) {
         sections.push({
             title: currentLocale === "ko"
-                ? `이 트렌드로 만들 수 있는 CX 시나리오 힌트`
-                : `CX scenario hints from these trends`,
+                ? `💡 시나리오 연결 기회`
+                : `💡 Scenario opportunities`,
             items: realSolutions
         });
     }
@@ -2592,15 +2592,15 @@ function mapLiveStep2Insight(data, countryCode, city) {
     rows.push({
         label: currentLocale === "ko" ? "Q3 힌트" : "Q3 hint",
         value: roleLens.next_step || (currentLocale === "ko"
-            ? "다음 단계에서 타겟과 상황을 구체화하면 시나리오가 더 날카로워집니다."
-            : "Sharpen the scenario by specifying target and context in the next step.")
+            ? "다음 단계에서 타겟과 생활 맥락을 구체화하면 시나리오 매칭이 더 정확해집니다."
+            : "Specifying target and life context in the next step will sharpen scenario matching.")
     });
 
     return {
-        badge: currentLocale === "ko" ? "Q2 Live Region" : "Q2 Live Region",
+        badge: currentLocale === "ko" ? "Q2 생활 맥락" : "Q2 Life Context",
         title: currentLocale === "ko"
-            ? `${roleTitle}를 위한 <strong class="city-accent">${marketLabel}</strong> 넛지`
-            : `<strong class="city-accent">${marketLabel}</strong> nudge for ${roleTitle}`,
+            ? `<strong class="city-accent">${marketLabel}</strong>에서 시나리오를 기획할 때 먼저 참고하세요`
+            : `Key life-context signals for scenario planning in <strong class="city-accent">${marketLabel}</strong>`,
         chips: [
             queryCity || localCity || marketLabel,
             roleTitle,
@@ -7954,12 +7954,80 @@ function triggerAiFromCuration(scenario) {
     const parentInfo = `[Parent Scenario: ${f.source}] ${f.article} > ${f.title}`;
     const originalSnippet = (f.originalText || f.narrative || "").substring(0, 300);
 
-    // purpose에 큐레이션 컨텍스트 주입
-    const curatedContext = `${purposeInput.value.trim()}\n\n--- Curated Parent ---\n${parentInfo}\n${originalSnippet}`;
+    // 카테고리 선택 UI 표시
+    renderOutputCategories();
+    const categoryFrame = document.getElementById("output-category-frame");
+    if (categoryFrame) {
+        categoryFrame.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
 
-    // 기존 purpose를 임시 보강 후 generateScenario 호출
-    const originalPurpose = purposeInput.value;
-    purposeInput.value = curatedContext;
-    generateScenario();
-    purposeInput.value = originalPurpose;
+    // 카테고리 선택 후 생성 버튼 (중복 방지)
+    let genBtn = document.getElementById("category-generate-btn");
+    if (!genBtn) {
+        genBtn = document.createElement("button");
+        genBtn.id = "category-generate-btn";
+        genBtn.className = "access-v2-btn";
+        genBtn.style.cssText = "margin-top:14px;max-width:400px;margin-left:auto;margin-right:auto;display:block";
+        genBtn.textContent = currentLocale === "ko"
+            ? "🤖 선택한 카테고리로 AI 시나리오 생성"
+            : "🤖 Generate AI scenario for selected categories";
+        const container = document.getElementById("output-categories");
+        if (container) container.parentElement.appendChild(genBtn);
+    }
+
+    genBtn.onclick = () => {
+        const cats = [...selectedOutputCategories];
+        const catContext = cats.length ? `\n\n--- Output Focus ---\n${cats.join(", ")}` : "";
+        const curatedContext = `${purposeInput.value.trim()}\n\n--- Curated Parent ---\n${parentInfo}\n${originalSnippet}${catContext}`;
+        const originalPurpose = purposeInput.value;
+        purposeInput.value = curatedContext;
+        generateScenario();
+        purposeInput.value = originalPurpose;
+    };
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   결과물 카테고리 선택 — 직무별 후속 선택형
+   ══════════════════════════════════════════════════════════════════════ */
+
+const OUTPUT_CATEGORIES = [
+    { id: "campaign", icon: "📢", titleKo: "캠페인 메시지 방향", titleEn: "Campaign messaging", descKo: "시나리오 기반 태그라인, 소구 포인트, 1-liner 카피", descEn: "Taglines, appeal points, and one-liner copy from the scenario" },
+    { id: "retail", icon: "🏪", titleKo: "리테일 현장 적용안", titleEn: "Retail execution", descKo: "매장 설명 흐름, 체험 시나리오, POP 문구", descEn: "In-store explanation flow, experience scenario, POP copy" },
+    { id: "dotcom", icon: "🌐", titleKo: "닷컴 콘텐츠/프로모 활용안", titleEn: "Dotcom content & promo", descKo: "랜딩 페이지 구성, 배너 카피, 전환 흐름", descEn: "Landing page structure, banner copy, conversion flow" },
+    { id: "crm", icon: "🔄", titleKo: "CRM/리텐션 활용안", titleEn: "CRM & retention", descKo: "푸시 알림 시나리오, 재방문 유도, 사용률 향상", descEn: "Push notification scenarios, re-engagement, usage lift" },
+    { id: "season", icon: "🎄", titleKo: "시즌/행사 연계안", titleEn: "Seasonal tie-in", descKo: "명절·시즌 캠페인 스토리, 한정 프로모 방향", descEn: "Holiday and seasonal campaign story, limited promo direction" },
+    { id: "report", icon: "📊", titleKo: "매니저/임원 보고용 요약", titleEn: "Executive summary", descKo: "1페이지 요약, 핵심 수치, 전략 방향", descEn: "One-page summary, key metrics, strategic direction" }
+];
+
+let selectedOutputCategories = new Set();
+
+function renderOutputCategories() {
+    const frame = document.getElementById("output-category-frame");
+    const container = document.getElementById("output-categories");
+    if (!frame || !container) return;
+
+    const isKo = currentLocale === "ko";
+
+    container.innerHTML = OUTPUT_CATEGORIES.map(cat => `
+        <div class="category-card${selectedOutputCategories.has(cat.id) ? " selected" : ""}" data-cat-id="${cat.id}">
+            <span class="category-card-icon">${cat.icon}</span>
+            <span class="category-card-title">${escapeHtml(isKo ? cat.titleKo : cat.titleEn)}</span>
+            <span class="category-card-desc">${escapeHtml(isKo ? cat.descKo : cat.descEn)}</span>
+        </div>
+    `).join("");
+
+    container.querySelectorAll(".category-card").forEach(card => {
+        card.addEventListener("click", () => {
+            const catId = card.dataset.catId;
+            if (selectedOutputCategories.has(catId)) {
+                selectedOutputCategories.delete(catId);
+                card.classList.remove("selected");
+            } else {
+                selectedOutputCategories.add(catId);
+                card.classList.add("selected");
+            }
+        });
+    });
+
+    frame.classList.remove("hidden");
 }
