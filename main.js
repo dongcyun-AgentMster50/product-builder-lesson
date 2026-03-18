@@ -2624,6 +2624,12 @@ function mapLiveStep2Insight(data, countryCode, city) {
     }
 
     const rows = [];
+    rows.push({
+        label: currentLocale === "ko" ? "Q2 힌트" : "Q2 hint",
+        value: currentLocale === "ko"
+            ? "Q2에서 타겟 고객과 거주지, 생활 맥락을 추가하면 이 지역에 딱 맞는 시나리오가 자동으로 완성됩니다."
+            : "Add target audience, housing, and life context in Q2 to auto-generate a scenario tailored to this region."
+    });
 
     return {
         badge: currentLocale === "ko" ? "Q1 생활 맥락" : "Q1 Life Context",
