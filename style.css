@@ -5228,3 +5228,130 @@ a.source-tag-link:hover {
         grid-template-columns: 1fr;
     }
 }
+
+/* ══════════════════════════════════════════
+   RTL (Arabic) overrides
+   ══════════════════════════════════════════ */
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+[dir="rtl"] .locale-selector {
+    right: auto;
+    left: 16px;
+}
+[dir="rtl"] .locale-dropdown {
+    right: auto;
+    left: 0;
+}
+[dir="rtl"] .hero-copy,
+[dir="rtl"] .access-card,
+[dir="rtl"] .access-card-v2,
+[dir="rtl"] .wizard-step,
+[dir="rtl"] .guide-card,
+[dir="rtl"] .report-head,
+[dir="rtl"] .curation-frame {
+    text-align: right;
+}
+[dir="rtl"] .hero-chips {
+    justify-content: flex-end;
+}
+[dir="rtl"] .hero-flow {
+    direction: rtl;
+}
+[dir="rtl"] .hero-flow-connector {
+    transform: scaleX(-1);
+}
+/* Progress bar */
+[dir="rtl"] .wizard-progress {
+    direction: rtl;
+}
+/* Form inputs */
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+    text-align: right;
+}
+/* Nudge cards — flip border side */
+[dir="rtl"] .city-nudge-card {
+    border-left: none;
+    border-right: 3px solid var(--line);
+    padding-left: 0;
+    padding-right: 18px;
+}
+[dir="rtl"] .city-nudge--situation { border-right-color: #4a90d9; }
+[dir="rtl"] .city-nudge--need { border-right-color: #e8943a; }
+[dir="rtl"] .city-nudge--opportunity { border-right-color: #3bb573; }
+/* Check items — flip border side */
+[dir="rtl"] .check-item.fit {
+    border-left: none;
+    border-right: 3px solid rgba(34, 139, 34, 0.4);
+}
+[dir="rtl"] .check-item.review {
+    border-left: none;
+    border-right: 3px solid rgba(200, 120, 0, 0.4);
+}
+[dir="rtl"] .check-item.neutral {
+    border-left: none;
+    border-right: 3px solid rgba(0, 80, 200, 0.35);
+}
+/* Insight summary — flip border */
+[dir="rtl"] .insight-summary {
+    border-left: none;
+    border-right: 3px solid var(--accent);
+    padding-left: 0;
+    padding-right: 18px;
+}
+/* Step insight — flip border */
+[dir="rtl"] .step-insight-box {
+    border-left: none;
+    border-right: 2px solid rgba(33,137,255,0.3);
+    padding-left: 0;
+    padding-right: 18px;
+}
+/* Lists */
+[dir="rtl"] ul, [dir="rtl"] ol {
+    padding-left: 0;
+    padding-right: 18px;
+}
+/* Output section tables */
+[dir="rtl"] .section-head {
+    text-align: right;
+}
+[dir="rtl"] td, [dir="rtl"] th {
+    text-align: right;
+}
+/* Buttons — keep centered */
+[dir="rtl"] .cta-btn,
+[dir="rtl"] .btn-primary,
+[dir="rtl"] .generate-btn {
+    text-align: center;
+}
+/* Q4 field labels */
+[dir="rtl"] .q4-field {
+    text-align: right;
+}
+/* Guide panel */
+[dir="rtl"] .guide-panel {
+    text-align: right;
+}
+[dir="rtl"] .guide-item {
+    text-align: right;
+}
+/* Export cards */
+[dir="rtl"] .export-card {
+    text-align: right;
+}
+/* Wizard nav buttons */
+[dir="rtl"] .wizard-nav {
+    direction: rtl;
+}
+/* State summary */
+[dir="rtl"] .state-grid {
+    text-align: right;
+}
+/* Persona chips & tags */
+[dir="rtl"] .persona-chip,
+[dir="rtl"] .evidence-source-tag {
+    text-align: right;
+}

@@ -1227,6 +1227,7 @@ const UI_TEXT = {
         prev05Title: "فوائد العميل", prev05Desc: "رتّب أولوية المزايا الأكثر إقناعاً للمستخدم.",
         prev06Title: "الجمهور والقبول", prev06Desc: "قدّر مدى القبول والمخاوف والاستقبال قبل التنفيذ.",
         prev07Title: "التوقيت والاتجاه الإبداعي", prev07Desc: "اربط السيناريو بتوقيت الحملة واتجاه السرد.",
+        prev08Title: "مطابقة السيناريو المنسَّقة", prev08Desc: "سيناريوهات موثوقة من Explore Contents متاحة فوراً.",
         exportPdf: "حفظ PDF", exportPdfDesc: "للاجتماعات ومرفقات البريد",
         exportWord: "حفظ Word", exportWordDesc: "مستند قابل للتعديل للتعاون",
         exportExcel: "حفظ Excel", exportExcelDesc: "جداول بيانات منظمة",
