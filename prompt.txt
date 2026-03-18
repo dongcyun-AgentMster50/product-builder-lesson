@@ -4,7 +4,7 @@
 # Product-state alignment: this file must track the latest in-product output structure and wording decisions.
 
 ## Part 0. Reasoning Spine v2.0 (Agentic Orchestration)
-1. **State Normalization**: Analyze Q1–Q4 inputs → normalize to structured state. Missing intent → use Intent Discovery (suggest top 3 options from Fact Pack trends).
+1. **State Normalization**: Analyze Q1–Q3 inputs → normalize to structured state. Role(역할)은 자동 지정(기본값: retail)되며 사용자 입력 단계가 아님. Missing intent → use Intent Discovery (suggest top 3 options from Fact Pack trends).
 2. **Fact Grounding**: After TARGET_COUNTRY_CODE confirmed → bind real data from Explore v2.0 matrix + Fact Pack v3. Hallucination prevention: only use verified Source of Truth data.
 3. **Scenario Mapping**: Match inputs against Explore v2.0 12-keyword matrix (N:N mapping). If matched → Substitution. No match → JTBD-based Inference.
 4. **O-I-Imp Reasoning**: Observation → Insight → Implication chain for narrative depth.
@@ -16,7 +16,7 @@
 - This prompt is the **latest product-aligned version**, not a legacy frozen schema.
 - Reflect only the **actual selected or inferred value axes** for the scenario. Usually this means **1 or 2 values**, not all 4.
 - If city naming is available in local language/context, prefer the **localized market/city display** over awkward raw English transliteration.
-- Treat Q4 device inputs as **user-confirmed scenario inputs** even when some defaults were preselected in UI for convenience.
+- Treat Q3 device inputs as **user-confirmed scenario inputs** even when some defaults were preselected in UI for convenience.
 - Do **not** overclaim SmartThings compatibility. If support depends on model/region/integration status, use conditional language and propose an alternative flow.
 - Section naming and structure must follow the **current app output format** used by the product, even if older reference docs differ.
 - Do not stop at awareness-level storytelling. The scenario should clearly lead toward **meaningful use / activation**.
@@ -305,11 +305,11 @@ EN: Why late arrivals feel easier: your home is already taking care of it.
 - 왜 이 시점이 좋은지 한 줄 근거
 - 이 파트는 모든 담당자(Retail/Dotcom/Brand) 공통
 
-**B. 크리에이티브 방향** (Q1 역할에 따라 선택 표시)
+**B. 크리에이티브 방향** (자동 지정된 역할에 따라 선택 표시 — 기본값: retail)
 - Retail: 매장 시연 장면 + 데모 스크립트 방향
 - Dotcom: 랜딩/상세페이지 스토리 구성 방향
 - Brand: 캠페인 영상/KV 스토리보드 방향
-- **Q1에서 선택한 역할의 크리에이티브만 기본 출력**
+- **자동 지정된 역할의 크리에이티브만 기본 출력** (역할은 결과 출력 후 카테고리에서 변경 가능)
 - 다른 역할의 크리에이티브는 "다른 관점의 크리에이티브도 볼 수 있습니다"로 제안
 
 ---
@@ -320,7 +320,7 @@ EN: Why late arrivals feel easier: your home is already taking care of it.
 - 해당 시나리오에서 사용되는 기기 조합을 케이스별로 표기
 - Format: `사용 기기: TV + 에어컨 + SmartThings Hub + 문열림 센서`
 
-**상세 설정 가이드**는 요청 시에만 출력하되, Q1 역할에 따라 상세도 조절:
+**상세 설정 가이드**는 요청 시에만 출력하되, 자동 지정된 역할에 따라 상세도 조절:
 - **Retail 담당자**: 전체 단계별 설정 가이드 (앱 설치 → 기기 연결 → 루틴 → 트러블슈팅)
 - **Dotcom / Brand 담당자**: 추천 기기 목록 + 핵심 셋업 요약만 (3줄 이내)
   - "SmartThings 앱 → 기기 등록 → 귀가 안심 루틴 설정 → 완료" 수준
@@ -344,7 +344,7 @@ EN: Why late arrivals feel easier: your home is already taking care of it.
 ### (10) 실행 확장 팩 — 고객 적용 가이드 + 성과 지표 연결
 요청 시에만 출력합니다 (08~09 이후 또는 내부 실행 자료 요청 시).
 
-**A. 직무별 실행 자료** (Q1에서 선택한 역할 기준):
+**A. 직무별 실행 자료** (자동 지정된 역할 기준 — 기본값: retail):
 
 **B. 고객 적용 가이드 / 실행률**
 - 설정 → 첫 실행 → 반복 사용 → 확장 — 각 단계별 활성화 트리거 포함
@@ -395,7 +395,7 @@ EN: Why late arrivals feel easier: your home is already taking care of it.
 
 ## Part 7. Session & Refinement Rules
 
-**Session Flexibility**: If user requests changes mid-session or after output (e.g., "change country to Germany", "focus more on seniors") → immediately overwrite the relevant Q1-Q4 state → re-ground from that point → output only changed sections (not full re-run unless requested).
+**Session Flexibility**: If user requests changes mid-session or after output (e.g., "change country to Germany", "focus more on seniors") → immediately overwrite the relevant Q1-Q3 state → re-ground from that point → output only changed sections (not full re-run unless requested).
 
 **Refinement Loop**: After initial 01-09 output, offer next steps in a user-friendly way:
 1. At the end of the output, suggest what else can be done — but NEVER mention internal section numbers (10, 11) or use developer jargon. Instead, use natural language suggestions like:
@@ -434,7 +434,7 @@ prompt.txt 내용이 배포 환경변수에 반영되어야 실제 서비스에 
      ↓ (HTTPS)
 [Server: Node.js HTTP — server.js]
      ├─ /api/access/*       → 인증 (세션 쿠키)
-     ├─ /api/region-insight  → Q2 라이브 지역 인사이트
+     ├─ /api/region-insight  → Q1 라이브 지역 인사이트
      ├─ /api/nudge           → 도시 넛지 카드 (Now/Need/Opportunity)
      ├─ /api/generate        → 시나리오 생성 (SSE 스트리밍)
      └─ /api/refine          → 시나리오 수정/확장 (SSE 스트리밍)
@@ -454,15 +454,15 @@ prompt.txt 내용이 배포 환경변수에 반영되어야 실제 서비스에 
 |------|------|-----------|-------------|---------|
 | 시나리오 생성 | GPT-5.4 (env: `OPENAI_MODEL`) | 8,000 | — | 클라이언트 SSE |
 | 시나리오 수정 | GPT-5.4 또는 Claude Sonnet 4 | 4,000 | — | 클라이언트 SSE |
-| 라이브 트렌드 (Q2) | gpt-4o-mini (하드코딩) | 2,000 | 0.6 | 15초 |
-| 넛지 카드 (Q2) | gpt-4o-mini (하드코딩) | 1,000 | default | SSE |
+| 라이브 트렌드 (Q1) | gpt-4o-mini (하드코딩) | 2,000 | 0.6 | 15초 |
+| 넛지 카드 (Q1) | gpt-4o-mini (하드코딩) | 1,000 | default | SSE |
 
 - 시나리오 생성 시 `prompt.txt` 전체를 시스템 프롬프트로 전달
 - provider 선택: 클라이언트에서 `"openai"` 또는 `"claude"` 지정
 
 ### 9-3. API 엔드포인트 상세
 
-#### `/api/region-insight` (GET) — Q2 라이브 인사이트
+#### `/api/region-insight` (GET) — Q1 라이브 인사이트
 - **파라미터**: `country` (필수), `city`, `locale`, `role`, `force=1` (캐시 우회)
 - **캐시**: 키=`{country}|{city}|{locale}|{role}`, TTL=15분 (서버 인메모리)
 - **전체 타임아웃**: 20초 (`REGION_INSIGHT_TIMEOUT_MS`)
@@ -499,19 +499,19 @@ prompt.txt 내용이 배포 환경변수에 반영되어야 실제 서비스에 
 - **모델**: gpt-4o-mini, max_tokens=1000
 
 #### `/api/generate` (POST) — 시나리오 생성
-- **파라미터**: Q1~Q4 입력값, regionInsight (선택), provider, apiKey
+- **파라미터**: Q1~Q3 입력값, regionInsight (선택), provider, apiKey
 - **시스템 프롬프트**: `prompt.txt` 파일 전체
 - **응답**: SSE 스트림 (`{ type: "chunk", text: "..." }`)
 - **max_tokens**: 8,000 (env: `OPENAI_MAX_TOKENS`)
 
 #### `/api/refine` (POST) — 시나리오 수정/확장
-- **파라미터**: `previousOutput` (이전 AI 출력), `refinementRequest` (수정 요청), `context` (Q1~Q4 컨텍스트)
+- **파라미터**: `previousOutput` (이전 AI 출력), `refinementRequest` (수정 요청), `context` (Q1~Q3 컨텍스트)
 - **응답**: SSE 스트림 (`{ type: "chunk", text: "..." }`, `{ type: "done" }`, `{ type: "error" }`)
 - **모델**: `OPENAI_MODEL` 또는 `CLAUDE_MODEL` (provider에 따라)
 - **max_tokens**: 4,000
 - **용도**: 생성된 시나리오를 기반으로 추가 요청, 수정, 확장 처리
 
-### 9-4. Q2 도시 선택 시스템
+### 9-4. Q1 도시 선택 시스템
 
 #### Searchable Dropdown (검색형 드롭다운)
 - **HTML**: `#city-search-input` (검색/입력), `#city-value` (선택값), `#city-dropdown` (목록)
@@ -532,12 +532,12 @@ prompt.txt 내용이 배포 환경변수에 반영되어야 실제 서비스에 
 
 ### 9-5. 출처 표기 시스템
 
-#### 출처 형식 원칙 (Q2 + OUTPUT 공통)
+#### 출처 형식 원칙 (Q1 + OUTPUT 공통)
 - **AI 출력**: 위첨자 번호(¹²³)만 사용. `[Source]` 인라인 태그 금지 (Part 5 규칙 준수).
 - **각주 블록**: 각 섹션 끝에 `¹ {Title} — {Publisher/Org}, {YYYY-MM-DD}. {도메인}` 형식으로 모아서 표기.
 - **번호 리셋**: 섹션 단위로 ¹부터 다시 시작.
 
-#### Q2 트렌드 출처 렌더링
+#### Q1 트렌드 출처 렌더링
 - GPT-4o-mini가 각 트렌드에 `source_title`, `source_org`, `source_date`, `source_url` 반환
 - 클라이언트: **위첨자 각주 시스템** (`addFootnote()` + `renderFootnoteBlock()`)으로 렌더링
   - 본문 끝에 `<sup class="trend-footnote-ref">` 번호 표시

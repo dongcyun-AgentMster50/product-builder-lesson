@@ -2331,10 +2331,10 @@ function buildStep1Insight() {
             {
                 label: currentLocale === "ko" ? "다음에 정할 것" : currentLocale === "de" ? "Als Nächstes festlegen" : "Next decision",
                 value: currentLocale === "ko"
-                    ? "Q2에서 국가와 도시를 구체화해 이 관점이 가장 잘 먹히는 장면을 좁혀보세요."
+                    ? "Q1에서 국가와 도시를 구체화해 이 관점이 가장 잘 먹히는 장면을 좁혀보세요."
                     : currentLocale === "de"
-                        ? "Präzisieren Sie in Q2 Land und Region, damit der stärkste Nutzungsmoment klarer wird."
-                        : "Use Q2 to narrow the country and city so the strongest usage moment becomes clearer."
+                        ? "Präzisieren Sie in Q1 Land und Region, damit der stärkste Nutzungsmoment klarer wird."
+                        : "Use Q1 to narrow the country and city so the strongest usage moment becomes clearer."
             }
         ]
     };
@@ -2342,7 +2342,7 @@ function buildStep1Insight() {
 
 function buildStep2Insight() {
     return {
-        badge: currentLocale === "ko" ? "Q2 Region" : "Q2 Region",
+        badge: currentLocale === "ko" ? "Q1 Region" : "Q1 Region",
         title: currentLocale === "ko" ? "지역 인사이트를 준비하고 있습니다" : "Preparing live regional insight",
         summary: currentLocale === "ko"
             ? "국가와 도시를 기반으로 실시간 외부 데이터를 수집하는 중입니다."
@@ -2358,7 +2358,7 @@ function buildStep2Insight() {
 function buildStep2CitySelectGuide(countryCode) {
     const countryName = getCountryName(countryCode);
     return {
-        badge: currentLocale === "ko" ? "Q2 City" : "Q2 City",
+        badge: currentLocale === "ko" ? "Q1 City" : "Q1 City",
         title: currentLocale === "ko"
             ? `${countryName} 도시를 선택해 주세요`
             : `Select a city in ${countryName}`,
@@ -2600,14 +2600,14 @@ function mapLiveStep2Insight(data, countryCode, city) {
 
     const rows = [];
     rows.push({
-        label: currentLocale === "ko" ? "Q3 힌트" : "Q3 hint",
+        label: currentLocale === "ko" ? "Q2 힌트" : "Q2 hint",
         value: roleLens.next_step || (currentLocale === "ko"
             ? "다음 단계에서 타겟과 생활 맥락을 구체화하면 시나리오 매칭이 더 정확해집니다."
             : "Specifying target and life context in the next step will sharpen scenario matching.")
     });
 
     return {
-        badge: currentLocale === "ko" ? "Q2 생활 맥락" : "Q2 Life Context",
+        badge: currentLocale === "ko" ? "Q1 생활 맥락" : "Q1 Life Context",
         title: currentLocale === "ko"
             ? `<strong class="city-accent">${marketLabel}</strong>에서 시나리오를 기획할 때 먼저 참고하세요`
             : `Key life-context signals for scenario planning in <strong class="city-accent">${marketLabel}</strong>`,
@@ -2749,7 +2749,7 @@ function inferCityCxProfile(countryCode, city, macro, local) {
 
 function buildStep2ErrorInsight(message) {
     return {
-        badge: currentLocale === "ko" ? "Q2 Live Error" : "Q2 Live Error",
+        badge: currentLocale === "ko" ? "Q1 Live Error" : "Q1 Live Error",
         title: currentLocale === "ko" ? "실시간 지역 인사이트를 불러오지 못했습니다" : "Failed to load live regional insight",
         summary: message,
         body: currentLocale === "ko"
@@ -2782,7 +2782,7 @@ function buildStep3Insight() {
     const primaryPersona = selectedLabels[0] || (currentLocale === "ko" ? "타겟 탐색 중" : currentLocale === "de" ? "Zielgruppe in Arbeit" : "Audience forming");
 
     return {
-        badge: currentLocale === "ko" ? "Q3 Audience" : currentLocale === "de" ? "Q3 Zielgruppe" : "Q3 Audience",
+        badge: currentLocale === "ko" ? "Q2 Audience" : currentLocale === "de" ? "Q2 Zielgruppe" : "Q2 Audience",
         title: currentLocale === "ko" ? `지금 타겟 해석은 ${personaCount || 1}개 축으로 모이고 있습니다` : currentLocale === "de" ? `Die Zielgruppe verdichtet sich jetzt über ${personaCount || 1} Achsen` : `The target is now clustering around ${personaCount || 1} signal layers`,
         summary: currentLocale === "ko"
             ? "타겟 조합이 결과 문장의 톤과 문제 정의를 직접 바꾸기 시작했습니다."
@@ -2816,7 +2816,7 @@ function buildStep3Insight() {
             {
                 label: currentLocale === "ko" ? "지금 필요한 입력" : currentLocale === "de" ? "Jetzt fehlt noch" : "Missing input",
                 value: purpose
-                    ? (currentLocale === "ko" ? "Q4에서 기기 조합을 줄이거나 넓혀 이 타겟에 맞는 첫 장면을 고정해 보세요." : currentLocale === "de" ? "Fixieren Sie in Q4 den ersten Moment über die passende Gerätekombination." : "Use Q4 to lock the first scene with the right device mix.")
+                    ? (currentLocale === "ko" ? "Q3에서 기기 조합을 줄이거나 넓혀 이 타겟에 맞는 첫 장면을 고정해 보세요." : currentLocale === "de" ? "Fixieren Sie in Q3 den ersten Moment über die passende Gerätekombination." : "Use Q3 to lock the first scene with the right device mix.")
                     : (currentLocale === "ko" ? "집에 들어오는 순간, 반복되는 불편, 계절 변수 중 하나만 적어보세요." : currentLocale === "de" ? "Ergänzen Sie Heimkehr, wiederkehrende Reibung oder einen saisonalen Auslöser." : "Add arrival home, recurring friction, or a seasonal trigger.")
             }
         ]
@@ -2889,7 +2889,7 @@ function buildStep4Insight() {
                 ? (currentLocale === "ko" ? "명확한 2기기 페어링" : currentLocale === "de" ? "klare Zwei-Geräte-Kombination" : "clear two-device pairing")
                 : (currentLocale === "ko" ? "단일 앵커 기기 중심" : currentLocale === "de" ? "einzelnes Ankergerät" : "single anchor device");
     return {
-        badge: currentLocale === "ko" ? "Q4 Devices" : currentLocale === "de" ? "Q4 Geräte" : "Q4 Devices",
+        badge: currentLocale === "ko" ? "Q3 Devices" : currentLocale === "de" ? "Q3 Geräte" : "Q3 Devices",
         title: currentLocale === "ko" ? `${deviceCount}개 기기 조합으로 첫 장면이 구체화되고 있습니다` : currentLocale === "de" ? `Mit ${deviceCount} Geräten wird der erste Moment konkreter` : `The first-use moment is becoming more concrete with ${deviceCount} devices`,
         summary: currentLocale === "ko"
             ? "이 단계에서는 기능 나열보다 어떤 생활 컷으로 시작할지가 거의 결정됩니다."
@@ -3113,7 +3113,7 @@ function validateCurrentStep() {
         }
     }
     if (currentStep === 4 && getSelectedDevices().length === 0) {
-        resultDiv.innerHTML = `<p class="error">${currentLocale === "ko" ? "Q4에서 기기를 하나 이상 선택해 주세요." : "Please select at least one device in Q4."}</p>`;
+        resultDiv.innerHTML = `<p class="error">${currentLocale === "ko" ? "Q3에서 기기를 하나 이상 선택해 주세요." : "Please select at least one device in Q3."}</p>`;
         return false;
     }
     return true;
