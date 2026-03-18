@@ -7138,20 +7138,25 @@ function applyLocale() {
     const stepPanels = document.querySelectorAll(".wizard-step");
     const deviceLabel = stepPanels[3]?.querySelector("label");
     const heroChips = document.querySelectorAll(".hero-chip");
-    const heroMetricLabels = document.querySelectorAll(".hero-metric span");
+    const heroFlowLabels = document.querySelectorAll(".hero-flow-label");
 
     document.querySelector(".eyebrow").textContent = t("heroEyebrow");
     document.querySelector(".hero-text").innerHTML = escapeHtml(t("heroText")).replace(/\n/g, "<br>");
     if (heroChips[0]) heroChips[0].textContent = t("heroChip1");
     if (heroChips[1]) heroChips[1].textContent = t("heroChip2");
     if (heroChips[2]) heroChips[2].textContent = t("heroChip3");
-    if (heroMetricLabels[0]) heroMetricLabels[0].textContent = t("heroFlow1");
-    if (heroMetricLabels[1]) heroMetricLabels[1].textContent = t("heroFlow2");
-    if (heroMetricLabels[2]) heroMetricLabels[2].textContent = t("heroFlow3");
-    document.querySelector("#access-screen h2").textContent = t("getStarted");
-    document.querySelector("label[for='access-code']").textContent = t("accessRequired").replace(".", "");
+    if (heroFlowLabels[0]) heroFlowLabels[0].textContent = t("heroFlow1");
+    if (heroFlowLabels[1]) heroFlowLabels[1].textContent = t("heroFlow2");
+    if (heroFlowLabels[2]) heroFlowLabels[2].textContent = t("heroFlow3");
+    if (heroFlowLabels[3]) heroFlowLabels[3].textContent = t("heroFlow4");
+    // Access card V2 — safe selectors
+    const accessTitle = document.querySelector(".access-v2-title");
+    const accessSubtitle = document.querySelector(".access-v2-subtitle");
+    const accessNote = document.querySelector(".access-v2-note");
+    if (accessTitle) accessTitle.textContent = t("getStarted");
+    if (accessSubtitle) accessSubtitle.textContent = t("accessRequired").replace(".", "");
     accessCodeInput.placeholder = t("accessPlaceholder");
-    document.querySelector("#access-screen .helper").textContent = t("accessHelper");
+    if (accessNote) accessNote.textContent = t("accessHelper");
     accessToggleBtn.textContent = t(isAccessCodeVisible ? "accessHide" : "accessShow");
     accessToggleBtn.setAttribute("aria-pressed", isAccessCodeVisible ? "true" : "false");
     unlockBtn.textContent = t("enterAgent");
