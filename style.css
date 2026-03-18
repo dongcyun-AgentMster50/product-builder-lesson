@@ -65,9 +65,9 @@ body {
 .hero {
     position: relative;
     display: grid;
-    grid-template-columns: 1.6fr 0.8fr;
-    gap: 16px;
-    padding: 28px 28px 22px;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 28px 28px 18px;
     border-radius: 20px;
     background:
         radial-gradient(circle at 86% 16%, rgba(58, 159, 220, 0.24), transparent 20%),
@@ -179,6 +179,7 @@ body {
 }
 
 .hero-panel {
+    display: none; /* replaced by hero-flow-bar */
     padding: 10px 14px 8px;
     border-radius: 14px;
     margin-top: 16px;
@@ -1382,6 +1383,212 @@ textarea {
     50%  { background-position: 0% 0; }
     100% { background-position: 100% 0; }
 }
+
+/* ══════════════════════════════════════════
+   Hero Flow Bar — 가로 스텝 인디케이터
+   ══════════════════════════════════════════ */
+.hero-flow-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-top: 20px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(6px);
+}
+.hero-flow-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+}
+.hero-flow-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #fff;
+}
+.hero-flow-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    white-space: nowrap;
+}
+.hero-flow-arrow {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.35), rgba(255,255,255,0.1));
+    flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════
+   Access Card V2 — 프리미엄 로그인
+   ══════════════════════════════════════════ */
+.access-card-v2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 48px 40px 40px;
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(0, 51, 102, 0.06), transparent 60%),
+        linear-gradient(180deg, #fff 0%, #f8faff 100%);
+    border: 1.5px solid rgba(0, 51, 102, 0.12);
+    box-shadow:
+        0 24px 60px rgba(0, 20, 60, 0.08),
+        0 2px 8px rgba(0, 51, 102, 0.04);
+    max-width: 480px;
+    margin: 0 auto;
+}
+.access-v2-icon {
+    font-size: 2.2rem;
+    margin-bottom: -4px;
+}
+.access-v2-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent-strong);
+    letter-spacing: -0.03em;
+}
+.access-v2-subtitle {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--muted);
+}
+.access-v2-input-wrap {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 0;
+    border: 2px solid rgba(0, 51, 102, 0.15);
+    border-radius: 14px;
+    background: #fff;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+.access-v2-input-wrap:focus-within {
+    border-color: var(--accent-strong);
+    box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.08);
+}
+.access-v2-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 14px 18px;
+    font-size: 1rem;
+    background: transparent;
+    color: var(--ink);
+    letter-spacing: 0.06em;
+}
+.access-v2-input::placeholder {
+    color: #b0b8c8;
+    letter-spacing: 0.02em;
+}
+.access-v2-toggle {
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: var(--accent-strong);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.access-v2-toggle:hover { color: var(--accent); }
+.access-v2-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent-strong), #004d99);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: all 0.2s;
+    box-shadow: 0 6px 20px rgba(0, 51, 102, 0.25);
+}
+.access-v2-btn:hover {
+    background: linear-gradient(135deg, #004d99, #006acc);
+    box-shadow: 0 8px 28px rgba(0, 51, 102, 0.35);
+    transform: translateY(-1px);
+}
+.access-v2-note {
+    margin: 0;
+    font-size: 0.74rem;
+    color: #a0a8b8;
+}
+
+/* ══════════════════════════════════════════
+   Preview Cards 4x2 그리드 + 카드 스타일
+   ══════════════════════════════════════════ */
+.preview-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+.preview-list-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, #fff 0%, #f8faff 100%);
+    box-shadow: 0 4px 12px rgba(0, 20, 60, 0.04);
+    transition: all 0.2s;
+    min-height: 90px;
+}
+.preview-list-item:hover {
+    box-shadow: 0 8px 24px rgba(0, 20, 60, 0.08);
+    border-color: rgba(0, 51, 102, 0.2);
+    transform: translateY(-2px);
+}
+.preview-list-item.highlight {
+    background: linear-gradient(135deg, rgba(0, 51, 102, 0.06), rgba(0, 80, 200, 0.08));
+    border-color: rgba(0, 51, 102, 0.2);
+}
+.preview-list-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--accent-strong);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+.preview-list-item.highlight .preview-list-num {
+    background: linear-gradient(135deg, #0050c8, #003366);
+}
+.preview-list-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+}
+.preview-list-desc {
+    font-size: 0.7rem;
+    color: var(--muted);
+    line-height: 1.4;
+}
 .nudge-shimmer {
     display: block;
     height: 14px;
@@ -2246,20 +2453,23 @@ pre {
 
 .placeholder-title {
     margin: 0;
-    padding: 14px 10px;
-    font-size: 1.6rem;
+    padding: 16px 10px 12px;
+    font-size: 1.5rem;
     text-align: center;
     font-weight: 800;
     letter-spacing: -0.02em;
+    color: #003366;
     background: linear-gradient(
         90deg,
-        var(--accent-strong) 0%,
-        var(--accent-strong) 40%,
-        #60a5fa 50%,
-        var(--accent-strong) 60%,
-        var(--accent-strong) 100%
+        #003366 0%,
+        #003366 35%,
+        #80c4ff 48%,
+        #ffffff 50%,
+        #80c4ff 52%,
+        #003366 65%,
+        #003366 100%
     );
-    background-size: 200% 100%;
+    background-size: 250% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

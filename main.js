@@ -5832,7 +5832,8 @@ function renderOutputPreview() {
         { icon: "04", title: t("prev04Title"), desc: t("prev04Desc") },
         { icon: "05", title: t("prev05Title"), desc: t("prev05Desc") },
         { icon: "06", title: t("prev06Title"), desc: t("prev06Desc") },
-        { icon: "07", title: t("prev07Title"), desc: t("prev07Desc") }
+        { icon: "07", title: t("prev07Title"), desc: t("prev07Desc") },
+        { icon: "✦", title: t("prev08Title"), desc: t("prev08Desc"), highlight: true }
     ];
 
     resultDiv.innerHTML = `
@@ -5840,7 +5841,7 @@ function renderOutputPreview() {
             <p class="placeholder-title">${escapeHtml(title)}</p>
             <div class="preview-list">
                 ${cards.map((card) => `
-                    <div class="preview-list-item">
+                    <div class="preview-list-item${card.highlight ? " highlight" : ""}">
                         <span class="preview-list-num">${card.icon}</span>
                         <span class="preview-list-title">${escapeHtml(card.title)}</span>
                         <span class="preview-list-desc">${escapeHtml(card.desc)}</span>
