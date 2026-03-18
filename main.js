@@ -5872,9 +5872,8 @@ function renderOutputPreview() {
     const title = t("previewTitle");
 
     const flowSteps = isKo ? [
-        { phase: "STEP 1", label: "큐레이션 매칭", icon: "✦",
-          desc: "입력한 국가/도시 + 타겟 + 기기 조건으로 Explore Contents에서 <strong>검증된 시나리오</strong>를 즉시 매칭합니다.",
-          note: "API 비용 없이 즉시 제공 — 원문 그대로 표시" },
+        { phase: "STEP 1", label: "입력 정보에 알맞는 시나리오 매칭", icon: "✦",
+          desc: "입력한 국가/도시 + 타겟 + 기기 조건으로 Explore Contents에서 <strong>검증된 시나리오</strong>를 즉시 매칭합니다." },
         { phase: "STEP 2", label: "시나리오 기반 결과물 생성", icon: "🤖",
           desc: "매칭된 시나리오를 Parent로 삼아, 아래 7개 결과물을 AI가 지역화·확장합니다.",
           items: [
@@ -5890,9 +5889,8 @@ function renderOutputPreview() {
           desc: "캠페인 메시지, 리테일 현장안, 닷컴 콘텐츠, CRM 활용안, 시즌 연계안, 보고용 요약 중 필요한 것만 골라 추가 생성합니다.",
           note: "복수 선택 가능 — 직무를 미리 고르지 않아도 됩니다" }
     ] : [
-        { phase: "STEP 1", label: "Curation Match", icon: "✦",
-          desc: "Instantly match <strong>verified scenarios</strong> from Explore Contents based on your country, target, and device selections.",
-          note: "No API cost — original text displayed as-is" },
+        { phase: "STEP 1", label: "Scenario matching based on your input", icon: "✦",
+          desc: "Instantly match <strong>verified scenarios</strong> from Explore Contents based on your country, target, and device selections." },
         { phase: "STEP 2", label: "AI-Expanded Results", icon: "🤖",
           desc: "Using the matched scenario as a Parent, AI generates 7 localized output sections:",
           items: [
