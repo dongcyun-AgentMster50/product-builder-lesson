@@ -2243,6 +2243,20 @@ textarea {
     box-sizing: border-box;
 }
 
+/* Q2/Q3 힌트 카드 — 진한 배경 + 흰 글씨 */
+.insight-row:last-child {
+    background: #003366;
+    border-color: #003366;
+    color: #fff;
+    border-radius: 14px;
+}
+.insight-row:last-child .insight-label {
+    color: rgba(255, 255, 255, 0.85);
+}
+.insight-row:last-child p {
+    color: #fff;
+}
+
 .insight-label {
     color: var(--accent-strong);
     font-size: 0.82rem;
