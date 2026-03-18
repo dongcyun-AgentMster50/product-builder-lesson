@@ -565,11 +565,13 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
     const selected = new Set(selectedIds);
     return groups.map((group) => {
         const mode = group.mode || "checkbox";
-        const inputType = mode === "radio" ? "radio" : "checkbox";
-        const radioName = mode === "radio" ? `${kind}_${group.id}` : "";
-
-        // For device groups (no mode field), keep legacy parent-checkbox behaviour
         const isLegacy = !group.mode;
+        const isChip = mode === "chip";
+        const isRadio = mode === "radio";
+        const inputType = isRadio ? "radio" : "checkbox";
+        const radioName = isRadio ? `${kind}_${group.id}` : "";
+
+        // Legacy parent-checkbox (device groups only)
         const allSelected = isLegacy && group.options.every((option) => selected.has(option.id));
 
         const parentHtml = isLegacy ? `
@@ -577,14 +579,37 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
                 <input type="checkbox" data-kind="${kind}" data-node-type="parent" data-group-id="${group.id}" ${allSelected ? "checked" : ""}>
                 <span class="tree-parent-title">${escapeHtml(group.title)}</span>
             </label>
-        ` : `<div class="tree-parent tree-parent--label"><span class="tree-parent-title">${escapeHtml(group.title)}</span></div>`;
+        ` : `<div class="tree-parent tree-parent--label">
+                <span class="tree-parent-title">${escapeHtml(group.title)}</span>
+                ${group.helper ? `<span class="tree-parent-helper">${escapeHtml(group.helper)}</span>` : ""}
+             </div>`;
 
         const optionsHtml = group.options.map((option) => {
-            // Divider — renders as a label separator, not a checkbox
             if (option.divider) {
                 return `<div class="tree-divider">${escapeHtml(option.label)}</div>`;
             }
             const childChecked = selected.has(option.id);
+            const descHtml = option.desc ? `<span class="tree-child-desc">${escapeHtml(option.desc)}</span>` : "";
+
+            // Chip mode — toggle chips
+            if (isChip) {
+                return `
+                    <label class="tree-chip ${childChecked ? "tree-chip--active" : ""}">
+                        <input type="checkbox" value="${option.id}" data-kind="${kind}" data-node-type="child" data-group-id="${group.id}" data-label="${escapeHtml(option.label)}" ${childChecked ? "checked" : ""}>
+                        <span>${escapeHtml(option.label)}</span>
+                    </label>`;
+            }
+
+            // Radio card mode — single select cards
+            if (isRadio) {
+                return `
+                    <label class="tree-card ${childChecked ? "tree-card--active" : ""}">
+                        <input type="radio" name="${radioName}" value="${option.id}" data-kind="${kind}" data-node-type="child" data-group-id="${group.id}" data-label="${escapeHtml(option.label)}" ${childChecked ? "checked" : ""}>
+                        <span class="tree-card-label">${escapeHtml(option.label)}</span>
+                        ${descHtml}
+                    </label>`;
+            }
+
             // Legacy sub-children support (for device groups)
             const subHtml = option.sub ? `
                 <div class="tree-sub-children" data-parent-option="${option.id}" style="${childChecked ? "" : "display:none"}">
@@ -598,18 +623,7 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
             ` : "";
             return `
                 <label class="tree-child">
-                    <input
-                        type="${inputType}"
-                        ${radioName ? `name="${radioName}"` : ""}
-                        value="${option.id}"
-                        data-kind="${kind}"
-                        data-node-type="child"
-                        data-group-id="${group.id}"
-                        data-label="${escapeHtml(option.label)}"
-                        ${option.sub ? `data-has-sub="true"` : ""}
-                        ${option.normalized ? `data-normalized="${escapeHtml(option.normalized)}"` : ""}
-                        ${childChecked ? "checked" : ""}
-                    >
+                    <input type="${inputType}" ${radioName ? `name="${radioName}"` : ""} value="${option.id}" data-kind="${kind}" data-node-type="child" data-group-id="${group.id}" data-label="${escapeHtml(option.label)}" ${option.sub ? `data-has-sub="true"` : ""} ${option.normalized ? `data-normalized="${escapeHtml(option.normalized)}"` : ""} ${childChecked ? "checked" : ""}>
                     <span>${escapeHtml(option.label)}</span>
                 </label>
                 ${subHtml}
@@ -621,10 +635,11 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
         ` : "";
 
         const scrollClass = group.scrollable ? " tree-children--scroll" : "";
+        const modeClass = isChip ? " tree-children--chips" : isRadio ? " tree-children--cards" : "";
         return `
             <section class="tree-group" data-group-id="${group.id}" data-mode="${mode}">
                 ${parentHtml}
-                <div class="tree-children${scrollClass}">
+                <div class="tree-children${scrollClass}${modeClass}">
                     ${optionsHtml}
                 </div>
                 ${customHtml}
@@ -939,14 +954,20 @@ function handleChecklistChange(event, container) {
 
     const mode = group.dataset.mode;
 
-    // Radio groups: clear custom input when an option is selected
+    // Radio groups: clear custom input + update card active state
     if (mode === "radio" && target.checked) {
         const customInput = group.querySelector('.tree-custom-input');
         if (customInput) customInput.value = "";
+        group.querySelectorAll('.tree-card').forEach((card) => card.classList.remove('tree-card--active'));
+        const parentCard = target.closest('.tree-card');
+        if (parentCard) parentCard.classList.add('tree-card--active');
     }
 
-    // "나 혼자(solo)" 배타 로직 제거 — 마케터가 "1인가구+반려동물" 등 복합 세그먼트 가능하도록
-    // 모든 household 옵션은 자유롭게 복수 선택 가능
+    // Chip toggle active state
+    if (mode === "chip") {
+        const parentChip = target.closest('.tree-chip');
+        if (parentChip) parentChip.classList.toggle('tree-chip--active', target.checked);
+    }
 
     // Legacy checkbox-parent behaviour (device groups)
     if (!mode || mode === "checkbox") {

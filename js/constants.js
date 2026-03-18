@@ -28,159 +28,151 @@ const ROLE_LENSES = [
 
 const PERSONA_CATEGORY_GROUPS = [
     {
-        id: "household",
-        title: "A. 타겟 고객 가구 구성",
-        mode: "checkbox",
+        id: "housing",
+        title: "A. 거주지 유형",
+        helper: "시나리오가 적용될 집의 형태를 골라 주세요",
+        mode: "radio",
         options: [
-            { id: "solo", label: "나 혼자" },
-            { id: "partner", label: "배우자/파트너", sub: [
-                { id: "partner_dual_income", label: "맞벌이" },
-                { id: "partner_single_income", label: "외벌이" }
-            ]},
-            { id: "children", label: "자녀", sub: [
-                { id: "child_infant", label: "영유아 (0–6세)" },
-                { id: "child_elementary", label: "초등 (7–12세)" },
-                { id: "child_teen", label: "청소년 (13–18세)" },
-                { id: "child_adult", label: "성인 자녀 (19세+)" },
-                { id: "child_multi", label: "자녀 2명 이상" }
-            ]},
-            { id: "parents_senior", label: "부모님/시니어", sub: [
-                { id: "parent_one", label: "한 분" },
-                { id: "parent_both", label: "두 분" },
-                { id: "parent_60s", label: "60대" },
-                { id: "parent_70plus", label: "70대 이상" }
-            ]},
-            { id: "siblings", label: "형제·자매" },
-            { id: "roommate", label: "룸메이트/하우스메이트" },
-            { id: "pet", label: "반려동물", sub: [
-                { id: "pet_dog", label: "강아지" },
-                { id: "pet_cat", label: "고양이" },
-                { id: "pet_other", label: "기타 (파충류·어류·소동물 등)" }
-            ]},
-            { id: "accessibility", label: "접근성 배려 필요 구성원", sub: [
-                { id: "acc_mobility", label: "거동 불편 (휠체어·보행기)" },
-                { id: "acc_visual_hearing", label: "시각·청각 지원 필요" },
-                { id: "acc_cognitive", label: "인지 지원 (치매·발달장애 등)" },
-                { id: "acc_child_safety", label: "영유아 안전 (문잠금·모서리 등)" }
-            ]}
-        ],
-        customPlaceholder: "위에 해당하지 않는 경우 직접 입력"
+            { id: "h_apt", label: "아파트", desc: "아파트, 주상복합, 고층" },
+            { id: "h_compact", label: "오피스텔·원룸", desc: "1인용 소형 독립 공간" },
+            { id: "h_villa", label: "빌라·다세대", desc: "연립, 다세대, 저층 공동주택" },
+            { id: "h_house", label: "단독·전원주택", desc: "마당 있는 독립 건물" },
+            { id: "h_shared", label: "셰어하우스·기숙사", desc: "공용 공간이 있는 공동 주거" },
+            { id: "h_care", label: "시니어·케어 주거", desc: "실버타운, assisted living" }
+        ]
+    },
+    {
+        id: "household",
+        title: "B. 세대 구성",
+        helper: "가장 어린 구성원 기준으로 선택하면 시나리오가 더 정확해집니다",
+        mode: "radio",
+        options: [
+            { id: "hh_solo", label: "1인 가구", desc: "혼자 생활" },
+            { id: "hh_couple", label: "2인 가구", desc: "부부, 커플, 룸메이트 2인" },
+            { id: "hh_young_kids", label: "영유아 자녀 가구", desc: "0–6세 자녀 포함" },
+            { id: "hh_school_kids", label: "초등~청소년 자녀", desc: "7–18세 자녀 포함" },
+            { id: "hh_adult_kids", label: "성인 자녀 동거", desc: "19세+ 자녀와 동거" },
+            { id: "hh_multi_gen", label: "3세대 이상 동거", desc: "조부모+부모+자녀" },
+            { id: "hh_senior", label: "시니어 가구", desc: "은퇴 세대 1~2인" }
+        ]
+    },
+    {
+        id: "lifestage",
+        title: "C. 라이프스테이지",
+        helper: "나이보다 지금 생활 상황 기준으로 선택해 주세요",
+        mode: "radio",
+        options: [
+            { id: "ls_starter", label: "사회 초년", desc: "독립 시작, 최소 세팅" },
+            { id: "ls_settled", label: "안정기 진입", desc: "본격 투자·확장기" },
+            { id: "ls_parenting", label: "육아·교육기", desc: "자녀 중심 생활" },
+            { id: "ls_established", label: "안정된 가정", desc: "경험 축적, 효율 추구" },
+            { id: "ls_empty_nest", label: "자녀 독립 후", desc: "부부 재설계 시기" },
+            { id: "ls_senior", label: "시니어 생활", desc: "편의·돌봄 중심" }
+        ]
+    },
+    {
+        id: "tags",
+        title: "D. 우리 집 특성",
+        helper: "해당하는 것을 모두 골라 주세요 — 시나리오가 더 구체적으로 맞춰집니다",
+        mode: "chip",
+        scrollable: true,
+        options: [
+            { id: "_divider_family", divider: true, label: "가족 상황" },
+            { id: "t_dual_income", label: "맞벌이" },
+            { id: "t_single_income", label: "외벌이" },
+            { id: "t_solo_parent", label: "양육 주 담당 1인" },
+            { id: "t_multi_kids", label: "자녀 2명+" },
+            { id: "t_pet", label: "반려동물 있음" },
+            { id: "_divider_care", divider: true, label: "돌봄·관계" },
+            { id: "t_parent_away", label: "부모님 따로 거주" },
+            { id: "t_parent_care", label: "부모님 돌봄 필요" },
+            { id: "t_acc_needs", label: "접근성 배려 필요" },
+            { id: "_divider_lifestyle", divider: true, label: "생활 패턴" },
+            { id: "t_remote", label: "재택·하이브리드 근무" },
+            { id: "t_long_away", label: "장시간 부재 잦음" },
+            { id: "t_weekend_out", label: "주말 외출·여행 잦음" },
+            { id: "t_night_shift", label: "야간·교대 생활" },
+            { id: "_divider_value", divider: true, label: "중시하는 가치" },
+            { id: "t_security", label: "보안 중시" },
+            { id: "t_wellness", label: "건강·웰니스 중시" },
+            { id: "t_efficiency", label: "가사 효율 중시" }
+        ]
     },
     {
         id: "interest",
-        title: "B. 생활맥락 — Explore Contents",
-        mode: "checkbox",
+        title: "E. 생활맥락 — Explore Contents",
+        helper: "시나리오에 반영할 생활 테마를 골라 주세요",
+        mode: "chip",
         scrollable: true,
         options: [
-            { id: "int_energy", label: "에너지 절약 (Save energy)" },
-            { id: "int_air", label: "쾌적한 공기 관리 (Keep the air fresh)" },
-            { id: "int_lights", label: "간편한 조명 제어 (Easily control your lights)" },
-            { id: "int_chores", label: "집안일 도우미 (Help with chores)" },
-            { id: "int_safe", label: "안전한 집 관리 (Keep your home safe)" },
-            { id: "int_sleep", label: "숙면 환경 (Sleep well)" },
-            { id: "int_mood", label: "분위기 향상 (Enhanced mood)" },
-            { id: "int_senior", label: "시니어 케어 (Care for seniors)" },
-            { id: "int_kids", label: "키즈 케어 (Care for kids)" },
-            { id: "int_pet", label: "펫 케어 (Care for your pet)" },
-            { id: "int_find", label: "물건 찾기 (Find your belongings)" },
-            { id: "int_health", label: "건강·피트니스 (Stay fit & healthy)" }
+            { id: "int_energy", label: "에너지 절약" },
+            { id: "int_air", label: "쾌적한 공기" },
+            { id: "int_lights", label: "조명 제어" },
+            { id: "int_chores", label: "집안일 도우미" },
+            { id: "int_safe", label: "안전한 집" },
+            { id: "int_sleep", label: "숙면 환경" },
+            { id: "int_mood", label: "분위기 향상" },
+            { id: "int_senior", label: "시니어 케어" },
+            { id: "int_kids", label: "키즈 케어" },
+            { id: "int_pet", label: "펫 케어" },
+            { id: "int_find", label: "물건 찾기" },
+            { id: "int_health", label: "건강·피트니스" }
         ],
         customPlaceholder: "위에 없는 생활맥락 직접 입력"
-    },
-    {
-        id: "housing",
-        title: "C. 거주지 유형",
-        mode: "checkbox",
-        scrollable: true,
-        options: [
-            { id: "h_apt", label: "아파트형 주거 (아파트, 주상복합)" },
-            { id: "h_small", label: "소형 독립형 주거 (오피스텔, 원룸)" },
-            { id: "h_multi", label: "다세대·공동주택형 (빌라, 다세대, 연립)" },
-            { id: "h_detached", label: "단독·전원형 주거 (단독주택, 전원주택)" },
-            { id: "h_shared", label: "공유·기관형 주거 (기숙사, 사택, 셰어하우스)" },
-            { id: "h_care", label: "케어형 주거 (실버타운, assisted living)" },
-            { id: "_divider_space", divider: true, label: "구체적 장소를 원하시면 아래 고르시거나 기입해주세요" },
-            { id: "space_living", label: "거실" },
-            { id: "space_bedroom", label: "침실" },
-            { id: "space_kitchen", label: "주방" },
-            { id: "space_entrance", label: "현관·입구" },
-            { id: "space_bathroom", label: "욕실" },
-            { id: "space_office", label: "홈오피스·서재" },
-            { id: "space_multifloor", label: "다층 공간 (계단·복도)" },
-            { id: "space_balcony", label: "발코니·테라스" },
-            { id: "space_yard", label: "마당·정원" }
-        ],
-        customPlaceholder: "위에 해당하지 않는 장소 직접 입력"
     }
 ];
 
 const PERSONA_GROUP_TITLE_EN = {
-    household: "A. Household members",
-    interest: "B. Life context — Explore Contents",
-    housing: "C. Housing type"
+    housing: "A. Housing type",
+    household: "B. Household",
+    lifestage: "C. Life stage",
+    tags: "D. Home characteristics",
+    interest: "E. Life context — Explore Contents"
+};
+
+const PERSONA_GROUP_HELPER_EN = {
+    housing: "Select the type of home for your scenario",
+    household: "Choose based on the youngest household member for better accuracy",
+    lifestage: "Pick based on your current life situation, not age alone",
+    tags: "Select all that apply — makes the scenario more specific",
+    interest: "Pick life themes to reflect in the scenario"
 };
 
 const PERSONA_OPTION_LABEL_EN = {
-    solo: "I live alone",
-    partner: "Spouse / Partner",
-    partner_dual_income: "Dual income",
-    partner_single_income: "Single income",
-    children: "Children",
-    child_infant: "Infant / Toddler (0–6)",
-    child_elementary: "Elementary (7–12)",
-    child_teen: "Teenager (13–18)",
-    child_adult: "Adult child (19+)",
-    child_multi: "2+ children",
-    parents_senior: "Parents / Senior",
-    parent_one: "One parent",
-    parent_both: "Both parents",
-    parent_60s: "60s",
-    parent_70plus: "70s or older",
-    siblings: "Siblings",
-    roommate: "Roommate / Housemate",
-    pet: "Pets",
-    pet_dog: "Dog",
-    pet_cat: "Cat",
-    pet_other: "Other (reptile, fish, small animal, etc.)",
-    accessibility: "Accessibility needs",
-    acc_mobility: "Mobility support (wheelchair, walker)",
-    acc_visual_hearing: "Visual / Hearing support",
-    acc_cognitive: "Cognitive support (dementia, developmental)",
-    acc_child_safety: "Child safety (locks, corner guards, etc.)",
-    int_energy: "Save energy",
-    int_air: "Keep the air fresh",
-    int_lights: "Easily control your lights",
-    int_chores: "Help with chores",
-    int_safe: "Keep your home safe",
-    int_sleep: "Sleep well",
-    int_mood: "Enhanced mood",
-    int_senior: "Care for seniors",
-    int_kids: "Care for kids",
-    int_pet: "Care for your pet",
-    int_find: "Find your belongings",
-    int_health: "Stay fit & healthy",
-    h_apt: "Apartment (high-rise, mixed-use)",
-    h_small: "Compact unit (officetel, studio)",
-    h_multi: "Multi-family (villa, row house)",
-    h_detached: "Detached / Rural home",
-    h_shared: "Shared / Institutional (dorm, company housing)",
-    h_care: "Care residence (senior town, assisted living)",
-    _divider_space: "Optional: select specific spaces or type below",
-    space_living: "Living Room",
-    space_bedroom: "Bedroom",
-    space_kitchen: "Kitchen",
-    space_entrance: "Entrance",
-    space_bathroom: "Bathroom",
-    space_office: "Home Office",
-    space_multifloor: "Multi-floor (stairs & hallways)",
-    space_balcony: "Balcony / Terrace",
-    space_yard: "Yard / Garden"
+    h_apt: "Apartment", h_compact: "Studio / Officetel", h_villa: "Villa / Multi-family",
+    h_house: "Detached / Rural home", h_shared: "Shared housing / Dorm", h_care: "Senior / Care residence",
+    hh_solo: "Single person", hh_couple: "Couple / Two adults", hh_young_kids: "Young children (0–6)",
+    hh_school_kids: "School-age children (7–18)", hh_adult_kids: "Adult children at home",
+    hh_multi_gen: "Multi-generational (3+)", hh_senior: "Senior household",
+    ls_starter: "Starting out", ls_settled: "Getting settled", ls_parenting: "Parenting years",
+    ls_established: "Established home", ls_empty_nest: "Empty nest", ls_senior: "Senior living",
+    t_dual_income: "Dual income", t_single_income: "Single income", t_solo_parent: "Primary caregiver",
+    t_multi_kids: "2+ children", t_pet: "Has pets",
+    t_parent_away: "Parents live separately", t_parent_care: "Parent care needed", t_acc_needs: "Accessibility needs",
+    t_remote: "Remote / Hybrid work", t_long_away: "Often away", t_weekend_out: "Weekend outings", t_night_shift: "Night / Shift work",
+    t_security: "Security-focused", t_wellness: "Health & Wellness", t_efficiency: "Household efficiency",
+    int_energy: "Save energy", int_air: "Fresh air", int_lights: "Light control", int_chores: "Help with chores",
+    int_safe: "Home safety", int_sleep: "Sleep well", int_mood: "Enhanced mood",
+    int_senior: "Senior care", int_kids: "Kids care", int_pet: "Pet care",
+    int_find: "Find belongings", int_health: "Fitness & Health",
+    _divider_family: "Family", _divider_care: "Care", _divider_lifestyle: "Lifestyle", _divider_value: "Values"
+};
+
+const PERSONA_OPTION_DESC_EN = {
+    h_apt: "Apartment, mixed-use, high-rise", h_compact: "Small independent unit for 1 person",
+    h_villa: "Low-rise multi-family housing", h_house: "Detached building with yard",
+    h_shared: "Shared common spaces", h_care: "Senior town, assisted living",
+    hh_solo: "Living alone", hh_couple: "Spouse, couple, or 2 roommates",
+    hh_young_kids: "Includes children aged 0–6", hh_school_kids: "Includes children aged 7–18",
+    hh_adult_kids: "Adult children living together", hh_multi_gen: "Grandparents + parents + children",
+    hh_senior: "Retired, 1–2 persons",
+    ls_starter: "Starting independence, minimal setup", ls_settled: "Investing and expanding",
+    ls_parenting: "Child-focused life", ls_established: "Experienced, seeking efficiency",
+    ls_empty_nest: "Redesigning as a couple", ls_senior: "Comfort and care first"
 };
 
 const PERSONA_CUSTOM_PLACEHOLDER_EN = {
-    household: "Other household member — type here",
-    interest: "Other life context — type here",
-    housing: "Other space — type here"
+    interest: "Other life context — type here"
 };
 
 /* Locale-specific housing overrides — disabled: C group is now space-based (Explore Contents) */
@@ -313,10 +305,12 @@ function getLocalizedPersonaGroups(locale, countryCode) {
     return groups.map((group) => ({
         ...group,
         title: PERSONA_GROUP_TITLE_EN[group.id] || group.title,
+        helper: PERSONA_GROUP_HELPER_EN[group.id] || group.helper,
         customPlaceholder: PERSONA_CUSTOM_PLACEHOLDER_EN[group.id] || group.customPlaceholder,
         options: group.options.map((option) => ({
             ...option,
             label: PERSONA_OPTION_LABEL_EN[option.id] || option.label,
+            desc: PERSONA_OPTION_DESC_EN[option.id] || option.desc,
             ...(option.sub ? { sub: option.sub.map((s) => ({
                 ...s,
                 label: PERSONA_OPTION_LABEL_EN[s.id] || s.label
