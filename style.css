@@ -694,9 +694,16 @@ textarea {
 .persona-groups {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
-/* D/E chip groups span full width */
+/* D/E chip groups: side by side in 2 columns */
 .persona-groups .tree-group[data-mode="chip"] {
-    grid-column: 1 / -1;
+    grid-column: span 1;
+}
+/* When only 2 chip groups remain in a row, first takes col 1-2, second takes col 3 */
+.persona-groups .tree-group[data-group-id="tags"] {
+    grid-column: 1 / 3;
+}
+.persona-groups .tree-group[data-group-id="interest"] {
+    grid-column: 3 / 4;
 }
 .device-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

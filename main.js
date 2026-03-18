@@ -2841,8 +2841,14 @@ function buildStep3Insight() {
             {
                 label: currentLocale === "ko" ? "지금 필요한 입력" : currentLocale === "de" ? "Jetzt fehlt noch" : "Missing input",
                 value: purpose
-                    ? (currentLocale === "ko" ? "Q3에서 기기 조합을 줄이거나 넓혀 이 타겟에 맞는 첫 장면을 고정해 보세요." : currentLocale === "de" ? "Fixieren Sie in Q3 den ersten Moment über die passende Gerätekombination." : "Use Q3 to lock the first scene with the right device mix.")
+                    ? (currentLocale === "ko" ? "상황 설명이 반영되었습니다. 아래 Q3 힌트를 참고해 기기를 선택하면 시나리오가 완성됩니다." : currentLocale === "de" ? "Situationsbeschreibung berücksichtigt. Wählen Sie in Q3 Geräte, um das Szenario abzuschließen." : "Context applied. Select devices in Q3 below to complete the scenario.")
                     : (currentLocale === "ko" ? "집에 들어오는 순간, 반복되는 불편, 계절 변수 중 하나만 적어보세요." : currentLocale === "de" ? "Ergänzen Sie Heimkehr, wiederkehrende Reibung oder einen saisonalen Auslöser." : "Add arrival home, recurring friction, or a seasonal trigger.")
+            },
+            {
+                label: currentLocale === "ko" ? "Q3 힌트" : "Q3 hint",
+                value: currentLocale === "ko"
+                    ? "Q3에서 시나리오에 반영할 기기를 선택하면, 이 타겟과 생활맥락에 딱 맞는 자동화 흐름이 완성됩니다."
+                    : "Select devices in Q3 to complete an automation flow tailored to this target and life context."
             }
         ]
     };
