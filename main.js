@@ -616,10 +616,11 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
             <input type="text" class="tree-custom-input" data-kind="${kind}" data-group-id="${group.id}" placeholder="${escapeHtml(group.customPlaceholder)}">
         ` : "";
 
+        const scrollClass = group.scrollable ? " tree-children--scroll" : "";
         return `
             <section class="tree-group" data-group-id="${group.id}" data-mode="${mode}">
                 ${parentHtml}
-                <div class="tree-children">
+                <div class="tree-children${scrollClass}">
                     ${optionsHtml}
                 </div>
                 ${customHtml}

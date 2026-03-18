@@ -1188,6 +1188,12 @@ textarea {
     display: grid;
     gap: 10px;
 }
+.tree-children--scroll {
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+}
 
 .tree-child {
     padding: 12px 14px;

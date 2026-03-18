@@ -68,43 +68,50 @@ const PERSONA_CATEGORY_GROUPS = [
     },
     {
         id: "interest",
-        title: "B. 요즘 관심사",
+        title: "B. 생활맥락 — Explore Contents",
         mode: "checkbox",
+        scrollable: true,
         options: [
-            { id: "int_health", label: "건강·수면·운동" },
-            { id: "int_energy", label: "에너지·비용 절감" },
-            { id: "int_entertain", label: "홈시네마·음악·게임" },
-            { id: "int_cooking", label: "홈쿡·식생활 관리" },
-            { id: "int_remote", label: "재택·하이브리드 근무" },
-            { id: "int_night", label: "야간·교대 생활" },
-            { id: "int_away", label: "외출·출장 잦음" },
-            { id: "int_hosting", label: "홈파티·손님 맞이" },
-            { id: "int_season", label: "시즌 이벤트 (명절·연말·월드컵 등)" }
+            { id: "int_energy", label: "에너지 절약 (Save energy)" },
+            { id: "int_air", label: "쾌적한 공기 관리 (Keep the air fresh)" },
+            { id: "int_lights", label: "간편한 조명 제어 (Easily control your lights)" },
+            { id: "int_chores", label: "집안일 도우미 (Help with chores)" },
+            { id: "int_safe", label: "안전한 집 관리 (Keep your home safe)" },
+            { id: "int_sleep", label: "숙면 환경 (Sleep well)" },
+            { id: "int_mood", label: "분위기 향상 (Enhanced mood)" },
+            { id: "int_senior", label: "시니어 케어 (Care for seniors)" },
+            { id: "int_kids", label: "키즈 케어 (Care for kids)" },
+            { id: "int_pet", label: "펫 케어 (Care for your pet)" },
+            { id: "int_find", label: "물건 찾기 (Find your belongings)" },
+            { id: "int_health", label: "건강·피트니스 (Stay fit & healthy)" }
         ],
-        customPlaceholder: "위에 없는 관심사 직접 입력"
+        customPlaceholder: "위에 없는 생활맥락 직접 입력"
     },
     {
         id: "housing",
-        title: "C. 거주지 유형",
+        title: "C. 주요 생활 공간 — Explore Contents",
         mode: "checkbox",
+        scrollable: true,
         options: [
-            { id: "apt_high", label: "아파트 고층 (15층+)" },
-            { id: "apt_low", label: "아파트·빌라 저중층" },
-            { id: "studio", label: "원룸·오피스텔·스튜디오" },
-            { id: "detached", label: "단독주택" },
-            { id: "townhouse", label: "타운하우스·연립" },
-            { id: "suburban", label: "전원·교외 주택" },
-            { id: "rental", label: "임대·단기 거주 (월세·전세)" },
-            { id: "shared", label: "셰어하우스·기숙사" }
+            { id: "space_living", label: "거실 (Living Room)" },
+            { id: "space_bedroom", label: "침실 (Bedroom)" },
+            { id: "space_kitchen", label: "주방 (Kitchen)" },
+            { id: "space_entrance", label: "현관·입구 (Entrance)" },
+            { id: "space_bathroom", label: "욕실 (Bathroom)" },
+            { id: "space_office", label: "홈오피스·서재 (Home Office)" },
+            { id: "space_balcony", label: "발코니·테라스 (Balcony)" },
+            { id: "space_multifloor", label: "다층 주거 — 계단·복도 (Multi-floor)" },
+            { id: "space_garage", label: "차고·창고 (Garage)" },
+            { id: "space_yard", label: "마당·정원 (Yard)" }
         ],
-        customPlaceholder: "위에 해당하지 않는 경우 직접 입력"
+        customPlaceholder: "위에 해당하지 않는 공간 직접 입력"
     }
 ];
 
 const PERSONA_GROUP_TITLE_EN = {
     household: "A. Household members",
-    interest: "B. Current interests",
-    housing: "C. Housing type"
+    interest: "B. Life context — Explore Contents",
+    housing: "C. Living spaces — Explore Contents"
 };
 
 const PERSONA_OPTION_LABEL_EN = {
@@ -134,33 +141,38 @@ const PERSONA_OPTION_LABEL_EN = {
     acc_visual_hearing: "Visual / Hearing support",
     acc_cognitive: "Cognitive support (dementia, developmental)",
     acc_child_safety: "Child safety (locks, corner guards, etc.)",
-    int_health: "Health / Sleep / Fitness",
-    int_energy: "Energy / Cost saving",
-    int_entertain: "Home cinema / Music / Gaming",
-    int_cooking: "Home cooking / Meal management",
-    int_remote: "Remote / Hybrid work",
-    int_night: "Night shift / Rotating schedule",
-    int_away: "Frequently away / Business travel",
-    int_hosting: "Home party / Hosting guests",
-    int_season: "Seasonal events (holidays, year-end, World Cup, etc.)",
-    apt_high: "High-rise apartment (15F+)",
-    apt_low: "Low/mid-rise apartment or villa",
-    studio: "Studio / Officetel / One-room",
-    detached: "Detached house",
-    townhouse: "Townhouse / Row house",
-    suburban: "Suburban / Rural home",
-    rental: "Rental / Short-term residence",
-    shared: "Shared housing / Dormitory"
+    int_energy: "Save energy",
+    int_air: "Keep the air fresh",
+    int_lights: "Easily control your lights",
+    int_chores: "Help with chores",
+    int_safe: "Keep your home safe",
+    int_sleep: "Sleep well",
+    int_mood: "Enhanced mood",
+    int_senior: "Care for seniors",
+    int_kids: "Care for kids",
+    int_pet: "Care for your pet",
+    int_find: "Find your belongings",
+    int_health: "Stay fit & healthy",
+    space_living: "Living Room",
+    space_bedroom: "Bedroom",
+    space_kitchen: "Kitchen",
+    space_entrance: "Entrance",
+    space_bathroom: "Bathroom",
+    space_office: "Home Office",
+    space_balcony: "Balcony / Terrace",
+    space_multifloor: "Multi-floor (stairs & hallways)",
+    space_garage: "Garage / Storage",
+    space_yard: "Yard / Garden"
 };
 
 const PERSONA_CUSTOM_PLACEHOLDER_EN = {
     household: "Other household member — type here",
-    interest: "Other interests — type here",
-    housing: "Other housing type — type here"
+    interest: "Other life context — type here",
+    housing: "Other living space — type here"
 };
 
-/* Locale-specific housing overrides — merged at runtime via getLocalizedPersonaGroups */
-const LOCALE_HOUSING_OPTIONS = {
+/* Locale-specific housing overrides — disabled: C group is now space-based (Explore Contents) */
+const LOCALE_HOUSING_OPTIONS_LEGACY = {
     KR: [
         { id: "apt_high", label: "아파트 고층 (15층+)" },
         { id: "apt_low", label: "아파트·빌라 저중층" },
@@ -282,25 +294,7 @@ const LOCALE_HOUSING_OPTIONS = {
 };
 
 function getLocalizedPersonaGroups(locale, countryCode) {
-    const resolveHousingOptions = (baseOptions) => {
-        if (!countryCode) return baseOptions;
-        const code = countryCode === "UK" ? "GB" : countryCode === "SEC" ? "KR" : countryCode;
-        const localeOptions = LOCALE_HOUSING_OPTIONS[code];
-        if (localeOptions) return localeOptions;
-        // Check alias (e.g. AT → DE)
-        const aliasMap = { AT: "DE", CH: "DE", CH_FR: "FR", CA_FR: "FR", BE_FR: "FR", AU: "US", CA: "US", NZ: "US", IE: "GB" };
-        const alias = aliasMap[code];
-        if (alias && LOCALE_HOUSING_OPTIONS[alias]) return LOCALE_HOUSING_OPTIONS[alias];
-        return baseOptions;
-    };
-
-    const groups = PERSONA_CATEGORY_GROUPS.map((group) => {
-        const g = { ...group };
-        if (group.id === "housing") {
-            g.options = resolveHousingOptions(group.options);
-        }
-        return g;
-    });
+    const groups = PERSONA_CATEGORY_GROUPS.map((group) => ({ ...group }));
 
     if (locale === "ko") return groups;
 
