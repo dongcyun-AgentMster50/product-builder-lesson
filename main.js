@@ -7957,10 +7957,14 @@ function runCuration() {
     if (!curationLoaded || !curationDbV1 || !curationDbV2) return;
 
     const personaIds = getSelectedPersonaOptionIds();
-    const segments = personaIds.filter(id => PERSONA_CATEGORY_GROUPS[0]?.options?.some(o => o.id === id) || personaIds.includes(id));
+    const segments = personaIds.filter(id => id.startsWith("hh_") || id.startsWith("ls_") || id.startsWith("t_"));
     const interests = personaIds.filter(id => id.startsWith("int_"));
     const housing = personaIds.filter(id => id.startsWith("h_"));
-    const devices = getSelectedDevices().map(d => getCategoryName ? getCategoryName(d) : d);
+    const devices = getSelectedDevices().map(d => {
+        // normalized 값으로 변환 (curation 매칭용)
+        const el = document.querySelector(`input[value="${d}"]`);
+        return el?.dataset?.normalized || (typeof getCategoryName === "function" ? getCategoryName(d) : d);
+    });
     const purpose = purposeInput.value.trim();
 
     const input = { segments, interests, housing, devices, purpose };

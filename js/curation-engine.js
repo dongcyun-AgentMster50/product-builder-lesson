@@ -4,90 +4,110 @@
  * 원문 그대로 보여주는 것이 핵심 (AI 재해석 금지)
  */
 
-// ─── 매핑 테이블: Q3 선택 → Explore 키워드 ───
+// ─── 매핑 테이블: Q2 선택 → Explore 키워드 (v1+v2 통합) ───
 const PERSONA_TO_EXPLORE_TAGS = {
-    // A. 가구 구성 → 키워드
-    solo:           ["Keep your home safe", "Save energy", "Sleep well"],
-    partner:        ["Save energy", "Help with chores", "Enhanced mood"],
-    children:       ["Care for kids", "Keep your home safe"],
-    child_infant:   ["Care for kids", "Keep your home safe"],
-    child_elementary: ["Care for kids", "Keep your home safe"],
-    child_teen:     ["Care for kids", "Keep your home safe"],
-    child_adult:    [],
-    child_multi:    ["Care for kids", "Help with chores"],
-    parents_senior: ["Care for seniors", "Keep your home safe"],
-    parent_one:     ["Care for seniors"],
-    parent_both:    ["Care for seniors"],
-    parent_60s:     ["Care for seniors"],
-    parent_70plus:  ["Care for seniors"],
-    siblings:       ["Help with chores"],
-    roommate:       ["Save energy", "Help with chores"],
-    pet:            ["Care for your pet", "Keep your home safe"],
-    pet_dog:        ["Care for your pet"],
-    pet_cat:        ["Care for your pet"],
-    pet_other:      ["Care for your pet"],
-    accessibility:  ["Care for seniors", "Keep your home safe"],
-    acc_mobility:   ["Care for seniors"],
-    acc_visual_hearing: ["Care for seniors"],
-    acc_cognitive:  ["Care for seniors"],
-    acc_child_safety: ["Care for kids", "Keep your home safe"],
+    // A. 거주지 유형
+    h_apt:          ["Save energy", "Keep the air fresh", "Energy Saving"],
+    h_compact:      ["Save energy", "Easily control your lights", "Energy Saving"],
+    h_villa:        ["Save energy", "Keep your home safe", "Security"],
+    h_house:        ["Keep your home safe", "Save energy", "Security"],
+    h_townhouse:    ["Keep your home safe", "Save energy", "Security"],
+    h_shared:       ["Keep your home safe", "Save energy", "Security"],
+    h_care:         ["Care for seniors", "Keep your home safe", "Family care"],
 
-    // B. 관심사 → 키워드
-    int_health:     ["Stay fit & healthy", "Sleep well", "Health"],
+    // B. 세대 구성
+    hh_solo:        ["Keep your home safe", "Save energy", "Sleep well", "Security"],
+    hh_couple:      ["Save energy", "Help with chores", "Enhanced mood", "Easy to use"],
+    hh_young_kids:  ["Care for kids", "Keep your home safe", "Family care", "Security"],
+    hh_school_kids: ["Care for kids", "Keep your home safe", "Family care"],
+    hh_adult_kids:  ["Save energy", "Help with chores", "Energy Saving"],
+    hh_multi_gen:   ["Care for seniors", "Care for kids", "Family care", "Keep your home safe"],
+    hh_senior:      ["Care for seniors", "Keep your home safe", "Family care", "Health"],
+
+    // C. 라이프스테이지
+    ls_starter:     ["Easy to use", "Save energy", "Energy Saving"],
+    ls_newlywed:    ["Enhanced mood", "Help with chores", "Easy to use"],
+    ls_settled:     ["Save energy", "Enhanced mood", "Energy Saving"],
+    ls_parenting:   ["Care for kids", "Keep your home safe", "Family care"],
+    ls_established: ["Save energy", "Help with chores", "Energy Saving", "Time saving"],
+    ls_empty_nest:  ["Stay fit & healthy", "Sleep well", "Health"],
+    ls_senior:      ["Care for seniors", "Keep your home safe", "Family care", "Health"],
+
+    // D. 우리 집 특성 태그
+    t_dual_income:  ["Time saving", "Help with chores"],
+    t_single_income: ["Save energy", "Energy Saving"],
+    t_solo_parent:  ["Help with chores", "Care for kids", "Time saving"],
+    t_multi_kids:   ["Care for kids", "Help with chores", "Family care"],
+    t_pet:          ["Care for your pet", "Keep your home safe", "Pet care"],
+    t_parent_away:  ["Care for seniors", "Keep your home safe", "Family care"],
+    t_parent_care:  ["Care for seniors", "Family care"],
+    t_acc_needs:    ["Care for seniors", "Keep your home safe"],
+    t_remote:       ["Save energy", "Easily control your lights", "Easy to use"],
+    t_long_away:    ["Keep your home safe", "Care for your pet", "Security"],
+    t_weekend_out:  ["Keep your home safe", "Security"],
+    t_night_shift:  ["Sleep well", "Easily control your lights", "Sleep"],
+    t_security:     ["Keep your home safe", "Security"],
+    t_wellness:     ["Stay fit & healthy", "Sleep well", "Health"],
+    t_efficiency:   ["Help with chores", "Time saving"],
+
+    // E. 생활맥락 (Explore Contents v2 키워드 직접 매핑)
     int_energy:     ["Save energy", "Energy Saving"],
-    int_entertain:  ["Enhanced mood", "Play"],
-    int_cooking:    ["Help with chores"],
-    int_remote:     ["Save energy", "Easily control your lights"],
-    int_night:      ["Sleep well", "Easily control your lights"],
-    int_away:       ["Keep your home safe", "Care for your pet", "Security"],
-    int_hosting:    ["Enhanced mood", "Help with chores"],
-    int_season:     ["Enhanced mood"],
-
-    // C. 거주지 유형 → 키워드 (간접)
-    apt_high:       ["Save energy", "Keep the air fresh"],
-    apt_low:        ["Save energy"],
-    studio:         ["Save energy", "Easily control your lights"],
-    detached:       ["Keep your home safe", "Save energy"],
-    townhouse:      ["Keep your home safe"],
-    suburban:       ["Keep your home safe", "Save energy"],
-    rental:         ["Easily control your lights"],
-    shared:         ["Keep your home safe", "Save energy"]
+    int_air:        ["Keep the air fresh"],
+    int_lights:     ["Easily control your lights", "Easy to use"],
+    int_chores:     ["Help with chores", "Time saving"],
+    int_safe:       ["Keep your home safe", "Security"],
+    int_sleep:      ["Sleep well", "Sleep"],
+    int_mood:       ["Enhanced mood"],
+    int_senior:     ["Care for seniors", "Family care"],
+    int_kids:       ["Care for kids", "Family care"],
+    int_pet:        ["Care for your pet", "Pet care"],
+    int_find:       ["Find your belongings"],
+    int_health:     ["Stay fit & healthy", "Health"]
 };
 
-// ─── 매핑: Q4 기기 → Explore 키워드 ───
+// ─── 매핑: Q3 기기 normalized → Explore 키워드 (v1+v2 통합) ───
 const DEVICE_TO_EXPLORE_TAGS = {
-    "TV":           ["Security", "Keep your home safe", "Enhanced mood"],
-    "냉장고":       ["Save energy", "Help with chores"],
-    "세탁기":       ["Help with chores", "Save energy"],
-    "건조기":       ["Help with chores", "Save energy"],
-    "에어컨":       ["Save energy", "Sleep well", "Keep the air fresh"],
-    "로봇청소기":   ["Help with chores", "Care for your pet"],
+    "TV":           ["Enhanced mood", "Security", "Keep your home safe"],
+    "냉장고":       ["Save energy", "Help with chores", "Energy Saving"],
+    "세탁기":       ["Help with chores", "Save energy", "Time saving"],
+    "건조기":       ["Help with chores", "Save energy", "Time saving"],
+    "세탁기/건조기": ["Help with chores", "Save energy", "Time saving"],
+    "에어컨":       ["Save energy", "Sleep well", "Keep the air fresh", "Energy Saving"],
+    "로봇청소기":   ["Help with chores", "Care for your pet", "Time saving"],
     "공기청정기":   ["Keep the air fresh", "Sleep well"],
-    "카메라":       ["Keep your home safe", "Care for your pet", "Security"],
     "센서":         ["Keep your home safe", "Care for seniors", "Security"],
-    "조명":         ["Easily control your lights", "Sleep well", "Enhanced mood"],
+    "조명":         ["Easily control your lights", "Sleep well", "Enhanced mood", "Easy to use"],
     "스피커":       ["Enhanced mood", "Easy to use"],
-    "도어벨":       ["Keep your home safe", "Security"],
-    "도어락":       ["Keep your home safe", "Security"],
-    "스마트 플러그": ["Save energy", "Easy to use"],
-    "블라인드":     ["Sleep well", "Enhanced mood"],
-    "Galaxy 스마트폰": ["Find your belongings", "Keep your home safe"],
-    "Galaxy Watch":  ["Stay fit & healthy", "Health"],
-    "Galaxy Tab":    ["Keep your home safe", "Care for kids"],
-    "SmartTag":      ["Find your belongings"],
-    "Hub":           ["Easy to use", "Keep your home safe"]
+    "오븐":         ["Help with chores"],
+    "스마트폰":     ["Find your belongings", "Keep your home safe"],
+    "웨어러블":     ["Stay fit & healthy", "Health", "Sleep well"],
+    "태블릿":       ["Care for kids", "Easy to use"],
 };
 
-// ─── v1.0 키워드 → v2.0 키워드 정규화 ───
+// ─── v1.0 키워드 ↔ v2.0 키워드 양방향 정규화 ───
 const V1_TO_V2_TAG_MAP = {
+    // v1 → v2
     "Security":      ["Keep your home safe"],
     "Energy Saving": ["Save energy"],
-    "Easy to use":   ["Help with chores", "Easily control your lights"],
+    "Easy to use":   ["Easily control your lights", "Help with chores"],
     "Time saving":   ["Help with chores"],
     "Sleep":         ["Sleep well"],
     "Health":        ["Stay fit & healthy"],
     "Pet care":      ["Care for your pet"],
-    "Family care":   ["Care for seniors", "Care for kids"]
+    "Family care":   ["Care for seniors", "Care for kids"],
+    // v2 → v1 (역방향 — scoreScenario에서 v2 태그로 v1 시나리오도 매칭)
+    "Keep your home safe": ["Security"],
+    "Save energy":         ["Energy Saving"],
+    "Help with chores":    ["Time saving", "Easy to use"],
+    "Easily control your lights": ["Easy to use"],
+    "Sleep well":          ["Sleep"],
+    "Stay fit & healthy":  ["Health"],
+    "Care for your pet":   ["Pet care"],
+    "Care for seniors":    ["Family care"],
+    "Care for kids":       ["Family care"],
+    "Enhanced mood":       [],
+    "Keep the air fresh":  [],
+    "Find your belongings": []
 };
 
 /**
