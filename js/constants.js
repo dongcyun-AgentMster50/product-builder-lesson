@@ -37,6 +37,7 @@ const PERSONA_CATEGORY_GROUPS = [
             { id: "h_compact", label: "오피스텔·원룸", desc: "1인용 소형 독립 공간" },
             { id: "h_villa", label: "빌라·다세대", desc: "연립, 다세대, 저층 공동주택" },
             { id: "h_house", label: "단독·전원주택", desc: "마당 있는 독립 건물" },
+            { id: "h_townhouse", label: "타운하우스·복층", desc: "2~3층 독립 현관, 다층 구조" },
             { id: "h_shared", label: "셰어하우스·기숙사", desc: "공용 공간이 있는 공동 주거" },
             { id: "h_care", label: "시니어·케어 주거", desc: "실버타운, assisted living" }
         ]
@@ -63,6 +64,7 @@ const PERSONA_CATEGORY_GROUPS = [
         mode: "radio",
         options: [
             { id: "ls_starter", label: "사회 초년", desc: "독립 시작, 최소 세팅" },
+            { id: "ls_newlywed", label: "신혼·동거 시작", desc: "첫 공동 생활, 새 공간 세팅" },
             { id: "ls_settled", label: "안정기 진입", desc: "본격 투자·확장기" },
             { id: "ls_parenting", label: "육아·교육기", desc: "자녀 중심 생활" },
             { id: "ls_established", label: "안정된 가정", desc: "경험 축적, 효율 추구" },
@@ -140,11 +142,11 @@ const PERSONA_GROUP_HELPER_EN = {
 
 const PERSONA_OPTION_LABEL_EN = {
     h_apt: "Apartment", h_compact: "Studio / Officetel", h_villa: "Villa / Multi-family",
-    h_house: "Detached / Rural home", h_shared: "Shared housing / Dorm", h_care: "Senior / Care residence",
+    h_house: "Detached / Rural home", h_townhouse: "Townhouse / Duplex", h_shared: "Shared housing / Dorm", h_care: "Senior / Care residence",
     hh_solo: "Single person", hh_couple: "Couple / Two adults", hh_young_kids: "Young children (0–6)",
     hh_school_kids: "School-age children (7–18)", hh_adult_kids: "Adult children at home",
     hh_multi_gen: "Multi-generational (3+)", hh_senior: "Senior household",
-    ls_starter: "Starting out", ls_settled: "Getting settled", ls_parenting: "Parenting years",
+    ls_starter: "Starting out", ls_newlywed: "Newlywed / Moving in together", ls_settled: "Getting settled", ls_parenting: "Parenting years",
     ls_established: "Established home", ls_empty_nest: "Empty nest", ls_senior: "Senior living",
     t_dual_income: "Dual income", t_single_income: "Single income", t_solo_parent: "Primary caregiver",
     t_multi_kids: "2+ children", t_pet: "Has pets",
@@ -161,12 +163,15 @@ const PERSONA_OPTION_LABEL_EN = {
 const PERSONA_OPTION_DESC_EN = {
     h_apt: "Apartment, mixed-use, high-rise", h_compact: "Small independent unit for 1 person",
     h_villa: "Low-rise multi-family housing", h_house: "Detached building with yard",
+    h_townhouse: "2–3 story with private entrance",
     h_shared: "Shared common spaces", h_care: "Senior town, assisted living",
     hh_solo: "Living alone", hh_couple: "Spouse, couple, or 2 roommates",
     hh_young_kids: "Includes children aged 0–6", hh_school_kids: "Includes children aged 7–18",
     hh_adult_kids: "Adult children living together", hh_multi_gen: "Grandparents + parents + children",
     hh_senior: "Retired, 1–2 persons",
-    ls_starter: "Starting independence, minimal setup", ls_settled: "Investing and expanding",
+    ls_starter: "Starting independence, minimal setup",
+    ls_newlywed: "First shared home, setting up together",
+    ls_settled: "Investing and expanding",
     ls_parenting: "Child-focused life", ls_established: "Experienced, seeking efficiency",
     ls_empty_nest: "Redesigning as a couple", ls_senior: "Comfort and care first"
 };
