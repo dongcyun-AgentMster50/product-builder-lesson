@@ -530,8 +530,8 @@ async function loadReferenceData() {
         updateRoleBrief();
         updateStatePreview();
     } catch (error) {
-        resultDiv.innerHTML = `<p class="error">데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>`;
-        console.error(error);
+        resultDiv.innerHTML = `<p class="error">데이터를 불러오지 못했습니다: ${escapeHtml(String(error?.message || error))}. 잠시 후 다시 시도해 주세요.</p>`;
+        console.error("[loadReferenceData] Fatal error:", error);
     }
 }
 
