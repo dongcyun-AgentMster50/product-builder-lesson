@@ -1827,6 +1827,7 @@ textarea {
     line-height: 1.6;
     width: 100%;
     box-sizing: border-box;
+    grid-column: 1 / -1;
 }
 
 .insight-card.insight-refresh {
@@ -4925,6 +4926,8 @@ a.source-tag-link:hover {
     border-radius: 20px;
     padding: 16px 18px;
     min-height: 80px;
+    grid-column: 1 / -1;
+    min-width: 0;
 }
 
 .insight-section {
