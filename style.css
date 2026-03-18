@@ -1157,9 +1157,8 @@ textarea {
     padding-bottom: 10px;
     border-bottom: 1px solid rgba(10, 34, 68, 0.08);
     display: flex;
-    align-items: baseline;
-    gap: 10px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .tree-custom-input {
