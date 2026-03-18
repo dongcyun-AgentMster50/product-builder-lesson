@@ -3092,8 +3092,8 @@ function syncWizardUi() {
     renderWizardProgress();
     updateStepInsight();
 
-    // Step 4 진입 시 큐레이션 자동 실행
-    if (currentStep === 4) {
+    // Step 4 진입 시 기기 선택이 있을 때만 큐레이션 실행
+    if (currentStep === 4 && getSelectedDevices().length > 0) {
         setTimeout(() => runCuration(), 300);
     }
 }
@@ -7620,10 +7620,10 @@ function getRoleBrief(id) {
 }
 
 function validateQ3Groups() {
-    const requiredGroups = ["household", "interest", "housing"];
+    const requiredGroups = ["housing", "household", "lifestage"];
     const groupLabels = currentLocale === "ko"
-        ? { household: "A. 타겟 고객 가구 구성", interest: "B. 요즘 관심사", housing: "C. 거주지 유형" }
-        : { household: "A. Household members", interest: "B. Interests", housing: "C. Housing type" };
+        ? { housing: "A. 거주지 유형", household: "B. 세대 구성", lifestage: "C. 라이프스테이지" }
+        : { housing: "A. Housing type", household: "B. Household", lifestage: "C. Life stage" };
     const missing = [];
     requiredGroups.forEach((gid) => {
         const group = personaGroups.querySelector(`.tree-group[data-group-id="${gid}"]`);
@@ -7948,7 +7948,7 @@ function runCuration() {
     const personaIds = getSelectedPersonaOptionIds();
     const segments = personaIds.filter(id => PERSONA_CATEGORY_GROUPS[0]?.options?.some(o => o.id === id) || personaIds.includes(id));
     const interests = personaIds.filter(id => id.startsWith("int_"));
-    const housing = personaIds.filter(id => ["apt_high","apt_low","studio","detached","townhouse","suburban","rental","shared"].includes(id));
+    const housing = personaIds.filter(id => id.startsWith("h_"));
     const devices = getSelectedDevices().map(d => getCategoryName ? getCategoryName(d) : d);
     const purpose = purposeInput.value.trim();
 
