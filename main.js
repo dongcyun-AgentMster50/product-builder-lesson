@@ -1750,12 +1750,19 @@ function openWizard() {
     accessScreen.classList.add("hidden");
     guideScreen.classList.add("hidden");
     wizardScreen.classList.remove("hidden");
-    currentStep = 1;
+    // Q1 직무 선택 스킵 — 기본값 "retail" 자동 설정, Q2부터 시작
+    if (!roleSelect.value) {
+        roleSelect.value = "retail";
+        const defaultCard = roleSelectionContainer?.querySelector('[data-role="retail"]');
+        if (defaultCard) {
+            roleCards.forEach(c => c.classList.remove("selected"));
+            defaultCard.classList.add("selected");
+            defaultCard.setAttribute("aria-pressed", "true");
+        }
+    }
+    currentStep = 2;
     syncWizardUi();
     renderOutputPreview();
-    const selectedCard = roleSelectionContainer?.querySelector(".role-card.selected");
-    const focusTarget = selectedCard || roleCards[0];
-    focusTarget?.focus();
     wizardScreen.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -1871,9 +1878,8 @@ function resetToAccessScreen() {
     accessScreen.classList.remove("hidden");
     logoutBtn.classList.add("hidden");
     guideCopy.innerHTML = "";
-    currentStep = 1;
+    currentStep = 2;
     latestPayload = null;
-    clearRoleSelection();
     if (marketOptions[0]) countrySelect.value = marketOptions[0].siteCode;
     const defaultCountryCode = resolveCountry(marketOptions[0])?.countryCode || "";
     populateCityOptions(defaultCountryCode, "");
@@ -1993,9 +1999,13 @@ function syncAccessControlState() {
 }
 
 function renderWizardProgress() {
-    const steps = [t("progress1"), t("progress2"), t("progress3"), t("progress4")];
-    document.getElementById("wizard-progress").innerHTML = steps.map((label, index) => {
-        const step = index + 1;
+    // Q1 스킵 — Q2(2), Q3(3), Q4(4)만 표시
+    const steps = [
+        { label: t("progress2"), step: 2 },
+        { label: t("progress3"), step: 3 },
+        { label: t("progress4"), step: 4 }
+    ];
+    document.getElementById("wizard-progress").innerHTML = steps.map(({ label, step }) => {
         const state = step === currentStep ? "current" : step < currentStep ? "done" : "";
         return `<div class="progress-pill ${state}">${label}</div>`;
     }).join("");
@@ -3051,7 +3061,7 @@ function syncWizardUi() {
     document.querySelectorAll(".wizard-step").forEach((panel) => {
         panel.classList.toggle("active", Number(panel.dataset.step) === currentStep);
     });
-    prevBtn.disabled = currentStep === 1;
+    prevBtn.disabled = currentStep <= 2;
     nextBtn.classList.toggle("hidden", currentStep === 4);
     generateBtn.classList.toggle("hidden", currentStep !== 4);
     renderWizardProgress();
@@ -3076,7 +3086,7 @@ function alignWizardStepViewport() {
 
 function moveStep(delta) {
     if (delta > 0 && !validateCurrentStep()) return;
-    const nextStep = Math.min(4, Math.max(1, currentStep + delta));
+    const nextStep = Math.min(4, Math.max(2, currentStep + delta));
     if (nextStep === currentStep) return;
     currentStep = nextStep;
     syncWizardUi();
@@ -3086,10 +3096,8 @@ function moveStep(delta) {
 }
 
 function validateCurrentStep() {
-    if (currentStep === 1 && !roleSelect.value) {
-        resultDiv.innerHTML = `<p class="error">${t("roleMissing")}</p>`;
-        return false;
-    }
+    // Q1 직무 선택 스킵 — 자동 기본값 보장
+    if (currentStep === 1) return true;
     if (currentStep === 2 && !countrySelect.value) {
         resultDiv.innerHTML = `<p class="error">${t("countryMissing")}</p>`;
         return false;
