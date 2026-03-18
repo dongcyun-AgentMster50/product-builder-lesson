@@ -564,6 +564,10 @@ function getDotcomMarketInfo(selectedMarket) {
 function renderChecklistGroups(groups, selectedIds = [], kind) {
     const selected = new Set(selectedIds);
     return groups.map((group) => {
+        // Section header — full-width label
+        if (group.section) {
+            return `<div class="device-section-header" style="grid-column:1/-1"><span>${escapeHtml(group.title)}</span></div>`;
+        }
         const mode = group.mode || "checkbox";
         const isLegacy = !group.mode;
         const isChip = mode === "chip";

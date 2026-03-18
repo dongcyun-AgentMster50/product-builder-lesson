@@ -1210,6 +1210,18 @@ textarea {
     padding-right: 4px;
     scrollbar-width: thin;
 }
+/* ── Device section header (Lifestyle / Device Type) ── */
+.device-section-header {
+    padding: 8px 14px;
+    margin-top: 4px;
+    border-radius: 10px;
+    background: var(--accent-strong);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
 .tree-divider {
     margin: 10px 0 4px;
     padding: 5px 0 4px;
