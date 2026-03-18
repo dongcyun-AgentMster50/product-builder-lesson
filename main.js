@@ -5824,28 +5824,75 @@ function renderScenario(payload) {
 }
 
 function renderOutputPreview() {
+    const isKo = currentLocale === "ko";
     const title = t("previewTitle");
-    const cards = [
-        { icon: "01", title: t("prev01Title"), desc: t("prev01Desc") },
-        { icon: "02", title: t("prev02Title"), desc: t("prev02Desc") },
-        { icon: "03", title: t("prev03Title"), desc: t("prev03Desc") },
-        { icon: "04", title: t("prev04Title"), desc: t("prev04Desc") },
-        { icon: "05", title: t("prev05Title"), desc: t("prev05Desc") },
-        { icon: "06", title: t("prev06Title"), desc: t("prev06Desc") },
-        { icon: "07", title: t("prev07Title"), desc: t("prev07Desc") },
-        { icon: "✦", title: t("prev08Title"), desc: t("prev08Desc"), highlight: true }
+
+    const flowSteps = isKo ? [
+        { phase: "STEP 1", label: "큐레이션 매칭", icon: "✦",
+          desc: "입력한 국가/도시 + 타겟 + 기기 조건으로 Explore Contents에서 <strong>검증된 시나리오</strong>를 즉시 매칭합니다.",
+          note: "API 비용 없이 즉시 제공 — 원문 그대로 표시" },
+        { phase: "STEP 2", label: "시나리오 기반 결과물 생성", icon: "🤖",
+          desc: "매칭된 시나리오를 Parent로 삼아, 아래 7개 결과물을 AI가 지역화·확장합니다.",
+          items: [
+              { num: "01", title: "시나리오 요약", sub: "타겟 고객과 핵심 가치가 한눈에" },
+              { num: "02", title: "상세 시나리오", sub: "Pain → 해결 → Benefit 구조" },
+              { num: "03", title: "지역 맞춤 인사이트", sub: "왜 이 시장에서 먹히는지" },
+              { num: "04", title: "마케팅 메시지", sub: "카피 옵션과 소구 포인트" },
+              { num: "05", title: "주요 고객 혜택", sub: "체감 이점 우선순위" },
+              { num: "06", title: "타겟 수용도 분석", sub: "좋아할 점과 우려할 점" },
+              { num: "07", title: "캠페인 타이밍", sub: "언제, 어떤 장면에서" }
+          ] },
+        { phase: "STEP 3", label: "직무별 활용 결과물 선택", icon: "📋",
+          desc: "캠페인 메시지, 리테일 현장안, 닷컴 콘텐츠, CRM 활용안, 시즌 연계안, 보고용 요약 중 필요한 것만 골라 추가 생성합니다.",
+          note: "복수 선택 가능 — 직무를 미리 고르지 않아도 됩니다" }
+    ] : [
+        { phase: "STEP 1", label: "Curation Match", icon: "✦",
+          desc: "Instantly match <strong>verified scenarios</strong> from Explore Contents based on your country, target, and device selections.",
+          note: "No API cost — original text displayed as-is" },
+        { phase: "STEP 2", label: "AI-Expanded Results", icon: "🤖",
+          desc: "Using the matched scenario as a Parent, AI generates 7 localized output sections:",
+          items: [
+              { num: "01", title: "Scenario Summary", sub: "Target customer & core value at a glance" },
+              { num: "02", title: "Detailed Scenario", sub: "Pain → Resolution → Benefit structure" },
+              { num: "03", title: "Regional Insight", sub: "Why this works in this market" },
+              { num: "04", title: "Marketing Messages", sub: "Copy options & appeal points" },
+              { num: "05", title: "Customer Benefits", sub: "Perceived benefits by priority" },
+              { num: "06", title: "Adoption Analysis", sub: "Likes vs concerns" },
+              { num: "07", title: "Campaign Timing", sub: "When and in what context" }
+          ] },
+        { phase: "STEP 3", label: "Output Category Selection", icon: "📋",
+          desc: "Choose from campaign messaging, retail execution, dotcom content, CRM, seasonal tie-in, or executive summary — generate only what you need.",
+          note: "Multi-select available — no need to choose a role upfront" }
     ];
 
     resultDiv.innerHTML = `
         <section class="placeholder-preview">
             <p class="placeholder-title">${escapeHtml(title)}</p>
-            <div class="preview-list">
-                ${cards.map((card) => `
-                    <div class="preview-list-item${card.highlight ? " highlight" : ""}">
-                        <span class="preview-list-num">${card.icon}</span>
-                        <span class="preview-list-title">${escapeHtml(card.title)}</span>
-                        <span class="preview-list-desc">${escapeHtml(card.desc)}</span>
+            <div class="preview-flow">
+                ${flowSteps.map((step, idx) => `
+                    <div class="preview-flow-step">
+                        <div class="preview-flow-phase">
+                            <span class="preview-flow-icon">${step.icon}</span>
+                            <span class="preview-flow-phase-label">${step.phase}</span>
+                            <strong class="preview-flow-phase-title">${escapeHtml(step.label)}</strong>
+                        </div>
+                        <div class="preview-flow-body">
+                            <p>${step.desc}</p>
+                            ${step.items ? `
+                                <div class="preview-flow-items">
+                                    ${step.items.map(item => `
+                                        <div class="preview-flow-item">
+                                            <span class="preview-flow-item-num">${item.num}</span>
+                                            <span class="preview-flow-item-title">${escapeHtml(item.title)}</span>
+                                            <span class="preview-flow-item-sub">${escapeHtml(item.sub)}</span>
+                                        </div>
+                                    `).join("")}
+                                </div>
+                            ` : ""}
+                            ${step.note ? `<p class="preview-flow-note">${escapeHtml(step.note)}</p>` : ""}
+                        </div>
                     </div>
+                    ${idx < flowSteps.length - 1 ? '<div class="preview-flow-connector"></div>' : ""}
                 `).join("")}
             </div>
         </section>
