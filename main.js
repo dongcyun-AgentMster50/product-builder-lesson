@@ -1799,7 +1799,6 @@ function buildGuideMarkup() {
                     <div class="guide-item"><strong>${escapeHtml(t("guideQ1"))}</strong><span>${escapeHtml(t("guideQ1Desc"))}</span></div>
                     <div class="guide-item"><strong>${escapeHtml(t("guideQ2"))}</strong><span>${escapeHtml(t("guideQ2Desc"))}</span></div>
                     <div class="guide-item"><strong>${escapeHtml(t("guideQ3"))}</strong><span>${escapeHtml(t("guideQ3Desc"))}</span></div>
-                    <div class="guide-item"><strong>${escapeHtml(t("guideQ4"))}</strong><span>${escapeHtml(t("guideQ4Desc"))}</span></div>
                 </div>
             </section>
             <section class="guide-panel">
