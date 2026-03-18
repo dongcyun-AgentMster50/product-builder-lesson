@@ -2624,12 +2624,6 @@ function mapLiveStep2Insight(data, countryCode, city) {
     }
 
     const rows = [];
-    rows.push({
-        label: currentLocale === "ko" ? "Q2 힌트" : "Q2 hint",
-        value: roleLens.next_step || (currentLocale === "ko"
-            ? "다음 단계에서 타겟과 생활 맥락을 구체화하면 시나리오 매칭이 더 정확해집니다."
-            : "Specifying target and life context in the next step will sharpen scenario matching.")
-    });
 
     return {
         badge: currentLocale === "ko" ? "Q1 생활 맥락" : "Q1 Life Context",
