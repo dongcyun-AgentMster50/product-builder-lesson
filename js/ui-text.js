@@ -17,7 +17,7 @@ const UI_TEXT = {
         q3Guide: "A·B·C 각 영역에서 최소 1개를 선택하거나 직접 입력해 주세요. 조합이 구체적일수록 시나리오가 날카로워집니다.",
         cityCustomPlaceholder: "도시 / 주 / 지역 직접 입력",
         deviceCustomPlaceholder: "추가 기기나 세부 모델을 직접 입력",
-        purposeExtraPlaceholder: "위 선택 외에 추가로 떠오르는 상황이 있다면 자유롭게 적어 주세요",
+        purposeExtraPlaceholder: "위 선택 사항 외 추가로 필요한 사항이 있다면 자유롭게 적어 주세요",
         accessRequired: "접근 코드를 입력해 주세요.",
         accessPlaceholder: "접근 코드 입력",
         accessHelper: "접근 코드는 서버에서 확인되며, 승인되면 바로 다음 단계로 이어집니다.",
