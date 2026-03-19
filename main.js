@@ -205,15 +205,40 @@ let userOverrideLocale = null;
 
 const SUPPORTED_UI_LOCALES = ["ko", "en", "de", "fr", "es", "pt", "it", "nl", "ar"];
 const Q4_ALL_QUICK_IDS = ["tv-premium", "refrigerator", "washer", "air-conditioner", "air-purifier", "ventilation", "robot-vacuum", "dryer", "dishwasher", "smart-plug", "eco-aircon", "camera", "door-lock", "hub", "care-camera", "activity-sensor", "speaker", "soundbar", "wearable-care", "lighting", "sleep-sensor", "energy-monitor", "galaxy-phone", "galaxy-watch", "galaxy-buds", "galaxy-tab"];
+// Samsung eStore 제품군 기반 그룹 + 역할 태그
 const Q4_QUICK_GROUPS = [
-    { label: "스마트폰·웨어러블", labelEn: "Phone & Wearable", ids: ["galaxy-phone", "galaxy-watch", "galaxy-buds", "galaxy-tab"] },
-    { label: "영상·음향", labelEn: "TV & Audio", ids: ["tv-premium", "speaker", "soundbar"] },
-    { label: "주방·생활가전", labelEn: "Kitchen & Living", ids: ["refrigerator", "washer", "dryer", "dishwasher"] },
-    { label: "공기·쾌적", labelEn: "Air & Comfort", ids: ["air-conditioner", "eco-aircon", "air-purifier", "ventilation"] },
-    { label: "청소·가사", labelEn: "Cleaning", ids: ["robot-vacuum"] },
-    { label: "보안·센서", labelEn: "Security & Sensor", ids: ["camera", "care-camera", "door-lock", "activity-sensor", "smart-plug"] },
-    { label: "스마트홈 허브", labelEn: "Smart Home Hub", ids: ["hub", "lighting", "sleep-sensor", "energy-monitor", "wearable-care"] }
+    { label: "모바일·웨어러블", labelEn: "Mobile & Wearable",
+      ids: ["galaxy-phone", "galaxy-watch", "galaxy-buds", "galaxy-tab"] },
+    { label: "TV·영상·오디오", labelEn: "TV · Video · Audio",
+      ids: ["tv-premium", "speaker", "soundbar"] },
+    { label: "주방가전", labelEn: "Kitchen",
+      ids: ["refrigerator", "dishwasher"] },
+    { label: "세탁·의류케어", labelEn: "Laundry & Clothing Care",
+      ids: ["washer", "dryer"] },
+    { label: "공기·청정·냉방", labelEn: "Air · Purification · Cooling",
+      ids: ["air-conditioner", "eco-aircon", "air-purifier", "ventilation"] },
+    { label: "청소·리빙", labelEn: "Cleaning & Living",
+      ids: ["robot-vacuum"] },
+    { label: "보안·센서·출입", labelEn: "Security · Sensor · Access",
+      ids: ["camera", "care-camera", "door-lock", "activity-sensor", "sleep-sensor"] },
+    { label: "연결·제어·에너지", labelEn: "Connectivity · Control · Energy",
+      ids: ["smart-plug", "hub", "lighting", "energy-monitor", "wearable-care"] }
 ];
+// 기기별 역할 태그 (중복 역할 표현용 — 그룹 내 중복 배치 X)
+const DEVICE_ROLE_TAGS = {
+    "tv-premium":       { ko: ["엔터테인먼트", "알림 허브"], en: ["Entertainment", "Alert Hub"] },
+    "refrigerator":     { ko: ["주방", "가족 케어"], en: ["Kitchen", "Family Care"] },
+    "robot-vacuum":     { ko: ["가사", "모니터링"], en: ["Chores", "Monitoring"] },
+    "smart-plug":       { ko: ["에너지", "제어"], en: ["Energy", "Control"] },
+    "care-camera":      { ko: ["돌봄", "모니터링"], en: ["Care", "Monitoring"] },
+    "door-lock":        { ko: ["보안", "출입"], en: ["Security", "Access"] },
+    "activity-sensor":  { ko: ["안전", "시니어 케어"], en: ["Safety", "Senior Care"] },
+    "sleep-sensor":     { ko: ["수면", "웰니스"], en: ["Sleep", "Wellness"] },
+    "lighting":         { ko: ["무드", "자동화"], en: ["Mood", "Automation"] },
+    "energy-monitor":   { ko: ["에너지", "모니터링"], en: ["Energy", "Monitoring"] },
+    "wearable-care":    { ko: ["돌봄", "건강"], en: ["Care", "Health"] },
+    "eco-aircon":       { ko: ["절약", "AI 제어"], en: ["Saving", "AI Control"] }
+};
 const Q4_PRESETS = [
     { id: "baseline", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner"] },
     { id: "energy", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "smart-plug", "eco-aircon"] },
@@ -663,22 +688,22 @@ function getDefaultDeviceSelectionsForCountry(siteCode) {
 
 function getQ4PresetCopy(presetId) {
     const ko = {
-        baseline: { title: "기본 조합" },
-        energy: { title: "에너지 절약형" },
-        care: { title: "케어 확장형" },
-        mood: { title: "무드 확장형" },
-        security: { title: "홈 시큐리티형" },
-        chores: { title: "가사 올인형" },
-        comfort: { title: "쾌적 환경형" }
+        baseline: { title: "기본 조합", desc: "TV + 냉장고 + 세탁기 + 에어컨", icon: "📦" },
+        energy:   { title: "에너지 절약형", desc: "기본 + 스마트 플러그, AI 에어컨", icon: "⚡" },
+        care:     { title: "케어 확장형", desc: "기본 + 돌봄 카메라, 활동 센서", icon: "💛" },
+        mood:     { title: "무드 확장형", desc: "기본 + 스피커, 사운드바", icon: "🎵" },
+        security: { title: "홈 시큐리티형", desc: "기본 + 카메라, 도어락, 허브", icon: "🛡" },
+        chores:   { title: "가사 올인형", desc: "기본 + 로봇청소기, 건조기, 식기세척기", icon: "🧹" },
+        comfort:  { title: "쾌적 환경형", desc: "기본 + 공기청정기, 환기 시스템", icon: "🌿" }
     };
     const en = {
-        baseline: { title: "Baseline" },
-        energy: { title: "Energy Saver" },
-        care: { title: "Care+" },
-        mood: { title: "Mood+" },
-        security: { title: "Security" },
-        chores: { title: "Chores All-in" },
-        comfort: { title: "Air Comfort" }
+        baseline: { title: "Baseline", desc: "TV + Fridge + Washer + AC", icon: "📦" },
+        energy:   { title: "Energy Saver", desc: "Base + Smart Plug, AI AC", icon: "⚡" },
+        care:     { title: "Care+", desc: "Base + Care cam, Activity sensor", icon: "💛" },
+        mood:     { title: "Mood+", desc: "Base + Speaker, Soundbar", icon: "🎵" },
+        security: { title: "Security", desc: "Base + Camera, Door lock, Hub", icon: "🛡" },
+        chores:   { title: "Chores All-in", desc: "Base + Robot vacuum, Dryer, Dishwasher", icon: "🧹" },
+        comfort:  { title: "Air Comfort", desc: "Base + Air purifier, Ventilation", icon: "🌿" }
     };
     const source = currentLocale === "ko" ? ko : en;
     return source[presetId] || source.baseline;
@@ -713,15 +738,11 @@ function renderQ4Composer() {
     q4Presets.innerHTML = Q4_PRESETS.map((preset) => {
         const copy = getQ4PresetCopy(preset.id);
         const isActive = preset.deviceIds.every((id) => selectedDeviceIds.has(id));
-        const chips = preset.deviceIds.map((optionId) => {
-            const input = deviceGrid?.querySelector(`input[data-node-type="child"][value="${optionId}"]`);
-            const label = input?.dataset.label || optionId;
-            return `<span class="q4-preset-device">${escapeHtml(label)}</span>`;
-        }).join("");
         return `
             <button type="button" class="q4-preset-btn${isActive ? " active" : ""}" data-preset-id="${preset.id}">
-                <strong>${escapeHtml(copy.title)}</strong>
-                <div class="q4-preset-devices">${chips}</div>
+                <span class="q4-preset-icon">${copy.icon || "📦"}</span>
+                <strong class="q4-preset-title">${escapeHtml(copy.title)}</strong>
+                <span class="q4-preset-desc">${escapeHtml(copy.desc || "")}</span>
             </button>
         `;
     }).join("");
@@ -747,9 +768,14 @@ function renderQ4QuickChipButtons(optionIds, kind) {
         if (!input) return "";
         const label = input.dataset.label || input.value;
         const selectedClass = input.checked ? " selected" : "";
+        const roles = DEVICE_ROLE_TAGS[optionId];
+        const roleTags = roles
+            ? (currentLocale === "ko" ? roles.ko : roles.en).map(r => `<span class="q4-role-tag">${escapeHtml(r)}</span>`).join("")
+            : "";
         return `
             <button type="button" class="q4-chip-btn${selectedClass}" data-q4-chip="${kind}" data-option-id="${optionId}">
-                ${escapeHtml(label)}
+                <span class="q4-chip-label">${escapeHtml(label)}</span>
+                ${roleTags ? `<span class="q4-chip-roles">${roleTags}</span>` : ""}
             </button>
         `;
     }).join("");
