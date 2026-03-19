@@ -791,10 +791,10 @@ textarea {
     gap: 8px;
 }
 
-/* 프리셋 그리드 — 균등 카드 */
+/* 프리셋 그리드 — 4열 고정 */
 .q4-preset-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 6px;
 }
 
@@ -856,8 +856,27 @@ textarea {
 /* 직접 선택 칩 그리드 */
 .q4-chip-grid {
     display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* 칩 행 — 2~3그룹씩 한 줄 */
+.q4-chip-row {
+    display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.q4-chip-row:last-child {
+    border-bottom: none;
+}
+
+.q4-chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
 }
 
 .q4-chip-btn {
@@ -3514,7 +3533,7 @@ pre {
 
     .chip-row,
     .wizard-progress {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .insight-grid {
@@ -3534,12 +3553,12 @@ pre {
     }
 
     .insight-image-gallery {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .insight-image-gallery-adaptive {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         height: auto;
     }
 
@@ -3556,7 +3575,7 @@ pre {
     }
 
     .export-actions {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         width: 100%;
     }
 
@@ -4187,11 +4206,11 @@ pre {
     }
 
     .persona-groups {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .q4-preset-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .ai-selection-grid {
@@ -5212,11 +5231,11 @@ a.source-tag-link:hover {
     }
 
     .q4-preset-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .persona-groups {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .scenario-case-grid {

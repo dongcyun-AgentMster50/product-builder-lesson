@@ -246,7 +246,8 @@ const Q4_PRESETS = [
     { id: "mood", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "speaker", "soundbar"] },
     { id: "security", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "camera", "door-lock", "hub"] },
     { id: "chores", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "robot-vacuum", "dryer", "dishwasher"] },
-    { id: "comfort", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "air-purifier", "ventilation"] }
+    { id: "comfort", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "air-purifier", "ventilation"] },
+    { id: "wellness", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "galaxy-watch", "sleep-sensor", "air-purifier"] }
 ];
 
 function detectBrowserLocale() {
@@ -694,7 +695,8 @@ function getQ4PresetCopy(presetId) {
         mood:     { title: "무드 확장형", desc: "기본 + 스피커, 사운드바", icon: "🎵" },
         security: { title: "홈 시큐리티형", desc: "기본 + 카메라, 도어락, 허브", icon: "🛡" },
         chores:   { title: "가사 올인형", desc: "기본 + 로봇청소기, 건조기, 식기세척기", icon: "🧹" },
-        comfort:  { title: "쾌적 환경형", desc: "기본 + 공기청정기, 환기 시스템", icon: "🌿" }
+        comfort:  { title: "쾌적 환경형", desc: "기본 + 공기청정기, 환기 시스템", icon: "🌿" },
+        wellness: { title: "건강·웰니스형", desc: "기본 + Galaxy Watch, 수면 센서, 공기청정기", icon: "🧘" }
     };
     const en = {
         baseline: { title: "Baseline", desc: "TV + Fridge + Washer + AC", icon: "📦" },
@@ -703,7 +705,8 @@ function getQ4PresetCopy(presetId) {
         mood:     { title: "Mood+", desc: "Base + Speaker, Soundbar", icon: "🎵" },
         security: { title: "Security", desc: "Base + Camera, Door lock, Hub", icon: "🛡" },
         chores:   { title: "Chores All-in", desc: "Base + Robot vacuum, Dryer, Dishwasher", icon: "🧹" },
-        comfort:  { title: "Air Comfort", desc: "Base + Air purifier, Ventilation", icon: "🌿" }
+        comfort:  { title: "Air Comfort", desc: "Base + Air purifier, Ventilation", icon: "🌿" },
+        wellness: { title: "Wellness", desc: "Base + Galaxy Watch, Sleep sensor, Air purifier", icon: "🧘" }
     };
     const source = currentLocale === "ko" ? ko : en;
     return source[presetId] || source.baseline;
@@ -749,13 +752,19 @@ function renderQ4Composer() {
 
     const allChipsEl = document.getElementById("q4-all-chips");
     if (allChipsEl) {
-        allChipsEl.innerHTML = Q4_QUICK_GROUPS.map((group) => {
-            const groupLabel = currentLocale === "ko" ? group.label : group.labelEn;
-            const chips = renderQ4QuickChipButtons(group.ids, "all");
-            return `<div class="q4-chip-group">
-                <span class="q4-chip-group-label">${escapeHtml(groupLabel)}</span>
-                <div class="q4-chip-group-items">${chips}</div>
-            </div>`;
+        // 2그룹씩 행 배치 (기기 수 균형): [0,1] [2,3,4] [5,6] [7]
+        const ROW_PAIRS = [[0, 1], [2, 3, 4], [5, 6], [7]];
+        allChipsEl.innerHTML = ROW_PAIRS.map(indices => {
+            const rowGroups = indices.map(i => Q4_QUICK_GROUPS[i]).filter(Boolean);
+            const rowHtml = rowGroups.map(group => {
+                const groupLabel = currentLocale === "ko" ? group.label : group.labelEn;
+                const chips = renderQ4QuickChipButtons(group.ids, "all");
+                return `<div class="q4-chip-group">
+                    <span class="q4-chip-group-label">${escapeHtml(groupLabel)}</span>
+                    <div class="q4-chip-group-items">${chips}</div>
+                </div>`;
+            }).join("");
+            return `<div class="q4-chip-row">${rowHtml}</div>`;
         }).join("");
     }
     syncQ4QuickChipSelection();
