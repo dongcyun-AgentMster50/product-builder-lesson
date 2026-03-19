@@ -113,12 +113,31 @@ const V1_TO_V2_TAG_MAP = {
 /**
  * Q1~Q4 입력을 Explore 태그 세트로 변환
  */
-function buildExploreTagsFromInput({ segments = [], interests = [], housing = [], devices = [], purpose = "" }) {
+// ─── Magic Keywords → Explore 태그 직접 매핑 ───
+const MAGIC_KEY_TO_EXPLORE_TAGS = {
+    climate:      ["Save energy", "Keep the air fresh", "Sleep well", "Energy Saving"],
+    housing:      ["Save energy", "Easily control your lights", "Keep your home safe"],
+    family:       ["Care for kids", "Care for seniors", "Family care", "Keep your home safe"],
+    daily_rhythm: ["Help with chores", "Time saving", "Save energy"],
+    safety:       ["Keep your home safe", "Security"],
+    energy:       ["Save energy", "Energy Saving"],
+    health:       ["Stay fit & healthy", "Sleep well", "Health"],
+    pets:         ["Care for your pet", "Pet care"],
+    mobility:     ["Keep your home safe", "Security", "Find your belongings"],
+    events:       ["Enhanced mood"]
+};
+
+function buildExploreTagsFromInput({ segments = [], interests = [], housing = [], devices = [], purpose = "", magicKeywords = [] }) {
     const tagScores = {};
 
     function addTag(tag, weight = 1) {
         tagScores[tag] = (tagScores[tag] || 0) + weight;
     }
+
+    // Magic Keywords: 사용자가 직접 선택한 도시 관심사 (가중치 4 — 최고 우선)
+    magicKeywords.forEach(key => {
+        (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTag(tag, 4));
+    });
 
     // Q3: 페르소나 선택 → 태그 (가중치 3)
     [...segments, ...interests, ...housing].forEach(id => {
@@ -467,6 +486,9 @@ function buildSelectionSummary(input, results, options = {}) {
                 isKo ? `${fieldLabelKo(i.field)}: ${i.value}` : `${i.field}: ${i.value}`
             )
         },
+
+        // Magic Keywords (사용자가 직접 선택한 도시 관심사)
+        magicKeywords: (input.magicKeywords || []).slice(),
 
         // 메타
         totalCandidates: results.length,

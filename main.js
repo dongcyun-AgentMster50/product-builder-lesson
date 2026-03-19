@@ -2604,24 +2604,25 @@ function bindCityProfileDrawer(container) {
     if (applyBtn) {
         applyBtn.addEventListener("click", () => {
             if (_magicSelected.size === 0) return;
-            // 선택된 키워드를 purpose input에 반영
             const isKo = currentLocale === "ko";
             const keywords = [..._magicSelected].map(key => {
                 const cat = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
                 return cat ? (isKo ? cat.labelKo : cat.labelEn) : key;
             });
-            const prefix = isKo ? "관심 키워드: " : "Focus: ";
-            const existing = purposeInput.value.trim();
-            const keywordText = prefix + keywords.join(", ");
-            purposeInput.value = existing ? `${existing} / ${keywordText}` : keywordText;
 
-            // 시각 피드백
-            applyBtn.textContent = isKo ? "반영됨!" : "Applied!";
+            // 시각 피드백: 반영 확인 + 어디에 반영되는지 설명
+            applyBtn.innerHTML = isKo
+                ? `<span style="color:#4caf50">&#10003;</span> 반영 완료 — 시나리오 매칭 + AI 생성에 적용됩니다`
+                : `<span style="color:#4caf50">&#10003;</span> Applied — will influence matching + AI generation`;
             applyBtn.disabled = true;
+
+            // state preview 업데이트 (있다면)
+            updateStatePreview();
+
             setTimeout(() => {
-                applyBtn.textContent = isKo ? "이 키워드를 시나리오에 반영하기" : "Apply these to scenario matching";
+                applyBtn.innerHTML = isKo ? "이 키워드를 시나리오에 반영하기" : "Apply these to scenario matching";
                 applyBtn.disabled = false;
-            }, 1500);
+            }, 2500);
         });
     }
 }
@@ -4376,6 +4377,20 @@ function renderExploreSelectionCard(summary) {
         ).join("")}</div>`
         : "";
 
+    // Magic Keywords (사용자가 직접 선택한 관심사)
+    const magicKeys = summary.magicKeywords || [];
+    const magicHtml = magicKeys.length > 0 ? `
+        <div class="sel-magic-row">
+            <strong class="sel-magic-label">${isKo ? "선택한 관심 키워드" : "Your focus keywords"}</strong>
+            <div class="sel-magic-tags">${magicKeys.map(key => {
+                const cat = (typeof CITY_PROFILE_CATEGORIES !== "undefined" ? CITY_PROFILE_CATEGORIES : []).find(c => c.key === key);
+                return cat
+                    ? `<span class="sel-magic-tag" style="--magic-accent:${cat.color}">${cat.icon} ${escapeHtml(isKo ? cat.labelKo : cat.labelEn)}</span>`
+                    : `<span class="sel-magic-tag">${escapeHtml(key)}</span>`;
+            }).join("")}</div>
+        </div>
+    ` : "";
+
     // 도출 키워드
     const derivedTags = (summary.derivedTags || []).slice(0, 5);
     const tagsHtml = derivedTags.length > 0
@@ -4412,6 +4427,7 @@ function renderExploreSelectionCard(summary) {
             </div>
             ${scenarioHtml}
             ${reasonHtml}
+            ${magicHtml}
             ${inputHtml}
             ${tagsHtml}
             ${confidenceHtml}
@@ -8837,8 +8853,12 @@ function runCuration() {
     const selectedMarket = marketOptions.find(m => m.siteCode === countrySelect.value);
     const city = getCityValue();
 
+    // Magic Setup에서 선택한 키워드
+    const magicKeywords = [..._magicSelected];
+
     const input = {
         segments, interests, housing, devices, purpose,
+        magicKeywords,
         market: {
             country: selectedMarket?.label || "",
             city: city || "",

@@ -5749,6 +5749,35 @@ a.source-tag-link:hover {
 }
 
 /* 확정 vs 추론 */
+/* Magic Keywords in selection card */
+.sel-magic-row {
+    margin-bottom: 10px;
+}
+.sel-magic-label {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--muted, #667);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+}
+.sel-magic-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.sel-magic-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: var(--magic-accent, #003366);
+    color: #fff;
+}
+
 .sel-confidence {
     display: flex;
     flex-wrap: wrap;
