@@ -2420,6 +2420,7 @@ async function renderStep2Insight(forceRefresh = false) {
         try {
             const profile = JSON.parse(cached);
             stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, profile);
+            bindCityProfileDrawer(stepInsight);
             updateQuestionHelpers();
             return;
         } catch { /* cache invalid, fetch fresh */ }
@@ -2458,6 +2459,7 @@ async function renderStep2Insight(forceRefresh = false) {
                 // 캐시 저장
                 sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
                 stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, result.data);
+                bindCityProfileDrawer(stepInsight);
                 updateQuestionHelpers();
                 stepInsight.classList.remove("insight-refresh");
                 void stepInsight.offsetWidth;
@@ -2493,34 +2495,44 @@ async function renderStep2Insight(forceRefresh = false) {
 /**
  * 10카테고리 도시 프로필을 인사이트 카드 HTML로 렌더링
  */
+/** 10카테고리 정의 — renderCityProfileInsight + 스마트 로딩에서 공유 */
+const CITY_PROFILE_CATEGORIES = [
+    { key: "climate",      icon: "🌤", labelKo: "기후·계절",    labelEn: "Climate",      color: "#1976d2" },
+    { key: "housing",      icon: "🏢", labelKo: "주거 형태",    labelEn: "Housing",      color: "#6d4c41" },
+    { key: "family",       icon: "👨‍👩‍👧", labelKo: "가족·돌봄",    labelEn: "Family",       color: "#e91e63" },
+    { key: "daily_rhythm", icon: "⏰", labelKo: "일상 리듬",    labelEn: "Daily Rhythm", color: "#ff6f00" },
+    { key: "safety",       icon: "🛡", labelKo: "안전·보안",    labelEn: "Safety",       color: "#2e7d32" },
+    { key: "energy",       icon: "⚡", labelKo: "에너지",       labelEn: "Energy",       color: "#f9a825" },
+    { key: "health",       icon: "💪", labelKo: "건강·웰니스",  labelEn: "Health",       color: "#00897b" },
+    { key: "pets",         icon: "🐾", labelKo: "펫 라이프",    labelEn: "Pets",         color: "#8d6e63" },
+    { key: "mobility",     icon: "🚇", labelKo: "이동·부재",    labelEn: "Mobility",     color: "#5c6bc0" },
+    { key: "events",       icon: "🎪", labelKo: "문화 행사",    labelEn: "Events",       color: "#d32f2f" }
+];
+
 function renderCityProfileInsight(countryName, localCity, profile) {
     const isKo = currentLocale === "ko";
-    const CATEGORIES = [
-        { key: "climate",      icon: "🌤", label: isKo ? "기후·계절" : "Climate",      color: "#1976d2" },
-        { key: "housing",      icon: "🏢", label: isKo ? "주거 형태" : "Housing",      color: "#6d4c41" },
-        { key: "family",       icon: "👨‍👩‍👧", label: isKo ? "가족·돌봄" : "Family",       color: "#e91e63" },
-        { key: "daily_rhythm", icon: "⏰", label: isKo ? "일상 리듬" : "Daily Rhythm", color: "#ff6f00" },
-        { key: "safety",       icon: "🛡", label: isKo ? "안전·보안" : "Safety",       color: "#2e7d32" },
-        { key: "energy",       icon: "⚡", label: isKo ? "에너지" : "Energy",         color: "#f9a825" },
-        { key: "health",       icon: "💪", label: isKo ? "건강·웰니스" : "Health",     color: "#00897b" },
-        { key: "pets",         icon: "🐾", label: isKo ? "펫 라이프" : "Pets",         color: "#8d6e63" },
-        { key: "mobility",     icon: "🚇", label: isKo ? "이동·부재" : "Mobility",    color: "#5c6bc0" },
-        { key: "events",       icon: "🎪", label: isKo ? "문화 행사" : "Events",      color: "#d32f2f" }
-    ];
 
-    const categoriesHtml = CATEGORIES
-        .filter(cat => profile[cat.key])
-        .map(cat => `
-            <div class="cpv2-item" style="--cpv2-accent:${cat.color}">
-                <div class="cpv2-icon">${cat.icon}</div>
-                <div class="cpv2-content">
-                    <span class="cpv2-label">${escapeHtml(cat.label)}</span>
-                    <span class="cpv2-text">${escapeHtml(profile[cat.key])}</span>
-                </div>
+    // 컴팩트 요약: 상위 3개 카테고리 아이콘 + 첫 문장 발췌
+    const available = CITY_PROFILE_CATEGORIES.filter(cat => profile[cat.key]);
+    const preview = available.slice(0, 3).map(cat => {
+        const text = profile[cat.key];
+        const short = text.length > 40 ? text.substring(0, 40) + "…" : text;
+        return `<span class="cpv2-pill" style="--cpv2-accent:${cat.color}">${cat.icon} ${escapeHtml(short)}</span>`;
+    }).join("");
+
+    // 전체 그리드 (서랍 안)
+    const categoriesHtml = available.map(cat => `
+        <div class="cpv2-item" style="--cpv2-accent:${cat.color}">
+            <div class="cpv2-icon">${cat.icon}</div>
+            <div class="cpv2-content">
+                <span class="cpv2-label">${escapeHtml(isKo ? cat.labelKo : cat.labelEn)}</span>
+                <span class="cpv2-text">${escapeHtml(profile[cat.key])}</span>
             </div>
-        `).join("");
+        </div>
+    `).join("");
 
-    const flag = getCountryFlagEmoji ? getCountryFlagEmoji("KR") : "🇰🇷";
+    const flag = typeof getCountryFlagEmoji === "function" ? getCountryFlagEmoji("KR") : "🇰🇷";
+    const drawerId = "cpv2-drawer-" + Date.now();
 
     return `
         <div class="insight-card city-profile-card-v2">
@@ -2532,7 +2544,17 @@ function renderCityProfileInsight(countryName, localCity, profile) {
                 </div>
                 <span class="cpv2-badge">${isKo ? "AI 도시 프로필" : "AI City Profile"}</span>
             </div>
-            <div class="city-profile-grid">${categoriesHtml}</div>
+            <div class="cpv2-preview">
+                <div class="cpv2-pills">${preview}</div>
+                <button type="button" class="cpv2-drawer-toggle" data-drawer="${drawerId}">
+                    <span class="cpv2-toggle-icon">💡</span>
+                    <span>${isKo ? "도시 라이프스타일 엿보기" : "Explore city lifestyle"}</span>
+                    <span class="cpv2-chevron">▾</span>
+                </button>
+            </div>
+            <div class="cpv2-drawer" id="${drawerId}">
+                <div class="city-profile-grid">${categoriesHtml}</div>
+            </div>
         </div>
     `;
 }
@@ -2540,6 +2562,21 @@ function renderCityProfileInsight(countryName, localCity, profile) {
 /**
  * 정적 city_signals fallback
  */
+function bindCityProfileDrawer(container) {
+    container.querySelectorAll(".cpv2-drawer-toggle").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const drawerId = btn.dataset.drawer;
+            const drawer = document.getElementById(drawerId);
+            if (!drawer) return;
+            const isOpen = drawer.classList.contains("open");
+            drawer.classList.toggle("open", !isOpen);
+            btn.classList.toggle("open", !isOpen);
+            const chevron = btn.querySelector(".cpv2-chevron");
+            if (chevron) chevron.textContent = isOpen ? "▾" : "▴";
+        });
+    });
+}
+
 function renderCityProfileFromStatic(countryName, localCity, content) {
     const isKo = currentLocale === "ko";
     // content가 객체이면 필드들을 카테고리처럼 표시
@@ -4229,23 +4266,43 @@ function renderExploreSelectionCard(summary) {
 }
 
 function buildStreamingUI(context) {
-    const label = currentLocale === "ko"
-        ? "선택한 조건에 맞춰 시나리오를 정리하고 있습니다"
-        : "Shaping the scenario around your selected inputs";
-    const sublabel = currentLocale === "ko"
-        ? "시장, 타겟, 기기, 반영할 가치를 기준으로 결과를 맞추는 중입니다."
-        : "Aligning the result to your market, target, devices, and chosen value.";
+    const isKo = currentLocale === "ko";
     const selCardHtml = context.selectionSummary
         ? renderExploreSelectionCard(context.selectionSummary)
         : buildSelectionSummaryCard(context);
+
+    // 스마트 로딩: 도시 맥락 기반 롤링 문구
+    const cityDisplay = context.cityDisplay || context.city || "";
+    const segment = context.segment || "";
+    const loadingPhrases = isKo ? [
+        `${cityDisplay || "선택한 지역"}의 생활 패턴을 분석 중...`,
+        `${segment || "타깃 고객"}의 일상 루틴을 매칭 중...`,
+        `Explore 시나리오에서 최적 조합 탐색 중...`,
+        `마케터용 + 일반 사용자용 결과물 구성 중...`,
+        `지역 인사이트와 채널 전략 연결 중...`,
+        `최적의 CX 시나리오를 찾았습니다!`
+    ] : [
+        `Analyzing lifestyle patterns in ${cityDisplay || "your city"}...`,
+        `Matching routines for ${segment || "target customers"}...`,
+        `Searching optimal Explore scenario combinations...`,
+        `Building marketer + consumer outputs...`,
+        `Connecting regional insights with channel strategy...`,
+        `Found the best CX scenario!`
+    ];
+
+    const phrasesHtml = loadingPhrases.map((p, i) => `
+        <span class="smart-load-phrase" style="animation-delay:${i * 2.5}s">${escapeHtml(p)}</span>
+    `).join("");
+
     return `
         <article class="scenario-output ai-streaming">
-            <div class="ai-stream-header">
-                <span class="ai-stream-spinner" aria-hidden="true"></span>
-                <div class="ai-stream-status-wrap">
-                    <span class="ai-stream-status">${escapeHtml(label)}</span>
-                    <span class="ai-stream-substatus">${escapeHtml(sublabel)}</span>
+            <div class="smart-load-header">
+                <div class="smart-load-orbit">
+                    <span class="smart-load-dot"></span>
+                    <span class="smart-load-dot"></span>
+                    <span class="smart-load-dot"></span>
                 </div>
+                <div class="smart-load-phrases">${phrasesHtml}</div>
             </div>
             ${selCardHtml}
             <pre class="ai-stream-output" aria-live="polite" aria-label="AI generating scenario"></pre>

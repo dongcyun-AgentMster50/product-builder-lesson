@@ -6108,13 +6108,14 @@ a.source-tag-link:hover {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   City Profile v2 — 10카테고리 도시 생활 프로필 (비주얼 강화)
+   City Profile v2 — 컴팩트 트리거 + 인사이트 서랍
    ══════════════════════════════════════════════════════════════════════ */
 
 .city-profile-card-v2 {
     padding: 0;
     overflow: hidden;
     border-radius: 16px;
+    border: 1px solid #d0dae8;
 }
 
 /* 헤더 */
@@ -6122,43 +6123,86 @@ a.source-tag-link:hover {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 18px 22px;
+    padding: 14px 20px;
     background: linear-gradient(135deg, #003366 0%, #004d99 100%);
     color: #fff;
 }
-
-.cpv2-flag {
-    font-size: 2rem;
-    line-height: 1;
-}
-
-.cpv2-header-text {
-    flex: 1;
-}
-
-.cpv2-city {
-    font-size: 1.15rem;
-    font-weight: 800;
-    margin: 0;
-    color: #fff;
-    letter-spacing: -0.01em;
-}
-
-.cpv2-country {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.7);
-}
-
+.cpv2-flag { font-size: 1.8rem; line-height: 1; }
+.cpv2-header-text { flex: 1; }
+.cpv2-city { font-size: 1.1rem; font-weight: 800; margin: 0; color: #fff; }
+.cpv2-country { font-size: 0.72rem; color: rgba(255,255,255,0.65); }
 .cpv2-badge {
-    font-size: 0.65rem;
-    font-weight: 700;
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
+    font-size: 0.62rem; font-weight: 700;
+    background: rgba(255,255,255,0.18); color: #fff;
+    padding: 3px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
+}
+
+/* 프리뷰 (접힌 상태) */
+.cpv2-preview {
+    padding: 12px 20px;
+    background: #f8fafd;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.cpv2-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.cpv2-pill {
+    font-size: 0.74rem;
+    color: #444;
+    background: #fff;
+    border: 1px solid #e4e8ee;
     padding: 4px 12px;
     border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    white-space: nowrap;
+    border-left: 3px solid var(--cpv2-accent, #003366);
+    line-height: 1.4;
+}
+
+/* 서랍 토글 버튼 */
+.cpv2-drawer-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px dashed rgba(0,51,102,0.25);
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    color: #003366;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.cpv2-drawer-toggle:hover {
+    background: rgba(0,51,102,0.06);
+    border-color: #003366;
+}
+.cpv2-drawer-toggle.open {
+    background: rgba(0,51,102,0.06);
+    border-style: solid;
+}
+.cpv2-toggle-icon { font-size: 1.1rem; }
+.cpv2-chevron {
+    margin-left: auto;
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+}
+.cpv2-drawer-toggle.open .cpv2-chevron {
+    transform: rotate(180deg);
+}
+
+/* 서랍 (접힌 상태 = 숨김) */
+.cpv2-drawer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+}
+.cpv2-drawer.open {
+    max-height: 2000px;
 }
 
 /* 카테고리 그리드 */
@@ -6168,7 +6212,6 @@ a.source-tag-link:hover {
     gap: 0;
     margin: 0;
 }
-
 .cpv2-item {
     display: flex;
     gap: 12px;
@@ -6178,62 +6221,89 @@ a.source-tag-link:hover {
     background: #fff;
     transition: background 0.15s;
 }
-
-.cpv2-item:hover {
-    background: #f8fafd;
-}
-
-/* 2열 그리드에서 오른쪽 열 border-right 제거 */
-.cpv2-item:nth-child(2n) {
-    border-right: none;
-}
-
-/* 마지막 행 border-bottom 제거 */
-.cpv2-item:nth-last-child(-n+2) {
-    border-bottom: none;
-}
+.cpv2-item:hover { background: #f8fafd; }
+.cpv2-item:nth-child(2n) { border-right: none; }
+.cpv2-item:nth-last-child(-n+2) { border-bottom: none; }
 
 .cpv2-icon {
-    font-size: 1.4rem;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 1.3rem;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
     border-radius: 10px;
     background: color-mix(in srgb, var(--cpv2-accent, #003366) 10%, transparent);
     flex-shrink: 0;
 }
-
-.cpv2-content {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    min-width: 0;
-}
-
+.cpv2-content { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .cpv2-label {
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 0.68rem; font-weight: 700;
     color: var(--cpv2-accent, #003366);
     letter-spacing: 0.03em;
 }
+.cpv2-text { font-size: 0.77rem; color: #444; line-height: 1.55; }
 
-.cpv2-text {
-    font-size: 0.78rem;
-    color: #444;
-    line-height: 1.55;
+@media (max-width: 700px) {
+    .city-profile-grid { grid-template-columns: 1fr; }
+    .cpv2-item { border-right: none; }
+    .cpv2-item:last-child { border-bottom: none; }
 }
 
-/* 반응형 */
-@media (max-width: 700px) {
-    .city-profile-grid {
-        grid-template-columns: 1fr;
-    }
-    .cpv2-item {
-        border-right: none;
-    }
-    .cpv2-item:last-child {
-        border-bottom: none;
-    }
+/* ══════════════════════════════════════════════════════════════════════
+   Smart Loading — 도시 맥락 기반 롤링 문구
+   ══════════════════════════════════════════════════════════════════════ */
+
+.smart-load-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 24px 28px;
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 100%);
+    border-radius: 14px 14px 0 0;
+}
+
+/* 오빗 도트 애니메이션 */
+.smart-load-orbit {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.smart-load-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #4fc3f7;
+    animation: smartDotPulse 1.4s ease-in-out infinite;
+}
+.smart-load-dot:nth-child(2) { animation-delay: 0.2s; background: #81d4fa; }
+.smart-load-dot:nth-child(3) { animation-delay: 0.4s; background: #b3e5fc; }
+
+@keyframes smartDotPulse {
+    0%, 100% { transform: scale(0.7); opacity: 0.4; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* 롤링 문구 */
+.smart-load-phrases {
+    position: relative;
+    height: 1.6em;
+    overflow: hidden;
+    flex: 1;
+}
+.smart-load-phrase {
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #e3f2fd;
+    line-height: 1.6em;
+    opacity: 0;
+    transform: translateY(100%);
+    animation: smartPhraseRoll 15s linear infinite;
+}
+
+@keyframes smartPhraseRoll {
+    0%   { opacity: 0; transform: translateY(100%); }
+    2%   { opacity: 1; transform: translateY(0); }
+    14%  { opacity: 1; transform: translateY(0); }
+    17%  { opacity: 0; transform: translateY(-100%); }
+    100% { opacity: 0; transform: translateY(-100%); }
 }
