@@ -1,7 +1,7 @@
 {
   "accessCodes": [
     {
-      "code": "demo-access",
+      "code": "demo-access007",
       "enabled": true,
       "expiresAt": null,
       "note": "Default demo code"
