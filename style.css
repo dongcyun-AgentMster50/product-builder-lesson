@@ -997,6 +997,31 @@ textarea {
     color: rgba(255,255,255,0.4);
 }
 
+/* 추가 기기 입력 (경량 fallback) */
+.q4-extra-input {
+    margin-top: 4px;
+}
+.q4-extra-text {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px dashed #c0c8d4;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: var(--ink, #222);
+    background: var(--paper, #fff);
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+.q4-extra-text:focus {
+    outline: none;
+    border-color: #003366;
+    border-style: solid;
+}
+.q4-extra-text::placeholder {
+    color: #999;
+    font-size: 0.76rem;
+}
+
 .q4-summary-card {
     align-self: start;
     background: linear-gradient(135deg, rgba(0, 51, 102, 0.04) 0%, rgba(0, 80, 200, 0.07) 100%);

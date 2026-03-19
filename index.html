@@ -200,12 +200,17 @@
                                         </aside>
                                     </div>
 
-                                    <!-- 카테고리별 상세 (전폭, 가운데) -->
-                                    <details class="q4-details">
-                                        <summary>카테고리별 상세 기기 보기</summary>
-                                        <div id="device-grid" class="device-grid"></div>
-                                        <input type="text" id="device-custom" name="device-custom" placeholder="추가 기기나 세부 모델을 직접 입력">
-                                    </details>
+                                    <!-- 추가 기기 입력 (경량 fallback) -->
+                                    <section class="q4-card q4-extra-input">
+                                        <div class="q4-section-head">
+                                            <h3>추가로 반영하고 싶은 기기</h3>
+                                        </div>
+                                        <input type="text" id="device-custom" name="device-custom"
+                                            class="q4-extra-text"
+                                            placeholder="예) 비스포크 냉장고, Galaxy Ring, 스마트 커튼 — 목록에 없는 기기를 자유롭게 입력하세요">
+                                    </section>
+                                    <!-- 내부 데이터용 (숨김) — 기기 체크박스 상태 유지 -->
+                                    <div id="device-grid" class="device-grid" style="display:none" aria-hidden="true"></div>
                                 </div>
                             </div>
                         </section>
