@@ -6630,39 +6630,67 @@ function renderOutputPreview() {
           note: "Multi-select available — no need to choose a role upfront" }
     ];
 
-    resultDiv.innerHTML = `
-        <section class="placeholder-preview">
-            <p class="placeholder-title">${escapeHtml(title)}</p>
-            <div class="preview-flow">
-                ${flowSteps.map((step, idx) => `
-                    <div class="preview-flow-step">
-                        <div class="preview-flow-phase">
-                            <span class="preview-flow-icon">${step.icon}</span>
-                            <span class="preview-flow-phase-label">${step.phase}</span>
-                            <strong class="preview-flow-phase-title">${escapeHtml(step.label)}</strong>
-                        </div>
-                        <div class="preview-flow-body">
-                            <p>${step.desc}</p>
-                            ${step.helper ? `<p class="preview-flow-helper">${escapeHtml(step.helper)}</p>` : ""}
-                            ${step.items ? `
-                                <div class="preview-flow-items">
-                                    ${step.items.map(item => `
-                                        <div class="preview-flow-item">
-                                            <span class="preview-flow-item-num">${item.num}</span>
-                                            <span class="preview-flow-item-title">${escapeHtml(item.title)}</span>
-                                            <span class="preview-flow-item-sub">${escapeHtml(item.sub)}</span>
-                                        </div>
-                                    `).join("")}
-                                </div>
-                            ` : ""}
-                            ${step.note ? `<p class="preview-flow-note">${escapeHtml(step.note)}</p>` : ""}
-                        </div>
+    const guideText = isKo
+        ? "어떤 결과물이 나오는지 궁금하면 눌러보세요"
+        : "Tap to see what outputs you'll get";
+    const guideLabel = isKo
+        ? "결과물 미리보기"
+        : "Output Preview";
+
+    const flowHtml = flowSteps.map((step, idx) => `
+        <div class="preview-flow-step">
+            <div class="preview-flow-phase">
+                <span class="preview-flow-icon">${step.icon}</span>
+                <span class="preview-flow-phase-label">${step.phase}</span>
+                <strong class="preview-flow-phase-title">${escapeHtml(step.label)}</strong>
+            </div>
+            <div class="preview-flow-body">
+                <p>${step.desc}</p>
+                ${step.helper ? `<p class="preview-flow-helper">${escapeHtml(step.helper)}</p>` : ""}
+                ${step.items ? `
+                    <div class="preview-flow-items">
+                        ${step.items.map(item => `
+                            <div class="preview-flow-item">
+                                <span class="preview-flow-item-num">${item.num}</span>
+                                <span class="preview-flow-item-title">${escapeHtml(item.title)}</span>
+                                <span class="preview-flow-item-sub">${escapeHtml(item.sub)}</span>
+                            </div>
+                        `).join("")}
                     </div>
-                    ${idx < flowSteps.length - 1 ? '<div class="preview-flow-connector"></div>' : ""}
-                `).join("")}
+                ` : ""}
+                ${step.note ? `<p class="preview-flow-note">${escapeHtml(step.note)}</p>` : ""}
+            </div>
+        </div>
+        ${idx < flowSteps.length - 1 ? '<div class="preview-flow-connector"></div>' : ""}
+    `).join("");
+
+    resultDiv.innerHTML = `
+        <section class="placeholder-preview placeholder-preview--collapsed">
+            <button type="button" class="preview-toggle" id="preview-toggle">
+                <span class="preview-toggle-icon">📋</span>
+                <span class="preview-toggle-text">
+                    <strong>${escapeHtml(guideLabel)}</strong>
+                    <span>${escapeHtml(guideText)}</span>
+                </span>
+                <span class="preview-toggle-chevron">▾</span>
+            </button>
+            <div class="preview-flow preview-flow--hidden" id="preview-flow-body">
+                ${flowHtml}
             </div>
         </section>
     `;
+
+    const toggleBtn = document.getElementById("preview-toggle");
+    const flowBody = document.getElementById("preview-flow-body");
+    if (toggleBtn && flowBody) {
+        toggleBtn.addEventListener("click", () => {
+            const isOpen = !flowBody.classList.contains("preview-flow--hidden");
+            flowBody.classList.toggle("preview-flow--hidden", isOpen);
+            toggleBtn.classList.toggle("open", !isOpen);
+            const chevron = toggleBtn.querySelector(".preview-toggle-chevron");
+            if (chevron) chevron.textContent = isOpen ? "▾" : "▴";
+        });
+    }
 }
 
 function buildParentStory(payload) {

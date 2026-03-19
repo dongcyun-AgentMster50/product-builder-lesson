@@ -5267,7 +5267,76 @@ a.source-tag-link:hover {
 }
 
 .placeholder-preview {
-    min-height: 200px;
+    min-height: 0;
+}
+
+/* 접힌 상태 토글 버튼 */
+.preview-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #f0f4fa 0%, #e8eef6 100%);
+    border: 1px dashed #c0c8d4;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+.preview-toggle:hover {
+    border-color: #003366;
+    background: linear-gradient(135deg, #e8eef6 0%, #dde5f0 100%);
+}
+.preview-toggle.open {
+    border-style: solid;
+    border-color: #003366;
+    border-radius: 12px 12px 0 0;
+    background: linear-gradient(135deg, #003366 0%, #004d99 100%);
+    color: #fff;
+}
+.preview-toggle-icon {
+    font-size: 1.3rem;
+}
+.preview-toggle-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.preview-toggle-text strong {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+.preview-toggle.open .preview-toggle-text strong {
+    color: #fff;
+}
+.preview-toggle-text span {
+    font-size: 0.72rem;
+    color: var(--muted, #889);
+}
+.preview-toggle.open .preview-toggle-text span {
+    color: rgba(255,255,255,0.7);
+}
+.preview-toggle-chevron {
+    font-size: 0.9rem;
+    color: var(--muted, #889);
+    transition: transform 0.2s;
+}
+.preview-toggle.open .preview-toggle-chevron {
+    color: #fff;
+}
+
+/* 접힌 상태 */
+.preview-flow--hidden {
+    display: none;
+}
+.preview-toggle.open + .preview-flow {
+    border: 1px solid #003366;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding-top: 16px;
 }
 
 /* ── 21. Access / Guide 카드 통일 ── */
