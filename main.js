@@ -3617,6 +3617,13 @@ async function streamGenerateScenario(context) {
         regionInsight
     };
 
+    // 디버그: selectionSummary 전달 확인
+    if (context.selectionSummary) {
+        console.info("[generate] JSON mode: selectionSummary with", context.selectionSummary.selectedScenarios?.length, "scenarios");
+    } else {
+        console.info("[generate] Markdown mode: no selectionSummary");
+    }
+
     let response;
     try {
         response = await fetch("/api/generate", {
@@ -3700,12 +3707,19 @@ async function streamGenerateScenario(context) {
 
         // JSON 모드 시도: selectionSummary가 있으면 JSON 파싱 우선
         if (context.selectionSummary && typeof extractJsonFromAIOutput === "function") {
-            const { json: parsed } = extractJsonFromAIOutput(aiOutputText);
-            if (parsed && parsed.transformation) {
-                const { output } = validateAndNormalizeOutput(parsed, context.selectionSummary);
-                renderStructuredOutput(output, context);
-                return;
+            try {
+                const { json: parsed } = extractJsonFromAIOutput(aiOutputText);
+                if (parsed && parsed.transformation) {
+                    const { valid, output, errors } = validateAndNormalizeOutput(parsed, context.selectionSummary);
+                    if (!valid) console.warn("[generate] JSON schema validation warnings:", errors);
+                    renderStructuredOutput(output, context);
+                    return;
+                }
+                console.warn("[generate] JSON parse succeeded but no 'transformation' key. Keys found:", parsed ? Object.keys(parsed) : "null");
+            } catch (jsonErr) {
+                console.warn("[generate] JSON extraction failed:", jsonErr.message);
             }
+            console.info("[generate] Falling back to markdown render. AI output starts with:", aiOutputText.substring(0, 100));
         }
         // JSON 파싱 실패 또는 selectionSummary 없음 → 기존 마크다운 렌더링
         renderAIResult(aiOutputText, context);

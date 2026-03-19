@@ -19,30 +19,46 @@ function buildGeneratePrompt(body) {
 
     // Selection Summary가 있으면 JSON 모드 (Part 5-A)
     if (selectionSummary && selectionSummary.selectedScenarios && selectionSummary.selectedScenarios.length > 0) {
+        // primary 시나리오의 핵심 정보를 직접 프롬프트에 삽입
+        const primary = selectionSummary.selectedScenarios.find(s => s.isPrimary) || selectionSummary.selectedScenarios[0];
+        const primaryContext = primary ? [
+            `\n## Selected Explore Scenario (변형의 출발점)`,
+            `- Title: ${primary.title}`,
+            `- Source: Explore ${primary.source}`,
+            `- Article: ${primary.articleTitle}`,
+            `- Values: ${(primary.valueTags || []).join(", ") || "N/A"}`,
+            `- Devices: ${(primary.devices || []).join(", ") || "N/A"}`,
+            primary.originalText ? `- Original: ${primary.originalText.substring(0, 500)}` : "",
+            primary.analysis ? `- Analysis: ${primary.analysis.substring(0, 300)}` : "",
+        ].filter(Boolean).join("\n") : "";
+
         return [
-            "## Selection Summary (내부 로직으로 결정됨 — 변경 금지)",
-            "```json",
-            JSON.stringify(selectionSummary, null, 2),
-            "```",
+            "IMPORTANT: You MUST respond with a single valid JSON object. No markdown, no explanation, no commentary. Only JSON.",
             "",
-            regionCtx ? `## Live Regional Data\n\`\`\`json\n${regionCtx}\n\`\`\`\n` : "",
+            "## Selection Summary (내부 로직으로 결정됨 — 변경 금지)",
+            JSON.stringify(selectionSummary, null, 2),
+            primaryContext,
+            "",
+            regionCtx ? `## Live Regional Data\n${regionCtx}\n` : "",
             `## Context`,
             `- Role: ${role}`,
             `- Output Language: ${locale === "ko" ? "Korean-primary (한국어 90% 이상)" : "English-primary"}`,
             "",
-            "## Task: Transform the selected Explore scenario",
+            "## Task: Transform the selected Explore scenario into JSON",
             "",
-            "위 Selection Summary에서 선택된 Explore 시나리오를 바탕으로,",
-            "시스템 프롬프트 Part 5-A의 JSON Schema에 맞춰 **마케터용 + 일반 사용자용** 변형 결과를 생성하세요.",
+            "위 Selected Explore Scenario를 바탕으로,",
+            "시스템 프롬프트 Part 5-A의 JSON Schema에 맞춰 마케터용 + 일반 사용자용 변형 결과를 생성하세요.",
             "",
-            "출력 규칙:",
-            "1. 반드시 valid JSON만 출력 (마크다운, 설명, 코멘트 섞지 말 것)",
-            "2. 한국어 90% 이상 (영어는 copyOptions의 en 필드와 sourceTrace만)",
-            "3. 선택된 시나리오의 원본 내용을 기반으로 변형 — 새로 창작하지 말 것",
-            "4. 입력된 지역/타깃/기기가 output 어디에 반영되었는지 명시적으로 보일 것",
-            "5. 가치 태그(Care/Secure/Save/Play)를 headline과 valueHighlights에 반영할 것",
+            "반드시 지켜야 할 규칙:",
+            "1. 응답 전체가 하나의 valid JSON 객체여야 합니다 — { 로 시작하고 } 로 끝나야 합니다",
+            "2. 마크다운 헤딩(##), 설명 텍스트, ```json 코드 펜스를 쓰지 마세요",
+            "3. 한국어 90% 이상 (영어는 copyOptions의 en 필드만)",
+            "4. 선택된 시나리오의 원본 내용(Original, Analysis)을 기반으로 변형 — 새로 창작 금지",
+            "5. headline에 [Care], [Secure], [Save], [Play] 등 가치 태그를 포함",
             "6. copyOptions 최소 2개, channelStrategy 최소 2개, setupSteps 최소 3단계",
-            "7. alternatives 최소 1개 (기기를 덜 가진 사용자를 위한 대안)"
+            "7. alternatives 최소 1개",
+            "",
+            "JSON 스키마 최상위 키: transformation, valueHighlights, localizedInsight, confidenceOrEvidence"
         ].filter(Boolean).join("\n");
     }
 
@@ -74,7 +90,7 @@ function buildGeneratePrompt(body) {
     ].filter(Boolean).join("\n");
 }
 
-async function streamOpenAIResponse({ apiKey, systemPrompt, userMessage, model, maxTokens }) {
+async function streamOpenAIResponse({ apiKey, systemPrompt, userMessage, model, maxTokens, jsonMode = false }) {
     const requestBody = {
         model,
         stream: true,
@@ -84,6 +100,11 @@ async function streamOpenAIResponse({ apiKey, systemPrompt, userMessage, model, 
             { role: "user", content: userMessage }
         ]
     };
+
+    // JSON 모드: OpenAI API에서 JSON 출력 강제
+    if (jsonMode) {
+        requestBody.response_format = { type: "json_object" };
+    }
 
     if (/^gpt-5/i.test(String(model || "").trim())) {
         requestBody.max_completion_tokens = maxTokens;
@@ -157,10 +178,15 @@ export async function onRequestPost(context) {
     const model = String(context.env.OPENAI_MODEL || "gpt-5.4").trim();
     const maxTokens = Number(context.env.OPENAI_MAX_TOKENS || 8000);
 
+    // Selection Summary 존재 시 JSON 모드 활성화
+    const sel = body?.selectionSummary;
+    const jsonMode = !!(sel && sel.selectedScenarios && sel.selectedScenarios.length > 0);
+
     console.info(JSON.stringify({
         type: "generate_request",
         ts: new Date().toISOString(),
         model,
+        jsonMode,
         locale: body?.locale || "ko",
         role: body?.role || "",
         country: body?.country || "",
@@ -170,7 +196,7 @@ export async function onRequestPost(context) {
 
     let apiResponse;
     try {
-        apiResponse = await streamOpenAIResponse({ apiKey, systemPrompt, userMessage, model, maxTokens });
+        apiResponse = await streamOpenAIResponse({ apiKey, systemPrompt, userMessage, model, maxTokens, jsonMode });
     } catch (error) {
         return json({ ok: false, error: { code: "UPSTREAM_ERROR", message: error.message } }, 502);
     }
