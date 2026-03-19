@@ -99,6 +99,11 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        if (pathname === "/api/city-profile" && req.method === "GET") {
+            await handleCityProfile(req, res);
+            return;
+        }
+
         if (req.method !== "GET" && req.method !== "HEAD") {
             sendJson(res, 405, {
                 ok: false,
@@ -2215,4 +2220,91 @@ function average(values) {
     const numeric = (Array.isArray(values) ? values : []).map((value) => Number(value)).filter(Number.isFinite);
     if (!numeric.length) return 0;
     return numeric.reduce((sum, value) => sum + value, 0) / numeric.length;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   City Profile — 10카테고리 도시 생활 특징 (경량 API)
+   ══════════════════════════════════════════════════════════════════════ */
+
+const CITY_PROFILE_SYSTEM_PROMPT = `당신은 특정 도시의 '생활 밀착형 특징'을 분석하는 고도로 전문화된 지역 데이터 분석가입니다. 당신의 임무는 거시적 트렌드나 해결책이 아닌, 오직 주민의 실제 생활과 관련된 객관적인 사실만을 요약하는 것입니다.
+
+엄격한 규칙:
+1. '특징'에만 집중: 트렌드, 문제점, 해결책, CX 시나리오 제안은 절대 생성하지 마세요. 오직 아래 10개 '생활 카테고리'의 렌즈를 통해 도시의 객관적인 특징만 설명해야 합니다.
+2. 철저한 지역화: 모든 설명은 국가 단위가 아닌, 요청된 도시에만 해당하는 구체적인 내용이어야 합니다.
+3. 간결한 출력: 각 카테고리 설명은 1-2 문장의 간결하고 자연스러운 문장으로 작성하세요. 요청된 locale의 언어로 작성합니다.
+4. 고정 JSON 출력: 최종 결과는 반드시 아래 키를 사용하는 유효한 JSON 객체여야 합니다. 설명 없이 JSON만 출력하세요.
+
+10가지 생활 카테고리 (JSON Key):
+1. climate: 기후·계절
+2. housing: 주거 형태·생활 공간
+3. family: 가족 구성·돌봄 구조
+4. daily_rhythm: 일상 리듬·생활 패턴
+5. safety: 안전·보안
+6. energy: 에너지 비용·절약
+7. health: 건강·웰니스
+8. pets: 펫 라이프
+9. mobility: 이동·부재·여행
+10. events: 문화 행사·시즌성 이벤트`;
+
+async function handleCityProfile(req, res) {
+    const authState = requireAuthenticatedSession(req, res);
+    if (!authState.ok) return;
+
+    const parsed = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+    const country = parsed.searchParams.get("country") || "";
+    const city = parsed.searchParams.get("city") || "";
+    const locale = parsed.searchParams.get("locale") || "ko";
+
+    if (!city || !country) {
+        sendJson(res, 400, { ok: false, error: { code: "MISSING_PARAMS", message: "country and city required." } });
+        return;
+    }
+
+    const apiKey = process.env.OPENAI_API_KEY || "";
+    if (!apiKey) {
+        sendJson(res, 500, { ok: false, error: { code: "API_NOT_CONFIGURED" } });
+        return;
+    }
+
+    const model = process.env.OPENAI_MODEL || "gpt-5.4";
+    const maxTokens = 1500;
+    const userMessage = `{ "city": "${city}", "country": "${country}", "locale": "${locale}" }에 대한 생활 밀착형 특징을 위의 규칙에 따라 JSON 형식으로 분석해 줘.`;
+
+    try {
+        const requestBody = {
+            model,
+            response_format: { type: "json_object" },
+            messages: [
+                { role: "system", content: CITY_PROFILE_SYSTEM_PROMPT },
+                { role: "user", content: userMessage }
+            ]
+        };
+        if (/^gpt-5/i.test(model)) {
+            requestBody.max_completion_tokens = maxTokens;
+        } else {
+            requestBody.max_tokens = maxTokens;
+        }
+
+        const apiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!apiRes.ok) {
+            const errText = await apiRes.text().catch(() => "");
+            sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: errText.substring(0, 200) } });
+            return;
+        }
+
+        const result = await apiRes.json();
+        const content = result.choices?.[0]?.message?.content || "{}";
+        let profile;
+        try { profile = JSON.parse(content); } catch { profile = { raw: content }; }
+
+        res.setHeader("Cache-Control", "public, max-age=86400");
+        sendJson(res, 200, { ok: true, data: profile, meta: { city, country, locale, model } });
+    } catch (err) {
+        sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: err.message } });
+    }
 }

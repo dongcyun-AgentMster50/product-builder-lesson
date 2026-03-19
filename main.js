@@ -2410,49 +2410,161 @@ async function renderStep2Insight(forceRefresh = false) {
         return;
     }
 
-    // 정적 도시 데이터로 가벼운 프로필 표시 (라이브 API 호출 없음 — Build 시점으로 이동)
-    const staticContent = getCitySignalContent(country.countryCode, city);
     const localCity = getCityDisplayValue(country.countryCode, city) || city;
     const countryName = selectedMarket?.label || getCountryName(country.countryCode);
 
+    // 1. sessionStorage 캐시 확인
+    const cacheKey = `city-profile-${country.countryCode}-${city}-${currentLocale}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached && !forceRefresh) {
+        try {
+            const profile = JSON.parse(cached);
+            stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, profile);
+            updateQuestionHelpers();
+            return;
+        } catch { /* cache invalid, fetch fresh */ }
+    }
+
+    // 2. 로딩 표시
+    stepInsight.innerHTML = buildInsightMarkup({
+        badge: "Q1 Region",
+        title: `${countryName} ${localCity}`,
+        summary: currentLocale === "ko"
+            ? "도시 생활 프로필을 불러오는 중입니다..."
+            : "Loading city lifestyle profile...",
+        loading: true,
+        loadingLabel: currentLocale === "ko" ? "프로필 로딩 중" : "Loading profile"
+    });
+    updateQuestionHelpers();
+
+    // 3. 라이브 API 호출
+    try {
+        await ensureBypassSession();
+        const params = new URLSearchParams({ country: country.countryCode, city, locale: currentLocale });
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 20000);
+
+        const response = await fetch(`/api/city-profile?${params}`, {
+            credentials: "include",
+            signal: controller.signal
+        });
+        clearTimeout(timer);
+
+        if (requestId !== latestStep2InsightRequest || currentStep !== 2) return;
+
+        if (response.ok) {
+            const result = await response.json();
+            if (result.ok && result.data) {
+                // 캐시 저장
+                sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
+                stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, result.data);
+                updateQuestionHelpers();
+                stepInsight.classList.remove("insight-refresh");
+                void stepInsight.offsetWidth;
+                stepInsight.classList.add("insight-refresh");
+                return;
+            }
+        }
+    } catch (err) {
+        console.warn("[city-profile] fetch failed:", err.message);
+    }
+
+    if (requestId !== latestStep2InsightRequest || currentStep !== 2) return;
+
+    // 4. API 실패 시 정적 데이터 fallback
+    const staticContent = getCitySignalContent(country.countryCode, city);
     if (staticContent) {
-        const insight = buildStep2StaticInsight(countryName, localCity, staticContent);
-        stepInsight.innerHTML = buildInsightMarkup(insight);
+        stepInsight.innerHTML = renderCityProfileFromStatic(countryName, localCity, staticContent);
     } else {
-        // 정적 데이터도 없으면 간단 안내
         stepInsight.innerHTML = buildInsightMarkup({
             badge: "Q1 Region",
-            title: currentLocale === "ko"
-                ? `${countryName} ${localCity} 선택됨`
-                : `${countryName} ${localCity} selected`,
+            title: `${countryName} ${localCity}`,
             summary: currentLocale === "ko"
-                ? "이 도시의 상세 인사이트는 Build 시 AI가 자동으로 수집합니다."
-                : "Detailed insights for this city will be collected by AI during Build."
+                ? "도시 프로필을 불러오지 못했습니다."
+                : "Could not load city profile."
         });
     }
     updateQuestionHelpers();
-
     stepInsight.classList.remove("insight-refresh");
     void stepInsight.offsetWidth;
     stepInsight.classList.add("insight-refresh");
 }
 
 /**
- * 정적 city_signals 데이터 기반 가벼운 Q1 인사이트
+ * 10카테고리 도시 프로필을 인사이트 카드 HTML로 렌더링
  */
-function buildStep2StaticInsight(countryName, localCity, content) {
+function renderCityProfileInsight(countryName, localCity, profile) {
     const isKo = currentLocale === "ko";
-    // content는 보통 문자열 하나 (도시 설명)
-    const text = typeof content === "string" ? content : (content.summary || content.description || JSON.stringify(content));
-
-    return {
-        badge: "Q1 Region",
-        title: isKo ? `${countryName} ${localCity}` : `${countryName} ${localCity}`,
-        summary: text.length > 200 ? text.substring(0, 200) + "..." : text,
-        body: isKo
-            ? "상세 지역 인사이트(트렌드, 행사, 생활 패턴)는 Build 시 AI가 실시간으로 수집합니다."
-            : "Detailed regional insights (trends, events, lifestyle patterns) will be collected by AI during Build."
+    const CATEGORY_LABELS = {
+        climate:      isKo ? "기후·계절" : "Climate",
+        housing:      isKo ? "주거 형태" : "Housing",
+        family:       isKo ? "가족·돌봄" : "Family",
+        daily_rhythm: isKo ? "일상 리듬" : "Daily Rhythm",
+        safety:       isKo ? "안전·보안" : "Safety",
+        energy:       isKo ? "에너지" : "Energy",
+        health:       isKo ? "건강·웰니스" : "Health",
+        pets:         isKo ? "펫 라이프" : "Pets",
+        mobility:     isKo ? "이동·부재" : "Mobility",
+        events:       isKo ? "문화 행사" : "Events"
     };
+
+    const categoriesHtml = Object.entries(CATEGORY_LABELS)
+        .filter(([key]) => profile[key])
+        .map(([key, label]) => `
+            <div class="city-profile-item">
+                <span class="city-profile-label">${escapeHtml(label)}</span>
+                <span class="city-profile-text">${escapeHtml(profile[key])}</span>
+            </div>
+        `).join("");
+
+    return `
+        <div class="insight-card city-profile-card-v2">
+            <div class="insight-badge-row">
+                <span class="insight-badge">Q1 Region</span>
+            </div>
+            <h3 class="insight-title">${escapeHtml(countryName)} ${escapeHtml(localCity)}</h3>
+            <p class="insight-summary">${isKo ? "도시 생활 프로필 (10개 카테고리)" : "City Lifestyle Profile (10 categories)"}</p>
+            <div class="city-profile-grid">${categoriesHtml}</div>
+        </div>
+    `;
+}
+
+/**
+ * 정적 city_signals fallback
+ */
+function renderCityProfileFromStatic(countryName, localCity, content) {
+    const isKo = currentLocale === "ko";
+    // content가 객체이면 필드들을 카테고리처럼 표시
+    if (typeof content === "object" && content !== null) {
+        const FIELD_LABELS = {
+            region: isKo ? "지역 특성" : "Region",
+            climate: isKo ? "기후·계절" : "Climate",
+            housing: isKo ? "주거 형태" : "Housing",
+            behavior: isKo ? "생활 패턴" : "Behavior",
+            implication: isKo ? "시사점" : "Implication"
+        };
+        const items = Object.entries(content)
+            .filter(([key, val]) => typeof val === "string" && FIELD_LABELS[key])
+            .map(([key, val]) => `
+                <div class="city-profile-item">
+                    <span class="city-profile-label">${escapeHtml(FIELD_LABELS[key])}</span>
+                    <span class="city-profile-text">${escapeHtml(val)}</span>
+                </div>
+            `).join("");
+
+        return `
+            <div class="insight-card city-profile-card-v2">
+                <div class="insight-badge-row"><span class="insight-badge">Q1 Region</span><span class="insight-badge" style="background:#e65100;color:#fff">${isKo ? "정적 데이터" : "Static"}</span></div>
+                <h3 class="insight-title">${escapeHtml(countryName)} ${escapeHtml(localCity)}</h3>
+                <div class="city-profile-grid">${items}</div>
+            </div>
+        `;
+    }
+    return buildInsightMarkup({
+        badge: "Q1 Region",
+        title: `${countryName} ${localCity}`,
+        summary: typeof content === "string" ? content : ""
+    });
 }
 
 async function fetchLiveStep2Insight(countryCode, city, role, forceRefresh = false) {

@@ -6106,3 +6106,48 @@ a.source-tag-link:hover {
         padding-right: 14px;
     }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   City Profile v2 — 10카테고리 도시 생활 프로필 그리드
+   ══════════════════════════════════════════════════════════════════════ */
+
+.city-profile-card-v2 {
+    padding: 18px 20px;
+}
+
+.city-profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.city-profile-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 51, 102, 0.08);
+}
+
+.city-profile-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #003366;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.city-profile-text {
+    font-size: 0.8rem;
+    color: #333;
+    line-height: 1.55;
+}
+
+@media (max-width: 600px) {
+    .city-profile-grid {
+        grid-template-columns: 1fr;
+    }
+}
