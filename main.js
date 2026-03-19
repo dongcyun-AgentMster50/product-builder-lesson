@@ -2495,35 +2495,43 @@ async function renderStep2Insight(forceRefresh = false) {
  */
 function renderCityProfileInsight(countryName, localCity, profile) {
     const isKo = currentLocale === "ko";
-    const CATEGORY_LABELS = {
-        climate:      isKo ? "기후·계절" : "Climate",
-        housing:      isKo ? "주거 형태" : "Housing",
-        family:       isKo ? "가족·돌봄" : "Family",
-        daily_rhythm: isKo ? "일상 리듬" : "Daily Rhythm",
-        safety:       isKo ? "안전·보안" : "Safety",
-        energy:       isKo ? "에너지" : "Energy",
-        health:       isKo ? "건강·웰니스" : "Health",
-        pets:         isKo ? "펫 라이프" : "Pets",
-        mobility:     isKo ? "이동·부재" : "Mobility",
-        events:       isKo ? "문화 행사" : "Events"
-    };
+    const CATEGORIES = [
+        { key: "climate",      icon: "🌤", label: isKo ? "기후·계절" : "Climate",      color: "#1976d2" },
+        { key: "housing",      icon: "🏢", label: isKo ? "주거 형태" : "Housing",      color: "#6d4c41" },
+        { key: "family",       icon: "👨‍👩‍👧", label: isKo ? "가족·돌봄" : "Family",       color: "#e91e63" },
+        { key: "daily_rhythm", icon: "⏰", label: isKo ? "일상 리듬" : "Daily Rhythm", color: "#ff6f00" },
+        { key: "safety",       icon: "🛡", label: isKo ? "안전·보안" : "Safety",       color: "#2e7d32" },
+        { key: "energy",       icon: "⚡", label: isKo ? "에너지" : "Energy",         color: "#f9a825" },
+        { key: "health",       icon: "💪", label: isKo ? "건강·웰니스" : "Health",     color: "#00897b" },
+        { key: "pets",         icon: "🐾", label: isKo ? "펫 라이프" : "Pets",         color: "#8d6e63" },
+        { key: "mobility",     icon: "🚇", label: isKo ? "이동·부재" : "Mobility",    color: "#5c6bc0" },
+        { key: "events",       icon: "🎪", label: isKo ? "문화 행사" : "Events",      color: "#d32f2f" }
+    ];
 
-    const categoriesHtml = Object.entries(CATEGORY_LABELS)
-        .filter(([key]) => profile[key])
-        .map(([key, label]) => `
-            <div class="city-profile-item">
-                <span class="city-profile-label">${escapeHtml(label)}</span>
-                <span class="city-profile-text">${escapeHtml(profile[key])}</span>
+    const categoriesHtml = CATEGORIES
+        .filter(cat => profile[cat.key])
+        .map(cat => `
+            <div class="cpv2-item" style="--cpv2-accent:${cat.color}">
+                <div class="cpv2-icon">${cat.icon}</div>
+                <div class="cpv2-content">
+                    <span class="cpv2-label">${escapeHtml(cat.label)}</span>
+                    <span class="cpv2-text">${escapeHtml(profile[cat.key])}</span>
+                </div>
             </div>
         `).join("");
 
+    const flag = getCountryFlagEmoji ? getCountryFlagEmoji("KR") : "🇰🇷";
+
     return `
         <div class="insight-card city-profile-card-v2">
-            <div class="insight-badge-row">
-                <span class="insight-badge">Q1 Region</span>
+            <div class="cpv2-header">
+                <span class="cpv2-flag">${flag}</span>
+                <div class="cpv2-header-text">
+                    <h3 class="cpv2-city">${escapeHtml(localCity)}</h3>
+                    <span class="cpv2-country">${escapeHtml(countryName)}</span>
+                </div>
+                <span class="cpv2-badge">${isKo ? "AI 도시 프로필" : "AI City Profile"}</span>
             </div>
-            <h3 class="insight-title">${escapeHtml(countryName)} ${escapeHtml(localCity)}</h3>
-            <p class="insight-summary">${isKo ? "도시 생활 프로필 (10개 카테고리)" : "City Lifestyle Profile (10 categories)"}</p>
             <div class="city-profile-grid">${categoriesHtml}</div>
         </div>
     `;

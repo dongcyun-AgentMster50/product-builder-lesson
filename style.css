@@ -6108,46 +6108,132 @@ a.source-tag-link:hover {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   City Profile v2 — 10카테고리 도시 생활 프로필 그리드
+   City Profile v2 — 10카테고리 도시 생활 프로필 (비주얼 강화)
    ══════════════════════════════════════════════════════════════════════ */
 
 .city-profile-card-v2 {
-    padding: 18px 20px;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 16px;
 }
 
+/* 헤더 */
+.cpv2-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, #003366 0%, #004d99 100%);
+    color: #fff;
+}
+
+.cpv2-flag {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.cpv2-header-text {
+    flex: 1;
+}
+
+.cpv2-city {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0;
+    color: #fff;
+    letter-spacing: -0.01em;
+}
+
+.cpv2-country {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.cpv2-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+/* 카테고리 그리드 */
 .city-profile-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 8px;
-    margin-top: 12px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    margin: 0;
 }
 
-.city-profile-item {
+.cpv2-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #f0f0f0;
+    border-right: 1px solid #f0f0f0;
+    background: #fff;
+    transition: background 0.15s;
+}
+
+.cpv2-item:hover {
+    background: #f8fafd;
+}
+
+/* 2열 그리드에서 오른쪽 열 border-right 제거 */
+.cpv2-item:nth-child(2n) {
+    border-right: none;
+}
+
+/* 마지막 행 border-bottom 제거 */
+.cpv2-item:nth-last-child(-n+2) {
+    border-bottom: none;
+}
+
+.cpv2-icon {
+    font-size: 1.4rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--cpv2-accent, #003366) 10%, transparent);
+    flex-shrink: 0;
+}
+
+.cpv2-content {
     display: flex;
     flex-direction: column;
     gap: 3px;
-    padding: 10px 14px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 8px;
-    border: 1px solid rgba(0, 51, 102, 0.08);
+    min-width: 0;
 }
 
-.city-profile-label {
-    font-size: 0.68rem;
+.cpv2-label {
+    font-size: 0.7rem;
     font-weight: 700;
-    color: #003366;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    color: var(--cpv2-accent, #003366);
+    letter-spacing: 0.03em;
 }
 
-.city-profile-text {
-    font-size: 0.8rem;
-    color: #333;
+.cpv2-text {
+    font-size: 0.78rem;
+    color: #444;
     line-height: 1.55;
 }
 
-@media (max-width: 600px) {
+/* 반응형 */
+@media (max-width: 700px) {
     .city-profile-grid {
         grid-template-columns: 1fr;
+    }
+    .cpv2-item {
+        border-right: none;
+    }
+    .cpv2-item:last-child {
+        border-bottom: none;
     }
 }
