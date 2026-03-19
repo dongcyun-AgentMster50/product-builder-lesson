@@ -1,6 +1,6 @@
 /**
  * Curation Engine — Explore Contents v1.0/v2.0 시나리오 매칭
- * API 호출 없이 순수 JS로 Q1~Q4 입력 → 최적 시나리오 반환
+ * API 호출 없이 순수 JS로 Q1~Q3 입력 → 최적 시나리오 반환
  * 원문 그대로 보여주는 것이 핵심 (AI 재해석 금지)
  */
 
@@ -256,7 +256,9 @@ function curateScenarios(input, v1Scenarios, v2Scenarios, options = {}) {
     const seen = new Set();
     const deduped = [];
     for (const s of scored) {
-        const key = s.story_title.toLowerCase().replace(/\s+/g, "");
+        const title = s.story_title || s.article_title || "";
+        if (!title) continue;
+        const key = title.toLowerCase().replace(/\s+/g, "");
         if (!seen.has(key)) {
             seen.add(key);
             deduped.push(s);
@@ -287,6 +289,202 @@ function formatCurationResult(scenario) {
     return result;
 }
 
+// ─── Selection Summary 구조체 ─────────────────────────────────────
+// Selection Stage의 최종 산출물. AI 프롬프트 및 렌더링에 구조적으로 전달됨.
+
+/**
+ * 태그가 어떤 입력 소스에서 도출되었는지 역추적
+ */
+function findTagSources(tag, input) {
+    const sources = [];
+    const allPersona = [...(input.segments || []), ...(input.interests || []), ...(input.housing || [])];
+    allPersona.forEach(id => {
+        if ((PERSONA_TO_EXPLORE_TAGS[id] || []).includes(tag)) {
+            sources.push({ type: "persona", id });
+        }
+    });
+    (input.devices || []).forEach(device => {
+        if ((DEVICE_TO_EXPLORE_TAGS[device] || []).includes(tag)) {
+            sources.push({ type: "device", id: device });
+        }
+    });
+    return sources;
+}
+
+/**
+ * 선택된 시나리오들에서 가치 축(Care/Secure/Save/Play 등) 추출
+ */
+function extractPrimaryValues(scenarios) {
+    const valueCounts = {};
+    scenarios.forEach(s => {
+        (s.value_tags || []).forEach(v => {
+            valueCounts[v] = (valueCounts[v] || 0) + 1;
+        });
+    });
+    return Object.entries(valueCounts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([value]) => value);
+}
+
+/**
+ * 확정 정보 목록 (사용자가 직접 선택한 것)
+ */
+function buildConfirmedItems(input) {
+    const items = [];
+    if (input.market?.country) items.push({ field: "country", value: input.market.country });
+    if (input.market?.city) items.push({ field: "city", value: input.market.city });
+    if (input.devices && input.devices.length > 0) items.push({ field: "devices", value: input.devices.join(", ") });
+    if (input.housing && input.housing.length > 0) items.push({ field: "housing", value: input.housing.join(", ") });
+    if (input.segments && input.segments.length > 0) items.push({ field: "household", value: input.segments.join(", ") });
+    if (input.interests && input.interests.length > 0) items.push({ field: "interests", value: input.interests.join(", ") });
+    return items;
+}
+
+/**
+ * 추론 정보 목록 (사용자 입력으로부터 추정된 것)
+ */
+function buildInferredItems(input, results, tagScores) {
+    const items = [];
+    if (tagScores.length > 0) {
+        items.push({
+            field: "derivedKeywords",
+            value: tagScores.slice(0, 5).map(t => t.tag).join(", "),
+            confidence: "high"
+        });
+    }
+    if (!input.purpose && results.length > 0) {
+        items.push({
+            field: "lifePurpose",
+            value: "선택된 시나리오 기반 추론",
+            confidence: "medium"
+        });
+    }
+    return items;
+}
+
+/**
+ * 한국어 선택 이유 생성
+ */
+function buildSelectionReasonKo(topScenario, topTags, input) {
+    if (!topScenario) return "입력 조건에 매칭되는 Explore 시나리오가 없습니다.";
+
+    const tagNames = topTags.slice(0, 3).map(t => t.tag).join(", ");
+    const deviceCount = (input.devices || []).length;
+    const deviceText = deviceCount > 0
+        ? `${(input.devices || []).slice(0, 3).join(", ")}${deviceCount > 3 ? ` 외 ${deviceCount - 3}개` : ""} 기기 조합과 함께 `
+        : "";
+
+    return `입력하신 조건에서 "${tagNames}" 키워드가 도출되었고, ` +
+        `${deviceText}"${topScenario.story_title}" 시나리오가 ` +
+        `가장 높은 적합도(${topScenario._score}점)로 선택되었습니다.`;
+}
+
+/**
+ * 영문 선택 이유 생성
+ */
+function buildSelectionReasonEn(topScenario, topTags) {
+    if (!topScenario) return "No matching Explore scenario found for the given inputs.";
+
+    const tagNames = topTags.slice(0, 3).map(t => t.tag).join(", ");
+    return `Keywords "${tagNames}" were derived from your inputs. ` +
+        `"${topScenario.story_title}" was selected with the highest relevance score (${topScenario._score}).`;
+}
+
+/**
+ * Selection Summary 구축 — Selection Stage의 최종 산출물
+ * @param {Object} input - { segments, interests, housing, devices, purpose, market }
+ * @param {Array} results - curateScenarios() 결과
+ * @param {Object} options - { locale: "ko", personaLabels: [], deviceLabels: [] }
+ * @returns {Object} selectionSummary
+ */
+function buildSelectionSummary(input, results, options = {}) {
+    const { locale = "ko", personaLabels = [], deviceLabels = [] } = options;
+    const tagScores = buildExploreTagsFromInput(input);
+    const topTags = tagScores.slice(0, 5);
+    const isKo = locale === "ko";
+
+    return {
+        // 입력 스냅샷
+        inputSnapshot: {
+            market: input.market || {},
+            persona: (input.segments || []).map((id, i) => ({
+                id,
+                label: personaLabels[i] || id,
+                confirmed: true
+            })),
+            housing: (input.housing || []).map(id => ({
+                id,
+                confirmed: true
+            })),
+            interests: (input.interests || []).map(id => ({
+                id,
+                confirmed: true
+            })),
+            devices: (input.devices || []).map((name, i) => ({
+                name,
+                label: deviceLabels[i] || name,
+                confirmed: true
+            })),
+            purpose: input.purpose ? { text: input.purpose, confirmed: true } : null
+        },
+
+        // 도출된 태그 (근거 추적용)
+        derivedTags: topTags.map(({ tag, score }) => ({
+            tag,
+            score,
+            sources: findTagSources(tag, input)
+        })),
+
+        // 선택된 시나리오 (상위 3개)
+        selectedScenarios: results.slice(0, 3).map((s, idx) => ({
+            id: s.id || `${s._source}-${(s.story_title || "").replace(/\s+/g, "-")}`,
+            title: s.story_title || "",
+            articleTitle: s.article_title || "",
+            source: s._source || "v2.0",
+            score: s._score,
+            matchedTags: (s._matchedTags || []).map(t => typeof t === "object" ? t.tag : t),
+            valueTags: s.value_tags || [],
+            devices: s.devices || [],
+            originalText: (s.original_text || s.narrative || "").substring(0, 400),
+            analysis: (s.analysis || s.value_proposition || "").substring(0, 300),
+            isPrimary: idx === 0
+        })),
+
+        // 선택 이유
+        selectionReason: isKo
+            ? buildSelectionReasonKo(results[0], topTags, input)
+            : buildSelectionReasonEn(results[0], topTags),
+
+        // 가치 축 요약
+        primaryValues: extractPrimaryValues(results.slice(0, 3)),
+
+        // 확정 vs 추론 구분
+        inferredVsConfirmed: {
+            confirmed: buildConfirmedItems(input).map(i =>
+                isKo ? `${fieldLabelKo(i.field)}: ${i.value}` : `${i.field}: ${i.value}`
+            ),
+            inferred: buildInferredItems(input, results, tagScores).map(i =>
+                isKo ? `${fieldLabelKo(i.field)}: ${i.value}` : `${i.field}: ${i.value}`
+            )
+        },
+
+        // 메타
+        totalCandidates: results.length,
+        locale
+    };
+}
+
+/** 필드명 한국어 라벨 */
+function fieldLabelKo(field) {
+    const map = {
+        country: "국가", city: "도시", devices: "기기",
+        housing: "거주 형태", household: "세대 구성",
+        interests: "생활 관심사", derivedKeywords: "도출 키워드",
+        lifePurpose: "생활 목적"
+    };
+    return map[field] || field;
+}
+
 // Export for use in main.js or Node.js
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
@@ -294,6 +492,9 @@ if (typeof module !== "undefined" && module.exports) {
         scoreScenario,
         curateScenarios,
         formatCurationResult,
+        buildSelectionSummary,
+        findTagSources,
+        extractPrimaryValues,
         PERSONA_TO_EXPLORE_TAGS,
         DEVICE_TO_EXPLORE_TAGS,
         V1_TO_V2_TAG_MAP

@@ -183,6 +183,7 @@ let serviceSupportMatrix = { markets: [] };
 let skuAvailabilityMatrix = { markets: [] };
 let productFeatureMatrix = { products: [] };
 let latestPayload = null;
+let latestStructuredOutput = null;  // 공통 JSON 스키마 기반 구조화 output
 let activeLensTab = "overview";
 let currentStep = 1;
 let currentLocale = "en";
@@ -3574,7 +3575,8 @@ function generateScenario() {
         intentTags: [...(intent.tags || [])],
         missionBucket: intent.missionBucket,
         locale: currentLocale,
-        provider: selectedProvider
+        provider: selectedProvider,
+        selectionSummary: latestSelectionSummary || null
     };
 
     // Fallback local path
@@ -3590,6 +3592,7 @@ async function streamGenerateScenario(context) {
     if (aiGenerating) return;
     aiGenerating = true;
     aiOutputText = "";
+    latestStructuredOutput = null;  // 새 생성 시작 시 이전 구조화 output 리셋
 
     // Show streaming UI
     resultDiv.innerHTML = buildStreamingUI(context);
@@ -3694,6 +3697,17 @@ async function streamGenerateScenario(context) {
         }
 
         aiGenerating = false;
+
+        // JSON 모드 시도: selectionSummary가 있으면 JSON 파싱 우선
+        if (context.selectionSummary && typeof extractJsonFromAIOutput === "function") {
+            const { json: parsed } = extractJsonFromAIOutput(aiOutputText);
+            if (parsed && parsed.transformation) {
+                const { output } = validateAndNormalizeOutput(parsed, context.selectionSummary);
+                renderStructuredOutput(output, context);
+                return;
+            }
+        }
+        // JSON 파싱 실패 또는 selectionSummary 없음 → 기존 마크다운 렌더링
         renderAIResult(aiOutputText, context);
     };
 
@@ -3713,13 +3727,16 @@ function renderGenerateError(context, message, statusCode = "") {
         : "Once the API responds normally, the result will render in the 01–07 format.";
     const statusText = statusCode ? `${currentLocale === "ko" ? "상태 코드" : "Status"}: ${statusCode}` : "";
 
+    const errSelCard = context.selectionSummary
+        ? renderExploreSelectionCard(context.selectionSummary)
+        : buildSelectionSummaryCard(context);
     resultDiv.innerHTML = `
         <article class="scenario-output ai-result ai-result--error">
             <div class="ai-result-meta">
                 <span class="ai-result-badge">${currentLocale === "ko" ? "AI Error" : "AI Error"}</span>
                 <span class="ai-result-context">${escapeHtml(context.role || "")}</span>
             </div>
-            ${buildSelectionSummaryCard(context)}
+            ${errSelCard}
             <div class="ai-result-body">
                 <h3>${escapeHtml(title)}</h3>
                 <p class="error">${escapeHtml(message || (currentLocale === "ko" ? "알 수 없는 오류" : "Unknown error"))}</p>
@@ -3794,6 +3811,270 @@ function buildSelectionSummaryCard(context) {
     `;
 }
 
+/**
+ * Explore 선택 근거 카드 — Selection Stage 산출물을 시각화
+ * selectionSummary가 없으면 빈 문자열 반환 (기존 buildSelectionSummaryCard로 fallback)
+ */
+/**
+ * Structured Output 렌더러 — JSON 스키마 기반 AI 출력용
+ * 마케터용 / 일반 사용자용 탭 전환 포함
+ */
+function renderStructuredOutput(output, context) {
+    latestStructuredOutput = output;  // 전역 저장 — export, refinement에서 사용
+    const isKo = (output.locale || currentLocale) === "ko";
+    const selCard = output.selection
+        ? renderExploreSelectionCard(output.selection)
+        : buildSelectionSummaryCard(context);
+
+    const tx = output.transformation || {};
+    const mo = tx.marketerOutput || {};
+    const co = tx.consumerOutput || {};
+
+    // 마케터용 output HTML
+    const marketerHtml = renderMarketerPanel(mo, isKo);
+    // 일반 사용자용 output HTML
+    const consumerHtml = renderConsumerPanel(co, isKo);
+    // 가치 하이라이트
+    const valuesHtml = (output.valueHighlights || []).map(v =>
+        `<div class="str-value-item"><span class="sel-value-badge sel-value-${(v.value || "").toLowerCase()}">${escapeHtml(v.value)}</span><span>${escapeHtml(v.description)}</span></div>`
+    ).join("");
+    // O-I-I 인사이트
+    const oii = output.localizedInsight;
+    const insightHtml = oii ? `
+        <div class="str-insight-block">
+            <h4>${isKo ? "지역 인사이트" : "Local Insight"}</h4>
+            <div class="str-oii"><strong>${isKo ? "관찰" : "Observation"}:</strong> ${escapeHtml(oii.observation || "")}</div>
+            <div class="str-oii"><strong>${isKo ? "인사이트" : "Insight"}:</strong> ${escapeHtml(oii.insight || "")}</div>
+            <div class="str-oii"><strong>${isKo ? "함의" : "Implication"}:</strong> ${escapeHtml(oii.implication || "")}</div>
+        </div>
+    ` : "";
+    // 출처 추적
+    const st = output.sourceTrace || tx.sourceTrace;
+    const sourceHtml = st ? `<div class="str-source-trace">${isKo ? "출처" : "Source"}: ${escapeHtml(typeof st === "string" ? st : `Explore ${st.exploreVersion} > ${st.articleTitle} > ${st.storyTitle}`)}</div>` : "";
+
+    resultDiv.innerHTML = `
+        <article class="scenario-output ai-result str-output">
+            <div class="ai-result-meta">
+                <span class="ai-result-badge">${context.provider === "claude" ? "Claude" : "GPT"} ${isKo ? "생성 결과" : "Generated"}</span>
+                <span class="ai-result-context">${escapeHtml(context.role)}</span>
+                <button type="button" class="tab-btn ai-copy-btn" id="str-copy-btn">${isKo ? "복사" : "Copy"}</button>
+            </div>
+            ${selCard}
+            <div class="str-tab-bar">
+                <button class="str-tab active" data-tab="marketer">${isKo ? "마케터용" : "Marketer"}</button>
+                <button class="str-tab" data-tab="consumer">${isKo ? "일반 사용자용" : "Consumer"}</button>
+            </div>
+            <div class="str-panel active" id="str-panel-marketer">${marketerHtml}</div>
+            <div class="str-panel" id="str-panel-consumer">${consumerHtml}</div>
+            ${valuesHtml ? `<div class="str-values-section"><h4>${isKo ? "강조 가치" : "Value Highlights"}</h4>${valuesHtml}</div>` : ""}
+            ${insightHtml}
+            ${sourceHtml}
+            ${buildRefinementUI()}
+        </article>
+    `;
+
+    // 탭 전환
+    resultDiv.querySelectorAll(".str-tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+            resultDiv.querySelectorAll(".str-tab").forEach(t => t.classList.remove("active"));
+            resultDiv.querySelectorAll(".str-panel").forEach(p => p.classList.remove("active"));
+            tab.classList.add("active");
+            document.getElementById(`str-panel-${tab.dataset.tab}`)?.classList.add("active");
+        });
+    });
+
+    // 복사
+    const copyBtn = resultDiv.querySelector("#str-copy-btn");
+    if (copyBtn) {
+        copyBtn.addEventListener("click", () => {
+            const text = JSON.stringify(output, null, 2);
+            navigator.clipboard.writeText(text).then(() => {
+                copyBtn.textContent = isKo ? "복사됨!" : "Copied!";
+                setTimeout(() => { copyBtn.textContent = isKo ? "복사" : "Copy"; }, 2000);
+            }).catch(() => {});
+        });
+    }
+
+    bindRefinementPrompt(JSON.stringify(output, null, 2), context);
+    scrollToResult();
+}
+
+function renderMarketerPanel(mo, isKo) {
+    const headline = mo.headline || "";
+    const summary = mo.summary || "";
+    const why = mo.whyThisScenario || "";
+    const tf = mo.targetFit || {};
+    const channels = mo.channelStrategy || [];
+    const copies = mo.copyOptions || [];
+    const insight = mo.localInsight || "";
+    const rd = mo.roleDifferentiation || {};
+
+    const channelsHtml = channels.filter(ch => ch && ch.channel).map(ch => `
+        <div class="str-channel-card">
+            <div class="str-channel-name">${escapeHtml(ch.channel || "")}</div>
+            <div class="str-channel-msg">${escapeHtml(ch.message || "")}</div>
+            <div class="str-channel-meta"><span class="str-tone-badge">${escapeHtml(ch.tone || "")}</span><span>${escapeHtml(ch.format || "")}</span></div>
+        </div>
+    `).join("");
+
+    const copiesHtml = copies.filter(c => c && (c.ko || c.en)).map((c, i) => `
+        <div class="str-copy-option">
+            <div class="str-copy-num">${isKo ? `옵션 ${i + 1}` : `Option ${i + 1}`}</div>
+            <div class="str-copy-ko">${escapeHtml(c.ko || "")}</div>
+            ${c.en ? `<div class="str-copy-en">${escapeHtml(c.en)}</div>` : ""}
+            ${c.tone ? `<div class="str-copy-tone">${escapeHtml(c.tone)}</div>` : ""}
+        </div>
+    `).join("");
+
+    const roleHtml = (rd.retail || rd.dotcom || rd.brand) ? `
+        <div class="str-role-diff">
+            <h4>${isKo ? "역할별 실행 방향" : "Role-specific Direction"}</h4>
+            ${rd.retail ? `<div><strong>Retail:</strong> ${escapeHtml(rd.retail)}</div>` : ""}
+            ${rd.dotcom ? `<div><strong>Dotcom:</strong> ${escapeHtml(rd.dotcom)}</div>` : ""}
+            ${rd.brand ? `<div><strong>Brand:</strong> ${escapeHtml(rd.brand)}</div>` : ""}
+        </div>
+    ` : "";
+
+    return `
+        <div class="str-marketer">
+            <h2 class="str-headline">${escapeHtml(headline)}</h2>
+            <p class="str-summary">${escapeHtml(summary)}</p>
+            ${why ? `<div class="str-why"><h4>${isKo ? "왜 이 시나리오인가" : "Why This Scenario"}</h4><p>${escapeHtml(why)}</p></div>` : ""}
+            ${tf.primary ? `<div class="str-target"><h4>${isKo ? "타깃 적합도" : "Target Fit"}</h4><p><strong>${isKo ? "주 타깃" : "Primary"}:</strong> ${escapeHtml(tf.primary)}</p>${tf.secondary ? `<p><strong>${isKo ? "보조" : "Secondary"}:</strong> ${escapeHtml(tf.secondary)}</p>` : ""}${tf.estimatedReach ? `<p><strong>${isKo ? "추정 도달" : "Est. reach"}:</strong> ${escapeHtml(tf.estimatedReach)}</p>` : ""}</div>` : ""}
+            ${channelsHtml ? `<div class="str-channels"><h4>${isKo ? "채널 전략" : "Channel Strategy"}</h4><div class="str-channels-grid">${channelsHtml}</div></div>` : ""}
+            ${copiesHtml ? `<div class="str-copies"><h4>${isKo ? "카피 옵션" : "Copy Options"}</h4>${copiesHtml}</div>` : ""}
+            ${insight ? `<div class="str-local-insight"><h4>${isKo ? "지역 인사이트" : "Local Insight"}</h4><p>${escapeHtml(insight)}</p></div>` : ""}
+            ${roleHtml}
+        </div>
+    `;
+}
+
+function renderConsumerPanel(co, isKo) {
+    const headline = co.headline || "";
+    const what = co.whatItDoes || "";
+    const setup = co.requiredSetup || {};
+    const steps = co.setupSteps || [];
+    const cautions = co.cautions || [];
+    const alts = co.alternatives || [];
+
+    const devicesHtml = (setup.devices || []).filter(d => d && d.name).map(d => `
+        <div class="str-device-item">
+            <span class="str-device-name">${escapeHtml(d.name || "")}</span>
+            ${d.role ? `<span class="str-device-role">${escapeHtml(d.role)}</span>` : ""}
+            <span class="str-device-req">${d.required !== false ? (isKo ? "필수" : "Required") : (isKo ? "선택" : "Optional")}</span>
+        </div>
+    `).join("");
+
+    const stepsHtml = steps.filter(Boolean).map(s => `<li>${escapeHtml(String(s))}</li>`).join("");
+    const cautionsHtml = cautions.filter(Boolean).map(c => `<li>${escapeHtml(String(c))}</li>`).join("");
+    const altsHtml = alts.filter(a => a && a.scenario).map(a => `<div class="str-alt-item"><strong>${escapeHtml(a.scenario || "")}</strong><span>${escapeHtml(a.reason || "")}</span></div>`).join("");
+
+    return `
+        <div class="str-consumer">
+            <h2 class="str-headline">${escapeHtml(headline)}</h2>
+            ${what ? `<div class="str-what"><p>${escapeHtml(what)}</p></div>` : ""}
+            ${devicesHtml ? `<div class="str-devices"><h4>${isKo ? "필요한 기기" : "Required Devices"}</h4>${devicesHtml}</div>` : ""}
+            ${(setup.apps || []).length ? `<div class="str-apps"><h4>${isKo ? "필요한 앱" : "Required Apps"}</h4><p>${(setup.apps || []).map(a => escapeHtml(a)).join(", ")}</p></div>` : ""}
+            ${(setup.conditions || []).length ? `<div class="str-conditions"><h4>${isKo ? "필요 조건" : "Prerequisites"}</h4><ul>${(setup.conditions || []).map(c => `<li>${escapeHtml(c)}</li>`).join("")}</ul></div>` : ""}
+            ${stepsHtml ? `<div class="str-steps"><h4>${isKo ? "설정 방법" : "Setup Steps"}</h4><ol>${stepsHtml}</ol></div>` : ""}
+            ${cautionsHtml ? `<div class="str-cautions"><h4>${isKo ? "주의사항" : "Cautions"}</h4><ul>${cautionsHtml}</ul></div>` : ""}
+            ${altsHtml ? `<div class="str-alts"><h4>${isKo ? "대체 구성" : "Alternatives"}</h4>${altsHtml}</div>` : ""}
+        </div>
+    `;
+}
+
+function renderExploreSelectionCard(summary) {
+    if (!summary || !summary.selectedScenarios || summary.selectedScenarios.length === 0) return "";
+
+    const isKo = (summary.locale || currentLocale) === "ko";
+    const primary = summary.selectedScenarios.find(s => s.isPrimary) || summary.selectedScenarios[0];
+
+    // 가치 배지
+    const valuesHtml = (summary.primaryValues || [])
+        .map(v => `<span class="sel-value-badge sel-value-${v.toLowerCase()}">${escapeHtml(v)}</span>`)
+        .join("");
+
+    // 선택된 시나리오 하이라이트
+    const scenarioHtml = `
+        <div class="sel-scenario-highlight">
+            <span class="sel-source-badge">${escapeHtml(`Explore ${primary.source}`)}</span>
+            <span class="sel-scenario-title">${escapeHtml(primary.title)}</span>
+            ${primary.articleTitle ? `<span class="sel-scenario-article">${escapeHtml(primary.articleTitle)}</span>` : ""}
+            ${valuesHtml ? `<div class="sel-values-row">${valuesHtml}</div>` : ""}
+        </div>
+    `;
+
+    // 선택 이유
+    const reasonHtml = summary.selectionReason
+        ? `<div class="sel-reason"><strong>${isKo ? "선택 이유" : "Why selected"}</strong> ${escapeHtml(summary.selectionReason)}</div>`
+        : "";
+
+    // 반영된 입력값
+    const inputItems = [];
+    const snap = summary.inputSnapshot || {};
+    if (snap.market?.country) {
+        const marketText = `${snap.market.country}${snap.market.city ? ` / ${snap.market.city}` : ""}`;
+        inputItems.push({ label: isKo ? "시장" : "Market", value: marketText });
+    }
+    if (snap.persona && snap.persona.length > 0) {
+        inputItems.push({ label: isKo ? "타깃" : "Target", value: snap.persona.map(p => p.label || p.id || "").filter(Boolean).join(", ") });
+    }
+    if (snap.devices && snap.devices.length > 0) {
+        inputItems.push({ label: isKo ? "기기" : "Devices", value: snap.devices.map(d => d.label || d.name || "").filter(Boolean).join(", ") });
+    }
+    if (snap.purpose?.text) {
+        inputItems.push({ label: isKo ? "상황/목적" : "Context", value: snap.purpose.text });
+    }
+
+    const inputHtml = inputItems.length > 0
+        ? `<div class="sel-input-grid">${inputItems.map(item =>
+            `<div class="sel-input-item"><span class="sel-input-label">${escapeHtml(item.label)}</span><span class="sel-input-value">${escapeHtml(item.value)}</span></div>`
+        ).join("")}</div>`
+        : "";
+
+    // 도출 키워드
+    const derivedTags = (summary.derivedTags || []).slice(0, 5);
+    const tagsHtml = derivedTags.length > 0
+        ? `<div class="sel-tags-row">${derivedTags.map(t =>
+            `<span class="sel-derived-tag" title="score: ${t.score}">${escapeHtml(t.tag)}</span>`
+        ).join("")}</div>`
+        : "";
+
+    // 확정 vs 추론
+    const ivc = summary.inferredVsConfirmed || {};
+    const confirmedHtml = (ivc.confirmed || []).map(c =>
+        `<span class="sel-chip sel-chip-confirmed">${escapeHtml(c)}</span>`
+    ).join("");
+    const inferredHtml = (ivc.inferred || []).map(i =>
+        `<span class="sel-chip sel-chip-inferred">${escapeHtml(i)}</span>`
+    ).join("");
+    const confidenceHtml = (confirmedHtml || inferredHtml)
+        ? `<div class="sel-confidence">
+            ${confirmedHtml ? `<div class="sel-confirmed-row">${confirmedHtml}</div>` : ""}
+            ${inferredHtml ? `<div class="sel-inferred-row">${inferredHtml}</div>` : ""}
+          </div>`
+        : "";
+
+    // 매칭된 시나리오 수
+    const countText = summary.totalCandidates > 1
+        ? (isKo ? `외 ${summary.totalCandidates - 1}개 시나리오 매칭` : `+${summary.totalCandidates - 1} more matched`)
+        : "";
+
+    return `
+        <section class="sel-card">
+            <div class="sel-card-header">
+                <h3 class="sel-card-title">${isKo ? "선택 근거" : "Selection Basis"}</h3>
+                ${countText ? `<span class="sel-count">${escapeHtml(countText)}</span>` : ""}
+            </div>
+            ${scenarioHtml}
+            ${reasonHtml}
+            ${inputHtml}
+            ${tagsHtml}
+            ${confidenceHtml}
+        </section>
+    `;
+}
+
 function buildStreamingUI(context) {
     const label = currentLocale === "ko"
         ? "선택한 조건에 맞춰 시나리오를 정리하고 있습니다"
@@ -3801,6 +4082,9 @@ function buildStreamingUI(context) {
     const sublabel = currentLocale === "ko"
         ? "시장, 타겟, 기기, 반영할 가치를 기준으로 결과를 맞추는 중입니다."
         : "Aligning the result to your market, target, devices, and chosen value.";
+    const selCardHtml = context.selectionSummary
+        ? renderExploreSelectionCard(context.selectionSummary)
+        : buildSelectionSummaryCard(context);
     return `
         <article class="scenario-output ai-streaming">
             <div class="ai-stream-header">
@@ -3810,7 +4094,7 @@ function buildStreamingUI(context) {
                     <span class="ai-stream-substatus">${escapeHtml(sublabel)}</span>
                 </div>
             </div>
-            ${buildSelectionSummaryCard(context)}
+            ${selCardHtml}
             <pre class="ai-stream-output" aria-live="polite" aria-label="AI generating scenario"></pre>
         </article>
     `;
@@ -3828,6 +4112,9 @@ function stripMetaPrompts(text) {
 function renderAIResult(markdown, context) {
     const cleaned = stripMetaPrompts(markdown);
     const html = parseSourceCitations(markdownToHtml(cleaned));
+    const selectionCardHtml = context.selectionSummary
+        ? renderExploreSelectionCard(context.selectionSummary)
+        : buildSelectionSummaryCard(context);
     resultDiv.innerHTML = `
         <article class="scenario-output ai-result">
             <div class="ai-result-meta">
@@ -3835,7 +4122,7 @@ function renderAIResult(markdown, context) {
                 <span class="ai-result-context">${escapeHtml(context.role)}</span>
                 <button type="button" class="tab-btn ai-copy-btn" id="ai-copy-btn">${currentLocale === "ko" ? "복사" : "Copy"}</button>
             </div>
-            ${buildSelectionSummaryCard(context)}
+            ${selectionCardHtml}
             <div class="ai-result-body">${html}</div>
             ${buildRefinementUI()}
         </article>
@@ -5858,8 +6145,28 @@ function buildDeviceGuide(country, deviceDecision, services) {
 }
 
 function renderScenario(payload) {
+    // selectionSummary가 있으면 구조화된 fallback output 시도
+    if (latestSelectionSummary && typeof buildFallbackOutput === "function") {
+        try {
+            const fallbackOutput = buildFallbackOutput(latestSelectionSummary, payload);
+            renderStructuredOutput(fallbackOutput, {
+                role: payload.scenarioMeta?.role || "",
+                provider: "none",
+                selectionSummary: latestSelectionSummary
+            });
+            return;
+        } catch (e) {
+            console.warn("Fallback structured output failed, using legacy render:", e);
+        }
+    }
+
+    // Legacy fallback
+    const selCard = latestSelectionSummary
+        ? renderExploreSelectionCard(latestSelectionSummary)
+        : "";
     resultDiv.innerHTML = `
         <article class="scenario-output">
+            ${selCard}
             <section id="tab-panel-overview" class="tab-panel active">
                 ${renderOverview(payload)}
             </section>
@@ -5868,6 +6175,7 @@ function renderScenario(payload) {
 
     bindPostOutputPrompt(payload);
     bindSourceTags(resultDiv);
+    scrollToResult();
 }
 
 function renderOutputPreview() {
@@ -6822,7 +7130,7 @@ function getOutputTitles() {
 }
 
 function handleExport(type) {
-    if (!latestPayload) {
+    if (!latestPayload && !latestStructuredOutput) {
         resultDiv.innerHTML = `<p class="error">${t("downloadFirst")}</p>`;
         return;
     }
@@ -6833,7 +7141,9 @@ function handleExport(type) {
 }
 
 async function copySummary() {
-    const text = buildPlainTextReport(latestPayload);
+    const text = latestStructuredOutput
+        ? buildStructuredPlainText(latestStructuredOutput)
+        : buildPlainTextReport(latestPayload);
     try {
         await navigator.clipboard.writeText(text);
         const btn = exportActions.querySelector('[data-export="copy"]');
@@ -6845,6 +7155,83 @@ async function copySummary() {
     } catch {
         window.prompt(currentLocale === "ko" ? "아래 내용을 복사하세요." : "Copy the text below.", text);
     }
+}
+
+function buildStructuredPlainText(output) {
+    const lines = [];
+    const tx = output.transformation || {};
+    const mo = tx.marketerOutput || {};
+    const co = tx.consumerOutput || {};
+    const sel = output.selection || {};
+    const isKo = (output.locale || "ko") === "ko";
+
+    // 선택 근거
+    const primary = (sel.selectedScenarios || []).find(s => s.isPrimary) || (sel.selectedScenarios || [])[0];
+    if (primary) {
+        lines.push(`═══ ${isKo ? "선택 근거" : "Selection Basis"} ═══`);
+        lines.push(`${isKo ? "시나리오" : "Scenario"}: ${primary.title} (Explore ${primary.source})`);
+        lines.push(`${isKo ? "아티클" : "Article"}: ${primary.articleTitle}`);
+        if (sel.selectionReason) lines.push(`${isKo ? "선택 이유" : "Reason"}: ${sel.selectionReason}`);
+        if ((sel.primaryValues || []).length) lines.push(`${isKo ? "가치" : "Values"}: ${sel.primaryValues.join(", ")}`);
+        lines.push("");
+    }
+
+    // 마케터용
+    lines.push(`═══ ${isKo ? "마케터용" : "For Marketers"} ═══`);
+    if (mo.headline) lines.push(mo.headline);
+    if (mo.summary) lines.push(mo.summary);
+    lines.push("");
+    if (mo.whyThisScenario) { lines.push(`${isKo ? "왜 이 시나리오:" : "Why:"} ${mo.whyThisScenario}`); lines.push(""); }
+    if ((mo.copyOptions || []).length) {
+        lines.push(isKo ? "카피 옵션:" : "Copy Options:");
+        mo.copyOptions.forEach((c, i) => {
+            lines.push(`  ${i + 1}) KR: ${c.ko || ""}`);
+            if (c.en) lines.push(`     EN: ${c.en}`);
+            if (c.tone) lines.push(`     ${isKo ? "톤" : "Tone"}: ${c.tone}`);
+        });
+        lines.push("");
+    }
+    if ((mo.channelStrategy || []).length) {
+        lines.push(isKo ? "채널 전략:" : "Channel Strategy:");
+        mo.channelStrategy.forEach(ch => {
+            lines.push(`  [${ch.channel}] ${ch.message} (${ch.tone}, ${ch.format || ""})`);
+        });
+        lines.push("");
+    }
+
+    // 일반 사용자용
+    lines.push(`═══ ${isKo ? "일반 사용자용" : "For Consumers"} ═══`);
+    if (co.headline) lines.push(co.headline);
+    if (co.whatItDoes) { lines.push(""); lines.push(co.whatItDoes); }
+    lines.push("");
+    if ((co.requiredSetup?.devices || []).length) {
+        lines.push(isKo ? "필요 기기:" : "Required Devices:");
+        co.requiredSetup.devices.forEach(d => {
+            lines.push(`  - ${d.name}${d.role ? ` (${d.role})` : ""}${d.required !== false ? "" : ` [${isKo ? "선택" : "Optional"}]`}`);
+        });
+        lines.push("");
+    }
+    if ((co.setupSteps || []).length) {
+        lines.push(isKo ? "설정 방법:" : "Setup Steps:");
+        co.setupSteps.forEach((s, i) => lines.push(`  ${i + 1}. ${s}`));
+        lines.push("");
+    }
+    if ((co.cautions || []).length) {
+        lines.push(isKo ? "주의사항:" : "Cautions:");
+        co.cautions.forEach(c => lines.push(`  - ${c}`));
+        lines.push("");
+    }
+
+    // 인사이트
+    const oii = output.localizedInsight;
+    if (oii) {
+        lines.push(`═══ ${isKo ? "인사이트" : "Insight"} ═══`);
+        if (oii.observation) lines.push(`${isKo ? "관찰" : "Observation"}: ${oii.observation}`);
+        if (oii.insight) lines.push(`${isKo ? "인사이트" : "Insight"}: ${oii.insight}`);
+        if (oii.implication) lines.push(`${isKo ? "함의" : "Implication"}: ${oii.implication}`);
+    }
+
+    return lines.join("\n");
 }
 
 function buildPlainTextReport(payload) {
@@ -6909,7 +7296,9 @@ li { margin-bottom: 4px; }
 }
 
 function exportPdf() {
-    const html = buildExportHtml(latestPayload);
+    const html = latestStructuredOutput
+        ? buildStructuredExportHtml(latestStructuredOutput)
+        : buildExportHtml(latestPayload);
     const win = window.open("", "_blank");
     if (!win) return;
     win.document.write(html);
@@ -6918,7 +7307,9 @@ function exportPdf() {
 }
 
 function exportWord() {
-    const html = buildExportHtml(latestPayload);
+    const html = latestStructuredOutput
+        ? buildStructuredExportHtml(latestStructuredOutput)
+        : buildExportHtml(latestPayload);
     const wordHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
 <head><meta charset="UTF-8"><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]--></head>
 <body>${html.replace(/.*<body>/s, "").replace(/<\/body>.*/s, "")}</body></html>`;
@@ -6934,6 +7325,11 @@ function exportWord() {
 }
 
 function exportExcel() {
+    // 구조화 output이면 구조화 CSV 생성
+    if (latestStructuredOutput) {
+        exportStructuredExcel(latestStructuredOutput);
+        return;
+    }
     const payload = latestPayload;
     const rows = [];
 
@@ -6992,6 +7388,103 @@ function exportExcel() {
     const a = document.createElement("a");
     a.href = url;
     a.download = `scenario-data-${Date.now()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function buildStructuredExportHtml(output) {
+    const isKo = (output.locale || "ko") === "ko";
+    const tx = output.transformation || {};
+    const mo = tx.marketerOutput || {};
+    const co = tx.consumerOutput || {};
+    const sel = output.selection || {};
+    const primary = (sel.selectedScenarios || []).find(s => s.isPrimary) || (sel.selectedScenarios || [])[0];
+    const values = (sel.primaryValues || []).join(", ");
+    const oii = output.localizedInsight;
+
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<style>body{font-family:'Pretendard',sans-serif;max-width:800px;margin:40px auto;color:#222;line-height:1.7}
+h1{background:#003366;color:#fff;padding:16px 24px;border-radius:10px;font-size:1.2rem}
+h2{color:#003366;border-bottom:2px solid #003366;padding-bottom:6px;font-size:1rem;margin-top:28px}
+h3{color:#003366;font-size:0.9rem;margin-top:20px}
+.badge{display:inline-block;background:#003366;color:#fff;padding:2px 12px;border-radius:20px;font-size:0.75rem;margin-right:6px}
+.card{background:#f8f9fb;border:1px solid #e4e8ee;border-radius:10px;padding:14px;margin:8px 0}
+table{width:100%;border-collapse:collapse;margin:12px 0}th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:0.85rem}th{background:#003366;color:#fff}
+.source{font-size:0.75rem;color:#889;margin-top:20px}
+@media print{body{margin:20px}}</style></head><body>
+${primary ? `<div style="margin-bottom:20px"><span class="badge">Explore ${primary.source}</span> <strong>${escapeHtml(primary.title)}</strong><br><small>${escapeHtml(primary.articleTitle || "")}</small>${values ? `<br><span class="badge">${escapeHtml(values)}</span>` : ""}</div>` : ""}
+${sel.selectionReason ? `<div class="card"><strong>${isKo ? "선택 이유" : "Selection Reason"}</strong><p>${escapeHtml(sel.selectionReason)}</p></div>` : ""}
+<h1>${escapeHtml(mo.headline || "")}</h1>
+<p>${escapeHtml(mo.summary || "")}</p>
+${mo.whyThisScenario ? `<h2>${isKo ? "왜 이 시나리오인가" : "Why This Scenario"}</h2><p>${escapeHtml(mo.whyThisScenario)}</p>` : ""}
+${(mo.copyOptions || []).length ? `<h2>${isKo ? "카피 옵션" : "Copy Options"}</h2>${(mo.copyOptions || []).map((c, i) => `<div class="card"><strong>${isKo ? "옵션" : "Option"} ${i + 1}</strong><br>KR: ${escapeHtml(c.ko || "")}<br>EN: ${escapeHtml(c.en || "")}${c.tone ? `<br><small>${escapeHtml(c.tone)}</small>` : ""}</div>`).join("")}` : ""}
+${(mo.channelStrategy || []).length ? `<h2>${isKo ? "채널 전략" : "Channel Strategy"}</h2><table><tr><th>${isKo ? "채널" : "Channel"}</th><th>${isKo ? "메시지" : "Message"}</th><th>${isKo ? "톤" : "Tone"}</th><th>${isKo ? "포맷" : "Format"}</th></tr>${(mo.channelStrategy || []).map(ch => `<tr><td>${escapeHtml(ch.channel || "")}</td><td>${escapeHtml(ch.message || "")}</td><td>${escapeHtml(ch.tone || "")}</td><td>${escapeHtml(ch.format || "")}</td></tr>`).join("")}</table>` : ""}
+<h1>${escapeHtml(co.headline || "")}</h1>
+${co.whatItDoes ? `<p>${escapeHtml(co.whatItDoes)}</p>` : ""}
+${(co.requiredSetup?.devices || []).length ? `<h2>${isKo ? "필요 기기" : "Required Devices"}</h2><table><tr><th>${isKo ? "기기" : "Device"}</th><th>${isKo ? "역할" : "Role"}</th><th>${isKo ? "필수" : "Required"}</th></tr>${co.requiredSetup.devices.map(d => `<tr><td>${escapeHtml(d.name || "")}</td><td>${escapeHtml(d.role || "")}</td><td>${d.required !== false ? "O" : "-"}</td></tr>`).join("")}</table>` : ""}
+${(co.setupSteps || []).length ? `<h2>${isKo ? "설정 방법" : "Setup Steps"}</h2><ol>${co.setupSteps.map(s => `<li>${escapeHtml(String(s))}</li>`).join("")}</ol>` : ""}
+${(co.cautions || []).length ? `<h2>${isKo ? "주의사항" : "Cautions"}</h2><ul>${co.cautions.map(c => `<li>${escapeHtml(String(c))}</li>`).join("")}</ul>` : ""}
+${oii ? `<h2>${isKo ? "인사이트" : "Insight"}</h2><p><strong>${isKo ? "관찰" : "Obs"}:</strong> ${escapeHtml(oii.observation || "")}<br><strong>${isKo ? "인사이트" : "Insight"}:</strong> ${escapeHtml(oii.insight || "")}<br><strong>${isKo ? "함의" : "Impl"}:</strong> ${escapeHtml(oii.implication || "")}</p>` : ""}
+<div class="source">${escapeHtml(typeof tx.sourceTrace === "string" ? tx.sourceTrace : "")} | ${output.generationMode || "ai"} | ${output.generatedAt || ""}</div>
+</body></html>`;
+}
+
+function exportStructuredExcel(output) {
+    const tx = output.transformation || {};
+    const mo = tx.marketerOutput || {};
+    const co = tx.consumerOutput || {};
+    const sel = output.selection || {};
+    const isKo = (output.locale || "ko") === "ko";
+    const rows = [];
+
+    rows.push(["Section", "Item", "KO", "EN", "Tone", "Note"]);
+
+    // 선택 근거
+    const primary = (sel.selectedScenarios || []).find(s => s.isPrimary) || (sel.selectedScenarios || [])[0];
+    if (primary) {
+        rows.push(["Selection", "Scenario", primary.title, primary.source, "", primary.articleTitle || ""]);
+        rows.push(["Selection", "Reason", sel.selectionReason || "", "", "", ""]);
+        rows.push(["Selection", "Values", (sel.primaryValues || []).join(", "), "", "", ""]);
+    }
+    rows.push(["", "", "", "", "", ""]);
+
+    // 마케터
+    rows.push(["Marketer", "Headline", mo.headline || "", "", "", ""]);
+    rows.push(["Marketer", "Summary", mo.summary || "", "", "", ""]);
+    rows.push(["Marketer", "Why", mo.whyThisScenario || "", "", "", ""]);
+    (mo.copyOptions || []).forEach((c, i) => {
+        rows.push(["Copy", `Option ${i + 1}`, c.ko || "", c.en || "", c.tone || "", ""]);
+    });
+    (mo.channelStrategy || []).forEach(ch => {
+        rows.push(["Channel", ch.channel || "", ch.message || "", "", ch.tone || "", ch.format || ""]);
+    });
+    rows.push(["", "", "", "", "", ""]);
+
+    // 사용자
+    rows.push(["Consumer", "Headline", co.headline || "", "", "", ""]);
+    rows.push(["Consumer", "What it does", co.whatItDoes || "", "", "", ""]);
+    (co.requiredSetup?.devices || []).forEach(d => {
+        rows.push(["Device", d.name || "", d.role || "", "", "", d.required !== false ? "Required" : "Optional"]);
+    });
+    (co.setupSteps || []).forEach((s, i) => {
+        rows.push(["Setup", `Step ${i + 1}`, String(s), "", "", ""]);
+    });
+    (co.cautions || []).forEach(c => {
+        rows.push(["Caution", "", String(c), "", "", ""]);
+    });
+
+    const escCell = (v) => {
+        const s = String(v || "").replace(/"/g, '""');
+        return s.includes(",") || s.includes("\n") || s.includes('"') ? `"${s}"` : s;
+    };
+    const csv = rows.map((row) => row.map(escCell).join(",")).join("\r\n");
+    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `scenario-structured-${Date.now()}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -7935,6 +8428,7 @@ function localizeRoleText(key, value = "") {
 let curationDbV1 = null;
 let curationDbV2 = null;
 let curationLoaded = false;
+let latestSelectionSummary = null;  // Selection Stage 산출물 — AI 프롬프트 및 output 렌더링에 전달
 
 async function loadCurationDb() {
     if (curationLoaded) return;
@@ -7968,11 +8462,38 @@ function runCuration() {
     });
     const purpose = purposeInput.value.trim();
 
-    const input = { segments, interests, housing, devices, purpose };
+    // 시장 정보 수집
+    const selectedMarket = marketOptions.find(m => m.siteCode === countrySelect.value);
+    const city = getCityValue();
+
+    const input = {
+        segments, interests, housing, devices, purpose,
+        market: {
+            country: selectedMarket?.label || "",
+            city: city || "",
+            locale: currentLocale
+        }
+    };
 
     if (typeof curateScenarios !== "function") return;
 
-    const results = curateScenarios(input, curationDbV1.scenarios, curationDbV2.scenarios, { maxResults: 5, minScore: 5 });
+    const v2Scenarios = curationDbV2.scenarios || [];
+    const results = curateScenarios(input, curationDbV1.scenarios, v2Scenarios, { maxResults: 5, minScore: 5 });
+
+    // Selection Summary 구축
+    if (typeof buildSelectionSummary === "function") {
+        const personaLabels = personaIds.map(id => {
+            const el = document.querySelector(`input[value="${id}"]`);
+            return el?.dataset?.label || id;
+        });
+        const deviceLabels = getSelectedDeviceLabels();
+
+        latestSelectionSummary = buildSelectionSummary(input, results, {
+            locale: currentLocale,
+            personaLabels,
+            deviceLabels
+        });
+    }
 
     // 입력 정보 요약 렌더링
     renderCurationInputSummary(personaIds, devices, purpose, results);
@@ -8097,8 +8618,37 @@ function renderCurationResults(results, selectedDevices) {
 
 function triggerAiFromCuration(scenario) {
     const f = formatCurationResult(scenario);
-    const parentInfo = `[Parent Scenario: ${f.source}] ${f.article} > ${f.title}`;
-    const originalSnippet = (f.originalText || f.narrative || "").substring(0, 300);
+
+    // latestSelectionSummary가 있으면 선택된 시나리오를 primary로 업데이트
+    if (latestSelectionSummary) {
+        latestSelectionSummary.selectedScenarios.forEach(s => { s.isPrimary = false; });
+        const match = latestSelectionSummary.selectedScenarios.find(
+            s => s.title === f.title && s.source === (scenario._source || "")
+        );
+        if (match) {
+            match.isPrimary = true;
+        } else {
+            // 사용자가 선택한 시나리오가 top 3에 없으면 추가
+            latestSelectionSummary.selectedScenarios.unshift({
+                id: scenario.id || `${scenario._source}-${(f.title || "").replace(/\s+/g, "-")}`,
+                title: f.title,
+                articleTitle: f.article,
+                source: scenario._source || "v2.0",
+                score: f.score,
+                matchedTags: f.matchedTags,
+                valueTags: f.valueTags,
+                devices: f.devices,
+                originalText: (f.originalText || f.narrative || "").substring(0, 400),
+                analysis: "",
+                isPrimary: true
+            });
+        }
+        // 선택 이유 업데이트
+        const isKo = currentLocale === "ko";
+        latestSelectionSummary.selectionReason = isKo
+            ? `"${f.title}" 시나리오를 직접 선택하셨습니다. (적합도 ${f.score}점, 소스: Explore ${scenario._source || "v2.0"})`
+            : `You selected "${f.title}" (score: ${f.score}, source: Explore ${scenario._source || "v2.0"}).`;
+    }
 
     // 카테고리 선택 UI 표시
     renderOutputCategories();
@@ -8115,14 +8665,16 @@ function triggerAiFromCuration(scenario) {
         genBtn.className = "access-v2-btn";
         genBtn.style.cssText = "margin-top:14px;max-width:400px;margin-left:auto;margin-right:auto;display:block";
         genBtn.textContent = currentLocale === "ko"
-            ? "🤖 선택한 카테고리로 AI 시나리오 생성"
-            : "🤖 Generate AI scenario for selected categories";
+            ? "선택한 카테고리로 AI 시나리오 생성"
+            : "Generate AI scenario for selected categories";
         const container = document.getElementById("output-categories");
         if (container) container.parentElement.appendChild(genBtn);
     }
 
     genBtn.onclick = () => {
         const cats = [...selectedOutputCategories];
+        const parentInfo = `[Parent Scenario: ${f.source}] ${f.article} > ${f.title}`;
+        const originalSnippet = (f.originalText || f.narrative || "").substring(0, 300);
         const catContext = cats.length ? `\n\n--- Output Focus ---\n${cats.join(", ")}` : "";
         const curatedContext = `${purposeInput.value.trim()}\n\n--- Curated Parent ---\n${parentInfo}\n${originalSnippet}${catContext}`;
         const originalPurpose = purposeInput.value;

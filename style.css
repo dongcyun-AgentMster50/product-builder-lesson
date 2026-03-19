@@ -5571,3 +5571,528 @@ a.source-tag-link:hover {
 [dir="rtl"] .evidence-source-tag {
     text-align: right;
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Selection Card — Explore 선택 근거 카드
+   ══════════════════════════════════════════════════════════════════════ */
+
+.sel-card {
+    background: linear-gradient(135deg, #f0f4fa 0%, #e8eef6 100%);
+    border: 1px solid #d0dae8;
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 18px;
+}
+
+.sel-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.sel-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.sel-count {
+    font-size: 0.72rem;
+    color: var(--muted, #8899aa);
+    background: rgba(0, 51, 102, 0.08);
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+/* 시나리오 하이라이트 */
+.sel-scenario-highlight {
+    background: #003366;
+    color: #fff;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.sel-source-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+}
+
+.sel-scenario-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    flex: 1;
+    min-width: 120px;
+}
+
+.sel-scenario-article {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.7);
+    width: 100%;
+}
+
+.sel-values-row {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    margin-top: 4px;
+}
+
+.sel-value-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.sel-value-care    { background: #e8f5e9; color: #2e7d32; }
+.sel-value-secure  { background: #e3f2fd; color: #1565c0; }
+.sel-value-save    { background: #fff8e1; color: #f57f17; }
+.sel-value-play    { background: #fce4ec; color: #c62828; }
+
+/* 선택 이유 */
+.sel-reason {
+    font-size: 0.82rem;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    border-left: 3px solid #003366;
+}
+
+.sel-reason strong {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted, #667);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+}
+
+/* 반영된 입력값 그리드 */
+.sel-input-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.sel-input-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.sel-input-label {
+    font-size: 0.68rem;
+    color: var(--muted, #667);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+}
+
+.sel-input-value {
+    font-size: 0.82rem;
+    color: #1a1a2e;
+    font-weight: 500;
+    word-break: keep-all;
+}
+
+/* 도출 키워드 태그 */
+.sel-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.sel-derived-tag {
+    font-size: 0.72rem;
+    font-weight: 500;
+    background: #003366;
+    color: #fff;
+    padding: 3px 12px;
+    border-radius: 20px;
+    cursor: default;
+}
+
+/* 확정 vs 추론 */
+.sel-confidence {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.sel-confirmed-row,
+.sel-inferred-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.sel-chip {
+    font-size: 0.7rem;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.sel-chip-confirmed {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.sel-chip-inferred {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+    .sel-card {
+        padding: 14px 16px;
+    }
+    .sel-input-grid {
+        grid-template-columns: 1fr;
+    }
+    .sel-scenario-highlight {
+        padding: 12px 14px;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Structured Output — JSON 기반 마케터/사용자 탭 출력
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* 탭 바 */
+.str-tab-bar {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 0;
+}
+
+.str-tab {
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    background: transparent;
+    border: none;
+    color: var(--muted, #667);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+.str-tab.active {
+    color: #003366;
+    border-bottom-color: #003366;
+    background: rgba(0, 51, 102, 0.04);
+}
+
+.str-tab:hover:not(.active) {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+/* 패널 */
+.str-panel {
+    display: none;
+    padding: 24px 28px;
+}
+
+.str-panel.active {
+    display: block;
+}
+
+/* 공통 요소 */
+.str-headline {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+    background: #003366;
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 10px;
+}
+
+.str-summary {
+    font-size: 0.88rem;
+    color: #444;
+    line-height: 1.7;
+    margin-bottom: 18px;
+}
+
+.str-marketer h4,
+.str-consumer h4 {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #003366;
+    margin: 18px 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* 마케터: 채널 전략 */
+.str-channels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+.str-channel-card {
+    background: #f8f9fb;
+    border: 1px solid #e4e8ee;
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.str-channel-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #003366;
+    margin-bottom: 6px;
+}
+
+.str-channel-msg {
+    font-size: 0.85rem;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.str-channel-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 0.72rem;
+    color: var(--muted, #667);
+}
+
+.str-tone-badge {
+    background: #003366;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 600;
+}
+
+/* 마케터: 카피 옵션 */
+.str-copy-option {
+    background: #fff;
+    border: 1px solid #e4e8ee;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+}
+
+.str-copy-num {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #003366;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.str-copy-ko {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+    line-height: 1.5;
+}
+
+.str-copy-en {
+    font-size: 0.82rem;
+    color: #667;
+    margin-bottom: 4px;
+    font-style: italic;
+}
+
+.str-copy-tone {
+    font-size: 0.72rem;
+    color: var(--muted, #889);
+}
+
+/* 마케터: 기타 */
+.str-why, .str-target, .str-local-insight {
+    background: #f8f9fb;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+}
+
+.str-why p, .str-target p, .str-local-insight p {
+    font-size: 0.85rem;
+    color: #333;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.str-role-diff {
+    background: #f0f4fa;
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 12px;
+}
+
+.str-role-diff div {
+    font-size: 0.82rem;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 4px;
+}
+
+/* 일반 사용자: 기기 */
+.str-device-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.str-device-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    min-width: 120px;
+}
+
+.str-device-role {
+    font-size: 0.78rem;
+    color: #667;
+    flex: 1;
+}
+
+.str-device-req {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 20px;
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+/* 일반 사용자: 설정/주의사항 */
+.str-steps ol, .str-cautions ul, .str-conditions ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.str-steps li, .str-cautions li, .str-conditions li {
+    font-size: 0.85rem;
+    color: #333;
+    line-height: 1.8;
+    margin-bottom: 4px;
+}
+
+.str-cautions li {
+    color: #e65100;
+}
+
+/* 일반 사용자: 대안 */
+.str-alt-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: #f8f9fb;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+}
+
+.str-alt-item strong {
+    font-size: 0.85rem;
+    color: #1a1a2e;
+}
+
+.str-alt-item span {
+    font-size: 0.78rem;
+    color: #667;
+}
+
+/* 가치 하이라이트 */
+.str-values-section {
+    padding: 14px 28px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.str-value-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 0.82rem;
+    color: #333;
+}
+
+/* O-I-I 인사이트 */
+.str-insight-block {
+    padding: 14px 28px;
+    background: #f8f9fb;
+    border-top: 1px solid #f0f0f0;
+}
+
+.str-oii {
+    font-size: 0.82rem;
+    color: #333;
+    line-height: 1.7;
+    margin-bottom: 4px;
+}
+
+.str-oii strong {
+    color: #003366;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* 출처 추적 */
+.str-source-trace {
+    padding: 10px 28px;
+    font-size: 0.72rem;
+    color: var(--muted, #889);
+    border-top: 1px solid #f0f0f0;
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+    .str-panel {
+        padding: 16px 14px;
+    }
+    .str-channels-grid {
+        grid-template-columns: 1fr;
+    }
+    .str-values-section,
+    .str-insight-block,
+    .str-source-trace {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+}

@@ -15,21 +15,52 @@ function buildGeneratePrompt(body) {
     const mission = String(body?.missionBucket || "").trim();
     const locale = String(body?.locale || "ko").trim();
     const regionCtx = body?.regionInsight ? JSON.stringify(body.regionInsight, null, 2) : null;
+    const selectionSummary = body?.selectionSummary || null;
 
+    // Selection Summary가 있으면 JSON 모드 (Part 5-A)
+    if (selectionSummary && selectionSummary.selectedScenarios && selectionSummary.selectedScenarios.length > 0) {
+        return [
+            "## Selection Summary (내부 로직으로 결정됨 — 변경 금지)",
+            "```json",
+            JSON.stringify(selectionSummary, null, 2),
+            "```",
+            "",
+            regionCtx ? `## Live Regional Data\n\`\`\`json\n${regionCtx}\n\`\`\`\n` : "",
+            `## Context`,
+            `- Role: ${role}`,
+            `- Output Language: ${locale === "ko" ? "Korean-primary (한국어 90% 이상)" : "English-primary"}`,
+            "",
+            "## Task: Transform the selected Explore scenario",
+            "",
+            "위 Selection Summary에서 선택된 Explore 시나리오를 바탕으로,",
+            "시스템 프롬프트 Part 5-A의 JSON Schema에 맞춰 **마케터용 + 일반 사용자용** 변형 결과를 생성하세요.",
+            "",
+            "출력 규칙:",
+            "1. 반드시 valid JSON만 출력 (마크다운, 설명, 코멘트 섞지 말 것)",
+            "2. 한국어 90% 이상 (영어는 copyOptions의 en 필드와 sourceTrace만)",
+            "3. 선택된 시나리오의 원본 내용을 기반으로 변형 — 새로 창작하지 말 것",
+            "4. 입력된 지역/타깃/기기가 output 어디에 반영되었는지 명시적으로 보일 것",
+            "5. 가치 태그(Care/Secure/Save/Play)를 headline과 valueHighlights에 반영할 것",
+            "6. copyOptions 최소 2개, channelStrategy 최소 2개, setupSteps 최소 3단계",
+            "7. alternatives 최소 1개 (기기를 덜 가진 사용자를 위한 대안)"
+        ].filter(Boolean).join("\n");
+    }
+
+    // Selection Summary 없으면 기존 마크다운 모드 (Part 5-B Legacy)
     return [
         "## Input State",
         `- Q1. Role: ${role}`,
         `- Q2. Country: ${country}${city ? ` / City: ${city}` : ""}`,
         `- Q3. Target Segment: ${segment || "(not specified)"}`,
         `- Q3. Purpose: ${purpose || "(not specified)"}`,
-        `- Q4. Devices: ${devices || "(none)"}`,
-        `- Q4. Device Categories: ${groups || "(none)"}`,
+        `- Devices: ${devices || "(none)"}`,
+        `- Device Categories: ${groups || "(none)"}`,
         `- Explore Tags (intent): ${tags || "(none)"}`,
         `- Mission Bucket: ${mission || "Discover"}`,
-        `- Output Language: ${locale === "ko" ? "Korean-primary (English for Section 01-IV Storyboard and Section 04 marketing hooks)" : "English-primary"}`,
+        `- Output Language: ${locale === "ko" ? "Korean-primary (English for Section 04 marketing hooks)" : "English-primary"}`,
         regionCtx ? `\n## Live Regional Data\n\`\`\`json\n${regionCtx}\n\`\`\`` : "",
         "\n## Task",
-        "Generate a Samsung SmartThings CX scenario following the output schema in the system prompt.",
+        "Generate a Samsung SmartThings CX scenario following Part 5-B (Markdown Sections Mode) in the system prompt.",
         "Output sections (01) through (07) only. Then suggest next steps in natural language — do NOT mention section numbers like 10 or 11.",
         "IMPORTANT FORMAT RULES:",
         "- MARKDOWN HEADINGS: Each section title MUST use ## markdown heading. Example: '## (01) CX 시나리오 제목 및 요약'. Sub-sections use ### heading.",
