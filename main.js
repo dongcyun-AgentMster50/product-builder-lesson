@@ -2373,15 +2373,10 @@ function buildStep1Insight() {
 function buildStep2Insight() {
     return {
         badge: currentLocale === "ko" ? "Q1 Region" : "Q1 Region",
-        title: currentLocale === "ko" ? "지역 인사이트를 준비하고 있습니다" : "Preparing live regional insight",
+        title: currentLocale === "ko" ? "국가와 도시를 선택해 주세요" : "Select a country and city",
         summary: currentLocale === "ko"
-            ? "국가와 도시를 기반으로 실시간 외부 데이터를 수집하는 중입니다."
-            : "Collecting live external signals based on the selected country and city.",
-        body: currentLocale === "ko"
-            ? "잠시만 기다려 주세요. 시장/도시 신호를 결합해 카드가 곧 갱신됩니다."
-            : "Please wait. The card will update after market and local signals are aggregated.",
-        loading: true,
-        loadingLabel: currentLocale === "ko" ? "데이터 로딩 중" : "Loading data"
+            ? "도시를 선택하면 기본 지역 프로필이 표시됩니다. 상세 인사이트는 Build 시 AI가 자동 수집합니다."
+            : "Select a city to see its basic profile. Detailed insights will be collected by AI during Build."
     };
 }
 
@@ -2407,33 +2402,57 @@ async function renderStep2Insight(forceRefresh = false) {
     }
 
     const requestId = ++latestStep2InsightRequest;
-    stepInsight.innerHTML = buildInsightMarkup(buildStep2Insight());
-    updateQuestionHelpers();
-
     const country = resolveCountry(selectedMarket);
     const city = getCityValue();
-    console.log(`[renderStep2Insight] city="${city}", dropdown="${citySelect.value}", customInput="${cityCustomInput.value}"`);
+
     if (!city) {
         stepInsight.innerHTML = buildInsightMarkup(buildStep2CitySelectGuide(country.countryCode));
         return;
     }
-    const role = normalizeRoleId(roleSelect.value);
-    const insight = await fetchLiveStep2Insight(country.countryCode, city, role, forceRefresh);
-    if (requestId !== latestStep2InsightRequest || currentStep !== 2) return;
 
-    stepInsight.innerHTML = buildInsightMarkup(insight);
-    bindEvidenceChips(stepInsight);
-    bindSourceTags(stepInsight);
-    const retryBtn = document.getElementById("region-insight-retry");
-    if (retryBtn) {
-        retryBtn.addEventListener("click", () => {
-            renderStep2Insight(true);
+    // 정적 도시 데이터로 가벼운 프로필 표시 (라이브 API 호출 없음 — Build 시점으로 이동)
+    const staticContent = getCitySignalContent(country.countryCode, city);
+    const localCity = getCityDisplayValue(country.countryCode, city) || city;
+    const countryName = selectedMarket?.label || getCountryName(country.countryCode);
+
+    if (staticContent) {
+        const insight = buildStep2StaticInsight(countryName, localCity, staticContent);
+        stepInsight.innerHTML = buildInsightMarkup(insight);
+    } else {
+        // 정적 데이터도 없으면 간단 안내
+        stepInsight.innerHTML = buildInsightMarkup({
+            badge: "Q1 Region",
+            title: currentLocale === "ko"
+                ? `${countryName} ${localCity} 선택됨`
+                : `${countryName} ${localCity} selected`,
+            summary: currentLocale === "ko"
+                ? "이 도시의 상세 인사이트는 Build 시 AI가 자동으로 수집합니다."
+                : "Detailed insights for this city will be collected by AI during Build."
         });
     }
+    updateQuestionHelpers();
 
     stepInsight.classList.remove("insight-refresh");
     void stepInsight.offsetWidth;
     stepInsight.classList.add("insight-refresh");
+}
+
+/**
+ * 정적 city_signals 데이터 기반 가벼운 Q1 인사이트
+ */
+function buildStep2StaticInsight(countryName, localCity, content) {
+    const isKo = currentLocale === "ko";
+    // content는 보통 문자열 하나 (도시 설명)
+    const text = typeof content === "string" ? content : (content.summary || content.description || JSON.stringify(content));
+
+    return {
+        badge: "Q1 Region",
+        title: isKo ? `${countryName} ${localCity}` : `${countryName} ${localCity}`,
+        summary: text.length > 200 ? text.substring(0, 200) + "..." : text,
+        body: isKo
+            ? "상세 지역 인사이트(트렌드, 행사, 생활 패턴)는 Build 시 AI가 실시간으로 수집합니다."
+            : "Detailed regional insights (trends, events, lifestyle patterns) will be collected by AI during Build."
+    };
 }
 
 async function fetchLiveStep2Insight(countryCode, city, role, forceRefresh = false) {
