@@ -907,6 +907,15 @@ function setSessionCookie(req, res, token, expiresAt) {
 }
 
 function loadAccessCodes() {
+    // 1. 환경변수 ACCESS_CODES 우선 (쉼표 구분)
+    if (process.env.ACCESS_CODES) {
+        const envCodes = process.env.ACCESS_CODES.split(",").map(c => c.trim()).filter(Boolean);
+        if (envCodes.length > 0) {
+            return envCodes.map(code => ({ code, enabled: true, expiresAt: null, note: "env" }));
+        }
+    }
+
+    // 2. 로컬 파일 fallback (개발용 — .gitignore에 포함, 레포에 커밋하지 않음)
     try {
         const raw = fs.readFileSync(ACCESS_CODES_FILE, "utf8");
         const payload = JSON.parse(raw);
@@ -925,7 +934,7 @@ function loadAccessCodes() {
             ? codes
             : FALLBACK_ACCESS_CODES.map((code) => ({ code, enabled: true, expiresAt: null, note: "" }));
     } catch (error) {
-        console.warn(`Failed to read ${ACCESS_CODES_FILE}. Using fallback access codes instead.`, error.message);
+        console.warn(`[access] No ACCESS_CODES env and ${ACCESS_CODES_FILE} unavailable. Using fallback.`, error.message);
         return FALLBACK_ACCESS_CODES.map((code) => ({ code, enabled: true, expiresAt: null, note: "" }));
     }
 }

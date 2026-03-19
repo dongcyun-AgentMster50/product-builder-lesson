@@ -1,7 +1,8 @@
-# Environment variables — never commit secrets
+# Environment variables & secrets — never commit
 .env
 .env.local
 .env.*.local
+access-codes.json
 
 # Backup directories
 backups/
