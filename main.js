@@ -6198,7 +6198,8 @@ function renderOutputPreview() {
 
     const flowSteps = isKo ? [
         { phase: "STEP 1", label: "입력 정보에 알맞는 시나리오 매칭", icon: "✦",
-          desc: "입력한 국가/도시 + 타겟 + 기기 조건으로 Explore Contents에서 <strong>검증된 시나리오</strong>를 즉시 매칭합니다." },
+          desc: "입력한 국가/도시 + 타겟 + 기기 조건으로 Explore Contents에서 <strong>검증된 시나리오</strong>를 즉시 매칭합니다.",
+          helper: "Build 클릭 시 Explore v1.0(183개) + v2.0(87개) 시나리오 중 입력 조건에 맞는 상위 5개가 자동 선별됩니다. 선별된 시나리오 중 하나를 선택하면 STEP 2로 이어집니다." },
         { phase: "STEP 2", label: "시나리오 기반 결과물 생성", icon: "🤖",
           desc: "매칭된 시나리오를 Parent로 삼아, 아래 7개 결과물을 AI가 지역화·확장합니다.",
           items: [
@@ -6215,7 +6216,8 @@ function renderOutputPreview() {
           note: "복수 선택 가능 — 직무를 미리 고르지 않아도 됩니다" }
     ] : [
         { phase: "STEP 1", label: "Scenario matching based on your input", icon: "✦",
-          desc: "Instantly match <strong>verified scenarios</strong> from Explore Contents based on your country, target, and device selections." },
+          desc: "Instantly match <strong>verified scenarios</strong> from Explore Contents based on your country, target, and device selections.",
+          helper: "When you click Build, the top 5 scenarios are auto-selected from Explore v1.0 (183) + v2.0 (87). Choose one to proceed to STEP 2." },
         { phase: "STEP 2", label: "AI-Expanded Results", icon: "🤖",
           desc: "Using the matched scenario as a Parent, AI generates 7 localized output sections:",
           items: [
@@ -6245,6 +6247,7 @@ function renderOutputPreview() {
                         </div>
                         <div class="preview-flow-body">
                             <p>${step.desc}</p>
+                            ${step.helper ? `<p class="preview-flow-helper">${escapeHtml(step.helper)}</p>` : ""}
                             ${step.items ? `
                                 <div class="preview-flow-items">
                                     ${step.items.map(item => `

@@ -5384,6 +5384,16 @@ a.source-tag-link:hover {
     background: rgba(0, 51, 102, 0.04);
     border-left: 3px solid var(--accent-strong);
 }
+.preview-flow-helper {
+    margin: 8px 0 4px;
+    font-size: 0.78rem;
+    color: #556;
+    line-height: 1.6;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: rgba(0, 51, 102, 0.05);
+    border: 1px dashed rgba(0, 51, 102, 0.15);
+}
 .preview-flow-items {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
