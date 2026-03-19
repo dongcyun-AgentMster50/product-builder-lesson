@@ -2513,13 +2513,10 @@ function renderCityProfileInsight(countryName, localCity, profile) {
     const isKo = currentLocale === "ko";
     const available = CITY_PROFILE_CATEGORIES.filter(cat => profile[cat.key]);
 
-    // 1줄 요약: 첫 카테고리 텍스트를 60자로 잘라서 표시
-    const firstCat = available[0];
-    const oneLiner = firstCat
-        ? `${firstCat.icon} ${profile[firstCat.key].substring(0, 60)}${profile[firstCat.key].length > 60 ? "…" : ""}`
-        : "";
+    // 도시 프로필을 전역 저장 (태그 선택 후 카드 렌더에 사용)
+    _latestCityProfile = { countryName, localCity, profile, available };
 
-    // 바텀시트 콘텐츠 (전역 DOM에 주입)
+    // 바텀시트 콘텐츠 준비
     const categoriesHtml = available.map(cat => `
         <div class="cpv2-item" style="--cpv2-accent:${cat.color}">
             <div class="cpv2-icon">${cat.icon}</div>
@@ -2531,8 +2528,6 @@ function renderCityProfileInsight(countryName, localCity, profile) {
     `).join("");
 
     const flag = typeof getCountryFlagEmoji === "function" ? getCountryFlagEmoji("KR") : "";
-
-    // 바텀시트 HTML을 전역에 저장 (bindCityProfileDrawer에서 DOM 주입)
     _pendingCitySheetHtml = `
         <div class="cpv2-sheet-header">
             <div class="cpv2-sheet-handle"></div>
@@ -2547,14 +2542,28 @@ function renderCityProfileInsight(countryName, localCity, profile) {
         <div class="city-profile-grid">${categoriesHtml}</div>
     `;
 
-    // 인라인 카드: 1줄 요약 + CTA
+    // Magic Setup: 태그 선택형 UI
+    const tagsHtml = available.map(cat => `
+        <button type="button" class="magic-tag" data-cat-key="${cat.key}" style="--magic-accent:${cat.color}">
+            <span class="magic-tag-icon">${cat.icon}</span>
+            <span class="magic-tag-label">${escapeHtml(isKo ? cat.labelKo : cat.labelEn)}</span>
+        </button>
+    `).join("");
+
     return `
-        <div class="insight-card cpv2-compact">
-            <div class="cpv2-compact-row">
-                <span class="cpv2-compact-summary">${oneLiner}</span>
-                <button type="button" class="cpv2-sheet-trigger">
-                    <span>💡</span>
-                    <span>${isKo ? "지역 라이프스타일 엿보기" : "Explore city lifestyle"}</span>
+        <div class="magic-setup">
+            <div class="magic-header">
+                <span class="magic-city">${flag} ${escapeHtml(localCity)}</span>
+                <span class="magic-prompt">${isKo ? "지금 가장 고민되는 키워드를 골라주세요" : "Pick the topics that matter most to you"} <em>(${isKo ? "최대 3개" : "up to 3"})</em></span>
+            </div>
+            <div class="magic-tags">${tagsHtml}</div>
+            <div class="magic-cards" id="magic-cards"></div>
+            <div class="magic-actions" id="magic-actions" style="display:none">
+                <button type="button" class="magic-apply-btn" id="magic-apply-btn">
+                    ${isKo ? "이 키워드를 시나리오에 반영하기" : "Apply these to scenario matching"}
+                </button>
+                <button type="button" class="cpv2-sheet-trigger magic-all-btn">
+                    ${isKo ? "전체 도시 프로필 보기" : "View full city profile"}
                 </button>
             </div>
         </div>
@@ -2562,14 +2571,120 @@ function renderCityProfileInsight(countryName, localCity, profile) {
 }
 
 let _pendingCitySheetHtml = "";
+let _latestCityProfile = null;
+let _magicSelected = new Set();
 
 /**
  * 정적 city_signals fallback
  */
 function bindCityProfileDrawer(container) {
+    // 바텀시트 "전체 보기" 트리거
     container.querySelectorAll(".cpv2-sheet-trigger").forEach(btn => {
         btn.addEventListener("click", () => openCitySheet());
     });
+
+    // Magic Setup 태그 선택
+    _magicSelected.clear();
+    container.querySelectorAll(".magic-tag").forEach(tag => {
+        tag.addEventListener("click", () => {
+            const key = tag.dataset.catKey;
+            if (_magicSelected.has(key)) {
+                _magicSelected.delete(key);
+                tag.classList.remove("selected");
+            } else if (_magicSelected.size < 3) {
+                _magicSelected.add(key);
+                tag.classList.add("selected");
+            }
+            renderMagicCards(container);
+        });
+    });
+
+    // "시나리오에 반영하기" 버튼
+    const applyBtn = container.querySelector("#magic-apply-btn");
+    if (applyBtn) {
+        applyBtn.addEventListener("click", () => {
+            if (_magicSelected.size === 0) return;
+            // 선택된 키워드를 purpose input에 반영
+            const isKo = currentLocale === "ko";
+            const keywords = [..._magicSelected].map(key => {
+                const cat = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
+                return cat ? (isKo ? cat.labelKo : cat.labelEn) : key;
+            });
+            const prefix = isKo ? "관심 키워드: " : "Focus: ";
+            const existing = purposeInput.value.trim();
+            const keywordText = prefix + keywords.join(", ");
+            purposeInput.value = existing ? `${existing} / ${keywordText}` : keywordText;
+
+            // 시각 피드백
+            applyBtn.textContent = isKo ? "반영됨!" : "Applied!";
+            applyBtn.disabled = true;
+            setTimeout(() => {
+                applyBtn.textContent = isKo ? "이 키워드를 시나리오에 반영하기" : "Apply these to scenario matching";
+                applyBtn.disabled = false;
+            }, 1500);
+        });
+    }
+}
+
+function renderMagicCards(container) {
+    const cardsEl = container.querySelector("#magic-cards");
+    const actionsEl = container.querySelector("#magic-actions");
+    if (!cardsEl || !_latestCityProfile) return;
+
+    if (_magicSelected.size === 0) {
+        cardsEl.innerHTML = "";
+        if (actionsEl) actionsEl.style.display = "none";
+        return;
+    }
+
+    const isKo = currentLocale === "ko";
+    const { localCity, profile } = _latestCityProfile;
+
+    const cards = [..._magicSelected].map(key => {
+        const cat = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
+        if (!cat || !profile[key]) return "";
+        const text = profile[key];
+        return `
+            <div class="magic-card" style="--magic-accent:${cat.color}">
+                <div class="magic-card-head">
+                    <span class="magic-card-icon">${cat.icon}</span>
+                    <span class="magic-card-label">${escapeHtml(isKo ? cat.labelKo : cat.labelEn)}</span>
+                </div>
+                <p class="magic-card-text">${escapeHtml(text)}</p>
+                <p class="magic-card-hint">${buildMagicHint(key, localCity, isKo)}</p>
+            </div>
+        `;
+    }).join("");
+
+    cardsEl.innerHTML = cards;
+    if (actionsEl) actionsEl.style.display = "";
+}
+
+function buildMagicHint(key, city, isKo) {
+    const hints = isKo ? {
+        climate: `${city}의 계절 특성에 맞춘 자동 냉난방·공기질 루틴을 설계할 수 있습니다.`,
+        housing: `${city} 주거 환경에 최적화된 스마트홈 자동화를 추천합니다.`,
+        family: `${city} 가구 구성에 맞는 돌봄·안심 시나리오를 연결합니다.`,
+        daily_rhythm: `${city} 주민의 출퇴근·생활 패턴에 맞춘 루틴을 설계합니다.`,
+        safety: `${city} 보안 환경에 맞는 안전·모니터링 시나리오를 추천합니다.`,
+        energy: `${city} 에너지 비용 구조에 맞는 절약 자동화를 제안합니다.`,
+        health: `${city} 생활 환경에 맞는 건강·웰니스 루틴을 연결합니다.`,
+        pets: `${city} 반려 생활에 맞는 펫 케어 자동화를 추천합니다.`,
+        mobility: `${city} 이동·부재 패턴에 맞는 외출 모드를 설계합니다.`,
+        events: `${city} 계절 행사에 맞춘 시즌별 캠페인 시나리오를 연결합니다.`
+    } : {
+        climate: `Design auto climate & air routines for ${city}'s seasonal patterns.`,
+        housing: `Recommend smart home automation optimized for ${city} housing.`,
+        family: `Connect care & safety scenarios for ${city} household types.`,
+        daily_rhythm: `Design routines matching ${city} commute & lifestyle patterns.`,
+        safety: `Recommend security scenarios for ${city}'s safety environment.`,
+        energy: `Suggest energy-saving automation for ${city}'s cost structure.`,
+        health: `Connect wellness routines suited to ${city}'s lifestyle.`,
+        pets: `Recommend pet care automation for ${city}'s pet owners.`,
+        mobility: `Design away-mode scenarios for ${city}'s travel patterns.`,
+        events: `Connect seasonal campaign scenarios to ${city}'s local events.`
+    };
+    return hints[key] || "";
 }
 
 function openCitySheet() {

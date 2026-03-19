@@ -6108,10 +6108,207 @@ a.source-tag-link:hover {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   City Profile v2 — 컴팩트 1줄 + 바텀시트
+   Magic Setup — 초개인화 태그 선택
    ══════════════════════════════════════════════════════════════════════ */
 
-/* 인라인 컴팩트 카드 (1줄) */
+.magic-setup {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #d0dae8;
+    background: #fff;
+}
+
+.magic-header {
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #003366 0%, #004d99 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.magic-city {
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.magic-prompt {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.magic-prompt em {
+    font-style: normal;
+    color: #81d4fa;
+    font-weight: 600;
+}
+
+/* 태그 그리드 */
+.magic-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 14px 20px;
+    background: #f8fafd;
+}
+
+.magic-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 2px solid #e0e4ea;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #444;
+}
+
+.magic-tag:hover {
+    border-color: var(--magic-accent, #003366);
+    background: color-mix(in srgb, var(--magic-accent, #003366) 6%, #fff);
+}
+
+.magic-tag.selected {
+    border-color: var(--magic-accent, #003366);
+    background: var(--magic-accent, #003366);
+    color: #fff;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--magic-accent, #003366) 30%, transparent);
+}
+
+.magic-tag.selected .magic-tag-icon {
+    filter: brightness(1.2);
+}
+
+.magic-tag-icon {
+    font-size: 1.05rem;
+}
+
+.magic-tag-label {
+    font-weight: 600;
+}
+
+/* 선택된 카드 영역 */
+.magic-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.magic-card {
+    padding: 16px 20px;
+    border-top: 1px solid #f0f0f0;
+    animation: magicCardIn 0.3s ease;
+}
+
+@keyframes magicCardIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.magic-card-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.magic-card-icon {
+    font-size: 1.2rem;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--magic-accent, #003366) 10%, transparent);
+}
+
+.magic-card-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--magic-accent, #003366);
+}
+
+.magic-card-text {
+    font-size: 0.82rem;
+    color: #333;
+    line-height: 1.6;
+    margin: 0 0 6px 0;
+}
+
+.magic-card-hint {
+    font-size: 0.74rem;
+    color: #003366;
+    font-weight: 500;
+    margin: 0;
+    padding: 6px 10px;
+    background: rgba(0, 51, 102, 0.04);
+    border-radius: 6px;
+    border-left: 3px solid var(--magic-accent, #003366);
+}
+
+/* 액션 버튼 영역 */
+.magic-actions {
+    padding: 12px 20px 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    border-top: 1px solid #f0f0f0;
+}
+
+.magic-apply-btn {
+    flex: 1;
+    min-width: 180px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #003366, #004d99);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.magic-apply-btn:hover:not(:disabled) {
+    box-shadow: 0 3px 12px rgba(0, 51, 102, 0.3);
+    transform: translateY(-1px);
+}
+
+.magic-apply-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.magic-all-btn {
+    padding: 10px 16px;
+    border: 1px solid #003366;
+    border-radius: 10px;
+    background: none;
+    color: #003366;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.magic-all-btn:hover {
+    background: rgba(0, 51, 102, 0.06);
+}
+
+@media (max-width: 600px) {
+    .magic-tags { gap: 6px; padding: 10px 14px; }
+    .magic-tag { padding: 5px 10px; font-size: 0.72rem; }
+    .magic-actions { flex-direction: column; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   City Profile — 바텀시트 (전체 보기)
+   ══════════════════════════════════════════════════════════════════════ */
 .cpv2-compact {
     padding: 10px 16px;
     border-radius: 10px;
