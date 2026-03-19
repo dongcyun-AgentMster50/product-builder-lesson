@@ -6108,104 +6108,129 @@ a.source-tag-link:hover {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   City Profile v2 — 컴팩트 트리거 + 인사이트 서랍
+   City Profile v2 — 컴팩트 1줄 + 바텀시트
    ══════════════════════════════════════════════════════════════════════ */
 
-.city-profile-card-v2 {
-    padding: 0;
-    overflow: hidden;
-    border-radius: 16px;
-    border: 1px solid #d0dae8;
+/* 인라인 컴팩트 카드 (1줄) */
+.cpv2-compact {
+    padding: 10px 16px;
+    border-radius: 10px;
 }
-
-/* 헤더 */
-.cpv2-header {
+.cpv2-compact-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 14px 20px;
-    background: linear-gradient(135deg, #003366 0%, #004d99 100%);
-    color: #fff;
-}
-.cpv2-flag { font-size: 1.8rem; line-height: 1; }
-.cpv2-header-text { flex: 1; }
-.cpv2-city { font-size: 1.1rem; font-weight: 800; margin: 0; color: #fff; }
-.cpv2-country { font-size: 0.72rem; color: rgba(255,255,255,0.65); }
-.cpv2-badge {
-    font-size: 0.62rem; font-weight: 700;
-    background: rgba(255,255,255,0.18); color: #fff;
-    padding: 3px 10px; border-radius: 20px;
-    text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
-}
-
-/* 프리뷰 (접힌 상태) */
-.cpv2-preview {
-    padding: 12px 20px;
-    background: #f8fafd;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.cpv2-pills {
-    display: flex;
     flex-wrap: wrap;
-    gap: 6px;
 }
-.cpv2-pill {
-    font-size: 0.74rem;
+.cpv2-compact-summary {
+    font-size: 0.8rem;
     color: #444;
-    background: #fff;
-    border: 1px solid #e4e8ee;
-    padding: 4px 12px;
-    border-radius: 20px;
-    border-left: 3px solid var(--cpv2-accent, #003366);
-    line-height: 1.4;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-
-/* 서랍 토글 버튼 */
-.cpv2-drawer-toggle {
-    display: flex;
+.cpv2-sheet-trigger {
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     background: none;
-    border: 1px dashed rgba(0,51,102,0.25);
-    border-radius: 8px;
-    padding: 8px 14px;
+    border: 1px solid #003366;
+    border-radius: 20px;
+    padding: 5px 14px;
     cursor: pointer;
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     color: #003366;
     font-weight: 600;
+    white-space: nowrap;
     transition: all 0.2s;
 }
-.cpv2-drawer-toggle:hover {
-    background: rgba(0,51,102,0.06);
-    border-color: #003366;
+.cpv2-sheet-trigger:hover {
+    background: #003366;
+    color: #fff;
 }
-.cpv2-drawer-toggle.open {
-    background: rgba(0,51,102,0.06);
-    border-style: solid;
+
+/* 오버레이 */
+.cpv2-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
+    z-index: 9998;
+    transition: background 0.3s;
 }
-.cpv2-toggle-icon { font-size: 1.1rem; }
-.cpv2-chevron {
+.cpv2-overlay.open {
+    background: rgba(0, 0, 0, 0.45);
+}
+
+/* 바텀시트 */
+.cpv2-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 75vh;
+    background: #fff;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.15);
+    z-index: 9999;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.cpv2-sheet.open {
+    transform: translateY(0);
+}
+
+/* 시트 헤더 */
+.cpv2-sheet-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: linear-gradient(135deg, #003366 0%, #004d99 100%);
+    padding: 10px 20px 14px;
+    border-radius: 18px 18px 0 0;
+}
+.cpv2-sheet-handle {
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.35);
+    margin: 0 auto 10px;
+}
+.cpv2-sheet-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+}
+.cpv2-sheet-title-row .cpv2-flag { font-size: 1.6rem; line-height: 1; }
+.cpv2-sheet-title-row .cpv2-city { font-size: 1.05rem; font-weight: 800; margin: 0; color: #fff; }
+.cpv2-sheet-title-row .cpv2-country { font-size: 0.7rem; color: rgba(255,255,255,0.6); }
+.cpv2-sheet-title-row .cpv2-badge {
+    font-size: 0.6rem; font-weight: 700;
+    background: rgba(255,255,255,0.18); color: #fff;
+    padding: 3px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+}
+.cpv2-sheet-close {
     margin-left: auto;
-    font-size: 0.8rem;
-    transition: transform 0.2s;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    font-size: 1.3rem;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
 }
-.cpv2-drawer-toggle.open .cpv2-chevron {
-    transform: rotate(180deg);
-}
+.cpv2-sheet-close:hover { background: rgba(255,255,255,0.3); }
 
-/* 서랍 (접힌 상태 = 숨김) */
-.cpv2-drawer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.35s ease;
-}
-.cpv2-drawer.open {
-    max-height: 2000px;
-}
-
-/* 카테고리 그리드 */
+/* 카테고리 그리드 (시트 안) */
+.cpv2-sheet .city-profile-grid,
 .city-profile-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -6242,25 +6267,40 @@ a.source-tag-link:hover {
 .cpv2-text { font-size: 0.77rem; color: #444; line-height: 1.55; }
 
 @media (max-width: 700px) {
+    .cpv2-sheet { max-height: 85vh; }
     .city-profile-grid { grid-template-columns: 1fr; }
     .cpv2-item { border-right: none; }
     .cpv2-item:last-child { border-bottom: none; }
 }
 
+/* 데스크탑: 시트를 중앙 정렬 + 최대 너비 제한 */
+@media (min-width: 768px) {
+    .cpv2-sheet {
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, 100%);
+        width: 680px;
+        max-height: 70vh;
+        border-radius: 18px 18px 0 0;
+    }
+    .cpv2-sheet.open {
+        transform: translate(-50%, 0);
+    }
+}
+
 /* ══════════════════════════════════════════════════════════════════════
-   Smart Loading — 도시 맥락 기반 롤링 문구
+   Smart Loading — 도시 맥락 기반 롤링 문구 (5개, ~9초 사이클)
    ══════════════════════════════════════════════════════════════════════ */
 
 .smart-load-header {
     display: flex;
     align-items: center;
     gap: 18px;
-    padding: 24px 28px;
+    padding: 22px 26px;
     background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 100%);
     border-radius: 14px 14px 0 0;
 }
 
-/* 오빗 도트 애니메이션 */
 .smart-load-orbit {
     display: flex;
     gap: 6px;
@@ -6280,10 +6320,9 @@ a.source-tag-link:hover {
     50% { transform: scale(1.2); opacity: 1; }
 }
 
-/* 롤링 문구 */
 .smart-load-phrases {
     position: relative;
-    height: 1.6em;
+    height: 1.5em;
     overflow: hidden;
     flex: 1;
 }
@@ -6291,19 +6330,19 @@ a.source-tag-link:hover {
     position: absolute;
     left: 0; top: 0;
     width: 100%;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: #e3f2fd;
-    line-height: 1.6em;
+    line-height: 1.5em;
     opacity: 0;
     transform: translateY(100%);
-    animation: smartPhraseRoll 15s linear infinite;
+    animation: smartPhraseRoll 9s linear infinite;
 }
 
 @keyframes smartPhraseRoll {
     0%   { opacity: 0; transform: translateY(100%); }
-    2%   { opacity: 1; transform: translateY(0); }
-    14%  { opacity: 1; transform: translateY(0); }
-    17%  { opacity: 0; transform: translateY(-100%); }
+    3%   { opacity: 1; transform: translateY(0); }
+    17%  { opacity: 1; transform: translateY(0); }
+    20%  { opacity: 0; transform: translateY(-100%); }
     100% { opacity: 0; transform: translateY(-100%); }
 }

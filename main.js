@@ -2511,16 +2511,15 @@ const CITY_PROFILE_CATEGORIES = [
 
 function renderCityProfileInsight(countryName, localCity, profile) {
     const isKo = currentLocale === "ko";
-
-    // 컴팩트 요약: 상위 3개 카테고리 아이콘 + 첫 문장 발췌
     const available = CITY_PROFILE_CATEGORIES.filter(cat => profile[cat.key]);
-    const preview = available.slice(0, 3).map(cat => {
-        const text = profile[cat.key];
-        const short = text.length > 40 ? text.substring(0, 40) + "…" : text;
-        return `<span class="cpv2-pill" style="--cpv2-accent:${cat.color}">${cat.icon} ${escapeHtml(short)}</span>`;
-    }).join("");
 
-    // 전체 그리드 (서랍 안)
+    // 1줄 요약: 첫 카테고리 텍스트를 60자로 잘라서 표시
+    const firstCat = available[0];
+    const oneLiner = firstCat
+        ? `${firstCat.icon} ${profile[firstCat.key].substring(0, 60)}${profile[firstCat.key].length > 60 ? "…" : ""}`
+        : "";
+
+    // 바텀시트 콘텐츠 (전역 DOM에 주입)
     const categoriesHtml = available.map(cat => `
         <div class="cpv2-item" style="--cpv2-accent:${cat.color}">
             <div class="cpv2-icon">${cat.icon}</div>
@@ -2531,50 +2530,90 @@ function renderCityProfileInsight(countryName, localCity, profile) {
         </div>
     `).join("");
 
-    const flag = typeof getCountryFlagEmoji === "function" ? getCountryFlagEmoji("KR") : "🇰🇷";
-    const drawerId = "cpv2-drawer-" + Date.now();
+    const flag = typeof getCountryFlagEmoji === "function" ? getCountryFlagEmoji("KR") : "";
 
-    return `
-        <div class="insight-card city-profile-card-v2">
-            <div class="cpv2-header">
-                <span class="cpv2-flag">${flag}</span>
-                <div class="cpv2-header-text">
-                    <h3 class="cpv2-city">${escapeHtml(localCity)}</h3>
-                    <span class="cpv2-country">${escapeHtml(countryName)}</span>
-                </div>
+    // 바텀시트 HTML을 전역에 저장 (bindCityProfileDrawer에서 DOM 주입)
+    _pendingCitySheetHtml = `
+        <div class="cpv2-sheet-header">
+            <div class="cpv2-sheet-handle"></div>
+            <div class="cpv2-sheet-title-row">
+                ${flag ? `<span class="cpv2-flag">${flag}</span>` : ""}
+                <h3 class="cpv2-city">${escapeHtml(localCity)}</h3>
+                <span class="cpv2-country">${escapeHtml(countryName)}</span>
                 <span class="cpv2-badge">${isKo ? "AI 도시 프로필" : "AI City Profile"}</span>
+                <button type="button" class="cpv2-sheet-close" aria-label="Close">&times;</button>
             </div>
-            <div class="cpv2-preview">
-                <div class="cpv2-pills">${preview}</div>
-                <button type="button" class="cpv2-drawer-toggle" data-drawer="${drawerId}">
-                    <span class="cpv2-toggle-icon">💡</span>
-                    <span>${isKo ? "도시 라이프스타일 엿보기" : "Explore city lifestyle"}</span>
-                    <span class="cpv2-chevron">▾</span>
+        </div>
+        <div class="city-profile-grid">${categoriesHtml}</div>
+    `;
+
+    // 인라인 카드: 1줄 요약 + CTA
+    return `
+        <div class="insight-card cpv2-compact">
+            <div class="cpv2-compact-row">
+                <span class="cpv2-compact-summary">${oneLiner}</span>
+                <button type="button" class="cpv2-sheet-trigger">
+                    <span>💡</span>
+                    <span>${isKo ? "지역 라이프스타일 엿보기" : "Explore city lifestyle"}</span>
                 </button>
-            </div>
-            <div class="cpv2-drawer" id="${drawerId}">
-                <div class="city-profile-grid">${categoriesHtml}</div>
             </div>
         </div>
     `;
 }
 
+let _pendingCitySheetHtml = "";
+
 /**
  * 정적 city_signals fallback
  */
 function bindCityProfileDrawer(container) {
-    container.querySelectorAll(".cpv2-drawer-toggle").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const drawerId = btn.dataset.drawer;
-            const drawer = document.getElementById(drawerId);
-            if (!drawer) return;
-            const isOpen = drawer.classList.contains("open");
-            drawer.classList.toggle("open", !isOpen);
-            btn.classList.toggle("open", !isOpen);
-            const chevron = btn.querySelector(".cpv2-chevron");
-            if (chevron) chevron.textContent = isOpen ? "▾" : "▴";
-        });
+    container.querySelectorAll(".cpv2-sheet-trigger").forEach(btn => {
+        btn.addEventListener("click", () => openCitySheet());
     });
+}
+
+function openCitySheet() {
+    if (!_pendingCitySheetHtml) return;
+
+    // 기존 시트가 있으면 제거
+    closeCitySheet();
+
+    // overlay + sheet 생성
+    const overlay = document.createElement("div");
+    overlay.className = "cpv2-overlay";
+    overlay.addEventListener("click", closeCitySheet);
+
+    const sheet = document.createElement("div");
+    sheet.className = "cpv2-sheet";
+    sheet.id = "cpv2-sheet";
+    sheet.innerHTML = _pendingCitySheetHtml;
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(sheet);
+
+    // 닫기 버튼
+    sheet.querySelector(".cpv2-sheet-close")?.addEventListener("click", closeCitySheet);
+
+    // ESC 키
+    document.addEventListener("keydown", _citySheetEscHandler);
+
+    // 트리거 애니메이션 (다음 프레임에서 open 클래스 추가)
+    requestAnimationFrame(() => {
+        overlay.classList.add("open");
+        sheet.classList.add("open");
+    });
+}
+
+function closeCitySheet() {
+    const overlay = document.querySelector(".cpv2-overlay");
+    const sheet = document.getElementById("cpv2-sheet");
+    if (overlay) { overlay.classList.remove("open"); setTimeout(() => overlay.remove(), 300); }
+    if (sheet) { sheet.classList.remove("open"); setTimeout(() => sheet.remove(), 300); }
+    document.removeEventListener("keydown", _citySheetEscHandler);
+}
+
+function _citySheetEscHandler(e) {
+    if (e.key === "Escape") closeCitySheet();
 }
 
 function renderCityProfileFromStatic(countryName, localCity, content) {
@@ -4271,27 +4310,27 @@ function buildStreamingUI(context) {
         ? renderExploreSelectionCard(context.selectionSummary)
         : buildSelectionSummaryCard(context);
 
-    // 스마트 로딩: 도시 맥락 기반 롤링 문구
+    // 스마트 로딩: 도시 맥락 기반 롤링 문구 (5개, 1.8초 간격 = ~9초 사이클)
     const cityDisplay = context.cityDisplay || context.city || "";
     const segment = context.segment || "";
+    const cityFallback = isKo ? "선택한 지역" : "your city";
+    const segFallback = isKo ? "타깃 고객" : "target customers";
     const loadingPhrases = isKo ? [
-        `${cityDisplay || "선택한 지역"}의 생활 패턴을 분석 중...`,
-        `${segment || "타깃 고객"}의 일상 루틴을 매칭 중...`,
-        `Explore 시나리오에서 최적 조합 탐색 중...`,
-        `마케터용 + 일반 사용자용 결과물 구성 중...`,
-        `지역 인사이트와 채널 전략 연결 중...`,
+        `${cityDisplay || cityFallback}의 생활 맥락을 분석 중...`,
+        `${segment || segFallback}의 평일·주말 패턴을 매칭 중...`,
+        `Explore 시나리오에서 최적 조합을 탐색 중...`,
+        `마케터용·사용자용 결과물을 구성 중...`,
         `최적의 CX 시나리오를 찾았습니다!`
     ] : [
-        `Analyzing lifestyle patterns in ${cityDisplay || "your city"}...`,
-        `Matching routines for ${segment || "target customers"}...`,
+        `Analyzing local living context in ${cityDisplay || cityFallback}...`,
+        `Matching weekday & weekend patterns for ${segment || segFallback}...`,
         `Searching optimal Explore scenario combinations...`,
-        `Building marketer + consumer outputs...`,
-        `Connecting regional insights with channel strategy...`,
-        `Found the best CX scenario!`
+        `Building marketer & consumer outputs...`,
+        `Found the best-fit CX scenario!`
     ];
 
     const phrasesHtml = loadingPhrases.map((p, i) => `
-        <span class="smart-load-phrase" style="animation-delay:${i * 2.5}s">${escapeHtml(p)}</span>
+        <span class="smart-load-phrase" style="animation-delay:${i * 1.8}s">${escapeHtml(p)}</span>
     `).join("");
 
     return `
