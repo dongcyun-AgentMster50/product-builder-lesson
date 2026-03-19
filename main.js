@@ -6197,39 +6197,43 @@ function renderOutputPreview() {
     const title = t("previewTitle");
 
     const flowSteps = isKo ? [
-        { phase: "STEP 1", label: "입력 정보에 알맞는 시나리오 매칭", icon: "✦",
-          desc: "입력한 국가/도시 + 타겟 + 기기 조건으로 Explore Contents에서 <strong>검증된 시나리오</strong>를 즉시 매칭합니다.",
-          helper: "Build 클릭 시 Explore v1.0(183개) + v2.0(87개) 시나리오 중 입력 조건에 맞는 상위 5개가 자동 선별됩니다. 선별된 시나리오 중 하나를 선택하면 STEP 2로 이어집니다." },
-        { phase: "STEP 2", label: "시나리오 기반 결과물 생성", icon: "🤖",
-          desc: "매칭된 시나리오를 Parent로 삼아, 아래 7개 결과물을 AI가 지역화·확장합니다.",
+        { phase: "STEP 1", label: "Explore 시나리오 자동 선별", icon: "✦",
+          desc: "입력한 국가/도시 + 타겟 + 기기 조건으로 Explore Contents에서 <strong>검증된 시나리오</strong>를 자동 매칭합니다.",
+          helper: "Build 클릭 시 Explore v1.0(183개) + v2.0(87개) 시나리오를 점수화하여 상위 5개를 선별합니다. 왜 선택되었는지, 어떤 입력이 반영되었는지가 함께 표시됩니다.",
           items: [
-              { num: "01", title: "시나리오 요약", sub: "타겟 고객과 핵심 가치가 한눈에" },
-              { num: "02", title: "상세 시나리오", sub: "Pain → 해결 → Benefit 구조" },
-              { num: "03", title: "지역 맞춤 인사이트", sub: "왜 이 시장에서 먹히는지" },
-              { num: "04", title: "마케팅 메시지", sub: "카피 옵션과 소구 포인트" },
-              { num: "05", title: "주요 고객 혜택", sub: "체감 이점 우선순위" },
-              { num: "06", title: "타겟 수용도 분석", sub: "좋아할 점과 우려할 점" },
-              { num: "07", title: "캠페인 타이밍", sub: "언제, 어떤 장면에서" }
+              { num: "A", title: "선택 근거 카드", sub: "어떤 시나리오가, 왜 선택되었는지" },
+              { num: "B", title: "입력 반영 확인", sub: "내 입력이 어디에 반영되었는지 한눈에" },
+              { num: "C", title: "가치 축 표시", sub: "Care / Secure / Save / Play 중 어떤 가치인지" }
           ] },
+        { phase: "STEP 2", label: "목적별 변형 결과물 생성", icon: "🤖",
+          desc: "선택된 Explore 시나리오를 바탕으로, AI가 <strong>마케터용</strong>과 <strong>일반 사용자용</strong> 두 가지 실행형 결과물을 생성합니다.",
+          items: [
+              { num: "📢", title: "마케터용", sub: "카피 옵션, 채널 전략, 타깃 적합도, 역할별 실행 방향" },
+              { num: "🏠", title: "일반 사용자용", sub: "이게 뭘 해주는지, 필요 기기, 설정 방법, 주의사항, 대안" },
+              { num: "📊", title: "가치 + 인사이트", sub: "강조 가치, 지역 인사이트(O-I-I), 확정/추론 구분" }
+          ],
+          helper: "같은 Explore 시나리오를 바탕으로 하되, 활용 목적에 따라 표현과 정보 구조가 다르게 나옵니다. 탭으로 전환하여 확인할 수 있습니다." },
         { phase: "STEP 3", label: "직무별 활용 결과물 선택", icon: "📋",
           desc: "캠페인 메시지, 리테일 현장안, 닷컴 콘텐츠, CRM 활용안, 시즌 연계안, 보고용 요약 중 필요한 것만 골라 추가 생성합니다.",
           note: "복수 선택 가능 — 직무를 미리 고르지 않아도 됩니다" }
     ] : [
-        { phase: "STEP 1", label: "Scenario matching based on your input", icon: "✦",
-          desc: "Instantly match <strong>verified scenarios</strong> from Explore Contents based on your country, target, and device selections.",
-          helper: "When you click Build, the top 5 scenarios are auto-selected from Explore v1.0 (183) + v2.0 (87). Choose one to proceed to STEP 2." },
-        { phase: "STEP 2", label: "AI-Expanded Results", icon: "🤖",
-          desc: "Using the matched scenario as a Parent, AI generates 7 localized output sections:",
+        { phase: "STEP 1", label: "Auto-select from Explore scenarios", icon: "✦",
+          desc: "Automatically match <strong>verified scenarios</strong> from Explore Contents based on your country, target, and device selections.",
+          helper: "On Build, scenarios from Explore v1.0 (183) + v2.0 (87) are scored and top 5 are selected. You'll see why each was chosen and which inputs were reflected.",
           items: [
-              { num: "01", title: "Scenario Summary", sub: "Target customer & core value at a glance" },
-              { num: "02", title: "Detailed Scenario", sub: "Pain → Resolution → Benefit structure" },
-              { num: "03", title: "Regional Insight", sub: "Why this works in this market" },
-              { num: "04", title: "Marketing Messages", sub: "Copy options & appeal points" },
-              { num: "05", title: "Customer Benefits", sub: "Perceived benefits by priority" },
-              { num: "06", title: "Adoption Analysis", sub: "Likes vs concerns" },
-              { num: "07", title: "Campaign Timing", sub: "When and in what context" }
+              { num: "A", title: "Selection Basis", sub: "Which scenario was chosen and why" },
+              { num: "B", title: "Input Reflection", sub: "See exactly where your inputs are reflected" },
+              { num: "C", title: "Value Axis", sub: "Care / Secure / Save / Play identification" }
           ] },
-        { phase: "STEP 3", label: "Output Category Selection", icon: "📋",
+        { phase: "STEP 2", label: "Purpose-driven transformation", icon: "🤖",
+          desc: "Based on the selected Explore scenario, AI generates two actionable outputs: <strong>Marketer</strong> and <strong>Consumer</strong> versions.",
+          items: [
+              { num: "📢", title: "For Marketers", sub: "Copy options, channel strategy, target fit, role-specific direction" },
+              { num: "🏠", title: "For Consumers", sub: "What it does, required devices, setup steps, cautions, alternatives" },
+              { num: "📊", title: "Values + Insight", sub: "Value highlights, regional O-I-I insight, confirmed vs inferred" }
+          ],
+          helper: "Same Explore scenario, different expression and structure depending on purpose. Switch between tabs to view." },
+        { phase: "STEP 3", label: "Role-specific output selection", icon: "📋",
           desc: "Choose from campaign messaging, retail execution, dotcom content, CRM, seasonal tie-in, or executive summary — generate only what you need.",
           note: "Multi-select available — no need to choose a role upfront" }
     ];
