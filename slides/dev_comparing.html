@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>개발방식 비교 리서치 슬라이드</title>
+  <style>
+    :root {
+      --navy: #003366;
+      --accent: #0000FF;
+      --panel: #F8F8F8;
+      --canvas: #ECEFF3;
+      --white: #FFFFFF;
+      --ink: #111111;
+      --muted: #5E6572;
+      --line: #D9DEE6;
+      --black: #000000;
+      --success: #DDF5E8;
+      --warn: #FFF1D6;
+      --danger: #FBE1E6;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow: 0 28px 60px rgba(17,17,17,0.10);
+      --slide-w: min(92vw, calc(100vh * 16 / 9 - 4vh));
+      --slide-h: calc(var(--slide-w) * 9 / 16);
+      --headline: "SamsungSharpSans", "Samsung One", "SamsungOne", "Noto Sans KR", Arial, sans-serif;
+      --bodyfont: "Samsung One", "SamsungOne", "Noto Sans KR", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--canvas); color: var(--ink); font-family: var(--bodyfont); }
+    body { overflow: hidden; }
+
+    .deck-shell {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2vh 2vw 6vh;
+      position: relative;
+    }
+
+    .deck {
+      width: var(--slide-w);
+      height: var(--slide-h);
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      background: var(--white);
+      border: 2px solid var(--black);
+      box-shadow: var(--shadow);
+      padding: 30px 34px 26px;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 16px;
+    }
+    .slide.active { display: grid; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--navy);
+    }
+    .brand-dot {
+      width: 11px;
+      height: 11px;
+      background: var(--accent);
+      border-radius: 999px;
+    }
+    .pagebox {
+      min-width: 94px;
+      padding: 8px 14px;
+      border: 1px solid var(--black);
+      border-radius: 999px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      background: #fff;
+    }
+
+    .title-wrap {
+      display: grid;
+      gap: 10px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 7px 12px;
+      background: var(--navy);
+      color: #fff;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, h4 { margin: 0; }
+    h1 {
+      font-family: var(--headline);
+      font-size: 31px;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+    h2 {
+      font-family: var(--headline);
+      font-size: 24px;
+      line-height: 1.14;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    h3 {
+      font-family: var(--headline);
+      font-size: 15px;
+      line-height: 1.25;
+    }
+    .lead {
+      max-width: 92%;
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.62;
+      color: #2b3240;
+    }
+
+    .content {
+      min-height: 0;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .stack { display: grid; gap: 12px; }
+
+    .card {
+      background: var(--panel);
+      border: none;
+      border-radius: 4px;
+      padding: 16px 16px 15px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: -16px -16px 12px;
+      padding: 10px 14px;
+      background: var(--navy);
+      color: #fff;
+    }
+    .card-header h3 {
+      font-family: var(--headline);
+      font-size: 15px;
+      line-height: 1.25;
+      color: #fff;
+    }
+    .card-header .subtle {
+      font-size: 11px;
+      color: #D9E5F4;
+    }
+
+    .body-copy,
+    li,
+    td,
+    th,
+    .caption {
+      font-size: 11.5px;
+      line-height: 1.56;
+      color: #232A36;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 29px;
+      padding: 6px 10px;
+      border: 1px solid rgba(0, 0, 255, 0.18);
+      background: rgba(0, 0, 255, 0.05);
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .pill.navy { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .pill.success { background: var(--success); color: #0C6A44; border-color: #B3E5CC; }
+    .pill.warn { background: var(--warn); color: #8B5C00; border-color: #F5DFA8; }
+    .pill.danger { background: var(--danger); color: #9F2743; border-color: #F0C4CF; }
+
+    .quote-band {
+      display: grid;
+      grid-template-columns: 12px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 14px 16px;
+      background: linear-gradient(90deg, rgba(0,51,102,0.08), rgba(0,0,255,0.02));
+      border-radius: 4px;
+    }
+    .quote-band::before {
+      content: "";
+      width: 12px;
+      height: 100%;
+      background: var(--navy);
+      border-radius: 99px;
+    }
+    .quote {
+      font-family: var(--headline);
+      font-size: 16px;
+      line-height: 1.42;
+      letter-spacing: -0.02em;
+    }
+
+    .table-wrap {
+      background: var(--panel);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    th {
+      background: var(--navy);
+      color: #fff;
+      text-align: left;
+      font-family: var(--headline);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      padding: 10px 12px;
+      border-right: 1px solid rgba(255,255,255,0.14);
+    }
+    th:last-child { border-right: 0; }
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid #E7EBF0;
+      vertical-align: top;
+      background: #fff;
+    }
+    tr:nth-child(even) td { background: #FAFBFC; }
+    td:last-child { border-right: 0; }
+    .rowhead { font-weight: 700; color: var(--navy); }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .strong { background: var(--success); color: #0C6A44; }
+    .middle { background: var(--warn); color: #8B5C00; }
+    .low { background: var(--danger); color: #9F2743; }
+
+    .bar {
+      height: 10px;
+      background: #DEE6F2;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+      margin-top: 10px;
+    }
+    .fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      background: linear-gradient(90deg, var(--navy), var(--accent));
+      border-radius: inherit;
+    }
+
+    .big-num {
+      font-family: var(--headline);
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--navy);
+      margin: 6px 0;
+    }
+
+    .decision-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .decision-card {
+      background: var(--panel);
+      border-radius: 4px;
+      padding: 14px 14px 12px;
+      display: grid;
+      gap: 10px;
+      position: relative;
+    }
+    .decision-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 6px;
+      background: var(--navy);
+    }
+    .decision-title {
+      font-family: var(--headline);
+      font-size: 16px;
+      color: var(--navy);
+      padding-top: 8px;
+    }
+
+    .source-block {
+      background: #fff;
+      border-radius: 4px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      display: grid;
+      gap: 7px;
+    }
+    .source-item {
+      font-size: 9.6px;
+      line-height: 1.55;
+      color: #4D5563;
+      font-style: italic;
+    }
+    .source-item a { color: var(--navy); text-decoration: none; }
+    .source-item a:hover { text-decoration: underline; }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      font-size: 10.5px;
+      color: var(--muted);
+    }
+
+    .controls {
+      position: fixed;
+      right: 18px;
+      bottom: 16px;
+      display: inline-flex;
+      gap: 10px;
+      z-index: 30;
+    }
+    .controls button {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      border: 1px solid var(--black);
+      background: #fff;
+      color: var(--navy);
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(17,17,17,0.12);
+    }
+    .controls button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .progress-shell {
+      position: fixed;
+      left: 24px;
+      right: 24px;
+      bottom: 18px;
+      height: 6px;
+      background: rgba(0,0,0,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-shell > div {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--navy), var(--accent));
+    }
+
+    @media (max-width: 1200px), (max-height: 760px) {
+      body { overflow: auto; }
+      .deck-shell { align-items: flex-start; }
+      .deck {
+        width: min(96vw, 1240px);
+        height: auto;
+        display: grid;
+        gap: 20px;
+      }
+      .slide {
+        position: relative;
+        display: grid;
+        width: 100%;
+        height: auto;
+        min-height: unset;
+      }
+      .slide:not(.active) { display: none; }
+      .grid-3, .grid-2, .decision-grid { grid-template-columns: 1fr; }
+      .progress-shell { display: none; }
+      .controls { bottom: 10px; left: 10px; right: 10px; justify-content: center; }
+      .controls button { width: 44px; height: 44px; font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-shell">
+    <div class="deck">
+
+      <!-- SLIDE 1: Cover -->
+      <section class="slide active">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Development Approach Deck</div>
+          <div class="pagebox" id="pagebox">1 / 9</div>
+        </div>
+        <div class="content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:24px">
+          <span class="eyebrow">검증 완료 · 공식 문서 기준 요약</span>
+          <h1 style="font-size:clamp(2.2rem,4.5vw,3.2rem);line-height:1.06;letter-spacing:-0.04em">채팅형 앱 구현 방식 비교</h1>
+          <p class="lead" style="max-width:72%;text-align:center;font-size:15px;line-height:1.7;color:var(--muted)">후배의 <b>Make + Gemini + Google Drive + NotebookLM</b> 방식과, David님의 <b>Firebase + GitHub + Cloudflare</b> 기반 웹앱 방식을<br><b>개발 방식 · 결과물 · 셋업 비용 · 운영/유지관리 비용</b> 관점으로 비교한 발표용 요약 자료입니다.</p>
+          <div class="pill-row" style="justify-content:center">
+            <span class="pill">A = 빠른 MVP</span>
+            <span class="pill">B = 제품형 웹앱</span>
+            <span class="pill navy">최적: B 본체 + A 보조</span>
+          </div>
+          <p style="font-size:11px;color:var(--muted);margin-top:12px">Samsung Global Marketing · Internal Use Only</p>
+        </div>
+        <div class="footer"><span>Press → or click Next to begin</span><span>Cover</span></div>
+      </section>
+
+      <!-- SLIDE 2: 스택의 본질이 다르다 -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Development Approach Deck</div>
+          <div class="pagebox">2 / 9</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Slide 1</span>
+          <h1>스택의 본질이 다르다</h1>
+        </div>
+        <div class="content stack">
+          <div class="grid-2">
+            <article class="card">
+              <div class="card-header"><h3>A. 후배 방식</h3><span class="subtle">Make + Gemini + Drive + NotebookLM</span></div>
+              <ul>
+                <li><strong>중심축:</strong> 시각적 자동화 / 오케스트레이션</li>
+                <li><strong>강점:</strong> 외부 앱 연동, 빠른 플로우 연결, 문서 기반 QA</li>
+                <li><strong>결과물:</strong> "자동화 중심 챗봇" 또는 "문서형 업무 보조 앱"</li>
+                <li><strong>주의:</strong> 사용자별 세션, 앱 권한모델, 장기 운영 구조는 우회가 늘기 쉬움</li>
+              </ul>
+              <div class="bar"><div class="fill" style="width:78%"></div></div>
+              <p class="caption" style="margin-top:8px">Make는 3,000+ 앱 연결과 시각적 자동화를 전면에 내세우며, 각 모듈 액션은 1 credit으로 계산됨. [1]</p>
+            </article>
+            <article class="card">
+              <div class="card-header"><h3>B. David님 방식</h3><span class="subtle">Firebase + GitHub + Cloudflare + AI CLI</span></div>
+              <ul>
+                <li><strong>중심축:</strong> 앱 백엔드 + 배포 + 코드 기반 제품 개발</li>
+                <li><strong>강점:</strong> 상태 저장, 인증, 실시간 동기화, 릴리즈/롤백</li>
+                <li><strong>결과물:</strong> "서비스형 웹앱" 또는 "제품형 SaaS"</li>
+                <li><strong>주의:</strong> 초기 설계·구현량이 더 큼</li>
+              </ul>
+              <div class="bar"><div class="fill" style="width:92%"></div></div>
+              <p class="caption" style="margin-top:8px">Firestore는 실시간 동기화, 오프라인, 보안 규칙 기반 데이터 계층을 제공하고, Cloudflare Pages는 GitHub PR마다 preview URL을 생성함. [2][3]</p>
+            </article>
+          </div>
+          <div class="quote-band">
+            <span></span>
+            <p class="quote"><b>A는 "자동화 플랫폼을 앱처럼 쓰는 접근"</b>이고, <b>B는 "앱 플랫폼으로 실제 웹앱을 만드는 접근"</b>이다.</p>
+          </div>
+        </div>
+        <div class="footer"><span>발표 포인트: 둘 다 채팅형처럼 보이지만, 실제로는 서로 다른 계층의 조합</span><span>1 / 9</span></div>
+      </section>
+
+      <!-- SLIDE 3: 개발 단계별 비교 -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Development Approach Deck</div>
+          <div class="pagebox">3 / 9</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Slide 2</span>
+          <h1>개발 단계별 비교</h1>
+        </div>
+        <div class="content">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th style="width:18%">비교 단계</th><th>A. Make 기반</th><th>B. Firebase 기반</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="rowhead">기획/PoC</td><td>매우 빠름. 문서 연결 + 자동화 흐름 시연이 쉬움. 데모 적합.</td><td>초기 구조 설계 필요. 대신 다음 단계로 이어지는 재사용성이 높음.</td></tr>
+                <tr><td class="rowhead">구현</td><td>화면보다 플로우 구현에 강함. UI 자유도는 낮음.</td><td>프론트/백/API를 분리 설계 가능. UX 자유도 높음.</td></tr>
+                <tr><td class="rowhead">테스트</td><td>시나리오 단위 점검은 빠르지만 회귀 테스트와 버전 흐름이 약함.</td><td>GitHub 브랜치, PR, preview URL, 코드 리뷰 중심 운영이 쉬움. [3]</td></tr>
+                <tr><td class="rowhead">배포</td><td>자동화 시나리오 publish는 간단. 하지만 앱 자체 배포는 별도 고민 필요.</td><td>Cloudflare Pages/Workers로 정석적인 웹앱 배포가 가능.</td></tr>
+                <tr><td class="rowhead">운영/관측</td><td>운영 흐름이 SaaS 정책과 credit 구조에 강하게 의존.</td><td>앱 로그, DB, 권한, 배포 체계를 분리 운영 가능.</td></tr>
+                <tr><td class="rowhead">리팩터링</td><td>초반엔 빠르지만 플로우가 복잡해질수록 구조가 꼬일 위험.</td><td>초반 비용은 크지만 장기 구조 수정과 확장에 유리.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="footer"><span>실무 포인트: "데모까지의 시간"은 A, "6개월 뒤 유지보수성"은 B</span><span>2 / 9</span></div>
+      </section>
+
+      <!-- SLIDE 4: 결과물 비교 -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Development Approach Deck</div>
+          <div class="pagebox">4 / 9</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Slide 3</span>
+          <h1>결과물 비교: 실제로 무엇이 나오나</h1>
+        </div>
+        <div class="content stack">
+          <div class="grid-2">
+            <article class="card">
+              <div class="card-header"><h3>A 결과물</h3><span class="subtle">업무형/문서형 챗봇에 강함</span></div>
+              <ul>
+                <li>Drive 문서에 근거한 답변</li>
+                <li>NotebookLM 스타일의 문서 QA 감각</li>
+                <li>특정 SaaS 자동화가 섞인 오퍼레이션 보조 툴</li>
+                <li>내부 데모, 부서용 MVP, 운영 자동화 PoC 적합</li>
+              </ul>
+              <div class="pill-row">
+                <span class="pill success">빠른 시연</span>
+                <span class="pill success">문서 기반 QA</span>
+                <span class="pill danger">앱다움 부족</span>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card-header"><h3>B 결과물</h3><span class="subtle">브랜드형/서비스형 웹앱에 강함</span></div>
+              <ul>
+                <li>로그인, 세션, 사용자별 저장 상태</li>
+                <li>정교한 프론트 UX, 대화 히스토리, 권한 제어</li>
+                <li>GitHub 중심 개선, PR 리뷰, 운영형 배포</li>
+                <li>대외 서비스, 장기 고도화, 제품화에 적합</li>
+              </ul>
+              <div class="pill-row">
+                <span class="pill success">제품 완성도</span>
+                <span class="pill success">확장성</span>
+                <span class="pill danger">초기 구현량</span>
+              </div>
+            </article>
+          </div>
+          <div class="decision-grid">
+            <div class="decision-card">
+              <div class="decision-title">내부 업무 보조</div>
+              <p class="body-copy"><span class="status strong">A 우세</span></p>
+            </div>
+            <div class="decision-card">
+              <div class="decision-title">대외 서비스 MVP</div>
+              <p class="body-copy"><span class="status middle">B 우세</span></p>
+            </div>
+            <div class="decision-card">
+              <div class="decision-title">장기 제품 운영</div>
+              <p class="body-copy"><span class="status low">B 우세</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span></span><span>3 / 9</span></div>
+      </section>
+
+      <!-- SLIDE 5: 비용 비교 -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Development Approach Deck</div>
+          <div class="pagebox">5 / 9</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Slide 4</span>
+          <h1>비용 비교: 런타임과 개발도구를 분리해서</h1>
+        </div>
+        <div class="content stack">
+          <div class="grid-2">
+            <article class="card">
+              <div class="card-header"><h3>A. 런타임 기본비</h3><span class="subtle">낮은 진입 · 높은 사용량 민감도</span></div>
+              <ul>
+                <li><strong>Make Free:</strong> 1,000 credits / month, Core는 $9 / month (10k credits). [1]</li>
+                <li><strong>Google AI Pro:</strong> $19.99 / month, NotebookLM higher access 포함. [4]</li>
+                <li><strong>Gemini API:</strong> 2.5 Flash-Lite 입력 $0.10 / 1M tokens, 출력 $0.40 / 1M tokens. [5]</li>
+                <li><strong>의미:</strong> 초반은 싸게 시작 가능하지만, 채팅 1턴이 여러 Make 모듈을 거치면 credit 누적이 빨라짐.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <div class="card-header"><h3>B. 런타임 기본비</h3><span class="subtle">초기 런타임 저비용 · 구조 확장 유리</span></div>
+              <ul>
+                <li><strong>Cloudflare Workers Paid:</strong> 최소 $5 / month, 요청·로그 등 사용량 기반. [6]</li>
+                <li><strong>Firestore Free quota:</strong> 1 GiB 저장, 50k reads/day, 20k writes/day. [7]</li>
+                <li><strong>Firebase Auth Spark:</strong> instrumentless usage 3,000 DAU/day. [8]</li>
+                <li><strong>의미:</strong> 저트래픽 제품형 웹앱은 런타임이 매우 싸게 시작될 수 있음.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="decision-grid">
+            <div class="decision-card">
+              <div class="decision-title">A 월 기본 추정</div>
+              <div class="big-num">$29~40+</div>
+              <p class="body-copy">Make Core + Google AI Pro + 소량 모델 호출 기준</p>
+            </div>
+            <div class="decision-card">
+              <div class="decision-title">B 월 런타임 추정</div>
+              <div class="big-num">$0~15+</div>
+              <p class="body-copy">Cloudflare + Firebase 무료구간 중심, 소규모 트래픽 기준</p>
+            </div>
+            <div class="decision-card">
+              <div class="decision-title">주의</div>
+              <p class="body-copy">Claude / Codex / Gemini CLI 비용은 "앱 운영비"가 아니라 <strong>"개발 생산성 비용"</strong>에 가깝다.</p>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span></span><span>4 / 9</span></div>
+      </section>
+
+      <!-- SLIDE 6: 셋업 비용 vs 유지관리 비용 -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Development Approach Deck</div>
+          <div class="pagebox">6 / 9</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Slide 5</span>
+          <h1>셋업 비용 vs 유지관리 비용</h1>
+        </div>
+        <div class="content stack">
+          <div class="grid-2">
+            <article class="card">
+              <div class="card-header"><h3>A. 후배 방식</h3><span class="subtle">셋업 낮고, 구조 복잡화 시 유지비 상승</span></div>
+              <ul>
+                <li><strong>셋업:</strong> 낮음 — no-code / low-code 연결이 빠름</li>
+                <li><strong>초기 개발기간:</strong> 짧음</li>
+                <li><strong>유지관리:</strong> 중~높음 — 시나리오가 늘수록 흐름 파악과 수정 영향도 관리가 어려워질 수 있음</li>
+                <li><strong>장기 리스크:</strong> 앱 권한/세션/버전/테스트 요구가 커질수록 재설계 가능성 증가</li>
+              </ul>
+              <div class="bar"><div class="fill" style="width:42%"></div></div>
+              <p class="caption" style="margin-top:8px">초기 진입장벽은 낮지만, "앱 본체" 요구가 커질수록 유지관리 난이도가 상승하는 유형</p>
+            </article>
+            <article class="card">
+              <div class="card-header"><h3>B. David님 방식</h3><span class="subtle">셋업 높지만, 유지비 안정적</span></div>
+              <ul>
+                <li><strong>셋업:</strong> 중간 이상 — 데이터 구조, 인증, 배포 구조 설계 필요</li>
+                <li><strong>초기 개발기간:</strong> 더 김</li>
+                <li><strong>유지관리:</strong> 낮음~중간 — 코드/브랜치/PR/preview 흐름으로 관리 가능</li>
+                <li><strong>장기 강점:</strong> 기능 추가, A/B 테스트, API 확장, 역할 분리에 유리</li>
+              </ul>
+              <div class="bar"><div class="fill" style="width:78%"></div></div>
+              <p class="caption" style="margin-top:8px">처음엔 무겁지만, 제품이 커질수록 구조적 이점이 쌓이는 유형</p>
+            </article>
+          </div>
+        </div>
+        <div class="footer"><span>핵심: "초기 셋업 비용"만 보면 A, "총소유비용(TCO)"까지 보면 B가 유리</span><span>5 / 9</span></div>
+      </section>
+
+      <!-- SLIDE 7: 제품 완성도와 운영 적합성 비교 -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Development Approach Deck</div>
+          <div class="pagebox">7 / 9</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Slide 6</span>
+          <h1>제품 완성도와 운영 적합성 비교</h1>
+        </div>
+        <div class="content stack">
+          <div class="decision-grid">
+            <div class="decision-card">
+              <div class="decision-title">PoC / 내부 데모</div>
+              <p class="body-copy"><span class="status strong">A 우세</span></p>
+              <p class="body-copy">문서 업로드, 답변, 자동화 연결까지 짧은 시간에 보여줄 수 있다.</p>
+              <div class="pill-row"><span class="pill">Speed</span><span class="pill">Demo</span><span class="pill">Automation</span></div>
+            </div>
+            <div class="decision-card">
+              <div class="decision-title">운영형 웹앱</div>
+              <p class="body-copy"><span class="status middle">B 우세</span></p>
+              <p class="body-copy">로그인, 세션, 사용자 데이터, 배포 파이프라인, 협업 개발 방식이 자연스럽다.</p>
+              <div class="pill-row"><span class="pill">Auth</span><span class="pill">Session</span><span class="pill">Release</span></div>
+            </div>
+            <div class="decision-card">
+              <div class="decision-title">확장/고도화</div>
+              <p class="body-copy"><span class="status low">B 우세</span></p>
+              <p class="body-copy">기능과 사용자가 늘수록 구조적 안정성이 크다. A는 보조 레이어가 더 적합하다.</p>
+              <div class="pill-row"><span class="pill">Scalability</span><span class="pill">Governance</span></div>
+            </div>
+          </div>
+          <div class="grid-2">
+            <article class="card">
+              <div class="card-header"><h3>NotebookLM 체크 포인트</h3></div>
+              <p class="body-copy">Standard 기준 100 notebooks/user, 50 sources/notebook, 50 chats/day이며, Pro access에서는 더 높은 한도를 제공한다. 문서 QA에는 강하지만 "앱 내부 상태 저장소"로 보기엔 성격이 다르다. [9]</p>
+            </article>
+            <article class="card">
+              <div class="card-header"><h3>Firebase Studio 체크 포인트</h3></div>
+              <p class="body-copy">Firebase Studio는 빠른 프로토타이핑에 유용하지만 현재 Preview이며 SLA 대상이 아니다. "생산성 보조 도구"로 보되, 운영 본체의 안정성 판단은 Firestore/Cloudflare 구조 기준으로 해야 한다. [10]</p>
+            </article>
+          </div>
+        </div>
+        <div class="footer"><span></span><span>6 / 9</span></div>
+      </section>
+
+      <!-- SLIDE 8: 최종 추천 -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Development Approach Deck</div>
+          <div class="pagebox">8 / 9</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Recommendation</span>
+          <h1>최종 추천: 어떤 방식이 더 좋은가?</h1>
+        </div>
+        <div class="content stack">
+          <div class="grid-2">
+            <article class="card">
+              <div class="card-header"><h3>정답 1</h3><span class="subtle">"빨리 검증"이 목표면 A</span></div>
+              <p class="body-copy">사내 문서 기반 답변, 간단한 챗 UI, 외부 앱 자동화를 짧은 시간에 연결해야 한다면 A가 더 빠르다.</p>
+            </article>
+            <article class="card">
+              <div class="card-header"><h3>정답 2</h3><span class="subtle">"제대로 운영할 앱"이면 B</span></div>
+              <p class="body-copy">브랜드 웹앱, 사용자 상태, 권한, 릴리즈, 장기 기능 확장이 필요하면 B가 더 낫다.</p>
+            </article>
+          </div>
+          <article class="card">
+            <div class="card-header"><h3>베스트 프랙티스</h3><span class="subtle">권장 아키텍처 = B를 본체로, A를 보조 자동화 레이어로</span></div>
+            <div class="grid-2" style="margin-top:4px">
+              <div>
+                <ul>
+                  <li>웹앱 본체: <b>Firebase + GitHub + Cloudflare</b></li>
+                  <li>세션/대화 저장: <b>Firestore</b></li>
+                  <li>배포/리뷰: <b>GitHub + Cloudflare preview</b></li>
+                </ul>
+              </div>
+              <div>
+                <ul>
+                  <li>외부 SaaS 자동화: <b>Make</b></li>
+                  <li>문서 리서치/보조 QA: <b>Drive + NotebookLM</b></li>
+                  <li>즉, <b>주요 채팅턴은 B, 저빈도 자동화 액션은 A</b></li>
+                </ul>
+              </div>
+            </div>
+          </article>
+          <div class="quote-band">
+            <span></span>
+            <p class="quote">최종 판단: <b>David님 방식이 장기적으로 더 좋은 선택.</b> 단, 초기 검증 단계에서는 A의 속도를 전략적으로 활용 가능.</p>
+          </div>
+        </div>
+        <div class="footer"><span></span><span>7 / 9</span></div>
+      </section>
+
+      <!-- SLIDE 9: 보고용 한 페이지 요약 -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="brand-dot"></span> Development Approach Deck</div>
+          <div class="pagebox">9 / 9</div>
+        </div>
+        <div class="title-wrap">
+          <span class="eyebrow">Executive Summary</span>
+          <h1>보고용 한 페이지 요약</h1>
+        </div>
+        <div class="content stack">
+          <div class="decision-grid">
+            <div class="decision-card">
+              <div class="decision-title">후배 방식</div>
+              <div class="big-num">빠름</div>
+              <p class="body-copy">문서형 QA · 자동화 · 데모</p>
+              <p class="caption">단기 MVP 적합 / 장기 운영엔 구조 제약</p>
+            </div>
+            <div class="decision-card">
+              <div class="decision-title">David님 방식</div>
+              <div class="big-num">탄탄함</div>
+              <p class="body-copy">제품형 웹앱 · 세션 · 배포 · 확장</p>
+              <p class="caption">초기 구축량은 많지만 장기적으로 효율적</p>
+            </div>
+            <div class="decision-card">
+              <div class="decision-title">권장안</div>
+              <div class="big-num">하이브리드</div>
+              <p class="body-copy">B 본체 + A 자동화 보조</p>
+              <p class="caption">속도와 안정성을 동시에 확보</p>
+            </div>
+          </div>
+          <div class="quote-band">
+            <span></span>
+            <p class="quote">임원 보고용 메시지: <b>"두 방식 중 장기적으로 더 좋은 것은 Firebase 기반 제품형 구조이며, Make/NotebookLM 조합은 초기 검증과 보조 자동화 레이어로 쓰는 것이 최적"</b></p>
+          </div>
+          <div class="source-block">
+            <p class="source-item">[1] <a href="https://www.make.com/en/pricing">Make Pricing</a> — credits 구조, Free/Core/Pro/Teams 가격 &nbsp;|&nbsp; [2] <a href="https://firebase.google.com/docs/firestore">Firestore overview</a> &nbsp;|&nbsp; [3] <a href="https://developers.cloudflare.com/pages/configuration/git-integration/github-integration/">Cloudflare Pages GitHub integration</a></p>
+            <p class="source-item">[4] <a href="https://one.google.com/about/plans">Google One / AI Pro plans</a> &nbsp;|&nbsp; [5] <a href="https://ai.google.dev/gemini-api/docs/pricing">Gemini API pricing</a> &nbsp;|&nbsp; [6] <a href="https://developers.cloudflare.com/workers/platform/pricing/">Cloudflare Workers pricing</a></p>
+            <p class="source-item">[7] <a href="https://firebase.google.com/docs/firestore/quotas">Firestore quotas</a> &nbsp;|&nbsp; [8] <a href="https://firebase.google.com/docs/auth/limits">Firebase Auth limits</a> &nbsp;|&nbsp; [9] <a href="https://support.google.com/notebooklm/answer/16213268?hl=en">NotebookLM limits</a> &nbsp;|&nbsp; [10] <a href="https://firebase.google.com/docs/studio">Firebase Studio</a></p>
+            <p class="source-item">[11] <a href="https://www.anthropic.com/claude-code">Claude Code</a> &nbsp;|&nbsp; [12] <a href="https://openai.com/index/introducing-codex/">OpenAI Codex</a> &nbsp;|&nbsp; 비용 수치는 2026-03-20 기준 공개 문서 기반 정리</p>
+          </div>
+        </div>
+        <div class="footer"><span>Samsung Global Marketing · Internal Use Only</span><span>End</span></div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="prev" disabled>&#8592;</button>
+    <button id="next">&#8594;</button>
+  </div>
+  <div class="progress-shell"><div id="bar"></div></div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const bar = document.getElementById('bar');
+    let idx = 0;
+
+    function show(i) {
+      idx = Math.max(0, Math.min(slides.length - 1, i));
+      slides.forEach((s, n) => s.classList.toggle('active', n === idx));
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === slides.length - 1;
+      bar.style.width = `${((idx + 1) / slides.length) * 100}%`;
+      // update all pagebox elements
+      document.querySelectorAll('.pagebox').forEach(el => {
+        el.textContent = `${idx + 1} / ${slides.length}`;
+      });
+    }
+
+    prevBtn.addEventListener('click', e => { e.stopPropagation(); show(idx - 1); });
+    nextBtn.addEventListener('click', e => { e.stopPropagation(); show(idx + 1); });
+
+    window.addEventListener('keydown', e => {
+      if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(idx + 1); }
+      if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(idx - 1); }
+      if (e.key === 'Home') show(0);
+      if (e.key === 'End') show(slides.length - 1);
+    });
+
+    show(0);
+  </script>
+</body>
+</html>
