@@ -204,26 +204,51 @@ let selectedProvider = sessionStorage.getItem("aiProvider") || "openai";
 let userOverrideLocale = null;
 
 const SUPPORTED_UI_LOCALES = ["ko", "en", "de", "fr", "es", "pt", "it", "nl", "ar"];
-const Q4_ALL_QUICK_IDS = ["tv-premium", "refrigerator", "washer", "air-conditioner", "air-purifier", "ventilation", "robot-vacuum", "dryer", "dishwasher", "smart-plug", "eco-aircon", "camera", "door-lock", "hub", "care-camera", "activity-sensor", "speaker", "soundbar", "wearable-care", "lighting", "sleep-sensor", "energy-monitor", "galaxy-phone", "galaxy-watch", "galaxy-buds", "galaxy-tab"];
-// Samsung eStore 제품군 기반 그룹 + 역할 태그
-const Q4_QUICK_GROUPS = [
-    { label: "모바일·웨어러블", labelEn: "Mobile & Wearable",
-      ids: ["galaxy-phone", "galaxy-watch", "galaxy-buds", "galaxy-tab"] },
-    { label: "TV·영상·오디오", labelEn: "TV · Video · Audio",
-      ids: ["tv-premium", "speaker", "soundbar"] },
-    { label: "주방가전", labelEn: "Kitchen",
-      ids: ["refrigerator", "dishwasher"] },
-    { label: "세탁·의류케어", labelEn: "Laundry & Clothing Care",
-      ids: ["washer", "dryer"] },
-    { label: "공기·청정·냉방", labelEn: "Air · Purification · Cooling",
-      ids: ["air-conditioner", "eco-aircon", "air-purifier", "ventilation"] },
-    { label: "청소·리빙", labelEn: "Cleaning & Living",
-      ids: ["robot-vacuum"] },
-    { label: "보안·센서·출입", labelEn: "Security · Sensor · Access",
-      ids: ["camera", "care-camera", "door-lock", "activity-sensor", "sleep-sensor"] },
-    { label: "연결·제어·에너지", labelEn: "Connectivity · Control · Energy",
-      ids: ["smart-plug", "hub", "lighting", "energy-monitor", "wearable-care"] }
+const Q4_ALL_QUICK_IDS = [
+    // Samsung products
+    "tv-premium", "refrigerator", "washer", "dryer", "air-conditioner", "air-purifier",
+    "ventilation", "robot-vacuum", "dishwasher", "eco-aircon", "speaker", "soundbar",
+    "galaxy-phone", "galaxy-watch", "galaxy-buds", "galaxy-tab", "galaxy-book",
+    "projector", "moving-style", "harman-audio", "kimchi-fridge", "cooktop", "oven",
+    "microwave", "water-purifier", "hood", "airdresser", "system-aircon",
+    "monitor", "printer", "memory-storage", "hub", "smartthings-product", "accessories",
+    // Partner devices
+    "smart-plug", "camera", "door-lock", "activity-sensor", "smart-switch",
+    "lighting", "body-scale", "partner-sleep", "partner-humidifier",
+    // Legacy (keep for backward compat)
+    "care-camera", "sleep-sensor", "energy-monitor", "wearable-care"
 ];
+// ── Samsung 구매 가능 제품 그룹 (한국 sec 기준) ──
+const Q4_SAMSUNG_GROUPS = [
+    { label: "모바일", labelEn: "Mobile",
+      ids: ["galaxy-phone", "galaxy-tab", "galaxy-book"] },
+    { label: "웨어러블", labelEn: "Wearable",
+      ids: ["galaxy-watch", "galaxy-buds"] },
+    { label: "TV/영상/음향", labelEn: "TV / Video / Audio",
+      ids: ["tv-premium", "projector", "moving-style", "speaker", "soundbar", "harman-audio"] },
+    { label: "주방가전", labelEn: "Kitchen",
+      ids: ["refrigerator", "kimchi-fridge", "dishwasher", "cooktop", "oven", "microwave", "water-purifier", "hood"] },
+    { label: "리빙가전", labelEn: "Living",
+      ids: ["washer", "dryer", "airdresser", "air-conditioner", "system-aircon", "air-purifier", "robot-vacuum"] },
+    { label: "IT/주변기기", labelEn: "IT / Peripherals",
+      ids: ["monitor", "printer", "memory-storage"] },
+    { label: "스마트홈 보조", labelEn: "Smart Home",
+      ids: ["hub", "smartthings-product", "accessories"] }
+];
+// ── SmartThings 호환 타사/파트너 기기 그룹 ──
+const Q4_PARTNER_GROUPS = [
+    { label: "제어", labelEn: "Control",
+      ids: ["smart-plug", "smart-switch", "lighting"] },
+    { label: "보안/감지", labelEn: "Security / Sensing",
+      ids: ["camera", "door-lock", "activity-sensor"] },
+    { label: "웰니스/생활", labelEn: "Wellness / Living",
+      ids: ["partner-sleep", "body-scale", "partner-humidifier"] }
+];
+// 전체 삼성 제품 ID Set (검증용)
+const Q4_SAMSUNG_IDS = new Set(Q4_SAMSUNG_GROUPS.flatMap(g => g.ids));
+const Q4_PARTNER_IDS = new Set(Q4_PARTNER_GROUPS.flatMap(g => g.ids));
+// 커스터마이징 상태 추적
+let q4ActivePresets = new Set();  // 현재 선택된 프리셋 카드 IDs
 // 기기별 역할 태그 (중복 역할 표현용 — 그룹 내 중복 배치 X)
 const DEVICE_ROLE_TAGS = {
     "tv-premium":       { ko: ["엔터테인먼트", "알림 허브"], en: ["Entertainment", "Alert Hub"] },
@@ -240,15 +265,33 @@ const DEVICE_ROLE_TAGS = {
     "eco-aircon":       { ko: ["절약", "AI 제어"], en: ["Saving", "AI Control"] }
 };
 const Q4_PRESETS = [
-    { id: "baseline", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner"] },
-    { id: "energy", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "smart-plug", "eco-aircon"] },
-    { id: "care", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "care-camera", "activity-sensor"] },
-    { id: "mood", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "speaker", "soundbar"] },
-    { id: "security", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "camera", "door-lock", "hub"] },
-    { id: "chores", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "robot-vacuum", "dryer", "dishwasher"] },
-    { id: "comfort", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "air-purifier", "ventilation"] },
-    { id: "wellness", deviceIds: ["tv-premium", "refrigerator", "washer", "air-conditioner", "galaxy-watch", "sleep-sensor", "air-purifier"] }
+    { id: "baseline",
+      samsungIds: ["tv-premium", "refrigerator", "washer", "air-conditioner"],
+      partnerIds: [] },
+    { id: "energy",
+      samsungIds: ["refrigerator", "washer", "air-conditioner", "air-purifier"],
+      partnerIds: ["smart-plug", "activity-sensor", "smart-switch"] },
+    { id: "care",
+      samsungIds: ["robot-vacuum", "tv-premium", "refrigerator", "galaxy-watch"],
+      partnerIds: ["camera", "activity-sensor"] },
+    { id: "mood",
+      samsungIds: ["tv-premium", "speaker", "projector", "air-purifier"],
+      partnerIds: ["lighting", "smart-switch"] },
+    { id: "security",
+      samsungIds: ["robot-vacuum", "tv-premium", "hub", "galaxy-phone"],
+      partnerIds: ["camera", "door-lock", "activity-sensor"] },
+    { id: "chores",
+      samsungIds: ["robot-vacuum", "washer", "dryer", "dishwasher", "refrigerator", "airdresser"],
+      partnerIds: [] },
+    { id: "comfort",
+      samsungIds: ["air-purifier", "air-conditioner", "system-aircon"],
+      partnerIds: ["partner-humidifier", "activity-sensor", "smart-switch"] },
+    { id: "wellness",
+      samsungIds: ["galaxy-watch", "air-purifier", "air-conditioner", "tv-premium"],
+      partnerIds: ["body-scale", "partner-sleep", "partner-humidifier"] }
 ];
+// backward compat: deviceIds = samsung + partner 합산
+Q4_PRESETS.forEach(p => { p.deviceIds = [...p.samsungIds, ...p.partnerIds]; });
 
 function detectBrowserLocale() {
     const lang = (navigator.language || navigator.userLanguage || "en").toLowerCase();
@@ -385,6 +428,7 @@ function clearQ3AutoMode() {
 
 function handleQ4AutoSelect() {
     // 모든 기기 해제 → "auto" 모드 플래그 설정
+    q4ActivePresets.clear();
     Q4_ALL_QUICK_IDS.forEach((optionId) => setDeviceOptionChecked(optionId, false));
     // deviceCustom에 auto 마커 설정
     const customInput = document.getElementById("device-custom");
@@ -689,24 +733,24 @@ function getDefaultDeviceSelectionsForCountry(siteCode) {
 
 function getQ4PresetCopy(presetId) {
     const ko = {
-        baseline: { title: "기본 조합", desc: "TV + 냉장고 + 세탁기 + 에어컨", icon: "📦" },
-        energy:   { title: "에너지 절약형", desc: "기본 + 스마트 플러그, AI 에어컨", icon: "⚡" },
-        care:     { title: "케어 확장형", desc: "기본 + 돌봄 카메라, 활동 센서", icon: "💛" },
-        mood:     { title: "무드 확장형", desc: "기본 + 스피커, 사운드바", icon: "🎵" },
-        security: { title: "홈 시큐리티형", desc: "기본 + 카메라, 도어락, 허브", icon: "🛡" },
-        chores:   { title: "가사 올인형", desc: "기본 + 로봇청소기, 건조기, 식기세척기", icon: "🧹" },
-        comfort:  { title: "쾌적 환경형", desc: "기본 + 공기청정기, 환기 시스템", icon: "🌿" },
-        wellness: { title: "건강·웰니스형", desc: "기본 + Galaxy Watch, 수면 센서, 공기청정기", icon: "🧘" }
+        baseline: { title: "기본 조합", desc: "TV, 냉장고, 세탁기, 에어컨", icon: "📦" },
+        energy:   { title: "에너지 절약형", desc: "냉장고, 세탁기, 에어컨, 공기청정기 + 플러그·센서·스위치", icon: "⚡" },
+        care:     { title: "케어 확장형", desc: "청소기, TV, 냉장고, Galaxy Watch + 카메라·센서", icon: "💛" },
+        mood:     { title: "무드 확장형", desc: "TV, 삼성 오디오, 프로젝터, 공기청정기 + 조명·스위치", icon: "🎵" },
+        security: { title: "홈 시큐리티형", desc: "청소기, TV, SmartThings, 스마트폰 + 카메라·도어록·센서", icon: "🛡" },
+        chores:   { title: "가사 올인형", desc: "청소기, 세탁기, 건조기, 식기세척기, 냉장고, 에어드레서", icon: "🧹" },
+        comfort:  { title: "쾌적 환경형", desc: "공기청정기, 에어컨, 시스템에어컨 + 가습기·센서·스위치", icon: "🌿" },
+        wellness: { title: "건강·웰니스형", desc: "Galaxy Watch, 공기청정기, 에어컨, TV + 체중계·수면기기·가습기", icon: "🧘" }
     };
     const en = {
-        baseline: { title: "Baseline", desc: "TV + Fridge + Washer + AC", icon: "📦" },
-        energy:   { title: "Energy Saver", desc: "Base + Smart Plug, AI AC", icon: "⚡" },
-        care:     { title: "Care+", desc: "Base + Care cam, Activity sensor", icon: "💛" },
-        mood:     { title: "Mood+", desc: "Base + Speaker, Soundbar", icon: "🎵" },
-        security: { title: "Security", desc: "Base + Camera, Door lock, Hub", icon: "🛡" },
-        chores:   { title: "Chores All-in", desc: "Base + Robot vacuum, Dryer, Dishwasher", icon: "🧹" },
-        comfort:  { title: "Air Comfort", desc: "Base + Air purifier, Ventilation", icon: "🌿" },
-        wellness: { title: "Wellness", desc: "Base + Galaxy Watch, Sleep sensor, Air purifier", icon: "🧘" }
+        baseline: { title: "Baseline", desc: "TV, Fridge, Washer, AC", icon: "📦" },
+        energy:   { title: "Energy Saver", desc: "Fridge, Washer, AC, Air Purifier + Plug·Sensor·Switch", icon: "⚡" },
+        care:     { title: "Care+", desc: "Vacuum, TV, Fridge, Watch + Camera·Sensor", icon: "💛" },
+        mood:     { title: "Mood+", desc: "TV, Audio, Projector, Air Purifier + Lighting·Switch", icon: "🎵" },
+        security: { title: "Security", desc: "Vacuum, TV, SmartThings, Phone + Camera·Lock·Sensor", icon: "🛡" },
+        chores:   { title: "Chores All-in", desc: "Vacuum, Washer, Dryer, Dishwasher, Fridge, AirDresser", icon: "🧹" },
+        comfort:  { title: "Air Comfort", desc: "Air Purifier, AC, System AC + Humidifier·Sensor·Switch", icon: "🌿" },
+        wellness: { title: "Wellness", desc: "Watch, Air Purifier, AC, TV + Scale·Sleep·Humidifier", icon: "🧘" }
     };
     const source = currentLocale === "ko" ? ko : en;
     return source[presetId] || source.baseline;
@@ -737,38 +781,110 @@ function renderQ4Composer() {
     const selectedDeviceIds = new Set(
         [...(deviceGrid?.querySelectorAll('input[data-node-type="child"]:checked') || [])].map((input) => input.value)
     );
+    const isKo = currentLocale === "ko";
 
+    // ── 스타일 조합 카드 8개 ──
     q4Presets.innerHTML = Q4_PRESETS.map((preset) => {
         const copy = getQ4PresetCopy(preset.id);
-        const isActive = preset.deviceIds.every((id) => selectedDeviceIds.has(id));
+        const isActive = q4ActivePresets.has(preset.id);
+        const custState = getPresetCustomizationState(preset, selectedDeviceIds);
+        const custBadge = isActive && custState.customized
+            ? `<span class="q4-cust-badge">${isKo ? "직접 조정됨" : "Customized"}</span>`
+            : isActive && custState.expanded
+                ? `<span class="q4-cust-badge q4-cust-expanded">${isKo ? "확장됨" : "Expanded"}</span>`
+                : "";
+
+        // 삼성/호환 배지
+        const samsungBadges = preset.samsungIds.map(id => {
+            const lbl = getDeviceLabel(id);
+            const removed = isActive && !selectedDeviceIds.has(id);
+            return `<span class="q4-card-badge q4-badge-samsung${removed ? " q4-badge-removed" : ""}">${escapeHtml(lbl)}</span>`;
+        }).join("");
+        const partnerBadges = preset.partnerIds.length > 0
+            ? preset.partnerIds.map(id => {
+                const lbl = getDeviceLabel(id);
+                const removed = isActive && !selectedDeviceIds.has(id);
+                return `<span class="q4-card-badge q4-badge-partner${removed ? " q4-badge-removed" : ""}">${escapeHtml(lbl)}</span>`;
+            }).join("")
+            : "";
+
         return `
-            <button type="button" class="q4-preset-btn${isActive ? " active" : ""}" data-preset-id="${preset.id}">
+            <button type="button" class="q4-preset-btn${isActive ? " active" : ""}${isActive && custState.customized ? " customized" : ""}" data-preset-id="${preset.id}">
                 <span class="q4-preset-icon">${copy.icon || "📦"}</span>
                 <strong class="q4-preset-title">${escapeHtml(copy.title)}</strong>
-                <span class="q4-preset-desc">${escapeHtml(copy.desc || "")}</span>
+                ${custBadge}
+                <div class="q4-card-badges">
+                    ${samsungBadges}
+                    ${partnerBadges ? `<span class="q4-badge-divider">+</span>${partnerBadges}` : ""}
+                </div>
+                ${preset.partnerIds.length === 0
+                    ? `<span class="q4-card-tag q4-tag-samsung-only">${isKo ? "삼성 중심" : "Samsung only"}</span>`
+                    : `<span class="q4-card-tag q4-tag-partner-needed">${isKo ? "타사 확장 가능" : "Partner expandable"}</span>`}
             </button>
         `;
     }).join("");
 
+    // ── 직접 기기 선택: 삼성 / 타사 분리 ──
     const allChipsEl = document.getElementById("q4-all-chips");
     if (allChipsEl) {
-        // 2그룹씩 행 배치 (기기 수 균형): [0,1] [2,3,4] [5,6] [7]
-        const ROW_PAIRS = [[0, 1], [2, 3, 4], [5, 6], [7]];
-        allChipsEl.innerHTML = ROW_PAIRS.map(indices => {
-            const rowGroups = indices.map(i => Q4_QUICK_GROUPS[i]).filter(Boolean);
-            const rowHtml = rowGroups.map(group => {
-                const groupLabel = currentLocale === "ko" ? group.label : group.labelEn;
-                const chips = renderQ4QuickChipButtons(group.ids, "all");
-                return `<div class="q4-chip-group">
-                    <span class="q4-chip-group-label">${escapeHtml(groupLabel)}</span>
-                    <div class="q4-chip-group-items">${chips}</div>
-                </div>`;
-            }).join("");
-            return `<div class="q4-chip-row">${rowHtml}</div>`;
-        }).join("");
+        const samsungHtml = renderQ4ChipSection(Q4_SAMSUNG_GROUPS, "samsung");
+        const partnerHtml = renderQ4ChipSection(Q4_PARTNER_GROUPS, "partner");
+
+        allChipsEl.innerHTML = `
+            <div class="q4-direct-section q4-direct-samsung">
+                <div class="q4-direct-section-head">
+                    <span class="q4-direct-section-icon">🏢</span>
+                    <span class="q4-direct-section-title">${isKo ? "삼성닷컴 Korea (sec) 기준 구매 가능 제품" : "Samsung.com Korea Products"}</span>
+                </div>
+                ${samsungHtml}
+            </div>
+            <div class="q4-direct-section q4-direct-partner">
+                <div class="q4-direct-section-head">
+                    <span class="q4-direct-section-icon">🔗</span>
+                    <span class="q4-direct-section-title">${isKo ? "SmartThings 호환 타사/파트너 기기" : "SmartThings Partner Devices"}</span>
+                </div>
+                ${partnerHtml}
+            </div>
+        `;
     }
     syncQ4QuickChipSelection();
     renderQ4Summary();
+}
+
+function renderQ4ChipSection(groups, kind) {
+    return groups.map(group => {
+        const groupLabel = currentLocale === "ko" ? group.label : group.labelEn;
+        const chips = renderQ4QuickChipButtons(group.ids, kind);
+        return `<div class="q4-chip-group">
+            <span class="q4-chip-group-label">${escapeHtml(groupLabel)}</span>
+            <div class="q4-chip-group-items">${chips}</div>
+        </div>`;
+    }).join("");
+}
+
+function getDeviceLabel(optionId) {
+    const input = deviceGrid?.querySelector(`input[data-node-type="child"][value="${optionId}"]`);
+    return input?.dataset?.label || optionId;
+}
+
+function getPresetCustomizationState(preset, selectedDeviceIds) {
+    if (!q4ActivePresets.has(preset.id)) return { customized: false, expanded: false };
+    const expectedIds = new Set(preset.deviceIds);
+    const removedFromPreset = preset.deviceIds.filter(id => !selectedDeviceIds.has(id));
+    const addedBeyondPresets = [...selectedDeviceIds].filter(id => {
+        // 이 기기가 어떤 활성 프리셋에도 속하지 않는 경우 = 사용자 직접 추가
+        for (const pid of q4ActivePresets) {
+            const p = Q4_PRESETS.find(x => x.id === pid);
+            if (p && p.deviceIds.includes(id)) return false;
+        }
+        return true;
+    });
+    return {
+        customized: removedFromPreset.length > 0,
+        expanded: addedBeyondPresets.length > 0,
+        removedIds: removedFromPreset,
+        addedIds: addedBeyondPresets
+    };
 }
 
 function renderQ4QuickChipButtons(optionIds, kind) {
@@ -795,25 +911,22 @@ function handleQ4PresetClick(event) {
     if (!button) return;
     const preset = Q4_PRESETS.find((item) => item.id === button.dataset.presetId);
     if (!preset) return;
+    clearQ4AutoMode();
 
-    // 중복 선택: 이미 활성화된 프리셋 → 해당 기기 OFF, 아니면 → 해당 기기 ON (기존 선택 유지)
-    const isActive = button.classList.contains("active");
+    const isActive = q4ActivePresets.has(preset.id);
     if (isActive) {
-        // 이 프리셋의 고유 기기만 해제 (다른 프리셋과 겹치는 기기는 유지)
+        q4ActivePresets.delete(preset.id);
+        // 이 프리셋의 고유 기기만 해제 (다른 활성 프리셋과 겹치는 기기는 유지)
         const otherPresetDevices = new Set();
-        Q4_PRESETS.forEach((p) => {
-            if (p.id !== preset.id) {
-                const btn = q4Presets?.querySelector(`[data-preset-id="${p.id}"]`);
-                if (btn?.classList.contains("active")) {
-                    p.deviceIds.forEach((id) => otherPresetDevices.add(id));
-                }
-            }
-        });
+        for (const pid of q4ActivePresets) {
+            const p = Q4_PRESETS.find(x => x.id === pid);
+            if (p) p.deviceIds.forEach(id => otherPresetDevices.add(id));
+        }
         preset.deviceIds.forEach((optionId) => {
             if (!otherPresetDevices.has(optionId)) setDeviceOptionChecked(optionId, false);
         });
     } else {
-        // 이 프리셋 기기 추가 (기존 선택 유지 = 중복 선택)
+        q4ActivePresets.add(preset.id);
         preset.deviceIds.forEach((optionId) => setDeviceOptionChecked(optionId, true));
     }
     renderQ4Composer();
@@ -895,42 +1008,108 @@ function renderQ4Summary() {
     if (!q4Summary) return;
     syncQ4QuickChipSelection();
 
-    const copy = getQ4SummaryCopy();
+    const isKo = currentLocale === "ko";
+    const selectedIds = new Set(
+        [...(deviceGrid?.querySelectorAll('input[data-node-type="child"]:checked') || [])].map(i => i.value)
+    );
     const selectedLabels = getSelectedDeviceLabels();
     const selectedDevices = getSelectedDevices();
 
     if (!selectedLabels.length) {
-        q4Summary.innerHTML = `<p class="q4-summary-empty">${escapeHtml(copy.empty)}</p>`;
+        const emptyMsg = isKo
+            ? "기기를 고르면 여기서 가능한 시나리오 범위와 한계가 바로 보입니다."
+            : "Choose devices to see what the scenario can realistically do.";
+        q4Summary.innerHTML = `<p class="q4-summary-empty">${escapeHtml(emptyMsg)}</p>`;
         return;
     }
 
+    // 삼성 / 타사 분류
+    const samsungSelected = [...selectedIds].filter(id => Q4_SAMSUNG_IDS.has(id));
+    const partnerSelected = [...selectedIds].filter(id => Q4_PARTNER_IDS.has(id));
+    const otherSelected = [...selectedIds].filter(id => !Q4_SAMSUNG_IDS.has(id) && !Q4_PARTNER_IDS.has(id));
+
+    const samsungChips = samsungSelected.map(id => `<span class="q4-summary-chip q4-chip-samsung">${escapeHtml(getDeviceLabel(id))}</span>`).join("");
+    const partnerChips = partnerSelected.map(id => `<span class="q4-summary-chip q4-chip-partner">${escapeHtml(getDeviceLabel(id))}</span>`).join("");
+    const otherChips = otherSelected.map(id => `<span class="q4-summary-chip">${escapeHtml(getDeviceLabel(id))}</span>`).join("");
+
+    // 커스터마이징 상태
+    let custStatusHtml = "";
+    if (q4ActivePresets.size > 0) {
+        const allExpected = new Set();
+        for (const pid of q4ActivePresets) {
+            const p = Q4_PRESETS.find(x => x.id === pid);
+            if (p) p.deviceIds.forEach(id => allExpected.add(id));
+        }
+        const removed = [...allExpected].filter(id => !selectedIds.has(id));
+        const added = [...selectedIds].filter(id => !allExpected.has(id));
+
+        if (removed.length > 0 || added.length > 0) {
+            const removedText = removed.length > 0
+                ? `<span class="q4-cust-removed">${isKo ? "제거됨" : "Removed"}: ${removed.map(id => escapeHtml(getDeviceLabel(id))).join(", ")}</span>`
+                : "";
+            const addedText = added.length > 0
+                ? `<span class="q4-cust-added">${isKo ? "추가됨" : "Added"}: ${added.map(id => escapeHtml(getDeviceLabel(id))).join(", ")}</span>`
+                : "";
+            custStatusHtml = `
+                <section class="q4-summary-block q4-summary-block--cust">
+                    <span class="q4-summary-label">${isKo ? "커스터마이징 상태" : "Customization"}</span>
+                    <div class="q4-cust-details">${removedText}${addedText}</div>
+                    <span class="q4-cust-note">${isKo ? "직접 기기 선택에서 일부 항목이 변경되었습니다." : "Some items have been changed from the default card selection."}</span>
+                </section>
+            `;
+        }
+    }
+
+    // 검증 상태
+    const hasCoreSamsung = samsungSelected.length >= 1;
+    const needsPartner = partnerSelected.length > 0;
+    let validationHtml = "";
+    if (!hasCoreSamsung) {
+        validationHtml = `<div class="q4-validation q4-validation--warn">${isKo
+            ? "이 스타일 조합을 생성하려면 최소 1개 이상의 핵심 삼성 제품이 필요합니다."
+            : "At least one core Samsung product is required to generate a scenario."}</div>`;
+    } else if (needsPartner) {
+        validationHtml = `<div class="q4-validation q4-validation--info">${isKo
+            ? "현재 선택한 조합에는 SmartThings 호환 타사 기기가 포함되어 있습니다. 실제 구현 시 추가 구매 또는 호환 여부 확인이 필요합니다."
+            : "Your selection includes SmartThings partner devices. Compatibility verification may be needed."}</div>`;
+    } else {
+        validationHtml = `<div class="q4-validation q4-validation--ok">${isKo
+            ? "현재 선택한 조합은 한국 삼성닷컴 판매 제품 중심으로 구성되어 바로 시나리오 생성이 가능합니다."
+            : "Your selection is based on Samsung.com Korea products and is ready for scenario generation."}</div>`;
+    }
+
+    // 기존 capability summary
     const capabilitySummary = buildQ4CapabilitySummary(selectedDevices);
-    const selectedMarkup = selectedLabels.slice(0, 8).map((label) => `<span class="q4-summary-chip">${escapeHtml(label)}</span>`).join("");
-    const capabilityMarkup = capabilitySummary.capabilities.slice(0, 3).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
-    const limitMarkup = capabilitySummary.limits.slice(0, 2).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
-    const recommendMarkup = capabilitySummary.recommendations.slice(0, 2).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+    const capabilityMarkup = capabilitySummary.capabilities.slice(0, 3).map(item => `<li>${escapeHtml(item)}</li>`).join("");
+    const limitMarkup = capabilitySummary.limits.slice(0, 2).map(item => `<li>${escapeHtml(item)}</li>`).join("");
 
     const deviceCount = selectedLabels.length;
-    const countLabel = currentLocale === "ko" ? `기기 ${deviceCount}개 선택됨` : `${deviceCount} devices selected`;
+    const countLabel = isKo ? `기기 ${deviceCount}개 선택됨` : `${deviceCount} devices selected`;
 
     q4Summary.innerHTML = `
         <div class="q4-summary-count">${escapeHtml(countLabel)}</div>
         <section class="q4-summary-block">
-            <span class="q4-summary-label">${escapeHtml(copy.selected)}</span>
-            <div class="q4-summary-chip-row">${selectedMarkup}</div>
+            <span class="q4-summary-label">${isKo ? "삼성 구매 가능 제품" : "Samsung Products"}</span>
+            <div class="q4-summary-chip-row">${samsungChips || `<span class="q4-summary-empty-inline">${isKo ? "없음" : "None"}</span>`}</div>
         </section>
+        ${partnerChips ? `<section class="q4-summary-block q4-summary-block--partner">
+            <span class="q4-summary-label">${isKo ? "타사/호환기기" : "Partner Devices"}</span>
+            <div class="q4-summary-chip-row">${partnerChips}</div>
+        </section>` : ""}
+        ${otherChips ? `<section class="q4-summary-block">
+            <span class="q4-summary-label">${isKo ? "기타" : "Other"}</span>
+            <div class="q4-summary-chip-row">${otherChips}</div>
+        </section>` : ""}
+        ${custStatusHtml}
         ${capabilityMarkup ? `<section class="q4-summary-block q4-summary-block--ok">
-            <span class="q4-summary-label">${escapeHtml(copy.capabilities)}</span>
+            <span class="q4-summary-label">${isKo ? "가능한 기능" : "What this enables"}</span>
             <ul class="q4-summary-list">${capabilityMarkup}</ul>
         </section>` : ""}
         ${limitMarkup ? `<section class="q4-summary-block q4-summary-block--warn">
-            <span class="q4-summary-label">${escapeHtml(copy.limits)}</span>
+            <span class="q4-summary-label">${isKo ? "현재 제한" : "Current limits"}</span>
             <ul class="q4-summary-list">${limitMarkup}</ul>
         </section>` : ""}
-        ${recommendMarkup ? `<section class="q4-summary-block q4-summary-block--tip">
-            <span class="q4-summary-label">${escapeHtml(copy.recommend)}</span>
-            <ul class="q4-summary-list">${recommendMarkup}</ul>
-        </section>` : ""}
+        ${validationHtml}
     `;
     renderQ4DotcomProducts();
 }

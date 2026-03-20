@@ -331,7 +331,10 @@ const DEVICE_GROUP_TITLE_EN = {
     "dt-home": "Home appliances", "dt-kitchen": "Kitchen appliances",
     "dt-tvav": "TV / AV", "dt-lights": "Lighting / Switches",
     "dt-sensors": "Sensors / Others", "dt-hub": "Hubs / Connectivity",
-    "dt-wearable": "Wearables", "dt-fitness": "Fitness / Health", "dt-personal": "Personal devices"
+    "dt-wearable": "Wearables", "dt-fitness": "Fitness / Health", "dt-personal": "Personal devices",
+    "sec-kitchen": "Kitchen (extended)", "sec-living": "Living (extended)",
+    "sec-tvav": "TV/AV (extended)", "sec-it": "IT / Peripherals",
+    "sec-smarthome": "Smart Home", "partner-wellness": "Partner Wellness"
 };
 
 const DEVICE_OPTION_LABEL_EN = {
@@ -401,7 +404,23 @@ const DEVICE_OPTION_LABEL_EN = {
     "tv-fitness": "TV (home fitness)",
     "body-scale": "Body composition scale",
     "wearable-sleep": "Galaxy Watch",
-    "wearable-care": "Galaxy Watch"
+    "wearable-care": "Galaxy Watch",
+    // Samsung sec 추가 제품
+    "kimchi-fridge": "Kimchi refrigerator",
+    "water-purifier": "Water purifier",
+    "hood": "Range hood",
+    "airdresser": "AirDresser & ShoeDresser",
+    "system-aircon": "System air conditioner",
+    "moving-style": "The Freestyle / Moving Style",
+    "harman-audio": "Harman audio",
+    "galaxy-book": "Galaxy Book",
+    "printer": "Printer",
+    "memory-storage": "Memory / Storage",
+    "smartthings-product": "SmartThings products",
+    "accessories": "Accessories",
+    // Partner devices
+    "partner-humidifier": "Humidifier (partner)",
+    "partner-sleep": "Sleep device (partner)"
 };
 
 function getLocalizedDeviceGroups(locale) {
@@ -604,6 +623,63 @@ const DEVICE_CATEGORY_GROUPS = [
             { id: "galaxy-phone", label: "Galaxy 스마트폰", normalized: "스마트폰" },
             { id: "galaxy-tab", label: "Galaxy Tab", normalized: "태블릿" },
             { id: "dt-tag", label: "SmartTag", normalized: "센서" }
+        ]
+    },
+
+    /* ═══ Section 3: Samsung sec 추가 제품 (한국 삼성닷컴 기준) ═══ */
+    { id: "_section_sec", section: true, title: "Samsung sec 추가 제품", titleEn: "Samsung Korea Products" },
+    {
+        id: "sec-kitchen",
+        title: "주방가전 확장",
+        options: [
+            { id: "kimchi-fridge", label: "김치냉장고", normalized: "냉장고" },
+            { id: "water-purifier", label: "정수기", normalized: "오븐" },
+            { id: "hood", label: "후드", normalized: "오븐" }
+        ]
+    },
+    {
+        id: "sec-living",
+        title: "리빙가전 확장",
+        options: [
+            { id: "airdresser", label: "에어드레서 & 슈드레서", normalized: "세탁기/건조기" },
+            { id: "system-aircon", label: "시스템에어컨", normalized: "에어컨" }
+        ]
+    },
+    {
+        id: "sec-tvav",
+        title: "TV/영상 확장",
+        options: [
+            { id: "moving-style", label: "무빙스타일", normalized: "TV" },
+            { id: "harman-audio", label: "하만 오디오", normalized: "스피커" }
+        ]
+    },
+    {
+        id: "sec-it",
+        title: "IT/주변기기",
+        options: [
+            { id: "galaxy-book", label: "Galaxy Book", normalized: "태블릿" },
+            { id: "monitor", label: "모니터", normalized: "TV" },
+            { id: "printer", label: "프린터", normalized: "센서" },
+            { id: "memory-storage", label: "메모리/스토리지", normalized: "센서" }
+        ]
+    },
+    {
+        id: "sec-smarthome",
+        title: "스마트홈 보조",
+        options: [
+            { id: "smartthings-product", label: "스마트싱스 상품", normalized: "센서" },
+            { id: "accessories", label: "소모품/액세서리", normalized: "센서" }
+        ]
+    },
+
+    /* ═══ Section 4: SmartThings 호환 타사/파트너 기기 ═══ */
+    { id: "_section_partner", section: true, title: "SmartThings 호환 타사기기", titleEn: "SmartThings Partner Devices" },
+    {
+        id: "partner-wellness",
+        title: "호환 웰니스/생활",
+        options: [
+            { id: "partner-humidifier", label: "가습기 (호환)", normalized: "에어컨" },
+            { id: "partner-sleep", label: "베개/수면기기 (호환)", normalized: "센서" }
         ]
     }
 ];

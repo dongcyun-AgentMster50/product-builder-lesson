@@ -856,6 +856,220 @@ textarea {
     color: #003366;
 }
 
+/* ── Q3 로케일 헤더 ── */
+.q4-locale-header {
+    background: linear-gradient(135deg, #e3f2fd, #e8eaf6);
+    border: 1px solid #bbdefb;
+    border-radius: var(--card-radius, 12px);
+    padding: 14px 18px;
+    margin-bottom: 12px;
+}
+.q4-locale-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    color: var(--ink);
+}
+.q4-locale-icon {
+    font-size: 1.2rem;
+}
+.q4-locale-sub {
+    margin: 6px 0 0;
+    font-size: 0.78rem;
+    color: var(--muted, #5d6677);
+    line-height: 1.5;
+}
+
+/* ── 섹션 힌트 ── */
+.q4-section-hint {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--muted, #889);
+    margin-top: 2px;
+}
+
+/* ── 카드 내부 배지 ── */
+.q4-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    justify-content: center;
+    margin-top: 4px;
+}
+.q4-card-badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    padding: 1px 5px;
+    border-radius: 4px;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+.q4-badge-samsung {
+    background: #e3f2fd;
+    color: #1565c0;
+    border: 1px solid #90caf9;
+}
+.q4-badge-partner {
+    background: #f5f5f5;
+    color: #616161;
+    border: 1px solid #e0e0e0;
+}
+.q4-badge-removed {
+    opacity: 0.35;
+    text-decoration: line-through;
+}
+.q4-badge-divider {
+    font-size: 0.6rem;
+    color: var(--muted, #aaa);
+    align-self: center;
+}
+
+/* ── 카드 태그 (삼성 중심 / 타사 확장) ── */
+.q4-card-tag {
+    display: inline-block;
+    font-size: 0.58rem;
+    padding: 1px 6px;
+    border-radius: 6px;
+    margin-top: 4px;
+    font-weight: 600;
+}
+.q4-tag-samsung-only {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+.q4-tag-partner-needed {
+    background: #fff8e1;
+    color: #f57f17;
+}
+
+/* ── 카드 커스터마이징 배지 ── */
+.q4-cust-badge {
+    display: inline-block;
+    font-size: 0.58rem;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #fff3e0;
+    color: #e65100;
+    font-weight: 600;
+}
+.q4-cust-expanded {
+    background: #e8f5e9;
+    color: #1b5e20;
+}
+
+/* ── 카드 커스터마이징 상태 테두리 ── */
+.q4-preset-btn.active.customized {
+    border-color: #7986cb;
+    background: rgba(121, 134, 203, 0.06);
+    box-shadow: 0 0 0 2px rgba(121, 134, 203, 0.15);
+}
+
+/* ── 직접 선택 삼성/타사 섹션 분리 ── */
+.q4-direct-section {
+    border: 1px solid var(--line, #e0e0e0);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+.q4-direct-samsung {
+    border-color: #bbdefb;
+    background: rgba(227, 242, 253, 0.3);
+}
+.q4-direct-partner {
+    border-color: #e0e0e0;
+    background: rgba(245, 245, 245, 0.3);
+}
+.q4-direct-section-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line, #e8e8e8);
+}
+.q4-direct-section-icon {
+    font-size: 1rem;
+}
+.q4-direct-section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+/* ── 요약 삼성/타사 칩 구분 ── */
+.q4-chip-samsung {
+    background: #e3f2fd !important;
+    color: #1565c0 !important;
+    border-color: #90caf9 !important;
+}
+.q4-chip-partner {
+    background: #f5f5f5 !important;
+    color: #616161 !important;
+    border-color: #bdbdbd !important;
+}
+.q4-summary-empty-inline {
+    font-size: 0.78rem;
+    color: var(--muted, #999);
+    font-style: italic;
+}
+
+/* ── 요약 커스터마이징 블록 ── */
+.q4-summary-block--cust {
+    border-left: 3px solid #ff9800;
+    padding-left: 10px;
+}
+.q4-cust-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 4px 0;
+}
+.q4-cust-removed {
+    font-size: 0.75rem;
+    color: #c62828;
+}
+.q4-cust-added {
+    font-size: 0.75rem;
+    color: #2e7d32;
+}
+.q4-cust-note {
+    font-size: 0.7rem;
+    color: var(--muted, #888);
+    font-style: italic;
+}
+
+/* ── 요약 파트너 블록 ── */
+.q4-summary-block--partner {
+    border-left: 3px solid #bdbdbd;
+    padding-left: 10px;
+}
+
+/* ── 검증 상태 표시 ── */
+.q4-validation {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+.q4-validation--ok {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+.q4-validation--info {
+    background: #fff8e1;
+    color: #f57f17;
+    border: 1px solid #ffe082;
+}
+.q4-validation--warn {
+    background: #fbe9e7;
+    color: #bf360c;
+    border: 1px solid #ffab91;
+}
+
 /* 직접 선택 칩 그리드 */
 .q4-chip-grid {
     display: flex;

@@ -169,6 +169,15 @@
                             <div class="field q4-field">
                                 <label>Q3. 어떤 기기들을 반영할까요?</label>
                                 <div class="q4-shell">
+                                    <!-- 로케일 안내 영역 -->
+                                    <div class="q4-locale-header">
+                                        <div class="q4-locale-main">
+                                            <span class="q4-locale-icon">🇰🇷</span>
+                                            <span class="q4-locale-label">현재 제품 기준: <strong>Samsung.com Korea (sec)</strong></span>
+                                        </div>
+                                        <p class="q4-locale-sub">아래 조합은 한국 삼성닷컴 판매 제품을 우선 반영했습니다. 일부 기능은 SmartThings 호환 타사 기기가 추가로 필요할 수 있습니다.</p>
+                                    </div>
+
                                     <!-- 자동 구성 버튼 (전폭) -->
                                     <button type="button" id="q4-auto-btn" class="q4-auto-btn">
                                         <span class="q4-auto-icon">&#x2728;</span>
@@ -180,7 +189,8 @@
                                         <div class="q4-left-stack">
                                             <section class="q4-card q4-presets">
                                                 <div class="q4-section-head">
-                                                    <h3>반영 기기 스타일별 조합</h3>
+                                                    <h3>스타일별 조합 카드</h3>
+                                                    <span class="q4-section-hint">복수 선택 가능 · 카드 내부의 기기가 자동 반영됩니다</span>
                                                 </div>
                                                 <div id="q4-presets" class="q4-preset-grid"></div>
                                             </section>
@@ -188,6 +198,7 @@
                                             <section class="q4-card q4-direct-select">
                                                 <div class="q4-section-head">
                                                     <h3>기기 직접 선택</h3>
+                                                    <span class="q4-section-hint">선택한 스타일 조합을 기반으로 기기를 자동 반영했습니다. 필요한 경우 직접 조정할 수 있습니다.</span>
                                                 </div>
                                                 <div id="q4-all-chips" class="q4-chip-grid"></div>
                                             </section>
@@ -195,7 +206,7 @@
 
                                         <aside class="q4-summary-card" id="q4-summary-card">
                                             <div class="q4-section-head">
-                                                <h3>현재 조합 요약</h3>
+                                                <h3>선택한 제품 조합</h3>
                                             </div>
                                             <div id="q4-summary" class="q4-summary"></div>
                                             <div id="q4-dotcom-products" class="q4-dotcom-products"></div>
