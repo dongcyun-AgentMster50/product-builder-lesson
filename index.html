@@ -55,16 +55,18 @@
             <section class="control-panel">
                 <section id="access-screen" class="access-screen">
                     <div class="access-card-v2">
-                        <div class="access-v2-icon">🔐</div>
-                        <h2 class="access-v2-title">Welcome</h2>
-                        <p class="access-v2-subtitle">접근 코드를 입력하고 시작하세요</p>
-                        <div class="access-v2-input-wrap">
-                            <input type="password" id="access-code" class="access-v2-input" placeholder="Access Code" autocomplete="off">
-                            <button type="button" id="access-toggle-btn" class="access-v2-toggle">보기</button>
+                        <div class="access-v2-inner">
+                            <div class="access-v2-icon">🔐</div>
+                            <h2 class="access-v2-title">Welcome</h2>
+                            <p class="access-v2-subtitle">접근 코드를 입력하고 시작하세요</p>
+                            <div class="access-v2-input-wrap">
+                                <input type="password" id="access-code" class="access-v2-input" placeholder="Access Code" autocomplete="off">
+                                <button type="button" id="access-toggle-btn" class="access-v2-toggle">보기</button>
+                            </div>
+                            <p id="access-status" class="access-status hidden" aria-live="polite"></p>
+                            <button type="button" id="unlock-btn" class="access-v2-btn">Enter Agent</button>
+                            <p class="access-v2-note">코드 확인 후 바로 다음 단계로 이어집니다</p>
                         </div>
-                        <p id="access-status" class="access-status hidden" aria-live="polite"></p>
-                        <button type="button" id="unlock-btn" class="access-v2-btn">Enter Agent</button>
-                        <p class="access-v2-note">코드 확인 후 바로 다음 단계로 이어집니다</p>
                     </div>
                 </section>
 
