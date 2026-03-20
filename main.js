@@ -6616,8 +6616,16 @@ function renderOutputPreview() {
           helper: "같은 Explore 시나리오를 바탕으로 하되, 활용 목적에 따라 표현과 정보 구조가 다르게 나옵니다. 탭으로 전환하여 확인할 수 있습니다." },
         { phase: "STEP 3", label: "직무별 활용 결과물 선택", icon: "📋",
           desc: "캠페인 메시지, 리테일 현장안, 닷컴 콘텐츠, CRM 활용안, 시즌 연계안, 보고용 요약 중 필요한 것만 골라 추가 생성합니다.",
-          summaryCard: true,
-          note: "복수 선택 가능 — 직무를 미리 고르지 않아도 됩니다" }
+          outputCards: [
+              { icon: "📣", label: "캠페인 메시지" },
+              { icon: "🏬", label: "리테일 현장안" },
+              { icon: "🌐", label: "닷컴 콘텐츠" },
+              { icon: "📧", label: "CRM 활용안" },
+              { icon: "📅", label: "시즌 연계안" },
+              { icon: "📊", label: "보고용 요약" }
+          ],
+          helper: "필요한 결과물만 골라 추가 생성할 수 있습니다. 복수 선택 가능!",
+          note: "직무를 미리 고르지 않아도 됩니다" }
     ] : [
         { phase: "STEP 1", label: "Auto-select from Explore scenarios", icon: "✦",
           desc: "Automatically match <strong>verified scenarios</strong> from Explore Contents based on your country, target, and device selections.",
@@ -6637,8 +6645,16 @@ function renderOutputPreview() {
           helper: "Same Explore scenario, different expression and structure depending on purpose. Switch between tabs to view." },
         { phase: "STEP 3", label: "Role-specific output selection", icon: "📋",
           desc: "Choose from campaign messaging, retail execution, dotcom content, CRM, seasonal tie-in, or executive summary — generate only what you need.",
-          summaryCard: true,
-          note: "Multi-select available — no need to choose a role upfront" }
+          outputCards: [
+              { icon: "📣", label: "Campaign" },
+              { icon: "🏬", label: "Retail" },
+              { icon: "🌐", label: "Dotcom" },
+              { icon: "📧", label: "CRM" },
+              { icon: "📅", label: "Seasonal" },
+              { icon: "📊", label: "Summary" }
+          ],
+          helper: "Pick only the outputs you need. Multi-select available!",
+          note: "No need to choose a role upfront" }
     ];
 
     const guideText = isKo
@@ -6669,11 +6685,14 @@ function renderOutputPreview() {
                         `).join("")}
                     </div>
                 ` : ""}
-                ${step.summaryCard ? `
-                    <div class="preview-summary-card">
-                        <span class="preview-summary-card-icon">📊</span>
-                        <span class="preview-summary-card-label">${isKo ? "보고용 요약 카드" : "Executive Summary Card"}</span>
-                        <span class="preview-summary-card-desc">${isKo ? "핵심 내용을 1장으로 정리" : "Key findings in one page"}</span>
+                ${step.outputCards ? `
+                    <div class="preview-output-cards">
+                        ${step.outputCards.map(c => `
+                            <div class="preview-output-chip">
+                                <span class="preview-output-chip-icon">${c.icon}</span>
+                                <span class="preview-output-chip-label">${escapeHtml(c.label)}</span>
+                            </div>
+                        `).join("")}
                     </div>
                 ` : ""}
                 ${step.note ? `<p class="preview-flow-note">${escapeHtml(step.note)}</p>` : ""}
