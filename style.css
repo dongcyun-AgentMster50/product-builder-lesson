@@ -68,7 +68,7 @@ body {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0;
-    padding: 20px 28px 14px;
+    padding: 32px 36px 24px;
     border-radius: 20px;
     background:
         radial-gradient(circle at 86% 16%, rgba(58, 159, 220, 0.24), transparent 20%),
@@ -148,9 +148,9 @@ body {
 }
 
 .hero-copy h1 {
-    margin: 4px 0 6px;
-    font-size: clamp(1.6rem, 2.8vw, 2.2rem);
-    line-height: 1.08;
+    margin: 6px 0 10px;
+    font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+    line-height: 1.1;
     letter-spacing: -0.04em;
     font-weight: 900;
 }
@@ -171,13 +171,15 @@ body {
 .hero .eyebrow,
 .hero .panel-label {
     color: rgba(247, 251, 255, 0.72);
+    font-size: 0.78rem;
 }
 
 .hero-text {
-    max-width: 720px;
-    font-size: 0.88rem;
-    line-height: 1.7;
+    max-width: 800px;
+    font-size: 0.95rem;
+    line-height: 1.75;
     color: rgba(247, 251, 255, 0.86);
+    margin-top: 4px;
 }
 
 .hero-panel {
@@ -195,20 +197,20 @@ body {
 .hero-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 10px;
+    margin-top: 14px;
 }
 
 .hero-chip {
     display: inline-flex;
     align-items: center;
-    min-height: 28px;
-    padding: 0 10px;
+    min-height: 32px;
+    padding: 0 14px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.18);
     color: #f7fbff;
-    font-size: 0.78rem;
+    font-size: 0.84rem;
     font-weight: 800;
 }
 
@@ -239,7 +241,8 @@ body {
 }
 
 .workspace {
-    display: block;
+    display: flex;
+    flex-direction: column;
     padding: 6px 10px;
     margin-top: 4px;
     border-radius: 16px;
@@ -1631,9 +1634,9 @@ textarea {
     align-items: center;
     justify-content: center;
     gap: 0;
-    margin-top: 14px;
-    padding: 10px 20px;
-    border-radius: 12px;
+    margin-top: 20px;
+    padding: 14px 28px;
+    border-radius: 14px;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(6px);
@@ -1641,31 +1644,31 @@ textarea {
 .hero-flow-step {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 16px;
+    gap: 10px;
+    padding: 8px 20px;
 }
 .hero-flow-num {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 26px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.18);
     border: 1.5px solid rgba(255, 255, 255, 0.35);
-    font-size: 0.72rem;
+    font-size: 0.8rem;
     font-weight: 800;
     color: #fff;
 }
 .hero-flow-label {
-    font-size: 0.78rem;
+    font-size: 0.88rem;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
 }
 .hero-flow-arrow {
     display: block;
-    width: 20px;
+    width: 28px;
     height: 2px;
     background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.35), rgba(255,255,255,0.1));
     flex-shrink: 0;
@@ -1678,8 +1681,8 @@ textarea {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: 32px 48px 28px;
+    gap: 12px;
+    padding: 36px 48px 32px;
     border-radius: 24px;
     background:
         radial-gradient(circle at 50% 0%, rgba(0, 51, 102, 0.06), transparent 60%),
@@ -1691,6 +1694,7 @@ textarea {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    margin-top: auto;
 }
 .access-v2-icon {
     font-size: 2.2rem;
