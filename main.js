@@ -4232,13 +4232,18 @@ function renderStructuredOutput(output, context) {
     const st = output.sourceTrace || tx.sourceTrace;
     const sourceHtml = st ? `<div class="str-source-trace">${isKo ? "출처" : "Source"}: ${escapeHtml(typeof st === "string" ? st : `Explore ${st.exploreVersion} > ${st.articleTitle} > ${st.storyTitle}`)}</div>` : "";
 
+    const completionBanner = buildCompletionBanner(context, isKo);
+    const curationSummary = buildCurationSummaryInline(isKo);
+
     resultDiv.innerHTML = `
         <article class="scenario-output ai-result str-output">
+            ${completionBanner}
             <div class="ai-result-meta">
                 <span class="ai-result-badge">${context.provider === "claude" ? "Claude" : "GPT"} ${isKo ? "생성 결과" : "Generated"}</span>
                 <span class="ai-result-context">${escapeHtml(context.role)}</span>
                 <button type="button" class="tab-btn ai-copy-btn" id="str-copy-btn">${isKo ? "복사" : "Copy"}</button>
             </div>
+            ${curationSummary}
             ${selCard}
             <div class="str-tab-bar">
                 <button class="str-tab active" data-tab="marketer">${isKo ? "마케터용" : "Marketer"}</button>
@@ -4315,16 +4320,23 @@ function renderMarketerPanel(mo, isKo) {
         </div>
     ` : "";
 
+    const sections = [];
+    if (why) sections.push({ title: isKo ? "왜 이 시나리오인가" : "Why This Scenario", html: `<p>${escapeHtml(why)}</p>` });
+    if (tf.primary) sections.push({ title: isKo ? "타깃 적합도" : "Target Fit", html: `<p><strong>${isKo ? "주 타깃" : "Primary"}:</strong> ${escapeHtml(tf.primary)}</p>${tf.secondary ? `<p><strong>${isKo ? "보조" : "Secondary"}:</strong> ${escapeHtml(tf.secondary)}</p>` : ""}${tf.estimatedReach ? `<p><strong>${isKo ? "추정 도달" : "Est. reach"}:</strong> ${escapeHtml(tf.estimatedReach)}</p>` : ""}` });
+    if (channelsHtml) sections.push({ title: isKo ? "채널 전략" : "Channel Strategy", html: `<div class="str-channels-grid">${channelsHtml}</div>` });
+    if (copiesHtml) sections.push({ title: isKo ? "카피 옵션" : "Copy Options", html: copiesHtml });
+    if (insight) sections.push({ title: isKo ? "지역 인사이트" : "Local Insight", html: `<p>${escapeHtml(insight)}</p>` });
+    if (rd.retail || rd.dotcom || rd.brand) sections.push({ title: isKo ? "역할별 실행 방향" : "Role-specific Direction", html: `${rd.retail ? `<div><strong>Retail:</strong> ${escapeHtml(rd.retail)}</div>` : ""}${rd.dotcom ? `<div><strong>Dotcom:</strong> ${escapeHtml(rd.dotcom)}</div>` : ""}${rd.brand ? `<div><strong>Brand:</strong> ${escapeHtml(rd.brand)}</div>` : ""}` });
+
+    const accordionsHtml = sections.map((sec, i) =>
+        `<details class="str-accordion"${i === 0 ? " open" : ""}><summary>${escapeHtml(sec.title)}</summary><div class="acc-body">${sec.html}</div></details>`
+    ).join("");
+
     return `
         <div class="str-marketer">
             <h2 class="str-headline">${escapeHtml(headline)}</h2>
             <p class="str-summary">${escapeHtml(summary)}</p>
-            ${why ? `<div class="str-why"><h4>${isKo ? "왜 이 시나리오인가" : "Why This Scenario"}</h4><p>${escapeHtml(why)}</p></div>` : ""}
-            ${tf.primary ? `<div class="str-target"><h4>${isKo ? "타깃 적합도" : "Target Fit"}</h4><p><strong>${isKo ? "주 타깃" : "Primary"}:</strong> ${escapeHtml(tf.primary)}</p>${tf.secondary ? `<p><strong>${isKo ? "보조" : "Secondary"}:</strong> ${escapeHtml(tf.secondary)}</p>` : ""}${tf.estimatedReach ? `<p><strong>${isKo ? "추정 도달" : "Est. reach"}:</strong> ${escapeHtml(tf.estimatedReach)}</p>` : ""}</div>` : ""}
-            ${channelsHtml ? `<div class="str-channels"><h4>${isKo ? "채널 전략" : "Channel Strategy"}</h4><div class="str-channels-grid">${channelsHtml}</div></div>` : ""}
-            ${copiesHtml ? `<div class="str-copies"><h4>${isKo ? "카피 옵션" : "Copy Options"}</h4>${copiesHtml}</div>` : ""}
-            ${insight ? `<div class="str-local-insight"><h4>${isKo ? "지역 인사이트" : "Local Insight"}</h4><p>${escapeHtml(insight)}</p></div>` : ""}
-            ${roleHtml}
+            ${accordionsHtml}
         </div>
     `;
 }
@@ -4349,16 +4361,23 @@ function renderConsumerPanel(co, isKo) {
     const cautionsHtml = cautions.filter(Boolean).map(c => `<li>${escapeHtml(String(c))}</li>`).join("");
     const altsHtml = alts.filter(a => a && a.scenario).map(a => `<div class="str-alt-item"><strong>${escapeHtml(a.scenario || "")}</strong><span>${escapeHtml(a.reason || "")}</span></div>`).join("");
 
+    const sections = [];
+    if (what) sections.push({ title: isKo ? "무엇을 하나요" : "What It Does", html: `<p>${escapeHtml(what)}</p>` });
+    if (devicesHtml) sections.push({ title: isKo ? "필요한 기기" : "Required Devices", html: devicesHtml });
+    if ((setup.apps || []).length) sections.push({ title: isKo ? "필요한 앱" : "Required Apps", html: `<p>${(setup.apps || []).map(a => escapeHtml(a)).join(", ")}</p>` });
+    if ((setup.conditions || []).length) sections.push({ title: isKo ? "필요 조건" : "Prerequisites", html: `<ul>${(setup.conditions || []).map(c => `<li>${escapeHtml(c)}</li>`).join("")}</ul>` });
+    if (stepsHtml) sections.push({ title: isKo ? "설정 방법" : "Setup Steps", html: `<ol>${stepsHtml}</ol>` });
+    if (cautionsHtml) sections.push({ title: isKo ? "주의사항" : "Cautions", html: `<ul>${cautionsHtml}</ul>` });
+    if (altsHtml) sections.push({ title: isKo ? "대체 구성" : "Alternatives", html: altsHtml });
+
+    const accordionsHtml = sections.map((sec, i) =>
+        `<details class="str-accordion"${i === 0 ? " open" : ""}><summary>${escapeHtml(sec.title)}</summary><div class="acc-body">${sec.html}</div></details>`
+    ).join("");
+
     return `
         <div class="str-consumer">
             <h2 class="str-headline">${escapeHtml(headline)}</h2>
-            ${what ? `<div class="str-what"><p>${escapeHtml(what)}</p></div>` : ""}
-            ${devicesHtml ? `<div class="str-devices"><h4>${isKo ? "필요한 기기" : "Required Devices"}</h4>${devicesHtml}</div>` : ""}
-            ${(setup.apps || []).length ? `<div class="str-apps"><h4>${isKo ? "필요한 앱" : "Required Apps"}</h4><p>${(setup.apps || []).map(a => escapeHtml(a)).join(", ")}</p></div>` : ""}
-            ${(setup.conditions || []).length ? `<div class="str-conditions"><h4>${isKo ? "필요 조건" : "Prerequisites"}</h4><ul>${(setup.conditions || []).map(c => `<li>${escapeHtml(c)}</li>`).join("")}</ul></div>` : ""}
-            ${stepsHtml ? `<div class="str-steps"><h4>${isKo ? "설정 방법" : "Setup Steps"}</h4><ol>${stepsHtml}</ol></div>` : ""}
-            ${cautionsHtml ? `<div class="str-cautions"><h4>${isKo ? "주의사항" : "Cautions"}</h4><ul>${cautionsHtml}</ul></div>` : ""}
-            ${altsHtml ? `<div class="str-alts"><h4>${isKo ? "대체 구성" : "Alternatives"}</h4>${altsHtml}</div>` : ""}
+            ${accordionsHtml}
         </div>
     `;
 }
@@ -4394,16 +4413,16 @@ function renderExploreSelectionCard(summary) {
     const snap = summary.inputSnapshot || {};
     if (snap.market?.country) {
         const marketText = `${snap.market.country}${snap.market.city ? ` / ${snap.market.city}` : ""}`;
-        inputItems.push({ label: isKo ? "시장" : "Market", value: marketText });
+        inputItems.push({ label: isKo ? "대상 시장" : "Target Market", value: marketText });
     }
     if (snap.persona && snap.persona.length > 0) {
-        inputItems.push({ label: isKo ? "타깃" : "Target", value: snap.persona.map(p => p.label || p.id || "").filter(Boolean).join(", ") });
+        inputItems.push({ label: isKo ? "핵심 타깃" : "Core Target", value: snap.persona.map(p => p.label || p.id || "").filter(Boolean).join(", ") });
     }
     if (snap.devices && snap.devices.length > 0) {
-        inputItems.push({ label: isKo ? "기기" : "Devices", value: snap.devices.map(d => d.label || d.name || "").filter(Boolean).join(", ") });
+        inputItems.push({ label: isKo ? "활용 기기" : "Devices Used", value: snap.devices.map(d => d.label || d.name || "").filter(Boolean).join(", ") });
     }
     if (snap.purpose?.text) {
-        inputItems.push({ label: isKo ? "상황/목적" : "Context", value: snap.purpose.text });
+        inputItems.push({ label: isKo ? "상황 · 목적" : "Context & Purpose", value: snap.purpose.text });
     }
 
     const inputHtml = inputItems.length > 0
@@ -4760,7 +4779,60 @@ function parseSourceCitations(html) {
 }
 
 function scrollToResult() {
-    resultDiv?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const curationFrame = document.getElementById("curation-frame");
+    if (curationFrame && curationFrame.offsetParent !== null) {
+        curationFrame.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+        resultDiv?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+}
+
+function buildCompletionBanner(context, isKo) {
+    const provider = context.provider === "claude" ? "Claude" : "GPT";
+    const role = context.role || "";
+    return `
+        <div class="str-completion-banner">
+            <span class="banner-icon">✓</span>
+            <div class="banner-text">
+                <span class="banner-title">${isKo ? "시나리오 생성 완료" : "Scenario Generation Complete"}</span>
+                <span class="banner-sub">${provider} · ${escapeHtml(role)}</span>
+            </div>
+        </div>
+    `;
+}
+
+function buildCurationSummaryInline(isKo) {
+    const container = document.getElementById("curation-results");
+    if (!container) return "";
+
+    const cards = container.querySelectorAll(".curation-card, .curation-result-card, [data-scenario-title]");
+    if (cards.length === 0) return "";
+
+    const items = [];
+    cards.forEach((card, i) => {
+        if (i >= 5) return;
+        const title = card.getAttribute("data-scenario-title")
+            || card.querySelector(".curation-title, .scenario-title, h3, h4")?.textContent?.trim()
+            || `Scenario ${i + 1}`;
+        const source = card.querySelector(".curation-source, .source-tag, .sel-source-badge")?.textContent?.trim() || "";
+        items.push({ rank: i + 1, title, source });
+    });
+
+    if (items.length === 0) return "";
+
+    const listHtml = items.map(it =>
+        `<li class="str-curation-item"><span class="curation-rank">${it.rank}</span><span class="curation-title">${escapeHtml(it.title)}</span>${it.source ? `<span class="curation-source">${escapeHtml(it.source)}</span>` : ""}</li>`
+    ).join("");
+
+    return `
+        <div class="str-curation-summary">
+            <div class="curation-summary-header">
+                <span class="curation-summary-title">${isKo ? "추천 시나리오 Top " + items.length : "Top " + items.length + " Recommended Scenarios"}</span>
+                <button type="button" class="curation-toggle-btn" onclick="this.closest('.str-curation-summary').querySelector('.str-curation-list').classList.toggle('hidden');this.textContent=this.textContent==='${isKo ? "접기" : "Collapse"}'?'${isKo ? "펼치기" : "Expand"}':'${isKo ? "접기" : "Collapse"}';">${isKo ? "접기" : "Collapse"}</button>
+            </div>
+            <ul class="str-curation-list">${listHtml}</ul>
+        </div>
+    `;
 }
 
 function buildStoryboardWebtoon(intent, services, deviceDecision) {
