@@ -6600,7 +6600,7 @@ function renderOutputPreview() {
     const flowSteps = isKo ? [
         { phase: "STEP 1", label: "Explore 시나리오 자동 선별", icon: "✦",
           desc: "입력한 국가/도시 + 타겟 + 기기 조건으로 Explore Contents에서 <strong>검증된 시나리오</strong>를 자동 매칭합니다.",
-          helper: "Build 클릭 시 Explore v1.0(183개) + v2.0(87개) 시나리오를 점수화하여 상위 5개를 선별합니다. 왜 선택되었는지, 어떤 입력이 반영되었는지가 함께 표시됩니다.",
+          helper: "Build 클릭 시 Explore v1.0(183개) + v2.0(87개) 시나리오를 점수화하여 상위 5개를 선별합니다. 왜 선택되었는지, 어떤 입력이 반영되었는지가 함께 표시됩니다.\n입력한 국가/도시의 도시 프로필 고려사항이 시나리오 추천에 반영됩니다.",
           items: [
               { num: "A", title: "선택 근거 카드", sub: "어떤 시나리오가, 왜 선택되었는지" },
               { num: "B", title: "입력 반영 확인", sub: "내 입력이 어디에 반영되었는지 한눈에" },
@@ -6616,11 +6616,12 @@ function renderOutputPreview() {
           helper: "같은 Explore 시나리오를 바탕으로 하되, 활용 목적에 따라 표현과 정보 구조가 다르게 나옵니다. 탭으로 전환하여 확인할 수 있습니다." },
         { phase: "STEP 3", label: "직무별 활용 결과물 선택", icon: "📋",
           desc: "캠페인 메시지, 리테일 현장안, 닷컴 콘텐츠, CRM 활용안, 시즌 연계안, 보고용 요약 중 필요한 것만 골라 추가 생성합니다.",
+          summaryCard: true,
           note: "복수 선택 가능 — 직무를 미리 고르지 않아도 됩니다" }
     ] : [
         { phase: "STEP 1", label: "Auto-select from Explore scenarios", icon: "✦",
           desc: "Automatically match <strong>verified scenarios</strong> from Explore Contents based on your country, target, and device selections.",
-          helper: "On Build, scenarios from Explore v1.0 (183) + v2.0 (87) are scored and top 5 are selected. You'll see why each was chosen and which inputs were reflected.",
+          helper: "On Build, scenarios from Explore v1.0 (183) + v2.0 (87) are scored and top 5 are selected. You'll see why each was chosen and which inputs were reflected.\nCity profile insights for your selected country/city are factored into scenario recommendations.",
           items: [
               { num: "A", title: "Selection Basis", sub: "Which scenario was chosen and why" },
               { num: "B", title: "Input Reflection", sub: "See exactly where your inputs are reflected" },
@@ -6636,6 +6637,7 @@ function renderOutputPreview() {
           helper: "Same Explore scenario, different expression and structure depending on purpose. Switch between tabs to view." },
         { phase: "STEP 3", label: "Role-specific output selection", icon: "📋",
           desc: "Choose from campaign messaging, retail execution, dotcom content, CRM, seasonal tie-in, or executive summary — generate only what you need.",
+          summaryCard: true,
           note: "Multi-select available — no need to choose a role upfront" }
     ];
 
@@ -6643,8 +6645,8 @@ function renderOutputPreview() {
         ? "어떤 결과물이 나오는지 궁금하면 눌러보세요"
         : "Tap to see what outputs you'll get";
     const guideLabel = isKo
-        ? "결과물 미리보기"
-        : "Output Preview";
+        ? "결과물 생성 과정과 형식은 다음 내용을 참조하세요~!"
+        : "See how outputs are generated and formatted";
 
     const flowHtml = flowSteps.map((step, idx) => `
         <div class="preview-flow-step">
@@ -6655,7 +6657,7 @@ function renderOutputPreview() {
             </div>
             <div class="preview-flow-body">
                 <p>${step.desc}</p>
-                ${step.helper ? `<p class="preview-flow-helper">${escapeHtml(step.helper)}</p>` : ""}
+                ${step.helper ? `<p class="preview-flow-helper">${escapeHtml(step.helper).replace(/\n/g, '<br>')}</p>` : ""}
                 ${step.items ? `
                     <div class="preview-flow-items">
                         ${step.items.map(item => `
@@ -6665,6 +6667,13 @@ function renderOutputPreview() {
                                 <span class="preview-flow-item-sub">${escapeHtml(item.sub)}</span>
                             </div>
                         `).join("")}
+                    </div>
+                ` : ""}
+                ${step.summaryCard ? `
+                    <div class="preview-summary-card">
+                        <span class="preview-summary-card-icon">📊</span>
+                        <span class="preview-summary-card-label">${isKo ? "보고용 요약 카드" : "Executive Summary Card"}</span>
+                        <span class="preview-summary-card-desc">${isKo ? "핵심 내용을 1장으로 정리" : "Key findings in one page"}</span>
                     </div>
                 ` : ""}
                 ${step.note ? `<p class="preview-flow-note">${escapeHtml(step.note)}</p>` : ""}

@@ -5474,6 +5474,9 @@ a.source-tag-link:hover {
     display: grid;
     gap: 0;
 }
+.preview-flow.preview-flow--hidden {
+    display: none;
+}
 .preview-flow-step {
     display: grid;
     grid-template-columns: 200px 1fr;
@@ -5573,6 +5576,28 @@ a.source-tag-link:hover {
     font-size: 0.64rem;
     color: var(--muted);
     line-height: 1.3;
+}
+.preview-summary-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--accent-strong);
+    background: linear-gradient(135deg, rgba(0,51,102,0.06) 0%, rgba(0,51,102,0.02) 100%);
+    width: fit-content;
+}
+.preview-summary-card-icon {
+    font-size: 1.1rem;
+}
+.preview-summary-card-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent-strong);
+}
+.preview-summary-card-desc {
+    font-size: 0.68rem;
+    color: var(--muted);
 }
 .preview-flow-connector {
     display: none;
