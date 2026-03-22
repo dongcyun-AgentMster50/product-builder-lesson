@@ -4303,6 +4303,13 @@ function inferMissionBucket(purpose, selectedDeviceGroups = []) {
 function generateScenario() {
     if (!validateCurrentStep()) return;
 
+    // Output Flow Tracker 시작: STEP 1 활성
+    updateOutputFlowTracker(1, { 1: "active", 2: "waiting", 3: "waiting" });
+    const isKoGen = currentLocale === "ko";
+    updateSectionHelper("curation-helper",
+        isKoGen ? "🔍 입력 정보를 분석하여 최적의 시나리오를 찾고 있습니다…" : "🔍 Analyzing your inputs to find the best scenarios…");
+    setSectionStatusBadge("curation-title", "working");
+
     // Build 시 큐레이션 먼저 실행
     runCuration();
 
@@ -4432,6 +4439,12 @@ async function streamGenerateScenario(context) {
     aiOutputText = "";
     latestStructuredOutput = null;  // 새 생성 시작 시 이전 구조화 output 리셋
 
+    // STEP 3 활성 — AI 생성 시작
+    updateOutputFlowTracker(3, { 1: "done", 2: "done", 3: "active" });
+    const isKoStream = currentLocale === "ko";
+    updateSectionHelper("result-helper",
+        isKoStream ? "🤖 AI가 맞춤형 시나리오를 생성하고 있습니다. 잠시만 기다려 주세요…" : "🤖 AI is building your custom scenario. Please wait…");
+
     // Show streaming UI
     resultDiv.innerHTML = buildStreamingUI(context);
     scrollToResult();
@@ -4542,6 +4555,12 @@ async function streamGenerateScenario(context) {
         }
 
         aiGenerating = false;
+
+        // STEP 3 완료
+        updateOutputFlowTracker(3, { 1: "done", 2: "done", 3: "done" });
+        const isKoDone = currentLocale === "ko";
+        updateSectionHelper("result-helper",
+            isKoDone ? "✅ 시나리오 생성이 완료되었습니다. 아래에서 결과를 확인하세요." : "✅ Scenario generation complete. Review the results below.");
 
         // JSON 모드 시도: selectionSummary가 있으면 JSON 파싱 우선
         if (context.selectionSummary && typeof extractJsonFromAIOutput === "function") {
@@ -5250,12 +5269,70 @@ function parseSourceCitations(html) {
         });
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   Output Flow Tracker — 3-step 상태 관리
+   ══════════════════════════════════════════════════════════════════════ */
+function updateOutputFlowTracker(activeStep, states) {
+    // states: { 1: "waiting"|"active"|"done", 2: ..., 3: ... }
+    const tracker = document.getElementById("output-flow-tracker");
+    if (!tracker) return;
+    tracker.classList.remove("hidden");
+
+    const isKo = currentLocale === "ko";
+    const statusLabels = {
+        waiting: isKo ? "대기" : "Waiting",
+        active:  isKo ? "진행 중…" : "In progress…",
+        done:    isKo ? "완료 ✓" : "Done ✓"
+    };
+
+    [1, 2, 3].forEach(n => {
+        const el = tracker.querySelector(`[data-oft="${n}"]`);
+        if (!el) return;
+        const state = states[n] || "waiting";
+        el.className = "oft-step " + state;
+        const statusEl = el.querySelector(".oft-status");
+        if (statusEl) {
+            statusEl.textContent = statusLabels[state] || "";
+        }
+    });
+}
+
+function updateSectionHelper(elementId, text) {
+    const el = document.getElementById(elementId);
+    if (el) el.textContent = text;
+}
+
+function setSectionStatusBadge(headingId, state) {
+    // state: "working" | "done" | null (remove)
+    const heading = document.getElementById(headingId);
+    if (!heading) return;
+    // Remove existing badge
+    const existing = heading.parentElement?.querySelector(".section-status-badge");
+    if (existing) existing.remove();
+    if (!state) return;
+
+    const isKo = currentLocale === "ko";
+    const badge = document.createElement("span");
+    badge.className = `section-status-badge ${state}`;
+    if (state === "working") {
+        badge.innerHTML = isKo ? "⏳ 작업 중…" : "⏳ Working…";
+    } else if (state === "done") {
+        badge.innerHTML = isKo ? "✅ 완료" : "✅ Done";
+    }
+    heading.insertAdjacentElement("afterend", badge);
+}
+
 function scrollToResult() {
-    const curationFrame = document.getElementById("curation-frame");
-    if (curationFrame && curationFrame.offsetParent !== null) {
-        curationFrame.scrollIntoView({ behavior: "smooth", block: "start" });
+    const tracker = document.getElementById("output-flow-tracker");
+    if (tracker && tracker.offsetParent !== null) {
+        tracker.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
-        resultDiv?.scrollIntoView({ behavior: "smooth", block: "start" });
+        const curationFrame = document.getElementById("curation-frame");
+        if (curationFrame && curationFrame.offsetParent !== null) {
+            curationFrame.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+            resultDiv?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
     }
 }
 
@@ -9643,6 +9720,15 @@ function renderCurationResults(results, selectedDevices) {
     });
 
     frame.classList.remove("hidden");
+
+    // STEP 1 완료 → 헬퍼 업데이트
+    const isKoCur = currentLocale === "ko";
+    updateOutputFlowTracker(1, { 1: "done", 2: "waiting", 3: "waiting" });
+    setSectionStatusBadge("curation-title", "done");
+    updateSectionHelper("curation-helper",
+        isKoCur
+            ? "입력하신 조건에 가장 잘 맞는 시나리오를 찾았습니다. 하나를 선택하면 다음 단계로 넘어갑니다."
+            : "We found the best-matching scenarios. Select one to proceed to the next step.");
 }
 
 function triggerAiFromCuration(scenario) {
@@ -9679,7 +9765,15 @@ function triggerAiFromCuration(scenario) {
             : `You selected "${f.title}" (score: ${f.score}, source: Explore ${scenario._source || "v2.0"}).`;
     }
 
-    // 카테고리 선택 UI 표시
+    // STEP 2 활성 → 카테고리 선택 UI 표시
+    updateOutputFlowTracker(2, { 1: "done", 2: "active", 3: "waiting" });
+    setSectionStatusBadge("category-title", "working");
+    const isKoTrig = currentLocale === "ko";
+    updateSectionHelper("category-helper",
+        isKoTrig
+            ? "필요한 유형을 골라 주세요. 복수 선택이 가능하며, 선택 후 아래 생성 버튼을 누르면 AI가 작업을 시작합니다."
+            : "Pick the output types you need. Multiple selections allowed. Then press Generate.");
+
     renderOutputCategories();
     const categoryFrame = document.getElementById("output-category-frame");
     if (categoryFrame) {
@@ -9701,6 +9795,16 @@ function triggerAiFromCuration(scenario) {
     }
 
     genBtn.onclick = () => {
+        // STEP 2 완료 → STEP 3 활성
+        updateOutputFlowTracker(3, { 1: "done", 2: "done", 3: "active" });
+        setSectionStatusBadge("category-title", "done");
+        const isKoG = currentLocale === "ko";
+        updateSectionHelper("category-helper",
+            isKoG ? "카테고리 선택 완료. AI가 시나리오를 생성하고 있습니다." : "Category selection complete. AI is generating your scenario.");
+        updateSectionHelper("result-helper",
+            isKoG ? "🤖 AI가 맞춤형 시나리오를 생성하고 있습니다. 잠시만 기다려 주세요…" : "🤖 AI is building your custom scenario. Please wait…");
+        setSectionStatusBadge("result-frame-title", "working");
+
         const cats = [...selectedOutputCategories];
         const parentInfo = `[Parent Scenario: ${f.source}] ${f.article} > ${f.title}`;
         const originalSnippet = (f.originalText || f.narrative || "").substring(0, 300);
