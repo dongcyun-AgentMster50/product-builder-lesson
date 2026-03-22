@@ -204,52 +204,341 @@ let selectedProvider = sessionStorage.getItem("aiProvider") || "openai";
 let userOverrideLocale = null;
 
 const SUPPORTED_UI_LOCALES = ["ko", "en", "de", "fr", "es", "pt", "it", "nl", "ar"];
+// ══════════════════════════════════════════════════════════════════
+// Q3 Locale-Aware Product Catalog System
+// - dotcom mapping 전체를 source of truth로 사용
+// - 새 국가 추가 시 코드 수정 없이 자동 대응
+// ══════════════════════════════════════════════════════════════════
+
+// ── siteCode → region 매핑 (국가별 카탈로그 해상도) ──
+const SITE_REGION_MAP = {
+    // East Asia
+    SEC: "KR", KR: "KR", JP: "JP",
+    CN: "CN", HK: "CN", HK_EN: "CN", TW: "CN",
+    // Americas
+    US: "US", CA: "US", CA_FR: "US",
+    MX: "LATAM", BR: "LATAM", AR: "LATAM", CO: "LATAM", CL: "LATAM", PE: "LATAM",
+    // UK / Ireland
+    UK: "UK", IE: "UK",
+    // Europe
+    DE: "EU", FR: "EU", IT: "EU", ES: "EU", PT: "EU", NL: "EU",
+    SE: "EU", NO: "EU", DK: "EU", FI: "EU", BE: "EU", BE_FR: "EU",
+    CH: "EU", CH_FR: "EU", AT: "EU", LU: "EU",
+    PL: "EU", CZ: "EU", HU: "EU", RO: "EU", BG: "EU", HR: "EU",
+    SK: "EU", SI: "EU", EE: "EU", LV: "EU", LT: "EU", GR: "EU",
+    // Turkey
+    TR: "ME",
+    // India / South Asia
+    IN: "IN", PK: "IN", BD: "IN", LK: "IN",
+    // Southeast Asia
+    SG: "SEA", MY: "SEA", TH: "SEA", VN: "SEA", PH: "SEA", ID: "SEA", MM: "SEA",
+    // Oceania
+    AU: "OCE", NZ: "OCE",
+    // Middle East / Africa
+    AE: "ME", SA: "ME", EG: "ME", IL: "ME", ZA: "ME", NG: "ME", KE: "ME",
+    JO: "ME", KW: "ME", QA: "ME", BH: "ME", OM: "ME", LB: "ME",
+    MA: "ME", TN: "ME", DZ: "ME", GH: "ME",
+    // CIS
+    RU: "CIS", UA: "CIS", KZ: "CIS", UZ: "CIS"
+};
+
+// ── 로케일별 제품 카탈로그 ──
+// 구조: { samsung: [...groups], partner: [...groups], styles: { cardId: {s:[],p:[]} } }
+// s = samsungIds, p = partnerIds
+const LOCALE_CATALOGS = {
+    // ── Global Default (모든 미정의 로케일의 fallback) ──
+    _default: {
+        samsung: [
+            { label: "모바일", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab"] },
+            { label: "웨어러블", labelEn: "Wearable", ids: ["galaxy-watch", "galaxy-buds"] },
+            { label: "TV/오디오", labelEn: "TV / Audio", ids: ["tv-premium", "soundbar", "speaker"] },
+            { label: "주방", labelEn: "Kitchen", ids: ["refrigerator", "dishwasher", "oven", "microwave"] },
+            { label: "리빙", labelEn: "Living", ids: ["washer", "dryer", "air-conditioner", "air-purifier", "robot-vacuum"] },
+            { label: "스마트홈", labelEn: "Smart Home", ids: ["hub"] }
+        ],
+        partner: [
+            { label: "제어", labelEn: "Control", ids: ["smart-plug", "smart-switch", "lighting"] },
+            { label: "보안/감지", labelEn: "Security", ids: ["camera", "door-lock", "activity-sensor"] },
+            { label: "웰니스", labelEn: "Wellness", ids: ["body-scale", "partner-humidifier"] }
+        ],
+        styles: {
+            baseline: { s: ["tv-premium", "refrigerator", "washer", "air-conditioner"], p: [] },
+            energy:   { s: ["refrigerator", "washer", "air-conditioner", "air-purifier"], p: ["smart-plug", "activity-sensor", "smart-switch"] },
+            care:     { s: ["robot-vacuum", "tv-premium", "refrigerator", "galaxy-watch"], p: ["camera", "activity-sensor"] },
+            mood:     { s: ["tv-premium", "speaker", "soundbar", "air-purifier"], p: ["lighting", "smart-switch"] },
+            security: { s: ["robot-vacuum", "tv-premium", "hub", "galaxy-phone"], p: ["camera", "door-lock", "activity-sensor"] },
+            chores:   { s: ["robot-vacuum", "washer", "dryer", "dishwasher", "refrigerator"], p: [] },
+            comfort:  { s: ["air-purifier", "air-conditioner"], p: ["partner-humidifier", "activity-sensor", "smart-switch"] },
+            wellness: { s: ["galaxy-watch", "air-purifier", "air-conditioner", "tv-premium"], p: ["body-scale", "partner-humidifier"] }
+        }
+    },
+
+    // ── KR (한국 삼성닷컴 sec) ──
+    KR: {
+        samsung: [
+            { label: "모바일", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab", "galaxy-book"] },
+            { label: "웨어러블", labelEn: "Wearable", ids: ["galaxy-watch", "galaxy-buds"] },
+            { label: "TV/영상/음향", labelEn: "TV / Video / Audio", ids: ["tv-premium", "projector", "moving-style", "speaker", "soundbar", "harman-audio"] },
+            { label: "주방가전", labelEn: "Kitchen", ids: ["refrigerator", "kimchi-fridge", "dishwasher", "cooktop", "oven", "microwave", "water-purifier", "hood"] },
+            { label: "리빙가전", labelEn: "Living", ids: ["washer", "dryer", "airdresser", "air-conditioner", "system-aircon", "air-purifier", "robot-vacuum"] },
+            { label: "IT/주변기기", labelEn: "IT / Peripherals", ids: ["monitor", "printer", "memory-storage"] },
+            { label: "스마트홈 보조", labelEn: "Smart Home", ids: ["hub", "smartthings-product", "accessories"] }
+        ],
+        partner: [
+            { label: "제어", labelEn: "Control", ids: ["smart-plug", "smart-switch", "lighting"] },
+            { label: "보안/감지", labelEn: "Security / Sensing", ids: ["camera", "door-lock", "activity-sensor"] },
+            { label: "웰니스/생활", labelEn: "Wellness / Living", ids: ["partner-sleep", "body-scale", "partner-humidifier"] }
+        ],
+        styles: {
+            baseline: { s: ["tv-premium", "refrigerator", "washer", "air-conditioner"], p: [] },
+            energy:   { s: ["refrigerator", "washer", "air-conditioner", "air-purifier"], p: ["smart-plug", "activity-sensor", "smart-switch"] },
+            care:     { s: ["robot-vacuum", "tv-premium", "refrigerator", "galaxy-watch"], p: ["camera", "activity-sensor"] },
+            mood:     { s: ["tv-premium", "speaker", "projector", "air-purifier"], p: ["lighting", "smart-switch"] },
+            security: { s: ["robot-vacuum", "tv-premium", "hub", "galaxy-phone"], p: ["camera", "door-lock", "activity-sensor"] },
+            chores:   { s: ["robot-vacuum", "washer", "dryer", "dishwasher", "refrigerator", "airdresser"], p: [] },
+            comfort:  { s: ["air-purifier", "air-conditioner", "system-aircon"], p: ["partner-humidifier", "activity-sensor", "smart-switch"] },
+            wellness: { s: ["galaxy-watch", "air-purifier", "air-conditioner", "tv-premium"], p: ["body-scale", "partner-sleep", "partner-humidifier"] }
+        }
+    },
+
+    // ── US (미국 삼성닷컴) ──
+    US: {
+        samsung: [
+            { label: "Mobile", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab", "galaxy-book"] },
+            { label: "Wearable", labelEn: "Wearable", ids: ["galaxy-watch", "galaxy-buds"] },
+            { label: "TV / Audio", labelEn: "TV / Audio", ids: ["tv-premium", "projector", "soundbar", "speaker"] },
+            { label: "Kitchen", labelEn: "Kitchen", ids: ["refrigerator", "dishwasher", "oven", "microwave", "cooktop"] },
+            { label: "Laundry & Living", labelEn: "Laundry & Living", ids: ["washer", "dryer", "air-purifier", "robot-vacuum"] },
+            { label: "Computing", labelEn: "Computing", ids: ["monitor", "galaxy-book"] },
+            { label: "Smart Home", labelEn: "Smart Home", ids: ["hub", "smartthings-product"] }
+        ],
+        partner: [
+            { label: "Control", labelEn: "Control", ids: ["smart-plug", "smart-switch", "lighting"] },
+            { label: "Security", labelEn: "Security", ids: ["camera", "door-lock", "activity-sensor"] },
+            { label: "Wellness", labelEn: "Wellness", ids: ["body-scale", "partner-humidifier"] }
+        ],
+        styles: {
+            baseline: { s: ["tv-premium", "refrigerator", "washer", "air-purifier"], p: [] },
+            energy:   { s: ["refrigerator", "washer", "air-purifier"], p: ["smart-plug", "activity-sensor", "smart-switch"] },
+            care:     { s: ["robot-vacuum", "tv-premium", "refrigerator", "galaxy-watch"], p: ["camera", "activity-sensor"] },
+            mood:     { s: ["tv-premium", "speaker", "soundbar", "air-purifier"], p: ["lighting", "smart-switch"] },
+            security: { s: ["robot-vacuum", "tv-premium", "hub", "galaxy-phone"], p: ["camera", "door-lock", "activity-sensor"] },
+            chores:   { s: ["robot-vacuum", "washer", "dryer", "dishwasher", "refrigerator"], p: [] },
+            comfort:  { s: ["air-purifier"], p: ["partner-humidifier", "activity-sensor", "smart-switch"] },
+            wellness: { s: ["galaxy-watch", "air-purifier", "tv-premium"], p: ["body-scale", "partner-humidifier"] }
+        }
+    },
+
+    // ── EU (유럽 공통) ──
+    EU: {
+        samsung: [
+            { label: "Mobile", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab", "galaxy-book"] },
+            { label: "Wearable", labelEn: "Wearable", ids: ["galaxy-watch", "galaxy-buds"] },
+            { label: "TV / Audio", labelEn: "TV / Audio", ids: ["tv-premium", "projector", "soundbar", "speaker"] },
+            { label: "Kitchen", labelEn: "Kitchen", ids: ["refrigerator", "dishwasher", "oven", "microwave", "cooktop"] },
+            { label: "Living", labelEn: "Living", ids: ["washer", "dryer", "air-conditioner", "air-purifier", "robot-vacuum"] },
+            { label: "Smart Home", labelEn: "Smart Home", ids: ["hub", "smartthings-product"] }
+        ],
+        partner: [
+            { label: "Control", labelEn: "Control", ids: ["smart-plug", "smart-switch", "lighting"] },
+            { label: "Security", labelEn: "Security", ids: ["camera", "door-lock", "activity-sensor"] },
+            { label: "Wellness", labelEn: "Wellness", ids: ["body-scale", "partner-humidifier"] }
+        ],
+        styles: {
+            baseline: { s: ["tv-premium", "refrigerator", "washer", "air-conditioner"], p: [] },
+            energy:   { s: ["refrigerator", "washer", "air-conditioner", "air-purifier"], p: ["smart-plug", "activity-sensor", "smart-switch"] },
+            care:     { s: ["robot-vacuum", "tv-premium", "refrigerator", "galaxy-watch"], p: ["camera", "activity-sensor"] },
+            mood:     { s: ["tv-premium", "speaker", "soundbar", "air-purifier"], p: ["lighting", "smart-switch"] },
+            security: { s: ["robot-vacuum", "tv-premium", "hub", "galaxy-phone"], p: ["camera", "door-lock", "activity-sensor"] },
+            chores:   { s: ["robot-vacuum", "washer", "dryer", "dishwasher", "refrigerator"], p: [] },
+            comfort:  { s: ["air-purifier", "air-conditioner"], p: ["partner-humidifier", "activity-sensor", "smart-switch"] },
+            wellness: { s: ["galaxy-watch", "air-purifier", "air-conditioner", "tv-premium"], p: ["body-scale", "partner-humidifier"] }
+        }
+    },
+
+    // ── UK ──
+    UK: {
+        samsung: [
+            { label: "Mobile", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab", "galaxy-book"] },
+            { label: "Wearable", labelEn: "Wearable", ids: ["galaxy-watch", "galaxy-buds"] },
+            { label: "TV / Audio", labelEn: "TV / Audio", ids: ["tv-premium", "projector", "soundbar", "speaker"] },
+            { label: "Kitchen", labelEn: "Kitchen", ids: ["refrigerator", "dishwasher", "oven", "microwave"] },
+            { label: "Living", labelEn: "Living", ids: ["washer", "dryer", "air-purifier", "robot-vacuum"] },
+            { label: "Smart Home", labelEn: "Smart Home", ids: ["hub", "smartthings-product"] }
+        ],
+        partner: [
+            { label: "Control", labelEn: "Control", ids: ["smart-plug", "smart-switch", "lighting"] },
+            { label: "Security", labelEn: "Security", ids: ["camera", "door-lock", "activity-sensor"] },
+            { label: "Wellness", labelEn: "Wellness", ids: ["body-scale", "partner-humidifier"] }
+        ],
+        styles: {
+            baseline: { s: ["tv-premium", "refrigerator", "washer"], p: [] },
+            energy:   { s: ["refrigerator", "washer", "air-purifier"], p: ["smart-plug", "activity-sensor", "smart-switch"] },
+            care:     { s: ["robot-vacuum", "tv-premium", "refrigerator", "galaxy-watch"], p: ["camera", "activity-sensor"] },
+            mood:     { s: ["tv-premium", "speaker", "soundbar", "air-purifier"], p: ["lighting", "smart-switch"] },
+            security: { s: ["robot-vacuum", "tv-premium", "hub", "galaxy-phone"], p: ["camera", "door-lock", "activity-sensor"] },
+            chores:   { s: ["robot-vacuum", "washer", "dryer", "dishwasher", "refrigerator"], p: [] },
+            comfort:  { s: ["air-purifier"], p: ["partner-humidifier", "activity-sensor", "smart-switch"] },
+            wellness: { s: ["galaxy-watch", "air-purifier", "tv-premium"], p: ["body-scale", "partner-humidifier"] }
+        }
+    },
+
+    // ── SEA (동남아) ── → air-conditioner 강세, 로봇청소기 보급 높음
+    SEA: {
+        samsung: [
+            { label: "Mobile", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab"] },
+            { label: "Wearable", labelEn: "Wearable", ids: ["galaxy-watch", "galaxy-buds"] },
+            { label: "TV / Audio", labelEn: "TV / Audio", ids: ["tv-premium", "soundbar"] },
+            { label: "Kitchen", labelEn: "Kitchen", ids: ["refrigerator", "microwave"] },
+            { label: "Living", labelEn: "Living", ids: ["washer", "air-conditioner", "air-purifier", "robot-vacuum"] },
+            { label: "Smart Home", labelEn: "Smart Home", ids: ["hub"] }
+        ],
+        partner: [
+            { label: "Control", labelEn: "Control", ids: ["smart-plug", "smart-switch", "lighting"] },
+            { label: "Security", labelEn: "Security", ids: ["camera", "door-lock", "activity-sensor"] },
+            { label: "Wellness", labelEn: "Wellness", ids: ["body-scale", "partner-humidifier"] }
+        ],
+        styles: {
+            baseline: { s: ["tv-premium", "refrigerator", "washer", "air-conditioner"], p: [] },
+            energy:   { s: ["refrigerator", "washer", "air-conditioner", "air-purifier"], p: ["smart-plug", "activity-sensor"] },
+            care:     { s: ["robot-vacuum", "tv-premium", "refrigerator", "galaxy-watch"], p: ["camera", "activity-sensor"] },
+            mood:     { s: ["tv-premium", "soundbar", "air-purifier"], p: ["lighting", "smart-switch"] },
+            security: { s: ["robot-vacuum", "tv-premium", "hub", "galaxy-phone"], p: ["camera", "door-lock", "activity-sensor"] },
+            chores:   { s: ["robot-vacuum", "washer", "refrigerator"], p: [] },
+            comfort:  { s: ["air-purifier", "air-conditioner"], p: ["partner-humidifier", "activity-sensor"] },
+            wellness: { s: ["galaxy-watch", "air-purifier", "air-conditioner", "tv-premium"], p: ["body-scale", "partner-humidifier"] }
+        }
+    },
+
+    // ── IN (인도) ── → 에어컨/공기청정기 비중 높음, 세탁기 보급 차이
+    IN: {
+        samsung: [
+            { label: "Mobile", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab"] },
+            { label: "Wearable", labelEn: "Wearable", ids: ["galaxy-watch", "galaxy-buds"] },
+            { label: "TV / Audio", labelEn: "TV / Audio", ids: ["tv-premium", "soundbar"] },
+            { label: "Kitchen", labelEn: "Kitchen", ids: ["refrigerator", "microwave"] },
+            { label: "Living", labelEn: "Living", ids: ["washer", "air-conditioner", "air-purifier"] },
+            { label: "Smart Home", labelEn: "Smart Home", ids: ["hub"] }
+        ],
+        partner: [
+            { label: "Control", labelEn: "Control", ids: ["smart-plug", "smart-switch", "lighting"] },
+            { label: "Security", labelEn: "Security", ids: ["camera", "door-lock", "activity-sensor"] },
+            { label: "Wellness", labelEn: "Wellness", ids: ["body-scale", "partner-humidifier"] }
+        ],
+        styles: {
+            baseline: { s: ["tv-premium", "refrigerator", "washer", "air-conditioner"], p: [] },
+            energy:   { s: ["refrigerator", "washer", "air-conditioner", "air-purifier"], p: ["smart-plug", "activity-sensor"] },
+            care:     { s: ["tv-premium", "refrigerator", "galaxy-watch"], p: ["camera", "activity-sensor"] },
+            mood:     { s: ["tv-premium", "soundbar", "air-purifier"], p: ["lighting", "smart-switch"] },
+            security: { s: ["tv-premium", "hub", "galaxy-phone"], p: ["camera", "door-lock", "activity-sensor"] },
+            chores:   { s: ["washer", "refrigerator"], p: [] },
+            comfort:  { s: ["air-purifier", "air-conditioner"], p: ["partner-humidifier", "activity-sensor"] },
+            wellness: { s: ["galaxy-watch", "air-purifier", "air-conditioner", "tv-premium"], p: ["body-scale", "partner-humidifier"] }
+        }
+    }
+    // LATAM, ME, OCE, CIS, JP, CN → _default fallback
+};
+
+// ── Catalog resolver: siteCode → region → catalog (with fallback) ──
+let _activeLocaleKey = null;
+let _activeFallbackSource = null;
+
+function resolveLocaleCatalog(siteCode) {
+    const code = (siteCode || "").toUpperCase().replace(/-.*$/, "");
+    // 1차: SITE_REGION_MAP에서 region 탐색
+    const region = SITE_REGION_MAP[code] || null;
+    // 2차: region catalog 존재 여부
+    if (region && LOCALE_CATALOGS[region]) {
+        _activeLocaleKey = region;
+        _activeFallbackSource = null;
+        return LOCALE_CATALOGS[region];
+    }
+    // 3차: dotcom mapping의 language 기반 자동 추론
+    if (dotcomMapping?.markets) {
+        const market = dotcomMapping.markets.find(m => m.siteCode?.toUpperCase() === code);
+        if (market) {
+            const lang = (market.language || "").toLowerCase();
+            if (lang === "korean") { _activeLocaleKey = "KR"; _activeFallbackSource = "language"; return LOCALE_CATALOGS.KR; }
+            if (lang === "english" && LOCALE_CATALOGS.US) { _activeLocaleKey = "US"; _activeFallbackSource = "language"; return LOCALE_CATALOGS.US; }
+        }
+    }
+    // 4차: global default
+    _activeLocaleKey = "_default";
+    _activeFallbackSource = region ? `region:${region}` : "no-mapping";
+    console.log(`[Q3 Catalog] fallback applied for ${code} → _default (reason: ${_activeFallbackSource})`);
+    return LOCALE_CATALOGS._default;
+}
+
+// ── Dynamic Q3 state (locale에 따라 변경됨) ──
+let Q4_SAMSUNG_GROUPS = [];
+let Q4_PARTNER_GROUPS = [];
+let Q4_SAMSUNG_IDS = new Set();
+let Q4_PARTNER_IDS = new Set();
+let Q4_PRESETS = [];
+let q4ActivePresets = new Set();
+
+// 모든 기기 ID (auto 해제용)
 const Q4_ALL_QUICK_IDS = [
-    // Samsung products
     "tv-premium", "refrigerator", "washer", "dryer", "air-conditioner", "air-purifier",
     "ventilation", "robot-vacuum", "dishwasher", "eco-aircon", "speaker", "soundbar",
     "galaxy-phone", "galaxy-watch", "galaxy-buds", "galaxy-tab", "galaxy-book",
     "projector", "moving-style", "harman-audio", "kimchi-fridge", "cooktop", "oven",
     "microwave", "water-purifier", "hood", "airdresser", "system-aircon",
     "monitor", "printer", "memory-storage", "hub", "smartthings-product", "accessories",
-    // Partner devices
     "smart-plug", "camera", "door-lock", "activity-sensor", "smart-switch",
     "lighting", "body-scale", "partner-sleep", "partner-humidifier",
-    // Legacy (keep for backward compat)
     "care-camera", "sleep-sensor", "energy-monitor", "wearable-care"
 ];
-// ── Samsung 구매 가능 제품 그룹 (한국 sec 기준) ──
-const Q4_SAMSUNG_GROUPS = [
-    { label: "모바일", labelEn: "Mobile",
-      ids: ["galaxy-phone", "galaxy-tab", "galaxy-book"] },
-    { label: "웨어러블", labelEn: "Wearable",
-      ids: ["galaxy-watch", "galaxy-buds"] },
-    { label: "TV/영상/음향", labelEn: "TV / Video / Audio",
-      ids: ["tv-premium", "projector", "moving-style", "speaker", "soundbar", "harman-audio"] },
-    { label: "주방가전", labelEn: "Kitchen",
-      ids: ["refrigerator", "kimchi-fridge", "dishwasher", "cooktop", "oven", "microwave", "water-purifier", "hood"] },
-    { label: "리빙가전", labelEn: "Living",
-      ids: ["washer", "dryer", "airdresser", "air-conditioner", "system-aircon", "air-purifier", "robot-vacuum"] },
-    { label: "IT/주변기기", labelEn: "IT / Peripherals",
-      ids: ["monitor", "printer", "memory-storage"] },
-    { label: "스마트홈 보조", labelEn: "Smart Home",
-      ids: ["hub", "smartthings-product", "accessories"] }
+
+// ── 스타일 카드 정의 (8개 공통 — locale 불변) ──
+const Q4_STYLE_CARDS = [
+    { id: "baseline", icon: "📦" },
+    { id: "energy",   icon: "⚡" },
+    { id: "care",     icon: "💛" },
+    { id: "mood",     icon: "🎵" },
+    { id: "security", icon: "🛡" },
+    { id: "chores",   icon: "🧹" },
+    { id: "comfort",  icon: "🌿" },
+    { id: "wellness", icon: "🧘" }
 ];
-// ── SmartThings 호환 타사/파트너 기기 그룹 ──
-const Q4_PARTNER_GROUPS = [
-    { label: "제어", labelEn: "Control",
-      ids: ["smart-plug", "smart-switch", "lighting"] },
-    { label: "보안/감지", labelEn: "Security / Sensing",
-      ids: ["camera", "door-lock", "activity-sensor"] },
-    { label: "웰니스/생활", labelEn: "Wellness / Living",
-      ids: ["partner-sleep", "body-scale", "partner-humidifier"] }
-];
-// 전체 삼성 제품 ID Set (검증용)
-const Q4_SAMSUNG_IDS = new Set(Q4_SAMSUNG_GROUPS.flatMap(g => g.ids));
-const Q4_PARTNER_IDS = new Set(Q4_PARTNER_GROUPS.flatMap(g => g.ids));
-// 커스터마이징 상태 추적
-let q4ActivePresets = new Set();  // 현재 선택된 프리셋 카드 IDs
-// 기기별 역할 태그 (중복 역할 표현용 — 그룹 내 중복 배치 X)
+
+/**
+ * 현재 국가 기준으로 Q3 카탈로그를 적용
+ * - Q4_SAMSUNG_GROUPS, Q4_PARTNER_GROUPS, Q4_PRESETS를 갱신
+ * - 이전 선택 중 새 로케일에 없는 기기 자동 제거
+ */
+function applyLocaleCatalog(siteCode) {
+    const catalog = resolveLocaleCatalog(siteCode);
+    Q4_SAMSUNG_GROUPS = catalog.samsung;
+    Q4_PARTNER_GROUPS = catalog.partner;
+    Q4_SAMSUNG_IDS = new Set(Q4_SAMSUNG_GROUPS.flatMap(g => g.ids));
+    Q4_PARTNER_IDS = new Set(Q4_PARTNER_GROUPS.flatMap(g => g.ids));
+
+    Q4_PRESETS = Q4_STYLE_CARDS.map(card => {
+        const mapping = catalog.styles[card.id] || { s: [], p: [] };
+        const samsungIds = [...mapping.s];
+        const partnerIds = [...mapping.p];
+        return { ...card, samsungIds, partnerIds, deviceIds: [...samsungIds, ...partnerIds] };
+    });
+}
+
+/** 현재 로케일의 dotcom 정보 반환 (헤더 표시용) */
+function getActiveLocaleInfo() {
+    const code = countrySelect?.value || "";
+    const market = (dotcomMapping?.markets || []).find(m =>
+        m.siteCode?.toUpperCase() === code.toUpperCase()
+    ) || (marketOptions || []).find(m => m.siteCode === code);
+    return {
+        country: market?.country || code,
+        siteCode: code,
+        baseUrl: market?.fullUrl || `https://www.samsung.com/${code.toLowerCase()}`,
+        isFallback: _activeFallbackSource !== null,
+        fallbackSource: _activeFallbackSource,
+        catalogKey: _activeLocaleKey
+    };
+}
+
+// 기기별 역할 태그 (중복 역할 표현용 — locale 불변)
 const DEVICE_ROLE_TAGS = {
     "tv-premium":       { ko: ["엔터테인먼트", "알림 허브"], en: ["Entertainment", "Alert Hub"] },
     "refrigerator":     { ko: ["주방", "가족 케어"], en: ["Kitchen", "Family Care"] },
@@ -264,34 +553,9 @@ const DEVICE_ROLE_TAGS = {
     "wearable-care":    { ko: ["돌봄", "건강"], en: ["Care", "Health"] },
     "eco-aircon":       { ko: ["절약", "AI 제어"], en: ["Saving", "AI Control"] }
 };
-const Q4_PRESETS = [
-    { id: "baseline",
-      samsungIds: ["tv-premium", "refrigerator", "washer", "air-conditioner"],
-      partnerIds: [] },
-    { id: "energy",
-      samsungIds: ["refrigerator", "washer", "air-conditioner", "air-purifier"],
-      partnerIds: ["smart-plug", "activity-sensor", "smart-switch"] },
-    { id: "care",
-      samsungIds: ["robot-vacuum", "tv-premium", "refrigerator", "galaxy-watch"],
-      partnerIds: ["camera", "activity-sensor"] },
-    { id: "mood",
-      samsungIds: ["tv-premium", "speaker", "projector", "air-purifier"],
-      partnerIds: ["lighting", "smart-switch"] },
-    { id: "security",
-      samsungIds: ["robot-vacuum", "tv-premium", "hub", "galaxy-phone"],
-      partnerIds: ["camera", "door-lock", "activity-sensor"] },
-    { id: "chores",
-      samsungIds: ["robot-vacuum", "washer", "dryer", "dishwasher", "refrigerator", "airdresser"],
-      partnerIds: [] },
-    { id: "comfort",
-      samsungIds: ["air-purifier", "air-conditioner", "system-aircon"],
-      partnerIds: ["partner-humidifier", "activity-sensor", "smart-switch"] },
-    { id: "wellness",
-      samsungIds: ["galaxy-watch", "air-purifier", "air-conditioner", "tv-premium"],
-      partnerIds: ["body-scale", "partner-sleep", "partner-humidifier"] }
-];
-// backward compat: deviceIds = samsung + partner 합산
-Q4_PRESETS.forEach(p => { p.deviceIds = [...p.samsungIds, ...p.partnerIds]; });
+
+// 초기 카탈로그 적용 (page load 시)
+applyLocaleCatalog("SEC");
 
 function detectBrowserLocale() {
     const lang = (navigator.language || navigator.userLanguage || "en").toLowerCase();
@@ -732,28 +996,32 @@ function getDefaultDeviceSelectionsForCountry(siteCode) {
 }
 
 function getQ4PresetCopy(presetId) {
-    const ko = {
-        baseline: { title: "기본 조합", desc: "TV, 냉장고, 세탁기, 에어컨", icon: "📦" },
-        energy:   { title: "에너지 절약형", desc: "냉장고, 세탁기, 에어컨, 공기청정기 + 플러그·센서·스위치", icon: "⚡" },
-        care:     { title: "케어 확장형", desc: "청소기, TV, 냉장고, Galaxy Watch + 카메라·센서", icon: "💛" },
-        mood:     { title: "무드 확장형", desc: "TV, 삼성 오디오, 프로젝터, 공기청정기 + 조명·스위치", icon: "🎵" },
-        security: { title: "홈 시큐리티형", desc: "청소기, TV, SmartThings, 스마트폰 + 카메라·도어록·센서", icon: "🛡" },
-        chores:   { title: "가사 올인형", desc: "청소기, 세탁기, 건조기, 식기세척기, 냉장고, 에어드레서", icon: "🧹" },
-        comfort:  { title: "쾌적 환경형", desc: "공기청정기, 에어컨, 시스템에어컨 + 가습기·센서·스위치", icon: "🌿" },
-        wellness: { title: "건강·웰니스형", desc: "Galaxy Watch, 공기청정기, 에어컨, TV + 체중계·수면기기·가습기", icon: "🧘" }
+    const titles = {
+        baseline: { ko: "기본 조합",       en: "Baseline" },
+        energy:   { ko: "에너지 절약형",    en: "Energy Saver" },
+        care:     { ko: "케어 확장형",     en: "Care+" },
+        mood:     { ko: "무드 확장형",     en: "Mood+" },
+        security: { ko: "홈 시큐리티형",    en: "Security" },
+        chores:   { ko: "가사 올인형",     en: "Chores All-in" },
+        comfort:  { ko: "쾌적 환경형",     en: "Air Comfort" },
+        wellness: { ko: "건강·웰니스형",    en: "Wellness" }
     };
-    const en = {
-        baseline: { title: "Baseline", desc: "TV, Fridge, Washer, AC", icon: "📦" },
-        energy:   { title: "Energy Saver", desc: "Fridge, Washer, AC, Air Purifier + Plug·Sensor·Switch", icon: "⚡" },
-        care:     { title: "Care+", desc: "Vacuum, TV, Fridge, Watch + Camera·Sensor", icon: "💛" },
-        mood:     { title: "Mood+", desc: "TV, Audio, Projector, Air Purifier + Lighting·Switch", icon: "🎵" },
-        security: { title: "Security", desc: "Vacuum, TV, SmartThings, Phone + Camera·Lock·Sensor", icon: "🛡" },
-        chores:   { title: "Chores All-in", desc: "Vacuum, Washer, Dryer, Dishwasher, Fridge, AirDresser", icon: "🧹" },
-        comfort:  { title: "Air Comfort", desc: "Air Purifier, AC, System AC + Humidifier·Sensor·Switch", icon: "🌿" },
-        wellness: { title: "Wellness", desc: "Watch, Air Purifier, AC, TV + Scale·Sleep·Humidifier", icon: "🧘" }
-    };
-    const source = currentLocale === "ko" ? ko : en;
-    return source[presetId] || source.baseline;
+    const icons = { baseline: "📦", energy: "⚡", care: "💛", mood: "🎵", security: "🛡", chores: "🧹", comfort: "🌿", wellness: "🧘" };
+    const isKo = currentLocale === "ko";
+    const title = (titles[presetId] || titles.baseline)[isKo ? "ko" : "en"];
+    const icon = icons[presetId] || "📦";
+
+    // desc는 현재 카탈로그의 실제 기기에서 동적 생성
+    const preset = Q4_PRESETS.find(p => p.id === presetId);
+    let desc = "";
+    if (preset) {
+        const sLabels = preset.samsungIds.slice(0, 4).map(id => getDeviceLabel(id)).join(", ");
+        const pLabels = preset.partnerIds.length > 0
+            ? " + " + preset.partnerIds.slice(0, 3).map(id => getDeviceLabel(id)).join("·")
+            : "";
+        desc = sLabels + pLabels;
+    }
+    return { title, desc, icon };
 }
 
 function getQ4SummaryCopy() {
@@ -777,6 +1045,31 @@ function getQ4SummaryCopy() {
 
 function renderQ4Composer() {
     if (!q4Presets) return;
+
+    // ── 현재 국가 기준 카탈로그 적용 ──
+    applyLocaleCatalog(countrySelect?.value || "SEC");
+
+    // ── 로케일 헤더 동적 갱신 ──
+    const localeInfo = getActiveLocaleInfo();
+    const localeHeader = document.querySelector(".q4-locale-header");
+    if (localeHeader) {
+        const isKoH = currentLocale === "ko";
+        const fallbackNotice = localeInfo.isFallback
+            ? `<p class="q4-locale-fallback">${isKoH
+                ? "현재 국가의 상세 제품 구성이 준비 중이어서 유사 로케일 기준 제품군을 우선 표시합니다."
+                : "Detailed product data for this market is being prepared. Showing similar locale products."}</p>`
+            : "";
+        localeHeader.innerHTML = `
+            <div class="q4-locale-main">
+                <span class="q4-locale-icon">🌐</span>
+                <span class="q4-locale-label">${isKoH ? "현재 제품 기준" : "Product source"}: <strong>Samsung.com ${escapeHtml(localeInfo.country)} (${escapeHtml(localeInfo.siteCode.toLowerCase())})</strong></span>
+            </div>
+            <p class="q4-locale-sub">${isKoH
+                ? "아래 조합은 해당 국가 삼성닷컴 판매 제품을 우선 반영했습니다. 일부 기능은 SmartThings 호환 타사 기기가 추가로 필요할 수 있습니다."
+                : "Products below prioritize this market's Samsung.com lineup. Some features may require SmartThings-compatible partner devices."}</p>
+            ${fallbackNotice}
+        `;
+    }
 
     const selectedDeviceIds = new Set(
         [...(deviceGrid?.querySelectorAll('input[data-node-type="child"]:checked') || [])].map((input) => input.value)
@@ -8323,6 +8616,9 @@ function updateLocaleFromCountry() {
     updateStepInsight();
     applyLocale();
     updateEnglishToggleVisibility();
+    // Q3 카탈로그를 새 locale 기준으로 재적용 + 재렌더
+    q4ActivePresets.clear();
+    renderQ4Composer();
 }
 
 function getRoleCardLocaleCopy(roleId) {

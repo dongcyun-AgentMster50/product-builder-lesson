@@ -880,6 +880,15 @@ textarea {
     color: var(--muted, #5d6677);
     line-height: 1.5;
 }
+.q4-locale-fallback {
+    margin: 6px 0 0;
+    font-size: 0.72rem;
+    color: #e65100;
+    background: #fff3e0;
+    padding: 4px 10px;
+    border-radius: 6px;
+    line-height: 1.4;
+}
 
 /* ── 섹션 힌트 ── */
 .q4-section-hint {
