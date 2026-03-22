@@ -7298,3 +7298,241 @@ a.source-tag-link:hover {
     .oft-step { padding: 6px 10px; gap: 5px; }
     .oft-step .oft-label { font-size: 0.72rem; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Matching Process Cards — Build 후 단계별 매칭 과정 시각화
+   ══════════════════════════════════════════════════════════════════════ */
+.matching-process-frame {
+    margin-top: 6px;
+    padding: 20px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(0, 51, 102, 0.15);
+    background: linear-gradient(180deg, #f8faff 0%, #fff 100%);
+    box-shadow: 0 12px 36px rgba(0, 20, 60, 0.07);
+}
+.matching-process-frame.hidden { display: none; }
+
+.mp-head {
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid var(--accent-strong);
+}
+.mp-head .step {
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.mp-head h2 {
+    font-family: var(--heading-font);
+    font-size: var(--heading-lg);
+    color: var(--ink);
+    margin: 4px 0;
+}
+
+.mp-cards { display: flex; flex-direction: column; gap: 14px; }
+
+/* Individual process card */
+.mp-card {
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: mpCardIn 0.45s ease-out forwards;
+}
+.mp-card.locked {
+    opacity: 0.35;
+    transform: none;
+    animation: none;
+    pointer-events: none;
+}
+
+@keyframes mpCardIn {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.mp-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #f0f4fa 0%, #e8eef8 100%);
+    border-bottom: 1px solid var(--line);
+}
+.mp-card-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent-strong);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+.mp-card.locked .mp-card-num { background: var(--muted); }
+
+.mp-card-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+.mp-card-check {
+    margin-left: auto;
+    font-size: 1rem;
+    display: none;
+}
+.mp-card.done .mp-card-check { display: inline; }
+
+.mp-card-body {
+    padding: 16px 18px;
+}
+.mp-card-helper {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+/* Tag pills inside process cards */
+.mp-tag-group { margin-bottom: 10px; }
+.mp-tag-group-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--accent-strong);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+}
+.mp-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.mp-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    background: #e8eef8;
+    color: var(--ink);
+}
+.mp-tag .mp-tag-icon { font-size: 0.82rem; }
+
+/* Weight bar visualization */
+.mp-weight-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.mp-weight-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ink);
+    min-width: 90px;
+    white-space: nowrap;
+}
+.mp-weight-bar-bg {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: #e8ecf2;
+    overflow: hidden;
+}
+.mp-weight-bar {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #003366, #0066cc);
+    transition: width 0.6s ease-out;
+}
+.mp-weight-score {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--accent-strong);
+    min-width: 30px;
+    text-align: right;
+}
+
+/* Scenario match preview */
+.mp-scenario-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    margin-bottom: 6px;
+    background: #fafbfd;
+}
+.mp-scenario-rank {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--accent-strong);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+.mp-scenario-info { flex: 1; min-width: 0; }
+.mp-scenario-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mp-scenario-meta {
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-top: 2px;
+}
+.mp-scenario-score {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #2e7d32;
+    white-space: nowrap;
+}
+
+/* Confirm button */
+.mp-confirm-btn {
+    display: block;
+    width: 100%;
+    margin-top: 14px;
+    padding: 11px 0;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #003366, #005599);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.mp-confirm-btn:hover {
+    background: linear-gradient(135deg, #004d99, #0066cc);
+    box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
+}
+.mp-confirm-btn:disabled {
+    background: #bbb;
+    cursor: default;
+    box-shadow: none;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .matching-process-frame { padding: 14px; }
+    .mp-card-body { padding: 12px 14px; }
+    .mp-weight-label { min-width: 70px; font-size: 0.68rem; }
+}

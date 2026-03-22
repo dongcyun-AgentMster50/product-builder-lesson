@@ -3941,10 +3941,28 @@ function syncWizardUi() {
     renderWizardProgress();
     updateStepInsight();
 
-    // Step 4가 아니면 큐레이션 프레임 숨김
+    // Step 4가 아니면 큐레이션 프레임 & Output Flow Tracker 숨김/초기화
     const curationFrame = document.getElementById("curation-frame");
     if (curationFrame && currentStep !== 4) {
         curationFrame.classList.add("hidden");
+    }
+    const tracker = document.getElementById("output-flow-tracker");
+    if (tracker && currentStep !== 4) {
+        tracker.classList.add("hidden");
+    }
+    const mpFrame = document.getElementById("matching-process-frame");
+    if (mpFrame && currentStep !== 4) {
+        mpFrame.classList.add("hidden");
+    }
+    const categoryFrame = document.getElementById("output-category-frame");
+    if (categoryFrame && currentStep !== 4) {
+        categoryFrame.classList.add("hidden");
+    }
+    // 상태 배지 제거
+    if (currentStep !== 4) {
+        setSectionStatusBadge("curation-title", null);
+        setSectionStatusBadge("category-title", null);
+        setSectionStatusBadge("result-frame-title", null);
     }
 }
 
@@ -4423,6 +4441,13 @@ function generateScenario() {
         provider: selectedProvider,
         selectionSummary: latestSelectionSummary || null
     };
+
+    // 매칭 프로세스 카드 표시 중이면 AI 즉시 시작하지 않음 (사용자가 시나리오 선택 후 시작)
+    const mpFrame = document.getElementById("matching-process-frame");
+    if (mpFrame && !mpFrame.classList.contains("hidden") && !_mpBypassProcess) {
+        // 프로세스 카드 → 큐레이션 결과 → 시나리오 선택 → 카테고리 선택 → AI 생성 순서로 진행
+        return;
+    }
 
     // Fallback local path
     if (selectedProvider === "none" || !selectedProvider) {
@@ -9558,17 +9583,13 @@ function runCuration() {
     const interests = personaIds.filter(id => id.startsWith("int_"));
     const housing = personaIds.filter(id => id.startsWith("h_"));
     const devices = getSelectedDevices().map(d => {
-        // normalized 값으로 변환 (curation 매칭용)
         const el = document.querySelector(`input[value="${d}"]`);
         return el?.dataset?.normalized || (typeof getCategoryName === "function" ? getCategoryName(d) : d);
     });
     const purpose = purposeInput.value.trim();
 
-    // 시장 정보 수집
     const selectedMarket = marketOptions.find(m => m.siteCode === countrySelect.value);
     const city = getCityValue();
-
-    // Magic Setup에서 선택한 키워드
     const magicKeywords = [..._magicSelected];
 
     const input = {
@@ -9583,7 +9604,13 @@ function runCuration() {
 
     if (typeof curateScenarios !== "function") return;
 
+    // 중간 데이터 수집: 태그 도출
+    const tagScores = (typeof buildExploreTagsFromInput === "function")
+        ? buildExploreTagsFromInput(input)
+        : [];
+
     const v2Scenarios = curationDbV2.scenarios || [];
+    const totalPool = (curationDbV1.scenarios || []).length + v2Scenarios.length;
     const results = curateScenarios(input, curationDbV1.scenarios, v2Scenarios, { maxResults: 5, minScore: 5 });
 
     // Selection Summary 구축
@@ -9601,10 +9628,208 @@ function runCuration() {
         });
     }
 
-    // 입력 정보 요약 렌더링
-    renderCurationInputSummary(personaIds, devices, purpose, results);
+    // 입력 라벨 수집 (프로세스 카드용)
+    const personaLabelsForCard = personaIds.map(id => {
+        const el = document.querySelector(`input[value="${id}"]`);
+        return el?.dataset?.label || id;
+    }).filter(Boolean);
+    const deviceLabelsForCard = getSelectedDeviceLabels();
 
-    renderCurationResults(results, devices);
+    // 매칭 프로세스 카드 렌더링 → 확인 후 결과 표시
+    renderMatchingProcess({
+        input, tagScores, results, totalPool,
+        personaLabels: personaLabelsForCard,
+        deviceLabels: deviceLabelsForCard.length > 0 ? deviceLabelsForCard : devices,
+        country: selectedMarket?.label || "",
+        city: city || "",
+        purpose,
+        personaIds, devices
+    });
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   매칭 프로세스 카드 — 4단계 시각화 + 확인 버튼 플로우
+   ══════════════════════════════════════════════════════════════════════ */
+let _mpCurrentStep = 0;
+let _mpBypassProcess = false;
+
+function renderMatchingProcess(ctx) {
+    const frame = document.getElementById("matching-process-frame");
+    const container = document.getElementById("mp-cards");
+    if (!frame || !container) return;
+
+    const isKo = currentLocale === "ko";
+    _mpCurrentStep = 0;
+
+    // 4단계 카드 데이터 구성
+    const cards = buildMpCards(ctx, isKo);
+    container.innerHTML = cards.map((card, i) =>
+        `<div class="mp-card${i === 0 ? "" : " locked"}" data-mp-step="${i}" style="animation-delay:${i * 0.1}s">
+            <div class="mp-card-header">
+                <span class="mp-card-num">${i + 1}</span>
+                <span class="mp-card-title">${card.title}</span>
+                <span class="mp-card-check">✅</span>
+            </div>
+            <div class="mp-card-body">
+                <p class="mp-card-helper">${card.helper}</p>
+                ${card.content}
+                <button type="button" class="mp-confirm-btn" data-mp-step="${i}">
+                    ${i < cards.length - 1
+                        ? (isKo ? "확인 — 다음 단계 보기" : "Confirm — See next step")
+                        : (isKo ? "확인 — 매칭된 시나리오 보기" : "Confirm — View matched scenarios")}
+                </button>
+            </div>
+        </div>`
+    ).join("");
+
+    frame.classList.remove("hidden");
+    frame.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // 확인 버튼 이벤트
+    container.querySelectorAll(".mp-confirm-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const step = parseInt(btn.dataset.mpStep, 10);
+            const card = container.querySelector(`[data-mp-step="${step}"]`);
+            if (card) {
+                card.classList.add("done");
+                btn.disabled = true;
+                btn.textContent = isKo ? "✅ 확인 완료" : "✅ Confirmed";
+            }
+
+            // 다음 카드 공개
+            const next = container.querySelector(`[data-mp-step="${step + 1}"]`);
+            if (next) {
+                next.classList.remove("locked");
+                next.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+
+            // 마지막 단계 확인 시 → 큐레이션 결과 표시
+            if (step === cards.length - 1) {
+                renderCurationInputSummary(ctx.personaIds, ctx.devices, ctx.purpose, ctx.results);
+                renderCurationResults(ctx.results, ctx.devices);
+
+                // Flow Tracker 업데이트
+                updateOutputFlowTracker(1, { 1: "done", 2: "waiting", 3: "waiting" });
+                setSectionStatusBadge("curation-title", "done");
+
+                const curationFrame = document.getElementById("curation-frame");
+                if (curationFrame) {
+                    setTimeout(() => {
+                        curationFrame.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }, 300);
+                }
+            }
+        });
+    });
+}
+
+function buildMpCards(ctx, isKo) {
+    const { input, tagScores, results, totalPool, personaLabels, deviceLabels, country, city, purpose } = ctx;
+
+    // ── Card 1: 입력 확인 ──
+    const inputTags = [
+        country && `<span class="mp-tag"><span class="mp-tag-icon">🌍</span>${escapeHtml(country)}</span>`,
+        city && `<span class="mp-tag"><span class="mp-tag-icon">🏙️</span>${escapeHtml(city)}</span>`,
+        ...personaLabels.slice(0, 8).map(l => `<span class="mp-tag"><span class="mp-tag-icon">👤</span>${escapeHtml(l)}</span>`),
+        ...deviceLabels.slice(0, 8).map(l => `<span class="mp-tag"><span class="mp-tag-icon">📱</span>${escapeHtml(l)}</span>`)
+    ].filter(Boolean).join("");
+
+    const purposeHtml = purpose
+        ? `<div class="mp-tag-group"><div class="mp-tag-group-label">${isKo ? "추가 설명" : "Your context"}</div><p style="font-size:0.8rem;color:var(--ink);margin:0">"${escapeHtml(purpose)}"</p></div>`
+        : "";
+
+    const card1 = {
+        title: isKo ? "📝 입력 내용 확인" : "📝 Your Inputs",
+        helper: isKo
+            ? "Q1~Q3에서 선택하신 조건들입니다. 이 정보를 바탕으로 관심 키워드를 뽑아냅니다."
+            : "These are the conditions you selected in Q1–Q3. We'll extract interest keywords from them.",
+        content: `
+            <div class="mp-tag-group">
+                <div class="mp-tag-group-label">${isKo ? "선택한 조건" : "Selected conditions"}</div>
+                <div class="mp-tags">${inputTags}</div>
+            </div>
+            ${purposeHtml}
+        `
+    };
+
+    // ── Card 2: 키워드 도출 ──
+    const maxScore = tagScores.length > 0 ? tagScores[0].score : 1;
+    const topTags = tagScores.slice(0, 8);
+    const weightRows = topTags.map(t => {
+        const pct = Math.round((t.score / maxScore) * 100);
+        return `<div class="mp-weight-row">
+            <span class="mp-weight-label">${escapeHtml(t.tag)}</span>
+            <div class="mp-weight-bar-bg"><div class="mp-weight-bar" style="width:${pct}%"></div></div>
+            <span class="mp-weight-score">${t.score}점</span>
+        </div>`;
+    }).join("");
+
+    const card2 = {
+        title: isKo ? "🔑 관심 키워드 도출" : "🔑 Interest Keywords",
+        helper: isKo
+            ? "선택하신 조건에서 관련 키워드를 추출하고 가중치를 부여했습니다. 점수가 높을수록 더 중요한 관심사입니다."
+            : "We extracted keywords from your selections and assigned weights. Higher scores mean stronger relevance.",
+        content: `
+            <div style="margin-bottom:8px;font-size:0.72rem;color:var(--muted)">
+                ${isKo ? "가중치 기준: 도시 맥락(4) > 타겟 세그먼트(3) > 선택 기기(2) > 추가 설명(1)" : "Weights: City context(4) > Target segment(3) > Devices(2) > Context text(1)"}
+            </div>
+            ${weightRows}
+        `
+    };
+
+    // ── Card 3: 스코어링 과정 ──
+    const matchedCount = results.length;
+    const topScore = results.length > 0 ? results[0]._score : 0;
+
+    const card3 = {
+        title: isKo ? "⚡ 시나리오 스코어링" : "⚡ Scenario Scoring",
+        helper: isKo
+            ? `총 ${totalPool}개의 Explore 시나리오 중에서, 도출된 키워드·기기·가치 태그를 기준으로 점수를 매겼습니다.`
+            : `We scored all ${totalPool} Explore scenarios based on your keywords, devices, and value tags.`,
+        content: `
+            <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px">
+                <div style="text-align:center;padding:10px 18px;border-radius:12px;background:#e8f5e9;flex:1;min-width:120px">
+                    <div style="font-size:1.6rem;font-weight:800;color:#2e7d32">${matchedCount}</div>
+                    <div style="font-size:0.72rem;color:#558b2f">${isKo ? "매칭된 시나리오" : "Matched scenarios"}</div>
+                </div>
+                <div style="text-align:center;padding:10px 18px;border-radius:12px;background:#e3f2fd;flex:1;min-width:120px">
+                    <div style="font-size:1.6rem;font-weight:800;color:#1565c0">${topScore}</div>
+                    <div style="font-size:0.72rem;color:#1976d2">${isKo ? "최고 적합도 점수" : "Top match score"}</div>
+                </div>
+                <div style="text-align:center;padding:10px 18px;border-radius:12px;background:#f3e5f5;flex:1;min-width:120px">
+                    <div style="font-size:1.6rem;font-weight:800;color:#7b1fa2">${totalPool}</div>
+                    <div style="font-size:0.72rem;color:#8e24aa">${isKo ? "전체 시나리오" : "Total scenarios"}</div>
+                </div>
+            </div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px">
+                ${isKo ? "스코어링 공식: 키워드 매칭(×10) + 기기 매칭(×8) + 원문 보너스(+5) + 가치태그(×3)" : "Scoring: keyword match(×10) + device match(×8) + text bonus(+5) + value tags(×3)"}
+            </div>
+        `
+    };
+
+    // ── Card 4: 최종 매칭 결과 미리보기 ──
+    const previewRows = results.slice(0, 5).map((r, i) => {
+        const f = (typeof formatCurationResult === "function") ? formatCurationResult(r) : { title: r.story_title || "", source: r._source || "" };
+        const tags = (r._matchedTags || []).slice(0, 3).map(t => typeof t === "object" ? t.tag : t);
+        return `<div class="mp-scenario-row">
+            <span class="mp-scenario-rank">${i + 1}</span>
+            <div class="mp-scenario-info">
+                <div class="mp-scenario-title">${escapeHtml(f.title || r.story_title || "")}</div>
+                <div class="mp-scenario-meta">${escapeHtml(f.source || r._source || "")} · ${tags.map(t => escapeHtml(t)).join(", ")}</div>
+            </div>
+            <span class="mp-scenario-score">${r._score}${isKo ? "점" : "pt"}</span>
+        </div>`;
+    }).join("");
+
+    const card4 = {
+        title: isKo ? "🎯 최종 매칭 결과" : "🎯 Final Match Results",
+        helper: isKo
+            ? "점수가 가장 높은 시나리오 순으로 정렬했습니다. 확인하시면 상세 카드를 볼 수 있습니다."
+            : "Scenarios sorted by relevance score. Confirm to see the detailed cards.",
+        content: previewRows || `<p style="color:var(--muted);font-size:0.82rem">${isKo ? "매칭된 시나리오가 없습니다." : "No matching scenarios found."}</p>`
+    };
+
+    return [card1, card2, card3, card4];
 }
 
 function renderCurationInputSummary(personaIds, devices, purpose, results) {
@@ -9812,7 +10037,9 @@ function triggerAiFromCuration(scenario) {
         const curatedContext = `${purposeInput.value.trim()}\n\n--- Curated Parent ---\n${parentInfo}\n${originalSnippet}${catContext}`;
         const originalPurpose = purposeInput.value;
         purposeInput.value = curatedContext;
+        _mpBypassProcess = true;
         generateScenario();
+        _mpBypassProcess = false;
         purposeInput.value = originalPurpose;
     };
 }
