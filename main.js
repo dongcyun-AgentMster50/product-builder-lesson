@@ -2639,7 +2639,15 @@ function buildInsightMarkup(insight) {
     const body = insight.body ? `<p class="insight-body">${escapeHtml(insight.body)}</p>` : "";
     const spotlight = insight.spotlight ? `<p class="insight-spotlight">${escapeHtml(insight.spotlight)}</p>` : "";
     const loading = insight.loading
-        ? `<p class="insight-loading" role="status" aria-live="polite">${escapeHtml(insight.loadingLabel || "Loading")}<span class="insight-loading-dots" aria-hidden="true"></span></p>`
+        ? `<div class="insight-loading" role="status" aria-live="polite">
+               <div class="pizza-spinner" aria-hidden="true">
+                   <svg viewBox="0 0 40 40" class="pizza-svg">
+                       <circle cx="20" cy="20" r="17" class="pizza-track"/>
+                       <circle cx="20" cy="20" r="17" class="pizza-fill"/>
+                   </svg>
+               </div>
+               <span class="pizza-label">${escapeHtml(insight.loadingLabel || "Loading")}</span>
+           </div>`
         : "";
     const chips = Array.isArray(insight.chips) && insight.chips.length
         ? `<div class="insight-chips">${insight.chips.map((chip) => `<span class="insight-chip">${escapeHtml(chip)}</span>`).join("")}</div>`
