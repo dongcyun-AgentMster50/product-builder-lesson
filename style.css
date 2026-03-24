@@ -2499,10 +2499,20 @@ textarea {
 
 /* --- Evidence layers --- */
 .q2-layer {
-    border-radius: 14px;
-    padding: 14px 16px 12px;
+    border-radius: 12px;
+    padding: 12px 14px 10px;
     display: grid;
-    gap: 8px;
+    gap: 4px;
+}
+.q2-layer-helper {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.45;
+    margin: -2px 0 4px 0;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: 6px;
+    border: 1px dashed rgba(0, 0, 0, 0.08);
 }
 
 .q2-layer--q1 {
@@ -2540,10 +2550,10 @@ textarea {
 .q2-hybrid-trait {
     display: grid;
     grid-template-columns: 4px 1fr;
-    gap: 0 10px;
-    padding: 9px 0;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.55);
+    gap: 0 8px;
+    padding: 6px 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.6);
     overflow: hidden;
 }
 
@@ -2565,7 +2575,7 @@ textarea {
 }
 
 .q2-trait-label {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 800;
     color: var(--fg);
     display: flex;

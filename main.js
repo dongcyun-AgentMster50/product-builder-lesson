@@ -3969,6 +3969,9 @@ function buildStep3Insight() {
                     <span class="q2-layer-header-icon">📍</span>
                     ${isKo ? "도시 맥락에서 추론한 잠정 신호 (Q1 기반)" : "Tentative signals from city context (Q1)"}
                 </p>
+                <p class="q2-layer-helper">${isKo
+                    ? "선택하신 도시의 인프라와 거주 형태를 바탕으로 도출된 잠재 라이프스타일 힌트입니다."
+                    : "Potential lifestyle hints inferred from your city context data."}</p>
                 ${traitCards}
             </div>`;
     }
@@ -4016,6 +4019,9 @@ function buildStep3Insight() {
                     <span class="q2-layer-header-icon">🎯</span>
                     ${isKo ? `타겟 생활 맥락 신호 (Q2 선택 기반) — ${q2Traits.length}개` : `Target lifestyle signals (Q2) — ${q2Traits.length} signals`}
                 </p>
+                <p class="q2-layer-helper">${isKo
+                    ? "직접 선택한 타겟의 핵심 특성입니다. Q1의 잠정 신호와 일치(교차 검증)할수록 매칭 신뢰도가 시너지로 작용합니다."
+                    : "Core lifestyle traits from your selections. Cross-validated traits with Q1 boost match confidence."}</p>
                 ${traitCards}
             </div>`;
     }
