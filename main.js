@@ -4251,59 +4251,59 @@ function buildStep4Insight() {
     const normalizedDevices = getSelectedDevices().map((device) => getCategoryName(device));
     if (devices.length === 0 && normalizedDevices.length === 0) return STEP_INSIGHTS[4];
 
-    const comboText = devices.slice(0, 3).join(", ");
-    const firstScene = inferFirstUseScene(normalizedDevices);
     const deviceCount = devices.length;
+    const isKo = currentLocale === "ko";
+    const isDe = currentLocale === "de";
     const mixRead = deviceCount >= 4
-        ? (currentLocale === "ko" ? "확장형 멀티디바이스 조합" : currentLocale === "de" ? "erweiterte Multi-Device-Kombination" : "expanded multi-device mix")
+        ? (isKo ? "확장형 멀티디바이스 조합" : isDe ? "erweiterte Multi-Device-Kombination" : "expanded multi-device mix")
         : deviceCount === 3
-            ? (currentLocale === "ko" ? "균형 잡힌 핵심 조합" : currentLocale === "de" ? "ausgewogene Kernkombination" : "balanced core mix")
+            ? (isKo ? "균형 잡힌 핵심 조합" : isDe ? "ausgewogene Kernkombination" : "balanced core mix")
             : deviceCount === 2
-                ? (currentLocale === "ko" ? "명확한 2기기 페어링" : currentLocale === "de" ? "klare Zwei-Geräte-Kombination" : "clear two-device pairing")
-                : (currentLocale === "ko" ? "단일 앵커 기기 중심" : currentLocale === "de" ? "einzelnes Ankergerät" : "single anchor device");
+                ? (isKo ? "명확한 2기기 페어링" : isDe ? "klare Zwei-Geräte-Kombination" : "clear two-device pairing")
+                : (isKo ? "단일 앵커 기기 중심" : isDe ? "einzelnes Ankergerät" : "single anchor device");
+
+    // 삼성 / 타사 분류
+    const selectedIds = new Set(
+        [...(deviceGrid?.querySelectorAll('input[data-node-type="child"]:checked') || [])].map(i => i.value)
+    );
+    const samsungCount = typeof Q4_SAMSUNG_IDS !== "undefined" ? [...selectedIds].filter(id => Q4_SAMSUNG_IDS.has(id)).length : deviceCount;
+    const partnerCount = typeof Q4_PARTNER_IDS !== "undefined" ? [...selectedIds].filter(id => Q4_PARTNER_IDS.has(id)).length : 0;
+
     return {
-        badge: currentLocale === "ko" ? "Q3 Devices" : currentLocale === "de" ? "Q3 Geräte" : "Q3 Devices",
-        title: currentLocale === "ko" ? `${deviceCount}개 기기 조합으로 첫 장면이 구체화되고 있습니다` : currentLocale === "de" ? `Mit ${deviceCount} Geräten wird der erste Moment konkreter` : `The first-use moment is becoming more concrete with ${deviceCount} devices`,
-        summary: currentLocale === "ko"
-            ? "이 단계에서는 기능 나열보다 어떤 생활 컷으로 시작할지가 거의 결정됩니다."
-            : currentLocale === "de"
-                ? "In diesem Schritt entscheidet sich fast schon, mit welchem Alltagsmoment das Szenario startet."
-                : "At this stage, the opening life moment is becoming more defined than the feature list itself.",
-        body: currentLocale === "ko"
-            ? `${comboText} 조합이면 단일 기능 설명보다 연결된 생활 장면으로 설계하는 편이 좋습니다. 지금은 ${firstScene} 같은 시작 컷이 자연스럽고, 여기서 한 번 더 줄이거나 보태면 결과 톤도 바로 달라집니다.`
-            : currentLocale === "de"
-                ? `Mit ${comboText} wirkt ein verbundener Alltagsmoment stärker als eine isolierte Funktionsbeschreibung. Ein Einstieg wie ${firstScene} passt jetzt gut, und schon ein Gerät mehr oder weniger verändert den Ton des Ergebnisses deutlich.`
-                : `With ${comboText}, a connected life moment is stronger than a single-feature explanation. A starting scene like ${firstScene} fits well here, and even one device more or less will noticeably change the output tone.`,
-        spotlight: currentLocale === "ko"
-            ? "기기 수와 조합 방식에 따라 결과는 기능 소개형, 루틴 제안형, 통합 장면형으로 완전히 달라집니다."
-            : currentLocale === "de"
-                ? "Geräteanzahl und Kombinationsart verändern das Ergebnis deutlich: Funktionsfokus, Routinenvorschlag oder integrierte Szene."
-                : "The number and type of devices change the output a lot: feature-led, routine-led, or fully integrated scene-led.",
-        chips: devices.slice(0, 5),
+        badge: "Q3 Devices",
+        title: isKo ? `${deviceCount}개 기기 선택 완료 — 시나리오 매칭 준비`
+             : isDe ? `${deviceCount} Geräte ausgewählt — bereit für Szenario-Matching`
+             : `${deviceCount} devices selected — ready for scenario matching`,
+        summary: isKo
+            ? "선택한 기기를 기반으로, DB에서 검증된 시나리오를 찾아 매칭합니다."
+            : isDe
+                ? "Basierend auf Ihren Geräten suchen wir passende verifizierte Szenarien in der Datenbank."
+                : "Based on your devices, we'll find verified scenarios from the database.",
+        chips: devices.slice(0, 6),
         rows: [
             {
-                label: currentLocale === "ko" ? "조합 성격" : currentLocale === "de" ? "Mix-Typ" : "Mix profile",
-                value: mixRead
+                label: isKo ? "조합 구성" : isDe ? "Mix-Typ" : "Mix profile",
+                value: isKo
+                    ? `${mixRead} (삼성 ${samsungCount}개${partnerCount > 0 ? ` · 타사 ${partnerCount}개` : ""})`
+                    : isDe
+                        ? `${mixRead} (Samsung ${samsungCount}${partnerCount > 0 ? ` · Partner ${partnerCount}` : ""})`
+                        : `${mixRead} (Samsung ${samsungCount}${partnerCount > 0 ? ` · Partner ${partnerCount}` : ""})`
             },
             {
-                label: currentLocale === "ko" ? "추천 시작 장면" : currentLocale === "de" ? "Empfohlener Startmoment" : "Best opening scene",
-                value: firstScene.replace(/^"|"$/g, "")
+                label: isKo ? "다음 단계" : isDe ? "Nächster Schritt" : "Next step",
+                value: isKo
+                    ? "아래 시나리오 매칭 버튼을 누르면, 이 기기 조합에 맞는 검증된 시나리오 후보를 DB에서 찾아 보여드립니다."
+                    : isDe
+                        ? "Klicken Sie auf die Matching-Schaltfläche, um verifizierte Szenarien für diese Gerätekombination zu finden."
+                        : "Click the matching button below to find verified scenarios for this device combination from the database."
             },
             {
-                label: currentLocale === "ko" ? "메시지 톤 변화" : currentLocale === "de" ? "Tonverschiebung" : "Tone shift",
-                value: currentLocale === "ko"
-                    ? deviceCount >= 4 ? "통합 시나리오형으로 읽힙니다." : deviceCount >= 2 ? "연결된 생활 장면형으로 읽힙니다." : "핵심 기기 가치 제안형으로 읽힙니다."
-                    : currentLocale === "de"
-                        ? deviceCount >= 4 ? "Es liest sich wie ein integriertes Szenario." : deviceCount >= 2 ? "Es liest sich wie ein verbundener Alltagsmoment." : "Es liest sich wie ein fokussiertes Geräte-Nutzenversprechen."
-                        : deviceCount >= 4 ? "This reads like an integrated scenario." : deviceCount >= 2 ? "This reads like a connected life moment." : "This reads like a focused anchor-device value story."
-            },
-            {
-                label: currentLocale === "ko" ? "빌드 전 마지막 체크" : currentLocale === "de" ? "Letzter Check vor dem Build" : "Final check before build",
-                value: currentLocale === "ko"
-                    ? "이 조합이 맞으면 Scenario Build로 넘어가고, 아니면 기기 1개만 더 줄여 메시지를 또렷하게 만들어 보세요."
-                    : currentLocale === "de"
-                        ? "Wenn die Mischung passt, gehen Sie zu Scenario Build. Falls nicht, nehmen Sie ein Gerät heraus und schärfen Sie die Botschaft."
-                        : "If this mix feels right, move to Scenario Build. If not, remove one device to sharpen the message."
+                label: isKo ? "매칭 후 흐름" : isDe ? "Nach dem Matching" : "After matching",
+                value: isKo
+                    ? "매칭된 시나리오를 확인한 뒤, 원하는 시나리오를 선택하여 확장·응용할 수 있습니다."
+                    : isDe
+                        ? "Nach dem Matching können Sie ein Szenario auswählen und erweitern."
+                        : "After matching, you can select a scenario to expand and customize."
             }
         ]
     };
@@ -10417,14 +10417,53 @@ function renderCurationResults(results, selectedDevices) {
 
     const isKo = currentLocale === "ko";
 
+    // 로케일 번역 매핑 (영어 시나리오 제목/본문 → 현지어)
+    const needsTranslation = currentLocale !== "en";
+    const scenarioTitleTranslations = {
+        ko: {
+            "Save energy": "에너지 절약", "Keep your home safe": "집을 안전하게",
+            "Help with chores": "가사 도움", "Care for kids": "아이 돌봄",
+            "Care for seniors": "시니어 케어", "Care for your pet": "반려동물 케어",
+            "Sleep well": "숙면 도움", "Enhanced mood": "분위기 연출",
+            "Stay fit & healthy": "건강 관리", "Easily control your lights": "조명 간편 제어",
+            "Keep the air fresh": "공기질 관리", "Find your belongings": "분실물 찾기",
+            "Time saving": "시간 절약", "Energy Saving": "에너지 절감",
+            "Security": "보안", "Family care": "가족 돌봄", "Easy to use": "간편 사용"
+        },
+        de: {
+            "Save energy": "Energie sparen", "Keep your home safe": "Zuhause sichern",
+            "Help with chores": "Hausarbeit erleichtern", "Care for kids": "Kinderbetreuung",
+            "Care for seniors": "Seniorenbetreuung", "Care for your pet": "Haustierpflege",
+            "Sleep well": "Besser schlafen", "Enhanced mood": "Stimmung verbessern",
+            "Stay fit & healthy": "Fit & gesund bleiben", "Easily control your lights": "Lichtsteuerung",
+            "Keep the air fresh": "Frische Luft", "Find your belongings": "Sachen finden"
+        }
+    };
+    const localTagMap = scenarioTitleTranslations[currentLocale] || {};
+
+    // 간이 번역 함수: 영문 텍스트에서 알려진 키워드를 로케일로 치환
+    function translateSnippet(text) {
+        if (!text || !needsTranslation) return "";
+        let translated = text;
+        for (const [en, local] of Object.entries(localTagMap)) {
+            translated = translated.replace(new RegExp(en.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), local);
+        }
+        return translated !== text ? translated : "";
+    }
+
     container.innerHTML = results.map((scenario, idx) => {
         const f = formatCurationResult(scenario);
         const bodyText = f.originalText || f.narrative || "";
         const truncated = bodyText.length > 250 ? bodyText.substring(0, 250) + "…" : bodyText;
 
-        const tagsHtml = f.matchedTags.map(tag =>
-            `<span class="curation-tag">${escapeHtml(tag)}</span>`
-        ).join("");
+        // 로케일 번역
+        const titleTranslation = needsTranslation ? translateSnippet(f.title) : "";
+        const bodyTranslation = needsTranslation ? translateSnippet(truncated) : "";
+
+        const tagsHtml = f.matchedTags.map(tag => {
+            const localTag = localTagMap[tag] || "";
+            return `<span class="curation-tag">${escapeHtml(tag)}${localTag ? ` <span class="curation-tag-local">(${escapeHtml(localTag)})</span>` : ""}</span>`;
+        }).join("");
 
         const devicesHtml = f.devices.map(d =>
             `<span class="curation-device-chip">${escapeHtml(d)}</span>`
@@ -10441,12 +10480,12 @@ function renderCurationResults(results, selectedDevices) {
             <article class="curation-card" data-curation-idx="${idx}">
                 <div class="curation-card-header">
                     <span class="curation-card-rank">${idx + 1}</span>
-                    <span class="curation-card-title">${escapeHtml(f.title)}</span>
+                    <span class="curation-card-title">${escapeHtml(f.title)}${titleTranslation ? ` <span class="curation-title-local">(${escapeHtml(titleTranslation)})</span>` : ""}</span>
                     <span class="curation-card-source">${escapeHtml(f.source)}</span>
                 </div>
                 ${f.article ? `<div style="font-size:0.76rem;color:var(--muted);margin-bottom:8px">📂 ${escapeHtml(f.article)}</div>` : ""}
                 <div class="curation-card-meta">${tagsHtml}</div>
-                <div class="curation-card-body">${escapeHtml(truncated)}</div>
+                <div class="curation-card-body">${escapeHtml(truncated)}${bodyTranslation ? `<br><span class="curation-body-local">${escapeHtml(bodyTranslation)}</span>` : ""}</div>
                 ${devicesHtml ? `<div class="curation-card-devices">${devicesHtml}</div>` : ""}
                 ${linksHtml ? `<div class="curation-card-links">${linksHtml}</div>` : ""}
                 <div class="curation-card-actions">
@@ -10457,6 +10496,30 @@ function renderCurationResults(results, selectedDevices) {
             </article>
         `;
     }).join("");
+
+    // 매칭 완료 안내 HELPER 배너 (5개 시나리오 아래)
+    const helperBanner = document.createElement("div");
+    helperBanner.className = "curation-completion-helper";
+    helperBanner.innerHTML = isKo
+        ? `<div class="curation-helper-icon">✅</div>
+           <div class="curation-helper-content">
+               <p class="curation-helper-title">시나리오 매칭이 완료되었습니다</p>
+               <p class="curation-helper-desc">위 시나리오 중 하나를 선택하여 <strong>AI 확장 생성</strong> 버튼을 누르면, 해당 시나리오를 기반으로 원하는 형식과 내용으로 재구성해 드립니다.</p>
+               <ul class="curation-helper-steps">
+                   <li>카테고리를 선택하셔도 되고, 필요한 내용을 직접 적으셔도 됩니다</li>
+                   <li>AI 기반으로 원하는 시나리오를 생성해 드립니다</li>
+               </ul>
+           </div>`
+        : `<div class="curation-helper-icon">✅</div>
+           <div class="curation-helper-content">
+               <p class="curation-helper-title">Scenario matching complete</p>
+               <p class="curation-helper-desc">Select a scenario above and click <strong>AI Expand</strong> to customize it into your desired format and content.</p>
+               <ul class="curation-helper-steps">
+                   <li>You can pick a category or describe what you need</li>
+                   <li>AI will generate the scenario tailored to your needs</li>
+               </ul>
+           </div>`;
+    container.appendChild(helperBanner);
 
     // "AI 확장" 버튼 이벤트
     container.querySelectorAll(".curation-ai-btn").forEach(btn => {
@@ -10470,11 +10533,10 @@ function renderCurationResults(results, selectedDevices) {
     frame.classList.remove("hidden");
 
     // STEP 1 완료 → 헬퍼 업데이트
-    const isKoCur = currentLocale === "ko";
     updateOutputFlowTracker(1, { 1: "done", 2: "waiting", 3: "waiting" });
     setSectionStatusBadge("curation-title", "done");
     updateSectionHelper("curation-helper",
-        isKoCur
+        isKo
             ? "입력하신 조건에 가장 잘 맞는 시나리오를 찾았습니다. 하나를 선택하면 다음 단계로 넘어갑니다."
             : "We found the best-matching scenarios. Select one to proceed to the next step.");
 }
