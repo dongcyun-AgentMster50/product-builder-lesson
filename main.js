@@ -3761,7 +3761,9 @@ function inferTraitReason(trait) {
         "importance of reducing setup fatigue": "default profile → easy start leads to sustained usage",
         "health and wellness focus": "wellness / fitness signals → air quality, sleep, exercise integration",
         "security and safety focus": "security / safety signals → monitoring and alert scenarios",
-        "chore efficiency focus": "chore / efficiency signals → reducing repetitive tasks through automation"
+        "chore efficiency focus": "chore / efficiency signals → reducing repetitive tasks through automation",
+        "sleep quality focus": "night-shift / sleep signals → better rest through environment automation",
+        "수면 품질 중시": "야간근무·수면 관련 선택에서 → 환경 자동화로 수면 질 개선"
     };
     return reasons[trait] || "";
 }
@@ -3784,12 +3786,13 @@ function inferCoreValues(traits, purpose) {
 
     // 명시적 persona ID 기반 (가장 강력한 신호)
     if (personaIds.has("t_pet")) scores.Care += 4;
-    if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting")) scores.Care += 3;
-    if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("t_parent_care")) scores.Care += 3;
+    if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting") || personaIds.has("int_kids")) scores.Care += 3;
+    if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("t_parent_care") || personaIds.has("int_senior")) scores.Care += 3;
     if (personaIds.has("t_wellness") || personaIds.has("int_health") || personaIds.has("ls_empty_nest")) scores.Health += 3;
-    if (personaIds.has("t_security") || personaIds.has("t_long_away")) scores.Secure += 3;
+    if (personaIds.has("t_security") || personaIds.has("t_long_away") || personaIds.has("int_safe")) scores.Secure += 3;
     if (personaIds.has("int_energy") || personaIds.has("h_apt")) scores.Save += 1;
     if (personaIds.has("int_mood") || personaIds.has("ls_newlywed")) scores.Play += 2;
+    if (personaIds.has("int_pet")) scores.Care += 4;
 
     const sorted = Object.entries(scores).filter(([, s]) => s > 0).sort((a, b) => b[1] - a[1]);
     if (sorted.length === 0) return ["Care"];
@@ -3970,7 +3973,7 @@ function buildStep3Insight() {
             </div>`;
     }
 
-    // ── Layer 2: Q2 타겟 생활 ──
+    // ── Layer 2: Q2 타겟 생활 (모든 Q2 trait 표시, Q1 연계 시 배지) ──
     let layer2Html = "";
     const hasAnyQ2Selection = !!(
         personaGroups.querySelector('[data-group-id="housing"] input:checked') ||
@@ -3978,42 +3981,43 @@ function buildStep3Insight() {
         personaGroups.querySelector('[data-group-id="lifestage"] input:checked')
     );
     if (hasAnyQ2Selection && q2Traits.length > 0) {
-        // Filter out traits already corroborated (shown in Q1 layer)
-        const uniqueQ2Traits = q2Traits.filter(t => !corroboratedLabels.has(t));
-        if (uniqueQ2Traits.length > 0) {
-            const warmColors = ["#ea580c", "#f97316", "#fb923c", "#c2410c", "#d97706"];
-            const traitCards = uniqueQ2Traits.slice(0, 4).map((trait, i) => {
-                const reason = inferTraitReason(trait);
-                const uid = `q2-ev-${i}-${Date.now()}`;
-                const warmColor = warmColors[i % warmColors.length];
-                return `
-                    <div class="q2-hybrid-trait">
-                        <div class="q2-trait-accent" style="background:${warmColor}"></div>
-                        <div class="q2-trait-body">
-                            <div class="q2-trait-top">
-                                <span class="q2-trait-label">${escapeHtml(trait)}</span>
-                            </div>
-                            <p class="q2-trait-source">${isKo ? "Q2 선택에서 도출" : "Derived from Q2 selections"}</p>
-                            ${reason ? `
-                            <button type="button" class="q2-evidence-toggle" data-ev-target="${uid}">
-                                <span class="q2-ev-arrow">▸</span> ${isKo ? "추론 근거 보기" : "View reasoning"}
-                            </button>
-                            <div class="q2-evidence-detail" id="${uid}">
-                                <p class="q2-ev-logic">${escapeHtml(reason)}</p>
-                            </div>` : ""}
+        const warmColors = ["#ea580c", "#f97316", "#fb923c", "#c2410c", "#d97706", "#b91c1c", "#dc2626"];
+        const traitCards = q2Traits.map((trait, i) => {
+            const reason = inferTraitReason(trait);
+            const uid = `q2-ev-${i}-${Date.now()}`;
+            const warmColor = warmColors[i % warmColors.length];
+            const isCorro = corroboratedLabels.has(trait);
+            const statusTag = isCorro
+                ? `<span class="q2-trait-confirmed">${isKo ? "Q1 연계" : "Q1 linked"}</span>`
+                : "";
+            return `
+                <div class="q2-hybrid-trait">
+                    <div class="q2-trait-accent" style="background:${warmColor}"></div>
+                    <div class="q2-trait-body">
+                        <div class="q2-trait-top">
+                            <span class="q2-trait-label">${escapeHtml(trait)}</span>
+                            ${statusTag}
                         </div>
-                    </div>`;
-            }).join("");
-
-            layer2Html = `
-                <div class="q2-layer q2-layer--q2">
-                    <p class="q2-layer-header">
-                        <span class="q2-layer-header-icon">🏠</span>
-                        ${isKo ? "타겟 생활 맥락 신호 (Q2 선택 기반)" : "Target lifestyle signals (Q2 selections)"}
-                    </p>
-                    ${traitCards}
+                        <p class="q2-trait-source">${isKo ? "Q2 선택에서 도출" : "Derived from Q2 selections"}</p>
+                        ${reason ? `
+                        <button type="button" class="q2-evidence-toggle" data-ev-target="${uid}">
+                            <span class="q2-ev-arrow">▸</span> ${isKo ? "추론 근거 보기" : "View reasoning"}
+                        </button>
+                        <div class="q2-evidence-detail" id="${uid}">
+                            <p class="q2-ev-logic">${escapeHtml(reason)}</p>
+                        </div>` : ""}
+                    </div>
                 </div>`;
-        }
+        }).join("");
+
+        layer2Html = `
+            <div class="q2-layer q2-layer--q2">
+                <p class="q2-layer-header">
+                    <span class="q2-layer-header-icon">🎯</span>
+                    ${isKo ? `타겟 생활 맥락 신호 (Q2 선택 기반) — ${q2Traits.length}개` : `Target lifestyle signals (Q2) — ${q2Traits.length} signals`}
+                </p>
+                ${traitCards}
+            </div>`;
     }
 
     // ── Synthesis: 시나리오 추천 스코어보드 (신뢰도 >= 40%) ──
@@ -4044,9 +4048,9 @@ function buildStep3Insight() {
             </div>`;
         }).join("");
 
-        // 신호 → 점수 바 HTML (Q2)
-        const warmColors = ["#ea580c", "#f97316", "#fb923c", "#c2410c", "#d97706"];
-        const q2ScoreBars = q2Traits.slice(0, 4).map((trait, i) => {
+        // 신호 → 점수 바 HTML (Q2) — 모든 Q2 trait 표시 (카드와 일치)
+        const warmColors = ["#ea580c", "#f97316", "#fb923c", "#c2410c", "#d97706", "#b91c1c", "#dc2626"];
+        const q2ScoreBars = q2Traits.map((trait, i) => {
             const score = Math.round(perQ2);
             const color = warmColors[i % warmColors.length];
             return `<div class="q2-score-row">
@@ -4537,22 +4541,28 @@ function inferSegmentTraits(selectedSegment, purpose) {
     // ── 실제 선택된 persona ID 기반 추론 (강화) ──
     const personaIds = new Set(getSelectedPersonaOptionIds());
 
-    // 펫 케어 명시 선택
-    if (personaIds.has("t_pet")) add("원격 확인 수요 존재", "remote check-in demand");
-    // 자녀 관련 명시 선택
-    if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting")) add("가구 운영 복잡도 높음", "high household complexity");
-    // 시니어 케어
-    if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("ls_senior") || personaIds.has("t_parent_care") || personaIds.has("t_parent_away")) add("케어/안심 니즈 큼", "strong care and reassurance needs");
+    // 펫 케어 (t_pet + int_pet 모두)
+    if (personaIds.has("t_pet") || personaIds.has("int_pet")) add("원격 확인 수요 존재", "remote check-in demand");
+    // 자녀 관련 (hh_ + ls_ + t_ + int_)
+    if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting") || personaIds.has("int_kids")) add("가구 운영 복잡도 높음", "high household complexity");
+    // 시니어 케어 (hh_ + ls_ + t_ + int_)
+    if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("ls_senior") || personaIds.has("t_parent_care") || personaIds.has("t_parent_away") || personaIds.has("int_senior")) add("케어/안심 니즈 큼", "strong care and reassurance needs");
     // 건강/웰니스
     if (personaIds.has("t_wellness") || personaIds.has("ls_empty_nest") || personaIds.has("int_health")) add("건강·웰니스 중시", "health and wellness focus");
     // 재택/하이브리드
     if (personaIds.has("t_remote") || personaIds.has("t_dual_income")) add("시간 가치 민감", "time-value sensitivity");
     // 보안
-    if (personaIds.has("t_security") || personaIds.has("t_long_away")) add("보안/안전 중시", "security and safety focus");
+    if (personaIds.has("t_security") || personaIds.has("t_long_away") || personaIds.has("int_safe")) add("보안/안전 중시", "security and safety focus");
     // 가사 효율
     if (personaIds.has("t_efficiency") || personaIds.has("int_chores")) add("가사 효율 추구", "chore efficiency focus");
     // 맞벌이
     if (personaIds.has("t_dual_income") || personaIds.has("t_solo_parent")) add("시간 가치 민감", "time-value sensitivity");
+    // 수면
+    if (personaIds.has("t_night_shift") || personaIds.has("int_sleep")) add("수면 품질 중시", "sleep quality focus");
+    // 여가/분위기
+    if (personaIds.has("int_mood") || personaIds.has("ls_newlywed")) add("여가 시간 품질 중시", "high value on leisure quality");
+    // 에너지
+    if (personaIds.has("int_energy")) add("지출 민감도 높음", "high spending sensitivity");
 
     // Q2 미선택 시 빈 배열 반환 — 근거 없는 기본값을 채우지 않음
     return traits;
@@ -4565,10 +4575,10 @@ function inferScenarioDirection(traits, purpose) {
     const directions = [];
 
     // 명시적 선택 기반 (우선순위 높음)
-    if (personaIds.has("t_pet")) directions.push(isKo ? "반려동물 케어와 안심 모니터링" : "pet care and peace-of-mind monitoring");
-    if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting"))
+    if (personaIds.has("t_pet") || personaIds.has("int_pet")) directions.push(isKo ? "반려동물 케어와 안심 모니터링" : "pet care and peace-of-mind monitoring");
+    if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting") || personaIds.has("int_kids"))
         directions.push(isKo ? "자녀 안전과 가족 돌봄 자동화" : "child safety and family care automation");
-    if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("t_parent_care"))
+    if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("t_parent_care") || personaIds.has("int_senior"))
         directions.push(isKo ? "시니어 돌봄과 원격 안심 확인" : "senior care and remote reassurance");
     if (personaIds.has("t_wellness") || personaIds.has("int_health"))
         directions.push(isKo ? "건강·웰니스 루틴 지원" : "health and wellness routine support");
