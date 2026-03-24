@@ -3776,40 +3776,52 @@ function inferCoreValues(traits, purpose) {
 function inferQ1Traits() {
     if (!_magicSelected || _magicSelected.size === 0) return [];
     const isKo = currentLocale === "ko";
+    const cityName = _latestCityProfile?.localCity || "";
+    const profile = _latestCityProfile?.profile || {};
+
     const mapping = {
         family:        { trait: isKo ? "케어/안심 니즈 큼"     : "strong care and reassurance needs",
-                         reason: isKo ? "도시 프로필의 가족·돌봄 데이터에서 추론"   : "Inferred from city profile family & care data" },
+                         logic: isKo ? "가족·돌봄 데이터 → 시니어나 아이가 있는 가구가 많을수록 원격 케어·안심 확인 수요 상승" : "Family/care data → more multi-gen households = higher remote care demand" },
         energy:        { trait: isKo ? "지출 민감도 높음"       : "high spending sensitivity",
-                         reason: isKo ? "도시 프로필의 에너지 데이터에서 추론"       : "Inferred from city profile energy data" },
+                         logic: isKo ? "에너지 소비 패턴 → 계절별 냉난방 비용 체감이 클수록 절약형 자동화 시나리오 적합" : "Energy data → high seasonal utility costs drive savings automation scenarios" },
         safety:        { trait: isKo ? "보안/안전 중시"         : "security and safety focus",
-                         reason: isKo ? "도시 프로필의 안전·보안 데이터에서 추론"    : "Inferred from city profile safety data" },
+                         logic: isKo ? "안전·보안 인프라 → 주거 밀집도와 외출 빈도에 따라 모니터링·알림 시나리오 유효" : "Safety data → density + outing frequency drive monitoring scenarios" },
         daily_rhythm:  { trait: isKo ? "시간 가치 민감"         : "time-value sensitivity",
-                         reason: isKo ? "도시 프로필의 일상 리듬 데이터에서 추론"    : "Inferred from city profile daily rhythm data" },
+                         logic: isKo ? "일상 리듬 데이터 → 출퇴근 패턴이 뚜렷할수록 '귀가 직후 자동화' 시나리오 효과적" : "Daily rhythm → clear commute patterns make return-home automation effective" },
         housing:       { trait: isKo ? "주거 환경 최적화"       : "housing environment optimization",
-                         reason: isKo ? "도시 프로필의 주거 형태 데이터에서 추론"    : "Inferred from city profile housing data" },
+                         logic: isKo ? "주거 형태 데이터 → 아파트·빌라 등 구조에 따라 적합한 기기 배치와 연동 방식이 달라짐" : "Housing data → dwelling type determines optimal device placement" },
         climate:       { trait: isKo ? "계절 민감 생활"         : "seasonal living sensitivity",
-                         reason: isKo ? "도시 프로필의 기후·계절 데이터에서 추론"    : "Inferred from city profile climate data" },
+                         logic: isKo ? "기후·계절 데이터 → 한서 차이가 클수록 실내 환경 자동 조절 시나리오의 체감 가치 상승" : "Climate data → wider temp swings increase indoor automation perceived value" },
         culture_event: { trait: isKo ? "여가 시간 품질 중시"    : "high value on leisure quality",
-                         reason: isKo ? "도시 프로필의 문화 행사 데이터에서 추론"    : "Inferred from city profile culture & events data" },
+                         logic: isKo ? "문화 행사 데이터 → 여가·문화 소비가 활발할수록 '집에서의 몰입 경험' 시나리오 유효" : "Culture data → active leisure patterns support immersive home scenarios" },
         events:        { trait: isKo ? "여가 시간 품질 중시"    : "high value on leisure quality",
-                         reason: isKo ? "도시 프로필의 문화 행사 데이터에서 추론"    : "Inferred from city profile culture & events data" },
+                         logic: isKo ? "문화 행사 데이터 → 여가·문화 소비가 활발할수록 '집에서의 몰입 경험' 시나리오 유효" : "Culture data → active leisure patterns support immersive home scenarios" },
         health:        { trait: isKo ? "건강·웰니스 중시"       : "health and wellness focus",
-                         reason: isKo ? "도시 프로필의 건강 데이터에서 추론"         : "Inferred from city profile health data" },
+                         logic: isKo ? "건강 데이터 → 웰니스 관심도가 높을수록 공기질·수면·운동 연동 시나리오 설득력 상승" : "Health data → wellness interest drives air quality, sleep, fitness scenarios" },
         shopping:      { trait: isKo ? "소비 트렌드 민감"       : "consumer trend sensitivity",
-                         reason: isKo ? "도시 프로필의 이동·쇼핑 데이터에서 추론"   : "Inferred from city profile shopping data" },
+                         logic: isKo ? "쇼핑 데이터 → 온라인 구매 활발 지역일수록 제품 연동·자동 재주문 시나리오 적합" : "Shopping data → active e-commerce regions suit auto-reorder scenarios" },
         transport:     { trait: isKo ? "이동 효율 중시"         : "mobility efficiency focus",
-                         reason: isKo ? "도시 프로필의 이동·교통 데이터에서 추론"   : "Inferred from city profile transport data" },
+                         logic: isKo ? "교통 데이터 → 이동 시간이 길수록 외출 전·귀가 시 자동화 시나리오 가치 상승" : "Transport data → longer commutes increase pre-departure automation value" },
         mobility:      { trait: isKo ? "이동 효율 중시"         : "mobility efficiency focus",
-                         reason: isKo ? "도시 프로필의 이동·교통 데이터에서 추론"   : "Inferred from city profile transport data" },
+                         logic: isKo ? "교통 데이터 → 이동 시간이 길수록 외출 전·귀가 시 자동화 시나리오 가치 상승" : "Transport data → longer commutes increase pre-departure automation value" },
         pets:          { trait: isKo ? "원격 확인 수요 존재"    : "remote check-in demand",
-                         reason: isKo ? "도시 프로필의 펫 라이프 데이터에서 추론"   : "Inferred from city profile pet data" }
+                         logic: isKo ? "펫 라이프 데이터 → 반려동물 가구 비중이 높을수록 외출 중 모니터링 시나리오 필수" : "Pet data → high pet ownership makes remote monitoring scenarios essential" }
     };
     const result = [];
     for (const key of _magicSelected) {
         const entry = mapping[key];
         if (entry && !result.some(r => r.trait === entry.trait)) {
             const cat = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
-            result.push({ ...entry, catKey: key, color: cat ? cat.color : "#3b82f6" });
+            const catLabel = cat ? (isKo ? cat.labelKo : cat.labelEn) : key;
+            // 실제 도시 프로필 텍스트 인용 (있으면)
+            const profileText = profile[key] ? String(profile[key]).slice(0, 120) : "";
+            result.push({
+                ...entry,
+                catKey: key,
+                catLabel,
+                color: cat ? cat.color : "#3b82f6",
+                profileQuote: profileText
+            });
         }
     }
     return result;
@@ -3893,24 +3905,31 @@ function buildStep3Insight() {
         const tentativeClass = hasAnyQ2 ? "" : " q2-layer--tentative";
         const traitCards = q1Traits.map((t, i) => {
             const isCorro = corroboratedLabels.has(t.trait);
-            const tentativeTag = isCorro ? "" : `<span class="q2-trait-tentative">${isKo ? "잠정" : "tentative"}</span>`;
-            const barQ1Width = 40;
-            const barQ2Width = isCorro ? 60 : 0;
+            const statusTag = isCorro
+                ? `<span class="q2-trait-confirmed">${isKo ? "Q2 검증됨" : "Q2 confirmed"}</span>`
+                : `<span class="q2-trait-tentative">${isKo ? "잠정" : "tentative"}</span>`;
             const uid = `q1-ev-${i}-${Date.now()}`;
+            const quoteHtml = t.profileQuote
+                ? `<p class="q2-ev-quote">"${escapeHtml(t.profileQuote)}${t.profileQuote.length >= 120 ? "…" : ""}"</p>`
+                : "";
             return `
                 <div class="q2-hybrid-trait">
                     <div class="q2-trait-accent" style="background:${t.color}"></div>
                     <div class="q2-trait-body">
-                        <div class="q2-trait-label">${escapeHtml(t.trait)}${tentativeTag}</div>
-                        <div class="q2-mini-bar">
-                            <div class="q2-mini-bar-q1" style="width:${barQ1Width}%"></div>
-                            <div class="q2-mini-bar-q2" style="width:${barQ2Width}%"></div>
+                        <div class="q2-trait-top">
+                            <span class="q2-trait-label">${escapeHtml(t.trait)}</span>
+                            ${statusTag}
                         </div>
+                        <p class="q2-trait-source">
+                            <span class="q2-source-tag" style="background:${t.color}20;color:${t.color}">${escapeHtml(t.catLabel)}</span>
+                            ${isKo ? `${escapeHtml(cityName)} 도시 프로필에서 도출` : `From ${escapeHtml(cityName)} city profile`}
+                        </p>
                         <button type="button" class="q2-evidence-toggle" data-ev-target="${uid}">
-                            <span class="q2-ev-arrow">▸</span> ${isKo ? "근거 보기" : "View evidence"}
+                            <span class="q2-ev-arrow">▸</span> ${isKo ? "추론 근거 보기" : "View reasoning"}
                         </button>
                         <div class="q2-evidence-detail" id="${uid}">
-                            <p class="q2-evidence-text">${escapeHtml(t.reason)}</p>
+                            ${quoteHtml}
+                            <p class="q2-ev-logic">${escapeHtml(t.logic)}</p>
                         </div>
                     </div>
                 </div>`;
@@ -3946,16 +3965,16 @@ function buildStep3Insight() {
                     <div class="q2-hybrid-trait">
                         <div class="q2-trait-accent" style="background:${warmColor}"></div>
                         <div class="q2-trait-body">
-                            <div class="q2-trait-label">${escapeHtml(trait)}</div>
-                            <div class="q2-mini-bar">
-                                <div class="q2-mini-bar-q2" style="width:60%"></div>
+                            <div class="q2-trait-top">
+                                <span class="q2-trait-label">${escapeHtml(trait)}</span>
                             </div>
+                            <p class="q2-trait-source">${isKo ? "Q2 선택에서 도출" : "Derived from Q2 selections"}</p>
                             ${reason ? `
                             <button type="button" class="q2-evidence-toggle" data-ev-target="${uid}">
-                                <span class="q2-ev-arrow">▸</span> ${isKo ? "근거 보기" : "View evidence"}
+                                <span class="q2-ev-arrow">▸</span> ${isKo ? "추론 근거 보기" : "View reasoning"}
                             </button>
                             <div class="q2-evidence-detail" id="${uid}">
-                                <p class="q2-evidence-text">${escapeHtml(reason)}</p>
+                                <p class="q2-ev-logic">${escapeHtml(reason)}</p>
                             </div>` : ""}
                         </div>
                     </div>`;

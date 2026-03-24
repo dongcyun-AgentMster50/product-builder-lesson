@@ -2583,25 +2583,62 @@ textarea {
     white-space: nowrap;
 }
 
-/* --- Mini confidence bar per trait --- */
-.q2-mini-bar {
-    height: 5px;
-    border-radius: 3px;
-    background: rgba(0, 0, 0, 0.06);
-    overflow: hidden;
+/* --- Trait card top row (label + status) --- */
+.q2-trait-top {
     display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.q2-mini-bar-q1 {
-    height: 100%;
-    background: #3b82f6;
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+.q2-trait-confirmed {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #15803d;
+    background: rgba(22, 163, 74, 0.1);
+    padding: 1px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
 }
 
-.q2-mini-bar-q2 {
-    height: 100%;
-    background: #f97316;
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+/* --- Trait source line --- */
+.q2-trait-source {
+    margin: 0;
+    font-size: 0.76rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.q2-source-tag {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* --- Evidence: quote + logic --- */
+.q2-ev-quote {
+    margin: 0 0 6px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(0, 51, 102, 0.04);
+    border-left: 3px solid rgba(0, 51, 102, 0.15);
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--fg);
+    line-height: 1.55;
+}
+
+.q2-ev-logic {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--accent-strong, #1b368d);
+    font-weight: 600;
+    line-height: 1.5;
 }
 
 /* --- Evidence accordion --- */
