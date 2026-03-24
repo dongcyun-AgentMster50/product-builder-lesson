@@ -44,41 +44,18 @@ const PERSONA_CATEGORY_GROUPS = [
     },
     {
         id: "household",
-        title: "B. 세대 구성",
-        helper: "가장 어린 구성원 기준으로 선택하면 시나리오가 더 정확해집니다",
-        mode: "radio",
-        options: [
-            { id: "hh_solo", label: "1인 가구", desc: "혼자 생활" },
-            { id: "hh_couple", label: "2인 가구", desc: "부부, 커플, 룸메이트 2인" },
-            { id: "hh_young_kids", label: "영유아 자녀 가구", desc: "0–6세 자녀 포함" },
-            { id: "hh_school_kids", label: "초등~청소년 자녀", desc: "7–18세 자녀 포함" },
-            { id: "hh_adult_kids", label: "성인 자녀 동거", desc: "19세+ 자녀와 동거" },
-            { id: "hh_multi_gen", label: "3세대 이상 동거", desc: "조부모+부모+자녀" },
-            { id: "hh_senior", label: "시니어 가구", desc: "은퇴 세대 1~2인" }
-        ]
-    },
-    {
-        id: "lifestage",
-        title: "C. 라이프스테이지",
-        helper: "나이보다 지금 생활 상황 기준으로 선택해 주세요",
-        mode: "radio",
-        options: [
-            { id: "ls_starter", label: "사회 초년", desc: "독립 시작, 최소 세팅" },
-            { id: "ls_newlywed", label: "신혼·동거 시작", desc: "첫 공동 생활, 새 공간 세팅" },
-            { id: "ls_settled", label: "안정기 진입", desc: "본격 투자·확장기" },
-            { id: "ls_parenting", label: "육아·교육기", desc: "자녀 중심 생활" },
-            { id: "ls_established", label: "안정된 가정", desc: "경험 축적, 효율 추구" },
-            { id: "ls_empty_nest", label: "자녀 독립 후", desc: "부부 재설계 시기" },
-            { id: "ls_senior", label: "시니어 생활", desc: "편의·돌봄 중심" }
-        ]
-    },
-    {
-        id: "tags",
-        title: "D. 우리 집 특성",
-        helper: "해당하는 것을 모두 골라 주세요 — 시나리오가 더 구체적으로 맞춰집니다",
+        title: "B. 세대 구성·가족",
+        helper: "세대 구성을 고르고, 해당하는 상세 조건을 추가로 선택하세요 (복수 선택 가능)",
         mode: "chip",
-        scrollable: true,
         options: [
+            { id: "_divider_hh_type", divider: true, label: "세대 구성" },
+            { id: "hh_solo", label: "1인 가구" },
+            { id: "hh_couple", label: "2인 가구" },
+            { id: "hh_young_kids", label: "영유아 자녀 가구" },
+            { id: "hh_school_kids", label: "초등~청소년 자녀" },
+            { id: "hh_adult_kids", label: "성인 자녀 동거" },
+            { id: "hh_multi_gen", label: "3세대 이상 동거" },
+            { id: "hh_senior", label: "시니어 가구" },
             { id: "_divider_family", divider: true, label: "가족 상황" },
             { id: "t_dual_income", label: "맞벌이" },
             { id: "t_single_income", label: "외벌이" },
@@ -88,25 +65,29 @@ const PERSONA_CATEGORY_GROUPS = [
             { id: "_divider_care", divider: true, label: "돌봄·관계" },
             { id: "t_parent_away", label: "부모님 따로 거주" },
             { id: "t_parent_care", label: "부모님 돌봄 필요" },
-            { id: "t_acc_needs", label: "접근성 배려 필요" },
+            { id: "t_acc_needs", label: "접근성 배려 필요" }
+        ]
+    },
+    {
+        id: "lifestage",
+        title: "C. 라이프스테이지·생활맥락",
+        helper: "지금 생활 상황을 고르고, 관련 생활 패턴과 테마를 추가하세요 (복수 선택 가능)",
+        mode: "chip",
+        options: [
+            { id: "_divider_ls", divider: true, label: "라이프스테이지" },
+            { id: "ls_starter", label: "사회 초년" },
+            { id: "ls_newlywed", label: "신혼·동거 시작" },
+            { id: "ls_settled", label: "안정기 진입" },
+            { id: "ls_parenting", label: "육아·교육기" },
+            { id: "ls_established", label: "안정된 가정" },
+            { id: "ls_empty_nest", label: "자녀 독립 후" },
+            { id: "ls_senior", label: "시니어 생활" },
             { id: "_divider_lifestyle", divider: true, label: "생활 패턴" },
             { id: "t_remote", label: "재택·하이브리드 근무" },
             { id: "t_long_away", label: "장시간 부재 잦음" },
             { id: "t_weekend_out", label: "주말 외출·여행 잦음" },
             { id: "t_night_shift", label: "야간·교대 생활" },
-            { id: "_divider_value", divider: true, label: "중시하는 가치" },
-            { id: "t_security", label: "보안 중시" },
-            { id: "t_wellness", label: "건강·웰니스 중시" },
-            { id: "t_efficiency", label: "가사 효율 중시" }
-        ]
-    },
-    {
-        id: "interest",
-        title: "E. 생활맥락",
-        helper: "시나리오에 반영할 생활 테마를 골라 주세요",
-        mode: "chip",
-        scrollable: true,
-        options: [
+            { id: "_divider_context", divider: true, label: "생활 테마" },
             { id: "int_energy", label: "에너지 절약" },
             { id: "int_air", label: "쾌적한 공기" },
             { id: "int_lights", label: "조명 제어" },
@@ -118,7 +99,10 @@ const PERSONA_CATEGORY_GROUPS = [
             { id: "int_kids", label: "키즈 케어" },
             { id: "int_pet", label: "펫 케어" },
             { id: "int_find", label: "물건 찾기" },
-            { id: "int_health", label: "건강·피트니스" }
+            { id: "int_health", label: "건강·피트니스" },
+            { id: "t_security", label: "보안 중시" },
+            { id: "t_wellness", label: "건강·웰니스 중시" },
+            { id: "t_efficiency", label: "가사 효율 중시" }
         ],
         customPlaceholder: "위에 없는 생활맥락 직접 입력"
     }
@@ -126,18 +110,14 @@ const PERSONA_CATEGORY_GROUPS = [
 
 const PERSONA_GROUP_TITLE_EN = {
     housing: "A. Housing type",
-    household: "B. Household",
-    lifestage: "C. Life stage",
-    tags: "D. Home characteristics",
-    interest: "E. Life context"
+    household: "B. Household & Family",
+    lifestage: "C. Life stage & Context"
 };
 
 const PERSONA_GROUP_HELPER_EN = {
     housing: "Select the type of home for your scenario",
-    household: "Choose based on the youngest household member for better accuracy",
-    lifestage: "Pick based on your current life situation, not age alone",
-    tags: "Select all that apply — makes the scenario more specific",
-    interest: "Pick life themes to reflect in the scenario"
+    household: "Pick household type, then add family details (multiple selections OK)",
+    lifestage: "Pick life stage, then add lifestyle patterns and themes (multiple selections OK)"
 };
 
 const PERSONA_OPTION_LABEL_EN = {
@@ -157,7 +137,8 @@ const PERSONA_OPTION_LABEL_EN = {
     int_safe: "Home safety", int_sleep: "Sleep well", int_mood: "Enhanced mood",
     int_senior: "Senior care", int_kids: "Kids care", int_pet: "Pet care",
     int_find: "Find belongings", int_health: "Fitness & Health",
-    _divider_family: "Family", _divider_care: "Care", _divider_lifestyle: "Lifestyle", _divider_value: "Values"
+    _divider_hh_type: "Household type", _divider_family: "Family situation", _divider_care: "Care & Relations",
+    _divider_ls: "Life stage", _divider_lifestyle: "Lifestyle patterns", _divider_context: "Life themes"
 };
 
 const PERSONA_OPTION_DESC_EN = {
@@ -177,7 +158,7 @@ const PERSONA_OPTION_DESC_EN = {
 };
 
 const PERSONA_CUSTOM_PLACEHOLDER_EN = {
-    interest: "Other life context — type here"
+    lifestage: "Other life context — type here"
 };
 
 /* Locale-specific housing overrides — disabled: C group is now space-based (Explore Contents) */
