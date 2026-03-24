@@ -4063,12 +4063,14 @@ function buildStep3Insight() {
         // ── 시나리오 태그 스코어 집계 (고급 추론) ──
         const tagScoreMap = {};
         const tagSourceCount = {}; // 중복 누적 방지용
-        function addTagScore(tag, pts, sourceId) {
-            // 동일 소스에서 같은 태그를 중복 기여하지 않도록 cap
+        const tagSources = {};    // 태그별 기여 소스 추적
+        function addTagScore(tag, pts, sourceId, sourceLabel) {
             const key = `${sourceId}|${tag}`;
             if (!tagSourceCount[key]) {
                 tagSourceCount[key] = true;
                 tagScoreMap[tag] = (tagScoreMap[tag] || 0) + pts;
+                if (!tagSources[tag]) tagSources[tag] = [];
+                tagSources[tag].push({ label: sourceLabel || sourceId, pts: Math.round(pts) });
             }
         }
 
@@ -4097,8 +4099,14 @@ function buildStep3Insight() {
             int_mood:     ["Enhanced mood"]
         };
         const PRIMARY_WEIGHT = 15; // 명시적 선택은 높은 가중치
+        // persona ID → 표시 라벨
+        function getPersonaLabel(id) {
+            const el = document.querySelector(`input[value="${id}"]`);
+            return el?.dataset?.label || id;
+        }
         personaIds.forEach(id => {
-            (PRIMARY_INTENT_MAP[id] || []).forEach(tag => addTagScore(tag, PRIMARY_WEIGHT, `primary_${id}`));
+            const lbl = getPersonaLabel(id);
+            (PRIMARY_INTENT_MAP[id] || []).forEach(tag => addTagScore(tag, PRIMARY_WEIGHT, `primary_${id}`, `${lbl} (${isKo ? "명시선택" : "explicit"} +${PRIMARY_WEIGHT})`));
         });
 
         // ── 세대 구성 (B) — 생활 맥락 신호 ──
@@ -4112,7 +4120,8 @@ function buildStep3Insight() {
             hh_couple:      ["Enhanced mood", "Help with chores"]
         };
         personaIds.forEach(id => {
-            (HOUSEHOLD_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSEHOLD_WEIGHT, `hh_${id}`));
+            const lbl = getPersonaLabel(id);
+            (HOUSEHOLD_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSEHOLD_WEIGHT, `hh_${id}`, `${lbl} (${isKo ? "세대구성" : "household"} +${HOUSEHOLD_WEIGHT})`));
         });
 
         // ── 라이프스테이지 (C) — 맥락 보강 ──
@@ -4127,7 +4136,8 @@ function buildStep3Insight() {
             ls_established:  ["Help with chores", "Time saving"]
         };
         personaIds.forEach(id => {
-            (LIFESTAGE_MAP[id] || []).forEach(tag => addTagScore(tag, LIFESTAGE_WEIGHT, `ls_${id}`));
+            const lbl = getPersonaLabel(id);
+            (LIFESTAGE_MAP[id] || []).forEach(tag => addTagScore(tag, LIFESTAGE_WEIGHT, `ls_${id}`, `${lbl} (${isKo ? "라이프스테이지" : "lifestage"} +${LIFESTAGE_WEIGHT})`));
         });
 
         // ── 거주지 유형 (A) — 배경 환경 (낮은 가중치) ──
@@ -4140,13 +4150,17 @@ function buildStep3Insight() {
             h_care:      ["Care for seniors"]
         };
         personaIds.forEach(id => {
-            (HOUSING_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSING_WEIGHT, `housing_${id}`));
+            const lbl = getPersonaLabel(id);
+            (HOUSING_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSING_WEIGHT, `housing_${id}`, `${lbl} (${isKo ? "거주지" : "housing"} +${HOUSING_WEIGHT})`));
         });
 
         // ── Q1 magic keywords → 태그 (도시 맥락) ──
         if (typeof MAGIC_KEY_TO_EXPLORE_TAGS !== "undefined" && _magicSelected) {
             for (const key of _magicSelected) {
-                (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTagScore(tag, perQ1 * 0.8, `q1_${key}`));
+                const q1Pts = Math.round(perQ1 * 0.8);
+                const catObj = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
+                const catLbl = catObj ? (isKo ? catObj.labelKo : catObj.labelEn) : key;
+                (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTagScore(tag, q1Pts, `q1_${key}`, `Q1 ${catLbl} (${isKo ? "도시맥락" : "city"} +${q1Pts})`));
             }
         }
 
@@ -4164,7 +4178,7 @@ function buildStep3Insight() {
             "운동|건강|health": "Stay fit & healthy"
         };
         Object.entries(purposeBonus).forEach(([pattern, tag]) => {
-            if (new RegExp(pattern, "i").test(purposeL)) addTagScore(tag, 8, `purpose_${tag}`);
+            if (new RegExp(pattern, "i").test(purposeL)) addTagScore(tag, 8, `purpose_${tag}`, `${isKo ? "추가 설명 텍스트" : "context text"} (+8)`);
         });
 
         // ── 유사 태그 병합 (에너지 절약 + 에너지 절감 → 에너지 절약으로 통합) ──
@@ -4182,6 +4196,12 @@ function buildStep3Insight() {
             if (tagScoreMap[from]) {
                 tagScoreMap[to] = (tagScoreMap[to] || 0) + tagScoreMap[from];
                 delete tagScoreMap[from];
+                // 소스도 병합
+                if (tagSources[from]) {
+                    if (!tagSources[to]) tagSources[to] = [];
+                    tagSources[to].push(...tagSources[from]);
+                    delete tagSources[from];
+                }
             }
         }
 
@@ -4203,14 +4223,27 @@ function buildStep3Insight() {
             "Health": "건강", "Pet care": "펫 케어", "Sleep": "수면"
         };
 
-        const tagBarsHtml = topTags.map(([tag, rawScore]) => {
+        const tagBarsHtml = topTags.map(([tag, rawScore], idx) => {
             const norm = Math.round((rawScore / maxRaw) * 100);
             const display = isKo ? (tagKoMap[tag] || tag) : tag;
             const barColor = norm >= 70 ? "#2563eb" : norm >= 40 ? "#3b82f6" : "#93c5fd";
-            return `<div class="q2-tag-row">
-                <span class="q2-tag-label">${escapeHtml(display)}</span>
-                <div class="q2-tag-bar-track"><div class="q2-tag-bar-fill" style="width:${norm}%;background:${barColor}"></div></div>
-                <span class="q2-tag-score">${norm}</span>
+            // 산출 근거 (어떤 소스에서 몇 점)
+            const sources = (tagSources[tag] || []).sort((a, b) => b.pts - a.pts);
+            const detailId = `tag-detail-${idx}-${Date.now()}`;
+            const sourceLines = sources.map(s =>
+                `<span class="q2-tag-source-item">+${s.pts} ← ${escapeHtml(s.label)}</span>`
+            ).join("");
+            return `<div class="q2-tag-row-wrap">
+                <div class="q2-tag-row">
+                    <span class="q2-tag-label">${escapeHtml(display)}</span>
+                    <div class="q2-tag-bar-track"><div class="q2-tag-bar-fill" style="width:${norm}%;background:${barColor}"></div></div>
+                    <span class="q2-tag-score">${norm}</span>
+                    <button type="button" class="q2-tag-detail-btn q2-evidence-toggle" data-ev-target="${detailId}"><span class="q2-ev-arrow">▸</span></button>
+                </div>
+                <div class="q2-evidence-detail q2-tag-source-detail" id="${detailId}">
+                    <p class="q2-tag-source-title">${escapeHtml(display)} ${isKo ? "점수 산출 근거" : "score breakdown"} (${isKo ? "원점수" : "raw"} ${Math.round(rawScore)})</p>
+                    ${sourceLines}
+                </div>
             </div>`;
         }).join("");
 
@@ -4230,6 +4263,9 @@ function buildStep3Insight() {
 
                 <div class="q2-scoreboard">
                     <p class="q2-scoreboard-title">${isKo ? "📊 신호 가중치 분석 (100점 만점)" : "📊 Signal Weight Analysis (out of 100)"}</p>
+                    <p class="q2-scoreboard-method">${isKo
+                        ? "Q1 도시 프로필에서 추론한 잠정 신호(40점)와 Q2에서 직접 선택한 생활 맥락 신호(60점)를 합산합니다. 아래 시나리오 매칭 예측은 각 신호가 어떤 시나리오 태그에 기여하는지 계산한 결과이며, ▸ 버튼을 누르면 산출 근거를 볼 수 있습니다."
+                        : "Combines tentative city signals from Q1 (40pt) with your explicit lifestyle selections from Q2 (60pt). The scenario predictions below show how each signal contributes to scenario tags — click ▸ to see the breakdown."}</p>
 
                     <div class="q2-score-section">
                         <p class="q2-score-section-label"><span class="q2-score-section-icon">📍</span> ${isKo ? "도시 맥락 (Q1)" : "City Context (Q1)"} <span class="q2-score-section-weight">${Q1_WEIGHT}${isKo ? "점" : "pt"}</span></p>

@@ -2805,9 +2805,15 @@ textarea {
     height: 1px; background: rgba(27,54,141,0.10); margin: 2px 0;
 }
 
+.q2-scoreboard-method {
+    font-size: 0.7rem; color: var(--muted); margin: 0; line-height: 1.5;
+    padding: 6px 8px; border-radius: 6px; background: rgba(0,0,0,0.03);
+}
+
 /* 시나리오 태그 바 */
+.q2-tag-row-wrap { display: grid; gap: 0; }
 .q2-tag-row {
-    display: grid; grid-template-columns: 1fr 100px 28px; align-items: center; gap: 8px;
+    display: grid; grid-template-columns: 1fr 100px 28px 22px; align-items: center; gap: 8px;
 }
 .q2-tag-label {
     font-size: 0.73rem; font-weight: 600; color: var(--fg);
@@ -2821,6 +2827,24 @@ textarea {
 }
 .q2-tag-score {
     font-size: 0.68rem; font-weight: 800; color: var(--accent-strong, #1b368d); text-align: right;
+}
+.q2-tag-detail-btn {
+    background: none; border: none; cursor: pointer; padding: 0; font-size: 0.7rem;
+    color: var(--muted); transition: color 0.2s;
+}
+.q2-tag-detail-btn:hover { color: var(--accent-strong); }
+.q2-tag-source-detail {
+    padding: 6px 10px; margin: 2px 0 6px;
+    border-radius: 8px; background: rgba(37,99,235,0.03);
+    border-left: 3px solid #3b82f6;
+    display: grid; gap: 3px;
+}
+.q2-tag-source-title {
+    font-size: 0.7rem; font-weight: 700; color: var(--fg); margin: 0;
+}
+.q2-tag-source-item {
+    display: block; font-size: 0.68rem; color: var(--muted); line-height: 1.45;
+    padding-left: 8px;
 }
 .q2-scenario-hint {
     font-size: 0.75rem; font-weight: 600; color: #1b368d;
