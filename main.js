@@ -4025,8 +4025,10 @@ function buildStep3Insight() {
         const valuesPills = coreValues.map(v => `<span class="q2-value-pill">${escapeHtml(v)}</span>`).join("");
 
         // ── 신호별 가중치 계산 (100점 만점) ──
-        const Q1_WEIGHT = 40;  // 도시 맥락 40%
-        const Q2_WEIGHT = 60;  // 생활 맥락 60%
+        // Q2 미선택 시 Q2 가중치를 0으로 하고 Q1만 표시
+        const hasQ2 = q2Traits.length > 0;
+        const Q1_WEIGHT = hasQ2 ? 40 : (q1Traits.length > 0 ? 100 : 0);
+        const Q2_WEIGHT = hasQ2 ? 60 : 0;
         const q1Count = Math.max(q1Traits.length, 1);
         const q2Count = Math.max(q2Traits.length, 1);
         const perQ1 = Q1_WEIGHT / q1Count;
@@ -4232,7 +4234,7 @@ function buildStep3Insight() {
 
                     <div class="q2-score-section">
                         <p class="q2-score-section-label"><span class="q2-score-section-icon">🎯</span> ${isKo ? "생활 맥락 (Q2)" : "Lifestyle Context (Q2)"} <span class="q2-score-section-weight">${Q2_WEIGHT}${isKo ? "점" : "pt"}</span></p>
-                        ${q2ScoreBars || `<p class="q2-score-empty">${isKo ? "Q2 선택 미완료" : "No Q2 selections yet"}</p>`}
+                        ${q2ScoreBars || `<p class="q2-score-empty">${isKo ? "⏳ 아직 Q2 항목을 선택하지 않았습니다. 위에서 A·B·C 항목을 선택하면 생활 맥락 신호가 여기에 표시됩니다." : "⏳ No Q2 selections yet. Choose items from A·B·C above to see lifestyle signals here."}</p>`}
                     </div>
 
                     <div class="q2-score-divider"></div>
@@ -4552,11 +4554,7 @@ function inferSegmentTraits(selectedSegment, purpose) {
     // 맞벌이
     if (personaIds.has("t_dual_income") || personaIds.has("t_solo_parent")) add("시간 가치 민감", "time-value sensitivity");
 
-    if (traits.length === 0) {
-        add("즉시 체감 가치 선호", "preference for immediate value");
-        add("설정 피로도 낮추기 중요", "importance of reducing setup fatigue");
-    }
-
+    // Q2 미선택 시 빈 배열 반환 — 근거 없는 기본값을 채우지 않음
     return traits;
 }
 
