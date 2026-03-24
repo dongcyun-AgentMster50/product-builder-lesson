@@ -4126,7 +4126,12 @@ function alignWizardStepViewport() {
         ".role-card.selected, .role-card, select, input[type='text'], textarea, input[type='checkbox']"
     );
     focusTarget?.focus({ preventScroll: true });
-    activeStep.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // wizard-progress 바를 기준으로 스크롤하여 step 상단이 화면 최상단에 오도록
+    const progressBar = document.getElementById("wizard-progress");
+    const scrollTarget = progressBar || activeStep;
+    const yOffset = scrollTarget.getBoundingClientRect().top + window.pageYOffset - 10;
+    window.scrollTo({ top: yOffset, behavior: "smooth" });
 }
 
 function moveStep(delta) {
