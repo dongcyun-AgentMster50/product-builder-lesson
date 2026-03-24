@@ -2967,6 +2967,8 @@ function buildStep2CitySelectGuide(countryCode) {
 }
 
 async function renderStep2Insight(forceRefresh = false) {
+    // Q1(step 2)이 아니면 렌더링하지 않음
+    if (currentStep !== 2) return;
     stepInsight.classList.remove("hidden");
     const selectedMarket = marketOptions.find((market) => market.siteCode === countrySelect.value);
     if (!selectedMarket) {
