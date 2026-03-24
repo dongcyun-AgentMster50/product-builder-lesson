@@ -2633,6 +2633,31 @@ function bindSourceTags(container) {
     });
 }
 
+/** 피자 원형 프로그레스를 0~100%로 업데이트 */
+function updatePizzaProgress(container, pct) {
+    const wedge = container.querySelector("[data-pizza-wedge]");
+    const label = container.querySelector("[data-pizza-pct]");
+    if (!wedge) return;
+    const clamped = Math.min(100, Math.max(0, pct));
+    const cx = 20, cy = 20, r = 18;
+    if (clamped <= 0) {
+        wedge.setAttribute("d", "");
+    } else if (clamped >= 100) {
+        // 완전한 원
+        wedge.setAttribute("d",
+            `M${cx},${cy - r} A${r},${r} 0 1,1 ${cx - 0.001},${cy - r} Z`);
+    } else {
+        const angle = (clamped / 100) * 360;
+        const rad = (angle - 90) * Math.PI / 180;
+        const x = cx + r * Math.cos(rad);
+        const y = cy + r * Math.sin(rad);
+        const large = angle > 180 ? 1 : 0;
+        wedge.setAttribute("d",
+            `M${cx},${cy} L${cx},${cy - r} A${r},${r} 0 ${large},1 ${x.toFixed(2)},${y.toFixed(2)} Z`);
+    }
+    if (label) label.textContent = `${Math.round(clamped)}%`;
+}
+
 function buildInsightMarkup(insight) {
     const badge = insight.badge ? `<span class="insight-badge">${escapeHtml(insight.badge)}</span>` : "";
     const summary = insight.summary ? `<p class="insight-summary">${escapeHtml(insight.summary)}</p>` : "";
@@ -2642,9 +2667,10 @@ function buildInsightMarkup(insight) {
         ? `<div class="insight-loading" role="status" aria-live="polite">
                <div class="pizza-spinner" aria-hidden="true">
                    <svg viewBox="0 0 40 40" class="pizza-svg">
-                       <circle cx="20" cy="20" r="17" class="pizza-track"/>
-                       <circle cx="20" cy="20" r="17" class="pizza-fill"/>
+                       <circle cx="20" cy="20" r="18" class="pizza-track"/>
+                       <path d="" class="pizza-wedge" data-pizza-wedge/>
                    </svg>
+                   <span class="pizza-pct" data-pizza-pct>0%</span>
                </div>
                <span class="pizza-label">${escapeHtml(insight.loadingLabel || "Loading")}</span>
            </div>`
@@ -2844,6 +2870,18 @@ function buildInsightMarkup(insight) {
                 <div class="insight-grid">${rows}</div>
             `);
 
+    // customHtml이 있으면 전용 렌더링
+    if (insight.customHtml) {
+        return `
+            <div class="insight-head">
+                ${badge}
+                <strong>${insight.title}</strong>
+            </div>
+            ${summary}
+            ${insight.customHtml}
+        `;
+    }
+
     return `
         <div class="insight-head">
             ${badge}
@@ -2973,6 +3011,16 @@ async function renderStep2Insight(forceRefresh = false) {
     });
     updateQuestionHelpers();
 
+    // 피자 프로그레스 시뮬레이션 (0→90% 구간을 서서히 채움)
+    let pizzaProgress = 0;
+    let pizzaDone = false;
+    const pizzaInterval = setInterval(() => {
+        if (pizzaDone) { clearInterval(pizzaInterval); return; }
+        // 점점 느려지며 90%까지 접근
+        pizzaProgress += (90 - pizzaProgress) * 0.06;
+        updatePizzaProgress(stepInsight, Math.min(pizzaProgress, 90));
+    }, 200);
+
     // 3. 라이브 API 호출
     try {
         await ensureBypassSession();
@@ -2986,11 +3034,17 @@ async function renderStep2Insight(forceRefresh = false) {
         });
         clearTimeout(timer);
 
-        if (requestId !== latestStep2InsightRequest || currentStep !== 2) return;
+        if (requestId !== latestStep2InsightRequest || currentStep !== 2) {
+            pizzaDone = true; clearInterval(pizzaInterval); return;
+        }
 
         if (response.ok) {
             const result = await response.json();
             if (result.ok && result.data) {
+                // 100%로 채우고 완료
+                pizzaDone = true; clearInterval(pizzaInterval);
+                updatePizzaProgress(stepInsight, 100);
+                await new Promise(r => setTimeout(r, 400));
                 // 캐시 저장
                 sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
                 stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, result.data);
@@ -3002,7 +3056,9 @@ async function renderStep2Insight(forceRefresh = false) {
                 return;
             }
         }
+        pizzaDone = true; clearInterval(pizzaInterval);
     } catch (err) {
+        pizzaDone = true; clearInterval(pizzaInterval);
         console.warn("[city-profile] fetch failed:", err.message);
     }
 
@@ -3660,6 +3716,30 @@ function toList(value) {
     return Array.isArray(value) ? value.filter(Boolean) : [];
 }
 
+/** 선택된 세그먼트 키워드별 "왜 이 특징이 도출되었는지" 설명 */
+function inferTraitReason(trait) {
+    const reasons = {
+        "시간 가치 민감": "맞벌이·퇴근 키워드에서 → 시간이 곧 비용인 생활 패턴",
+        "가구 운영 복잡도 높음": "육아·가족 키워드에서 → 동시에 챙겨야 할 대상이 많음",
+        "케어/안심 니즈 큼": "부모·시니어·돌봄 키워드에서 → 멀리서도 확인·케어 필요",
+        "지출 민감도 높음": "에너지·생활비 키워드에서 → 절감 효과가 바로 체감되어야 함",
+        "여가 시간 품질 중시": "주말·여가·웰니스 키워드에서 → 쉬는 시간의 질이 핵심",
+        "원격 확인 수요 존재": "펫·반려 키워드에서 → 외출 중에도 상태 확인 필수",
+        "즉시 체감 가치 선호": "기본 타겟 프로필 → 복잡한 설정 없이 바로 효과 체감",
+        "설정 피로도 낮추기 중요": "기본 타겟 프로필 → 쉬운 시작이 지속 사용으로 연결",
+        // EN
+        "time-value sensitivity": "dual-income / commute signals → time equals cost",
+        "high household complexity": "parenting / family signals → many things to manage at once",
+        "strong care and reassurance needs": "parent / senior / care signals → remote monitoring needed",
+        "high spending sensitivity": "energy / cost signals → savings must be immediately visible",
+        "high value on leisure quality": "weekend / wellness signals → quality of downtime matters most",
+        "remote check-in demand": "pet / companion signals → must check status while away",
+        "preference for immediate value": "default profile → value must be felt instantly",
+        "importance of reducing setup fatigue": "default profile → easy start leads to sustained usage"
+    };
+    return reasons[trait] || "";
+}
+
 function buildStep3Insight() {
     const selectedSegment = getSelectedSegment();
     const purpose = purposeInput.value.trim();
@@ -3671,57 +3751,61 @@ function buildStep3Insight() {
 
     const traits = inferSegmentTraits(selectedSegment, purpose);
     const place = city ? `${city} 생활권` : "이 타겟";
-    const featureText = traits.slice(0, 2).join(", ");
     const direction = inferScenarioDirection(traits, purpose);
-    const personaCount = getSelectedPersonaLabels().length;
     const selectedLabels = getSelectedPersonaLabels();
-    const primaryPersona = selectedLabels[0] || (currentLocale === "ko" ? "타겟 탐색 중" : currentLocale === "de" ? "Zielgruppe in Arbeit" : "Audience forming");
+    const primaryPersona = selectedLabels[0] || (currentLocale === "ko" ? "타겟 탐색 중" : "Audience forming");
+    const isKo = currentLocale === "ko";
+
+    // ── 특징 태그 + Why 설명 ──
+    const traitCardsHtml = traits.slice(0, 3).map(trait => {
+        const reason = inferTraitReason(trait);
+        return `
+            <div class="q2-trait-card">
+                <span class="q2-trait-tag">${escapeHtml(trait)}</span>
+                ${reason ? `<p class="q2-trait-why">${escapeHtml(reason)}</p>` : ""}
+            </div>`;
+    }).join("");
+
+    // ── 서사 방향 (한 단계 위 위계) ──
+    const narrativeHtml = `
+        <div class="q2-narrative-box">
+            <span class="q2-narrative-label">${isKo ? "서사 방향" : "Narrative"}</span>
+            <p class="q2-narrative-text">${escapeHtml(direction)}</p>
+        </div>`;
+
+    // ── 다음 행동 CTA ──
+    const ctaHtml = purpose
+        ? `<div class="q2-action-prompt q2-action-done">
+               <span class="q2-action-icon">✅</span>
+               <p>${isKo ? "상황 반영 완료 — <strong>다음</strong> 버튼을 눌러 기기를 선택하세요" : "Context applied — press <strong>Next</strong> to select devices"}</p>
+           </div>`
+        : `<div class="q2-action-prompt q2-action-todo">
+               <span class="q2-action-icon">✍️</span>
+               <p>${isKo ? "아래 텍스트 영역에 <strong>생활 상황을 한 줄</strong> 적으면 시나리오가 훨씬 선명해집니다" : "Add <strong>one line of life context</strong> below to sharpen the scenario"}</p>
+           </div>`;
+
+    // ── Q3 힌트 (풀 위드 배너) ──
+    const q3HintHtml = `
+        <div class="q2-hint-banner">
+            <span class="q2-hint-icon">→</span>
+            <span>${isKo ? "다음 단계(Q3)에서 기기를 고르면, 이 타겟에 맞는 자동화 흐름이 완성됩니다" : "Pick devices in Q3 to complete an automation flow for this target"}</span>
+        </div>`;
 
     return {
-        badge: currentLocale === "ko" ? "Q2 Audience" : currentLocale === "de" ? "Q2 Zielgruppe" : "Q2 Audience",
-        title: currentLocale === "ko" ? `지금 타겟 해석은 ${personaCount || 1}개 축으로 모이고 있습니다` : currentLocale === "de" ? `Die Zielgruppe verdichtet sich jetzt über ${personaCount || 1} Achsen` : `The target is now clustering around ${personaCount || 1} signal layers`,
-        summary: currentLocale === "ko"
-            ? "타겟 조합이 결과 문장의 톤과 문제 정의를 직접 바꾸기 시작했습니다."
-            : currentLocale === "de"
-                ? "Die Zielgruppen-Kombination verändert jetzt direkt Ton und Problemdefinition des Ergebnisses."
-                : "The audience mix is now directly changing the tone and problem definition of the output.",
-        body: currentLocale === "ko"
-            ? `${place}의 ${selectedSegment || "사용자"}는 ${featureText} 특징이 강하게 보입니다. ${purpose ? "입력한 상황 설명까지 붙어서" : "여기에 상황 설명까지 더하면"} 시나리오는 ${direction} 쪽으로 훨씬 선명해집니다.`
-            : currentLocale === "de"
-                ? `Für ${selectedSegment || "die Zielgruppe"} in ${place} zeigen sich vor allem ${featureText}. ${purpose ? "Mit Ihrer Situationsbeschreibung" : "Mit einer ergänzten Situationsbeschreibung"} kann das Szenario noch klarer in Richtung ${direction} geführt werden.`
-                : `The ${selectedSegment || "target"} in ${place} is showing strong signals of ${featureText}. ${purpose ? "With the context you already added," : "If you add one more concrete context line,"} the scenario can lean much more clearly toward ${direction}.`,
-        spotlight: currentLocale === "ko"
-            ? purpose ? "이 단계부터는 같은 시장이어도 누구를 위해 쓰는지에 따라 결과 톤이 크게 달라집니다." : "아직은 타겟 뼈대만 잡힌 상태입니다. 상황 한 줄이 들어오면 카드 성격이 훨씬 달라집니다."
-            : currentLocale === "de"
-                ? purpose ? "Ab hier verändert sich der Ergebniston stark je nachdem, für wen die Geschichte geschrieben wird." : "Aktuell steht vor allem das Zielgruppen-Grundgerüst. Eine konkrete Situation verändert den Charakter der Karte deutlich."
-                : purpose ? "From here, the output tone changes sharply depending on who the scenario is for." : "Right now the audience skeleton is there, but one concrete context line will change the card character a lot.",
-        chips: selectedLabels.slice(0, 4).length ? selectedLabels.slice(0, 4) : [primaryPersona],
-        rows: [
-            {
-                label: currentLocale === "ko" ? "핵심 타겟 축" : currentLocale === "de" ? "Zielgruppenachse" : "Audience axis",
-                value: primaryPersona
-            },
-            {
-                label: currentLocale === "ko" ? "지금 읽히는 특징" : currentLocale === "de" ? "Aktuelle Lesart" : "Current read",
-                value: featureText || (currentLocale === "ko" ? "핵심 신호 수집 중" : currentLocale === "de" ? "Signale werden gesammelt" : "signals gathering")
-            },
-            {
-                label: currentLocale === "ko" ? "서사 방향" : currentLocale === "de" ? "Erzählrichtung" : "Narrative direction",
-                value: direction
-            },
-            {
-                label: currentLocale === "ko" ? "지금 필요한 입력" : currentLocale === "de" ? "Jetzt fehlt noch" : "Missing input",
-                value: purpose
-                    ? (currentLocale === "ko" ? "상황 설명이 반영되었습니다. 아래 Q3 힌트를 참고해 기기를 선택하면 시나리오가 완성됩니다." : currentLocale === "de" ? "Situationsbeschreibung berücksichtigt. Wählen Sie in Q3 Geräte, um das Szenario abzuschließen." : "Context applied. Select devices in Q3 below to complete the scenario.")
-                    : (currentLocale === "ko" ? "집에 들어오는 순간, 반복되는 불편, 계절 변수 중 하나만 적어보세요." : currentLocale === "de" ? "Ergänzen Sie Heimkehr, wiederkehrende Reibung oder einen saisonalen Auslöser." : "Add arrival home, recurring friction, or a seasonal trigger.")
-            },
-            {
-                label: currentLocale === "ko" ? "Q3 힌트" : "Q3 hint",
-                value: currentLocale === "ko"
-                    ? "Q3에서 시나리오에 반영할 기기를 선택하면, 이 타겟과 생활맥락에 딱 맞는 자동화 흐름이 완성됩니다."
-                    : "Select devices in Q3 to complete an automation flow tailored to this target and life context."
-            }
-        ]
+        badge: isKo ? "Q2 Audience" : "Q2 Audience",
+        title: `${primaryPersona}${selectedLabels.length > 1 ? ` 외 ${selectedLabels.length - 1}개` : ""}`,
+        summary: isKo ? `${place}의 타겟 프로필` : `Target profile in ${place}`,
+        customHtml: `
+            <div class="q2-redesign">
+                <div class="q2-traits-section">
+                    <p class="q2-section-label">${isKo ? "도출된 특징" : "Derived traits"}</p>
+                    <div class="q2-trait-cards">${traitCardsHtml}</div>
+                </div>
+                ${narrativeHtml}
+                ${ctaHtml}
+                ${q3HintHtml}
+            </div>
+        `
     };
 }
 

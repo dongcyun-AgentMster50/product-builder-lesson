@@ -2198,39 +2198,41 @@ textarea {
     font-size: 0.84rem;
 }
 
-/* ── 피자 스피너 ── */
+/* ── 피자 프로그레스 (면적 채우기) ── */
 .pizza-spinner {
-    width: 32px;
-    height: 32px;
+    position: relative;
+    width: 38px;
+    height: 38px;
     flex-shrink: 0;
 }
 
 .pizza-svg {
     width: 100%;
     height: 100%;
-    transform: rotate(-90deg);
 }
 
 .pizza-track {
-    fill: none;
-    stroke: rgba(0, 51, 102, 0.1);
-    stroke-width: 5;
+    fill: rgba(0, 51, 102, 0.06);
+    stroke: rgba(0, 51, 102, 0.15);
+    stroke-width: 1.2;
 }
 
-.pizza-fill {
-    fill: none;
-    stroke: var(--accent, #1b368d);
-    stroke-width: 5;
-    stroke-linecap: round;
-    stroke-dasharray: 106.8;
-    stroke-dashoffset: 106.8;
-    animation: pizzaSweep 1.8s ease-in-out infinite;
+.pizza-wedge {
+    fill: var(--accent, #1b368d);
+    opacity: 0.85;
+    transition: d 0.2s ease-out;
 }
 
-@keyframes pizzaSweep {
-    0%   { stroke-dashoffset: 106.8; }
-    50%  { stroke-dashoffset: 0; }
-    100% { stroke-dashoffset: -106.8; }
+.pizza-pct {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    font-weight: 800;
+    color: var(--accent-strong, #1b368d);
+    pointer-events: none;
 }
 
 .pizza-label {
@@ -2252,6 +2254,122 @@ textarea {
     background: rgba(0, 51, 102, 0.06);
     color: var(--accent-strong);
     font-weight: 700;
+}
+
+/* ═══ Q2 Audience Redesign ═══ */
+.q2-redesign {
+    display: grid;
+    gap: 12px;
+}
+
+.q2-section-label {
+    margin: 0 0 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+}
+
+.q2-trait-cards {
+    display: grid;
+    gap: 8px;
+}
+
+.q2-trait-card {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border-left: 3px solid var(--accent, #1b368d);
+    background: rgba(0, 51, 102, 0.05);
+}
+
+.q2-trait-tag {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 0.92rem;
+    color: var(--accent-strong, #1b368d);
+}
+
+.q2-trait-why {
+    margin: 3px 0 0;
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.45;
+}
+
+.q2-narrative-box {
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(27, 54, 141, 0.08), rgba(70, 194, 208, 0.08));
+    border: 1px solid rgba(0, 51, 102, 0.12);
+}
+
+.q2-narrative-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent, #1b368d);
+    margin-bottom: 4px;
+}
+
+.q2-narrative-text {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--fg);
+    line-height: 1.5;
+}
+
+.q2-action-prompt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.q2-action-prompt p {
+    margin: 0;
+}
+
+.q2-action-todo {
+    background: rgba(255, 180, 0, 0.1);
+    border: 1px solid rgba(255, 180, 0, 0.25);
+    color: #7a5800;
+}
+
+.q2-action-done {
+    background: rgba(0, 160, 80, 0.08);
+    border: 1px solid rgba(0, 160, 80, 0.2);
+    color: #1a6b3a;
+}
+
+.q2-action-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.q2-hint-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: rgba(0, 51, 102, 0.04);
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.45;
+}
+
+.q2-hint-icon {
+    font-weight: 800;
+    color: var(--accent, #1b368d);
+    font-size: 0.9rem;
+    flex-shrink: 0;
 }
 
 .insight-chips {
@@ -2826,9 +2944,9 @@ textarea {
 }
 
 @keyframes pointerBounce {
-    0%, 100% { transform: translateX(0) translateY(0); }
-    40%      { transform: translateX(-6px) translateY(-4px); }
-    70%      { transform: translateX(2px) translateY(2px); }
+    0%, 100% { transform: translateY(-50%) translateX(0); }
+    40%      { transform: translateY(-50%) translateX(6px); }
+    70%      { transform: translateY(-50%) translateX(-2px); }
 }
 
 .guide-start-pulse {
@@ -2839,15 +2957,15 @@ textarea {
 }
 
 .guide-start-pulse::after {
-    content: "☝️";
+    content: "👉";
     position: absolute;
-    top: -32px;
-    left: -20px;
+    top: 50%;
+    left: -38px;
+    transform: translateY(-50%);
     font-size: 1.6rem;
     animation: pointerBounce 1.4s ease-in-out infinite;
     filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
     pointer-events: none;
-    rotate: 135deg;
 }
 
 .guide-note {
