@@ -3755,11 +3755,10 @@ function buildStep3Insight() {
     const selectedSegment = getSelectedSegment();
     const purpose = purposeInput.value.trim();
     const cityRaw = getCityValue();
-    const country = getSelectedCountry();
+    const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
+    const country = selectedMarket ? resolveCountry(selectedMarket) : null;
 
-    if (!selectedSegment && !purpose) {
-        return STEP_INSIGHTS[3];
-    }
+    // 세그먼트 미선택이어도 Q2 Audience 카드 구조를 보여줌
 
     const traits = inferSegmentTraits(selectedSegment, purpose);
     // 도시명 한국어 변환
