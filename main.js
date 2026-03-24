@@ -2583,6 +2583,7 @@ function updateStepInsight() {
     stepInsight.classList.remove("hidden");
     const insight = getStepInsight();
     stepInsight.innerHTML = buildInsightMarkup(insight);
+    bindQ2EvidenceToggles(stepInsight);
     updateQuestionHelpers();
     stepInsight.classList.remove("insight-refresh");
     void stepInsight.offsetWidth;
@@ -2628,6 +2629,26 @@ function bindSourceTags(container) {
             if (!isOpen) {
                 detail.classList.add("open");
                 tag.classList.add("active");
+            }
+        });
+    });
+}
+
+/** Q2 Hybrid 카드 — 근거 보기 아코디언 바인딩 */
+function bindQ2EvidenceToggles(container) {
+    container.querySelectorAll(".q2-evidence-toggle[data-ev-target]").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const targetId = btn.dataset.evTarget;
+            const detail = document.getElementById(targetId);
+            if (!detail) return;
+            const isOpen = detail.classList.contains("open");
+            // 같은 레이어 내 모든 열린 디테일 닫기
+            const layer = btn.closest(".q2-layer") || container;
+            layer.querySelectorAll(".q2-evidence-detail.open").forEach(d => d.classList.remove("open"));
+            layer.querySelectorAll(".q2-evidence-toggle.active").forEach(b => b.classList.remove("active"));
+            if (!isOpen) {
+                detail.classList.add("open");
+                btn.classList.add("active");
             }
         });
     });
@@ -3751,67 +3772,229 @@ function inferCoreValues(traits, purpose) {
     return values.slice(0, 2);
 }
 
+/** Q1 도시 프로필 키워드 → 잠정 타겟 특성 추론 */
+function inferQ1Traits() {
+    if (!_magicSelected || _magicSelected.size === 0) return [];
+    const isKo = currentLocale === "ko";
+    const mapping = {
+        family:        { trait: isKo ? "케어/안심 니즈 큼"     : "strong care and reassurance needs",
+                         reason: isKo ? "도시 프로필의 가족·돌봄 데이터에서 추론"   : "Inferred from city profile family & care data" },
+        energy:        { trait: isKo ? "지출 민감도 높음"       : "high spending sensitivity",
+                         reason: isKo ? "도시 프로필의 에너지 데이터에서 추론"       : "Inferred from city profile energy data" },
+        safety:        { trait: isKo ? "보안/안전 중시"         : "security and safety focus",
+                         reason: isKo ? "도시 프로필의 안전·보안 데이터에서 추론"    : "Inferred from city profile safety data" },
+        daily_rhythm:  { trait: isKo ? "시간 가치 민감"         : "time-value sensitivity",
+                         reason: isKo ? "도시 프로필의 일상 리듬 데이터에서 추론"    : "Inferred from city profile daily rhythm data" },
+        housing:       { trait: isKo ? "주거 환경 최적화"       : "housing environment optimization",
+                         reason: isKo ? "도시 프로필의 주거 형태 데이터에서 추론"    : "Inferred from city profile housing data" },
+        climate:       { trait: isKo ? "계절 민감 생활"         : "seasonal living sensitivity",
+                         reason: isKo ? "도시 프로필의 기후·계절 데이터에서 추론"    : "Inferred from city profile climate data" },
+        culture_event: { trait: isKo ? "여가 시간 품질 중시"    : "high value on leisure quality",
+                         reason: isKo ? "도시 프로필의 문화 행사 데이터에서 추론"    : "Inferred from city profile culture & events data" },
+        events:        { trait: isKo ? "여가 시간 품질 중시"    : "high value on leisure quality",
+                         reason: isKo ? "도시 프로필의 문화 행사 데이터에서 추론"    : "Inferred from city profile culture & events data" },
+        health:        { trait: isKo ? "건강·웰니스 중시"       : "health and wellness focus",
+                         reason: isKo ? "도시 프로필의 건강 데이터에서 추론"         : "Inferred from city profile health data" },
+        shopping:      { trait: isKo ? "소비 트렌드 민감"       : "consumer trend sensitivity",
+                         reason: isKo ? "도시 프로필의 이동·쇼핑 데이터에서 추론"   : "Inferred from city profile shopping data" },
+        transport:     { trait: isKo ? "이동 효율 중시"         : "mobility efficiency focus",
+                         reason: isKo ? "도시 프로필의 이동·교통 데이터에서 추론"   : "Inferred from city profile transport data" },
+        mobility:      { trait: isKo ? "이동 효율 중시"         : "mobility efficiency focus",
+                         reason: isKo ? "도시 프로필의 이동·교통 데이터에서 추론"   : "Inferred from city profile transport data" },
+        pets:          { trait: isKo ? "원격 확인 수요 존재"    : "remote check-in demand",
+                         reason: isKo ? "도시 프로필의 펫 라이프 데이터에서 추론"   : "Inferred from city profile pet data" }
+    };
+    const result = [];
+    for (const key of _magicSelected) {
+        const entry = mapping[key];
+        if (entry && !result.some(r => r.trait === entry.trait)) {
+            const cat = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
+            result.push({ ...entry, catKey: key, color: cat ? cat.color : "#3b82f6" });
+        }
+    }
+    return result;
+}
+
+/** 프로필 신뢰도 계산 (0–100) */
+function calculateConfidence() {
+    let pct = 0;
+    // 도시 선택 = base 20%
+    const cityRaw = getCityValue();
+    if (cityRaw) pct += 20;
+    // Q1 키워드 반영 = +20%
+    if (_magicSelected && _magicSelected.size > 0) pct += 20;
+    // Q2 A/B/C 각 +20% (최대 60%)
+    const hasHousing   = !!personaGroups.querySelector('[data-group-id="housing"] input:checked');
+    const hasHousehold = !!personaGroups.querySelector('[data-group-id="household"] input:checked');
+    const hasLifestage = !!personaGroups.querySelector('[data-group-id="lifestage"] input:checked');
+    if (hasHousing)   pct += 20;
+    if (hasHousehold) pct += 20;
+    if (hasLifestage) pct += 20;
+    return Math.min(100, pct);
+}
+
 function buildStep3Insight() {
     const selectedSegment = getSelectedSegment();
     const purpose = purposeInput.value.trim();
     const cityRaw = getCityValue();
     const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
     const country = selectedMarket ? resolveCountry(selectedMarket) : null;
-
-    // 세그먼트 미선택이어도 Q2 Audience 카드 구조를 보여줌
-
-    const traits = inferSegmentTraits(selectedSegment, purpose);
-    // 도시명 한국어 변환
-    const cityDisplay = (country && cityRaw) ? (getCityDisplayValue(country.countryCode, cityRaw) || cityRaw) : cityRaw;
-    const place = cityDisplay ? `${cityDisplay} 생활권` : "이 타겟";
-    const direction = inferScenarioDirection(traits, purpose);
-    const coreValues = inferCoreValues(traits, purpose);
-    const selectedLabels = getSelectedPersonaLabels();
-    const primaryPersona = selectedLabels[0] || (currentLocale === "ko" ? "타겟 탐색 중" : "Audience forming");
     const isKo = currentLocale === "ko";
 
-    // ── Q1 도시 프로필 반영 출처 안내 ──
-    let q1SourceHtml = "";
-    if (_magicSelected.size > 0 && _latestCityProfile) {
-        const cityName = _latestCityProfile.localCity || "";
-        const appliedLabels = [..._magicSelected].map(key => {
-            const cat = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
-            return cat ? (isKo ? cat.labelKo : cat.labelEn) : key;
-        });
-        q1SourceHtml = `
-            <div class="q2-source-banner">
-                <span class="q2-source-icon">📍</span>
-                <p>${isKo
-                    ? `Q1에서 <strong>${escapeHtml(cityName)}</strong>의 도시 프로필 중 <strong>${appliedLabels.map(l => escapeHtml(l)).join(", ")}</strong>을(를) 반영하여 아래 특징이 도출되었습니다.`
-                    : `Derived from <strong>${escapeHtml(cityName)}</strong> city profile: <strong>${appliedLabels.map(l => escapeHtml(l)).join(", ")}</strong> applied in Q1.`}</p>
+    // ── 기본 데이터 ──
+    const q2Traits = inferSegmentTraits(selectedSegment, purpose);
+    const q1Traits = inferQ1Traits();
+    const confidence = calculateConfidence();
+    const cityDisplay = (country && cityRaw) ? (getCityDisplayValue(country.countryCode, cityRaw) || cityRaw) : cityRaw;
+    const direction = inferScenarioDirection(q2Traits, purpose);
+    const coreValues = inferCoreValues([...q2Traits, ...q1Traits.map(t => t.trait)], purpose);
+    const selectedLabels = getSelectedPersonaLabels();
+    const primaryPersona = selectedLabels[0] || (isKo ? "타겟 프로필 구성 중" : "Building target profile");
+
+    // ── 신뢰도 색상/라벨 ──
+    const confColor = confidence < 40 ? "amber" : confidence < 80 ? "blue" : "green";
+    const confLabel = confidence < 40
+        ? (isKo ? "신뢰도 낮음" : "Low confidence")
+        : confidence < 80
+            ? (isKo ? "구체화 중" : "Refining")
+            : (isKo ? "프로필 완성" : "Profile complete");
+
+    // ── Confidence ring SVG ──
+    const ringHtml = `
+        <div class="q2-confidence-wrap">
+            <svg viewBox="0 0 36 36" class="q2-confidence-ring">
+                <circle cx="18" cy="18" r="15.9" class="q2-ring-track"/>
+                <circle cx="18" cy="18" r="15.9" class="q2-ring-fill q2-ring-fill--${confColor}"
+                    style="stroke-dasharray: ${confidence} 100"/>
+            </svg>
+            <span class="q2-ring-center">${confidence}%</span>
+        </div>`;
+
+    // ── Header ──
+    const titleSuffix = selectedLabels.length > 1 ? (isKo ? ` 외 ${selectedLabels.length - 1}개` : ` +${selectedLabels.length - 1}`) : "";
+    const headerHtml = `
+        <div class="q2-hybrid-header">
+            ${ringHtml}
+            <div class="q2-header-text">
+                <span class="q2-header-persona">${escapeHtml(primaryPersona)}${escapeHtml(titleSuffix)}</span>
+                <span class="q2-header-confidence q2-header-confidence--${confColor}">${escapeHtml(confLabel)}</span>
+            </div>
+        </div>`;
+
+    // ── Corroboration: Q2 trait labels that match Q1 trait labels ──
+    const q2TraitLabels = new Set(q2Traits);
+    const corroboratedLabels = new Set();
+    q1Traits.forEach(t => { if (q2TraitLabels.has(t.trait)) corroboratedLabels.add(t.trait); });
+
+    // ── Layer 1: Q1 도시 맥락 ──
+    let layer1Html = "";
+    if (q1Traits.length > 0) {
+        const hasAnyQ2 = q2Traits.length > 0 && (q2Traits[0] !== (isKo ? "즉시 체감 가치 선호" : "preference for immediate value"));
+        const tentativeClass = hasAnyQ2 ? "" : " q2-layer--tentative";
+        const traitCards = q1Traits.map((t, i) => {
+            const isCorro = corroboratedLabels.has(t.trait);
+            const tentativeTag = isCorro ? "" : `<span class="q2-trait-tentative">${isKo ? "잠정" : "tentative"}</span>`;
+            const barQ1Width = 40;
+            const barQ2Width = isCorro ? 60 : 0;
+            const uid = `q1-ev-${i}-${Date.now()}`;
+            return `
+                <div class="q2-hybrid-trait">
+                    <div class="q2-trait-accent" style="background:${t.color}"></div>
+                    <div class="q2-trait-body">
+                        <div class="q2-trait-label">${escapeHtml(t.trait)}${tentativeTag}</div>
+                        <div class="q2-mini-bar">
+                            <div class="q2-mini-bar-q1" style="width:${barQ1Width}%"></div>
+                            <div class="q2-mini-bar-q2" style="width:${barQ2Width}%"></div>
+                        </div>
+                        <button type="button" class="q2-evidence-toggle" data-ev-target="${uid}">
+                            <span class="q2-ev-arrow">▸</span> ${isKo ? "근거 보기" : "View evidence"}
+                        </button>
+                        <div class="q2-evidence-detail" id="${uid}">
+                            <p class="q2-evidence-text">${escapeHtml(t.reason)}</p>
+                        </div>
+                    </div>
+                </div>`;
+        }).join("");
+
+        layer1Html = `
+            <div class="q2-layer q2-layer--q1${tentativeClass}">
+                <p class="q2-layer-header">
+                    <span class="q2-layer-header-icon">📍</span>
+                    ${isKo ? "도시 맥락에서 추론한 잠정 신호 (Q1 기반)" : "Tentative signals from city context (Q1)"}
+                </p>
+                ${traitCards}
             </div>`;
     }
 
-    // ── 특징 태그 + Why 설명 ──
-    const traitCardsHtml = traits.slice(0, 3).map(trait => {
-        const reason = inferTraitReason(trait);
-        return `
-            <div class="q2-trait-card">
-                <span class="q2-trait-tag">${escapeHtml(trait)}</span>
-                ${reason ? `<p class="q2-trait-why">${escapeHtml(reason)}</p>` : ""}
+    // ── Layer 2: Q2 타겟 생활 ──
+    let layer2Html = "";
+    const hasAnyQ2Selection = !!(
+        personaGroups.querySelector('[data-group-id="housing"] input:checked') ||
+        personaGroups.querySelector('[data-group-id="household"] input:checked') ||
+        personaGroups.querySelector('[data-group-id="lifestage"] input:checked')
+    );
+    if (hasAnyQ2Selection && q2Traits.length > 0) {
+        // Filter out traits already corroborated (shown in Q1 layer)
+        const uniqueQ2Traits = q2Traits.filter(t => !corroboratedLabels.has(t));
+        if (uniqueQ2Traits.length > 0) {
+            const warmColors = ["#ea580c", "#f97316", "#fb923c", "#c2410c", "#d97706"];
+            const traitCards = uniqueQ2Traits.slice(0, 4).map((trait, i) => {
+                const reason = inferTraitReason(trait);
+                const uid = `q2-ev-${i}-${Date.now()}`;
+                const warmColor = warmColors[i % warmColors.length];
+                return `
+                    <div class="q2-hybrid-trait">
+                        <div class="q2-trait-accent" style="background:${warmColor}"></div>
+                        <div class="q2-trait-body">
+                            <div class="q2-trait-label">${escapeHtml(trait)}</div>
+                            <div class="q2-mini-bar">
+                                <div class="q2-mini-bar-q2" style="width:60%"></div>
+                            </div>
+                            ${reason ? `
+                            <button type="button" class="q2-evidence-toggle" data-ev-target="${uid}">
+                                <span class="q2-ev-arrow">▸</span> ${isKo ? "근거 보기" : "View evidence"}
+                            </button>
+                            <div class="q2-evidence-detail" id="${uid}">
+                                <p class="q2-evidence-text">${escapeHtml(reason)}</p>
+                            </div>` : ""}
+                        </div>
+                    </div>`;
+            }).join("");
+
+            layer2Html = `
+                <div class="q2-layer q2-layer--q2">
+                    <p class="q2-layer-header">
+                        <span class="q2-layer-header-icon">🏠</span>
+                        ${isKo ? "타겟 생활 맥락 신호 (Q2 선택 기반)" : "Target lifestyle signals (Q2 selections)"}
+                    </p>
+                    ${traitCards}
+                </div>`;
+        }
+    }
+
+    // ── Synthesis strip (신뢰도 >= 40%) ──
+    let synthesisHtml = "";
+    if (confidence >= 40) {
+        const caveat = confidence < 80
+            ? `<p class="q2-synthesis-caveat">${isKo ? "예상 시나리오 방향 (추가 선택 시 변경 가능)" : "Expected scenario direction (may change with more selections)"}</p>`
+            : "";
+        const valuesPills = coreValues.map(v => `<span class="q2-value-pill">${escapeHtml(v)}</span>`).join("");
+        synthesisHtml = `
+            <div class="q2-synthesis">
+                ${caveat}
+                <p class="q2-synthesis-direction">${escapeHtml(direction)}</p>
+                <div class="q2-synthesis-values">${valuesPills}</div>
+                <p class="q2-synthesis-weight">${isKo ? "근거 비중: 도시 맥락 40% · 생활 맥락 60%" : "Evidence weight: City context 40% · Lifestyle context 60%"}</p>
             </div>`;
-    }).join("");
+    }
 
-    // ── 시나리오 선택 방향과 4대 가치 ──
-    const valuesText = coreValues.join(", ");
-    const narrativeHtml = `
-        <div class="q2-narrative-box">
-            <span class="q2-narrative-label">${isKo ? "시나리오 선택 방향과 반영될 4대 가치" : "Scenario direction & core values"}</span>
-            <p class="q2-narrative-text">${escapeHtml(direction)} <span class="q2-value-badge">(${escapeHtml(valuesText)})</span></p>
-        </div>`;
-
-    // ── 다음 행동 CTA — 선택 누락 안내 or 맥락 입력 유도 ──
-    const hasHousing = !!personaGroups.querySelector('[data-group-id="housing"] input:checked');
+    // ── CTA / Missing input ──
+    const hasHousing   = !!personaGroups.querySelector('[data-group-id="housing"] input:checked');
     const hasHousehold = !!personaGroups.querySelector('[data-group-id="household"] input:checked');
     const hasLifestage = !!personaGroups.querySelector('[data-group-id="lifestage"] input:checked');
     const missingParts = [];
-    if (!hasHousing) missingParts.push(isKo ? "거주지 유형(A)" : "Housing(A)");
-    if (!hasHousehold) missingParts.push(isKo ? "세대 구성(B)" : "Household(B)");
+    if (!hasHousing)   missingParts.push(isKo ? "거주지 유형(A)" : "Housing(A)");
+    if (!hasHousehold) missingParts.push(isKo ? "세대 구성(B)"   : "Household(B)");
     if (!hasLifestage) missingParts.push(isKo ? "라이프스테이지(C)" : "Life stage(C)");
 
     let ctaHtml;
@@ -3836,25 +4019,25 @@ function buildStep3Insight() {
         </div>`;
     }
 
-    // ── Q3 힌트 (풀 위드 배너) ──
+    // ── Q3 힌트 배너 ──
     const q3HintHtml = `
         <div class="q2-hint-banner">
             <span class="q2-hint-icon">→</span>
             <span>${isKo ? "다음 단계(Q3)에서 기기를 고르면, 이 타겟에 맞는 자동화 흐름이 완성됩니다" : "Pick devices in Q3 to complete an automation flow for this target"}</span>
         </div>`;
 
+    const place = cityDisplay ? `${cityDisplay} ${isKo ? "생활권" : "area"}` : (isKo ? "이 타겟" : "this target");
+
     return {
-        badge: isKo ? "Q2 Audience" : "Q2 Audience",
-        title: `${primaryPersona}${selectedLabels.length > 1 ? (isKo ? ` 외 ${selectedLabels.length - 1}개` : ` +${selectedLabels.length - 1}`) : ""}`,
+        badge: "Q2 Audience",
+        title: `${primaryPersona}${titleSuffix}`,
         summary: isKo ? `${place}의 타겟 프로필` : `Target profile in ${place}`,
         customHtml: `
             <div class="q2-redesign">
-                ${q1SourceHtml}
-                <div class="q2-traits-section">
-                    <p class="q2-section-label">${isKo ? "도출된 타겟 세그먼트 특징" : "Derived target segment traits"}</p>
-                    <div class="q2-trait-cards">${traitCardsHtml}</div>
-                </div>
-                ${narrativeHtml}
+                ${headerHtml}
+                ${layer1Html}
+                ${layer2Html}
+                ${synthesisHtml}
                 ${ctaHtml}
                 ${q3HintHtml}
             </div>
