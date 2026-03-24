@@ -2594,11 +2594,23 @@ textarea {
     100% { content: ""; }
 }
 
+/* ── Guide screen: 좌측정렬 + 컴팩트 ── */
+.guide-head {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.guide-screen {
+    align-self: start;
+}
+
 .guide-actions {
     display: flex;
-    gap: 6px;
+    flex-direction: column;
+    gap: 8px;
     margin-bottom: 10px;
-    align-items: center;
+    align-items: stretch;
+    max-width: 260px;
 }
 
 .guide-session-row {
@@ -2620,9 +2632,13 @@ textarea {
 
 .guide-choice-btn {
     min-width: 108px;
-    border-color: rgba(0, 51, 102, 0.14);
+    padding: 14px 24px;
+    border-color: rgba(0, 51, 102, 0.18);
     background: rgba(248, 248, 248, 0.92);
     font-weight: 800;
+    font-size: 1rem;
+    border-radius: 12px;
+    transition: all 0.15s ease;
 }
 
 .guide-choice-btn:hover,
