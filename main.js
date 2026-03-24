@@ -3045,12 +3045,14 @@ async function renderStep2Insight(forceRefresh = false) {
         if (response.ok) {
             const result = await response.json();
             if (result.ok && result.data) {
+                // 캐시 저장 (step과 무관하게)
+                sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
                 // 100%로 채우고 완료
                 pizzaDone = true; clearInterval(pizzaInterval);
+                if (currentStep !== 2) return;
                 updatePizzaProgress(stepInsight, 100);
                 await new Promise(r => setTimeout(r, 400));
-                // 캐시 저장
-                sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
+                if (currentStep !== 2) return;
                 stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, result.data);
                 bindCityProfileDrawer(stepInsight);
                 updateQuestionHelpers();
