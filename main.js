@@ -3016,8 +3016,8 @@ async function renderStep2Insight(forceRefresh = false) {
     let pizzaDone = false;
     const pizzaInterval = setInterval(() => {
         if (pizzaDone) { clearInterval(pizzaInterval); return; }
-        // 점점 느려지며 90%까지 접근
-        pizzaProgress += (90 - pizzaProgress) * 0.06;
+        // 점점 느려지며 90%까지 접근 (30초 타임아웃에 맞춤)
+        pizzaProgress += (90 - pizzaProgress) * 0.035;
         updatePizzaProgress(stepInsight, Math.min(pizzaProgress, 90));
     }, 200);
 
@@ -3026,7 +3026,7 @@ async function renderStep2Insight(forceRefresh = false) {
         await ensureBypassSession();
         const params = new URLSearchParams({ country: country.countryCode, city, locale: currentLocale });
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 20000);
+        const timer = setTimeout(() => controller.abort(), 30000);
 
         const response = await fetch(`/api/city-profile?${params}`, {
             credentials: "include",
@@ -3064,19 +3064,12 @@ async function renderStep2Insight(forceRefresh = false) {
 
     if (requestId !== latestStep2InsightRequest || currentStep !== 2) return;
 
-    // 4. API 실패 시 정적 데이터 fallback
-    const staticContent = getCitySignalContent(country.countryCode, city);
-    if (staticContent) {
-        stepInsight.innerHTML = renderCityProfileFromStatic(countryName, localCity, staticContent);
-    } else {
-        stepInsight.innerHTML = buildInsightMarkup({
-            badge: "Q1 Region",
-            title: `${countryName} ${localCity}`,
-            summary: currentLocale === "ko"
-                ? "도시 프로필을 불러오지 못했습니다."
-                : "Could not load city profile."
-        });
-    }
+    // 4. API 실패 시 — 정적 데이터 없이 재시도 안내만 표시
+    stepInsight.innerHTML = buildInsightMarkup(buildStep2ErrorInsight(
+        currentLocale === "ko"
+            ? "AI 마켓 리서치 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요."
+            : "AI market research response is delayed. Please try again shortly."
+    ));
     updateQuestionHelpers();
     stepInsight.classList.remove("insight-refresh");
     void stepInsight.offsetWidth;
