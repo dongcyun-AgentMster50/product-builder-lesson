@@ -10085,7 +10085,6 @@ function renderMatchingProcess(ctx) {
     ).join("");
 
     frame.classList.remove("hidden");
-    frame.scrollIntoView({ behavior: "smooth", block: "start" });
 
     // 확인 버튼 이벤트
     container.querySelectorAll(".mp-confirm-btn").forEach(btn => {
