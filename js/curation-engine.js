@@ -129,27 +129,58 @@ const MAGIC_KEY_TO_EXPLORE_TAGS = {
 
 function buildExploreTagsFromInput({ segments = [], interests = [], housing = [], devices = [], purpose = "", magicKeywords = [] }) {
     const tagScores = {};
+    const sourceTracker = {}; // 소스별 중복 기여 방지
 
-    function addTag(tag, weight = 1) {
+    function addTag(tag, weight = 1, sourceId = "") {
+        // 동일 소스의 동일 태그 중복 기여 방지
+        if (sourceId) {
+            const key = `${sourceId}|${tag}`;
+            if (sourceTracker[key]) return;
+            sourceTracker[key] = true;
+        }
         tagScores[tag] = (tagScores[tag] || 0) + weight;
     }
 
-    // Magic Keywords: 사용자가 직접 선택한 도시 관심사 (가중치 4 — 최고 우선)
+    // ── Primary Intent: 명시적 특성 선택 (t_, int_) — 가중치 6 (최고) ──
+    const PRIMARY_IDS = new Set([
+        "t_pet", "t_multi_kids", "t_parent_care", "t_parent_away", "t_wellness",
+        "t_security", "t_efficiency", "t_remote", "t_dual_income", "t_solo_parent",
+        "t_long_away", "t_night_shift", "t_weekend_out", "t_acc_needs",
+        "int_energy", "int_pet", "int_kids", "int_senior", "int_health",
+        "int_safe", "int_chores", "int_sleep", "int_mood", "int_air", "int_lights", "int_find"
+    ]);
+    [...segments, ...interests].forEach(id => {
+        if (PRIMARY_IDS.has(id)) {
+            (PERSONA_TO_EXPLORE_TAGS[id] || []).forEach(tag => addTag(tag, 6, `primary_${id}`));
+        }
+    });
+
+    // ── 세대 구성 (hh_) — 가중치 5 ──
+    [...segments].filter(id => id.startsWith("hh_")).forEach(id => {
+        (PERSONA_TO_EXPLORE_TAGS[id] || []).forEach(tag => addTag(tag, 5, `hh_${id}`));
+    });
+
+    // ── 라이프스테이지 (ls_) — 가중치 4 ──
+    [...segments].filter(id => id.startsWith("ls_")).forEach(id => {
+        (PERSONA_TO_EXPLORE_TAGS[id] || []).forEach(tag => addTag(tag, 4, `ls_${id}`));
+    });
+
+    // ── 거주지 유형 (h_) — 가중치 2 (배경 환경, 낮은 가중치) ──
+    [...housing].forEach(id => {
+        (PERSONA_TO_EXPLORE_TAGS[id] || []).forEach(tag => addTag(tag, 2, `housing_${id}`));
+    });
+
+    // ── Magic Keywords: 도시 관심사 (가중치 4) ──
     magicKeywords.forEach(key => {
-        (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTag(tag, 4));
+        (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTag(tag, 4, `magic_${key}`));
     });
 
-    // Q3: 페르소나 선택 → 태그 (가중치 3)
-    [...segments, ...interests, ...housing].forEach(id => {
-        (PERSONA_TO_EXPLORE_TAGS[id] || []).forEach(tag => addTag(tag, 3));
-    });
-
-    // Q4: 기기 선택 → 태그 (가중치 2)
+    // ── 기기 선택 → 태그 (가중치 2) ──
     devices.forEach(device => {
-        (DEVICE_TO_EXPLORE_TAGS[device] || []).forEach(tag => addTag(tag, 2));
+        (DEVICE_TO_EXPLORE_TAGS[device] || []).forEach(tag => addTag(tag, 2, `device_${device}`));
     });
 
-    // Purpose 텍스트 분석 (가중치 1)
+    // ── Purpose 텍스트 분석 (가중치 3) ──
     const purposeL = purpose.toLowerCase();
     const purposeMap = {
         "반려|펫|pet|dog|cat":       ["Care for your pet"],
@@ -167,7 +198,7 @@ function buildExploreTagsFromInput({ segments = [], interests = [], housing = []
     };
     Object.entries(purposeMap).forEach(([pattern, tags]) => {
         if (new RegExp(pattern, "i").test(purposeL)) {
-            tags.forEach(tag => addTag(tag, 1));
+            tags.forEach(tag => addTag(tag, 3, `purpose_${pattern}`));
         }
     });
 

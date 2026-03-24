@@ -1225,7 +1225,7 @@ function handleQ4PresetClick(event) {
     renderQ4Composer();
     updateStatePreview();
     updateStepInsight();
-    if (currentStep === 4) runCuration();
+    // curation은 "시나리오 매칭 시작" 버튼 클릭 시에만 실행
 }
 
 function handleQ4QuickChipClick(event) {
@@ -1239,7 +1239,7 @@ function handleQ4QuickChipClick(event) {
     renderQ4Composer();
     updateStatePreview();
     updateStepInsight();
-    if (currentStep === 4) runCuration();
+    // curation은 "시나리오 매칭 시작" 버튼 클릭 시에만 실행
 }
 
 function setDeviceOptionChecked(optionId, shouldCheck) {
@@ -3747,6 +3747,9 @@ function inferTraitReason(trait) {
         "원격 확인 수요 존재": "펫·반려 키워드에서 → 외출 중에도 상태 확인 필수",
         "즉시 체감 가치 선호": "기본 타겟 프로필 → 복잡한 설정 없이 바로 효과 체감",
         "설정 피로도 낮추기 중요": "기본 타겟 프로필 → 쉬운 시작이 지속 사용으로 연결",
+        "건강·웰니스 중시": "웰니스·피트니스 선택에서 → 공기질·수면·운동 연동 시나리오 적합",
+        "보안/안전 중시": "보안·안전 선택에서 → 모니터링·알림 시나리오 유효",
+        "가사 효율 추구": "가사·효율 선택에서 → 자동화로 반복 작업을 줄이는 방향",
         // EN
         "time-value sensitivity": "dual-income / commute signals → time equals cost",
         "high household complexity": "parenting / family signals → many things to manage at once",
@@ -3755,7 +3758,10 @@ function inferTraitReason(trait) {
         "high value on leisure quality": "weekend / wellness signals → quality of downtime matters most",
         "remote check-in demand": "pet / companion signals → must check status while away",
         "preference for immediate value": "default profile → value must be felt instantly",
-        "importance of reducing setup fatigue": "default profile → easy start leads to sustained usage"
+        "importance of reducing setup fatigue": "default profile → easy start leads to sustained usage",
+        "health and wellness focus": "wellness / fitness signals → air quality, sleep, exercise integration",
+        "security and safety focus": "security / safety signals → monitoring and alert scenarios",
+        "chore efficiency focus": "chore / efficiency signals → reducing repetitive tasks through automation"
     };
     return reasons[trait] || "";
 }
@@ -3763,13 +3769,31 @@ function inferTraitReason(trait) {
 /** traits에서 4대 가치(Care, Play, Save, Secure)를 추론 */
 function inferCoreValues(traits, purpose) {
     const text = `${traits.join(" ")} ${purpose}`.toLowerCase();
-    const values = [];
-    if (text.includes("케어") || text.includes("안심") || text.includes("돌봄") || text.includes("care")) values.push("Care");
-    if (text.includes("여가") || text.includes("웰니스") || text.includes("play") || text.includes("엔터")) values.push("Play");
-    if (text.includes("에너지") || text.includes("지출") || text.includes("절감") || text.includes("save") || text.includes("비용")) values.push("Save");
-    if (text.includes("보안") || text.includes("안전") || text.includes("secure")) values.push("Secure");
-    if (values.length === 0) values.push("Care");
-    return values.slice(0, 2);
+    const personaIds = new Set(getSelectedPersonaOptionIds());
+    const scores = { Care: 0, Play: 0, Save: 0, Secure: 0, Health: 0 };
+
+    // 텍스트 기반
+    if (text.includes("케어") || text.includes("안심") || text.includes("돌봄") || text.includes("care")) scores.Care += 2;
+    if (text.includes("여가") || text.includes("웰니스") || text.includes("play") || text.includes("엔터")) scores.Play += 2;
+    if (text.includes("에너지") || text.includes("지출") || text.includes("절감") || text.includes("save") || text.includes("비용")) scores.Save += 2;
+    if (text.includes("보안") || text.includes("안전") || text.includes("secure")) scores.Secure += 2;
+    if (text.includes("건강") || text.includes("피트니스") || text.includes("health") || text.includes("wellness")) scores.Health += 2;
+    if (text.includes("펫") || text.includes("반려") || text.includes("pet")) scores.Care += 3;
+    if (text.includes("자녀") || text.includes("아이") || text.includes("kid") || text.includes("가구 운영")) scores.Care += 2;
+    if (text.includes("원격 확인") || text.includes("remote")) scores.Care += 1;
+
+    // 명시적 persona ID 기반 (가장 강력한 신호)
+    if (personaIds.has("t_pet")) scores.Care += 4;
+    if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting")) scores.Care += 3;
+    if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("t_parent_care")) scores.Care += 3;
+    if (personaIds.has("t_wellness") || personaIds.has("int_health") || personaIds.has("ls_empty_nest")) scores.Health += 3;
+    if (personaIds.has("t_security") || personaIds.has("t_long_away")) scores.Secure += 3;
+    if (personaIds.has("int_energy") || personaIds.has("h_apt")) scores.Save += 1;
+    if (personaIds.has("int_mood") || personaIds.has("ls_newlywed")) scores.Play += 2;
+
+    const sorted = Object.entries(scores).filter(([, s]) => s > 0).sort((a, b) => b[1] - a[1]);
+    if (sorted.length === 0) return ["Care"];
+    return sorted.slice(0, 3).map(([v]) => v);
 }
 
 /** Q1 도시 프로필 키워드 → 잠정 타겟 특성 추론 */
@@ -4030,24 +4054,97 @@ function buildStep3Insight() {
             </div>`;
         }).join("");
 
-        // ── 시나리오 태그 스코어 집계 ──
+        // ── 시나리오 태그 스코어 집계 (고급 추론) ──
         const tagScoreMap = {};
-        function addTagScore(tag, pts) { tagScoreMap[tag] = (tagScoreMap[tag] || 0) + pts; }
-
-        // Q1 magic keywords → 태그
-        if (typeof MAGIC_KEY_TO_EXPLORE_TAGS !== "undefined" && _magicSelected) {
-            for (const key of _magicSelected) {
-                (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTagScore(tag, perQ1));
+        const tagSourceCount = {}; // 중복 누적 방지용
+        function addTagScore(tag, pts, sourceId) {
+            // 동일 소스에서 같은 태그를 중복 기여하지 않도록 cap
+            const key = `${sourceId}|${tag}`;
+            if (!tagSourceCount[key]) {
+                tagSourceCount[key] = true;
+                tagScoreMap[tag] = (tagScoreMap[tag] || 0) + pts;
             }
         }
-        // Q2 persona selections → 태그
-        if (typeof PERSONA_TO_EXPLORE_TAGS !== "undefined") {
-            const personaIds = getSelectedPersonaOptionIds();
-            personaIds.forEach(id => {
-                (PERSONA_TO_EXPLORE_TAGS[id] || []).forEach(tag => addTagScore(tag, perQ2 / 2));
-            });
+
+        // ── 명시적 선택 (Primary Intent) — 가중치 최고 ──
+        // 사용자가 명시적으로 선택한 특성 태그는 직접적 의도를 나타냄
+        const personaIds = getSelectedPersonaOptionIds();
+        const PRIMARY_INTENT_MAP = {
+            t_pet:        ["Care for your pet", "Pet care"],
+            t_multi_kids: ["Care for kids", "Family care"],
+            t_parent_care:["Care for seniors", "Family care"],
+            t_parent_away:["Care for seniors", "Keep your home safe"],
+            t_wellness:   ["Stay fit & healthy", "Health", "Sleep well"],
+            t_security:   ["Keep your home safe", "Security"],
+            t_efficiency: ["Help with chores", "Time saving"],
+            t_remote:     ["Help with chores", "Time saving"],
+            t_dual_income:["Time saving", "Help with chores"],
+            t_night_shift:["Sleep well"],
+            int_energy:   ["Save energy", "Energy Saving"],
+            int_pet:      ["Care for your pet", "Pet care"],
+            int_kids:     ["Care for kids", "Family care"],
+            int_senior:   ["Care for seniors", "Family care"],
+            int_health:   ["Stay fit & healthy", "Health"],
+            int_safe:     ["Keep your home safe", "Security"],
+            int_chores:   ["Help with chores", "Time saving"],
+            int_sleep:    ["Sleep well"],
+            int_mood:     ["Enhanced mood"]
+        };
+        const PRIMARY_WEIGHT = 15; // 명시적 선택은 높은 가중치
+        personaIds.forEach(id => {
+            (PRIMARY_INTENT_MAP[id] || []).forEach(tag => addTagScore(tag, PRIMARY_WEIGHT, `primary_${id}`));
+        });
+
+        // ── 세대 구성 (B) — 생활 맥락 신호 ──
+        const HOUSEHOLD_WEIGHT = 10;
+        const HOUSEHOLD_MAP = {
+            hh_young_kids:  ["Care for kids", "Keep your home safe", "Family care"],
+            hh_school_kids: ["Care for kids", "Keep your home safe", "Family care"],
+            hh_senior:      ["Care for seniors", "Keep your home safe", "Family care"],
+            hh_multi_gen:   ["Care for seniors", "Care for kids", "Family care"],
+            hh_solo:        ["Keep your home safe", "Save energy"],
+            hh_couple:      ["Enhanced mood", "Help with chores"]
+        };
+        personaIds.forEach(id => {
+            (HOUSEHOLD_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSEHOLD_WEIGHT, `hh_${id}`));
+        });
+
+        // ── 라이프스테이지 (C) — 맥락 보강 ──
+        const LIFESTAGE_WEIGHT = 8;
+        const LIFESTAGE_MAP = {
+            ls_parenting:    ["Care for kids", "Keep your home safe", "Family care"],
+            ls_senior:       ["Care for seniors", "Family care", "Health"],
+            ls_empty_nest:   ["Stay fit & healthy", "Sleep well"],
+            ls_starter:      ["Save energy", "Easy to use"],
+            ls_newlywed:     ["Enhanced mood", "Help with chores"],
+            ls_settled:      ["Save energy", "Enhanced mood"],
+            ls_established:  ["Help with chores", "Time saving"]
+        };
+        personaIds.forEach(id => {
+            (LIFESTAGE_MAP[id] || []).forEach(tag => addTagScore(tag, LIFESTAGE_WEIGHT, `ls_${id}`));
+        });
+
+        // ── 거주지 유형 (A) — 배경 환경 (낮은 가중치) ──
+        const HOUSING_WEIGHT = 4;
+        const HOUSING_MAP = {
+            h_apt:       ["Save energy", "Keep the air fresh"],
+            h_compact:   ["Save energy"],
+            h_villa:     ["Keep your home safe"],
+            h_house:     ["Keep your home safe"],
+            h_care:      ["Care for seniors"]
+        };
+        personaIds.forEach(id => {
+            (HOUSING_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSING_WEIGHT, `housing_${id}`));
+        });
+
+        // ── Q1 magic keywords → 태그 (도시 맥락) ──
+        if (typeof MAGIC_KEY_TO_EXPLORE_TAGS !== "undefined" && _magicSelected) {
+            for (const key of _magicSelected) {
+                (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTagScore(tag, perQ1 * 0.8, `q1_${key}`));
+            }
         }
-        // purpose 텍스트 보너스
+
+        // ── purpose 텍스트 보너스 ──
         const purposeL = purpose.toLowerCase();
         const purposeBonus = {
             "반려|펫|pet|dog|cat": "Care for your pet",
@@ -4061,8 +4158,26 @@ function buildStep3Insight() {
             "운동|건강|health": "Stay fit & healthy"
         };
         Object.entries(purposeBonus).forEach(([pattern, tag]) => {
-            if (new RegExp(pattern, "i").test(purposeL)) addTagScore(tag, 5);
+            if (new RegExp(pattern, "i").test(purposeL)) addTagScore(tag, 8, `purpose_${tag}`);
         });
+
+        // ── 유사 태그 병합 (에너지 절약 + 에너지 절감 → 에너지 절약으로 통합) ──
+        const TAG_MERGE = {
+            "Energy Saving": "Save energy",
+            "Security": "Keep your home safe",
+            "Pet care": "Care for your pet",
+            "Family care": "Care for kids",
+            "Health": "Stay fit & healthy",
+            "Sleep": "Sleep well",
+            "Time saving": "Help with chores",
+            "Easy to use": "Easily control your lights"
+        };
+        for (const [from, to] of Object.entries(TAG_MERGE)) {
+            if (tagScoreMap[from]) {
+                tagScoreMap[to] = (tagScoreMap[to] || 0) + tagScoreMap[from];
+                delete tagScoreMap[from];
+            }
+        }
 
         // 정렬 & 100점 정규화
         const sortedTags = Object.entries(tagScoreMap).sort((a, b) => b[1] - a[1]);
@@ -4398,36 +4513,78 @@ function inferFirstUseScene(devices) {
 }
 
 function inferSegmentTraits(selectedSegment, purpose) {
+    const isKo = currentLocale === "ko";
     const text = `${selectedSegment} ${purpose}`.toLowerCase();
     const traits = [];
+    const added = new Set();
 
-    if (text.includes("맞벌이") || text.includes("퇴근")) traits.push(currentLocale === "ko" ? "시간 가치 민감" : "time-value sensitivity");
-    if (text.includes("아이") || text.includes("육아") || text.includes("가족")) traits.push(currentLocale === "ko" ? "가구 운영 복잡도 높음" : "high household complexity");
-    if (text.includes("부모") || text.includes("시니어") || text.includes("돌봄")) traits.push(currentLocale === "ko" ? "케어/안심 니즈 큼" : "strong care and reassurance needs");
-    if (text.includes("에너지") || text.includes("생활비") || text.includes("절감") || text.includes("비용")) traits.push(currentLocale === "ko" ? "지출 민감도 높음" : "high spending sensitivity");
-    if (text.includes("주말") || text.includes("여가") || text.includes("웰니스")) traits.push(currentLocale === "ko" ? "여가 시간 품질 중시" : "high value on leisure quality");
-    if (text.includes("펫") || text.includes("반려")) traits.push(currentLocale === "ko" ? "원격 확인 수요 존재" : "remote check-in demand");
+    function add(traitKo, traitEn) {
+        const t = isKo ? traitKo : traitEn;
+        if (!added.has(t)) { added.add(t); traits.push(t); }
+    }
+
+    // ── 텍스트 기반 추론 (기존) ──
+    if (text.includes("맞벌이") || text.includes("퇴근") || text.includes("재택") || text.includes("하이브리드")) add("시간 가치 민감", "time-value sensitivity");
+    if (text.includes("아이") || text.includes("육아") || text.includes("가족") || text.includes("자녀")) add("가구 운영 복잡도 높음", "high household complexity");
+    if (text.includes("부모") || text.includes("시니어") || text.includes("돌봄")) add("케어/안심 니즈 큼", "strong care and reassurance needs");
+    if (text.includes("에너지") || text.includes("생활비") || text.includes("절감") || text.includes("비용")) add("지출 민감도 높음", "high spending sensitivity");
+    if (text.includes("주말") || text.includes("여가") || text.includes("웰니스")) add("여가 시간 품질 중시", "high value on leisure quality");
+    if (text.includes("펫") || text.includes("반려") || text.includes("pet")) add("원격 확인 수요 존재", "remote check-in demand");
+    if (text.includes("건강") || text.includes("피트니스") || text.includes("health") || text.includes("wellness")) add("건강·웰니스 중시", "health and wellness focus");
+
+    // ── 실제 선택된 persona ID 기반 추론 (강화) ──
+    const personaIds = new Set(getSelectedPersonaOptionIds());
+
+    // 펫 케어 명시 선택
+    if (personaIds.has("t_pet")) add("원격 확인 수요 존재", "remote check-in demand");
+    // 자녀 관련 명시 선택
+    if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting")) add("가구 운영 복잡도 높음", "high household complexity");
+    // 시니어 케어
+    if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("ls_senior") || personaIds.has("t_parent_care") || personaIds.has("t_parent_away")) add("케어/안심 니즈 큼", "strong care and reassurance needs");
+    // 건강/웰니스
+    if (personaIds.has("t_wellness") || personaIds.has("ls_empty_nest") || personaIds.has("int_health")) add("건강·웰니스 중시", "health and wellness focus");
+    // 재택/하이브리드
+    if (personaIds.has("t_remote") || personaIds.has("t_dual_income")) add("시간 가치 민감", "time-value sensitivity");
+    // 보안
+    if (personaIds.has("t_security") || personaIds.has("t_long_away")) add("보안/안전 중시", "security and safety focus");
+    // 가사 효율
+    if (personaIds.has("t_efficiency") || personaIds.has("int_chores")) add("가사 효율 추구", "chore efficiency focus");
+    // 맞벌이
+    if (personaIds.has("t_dual_income") || personaIds.has("t_solo_parent")) add("시간 가치 민감", "time-value sensitivity");
 
     if (traits.length === 0) {
-        traits.push(currentLocale === "ko" ? "즉시 체감 가치 선호" : "preference for immediate value");
-        traits.push(currentLocale === "ko" ? "설정 피로도 낮추기 중요" : "importance of reducing setup fatigue");
+        add("즉시 체감 가치 선호", "preference for immediate value");
+        add("설정 피로도 낮추기 중요", "importance of reducing setup fatigue");
     }
 
     return traits;
 }
 
 function inferScenarioDirection(traits, purpose) {
+    const isKo = currentLocale === "ko";
     const text = `${traits.join(" ")} ${purpose}`.toLowerCase();
-    if (text.includes("케어") || text.includes("안심")) {
-        return currentLocale === "ko" ? "돌봄 부담 완화와 안심 강화" : "reduced care burden and stronger reassurance";
+    const personaIds = new Set(getSelectedPersonaOptionIds());
+    const directions = [];
+
+    // 명시적 선택 기반 (우선순위 높음)
+    if (personaIds.has("t_pet")) directions.push(isKo ? "반려동물 케어와 안심 모니터링" : "pet care and peace-of-mind monitoring");
+    if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting"))
+        directions.push(isKo ? "자녀 안전과 가족 돌봄 자동화" : "child safety and family care automation");
+    if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("t_parent_care"))
+        directions.push(isKo ? "시니어 돌봄과 원격 안심 확인" : "senior care and remote reassurance");
+    if (personaIds.has("t_wellness") || personaIds.has("int_health"))
+        directions.push(isKo ? "건강·웰니스 루틴 지원" : "health and wellness routine support");
+
+    // 텍스트 기반 보완
+    if (directions.length === 0) {
+        if (text.includes("펫") || text.includes("반려") || text.includes("pet")) directions.push(isKo ? "반려동물 케어와 안심 모니터링" : "pet care and peace-of-mind monitoring");
+        if (text.includes("케어") || text.includes("안심") || text.includes("돌봄")) directions.push(isKo ? "돌봄 부담 완화와 안심 강화" : "reduced care burden and stronger reassurance");
+        if (text.includes("에너지") || text.includes("지출") || text.includes("비용")) directions.push(isKo ? "절감 효과를 눈에 보이게 보여주는 방향" : "visible savings and cost-control value");
+        if (text.includes("여가") || text.includes("웰니스")) directions.push(isKo ? "주말과 저녁의 여유를 회복하는 방향" : "recovering weekend and evening ease");
     }
-    if (text.includes("에너지") || text.includes("지출") || text.includes("비용")) {
-        return currentLocale === "ko" ? "절감 효과를 눈에 보이게 보여주는 방향" : "visible savings and cost-control value";
-    }
-    if (text.includes("여가") || text.includes("웰니스")) {
-        return currentLocale === "ko" ? "주말과 저녁의 여유를 회복하는 방향" : "recovering weekend and evening ease";
-    }
-    return currentLocale === "ko" ? "복잡한 집안 루틴을 가볍게 만드는 방향" : "making complex home routines feel lighter";
+
+    if (directions.length === 0) return isKo ? "복잡한 집안 루틴을 가볍게 만드는 방향" : "making complex home routines feel lighter";
+    return directions.slice(0, 2).join(isKo ? " + " : " + ");
 }
 
 function syncWizardUi() {
