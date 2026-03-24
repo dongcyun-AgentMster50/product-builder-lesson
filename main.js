@@ -4028,37 +4028,152 @@ function buildStep3Insight() {
             : "";
         const valuesPills = coreValues.map(v => `<span class="q2-value-pill">${escapeHtml(v)}</span>`).join("");
 
-        // ── 신호별 가중치 계산 (100점 만점) ──
-        // Q2 미선택 시 Q2 가중치를 0으로 하고 Q1만 표시
+        // ── 클러스터 기반 신호 가중치 (100점 만점) ──
         const hasQ2 = q2Traits.length > 0;
         const Q1_WEIGHT = hasQ2 ? 40 : (q1Traits.length > 0 ? 100 : 0);
         const Q2_WEIGHT = hasQ2 ? 60 : 0;
-        const q1Count = Math.max(q1Traits.length, 1);
-        const q2Count = Math.max(q2Traits.length, 1);
-        const perQ1 = Q1_WEIGHT / q1Count;
-        const perQ2 = Q2_WEIGHT / q2Count;
 
-        // 신호 → 점수 바 HTML (Q1)
-        const q1ScoreBars = q1Traits.map(t => {
-            const score = Math.round(perQ1);
+        // 테마 클러스터 정의
+        const SIGNAL_CLUSTERS = {
+            family_care: {
+                label: isKo ? "🏠 패밀리 케어" : "🏠 Family Care",
+                color: "#dc2626",
+                traits: isKo
+                    ? ["가구 운영 복잡도 높음", "케어/안심 니즈 큼", "원격 확인 수요 존재"]
+                    : ["high household complexity", "strong care and reassurance needs", "remote check-in demand"]
+            },
+            efficiency: {
+                label: isKo ? "⚡ 시간·효율" : "⚡ Time & Efficiency",
+                color: "#ea580c",
+                traits: isKo
+                    ? ["시간 가치 민감", "가사 효율 추구"]
+                    : ["time-value sensitivity", "chore efficiency focus"]
+            },
+            savings: {
+                label: isKo ? "💰 절약·비용" : "💰 Savings",
+                color: "#d97706",
+                traits: isKo
+                    ? ["지출 민감도 높음"]
+                    : ["high spending sensitivity"]
+            },
+            wellness: {
+                label: isKo ? "💚 건강·여가" : "💚 Health & Leisure",
+                color: "#16a34a",
+                traits: isKo
+                    ? ["건강·웰니스 중시", "여가 시간 품질 중시", "수면 품질 중시"]
+                    : ["health and wellness focus", "high value on leisure quality", "sleep quality focus"]
+            },
+            security: {
+                label: isKo ? "🔒 안전·보안" : "🔒 Security",
+                color: "#2563eb",
+                traits: isKo
+                    ? ["보안/안전 중시"]
+                    : ["security and safety focus"]
+            }
+        };
+
+        // Q1/Q2 trait 세트
+        const q1TraitSet = new Set(q1Traits.map(t => t.trait));
+        const q2TraitSet = new Set(q2Traits);
+
+        // 교차 검증 (Q1+Q2 중복) 감지
+        const corroTraits = new Set();
+        for (const t of q2Traits) { if (q1TraitSet.has(t)) corroTraits.add(t); }
+
+        // 클러스터별 신호 점수 계산
+        function calcSignalScore(trait, pool, count, source) {
+            let base = pool / Math.max(count, 1);
+            // 교차 검증 보너스: Q1+Q2 모두에서 나온 신호는 1.5배
+            if (corroTraits.has(trait)) base *= 1.5;
+            // 클러스터 시너지: 같은 클러스터에 2개 이상 신호가 있으면 +20%
+            for (const cl of Object.values(SIGNAL_CLUSTERS)) {
+                const allTraits = source === "q1" ? q1Traits.map(t => t.trait) : q2Traits;
+                const inCluster = cl.traits.filter(ct => allTraits.includes(ct));
+                if (cl.traits.includes(trait) && inCluster.length >= 2) {
+                    base *= 1.2;
+                    break;
+                }
+            }
+            return base;
+        }
+
+        // Q1 점수 계산 (교차검증 + 클러스터 시너지 반영)
+        const q1Scores = q1Traits.map(t => ({
+            ...t,
+            score: calcSignalScore(t.trait, Q1_WEIGHT, q1Traits.length, "q1"),
+            isCorro: corroTraits.has(t.trait)
+        }));
+        // Q1 총합이 풀을 초과하면 정규화
+        const q1Total = q1Scores.reduce((s, t) => s + t.score, 0);
+        if (q1Total > 0) q1Scores.forEach(t => { t.score = (t.score / q1Total) * Q1_WEIGHT; });
+
+        // Q2 점수 계산
+        const q2Scores = q2Traits.map(trait => ({
+            trait,
+            score: calcSignalScore(trait, Q2_WEIGHT, q2Traits.length, "q2"),
+            isCorro: corroTraits.has(trait)
+        }));
+        const q2Total = q2Scores.reduce((s, t) => s + t.score, 0);
+        if (q2Total > 0) q2Scores.forEach(t => { t.score = (t.score / q2Total) * Q2_WEIGHT; });
+
+        // perQ1/perQ2 — 태그 계산용 평균
+        const perQ1 = Q1_WEIGHT / Math.max(q1Traits.length, 1);
+        const perQ2 = Q2_WEIGHT / Math.max(q2Traits.length, 1);
+
+        // 클러스터 매핑 함수
+        function findCluster(trait) {
+            for (const [key, cl] of Object.entries(SIGNAL_CLUSTERS)) {
+                if (cl.traits.includes(trait)) return { key, ...cl };
+            }
+            return null;
+        }
+
+        // 신호 → 점수 바 HTML (Q1) — 클러스터 그룹핑
+        const q1ScoreBars = q1Scores.map(t => {
+            const score = Math.round(t.score);
+            const cl = findCluster(t.trait);
+            const corroTag = t.isCorro ? `<span class="q2-corro-badge">${isKo ? "Q2 교차검증 ×1.5" : "Q2 corroborated ×1.5"}</span>` : "";
+            const clTag = cl ? `<span class="q2-cluster-dot" style="background:${cl.color}" title="${cl.label}"></span>` : "";
             return `<div class="q2-score-row">
-                <span class="q2-score-label"><span class="q2-score-dot" style="background:${t.color}"></span>${escapeHtml(t.trait)}</span>
+                <span class="q2-score-label">${clTag}<span class="q2-score-dot" style="background:${t.color}"></span>${escapeHtml(t.trait)}</span>
+                ${corroTag}
                 <div class="q2-score-bar-track"><div class="q2-score-bar-fill q2-score-bar--q1" style="width:${score}%"></div></div>
                 <span class="q2-score-num">${score}${isKo ? "점" : "pt"}</span>
             </div>`;
         }).join("");
 
-        // 신호 → 점수 바 HTML (Q2) — 모든 Q2 trait 표시 (카드와 일치)
+        // 신호 → 점수 바 HTML (Q2) — 클러스터 그룹핑
         const warmColors = ["#ea580c", "#f97316", "#fb923c", "#c2410c", "#d97706", "#b91c1c", "#dc2626"];
-        const q2ScoreBars = q2Traits.map((trait, i) => {
-            const score = Math.round(perQ2);
+        const q2ScoreBars = q2Scores.map((t, i) => {
+            const score = Math.round(t.score);
             const color = warmColors[i % warmColors.length];
+            const cl = findCluster(t.trait);
+            const corroTag = t.isCorro ? `<span class="q2-corro-badge">${isKo ? "Q1 교차검증 ×1.5" : "Q1 corroborated ×1.5"}</span>` : "";
+            const clTag = cl ? `<span class="q2-cluster-dot" style="background:${cl.color}" title="${cl.label}"></span>` : "";
             return `<div class="q2-score-row">
-                <span class="q2-score-label"><span class="q2-score-dot" style="background:${color}"></span>${escapeHtml(trait)}</span>
+                <span class="q2-score-label">${clTag}<span class="q2-score-dot" style="background:${color}"></span>${escapeHtml(t.trait)}</span>
+                ${corroTag}
                 <div class="q2-score-bar-track"><div class="q2-score-bar-fill q2-score-bar--q2" style="width:${score}%"></div></div>
                 <span class="q2-score-num">${score}${isKo ? "점" : "pt"}</span>
             </div>`;
         }).join("");
+
+        // 클러스터 요약 (활성 클러스터만)
+        const activeClusterHtml = Object.entries(SIGNAL_CLUSTERS).map(([key, cl]) => {
+            const q1Hits = q1Traits.filter(t => cl.traits.includes(t.trait));
+            const q2Hits = q2Traits.filter(t => cl.traits.includes(t));
+            const total = q1Hits.length + q2Hits.length;
+            if (total === 0) return "";
+            const hasSynergy = total >= 2;
+            const hasCorro = q1Hits.some(t => q2Hits.includes(t.trait));
+            const badges = [];
+            if (hasSynergy) badges.push(isKo ? "시너지 ×1.2" : "synergy ×1.2");
+            if (hasCorro) badges.push(isKo ? "교차검증 ×1.5" : "corroborated ×1.5");
+            return `<span class="q2-cluster-pill" style="border-color:${cl.color};color:${cl.color}">
+                ${cl.label} <span class="q2-cluster-count">${total}</span>
+                ${badges.length ? `<span class="q2-cluster-bonus">${badges.join(" + ")}</span>` : ""}
+            </span>`;
+        }).filter(Boolean).join("");
 
         // ── 시나리오 태그 스코어 집계 (고급 추론) ──
         const tagScoreMap = {};
@@ -4264,8 +4379,9 @@ function buildStep3Insight() {
                 <div class="q2-scoreboard">
                     <p class="q2-scoreboard-title">${isKo ? "📊 신호 가중치 분석 (100점 만점)" : "📊 Signal Weight Analysis (out of 100)"}</p>
                     <p class="q2-scoreboard-method">${isKo
-                        ? "Q1 도시 프로필에서 추론한 잠정 신호(40점)와 Q2에서 직접 선택한 생활 맥락 신호(60점)를 합산합니다. 아래 시나리오 매칭 예측은 각 신호가 어떤 시나리오 태그에 기여하는지 계산한 결과이며, ▸ 버튼을 누르면 산출 근거를 볼 수 있습니다."
-                        : "Combines tentative city signals from Q1 (40pt) with your explicit lifestyle selections from Q2 (60pt). The scenario predictions below show how each signal contributes to scenario tags — click ▸ to see the breakdown."}</p>
+                        ? "Q1(40점)과 Q2(60점) 신호를 합산합니다. 같은 테마 클러스터의 신호가 2개 이상이면 시너지(×1.2), Q1·Q2 양쪽에서 교차 검증된 신호는 강화(×1.5)됩니다. ▸로 산출 근거를 확인하세요."
+                        : "Q1 (40pt) + Q2 (60pt) signals. Cluster synergy (×1.2) when 2+ signals share a theme; cross-validated signals get ×1.5 boost. Click ▸ for score breakdown."}</p>
+                    ${activeClusterHtml ? `<div class="q2-cluster-row">${activeClusterHtml}</div>` : ""}
 
                     <div class="q2-score-section">
                         <p class="q2-score-section-label"><span class="q2-score-section-icon">📍</span> ${isKo ? "도시 맥락 (Q1)" : "City Context (Q1)"} <span class="q2-score-section-weight">${Q1_WEIGHT}${isKo ? "점" : "pt"}</span></p>
