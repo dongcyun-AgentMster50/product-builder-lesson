@@ -10730,96 +10730,134 @@ function renderMatchingProcess(ctx) {
 function buildMpCards(ctx, isKo) {
     const { input, tagScores, results, totalPool, personaLabels, deviceLabels, country, city, purpose } = ctx;
 
-    // ── Card 1: 입력 확인 ──
-    const inputTags = [
-        country && `<span class="mp-tag"><span class="mp-tag-icon">🌍</span>${escapeHtml(country)}</span>`,
-        city && `<span class="mp-tag"><span class="mp-tag-icon">🏙️</span>${escapeHtml(city)}</span>`,
-        ...personaLabels.slice(0, 8).map(l => `<span class="mp-tag"><span class="mp-tag-icon">👤</span>${escapeHtml(l)}</span>`),
-        ...deviceLabels.slice(0, 8).map(l => `<span class="mp-tag"><span class="mp-tag-icon">📱</span>${escapeHtml(l)}</span>`)
-    ].filter(Boolean).join("");
+    // ── Q2 스코어보드 결과 가져오기 (연장선) ──
+    const q2Traits = inferSegmentTraits(getSelectedSegment(), purposeInput.value.trim());
+    const q1Traits = inferQ1Traits();
+    const coreValues = inferCoreValues([...q2Traits, ...q1Traits.map(t => t.trait)], purposeInput.value.trim());
+    const direction = inferScenarioDirection(q2Traits, purposeInput.value.trim());
 
-    const purposeHtml = purpose
-        ? `<div class="mp-tag-group"><div class="mp-tag-group-label">${isKo ? "추가 설명" : "Your context"}</div><p style="font-size:0.8rem;color:var(--ink);margin:0">"${escapeHtml(purpose)}"</p></div>`
-        : "";
+    // Q2 시나리오 태그 한글 매핑
+    const tagKoMap = {
+        "Save energy": "에너지 절약", "Keep your home safe": "홈 안전·보안",
+        "Help with chores": "가사 자동화", "Care for kids": "자녀 케어",
+        "Care for seniors": "시니어 케어", "Care for your pet": "반려동물 케어",
+        "Sleep well": "수면 개선", "Enhanced mood": "분위기 연출",
+        "Stay fit & healthy": "건강·피트니스", "Easily control your lights": "조명 제어",
+        "Keep the air fresh": "공기질 관리", "Find your belongings": "분실물 찾기"
+    };
+
+    // ── Card 1: 🧩 매칭 컨텍스트 요약 ──
+    const clusterNames = coreValues.slice(0, 2).join(" + ");
+    const deviceCount = deviceLabels.length || getSelectedDeviceLabels().length;
+    const deviceChips = deviceLabels.slice(0, 6).map(l =>
+        `<span class="mp-tag"><span class="mp-tag-icon">📱</span>${escapeHtml(l)}</span>`
+    ).join("");
+    const moreDevices = deviceCount > 6 ? `<span class="mp-tag" style="opacity:0.6">+${deviceCount - 6}</span>` : "";
 
     const card1 = {
-        title: isKo ? "📝 입력 내용 확인" : "📝 Your Inputs",
+        title: isKo ? "🧩 매칭 컨텍스트 요약" : "🧩 Matching Context Summary",
         helper: isKo
-            ? "Q1~Q3에서 선택하신 조건들입니다. 이 정보를 바탕으로 관심 키워드를 뽑아냅니다."
-            : "These are the conditions you selected in Q1–Q3. We'll extract interest keywords from them.",
+            ? "Q1~Q3에서 확정된 타겟 프로필과 기기 풀을 기준으로 시나리오를 탐색합니다."
+            : "Searching scenarios based on your confirmed target profile and device pool from Q1–Q3.",
         content: `
-            <div class="mp-tag-group">
-                <div class="mp-tag-group-label">${isKo ? "선택한 조건" : "Selected conditions"}</div>
-                <div class="mp-tags">${inputTags}</div>
+            <div class="mp-context-grid">
+                <div class="mp-context-item">
+                    <span class="mp-context-label">${isKo ? "목표 페르소나" : "Target Persona"}</span>
+                    <span class="mp-context-value"><strong>${escapeHtml(clusterNames)}</strong></span>
+                </div>
+                <div class="mp-context-item">
+                    <span class="mp-context-label">${isKo ? "시나리오 방향" : "Scenario Direction"}</span>
+                    <span class="mp-context-value">${escapeHtml(direction)}</span>
+                </div>
+                <div class="mp-context-item">
+                    <span class="mp-context-label">${isKo ? "보유 기기 풀" : "Device Pool"}</span>
+                    <div class="mp-tags">${deviceChips}${moreDevices}</div>
+                </div>
+                ${purpose ? `<div class="mp-context-item">
+                    <span class="mp-context-label">${isKo ? "추가 요구사항" : "Additional Context"}</span>
+                    <span class="mp-context-value" style="font-style:italic">"${escapeHtml(purpose)}"</span>
+                </div>` : ""}
             </div>
-            ${purposeHtml}
         `
     };
 
-    // ── Card 2: 키워드 도출 ──
-    const maxScore = tagScores.length > 0 ? tagScores[0].score : 1;
-    const topTags = tagScores.slice(0, 8);
-    const weightRows = topTags.map(t => {
-        const pct = Math.round((t.score / maxScore) * 100);
+    // ── Card 2: 🧮 시나리오 가중치 결합 (Q2 연장선) ──
+    // Q2 스코어보드의 태그 점수를 기기 가능성과 결합
+    const combinedScores = tagScores.map(t => {
+        const q2Display = isKo ? (tagKoMap[t.tag] || t.tag) : t.tag;
+        // 기기 매칭 보너스 확인
+        const devBonus = (typeof DEVICE_TO_EXPLORE_TAGS !== "undefined")
+            ? getSelectedDevices().some(d => {
+                const norm = getCategoryName(d);
+                return (DEVICE_TO_EXPLORE_TAGS[norm] || []).includes(t.tag);
+              }) : false;
+        return { ...t, display: q2Display, hasDeviceSupport: devBonus };
+    });
+    const maxCombined = combinedScores.length > 0 ? combinedScores[0].score : 1;
+    const topCombined = combinedScores.slice(0, 6);
+
+    const combinedRows = topCombined.map(t => {
+        const pct = Math.round((t.score / maxCombined) * 100);
+        const devBadge = t.hasDeviceSupport
+            ? `<span class="mp-dev-badge">${isKo ? "기기 지원" : "device ✓"}</span>`
+            : "";
         return `<div class="mp-weight-row">
-            <span class="mp-weight-label">${escapeHtml(t.tag)}</span>
+            <span class="mp-weight-label">${escapeHtml(t.display)}${devBadge}</span>
             <div class="mp-weight-bar-bg"><div class="mp-weight-bar" style="width:${pct}%"></div></div>
-            <span class="mp-weight-score">${t.score}점</span>
+            <span class="mp-weight-score">${t.score}${isKo ? "점" : "pt"}</span>
         </div>`;
     }).join("");
 
     const card2 = {
-        title: isKo ? "🔑 관심 키워드 도출" : "🔑 Interest Keywords",
+        title: isKo ? "🧮 시나리오 가중치 결합" : "🧮 Combined Scenario Weights",
         helper: isKo
-            ? "선택하신 조건에서 관련 키워드를 추출하고 가중치를 부여했습니다. 점수가 높을수록 더 중요한 관심사입니다."
-            : "We extracted keywords from your selections and assigned weights. Higher scores mean stronger relevance.",
+            ? "Q2에서 도출된 라이프스타일 요구도와 Q3 기기의 실행 가능성을 결합한 최종 가중치입니다. '기기 지원' 표시는 보유 기기로 해당 시나리오를 바로 구현할 수 있음을 의미합니다."
+            : "Final weights combining Q2 lifestyle demands with Q3 device capabilities. 'device ✓' means your devices can directly execute this scenario.",
         content: `
-            <div style="margin-bottom:8px;font-size:0.72rem;color:var(--muted)">
-                ${isKo ? "가중치 기준: 도시 맥락(4) > 타겟 세그먼트(3) > 선택 기기(2) > 추가 설명(1)" : "Weights: City context(4) > Target segment(3) > Devices(2) > Context text(1)"}
+            <div style="margin-bottom:6px;font-size:0.72rem;color:var(--muted)">
+                ${isKo ? "산출: Q2 클러스터 추론(시너지 ×1.2 · 교차검증 ×1.5) + Q3 기기 매칭 보너스" : "Calculation: Q2 cluster reasoning (synergy ×1.2 · cross-validation ×1.5) + Q3 device match bonus"}
             </div>
-            ${weightRows}
+            ${combinedRows}
         `
     };
 
-    // ── Card 3: 스코어링 과정 ──
+    // ── Card 3: ⚡ 스코어링 과정 ──
     const matchedCount = results.length;
     const topScore = results.length > 0 ? results[0]._score : 0;
 
     const card3 = {
         title: isKo ? "⚡ 시나리오 스코어링" : "⚡ Scenario Scoring",
         helper: isKo
-            ? `총 ${totalPool}개의 Explore 시나리오 중에서, 도출된 키워드·기기·가치 태그를 기준으로 점수를 매겼습니다.`
-            : `We scored all ${totalPool} Explore scenarios based on your keywords, devices, and value tags.`,
+            ? `위 가중치를 기준으로 ${totalPool}개 시나리오 DB를 탐색하여 적합도 점수를 매겼습니다.`
+            : `Scored ${totalPool} scenarios in the DB using the weights above.`,
         content: `
-            <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px">
-                <div style="text-align:center;padding:10px 18px;border-radius:12px;background:#e8f5e9;flex:1;min-width:120px">
-                    <div style="font-size:1.6rem;font-weight:800;color:#2e7d32">${matchedCount}</div>
-                    <div style="font-size:0.72rem;color:#558b2f">${isKo ? "매칭된 시나리오" : "Matched scenarios"}</div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+                <div style="text-align:center;padding:8px 16px;border-radius:10px;background:#e8f5e9;flex:1;min-width:100px">
+                    <div style="font-size:1.4rem;font-weight:800;color:#2e7d32">${matchedCount}</div>
+                    <div style="font-size:0.7rem;color:#558b2f">${isKo ? "매칭 시나리오" : "Matched"}</div>
                 </div>
-                <div style="text-align:center;padding:10px 18px;border-radius:12px;background:#e3f2fd;flex:1;min-width:120px">
-                    <div style="font-size:1.6rem;font-weight:800;color:#1565c0">${topScore}</div>
-                    <div style="font-size:0.72rem;color:#1976d2">${isKo ? "최고 적합도 점수" : "Top match score"}</div>
+                <div style="text-align:center;padding:8px 16px;border-radius:10px;background:#e3f2fd;flex:1;min-width:100px">
+                    <div style="font-size:1.4rem;font-weight:800;color:#1565c0">${topScore}</div>
+                    <div style="font-size:0.7rem;color:#1976d2">${isKo ? "최고 적합도" : "Top score"}</div>
                 </div>
-                <div style="text-align:center;padding:10px 18px;border-radius:12px;background:#f3e5f5;flex:1;min-width:120px">
-                    <div style="font-size:1.6rem;font-weight:800;color:#7b1fa2">${totalPool}</div>
-                    <div style="font-size:0.72rem;color:#8e24aa">${isKo ? "전체 시나리오" : "Total scenarios"}</div>
+                <div style="text-align:center;padding:8px 16px;border-radius:10px;background:#f3e5f5;flex:1;min-width:100px">
+                    <div style="font-size:1.4rem;font-weight:800;color:#7b1fa2">${totalPool}</div>
+                    <div style="font-size:0.7rem;color:#8e24aa">${isKo ? "전체 DB" : "Total DB"}</div>
                 </div>
-            </div>
-            <div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px">
-                ${isKo ? "스코어링 공식: 키워드 매칭(×10) + 기기 매칭(×8) + 원문 보너스(+5) + 가치태그(×3)" : "Scoring: keyword match(×10) + device match(×8) + text bonus(+5) + value tags(×3)"}
             </div>
         `
     };
 
-    // ── Card 4: 최종 매칭 결과 미리보기 ──
+    // ── Card 4: 🎯 최종 매칭 결과 ──
     const previewRows = results.slice(0, 5).map((r, i) => {
         const f = (typeof formatCurationResult === "function") ? formatCurationResult(r) : { title: r.story_title || "", source: r._source || "" };
         const tags = (r._matchedTags || []).slice(0, 3).map(t => typeof t === "object" ? t.tag : t);
+        const tagDisplay = tags.map(t => isKo ? (tagKoMap[t] || t) : t);
         return `<div class="mp-scenario-row">
             <span class="mp-scenario-rank">${i + 1}</span>
             <div class="mp-scenario-info">
                 <div class="mp-scenario-title">${escapeHtml(f.title || r.story_title || "")}</div>
-                <div class="mp-scenario-meta">${escapeHtml(f.source || r._source || "")} · ${tags.map(t => escapeHtml(t)).join(", ")}</div>
+                <div class="mp-scenario-meta">${escapeHtml(f.source || r._source || "")} · ${tagDisplay.map(t => escapeHtml(t)).join(", ")}</div>
             </div>
             <span class="mp-scenario-score">${r._score}${isKo ? "점" : "pt"}</span>
         </div>`;
@@ -10828,8 +10866,8 @@ function buildMpCards(ctx, isKo) {
     const card4 = {
         title: isKo ? "🎯 최종 매칭 결과" : "🎯 Final Match Results",
         helper: isKo
-            ? "점수가 가장 높은 시나리오 순으로 정렬했습니다. 확인하시면 상세 카드를 볼 수 있습니다."
-            : "Scenarios sorted by relevance score. Confirm to see the detailed cards.",
+            ? "Q2 타겟 프로필 + Q3 기기 조합에 가장 적합한 시나리오 순위입니다. 확인하시면 상세 카드를 볼 수 있습니다."
+            : "Scenarios ranked by fit with your Q2 profile + Q3 devices. Confirm to see detailed cards.",
         content: previewRows || `<p style="color:var(--muted);font-size:0.82rem">${isKo ? "매칭된 시나리오가 없습니다." : "No matching scenarios found."}</p>`
     };
 

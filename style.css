@@ -8306,6 +8306,24 @@ a.source-tag-link:hover {
 .mp-tag .mp-tag-icon { font-size: 0.82rem; }
 
 /* Weight bar visualization */
+/* ── Process Card 1: Context Grid ── */
+.mp-context-grid { display: grid; gap: 8px; }
+.mp-context-item {
+    display: grid; grid-template-columns: 100px 1fr; gap: 8px; align-items: start;
+    font-size: 0.78rem;
+}
+.mp-context-label {
+    font-size: 0.7rem; font-weight: 700; color: var(--muted);
+    padding-top: 2px;
+}
+.mp-context-value { color: var(--fg); line-height: 1.45; }
+.mp-dev-badge {
+    display: inline-block; font-size: 0.6rem; font-weight: 700;
+    color: #16a34a; background: rgba(22,163,74,0.08);
+    padding: 1px 5px; border-radius: 3px; margin-left: 4px;
+    vertical-align: middle;
+}
+
 .mp-weight-row {
     display: flex;
     align-items: center;
