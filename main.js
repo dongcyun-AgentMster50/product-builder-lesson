@@ -4083,6 +4083,10 @@ function syncWizardUi() {
     renderWizardProgress();
     updateStepInsight();
 
+    // step 전환 시 이전 에러 메시지 클리어
+    const errEl = resultDiv.querySelector(".error");
+    if (errEl) errEl.remove();
+
     // Step 4가 아니면 큐레이션 프레임 & Output Flow Tracker 숨김/초기화
     const curationFrame = document.getElementById("curation-frame");
     if (curationFrame && currentStep !== 4) {
@@ -4141,9 +4145,20 @@ function validateCurrentStep() {
         const missing = validateQ3Groups();
         if (missing.length > 0) {
             const labels = missing.join(", ");
-            resultDiv.innerHTML = `<p class="error">${currentLocale === "ko"
-                ? `${labels} 영역에서 최소 1개를 선택하거나 직접 입력해 주세요.`
-                : `Please select at least one option or type in: ${labels}`}</p>`;
+            // step-insight 영역에 안내 표시 (resultDiv 대신)
+            const insightEl = document.getElementById("step-insight");
+            if (insightEl) {
+                const warnHtml = `<div class="q2-action-prompt q2-action-warn" style="margin-top:8px">
+                    <span class="q2-action-icon">⚠️</span>
+                    <p>${currentLocale === "ko"
+                        ? `<strong>${labels}</strong> 영역에서 최소 1개를 선택하거나 직접 입력해 주세요.`
+                        : `Please select at least one option in: <strong>${labels}</strong>`}</p>
+                </div>`;
+                // 기존 경고가 있으면 교체
+                const existing = insightEl.querySelector(".q2-action-warn");
+                if (existing) existing.outerHTML = warnHtml;
+                else insightEl.insertAdjacentHTML("beforeend", warnHtml);
+            }
             return false;
         }
     }
