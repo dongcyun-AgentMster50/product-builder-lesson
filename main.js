@@ -3770,6 +3770,23 @@ function buildStep3Insight() {
     const primaryPersona = selectedLabels[0] || (currentLocale === "ko" ? "타겟 탐색 중" : "Audience forming");
     const isKo = currentLocale === "ko";
 
+    // ── Q1 도시 프로필 반영 출처 안내 ──
+    let q1SourceHtml = "";
+    if (_magicSelected.size > 0 && _latestCityProfile) {
+        const cityName = _latestCityProfile.localCity || "";
+        const appliedLabels = [..._magicSelected].map(key => {
+            const cat = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
+            return cat ? (isKo ? cat.labelKo : cat.labelEn) : key;
+        });
+        q1SourceHtml = `
+            <div class="q2-source-banner">
+                <span class="q2-source-icon">📍</span>
+                <p>${isKo
+                    ? `Q1에서 <strong>${escapeHtml(cityName)}</strong>의 도시 프로필 중 <strong>${appliedLabels.map(l => escapeHtml(l)).join(", ")}</strong>을(를) 반영하여 아래 특징이 도출되었습니다.`
+                    : `Derived from <strong>${escapeHtml(cityName)}</strong> city profile: <strong>${appliedLabels.map(l => escapeHtml(l)).join(", ")}</strong> applied in Q1.`}</p>
+            </div>`;
+    }
+
     // ── 특징 태그 + Why 설명 ──
     const traitCardsHtml = traits.slice(0, 3).map(trait => {
         const reason = inferTraitReason(trait);
@@ -3832,6 +3849,7 @@ function buildStep3Insight() {
         summary: isKo ? `${place}의 타겟 프로필` : `Target profile in ${place}`,
         customHtml: `
             <div class="q2-redesign">
+                ${q1SourceHtml}
                 <div class="q2-traits-section">
                     <p class="q2-section-label">${isKo ? "도출된 타겟 세그먼트 특징" : "Derived target segment traits"}</p>
                     <div class="q2-trait-cards">${traitCardsHtml}</div>

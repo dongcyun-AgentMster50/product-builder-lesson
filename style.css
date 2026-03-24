@@ -2372,6 +2372,29 @@ textarea {
     flex-shrink: 0;
 }
 
+.q2-source-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(25, 118, 210, 0.08), rgba(70, 194, 208, 0.06));
+    border: 1px solid rgba(25, 118, 210, 0.18);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--fg);
+}
+
+.q2-source-banner p {
+    margin: 0;
+}
+
+.q2-source-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
 .q2-hint-banner {
     display: flex;
     align-items: center;
