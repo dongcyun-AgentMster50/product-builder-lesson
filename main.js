@@ -2306,15 +2306,26 @@ function openWizard() {
 
 function showGuideCopy() {
     setGuideChoice("no");
+
+    // 질문 헤더, Yes/No 버튼, 로그아웃 영역 숨기기
+    const guideHead = guideScreen.querySelector(".guide-head");
+    const guideActions = guideScreen.querySelector(".guide-actions");
+    const guideSessionRow = guideScreen.querySelector(".guide-session-row");
+    if (guideHead) guideHead.classList.add("hidden");
+    if (guideActions) guideActions.classList.add("hidden");
+    if (guideSessionRow) guideSessionRow.classList.add("hidden");
+
     guideCopy.innerHTML = buildGuideMarkup();
     guideCopy.classList.remove("hidden");
 
     const footerStartBtn = document.getElementById("guide-footer-start-btn");
     if (footerStartBtn) {
+        footerStartBtn.classList.add("guide-start-pulse");
         footerStartBtn.addEventListener("click", openWizard);
     }
 
-    guideCopy.scrollIntoView({ behavior: "smooth", block: "start" });
+    // 가이드 카드를 화면 맨 위로 스크롤
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function setGuideChoice(choice) {
@@ -2364,6 +2375,15 @@ function showGuideScreen() {
     aiProviderScreen?.classList.add("hidden");
     guideScreen.classList.remove("hidden");
     logoutBtn.classList.remove("hidden");
+
+    // No로 숨겼던 요소 복원
+    const guideHead = guideScreen.querySelector(".guide-head");
+    const guideActions = guideScreen.querySelector(".guide-actions");
+    const guideSessionRow = guideScreen.querySelector(".guide-session-row");
+    if (guideHead) guideHead.classList.remove("hidden");
+    if (guideActions) guideActions.classList.remove("hidden");
+    if (guideSessionRow) guideSessionRow.classList.remove("hidden");
+    guideCopy.classList.add("hidden");
 }
 
 async function handleLogout() {

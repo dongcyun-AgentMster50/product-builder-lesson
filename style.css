@@ -2778,6 +2778,19 @@ textarea {
     white-space: nowrap;
 }
 
+/* ── 시작 버튼 펄스 애니메이션 ── */
+@keyframes guidePulse {
+    0%   { transform: scale(1);     box-shadow: 0 0 0 0 rgba(255,255,255,0.5); }
+    50%  { transform: scale(1.06);  box-shadow: 0 0 18px 6px rgba(55,214,207,0.45); }
+    100% { transform: scale(1);     box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+}
+
+.guide-start-pulse {
+    animation: guidePulse 1.6s ease-in-out infinite;
+    font-size: 1.1rem;
+    padding: 14px 32px;
+}
+
 .guide-note {
     margin: 0;
     padding: 10px 14px;
