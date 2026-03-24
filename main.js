@@ -4317,10 +4317,16 @@ function buildStep3Insight() {
             if (tagScoreMap[from]) {
                 tagScoreMap[to] = (tagScoreMap[to] || 0) + tagScoreMap[from];
                 delete tagScoreMap[from];
-                // 소스도 병합
+                // 소스도 병합 + 라벨 기준 중복 제거
                 if (tagSources[from]) {
                     if (!tagSources[to]) tagSources[to] = [];
-                    tagSources[to].push(...tagSources[from]);
+                    const existingLabels = new Set(tagSources[to].map(s => s.label));
+                    for (const s of tagSources[from]) {
+                        if (!existingLabels.has(s.label)) {
+                            tagSources[to].push(s);
+                            existingLabels.add(s.label);
+                        }
+                    }
                     delete tagSources[from];
                 }
             }
