@@ -3846,6 +3846,7 @@ function calculateConfidence() {
 }
 
 function buildStep3Insight() {
+  try {
     const selectedSegment = getSelectedSegment();
     const purpose = purposeInput.value.trim();
     const cityRaw = getCityValue();
@@ -4062,6 +4063,15 @@ function buildStep3Insight() {
             </div>
         `
     };
+  } catch (err) {
+    console.error("[buildStep3Insight] error:", err);
+    return {
+        badge: "Q2 Audience",
+        title: currentLocale === "ko" ? "타겟 프로필" : "Target profile",
+        summary: currentLocale === "ko" ? "카드 렌더링 중 오류가 발생했습니다." : "Card rendering error.",
+        body: String(err.message || err)
+    };
+  }
 }
 
 function inferRegionalDirection(countryCode) {
