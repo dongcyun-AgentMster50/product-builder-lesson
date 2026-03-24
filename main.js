@@ -2994,6 +2994,7 @@ async function renderStep2Insight(forceRefresh = false) {
     if (cached && !forceRefresh) {
         try {
             const profile = JSON.parse(cached);
+            if (currentStep !== 2) return;
             stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, profile);
             bindCityProfileDrawer(stepInsight);
             updateQuestionHelpers();
@@ -3002,6 +3003,7 @@ async function renderStep2Insight(forceRefresh = false) {
     }
 
     // 2. 로딩 표시
+    if (currentStep !== 2) return;
     stepInsight.innerHTML = buildInsightMarkup({
         badge: "Q1 Region",
         title: `${countryName} ${localCity}`,
@@ -3017,7 +3019,7 @@ async function renderStep2Insight(forceRefresh = false) {
     let pizzaProgress = 0;
     let pizzaDone = false;
     const pizzaInterval = setInterval(() => {
-        if (pizzaDone) { clearInterval(pizzaInterval); return; }
+        if (pizzaDone || currentStep !== 2) { clearInterval(pizzaInterval); return; }
         // 점점 느려지며 90%까지 접근 (30초 타임아웃에 맞춤)
         pizzaProgress += (90 - pizzaProgress) * 0.035;
         updatePizzaProgress(stepInsight, Math.min(pizzaProgress, 90));
