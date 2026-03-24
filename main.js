@@ -3992,19 +3992,141 @@ function buildStep3Insight() {
         }
     }
 
-    // ── Synthesis strip (신뢰도 >= 40%) ──
+    // ── Synthesis: 시나리오 추천 스코어보드 (신뢰도 >= 40%) ──
     let synthesisHtml = "";
     if (confidence >= 40) {
         const caveat = confidence < 80
             ? `<p class="q2-synthesis-caveat">${isKo ? "예상 시나리오 방향 (추가 선택 시 변경 가능)" : "Expected scenario direction (may change with more selections)"}</p>`
             : "";
         const valuesPills = coreValues.map(v => `<span class="q2-value-pill">${escapeHtml(v)}</span>`).join("");
+
+        // ── 신호별 가중치 계산 (100점 만점) ──
+        const Q1_WEIGHT = 40;  // 도시 맥락 40%
+        const Q2_WEIGHT = 60;  // 생활 맥락 60%
+        const q1Count = Math.max(q1Traits.length, 1);
+        const q2Count = Math.max(q2Traits.length, 1);
+        const perQ1 = Q1_WEIGHT / q1Count;
+        const perQ2 = Q2_WEIGHT / q2Count;
+
+        // 신호 → 점수 바 HTML (Q1)
+        const q1ScoreBars = q1Traits.map(t => {
+            const score = Math.round(perQ1);
+            return `<div class="q2-score-row">
+                <span class="q2-score-label"><span class="q2-score-dot" style="background:${t.color}"></span>${escapeHtml(t.trait)}</span>
+                <div class="q2-score-bar-track"><div class="q2-score-bar-fill q2-score-bar--q1" style="width:${score}%"></div></div>
+                <span class="q2-score-num">${score}${isKo ? "점" : "pt"}</span>
+            </div>`;
+        }).join("");
+
+        // 신호 → 점수 바 HTML (Q2)
+        const warmColors = ["#ea580c", "#f97316", "#fb923c", "#c2410c", "#d97706"];
+        const q2ScoreBars = q2Traits.slice(0, 4).map((trait, i) => {
+            const score = Math.round(perQ2);
+            const color = warmColors[i % warmColors.length];
+            return `<div class="q2-score-row">
+                <span class="q2-score-label"><span class="q2-score-dot" style="background:${color}"></span>${escapeHtml(trait)}</span>
+                <div class="q2-score-bar-track"><div class="q2-score-bar-fill q2-score-bar--q2" style="width:${score}%"></div></div>
+                <span class="q2-score-num">${score}${isKo ? "점" : "pt"}</span>
+            </div>`;
+        }).join("");
+
+        // ── 시나리오 태그 스코어 집계 ──
+        const tagScoreMap = {};
+        function addTagScore(tag, pts) { tagScoreMap[tag] = (tagScoreMap[tag] || 0) + pts; }
+
+        // Q1 magic keywords → 태그
+        if (typeof MAGIC_KEY_TO_EXPLORE_TAGS !== "undefined" && _magicSelected) {
+            for (const key of _magicSelected) {
+                (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTagScore(tag, perQ1));
+            }
+        }
+        // Q2 persona selections → 태그
+        if (typeof PERSONA_TO_EXPLORE_TAGS !== "undefined") {
+            const personaIds = getSelectedPersonaOptionIds();
+            personaIds.forEach(id => {
+                (PERSONA_TO_EXPLORE_TAGS[id] || []).forEach(tag => addTagScore(tag, perQ2 / 2));
+            });
+        }
+        // purpose 텍스트 보너스
+        const purposeL = purpose.toLowerCase();
+        const purposeBonus = {
+            "반려|펫|pet|dog|cat": "Care for your pet",
+            "부모|시니어|senior": "Care for seniors",
+            "아이|자녀|kid|child": "Care for kids",
+            "에너지|절약|energy|save": "Save energy",
+            "보안|안전|security|safe": "Keep your home safe",
+            "수면|잠|sleep": "Sleep well",
+            "게임|영화|music": "Enhanced mood",
+            "세탁|청소|가사|chore": "Help with chores",
+            "운동|건강|health": "Stay fit & healthy"
+        };
+        Object.entries(purposeBonus).forEach(([pattern, tag]) => {
+            if (new RegExp(pattern, "i").test(purposeL)) addTagScore(tag, 5);
+        });
+
+        // 정렬 & 100점 정규화
+        const sortedTags = Object.entries(tagScoreMap).sort((a, b) => b[1] - a[1]);
+        const maxRaw = sortedTags.length > 0 ? sortedTags[0][1] : 1;
+        const topTags = sortedTags.slice(0, 6);
+
+        // 시나리오 태그 → 한글 매핑
+        const tagKoMap = {
+            "Save energy": "에너지 절약", "Keep your home safe": "홈 안전·보안",
+            "Help with chores": "가사 자동화", "Care for kids": "자녀 케어",
+            "Care for seniors": "시니어 케어", "Care for your pet": "반려동물 케어",
+            "Sleep well": "수면 개선", "Enhanced mood": "분위기 연출",
+            "Stay fit & healthy": "건강·피트니스", "Easily control your lights": "조명 제어",
+            "Keep the air fresh": "공기질 관리", "Find your belongings": "분실물 찾기",
+            "Time saving": "시간 절약", "Energy Saving": "에너지 절감",
+            "Security": "보안", "Family care": "가족 돌봄", "Easy to use": "간편 사용",
+            "Health": "건강", "Pet care": "펫 케어", "Sleep": "수면"
+        };
+
+        const tagBarsHtml = topTags.map(([tag, rawScore]) => {
+            const norm = Math.round((rawScore / maxRaw) * 100);
+            const display = isKo ? (tagKoMap[tag] || tag) : tag;
+            const barColor = norm >= 70 ? "#2563eb" : norm >= 40 ? "#3b82f6" : "#93c5fd";
+            return `<div class="q2-tag-row">
+                <span class="q2-tag-label">${escapeHtml(display)}</span>
+                <div class="q2-tag-bar-track"><div class="q2-tag-bar-fill" style="width:${norm}%;background:${barColor}"></div></div>
+                <span class="q2-tag-score">${norm}</span>
+            </div>`;
+        }).join("");
+
+        // ── 후보 시나리오 방향 요약 ──
+        const top3Tags = topTags.slice(0, 3).map(([tag]) => isKo ? (tagKoMap[tag] || tag) : tag);
+        const scenarioHint = top3Tags.length > 0
+            ? (isKo
+                ? `이 조합이면 <strong>${top3Tags.join(", ")}</strong> 중심의 시나리오가 높은 점수로 매칭될 가능성이 큽니다.`
+                : `Scenarios focused on <strong>${top3Tags.join(", ")}</strong> are most likely to score highest.`)
+            : "";
+
         synthesisHtml = `
             <div class="q2-synthesis">
                 ${caveat}
                 <p class="q2-synthesis-direction">${escapeHtml(direction)}</p>
                 <div class="q2-synthesis-values">${valuesPills}</div>
-                <p class="q2-synthesis-weight">${isKo ? "근거 비중: 도시 맥락 40% · 생활 맥락 60%" : "Evidence weight: City context 40% · Lifestyle context 60%"}</p>
+
+                <div class="q2-scoreboard">
+                    <p class="q2-scoreboard-title">${isKo ? "📊 신호 가중치 분석 (100점 만점)" : "📊 Signal Weight Analysis (out of 100)"}</p>
+
+                    <div class="q2-score-section">
+                        <p class="q2-score-section-label"><span class="q2-score-section-icon">📍</span> ${isKo ? "도시 맥락 (Q1)" : "City Context (Q1)"} <span class="q2-score-section-weight">${Q1_WEIGHT}${isKo ? "점" : "pt"}</span></p>
+                        ${q1ScoreBars || `<p class="q2-score-empty">${isKo ? "Q1 도시 프로필 미반영" : "No Q1 city profile applied"}</p>`}
+                    </div>
+
+                    <div class="q2-score-section">
+                        <p class="q2-score-section-label"><span class="q2-score-section-icon">🎯</span> ${isKo ? "생활 맥락 (Q2)" : "Lifestyle Context (Q2)"} <span class="q2-score-section-weight">${Q2_WEIGHT}${isKo ? "점" : "pt"}</span></p>
+                        ${q2ScoreBars || `<p class="q2-score-empty">${isKo ? "Q2 선택 미완료" : "No Q2 selections yet"}</p>`}
+                    </div>
+
+                    <div class="q2-score-divider"></div>
+
+                    <p class="q2-scoreboard-title">${isKo ? "🎬 시나리오 매칭 예측" : "🎬 Scenario Match Prediction"}</p>
+                    ${tagBarsHtml}
+
+                    ${scenarioHint ? `<p class="q2-scenario-hint">${scenarioHint}</p>` : ""}
+                </div>
             </div>`;
     }
 
