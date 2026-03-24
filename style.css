@@ -2298,10 +2298,11 @@ textarea {
 }
 
 .q2-narrative-box {
-    padding: 12px 16px;
+    padding: 14px 18px;
     border-radius: 14px;
-    background: linear-gradient(135deg, rgba(27, 54, 141, 0.08), rgba(70, 194, 208, 0.08));
-    border: 1px solid rgba(0, 51, 102, 0.12);
+    background: linear-gradient(135deg, rgba(27, 54, 141, 0.18), rgba(44, 104, 186, 0.14));
+    border: 1px solid rgba(0, 51, 102, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 27, 71, 0.08);
 }
 
 .q2-narrative-label {
@@ -2336,10 +2337,28 @@ textarea {
     margin: 0;
 }
 
+.q2-action-warn {
+    background: rgba(220, 80, 20, 0.08);
+    border: 1px solid rgba(220, 80, 20, 0.22);
+    color: #8b3a0e;
+}
+
 .q2-action-todo {
     background: rgba(255, 180, 0, 0.1);
     border: 1px solid rgba(255, 180, 0, 0.25);
     color: #7a5800;
+}
+
+.q2-value-badge {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.5);
+    font-weight: 800;
+    font-size: 0.82rem;
+    color: var(--accent-strong, #1b368d);
+    letter-spacing: 0.02em;
 }
 
 .q2-action-done {

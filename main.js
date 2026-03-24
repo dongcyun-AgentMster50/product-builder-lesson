@@ -3733,18 +3733,34 @@ function inferTraitReason(trait) {
     return reasons[trait] || "";
 }
 
+/** traits에서 4대 가치(Care, Play, Save, Secure)를 추론 */
+function inferCoreValues(traits, purpose) {
+    const text = `${traits.join(" ")} ${purpose}`.toLowerCase();
+    const values = [];
+    if (text.includes("케어") || text.includes("안심") || text.includes("돌봄") || text.includes("care")) values.push("Care");
+    if (text.includes("여가") || text.includes("웰니스") || text.includes("play") || text.includes("엔터")) values.push("Play");
+    if (text.includes("에너지") || text.includes("지출") || text.includes("절감") || text.includes("save") || text.includes("비용")) values.push("Save");
+    if (text.includes("보안") || text.includes("안전") || text.includes("secure")) values.push("Secure");
+    if (values.length === 0) values.push("Care");
+    return values.slice(0, 2);
+}
+
 function buildStep3Insight() {
     const selectedSegment = getSelectedSegment();
     const purpose = purposeInput.value.trim();
-    const city = getCityValue();
+    const cityRaw = getCityValue();
+    const country = getSelectedCountry();
 
     if (!selectedSegment && !purpose) {
         return STEP_INSIGHTS[3];
     }
 
     const traits = inferSegmentTraits(selectedSegment, purpose);
-    const place = city ? `${city} 생활권` : "이 타겟";
+    // 도시명 한국어 변환
+    const cityDisplay = (country && cityRaw) ? (getCityDisplayValue(country.countryCode, cityRaw) || cityRaw) : cityRaw;
+    const place = cityDisplay ? `${cityDisplay} 생활권` : "이 타겟";
     const direction = inferScenarioDirection(traits, purpose);
+    const coreValues = inferCoreValues(traits, purpose);
     const selectedLabels = getSelectedPersonaLabels();
     const primaryPersona = selectedLabels[0] || (currentLocale === "ko" ? "타겟 탐색 중" : "Audience forming");
     const isKo = currentLocale === "ko";
@@ -3759,23 +3775,44 @@ function buildStep3Insight() {
             </div>`;
     }).join("");
 
-    // ── 서사 방향 (한 단계 위 위계) ──
+    // ── 시나리오 선택 방향과 4대 가치 ──
+    const valuesText = coreValues.join(", ");
     const narrativeHtml = `
         <div class="q2-narrative-box">
-            <span class="q2-narrative-label">${isKo ? "서사 방향" : "Narrative"}</span>
-            <p class="q2-narrative-text">${escapeHtml(direction)}</p>
+            <span class="q2-narrative-label">${isKo ? "시나리오 선택 방향과 반영될 4대 가치" : "Scenario direction & core values"}</span>
+            <p class="q2-narrative-text">${escapeHtml(direction)} <span class="q2-value-badge">(${escapeHtml(valuesText)})</span></p>
         </div>`;
 
-    // ── 다음 행동 CTA ──
-    const ctaHtml = purpose
-        ? `<div class="q2-action-prompt q2-action-done">
-               <span class="q2-action-icon">✅</span>
-               <p>${isKo ? "상황 반영 완료 — <strong>다음</strong> 버튼을 눌러 기기를 선택하세요" : "Context applied — press <strong>Next</strong> to select devices"}</p>
-           </div>`
-        : `<div class="q2-action-prompt q2-action-todo">
-               <span class="q2-action-icon">✍️</span>
-               <p>${isKo ? "아래 텍스트 영역에 <strong>생활 상황을 한 줄</strong> 적으면 시나리오가 훨씬 선명해집니다" : "Add <strong>one line of life context</strong> below to sharpen the scenario"}</p>
-           </div>`;
+    // ── 다음 행동 CTA — 선택 누락 안내 or 맥락 입력 유도 ──
+    const hasHousing = !!personaGroups.querySelector('[data-group-id="housing"] input:checked');
+    const hasHousehold = !!personaGroups.querySelector('[data-group-id="household"] input:checked');
+    const hasLifestage = !!personaGroups.querySelector('[data-group-id="lifestage"] input:checked');
+    const missingParts = [];
+    if (!hasHousing) missingParts.push(isKo ? "거주지 유형(A)" : "Housing(A)");
+    if (!hasHousehold) missingParts.push(isKo ? "세대 구성(B)" : "Household(B)");
+    if (!hasLifestage) missingParts.push(isKo ? "라이프스테이지(C)" : "Life stage(C)");
+
+    let ctaHtml;
+    if (missingParts.length > 0) {
+        ctaHtml = `<div class="q2-action-prompt q2-action-warn">
+            <span class="q2-action-icon">⚠️</span>
+            <p>${isKo
+                ? `<strong>${missingParts.join(", ")}</strong>을(를) 아직 선택하지 않으셨습니다. 선택할수록 시나리오가 정확해집니다.`
+                : `<strong>${missingParts.join(", ")}</strong> not yet selected. More selections lead to better scenarios.`}</p>
+        </div>`;
+    } else if (!purpose) {
+        ctaHtml = `<div class="q2-action-prompt q2-action-todo">
+            <span class="q2-action-icon">✍️</span>
+            <p>${isKo
+                ? "라이프 스타일이나 현재 불편한 상황이 있다면, <strong>위 빈칸에 자유롭게 적어주세요.</strong> 시나리오 정확도가 크게 올라갑니다."
+                : "If you have a specific lifestyle or pain point, <strong>describe it in the text area above.</strong> It greatly improves scenario accuracy."}</p>
+        </div>`;
+    } else {
+        ctaHtml = `<div class="q2-action-prompt q2-action-done">
+            <span class="q2-action-icon">✅</span>
+            <p>${isKo ? "상황 반영 완료 — <strong>다음</strong> 버튼을 눌러 기기를 선택하세요" : "Context applied — press <strong>Next</strong> to select devices"}</p>
+        </div>`;
+    }
 
     // ── Q3 힌트 (풀 위드 배너) ──
     const q3HintHtml = `
@@ -3786,12 +3823,12 @@ function buildStep3Insight() {
 
     return {
         badge: isKo ? "Q2 Audience" : "Q2 Audience",
-        title: `${primaryPersona}${selectedLabels.length > 1 ? ` 외 ${selectedLabels.length - 1}개` : ""}`,
+        title: `${primaryPersona}${selectedLabels.length > 1 ? (isKo ? ` 외 ${selectedLabels.length - 1}개` : ` +${selectedLabels.length - 1}`) : ""}`,
         summary: isKo ? `${place}의 타겟 프로필` : `Target profile in ${place}`,
         customHtml: `
             <div class="q2-redesign">
                 <div class="q2-traits-section">
-                    <p class="q2-section-label">${isKo ? "도출된 특징" : "Derived traits"}</p>
+                    <p class="q2-section-label">${isKo ? "도출된 타겟 세그먼트 특징" : "Derived target segment traits"}</p>
                     <div class="q2-trait-cards">${traitCardsHtml}</div>
                 </div>
                 ${narrativeHtml}
