@@ -3923,7 +3923,7 @@ function buildStep3Insight() {
                         </div>
                         <p class="q2-trait-source">
                             <span class="q2-source-tag" style="background:${t.color}20;color:${t.color}">${escapeHtml(t.catLabel)}</span>
-                            ${isKo ? `${escapeHtml(cityName)} 도시 프로필에서 도출` : `From ${escapeHtml(cityName)} city profile`}
+                            ${isKo ? `${escapeHtml(cityDisplay)} 도시 프로필에서 도출` : `From ${escapeHtml(cityDisplay)} city profile`}
                         </p>
                         <button type="button" class="q2-evidence-toggle" data-ev-target="${uid}">
                             <span class="q2-ev-arrow">▸</span> ${isKo ? "추론 근거 보기" : "View reasoning"}
