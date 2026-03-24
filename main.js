@@ -4087,6 +4087,11 @@ function syncWizardUi() {
     nextBtn.classList.toggle("hidden", currentStep === 4);
     generateBtn.classList.toggle("hidden", currentStep !== 4);
     renderWizardProgress();
+
+    // step 전환 시 이전 step-insight 즉시 클리어 (비동기 덮어쓰기 방지)
+    ++latestStep2InsightRequest;
+    stepInsight.innerHTML = "";
+
     updateStepInsight();
 
     // step 전환 시 이전 에러 메시지 클리어
