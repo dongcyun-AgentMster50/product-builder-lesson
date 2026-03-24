@@ -5699,6 +5699,79 @@ a.source-tag-link:hover {
 }
 .curation-helper-steps li { margin-bottom: 2px; }
 
+/* ── Q3 Devices Insight Redesign ── */
+.q3-insight-redesign { display: grid; gap: 10px; }
+.q3-chips-row {
+    display: flex; flex-wrap: wrap; gap: 5px;
+}
+.q3-chips-row .insight-chip { font-size: 0.78rem; min-height: 26px; padding: 0 10px; }
+.insight-chip--more { background: rgba(0,0,0,0.04); color: var(--muted); border-color: rgba(0,0,0,0.08); font-weight: 700; }
+
+.q3-routines-section {
+    display: grid; gap: 6px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(37,99,235,0.04), rgba(22,163,74,0.03));
+    border: 1px solid rgba(37,99,235,0.12);
+}
+.q3-routines-title {
+    font-size: 0.82rem; font-weight: 800; color: var(--fg); margin: 0;
+}
+.q3-routines-helper {
+    font-size: 0.7rem; color: var(--muted); margin: -2px 0 4px; line-height: 1.4;
+}
+.q3-routine-card {
+    display: grid; gap: 4px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.q3-routine-head {
+    display: flex; align-items: center; gap: 6px;
+}
+.q3-routine-icon { font-size: 1rem; }
+.q3-routine-name { font-size: 0.8rem; font-weight: 800; color: var(--fg); }
+.q3-routine-flow {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+    padding-left: 6px;
+}
+.q3-step {
+    display: inline-flex; align-items: center; gap: 3px; font-size: 0.72rem;
+}
+.q3-step-arrow {
+    color: var(--muted); font-size: 0.7rem; margin: 0 2px;
+}
+.q3-step-device {
+    font-weight: 700; color: var(--accent-strong, #1b368d);
+    background: rgba(27,54,141,0.06); padding: 1px 6px; border-radius: 4px;
+}
+.q3-step-action {
+    color: var(--fg); font-weight: 500;
+}
+
+.q3-expansion {
+    display: flex; gap: 8px; align-items: flex-start;
+    padding: 10px 14px; border-radius: 10px;
+    background: rgba(251,191,36,0.06);
+    border: 1px dashed rgba(217,119,6,0.25);
+}
+.q3-expansion-icon { font-size: 1.1rem; flex-shrink: 0; }
+.q3-expansion p {
+    font-size: 0.78rem; color: var(--fg); margin: 0; line-height: 1.5;
+}
+.q3-expansion strong { font-weight: 800; color: #b45309; }
+
+.q3-cta-box {
+    padding: 10px 14px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent-strong, #003366), #004d99);
+    color: #fff;
+}
+.q3-cta-text {
+    font-size: 0.78rem; font-weight: 600; margin: 0; line-height: 1.55;
+}
+.q3-cta-text strong { font-weight: 800; }
+
 /* ── Output Category Selection ── */
 .output-category-frame {
     margin-top: 6px;

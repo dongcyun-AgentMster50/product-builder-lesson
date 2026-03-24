@@ -4532,14 +4532,7 @@ function buildStep4Insight() {
 
     const deviceCount = devices.length;
     const isKo = currentLocale === "ko";
-    const isDe = currentLocale === "de";
-    const mixRead = deviceCount >= 4
-        ? (isKo ? "확장형 멀티디바이스 조합" : isDe ? "erweiterte Multi-Device-Kombination" : "expanded multi-device mix")
-        : deviceCount === 3
-            ? (isKo ? "균형 잡힌 핵심 조합" : isDe ? "ausgewogene Kernkombination" : "balanced core mix")
-            : deviceCount === 2
-                ? (isKo ? "명확한 2기기 페어링" : isDe ? "klare Zwei-Geräte-Kombination" : "clear two-device pairing")
-                : (isKo ? "단일 앵커 기기 중심" : isDe ? "einzelnes Ankergerät" : "single anchor device");
+    const devSet = new Set(normalizedDevices);
 
     // 삼성 / 타사 분류
     const selectedIds = new Set(
@@ -4547,44 +4540,209 @@ function buildStep4Insight() {
     );
     const samsungCount = typeof Q4_SAMSUNG_IDS !== "undefined" ? [...selectedIds].filter(id => Q4_SAMSUNG_IDS.has(id)).length : deviceCount;
     const partnerCount = typeof Q4_PARTNER_IDS !== "undefined" ? [...selectedIds].filter(id => Q4_PARTNER_IDS.has(id)).length : 0;
+    const mixLabel = isKo
+        ? `삼성 ${samsungCount}개${partnerCount > 0 ? ` · 타사 ${partnerCount}개` : ""}`
+        : `Samsung ${samsungCount}${partnerCount > 0 ? ` · Partner ${partnerCount}` : ""}`;
+
+    // ── 루틴 프리뷰 매핑 (기기 조합 → 구현 가능한 자동화 장면) ──
+    const ROUTINE_DB = [
+        { id: "away_security", icon: "🛡️",
+          nameKo: "외출 안심 모니터링", nameEn: "Away Security Monitoring",
+          needs: ["카메라/CCTV"],
+          optional: ["도어락", "스마트 플러그", "센서"],
+          stepsKo: d => {
+              const s = [];
+              if (d.has("도어락")) s.push(["도어락", "외출 잠금"]);
+              s.push(["카메라/CCTV", "움직임 감지 녹화"]);
+              if (d.has("스마트 플러그")) s.push(["스마트 플러그", "대기전력 차단"]);
+              if (d.has("센서")) s.push(["센서", "침입 알림"]);
+              return s;
+          },
+          stepsEn: d => {
+              const s = [];
+              if (d.has("도어락")) s.push(["Door Lock", "lock on leave"]);
+              s.push(["Camera", "motion recording"]);
+              if (d.has("스마트 플러그")) s.push(["Smart Plug", "standby power off"]);
+              if (d.has("센서")) s.push(["Sensor", "intrusion alert"]);
+              return s;
+          }
+        },
+        { id: "sleep_mood", icon: "🌙",
+          nameKo: "취침 무드 연출", nameEn: "Sleep Mood Automation",
+          needs: ["조명"],
+          optional: ["TV", "에어컨", "스피커"],
+          stepsKo: d => {
+              const s = [["조명", "조도 10% 디밍"]];
+              if (d.has("TV")) s.push(["TV", "화면 Off / 앰비언트"]);
+              if (d.has("에어컨")) s.push(["에어컨", "수면 모드 전환"]);
+              if (d.has("스피커")) s.push(["스피커", "백색소음 재생"]);
+              return s;
+          },
+          stepsEn: d => {
+              const s = [["Lights", "dim to 10%"]];
+              if (d.has("TV")) s.push(["TV", "screen off / ambient"]);
+              if (d.has("에어컨")) s.push(["AC", "sleep mode"]);
+              if (d.has("스피커")) s.push(["Speaker", "white noise"]);
+              return s;
+          }
+        },
+        { id: "welcome_home", icon: "🏠",
+          nameKo: "귀가 웰컴 루틴", nameEn: "Welcome Home Routine",
+          needs: ["센서", "조명"],
+          optional: ["에어컨", "TV", "스피커"],
+          stepsKo: d => {
+              const s = [["센서", "현관 움직임 감지"], ["조명", "자동 점등"]];
+              if (d.has("에어컨")) s.push(["에어컨", "쾌적 온도 가동"]);
+              if (d.has("TV")) s.push(["TV", "뉴스/음악 자동 재생"]);
+              return s;
+          },
+          stepsEn: d => {
+              const s = [["Sensor", "entrance motion detected"], ["Lights", "auto on"]];
+              if (d.has("에어컨")) s.push(["AC", "comfort temp on"]);
+              if (d.has("TV")) s.push(["TV", "auto play news/music"]);
+              return s;
+          }
+        },
+        { id: "energy_save", icon: "⚡",
+          nameKo: "에너지 절약 자동화", nameEn: "Energy Saving Automation",
+          needs: ["에어컨"],
+          optional: ["스마트 플러그", "조명", "센서"],
+          stepsKo: d => {
+              const s = [["에어컨", "외출 시 자동 절전"]];
+              if (d.has("스마트 플러그")) s.push(["스마트 플러그", "대기전력 모니터링"]);
+              if (d.has("조명")) s.push(["조명", "부재 시 자동 소등"]);
+              if (d.has("센서")) s.push(["센서", "재실 감지 연동"]);
+              return s;
+          },
+          stepsEn: d => {
+              const s = [["AC", "auto eco on leave"]];
+              if (d.has("스마트 플러그")) s.push(["Smart Plug", "standby monitoring"]);
+              if (d.has("조명")) s.push(["Lights", "auto off when away"]);
+              if (d.has("센서")) s.push(["Sensor", "occupancy detection"]);
+              return s;
+          }
+        },
+        { id: "pet_care", icon: "🐾",
+          nameKo: "반려동물 케어 모니터링", nameEn: "Pet Care Monitoring",
+          needs: ["카메라/CCTV"],
+          optional: ["센서", "에어컨", "공기청정기"],
+          stepsKo: d => {
+              const s = [["카메라/CCTV", "실시간 펫 모니터링"]];
+              if (d.has("센서")) s.push(["센서", "활동량 감지"]);
+              if (d.has("에어컨")) s.push(["에어컨", "실내 온도 자동 유지"]);
+              if (d.has("공기청정기")) s.push(["공기청정기", "공기질 자동 관리"]);
+              return s;
+          },
+          stepsEn: d => {
+              const s = [["Camera", "live pet monitoring"]];
+              if (d.has("센서")) s.push(["Sensor", "activity detection"]);
+              if (d.has("에어컨")) s.push(["AC", "auto temp control"]);
+              if (d.has("공기청정기")) s.push(["Air Purifier", "auto air quality"]);
+              return s;
+          }
+        },
+        { id: "laundry", icon: "🫧",
+          nameKo: "세탁 완료 알림 루틴", nameEn: "Laundry Done Routine",
+          needs: ["세탁기"],
+          optional: ["TV", "스피커", "스마트폰"],
+          stepsKo: d => {
+              const s = [["세탁기", "세탁 완료 감지"]];
+              if (d.has("TV")) s.push(["TV", "화면 알림 팝업"]);
+              if (d.has("스피커")) s.push(["스피커", "음성 알림"]);
+              return s;
+          },
+          stepsEn: d => {
+              const s = [["Washer", "cycle complete"]];
+              if (d.has("TV")) s.push(["TV", "on-screen notification"]);
+              if (d.has("스피커")) s.push(["Speaker", "voice alert"]);
+              return s;
+          }
+        },
+        { id: "kids_safety", icon: "👶",
+          nameKo: "자녀 안전 모니터링", nameEn: "Kids Safety Monitoring",
+          needs: ["카메라/CCTV", "센서"],
+          optional: ["도어락", "스마트폰"],
+          stepsKo: d => {
+              const s = [["센서", "아이 방 출입 감지"], ["카메라/CCTV", "실시간 확인"]];
+              if (d.has("도어락")) s.push(["도어락", "자녀 귀가 알림"]);
+              return s;
+          },
+          stepsEn: d => {
+              const s = [["Sensor", "child room entry"], ["Camera", "live check"]];
+              if (d.has("도어락")) s.push(["Door Lock", "child return alert"]);
+              return s;
+          }
+        }
+    ];
+
+    // 구현 가능한 루틴 필터링
+    const matchedRoutines = ROUTINE_DB.filter(r => r.needs.every(n => devSet.has(n)));
+    const routineHtml = matchedRoutines.slice(0, 3).map(r => {
+        const steps = isKo ? r.stepsKo(devSet) : r.stepsEn(devSet);
+        const stepsHtml = steps.map(([dev, action], i) =>
+            `<span class="q3-step">${i > 0 ? '<span class="q3-step-arrow">➔</span>' : ''}<span class="q3-step-device">${escapeHtml(dev)}</span><span class="q3-step-action">${escapeHtml(action)}</span></span>`
+        ).join("");
+        return `<div class="q3-routine-card">
+            <div class="q3-routine-head">
+                <span class="q3-routine-icon">${r.icon}</span>
+                <span class="q3-routine-name">${escapeHtml(isKo ? r.nameKo : r.nameEn)}</span>
+            </div>
+            <div class="q3-routine-flow">${stepsHtml}</div>
+        </div>`;
+    }).join("");
+
+    // ── 확장 제안 (1개 기기 추가 시 해금되는 루틴) ──
+    const unmatchedRoutines = ROUTINE_DB.filter(r => !r.needs.every(n => devSet.has(n)));
+    let expansionHtml = "";
+    for (const r of unmatchedRoutines) {
+        const missing = r.needs.filter(n => !devSet.has(n));
+        if (missing.length === 1) {
+            const missingDev = missing[0];
+            const name = isKo ? r.nameKo : r.nameEn;
+            expansionHtml = `<div class="q3-expansion">
+                <span class="q3-expansion-icon">💡</span>
+                <p>${isKo
+                    ? `현재 조합에 <strong>${escapeHtml(missingDev)}</strong>을(를) 1개만 추가하면 <strong>'${escapeHtml(name)}'</strong> 장면까지 구현할 수 있습니다.`
+                    : `Add just <strong>${escapeHtml(missingDev)}</strong> to unlock the <strong>'${escapeHtml(name)}'</strong> routine.`}</p>
+            </div>`;
+            break;
+        }
+    }
+
+    // 칩 HTML
+    const chipsHtml = devices.slice(0, 8).map(d => `<span class="insight-chip">${escapeHtml(d)}</span>`).join("");
+    const moreCount = devices.length > 8 ? devices.length - 8 : 0;
+    const moreHtml = moreCount > 0 ? `<span class="insight-chip insight-chip--more">+${moreCount}</span>` : "";
+
+    // 시나리오 DB 수 (curation DB가 있으면)
+    const dbCount = (typeof curationDbV1 !== "undefined" && curationDbV1?.scenarios ? curationDbV1.scenarios.length : 0)
+        + (typeof curationDbV2 !== "undefined" && curationDbV2?.scenarios ? curationDbV2.scenarios.length : 0);
+    const dbLabel = dbCount > 0 ? `${dbCount}+` : "270+";
 
     return {
         badge: "Q3 Devices",
-        title: isKo ? `${deviceCount}개 기기 선택 완료 — 시나리오 매칭 준비`
-             : isDe ? `${deviceCount} Geräte ausgewählt — bereit für Szenario-Matching`
-             : `${deviceCount} devices selected — ready for scenario matching`,
-        summary: isKo
-            ? "선택한 기기를 기반으로, DB에서 검증된 시나리오를 찾아 매칭합니다."
-            : isDe
-                ? "Basierend auf Ihren Geräten suchen wir passende verifizierte Szenarien in der Datenbank."
-                : "Based on your devices, we'll find verified scenarios from the database.",
-        chips: devices.slice(0, 6),
-        rows: [
-            {
-                label: isKo ? "조합 구성" : isDe ? "Mix-Typ" : "Mix profile",
-                value: isKo
-                    ? `${mixRead} (삼성 ${samsungCount}개${partnerCount > 0 ? ` · 타사 ${partnerCount}개` : ""})`
-                    : isDe
-                        ? `${mixRead} (Samsung ${samsungCount}${partnerCount > 0 ? ` · Partner ${partnerCount}` : ""})`
-                        : `${mixRead} (Samsung ${samsungCount}${partnerCount > 0 ? ` · Partner ${partnerCount}` : ""})`
-            },
-            {
-                label: isKo ? "다음 단계" : isDe ? "Nächster Schritt" : "Next step",
-                value: isKo
-                    ? "아래 시나리오 매칭 버튼을 누르면, 이 기기 조합에 맞는 검증된 시나리오 후보를 DB에서 찾아 보여드립니다."
-                    : isDe
-                        ? "Klicken Sie auf die Matching-Schaltfläche, um verifizierte Szenarien für diese Gerätekombination zu finden."
-                        : "Click the matching button below to find verified scenarios for this device combination from the database."
-            },
-            {
-                label: isKo ? "매칭 후 흐름" : isDe ? "Nach dem Matching" : "After matching",
-                value: isKo
-                    ? "매칭된 시나리오를 확인한 뒤, 원하는 시나리오를 선택하여 확장·응용할 수 있습니다."
-                    : isDe
-                        ? "Nach dem Matching können Sie ein Szenario auswählen und erweitern."
-                        : "After matching, you can select a scenario to expand and customize."
-            }
-        ]
+        title: isKo ? `${deviceCount}개 기기 선택 완료` : `${deviceCount} devices selected`,
+        summary: isKo ? `${mixLabel}` : `${mixLabel}`,
+        customHtml: `
+            <div class="q3-insight-redesign">
+                <div class="q3-chips-row">${chipsHtml}${moreHtml}</div>
+
+                ${matchedRoutines.length > 0 ? `
+                <div class="q3-routines-section">
+                    <p class="q3-routines-title">${isKo ? "✨ 현재 조합으로 구현 가능한 대표 자동화 장면" : "✨ Automation scenes possible with your devices"}</p>
+                    <p class="q3-routines-helper">${isKo ? "선택한 기기들의 기능을 연결하면 이런 루틴을 바로 만들 수 있습니다." : "These routines can be built by connecting your selected devices."}</p>
+                    ${routineHtml}
+                </div>` : ""}
+
+                ${expansionHtml}
+
+                <div class="q3-cta-box">
+                    <p class="q3-cta-text">${isKo
+                        ? `아래 <strong>시나리오 매칭 시작</strong> 버튼을 누르면, 이 기기 조합에 맞는 검증된 시나리오를 <strong>${dbLabel}개 DB</strong>에서 탐색합니다.`
+                        : `Click <strong>Start Scenario Matching</strong> below to search <strong>${dbLabel} verified scenarios</strong> for this device combination.`}</p>
+                </div>
+            </div>
+        `
     };
 }
 
