@@ -10122,7 +10122,10 @@ function buildMarketOptions() {
             });
         }
     }
-    if (!unique.has("KR")) {
+    // SEC(samsung.com/sec)가 이미 KR로 해석되므로 중복 KR 추가 불필요
+    // SEC도 없는 경우에만 fallback
+    const hasKrVariant = [...unique.values()].some(m => normalizeSiteCode(m.siteCode) === "KR");
+    if (!hasKrVariant) {
         unique.set("KR", {
             siteCode: "KR",
             countryName: "Korea",
