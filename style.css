@@ -2908,6 +2908,15 @@ textarea {
     display: block; font-size: 0.68rem; color: var(--muted); line-height: 1.45;
     padding-left: 8px;
 }
+.q2-tag-source-total {
+    margin-top: 4px; padding-top: 4px;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    font-size: 0.7rem; font-weight: 800; color: var(--fg);
+}
+.q2-tag-source-norm {
+    font-size: 0.65rem; color: var(--muted); margin: 2px 0 0; line-height: 1.4;
+}
+.q2-tag-source-norm strong { font-weight: 800; color: var(--accent-strong, #1b368d); }
 .q2-scenario-hint {
     font-size: 0.75rem; font-weight: 600; color: #1b368d;
     margin: 4px 0 0; line-height: 1.5;

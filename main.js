@@ -4356,10 +4356,19 @@ function buildStep3Insight() {
             const barColor = norm >= 70 ? "#2563eb" : norm >= 40 ? "#3b82f6" : "#93c5fd";
             // 산출 근거 (어떤 소스에서 몇 점)
             const sources = (tagSources[tag] || []).sort((a, b) => b.pts - a.pts);
+            const sourceSum = sources.reduce((s, x) => s + x.pts, 0);
             const detailId = `tag-detail-${idx}-${Date.now()}`;
             const sourceLines = sources.map(s =>
                 `<span class="q2-tag-source-item">+${s.pts} ← ${escapeHtml(s.label)}</span>`
             ).join("");
+            // 정규화 설명
+            const normExplain = isKo
+                ? (idx === 0
+                    ? `원점수 합계 ${sourceSum} → 1위 기준점이므로 <strong>100점</strong>으로 표시`
+                    : `원점수 합계 ${sourceSum} ÷ 1위 원점수 ${Math.round(maxRaw)} × 100 = <strong>${norm}점</strong>`)
+                : (idx === 0
+                    ? `Raw total ${sourceSum} → top scorer, displayed as <strong>100</strong>`
+                    : `Raw total ${sourceSum} ÷ top raw ${Math.round(maxRaw)} × 100 = <strong>${norm}</strong>`);
             return `<div class="q2-tag-row-wrap">
                 <div class="q2-tag-row">
                     <span class="q2-tag-label">${escapeHtml(display)}</span>
@@ -4368,8 +4377,12 @@ function buildStep3Insight() {
                     <button type="button" class="q2-tag-detail-btn q2-evidence-toggle" data-ev-target="${detailId}"><span class="q2-ev-arrow">▸</span></button>
                 </div>
                 <div class="q2-evidence-detail q2-tag-source-detail" id="${detailId}">
-                    <p class="q2-tag-source-title">${escapeHtml(display)} ${isKo ? "점수 산출 근거" : "score breakdown"} (${isKo ? "원점수" : "raw"} ${Math.round(rawScore)})</p>
+                    <p class="q2-tag-source-title">${escapeHtml(display)} ${isKo ? "점수 산출 근거" : "score breakdown"}</p>
                     ${sourceLines}
+                    <div class="q2-tag-source-total">
+                        <span>${isKo ? "합계" : "Total"}: ${sourceSum}${isKo ? "점" : "pt"}</span>
+                    </div>
+                    <p class="q2-tag-source-norm">${normExplain}</p>
                 </div>
             </div>`;
         }).join("");
