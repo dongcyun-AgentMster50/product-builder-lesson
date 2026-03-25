@@ -272,10 +272,10 @@ function scoreScenario(scenario, tagScores, selectedDevices = []) {
  * @returns {Array} 점수순 정렬된 매칭 시나리오 배열
  */
 function curateScenarios(input, v1Scenarios, v2Scenarios, options = {}) {
-    const { maxResults = 10, minScore = 5 } = options;
+    const { maxResults = 10, minScore = 5, overrideTagScores } = options;
 
-    // 1. 입력 → 태그 변환
-    const tagScores = buildExploreTagsFromInput(input);
+    // 1. 입력 → 태그 변환 (외부에서 고수준 가중치가 주입되면 그것을 사용)
+    const tagScores = overrideTagScores || buildExploreTagsFromInput(input);
 
     if (tagScores.length === 0) return [];
 

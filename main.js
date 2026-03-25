@@ -4317,7 +4317,7 @@ function buildStep3Insight() {
             if (tagScoreMap[from]) {
                 tagScoreMap[to] = (tagScoreMap[to] || 0) + tagScoreMap[from];
                 delete tagScoreMap[from];
-                // 소스도 병합 + 라벨 기준 중복 제거
+                // 소스도 병합 + 라벨 기준 중복 제거 (중복 시 점수 뻥튀기 방지)
                 if (tagSources[from]) {
                     if (!tagSources[to]) tagSources[to] = [];
                     const existingLabels = new Set(tagSources[to].map(s => s.label));
@@ -4325,6 +4325,10 @@ function buildStep3Insight() {
                         if (!existingLabels.has(s.label)) {
                             tagSources[to].push(s);
                             existingLabels.add(s.label);
+                        } else {
+                            // 중복된 소스(동일한 이유로 여러 태그에 점수가 중복 부여된 경우)
+                            // 병합 과정에서 원점수가 뻥튀기되지 않도록 합산된 점수에서 차감
+                            tagScoreMap[to] -= s.pts;
                         }
                     }
                     delete tagSources[from];
@@ -10613,6 +10617,162 @@ async function loadCurationDb() {
 // 앱 시작 시 DB를 미리 로드 (비동기, 논블로킹)
 loadCurationDb();
 
+/**
+ * Q2 라이프스타일 가중치 로직과 Q3 기기 보너스를 결합한 통합 가중치 산출 함수 (Step 4 매칭 엔진용)
+ */
+function getIntegratedTagScores(input) {
+    const purpose = input.purpose || "";
+    const q1Traits = typeof inferQ1Traits === "function" ? inferQ1Traits() : [];
+    
+    // Q1_WEIGHT, Q2_WEIGHT (Q2 화면 로직과 동일)
+    const Q1_WEIGHT = 40;
+    const perQ1 = Q1_WEIGHT / Math.max(q1Traits.length, 1);
+
+    const tagScoreMap = {};
+    const tagSourceCount = {}; 
+    function addTagScore(tag, pts, sourceId) {
+        const key = `${sourceId}|${tag}`;
+        if (!tagSourceCount[key]) {
+            tagSourceCount[key] = true;
+            tagScoreMap[tag] = (tagScoreMap[tag] || 0) + pts;
+        }
+    }
+
+    // 명시적 의도(Primary)
+    const PRIMARY_WEIGHT = 15;
+    const personaIds = [...(input.segments || []), ...(input.interests || [])];
+    const PRIMARY_INTENT_MAP = {
+        t_pet:        ["Care for your pet", "Pet care"],
+        t_multi_kids: ["Care for kids", "Family care"],
+        t_parent_care:["Care for seniors", "Family care"],
+        t_parent_away:["Care for seniors", "Keep your home safe"],
+        t_wellness:   ["Stay fit & healthy", "Health", "Sleep well"],
+        t_security:   ["Keep your home safe", "Security"],
+        t_efficiency: ["Help with chores", "Time saving"],
+        t_remote:     ["Help with chores", "Time saving"],
+        t_dual_income:["Time saving", "Help with chores"],
+        t_night_shift:["Sleep well"],
+        int_energy:   ["Save energy", "Energy Saving"],
+        int_pet:      ["Care for your pet", "Pet care"],
+        int_kids:     ["Care for kids", "Family care"],
+        int_senior:   ["Care for seniors", "Family care"],
+        int_health:   ["Stay fit & healthy", "Health"],
+        int_safe:     ["Keep your home safe", "Security"],
+        int_chores:   ["Help with chores", "Time saving"],
+        int_sleep:    ["Sleep well"],
+        int_mood:     ["Enhanced mood"]
+    };
+    personaIds.forEach(id => {
+        (PRIMARY_INTENT_MAP[id] || []).forEach(tag => addTagScore(tag, PRIMARY_WEIGHT, `primary_${id}`));
+    });
+
+    // 세대 구성 (Household)
+    const HOUSEHOLD_WEIGHT = 10;
+    const HOUSEHOLD_MAP = {
+        hh_young_kids:  ["Care for kids", "Keep your home safe", "Family care"],
+        hh_school_kids: ["Care for kids", "Keep your home safe", "Family care"],
+        hh_senior:      ["Care for seniors", "Keep your home safe", "Family care"],
+        hh_multi_gen:   ["Care for seniors", "Care for kids", "Family care"],
+        hh_solo:        ["Keep your home safe", "Save energy"],
+        hh_couple:      ["Enhanced mood", "Help with chores"]
+    };
+    (input.segments || []).forEach(id => {
+        (HOUSEHOLD_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSEHOLD_WEIGHT, `hh_${id}`));
+    });
+
+    // 라이프스테이지
+    const LIFESTAGE_WEIGHT = 8;
+    const LIFESTAGE_MAP = {
+        ls_parenting:    ["Care for kids", "Keep your home safe", "Family care"],
+        ls_senior:       ["Care for seniors", "Family care", "Health"],
+        ls_empty_nest:   ["Stay fit & healthy", "Sleep well"],
+        ls_starter:      ["Save energy", "Easy to use"],
+        ls_newlywed:     ["Enhanced mood", "Help with chores"],
+        ls_settled:      ["Save energy", "Enhanced mood"],
+        ls_established:  ["Help with chores", "Time saving"]
+    };
+    (input.segments || []).forEach(id => {
+        (LIFESTAGE_MAP[id] || []).forEach(tag => addTagScore(tag, LIFESTAGE_WEIGHT, `ls_${id}`));
+    });
+
+    // 거주지 (Housing)
+    const HOUSING_WEIGHT = 4;
+    const HOUSING_MAP = {
+        h_apt:       ["Save energy", "Keep the air fresh"],
+        h_compact:   ["Save energy"],
+        h_villa:     ["Keep your home safe"],
+        h_house:     ["Keep your home safe"],
+        h_care:      ["Care for seniors"]
+    };
+    (input.housing || []).forEach(id => {
+        (HOUSING_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSING_WEIGHT, `housing_${id}`));
+    });
+
+    // Q1 매직 키워드
+    if (typeof MAGIC_KEY_TO_EXPLORE_TAGS !== "undefined") {
+        const magicKeys = input.magicKeywords || [];
+        for (const key of magicKeys) {
+            const q1Pts = Math.round(perQ1 * 0.8);
+            (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTagScore(tag, q1Pts, `q1_${key}`));
+        }
+    }
+
+    // 추가 텍스트 보너스
+    const purposeBonus = {
+        "반려|펫|pet|dog|cat": "Care for your pet",
+        "부모|시니어|senior": "Care for seniors",
+        "아이|자녀|kid|child": "Care for kids",
+        "에너지|절약|energy|save": "Save energy",
+        "보안|안전|security|safe": "Keep your home safe",
+        "수면|잠|sleep": "Sleep well",
+        "게임|영화|music": "Enhanced mood",
+        "세탁|청소|가사|chore": "Help with chores",
+        "운동|건강|health": "Stay fit & healthy"
+    };
+    Object.entries(purposeBonus).forEach(([pattern, tag]) => {
+        if (new RegExp(pattern, "i").test(purpose.toLowerCase())) addTagScore(tag, 8, `purpose_${tag}`);
+    });
+
+    // 유사 태그 병합 (TAG_MERGE) - 중복 뻥튀기분 삭감(0.9배율 적용)
+    const TAG_MERGE = {
+        "Energy Saving": "Save energy",
+        "Security": "Keep your home safe",
+        "Pet care": "Care for your pet",
+        "Family care": "Care for kids",
+        "Health": "Stay fit & healthy",
+        "Sleep": "Sleep well",
+        "Time saving": "Help with chores",
+        "Easy to use": "Easily control your lights"
+    };
+    for (const [from, to] of Object.entries(TAG_MERGE)) {
+        if (tagScoreMap[from]) {
+            tagScoreMap[to] = (tagScoreMap[to] || 0) + (tagScoreMap[from] * 0.9);
+            delete tagScoreMap[from];
+        }
+    }
+
+    // 기기 보너스 결합
+    const devices = input.devices || [];
+    const integratedScores = Object.entries(tagScoreMap).map(([tag, score]) => {
+        let devBonus = 0;
+        if (typeof DEVICE_TO_EXPLORE_TAGS !== "undefined") {
+            const hasSupport = devices.some(d => (DEVICE_TO_EXPLORE_TAGS[d] || []).includes(tag));
+            if (hasSupport) devBonus = 15; // Q3 기기 매칭에 대한 대형 가중치 직접 주입
+        }
+        return { tag, score: score + devBonus };
+    });
+
+    // 점수 정규화 (엔진 적합성을 위해 최고점을 12점으로 맞춤)
+    const maxScore = Math.max(1, ...integratedScores.map(t => t.score));
+    return integratedScores
+        .map(t => ({
+            tag: t.tag,
+            score: Math.round((t.score / maxScore) * 12)
+        }))
+        .filter(t => t.score > 0)
+        .sort((a, b) => b.score - a.score);
+}
+
 function runCuration() {
     if (!curationLoaded || !curationDbV1 || !curationDbV2) return;
 
@@ -10642,14 +10802,14 @@ function runCuration() {
 
     if (typeof curateScenarios !== "function") return;
 
-    // 중간 데이터 수집: 태그 도출
-    const tagScores = (typeof buildExploreTagsFromInput === "function")
-        ? buildExploreTagsFromInput(input)
-        : [];
+    // 중간 데이터 수집: 기존의 독립적 태그 도출 로직 폐기, Q2-Q3 결합 로직으로 변경
+    const tagScores = getIntegratedTagScores(input);
 
     const v2Scenarios = curationDbV2.scenarios || [];
     const totalPool = (curationDbV1.scenarios || []).length + v2Scenarios.length;
-    const results = curateScenarios(input, curationDbV1.scenarios, v2Scenarios, { maxResults: 5, minScore: 5 });
+    
+    // 엔진에 통합 가중치 주입 (overrideTagScores)
+    const results = curateScenarios(input, curationDbV1.scenarios, v2Scenarios, { maxResults: 5, minScore: 5, overrideTagScores: tagScores });
 
     // Selection Summary 구축
     if (typeof buildSelectionSummary === "function") {
