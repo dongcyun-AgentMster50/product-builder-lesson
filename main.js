@@ -4395,6 +4395,17 @@ function buildStep3Insight() {
                         : "Q1 (40pt) + Q2 (60pt) signals. Cluster synergy (×1.2) when 2+ signals share a theme; cross-validated signals get ×1.5 boost. Click ▸ for score breakdown."}</p>
                     ${activeClusterHtml ? `<div class="q2-cluster-row">${activeClusterHtml}</div>` : ""}
 
+                    <div class="q2-legend">
+                        <span class="q2-legend-item"><span class="q2-legend-bar q2-score-bar--q1"></span> ${isKo ? "Q1 도시 맥락 점수" : "Q1 city context score"}</span>
+                        <span class="q2-legend-item"><span class="q2-legend-bar q2-score-bar--q2"></span> ${isKo ? "Q2 생활 맥락 점수" : "Q2 lifestyle score"}</span>
+                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#dc2626"></span> ${isKo ? "패밀리 케어" : "Family Care"}</span>
+                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#ea580c"></span> ${isKo ? "시간·효율" : "Time & Efficiency"}</span>
+                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#d97706"></span> ${isKo ? "절약·비용" : "Savings"}</span>
+                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#16a34a"></span> ${isKo ? "건강·여가" : "Health & Leisure"}</span>
+                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#2563eb"></span> ${isKo ? "안전·보안" : "Security"}</span>
+                        <span class="q2-legend-item"><span class="q2-corro-badge" style="font-size:0.6rem">${isKo ? "교차검증 ×1.5" : "cross-validated ×1.5"}</span></span>
+                    </div>
+
                     <div class="q2-score-section">
                         <p class="q2-score-section-label"><span class="q2-score-section-icon">📍</span> ${isKo ? "도시 맥락 (Q1)" : "City Context (Q1)"} <span class="q2-score-section-weight">${Q1_WEIGHT}${isKo ? "점" : "pt"}</span></p>
                         ${q1ScoreBars || `<p class="q2-score-empty">${isKo ? "Q1 도시 프로필 미반영" : "No Q1 city profile applied"}</p>`}

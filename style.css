@@ -2821,6 +2821,23 @@ textarea {
 }
 
 /* 클러스터 & 교차검증 */
+/* 색상 범례 */
+.q2-legend {
+    display: flex; flex-wrap: wrap; gap: 6px 12px;
+    padding: 6px 10px; border-radius: 8px;
+    background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.05);
+}
+.q2-legend-item {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.64rem; color: var(--muted); white-space: nowrap;
+}
+.q2-legend-bar {
+    display: inline-block; width: 16px; height: 6px; border-radius: 3px;
+}
+.q2-legend-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+}
+
 .q2-cluster-row {
     display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px;
 }
