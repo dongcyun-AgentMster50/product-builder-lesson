@@ -10178,7 +10178,7 @@ function normalizeSiteCode(siteCode) {
 function localizeCountryLabel(countryName, siteCode) {
     const bySite = {
         KR: { ko: "대한민국 (KR)", en: "South Korea (KR)", de: "Südkorea (KR)" },
-        SEC: { ko: "대한민국 (SEC)", en: "South Korea (SEC)", de: "Südkorea (SEC)" },
+        SEC: { ko: "대한민국 (KR)", en: "South Korea (KR)", de: "Südkorea (KR)" },
         US: { ko: "미국 (US)", en: "United States (US)", de: "Vereinigte Staaten (US)" },
         UK: { ko: "영국 (UK)", en: "United Kingdom (UK)", de: "Vereinigtes Königreich (UK)" },
         DE: { ko: "독일 (DE)", en: "Germany (DE)", de: "Deutschland (DE)" },
