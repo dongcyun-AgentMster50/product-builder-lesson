@@ -529,11 +529,37 @@ async function handleGenerate(req, res) {
         : String(body?.apiKey || process.env.OPENAI_API_KEY || "").trim();
     const regionCtx  = body?.regionInsight ? JSON.stringify(body.regionInsight, null, 2) : null;
     const selectionSummary = body?.selectionSummary || null;
+    const isCampaignSection = body?.campaignSection === true;
+    const sectionPrompt = String(body?.sectionPrompt || "").trim();
 
     let userMessage;
+    let jsonMode = false;
 
-    // Selection Summary가 있으면 JSON 모드 (Part 5-A)
-    if (selectionSummary && selectionSummary.selectedScenarios && selectionSummary.selectedScenarios.length > 0) {
+    // ─── Mode 1: Campaign Section (13-Section 개별 API 호출) ───
+    if (isCampaignSection && sectionPrompt) {
+        const langInstruction = locale === "ko"
+            ? "반드시 한국어로 작성하세요 (전문 용어만 영어 병기 가능)."
+            : "Write in English.";
+        userMessage = [
+            `## Context`,
+            `- Role: ${role}`,
+            `- Country: ${country}${city ? ` / City: ${city}` : ""}`,
+            `- Target Segment: ${segment || "(not specified)"}`,
+            `- Devices: ${devices || "(none)"}`,
+            `- Mission / Value Focus: ${mission || "Discover"}`,
+            regionCtx ? `\n## Regional Data\n${regionCtx}\n` : "",
+            `\n## Task`,
+            sectionPrompt,
+            "",
+            `IMPORTANT:`,
+            `- ${langInstruction}`,
+            `- 반드시 제공된 시나리오 원문(Original)에 기반하여 작성하세요. 원문에 없는 내용을 창작하지 마세요.`,
+            `- 출력 형식: JSON 배열 (예: [{...}, {...}]). 마크다운이나 설명 텍스트는 포함하지 마세요.`,
+            `- 배열이 아닌 단일 객체로 응답해야 하면 [{}] 형태로 감싸세요.`
+        ].filter(Boolean).join("\n");
+
+    // ─── Mode 2: Selection Summary JSON 모드 (Part 5-A) ───
+    } else if (selectionSummary && selectionSummary.selectedScenarios && selectionSummary.selectedScenarios.length > 0) {
         const primary = selectionSummary.selectedScenarios.find(s => s.isPrimary) || selectionSummary.selectedScenarios[0];
         const primaryContext = primary ? [
             `\n## Selected Explore Scenario (변형의 출발점)`,
@@ -574,8 +600,9 @@ async function handleGenerate(req, res) {
             "",
             "JSON 스키마 최상위 키: transformation, valueHighlights, localizedInsight, confidenceOrEvidence"
         ].filter(Boolean).join("\n");
+        jsonMode = true;
     } else {
-        // Selection Summary 없으면 기존 마크다운 모드 (Part 5-B Legacy)
+        // ─── Mode 3: 기존 마크다운 레거시 모드 (Part 5-B) ───
         userMessage = [
             `## Input State`,
             `- Q1. Role: ${role}`,
@@ -597,9 +624,6 @@ async function handleGenerate(req, res) {
             `- Use --- (horizontal rule) between sections.`
         ].filter(Boolean).join("\n");
     }
-
-    // Selection Summary 존재 시 JSON 모드
-    const jsonMode = !!(selectionSummary && selectionSummary.selectedScenarios && selectionSummary.selectedScenarios.length > 0);
 
     sendSseHeaders(res);
     res.write(`data: ${JSON.stringify({ type: "start" })}\n\n`);

@@ -5449,6 +5449,10 @@ function syncWizardUi() {
     if (categoryFrame && currentStep !== 4) {
         categoryFrame.classList.add("hidden");
     }
+    const campaignFrame = document.getElementById("campaign-output-frame");
+    if (campaignFrame && currentStep !== 4) {
+        campaignFrame.classList.add("hidden");
+    }
     // 상태 배지 제거
     if (currentStep !== 4) {
         setSectionStatusBadge("curation-title", null);
@@ -11083,6 +11087,7 @@ let curationDbV1 = null;
 let curationDbV2 = null;
 let curationLoaded = false;
 let latestSelectionSummary = null;  // Selection Stage 산출물 — AI 프롬프트 및 output 렌더링에 전달
+let _latestCurationResults = [];    // 최근 큐레이션 결과 (campaign output에서 참조)
 
 async function loadCurationDb() {
     if (curationLoaded) return;
@@ -11600,6 +11605,9 @@ function renderCurationResults(results, selectedDevices) {
     const container = document.getElementById("curation-results");
     if (!frame || !container) return;
 
+    // 캠페인 output에서 참조할 수 있도록 저장
+    _latestCurationResults = results;
+
     if (results.length === 0) {
         frame.classList.add("hidden");
         return;
@@ -11791,7 +11799,6 @@ function triggerAiFromCuration(scenario) {
         if (match) {
             match.isPrimary = true;
         } else {
-            // 사용자가 선택한 시나리오가 top 3에 없으면 추가
             latestSelectionSummary.selectedScenarios.unshift({
                 id: scenario.id || `${scenario._source}-${(f.title || "").replace(/\s+/g, "-")}`,
                 title: f.title,
@@ -11806,65 +11813,46 @@ function triggerAiFromCuration(scenario) {
                 isPrimary: true
             });
         }
-        // 선택 이유 업데이트
         const isKo = currentLocale === "ko";
         latestSelectionSummary.selectionReason = isKo
             ? `"${f.title}" 시나리오를 직접 선택하셨습니다. (적합도 ${f.score}점, 소스: Explore ${scenario._source || "v2.0"})`
             : `You selected "${f.title}" (score: ${f.score}, source: Explore ${scenario._source || "v2.0"}).`;
     }
 
-    // STEP 2 활성 → 카테고리 선택 UI 표시
-    updateOutputFlowTracker(2, { 1: "done", 2: "active", 3: "waiting" });
-    setSectionStatusBadge("category-title", "working");
-    const isKoTrig = currentLocale === "ko";
-    updateSectionHelper("category-helper",
-        isKoTrig
-            ? "필요한 유형을 골라 주세요. 복수 선택이 가능하며, 선택 후 아래 생성 버튼을 누르면 AI가 작업을 시작합니다."
-            : "Pick the output types you need. Multiple selections allowed. Then press Generate.");
+    // ── 13-Section Campaign Output 실행 ──
+    // aiScenarioContext 빌드 (generateScenario에서 사용하던 것과 동일)
+    const selectedMarket = marketOptions.find(m => m.siteCode === countrySelect.value);
+    const city = getCityValue();
+    const selectedDeviceLabels = getSelectedDeviceLabels();
+    const selectedDevices = getSelectedDevices();
+    const rawSelectedSegment = getSelectedSegment();
+    const rawPurpose = purposeInput.value.trim();
 
-    renderOutputCategories();
-    const categoryFrame = document.getElementById("output-category-frame");
-    if (categoryFrame) {
-        categoryFrame.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    // 카테고리 선택 후 생성 버튼 (중복 방지)
-    let genBtn = document.getElementById("category-generate-btn");
-    if (!genBtn) {
-        genBtn = document.createElement("button");
-        genBtn.id = "category-generate-btn";
-        genBtn.className = "access-v2-btn";
-        genBtn.style.cssText = "margin-top:14px;max-width:400px;margin-left:auto;margin-right:auto;display:block";
-        genBtn.textContent = currentLocale === "ko"
-            ? "선택한 카테고리로 AI 시나리오 생성"
-            : "Generate AI scenario for selected categories";
-        const container = document.getElementById("output-categories");
-        if (container) container.parentElement.appendChild(genBtn);
-    }
-
-    genBtn.onclick = () => {
-        // STEP 2 완료 → STEP 3 활성
-        updateOutputFlowTracker(3, { 1: "done", 2: "done", 3: "active" });
-        setSectionStatusBadge("category-title", "done");
-        const isKoG = currentLocale === "ko";
-        updateSectionHelper("category-helper",
-            isKoG ? "카테고리 선택 완료. AI가 시나리오를 생성하고 있습니다." : "Category selection complete. AI is generating your scenario.");
-        updateSectionHelper("result-helper",
-            isKoG ? "🤖 AI가 맞춤형 시나리오를 생성하고 있습니다. 잠시만 기다려 주세요…" : "🤖 AI is building your custom scenario. Please wait…");
-        setSectionStatusBadge("result-frame-title", "working");
-
-        const cats = [...selectedOutputCategories];
-        const parentInfo = `[Parent Scenario: ${f.source}] ${f.article} > ${f.title}`;
-        const originalSnippet = (f.originalText || f.narrative || "").substring(0, 300);
-        const catContext = cats.length ? `\n\n--- Output Focus ---\n${cats.join(", ")}` : "";
-        const curatedContext = `${purposeInput.value.trim()}\n\n--- Curated Parent ---\n${parentInfo}\n${originalSnippet}${catContext}`;
-        const originalPurpose = purposeInput.value;
-        purposeInput.value = curatedContext;
-        _mpBypassProcess = true;
-        generateScenario();
-        _mpBypassProcess = false;
-        purposeInput.value = originalPurpose;
+    const context = {
+        role: typeof getRoleTitle === "function" ? getRoleTitle(roleSelect?.value || "") : "",
+        roleId: roleSelect?.value || "",
+        countryCode: selectedMarket?.siteCode || "",
+        country: typeof getCountryName === "function" ? getCountryName(selectedMarket?.siteCode || "") : (selectedMarket?.label || ""),
+        city: city || "",
+        cityDisplay: typeof getCityDisplayValue === "function" ? getCityDisplayValue(selectedMarket?.siteCode || "", city || "") : (city || ""),
+        segment: rawSelectedSegment || "",
+        purpose: rawPurpose,
+        devices: selectedDeviceLabels.length > 0 ? selectedDeviceLabels : selectedDevices.map(d => typeof getCategoryName === "function" ? getCategoryName(d) : d),
+        deviceGroups: typeof getSelectedDeviceGroupIds === "function" ? getSelectedDeviceGroupIds() : [],
+        intentTags: [...(_magicSelected || [])],
+        missionBucket: typeof analyzeIntent === "function" ? analyzeIntent(rawPurpose, rawSelectedSegment, selectedDevices, []).missionBucket : "Discover",
+        locale: currentLocale,
+        provider: selectedProvider,
+        selectionSummary: latestSelectionSummary || null
     };
+
+    // 큐레이션 결과 가져오기 (renderCurationResults에서 사용된 results)
+    const curationResults = _latestCurationResults || [];
+
+    // 13-section output 실행
+    if (typeof launchCampaignOutput === "function") {
+        launchCampaignOutput(curationResults, scenario, context, latestSelectionSummary);
+    }
 }
 
 /* ══════════════════════════════════════════════════════════════════════

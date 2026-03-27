@@ -133,15 +133,33 @@ function extractJsonFromAIOutput(text) {
         } catch { /* fall through */ }
     }
 
-    // 2. 전체 텍스트가 JSON인지 시도
+    // 2. 전체 텍스트가 JSON인지 시도 (객체 또는 배열)
     const trimmed = text.trim();
-    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+    if ((trimmed.startsWith("{") && trimmed.endsWith("}")) ||
+        (trimmed.startsWith("[") && trimmed.endsWith("]"))) {
         try {
             return { json: JSON.parse(trimmed), remainder: "" };
         } catch { /* fall through */ }
     }
 
-    // 3. 텍스트 내 첫 번째 { ... } 블록 추출 (중첩 대응)
+    // 3. 텍스트 내 첫 번째 [ ... ] 배열 추출 (중첩 대응)
+    const firstBracket = trimmed.indexOf("[");
+    if (firstBracket >= 0) {
+        let depth = 0;
+        let end = -1;
+        for (let i = firstBracket; i < trimmed.length; i++) {
+            if (trimmed[i] === "[") depth++;
+            else if (trimmed[i] === "]") { depth--; if (depth === 0) { end = i; break; } }
+        }
+        if (end > firstBracket) {
+            try {
+                const candidate = trimmed.substring(firstBracket, end + 1);
+                return { json: JSON.parse(candidate), remainder: trimmed.substring(end + 1).trim() };
+            } catch { /* fall through */ }
+        }
+    }
+
+    // 4. 텍스트 내 첫 번째 { ... } 블록 추출 (중첩 대응)
     const firstBrace = trimmed.indexOf("{");
     if (firstBrace >= 0) {
         let depth = 0;
@@ -160,6 +178,49 @@ function extractJsonFromAIOutput(text) {
 
     // JSON 추출 실패 — 원본 텍스트 그대로 반환 (마크다운 fallback)
     return { json: null, remainder: text };
+}
+
+/**
+ * 캠페인 섹션 API 응답의 필드 유무를 검증하고 경고 로그 생성
+ * @param {string} sectionId - "05"~"12"
+ * @param {Array} data - 파싱된 JSON 배열
+ * @returns {{ valid: boolean, warnings: string[], data: Array }}
+ */
+function validateCampaignSectionData(sectionId, data) {
+    if (!Array.isArray(data)) {
+        return { valid: false, warnings: ["응답이 배열 형식이 아닙니다."], data: [] };
+    }
+
+    const SECTION_REQUIRED_KEYS = {
+        "05": ["rank", "title", "fgdPriority", "recommendation"],
+        "06": ["rank", "title", "validationObjective", "fgdQuestions"],
+        "07": ["rank", "title", "consumerTension", "campaignTheme"],
+        "08": ["rank", "title", "tones"],
+        "09": ["rank", "title", "situationSetup", "creativeHook"],
+        "10": ["rank", "title", "searchFor", "referenceMood"],
+        "11": ["rank", "title", "concepts"],
+        "12": ["rank", "title", "storyHook", "cuts"]
+    };
+
+    const requiredKeys = SECTION_REQUIRED_KEYS[sectionId] || ["rank", "title"];
+    const warnings = [];
+
+    data.forEach((item, idx) => {
+        requiredKeys.forEach(key => {
+            if (item[key] === undefined || item[key] === null || item[key] === "") {
+                warnings.push(`항목 ${idx + 1}: "${key}" 필드 누락`);
+                // 기본값 보정
+                if (key === "rank") item.rank = idx + 1;
+                if (key === "title") item.title = `Scenario ${idx + 1}`;
+            }
+        });
+    });
+
+    if (warnings.length > 0) {
+        console.warn(`[OutputSchema] 섹션 ${sectionId} 검증 경고:`, warnings);
+    }
+
+    return { valid: warnings.length === 0, warnings, data };
 }
 
 /**
