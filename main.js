@@ -487,7 +487,9 @@ const Q4_ALL_QUICK_IDS = [
     "monitor", "printer", "memory-storage", "hub", "smartthings-product", "accessories",
     "smart-plug", "camera", "door-lock", "activity-sensor", "smart-switch",
     "lighting", "body-scale", "partner-sleep", "partner-humidifier",
-    "care-camera", "sleep-sensor", "energy-monitor", "wearable-care"
+    "care-camera", "sleep-sensor", "energy-monitor", "wearable-care",
+    "galaxy-ring", "galaxy-xr", "galaxy-accessories", "music-frame",
+    "dt-vacuum", "dt-small-appliance", "copilot-pc", "desktop-pc", "sec-moving-style"
 ];
 
 // ── 스타일 카드 정의 (8개 공통 — locale 불변) ──
@@ -691,18 +693,125 @@ function clearQ3AutoMode() {
 }
 
 function handleQ4AutoSelect() {
-    // 모든 기기 해제 → "auto" 모드 플래그 설정
+    // 모든 기기 해제
     q4ActivePresets.clear();
     Q4_ALL_QUICK_IDS.forEach((optionId) => setDeviceOptionChecked(optionId, false));
+
+    // Q1/Q2 기반 기기 자동 선택
+    const personaIds = getSelectedPersonaOptionIds();
+    const isKo = currentLocale === "ko";
+
+    // 페르소나 → 기기 매핑
+    const PERSONA_DEVICE_MAP = {
+        // 세대 구성
+        hh_solo: ["galaxy-phone", "galaxy-watch", "air-conditioner", "robot-vacuum", "lighting"],
+        hh_couple: ["tv-premium", "soundbar", "air-conditioner", "robot-vacuum", "lighting"],
+        hh_young_kids: ["camera", "air-purifier", "robot-vacuum", "galaxy-tab", "door-lock"],
+        hh_school_kids: ["galaxy-tab", "camera", "air-purifier", "tv-premium"],
+        hh_adult_kids: ["tv-premium", "galaxy-phone", "air-conditioner", "robot-vacuum"],
+        hh_multi_gen: ["camera", "activity-sensor", "galaxy-watch", "tv-premium", "air-purifier"],
+        hh_senior: ["activity-sensor", "galaxy-watch", "camera", "air-conditioner"],
+        // 가족 상황
+        t_dual_income: ["robot-vacuum", "washer", "dryer", "smart-plug", "door-lock"],
+        t_pet: ["pet-camera", "pet-feeder", "robot-vacuum", "air-purifier"],
+        t_parent_away: ["camera", "activity-sensor", "galaxy-phone"],
+        t_parent_care: ["activity-sensor", "galaxy-watch", "camera"],
+        // 라이프스테이지
+        ls_starter: ["galaxy-phone", "lighting", "smart-plug", "air-conditioner"],
+        ls_newlywed: ["tv-premium", "soundbar", "robot-vacuum", "lighting", "air-conditioner"],
+        ls_settled: ["air-conditioner", "air-purifier", "robot-vacuum", "tv-premium", "washer"],
+        ls_parenting: ["camera", "air-purifier", "robot-vacuum", "galaxy-tab", "door-lock"],
+        ls_established: ["tv-premium", "air-conditioner", "robot-vacuum", "washer", "dryer"],
+        ls_empty_nest: ["tv-premium", "galaxy-watch", "air-conditioner", "robot-vacuum"],
+        ls_senior: ["galaxy-watch", "activity-sensor", "camera", "air-conditioner"],
+        // 생활 패턴
+        t_remote: ["galaxy-tab", "galaxy-phone", "air-purifier", "lighting", "speaker"],
+        t_long_away: ["camera", "door-lock", "smart-plug", "robot-vacuum"],
+        t_weekend_out: ["camera", "door-lock", "smart-plug", "robot-vacuum"],
+        t_night_shift: ["sleep-sensor", "lighting", "air-conditioner"],
+        t_homebody: ["tv-premium", "soundbar", "gaming-console", "air-purifier", "lighting"],
+        // 생활 테마
+        int_energy: ["smart-plug", "energy-monitor", "eco-aircon"],
+        int_air: ["air-purifier", "ventilation"],
+        int_lights: ["lighting", "smart-switch"],
+        int_safe: ["camera", "door-lock", "doorbell", "open-sensor"],
+        int_sleep: ["sleep-sensor", "lighting", "air-conditioner"],
+        int_pet: ["pet-camera", "pet-feeder", "robot-vacuum"],
+        int_health: ["galaxy-watch", "galaxy-buds", "body-scale"],
+        // 거주지
+        h_apt: ["air-conditioner", "air-purifier", "robot-vacuum"],
+        h_house: ["camera", "door-lock", "doorbell", "smart-plug"],
+        h_compact: ["air-conditioner", "robot-vacuum", "lighting"],
+    };
+
+    const autoDevices = new Set();
+    const reasons = [];
+    personaIds.forEach(id => {
+        const devices = PERSONA_DEVICE_MAP[id];
+        if (devices) {
+            devices.forEach(d => autoDevices.add(d));
+        }
+    });
+
+    // 기본 기기 (최소 선택)
+    if (autoDevices.size === 0) {
+        ["galaxy-phone", "tv-premium", "air-conditioner", "robot-vacuum", "lighting"].forEach(d => autoDevices.add(d));
+    }
+
+    // 실제 기기 선택
+    autoDevices.forEach(deviceId => {
+        setDeviceOptionChecked(deviceId, true);
+    });
+
+    // 선택 이유 구성
+    const reasonMap = {
+        hh_solo: isKo ? "1인 가구 → 스마트폰·워치 중심 간편 제어" : "Single → phone & watch centric control",
+        hh_couple: isKo ? "2인 가구 → 엔터테인먼트 + 생활 편의" : "Couple → entertainment + convenience",
+        hh_young_kids: isKo ? "영유아 가구 → 안전 모니터링 + 공기질" : "Young kids → safety monitoring + air",
+        hh_school_kids: isKo ? "학령기 자녀 → 학습 태블릿 + 안전" : "School kids → tablet + safety",
+        hh_senior: isKo ? "시니어 → 활동 감지 + 건강 모니터링" : "Senior → activity + health monitoring",
+        hh_multi_gen: isKo ? "다세대 → 돌봄 센서 + 공기질" : "Multi-gen → care sensors + air quality",
+        t_dual_income: isKo ? "맞벌이 → 가사 자동화 + 에너지 관리" : "Dual income → chore automation + energy",
+        t_pet: isKo ? "반려동물 → 펫 카메라 + 자동 급식" : "Pets → pet camera + auto feeder",
+        t_remote: isKo ? "재택근무 → 태블릿 + 공기질 + 조명" : "Remote work → tablet + air + lighting",
+        t_homebody: isKo ? "홈 레저 → TV + 사운드바 + 조명" : "Homebody → TV + soundbar + lighting",
+        ls_parenting: isKo ? "육아기 → 안전 카메라 + 공기청정" : "Parenting → safety camera + air purifier",
+        int_energy: isKo ? "에너지 절약 → 스마트 플러그 + 모니터" : "Energy saving → smart plug + monitor",
+        int_safe: isKo ? "안전 중시 → 카메라 + 도어락" : "Safety → camera + door lock",
+        int_pet: isKo ? "펫 케어 → 펫 카메라 + 급식기" : "Pet care → pet camera + feeder",
+        int_health: isKo ? "건강 관리 → 워치 + 체성분계" : "Health → watch + body scale",
+    };
+
+    personaIds.forEach(id => {
+        if (reasonMap[id]) reasons.push(reasonMap[id]);
+    });
+
     // deviceCustom에 auto 마커 설정
     const customInput = document.getElementById("device-custom");
     if (customInput) customInput.value = "__auto__";
     renderQ4Composer();
     updateStatePreview();
     updateStepInsight();
+
     // 버튼 활성 표시
     const btn = document.getElementById("q4-auto-btn");
     if (btn) btn.classList.add("active");
+
+    // 선택 이유 표시
+    if (reasons.length > 0) {
+        const reasonHtml = `
+            <div class="q4-auto-reason" style="margin-top:10px;padding:10px 14px;background:#f0f4ff;border-radius:8px;border-left:3px solid #1976d2;font-size:.75rem;color:#333;line-height:1.6">
+                <strong style="color:#1976d2">${isKo ? "자동 선택 근거" : "Auto-selection rationale"}</strong>
+                <ul style="margin:4px 0 0 16px;padding:0">
+                    ${reasons.map(r => `<li>${escapeHtml(r)}</li>`).join("")}
+                </ul>
+                <p style="margin:6px 0 0;color:#888;font-size:.68rem">${isKo ? "직접 조정이 필요하면 아래에서 기기를 추가/해제할 수 있습니다." : "You can adjust selections below if needed."}</p>
+            </div>`;
+        const autoBtn = document.getElementById("q4-auto-btn");
+        // 기존 이유 카드 제거
+        autoBtn?.parentElement?.querySelector(".q4-auto-reason")?.remove();
+        if (autoBtn) autoBtn.insertAdjacentHTML("afterend", reasonHtml);
+    }
 }
 // auto 모드 해제: 기기 수동 선택 시
 function clearQ4AutoMode() {
@@ -710,6 +819,8 @@ function clearQ4AutoMode() {
     if (customInput?.value === "__auto__") customInput.value = "";
     const btn = document.getElementById("q4-auto-btn");
     if (btn) btn.classList.remove("active");
+    // 자동 선택 근거 카드 제거
+    btn?.parentElement?.querySelector(".q4-auto-reason")?.remove();
 }
 
 function shouldBypassAccessForLocal() {
@@ -1429,15 +1540,20 @@ function renderQ4DotcomProducts() {
         { label: i("청소기", "Vacuums"), icon: "🤖", path: "/vacuum-cleaners/all-vacuum-cleaners/" },
         { label: i("식기세척기", "Dishwashers"), icon: "🍽️", path: "/dishwashers/all-dishwashers/" },
         { label: "SmartThings", icon: "🏠", path: "/smartthings/all-smartthings/" },
-        { label: i("eStore 전체", "eStore"), icon: "🛒", path: "/offer/" }
+        { label: i("전체 보기", "All Products"), icon: "🛒", path: "/offer/" }
     ];
 
-    const title = i("Samsung eStore 제품 보기", "Browse Samsung eStore");
+    const title = i("Samsung 판매 제품 보기", "Browse Samsung Products");
+    const desc = i(
+        "해당 국가 Samsung.com에서 판매 중인 제품을 카테고리별로 확인할 수 있습니다. 시나리오에 반영할 기기를 직접 탐색하고, 실제 판매 가격과 스펙을 비교해 보세요.",
+        "Browse products currently available on Samsung.com for this market. Explore devices by category, compare specs and pricing to inform your scenario."
+    );
     const domain = baseUrl.replace("https://", "");
 
     container.innerHTML = `
         <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line,#e0e0e0)">
             <p style="font-size:.78rem;font-weight:700;color:var(--accent-strong,#003366);margin-bottom:4px">${escapeHtml(title)}</p>
+            <p style="font-size:.66rem;color:#666;margin-bottom:6px;line-height:1.5">${escapeHtml(desc)}</p>
             <p style="font-size:.68rem;color:#888;margin-bottom:8px">${escapeHtml(domain)}</p>
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px">
                 ${categories.map((cat) => `
@@ -2584,6 +2700,8 @@ function updateStepInsight() {
     const insight = getStepInsight();
     stepInsight.innerHTML = buildInsightMarkup(insight);
     bindQ2EvidenceToggles(stepInsight);
+    bindInsightRetryButton(stepInsight);
+    bindLegendHelpButton(stepInsight);
     updateQuestionHelpers();
     stepInsight.classList.remove("insight-refresh");
     void stepInsight.offsetWidth;
@@ -2652,6 +2770,158 @@ function bindQ2EvidenceToggles(container) {
             }
         });
     });
+}
+
+/** 스코어보드 범례 도움말 팝업 바인딩 */
+function bindLegendHelpButton(container) {
+    const helpBtn = container.querySelector("#q2-legend-help-btn");
+    if (!helpBtn) return;
+    helpBtn.addEventListener("click", () => {
+        showLegendHelpPopup();
+    });
+}
+
+function showLegendHelpPopup() {
+    // 기존 팝업이 있으면 제거
+    const existing = document.getElementById("legend-help-overlay");
+    if (existing) { existing.remove(); return; }
+
+    const isKo = currentLocale === "ko";
+
+    const content = isKo ? `
+        <div class="legend-help-popup">
+            <div class="legend-help-header">
+                <h3>스코어보드 범례 보는 방법</h3>
+                <button type="button" class="legend-help-close" id="legend-help-close">&times;</button>
+            </div>
+            <div class="legend-help-body">
+                <section class="legend-help-section">
+                    <h4>막대 바 (2열 구조)</h4>
+                    <p>각 Explore 태그 옆에 <strong>2개의 막대</strong>가 표시됩니다.</p>
+                    <div class="legend-help-table">
+                        <div class="legend-help-row">
+                            <span class="legend-help-bar-sample q2-score-bar--q1"></span>
+                            <span><strong>좌측 (파랑)</strong> — Q1 도시 맥락 점수</span>
+                        </div>
+                        <div class="legend-help-desc">선택한 도시의 기후, 인프라, 거주 형태 등에서 추론된 점수</div>
+                        <div class="legend-help-row">
+                            <span class="legend-help-bar-sample q2-score-bar--q2"></span>
+                            <span><strong>우측 (초록)</strong> — Q2 생활 맥락 점수</span>
+                        </div>
+                        <div class="legend-help-desc">세대 구성, 라이프스테이지, 생활 패턴 등 직접 선택한 항목에서 부여된 점수</div>
+                    </div>
+                    <div class="legend-help-example">
+                        <p class="legend-help-example-title">예시: "에너지 절약" 태그</p>
+                        <ul>
+                            <li><span class="legend-help-bar-sample q2-score-bar--q1" style="width:60px"></span> Q1 파란 바가 길다 → 도시 프로필에서 "에너지 비용이 높은 지역"이라는 신호가 잡혀서 높은 점수</li>
+                            <li><span class="legend-help-bar-sample q2-score-bar--q2" style="width:20px"></span> Q2 초록 바가 짧다 → Q2에서 에너지 관련 선택을 하지 않아 낮은 점수</li>
+                        </ul>
+                        <p class="legend-help-example-title">예시: "가족 돌봄" 태그</p>
+                        <ul>
+                            <li><span class="legend-help-bar-sample q2-score-bar--q1" style="width:10px"></span> Q1 바가 짧음 → 도시 자체에서는 가족 돌봄 신호가 약함</li>
+                            <li><span class="legend-help-bar-sample q2-score-bar--q2" style="width:70px"></span> Q2 바가 길다 → 영유아 자녀 가구 + 맞벌이를 선택해서 높은 점수</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="legend-help-section">
+                    <h4>색상 점 (클러스터 분류)</h4>
+                    <p>각 태그는 아래 <strong>5개 클러스터</strong> 중 하나에 속합니다. 같은 클러스터에 신호가 2개 이상이면 시너지(x1.2)가 적용됩니다.</p>
+                    <div class="legend-help-clusters">
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#dc2626"></span> <strong>패밀리 케어</strong> — 아이 돌봄, 시니어 케어, 가족 돌봄</div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#ea580c"></span> <strong>시간·효율</strong> — 가사 도움, 시간 절약, 간편 사용</div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#d97706"></span> <strong>절약·비용</strong> — 에너지 절약, 에너지 절감</div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#16a34a"></span> <strong>건강·여가</strong> — 건강 관리, 숙면 도움, 분위기 연출</div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#2563eb"></span> <strong>안전·보안</strong> — 집 안전, 보안, 분실물 찾기</div>
+                    </div>
+                </section>
+
+                <section class="legend-help-section">
+                    <h4>교차검증 x1.5</h4>
+                    <p>Q1(도시)과 Q2(생활) <strong>양쪽에서 같은 태그가 도출</strong>되면 교차검증 배지가 붙고 점수가 <strong>1.5배</strong>로 가산됩니다.</p>
+                    <div class="legend-help-example">
+                        <p class="legend-help-example-title">예시</p>
+                        <ul>
+                            <li>서울 선택 → Q1에서 "공기질 관리" 도출 (미세먼지 신호)</li>
+                            <li>Q2에서 "쾌적한 공기" 테마도 선택</li>
+                            <li>→ "Keep the air fresh" 태그에 <span class="q2-corro-badge" style="font-size:0.6rem">교차검증 ×1.5</span> 적용</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="legend-help-section">
+                    <h4>종합 읽기</h4>
+                    <div class="legend-help-example" style="background:#f0f4ff">
+                        <p style="font-family:monospace;font-size:0.75rem;line-height:1.8;margin:0">
+                            <strong>"Keep your home safe" (홈 안전·보안)</strong><br>
+                            <span class="legend-help-bar-sample q2-score-bar--q1" style="width:40px"></span> Q1: 8점 — 도시에 빈집 보안 이슈 신호<br>
+                            <span class="legend-help-bar-sample q2-score-bar--q2" style="width:70px"></span> Q2: 14점 — 장시간 부재 + 시니어 케어 선택<br>
+                            <span class="q2-legend-dot" style="background:#2563eb;vertical-align:middle"></span> 안전·보안 클러스터<br>
+                            <span class="q2-corro-badge" style="font-size:0.6rem">교차검증 ×1.5</span> → 최종: (8+14) × 1.5 = <strong>33점</strong>
+                        </p>
+                    </div>
+                    <p style="margin-top:8px;color:#666;font-size:0.75rem">두 열의 비율을 보면 "이 시나리오가 도시 특성 때문에 올라온 건지, 내가 선택한 생활 맥락 때문인지"를 바로 파악할 수 있습니다.</p>
+                </section>
+            </div>
+        </div>
+    ` : `
+        <div class="legend-help-popup">
+            <div class="legend-help-header">
+                <h3>How to Read the Scoreboard</h3>
+                <button type="button" class="legend-help-close" id="legend-help-close">&times;</button>
+            </div>
+            <div class="legend-help-body">
+                <section class="legend-help-section">
+                    <h4>Bar Chart (2 columns)</h4>
+                    <p>Each Explore tag shows <strong>two bars</strong> representing the source of its score.</p>
+                    <div class="legend-help-table">
+                        <div class="legend-help-row">
+                            <span class="legend-help-bar-sample q2-score-bar--q1"></span>
+                            <span><strong>Left (blue)</strong> — Q1 City Context score</span>
+                        </div>
+                        <div class="legend-help-desc">Score inferred from city climate, infrastructure, and housing</div>
+                        <div class="legend-help-row">
+                            <span class="legend-help-bar-sample q2-score-bar--q2"></span>
+                            <span><strong>Right (green)</strong> — Q2 Lifestyle score</span>
+                        </div>
+                        <div class="legend-help-desc">Score from your household, life stage, and lifestyle selections</div>
+                    </div>
+                </section>
+                <section class="legend-help-section">
+                    <h4>Color Dots (Clusters)</h4>
+                    <div class="legend-help-clusters">
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#dc2626"></span> <strong>Family Care</strong></div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#ea580c"></span> <strong>Time & Efficiency</strong></div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#d97706"></span> <strong>Savings</strong></div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#16a34a"></span> <strong>Health & Leisure</strong></div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#2563eb"></span> <strong>Security</strong></div>
+                    </div>
+                    <p>2+ signals in the same cluster get a synergy boost (x1.2).</p>
+                </section>
+                <section class="legend-help-section">
+                    <h4>Cross-validated x1.5</h4>
+                    <p>When the <strong>same tag appears from both Q1 and Q2</strong>, it receives a 1.5x score multiplier.</p>
+                </section>
+            </div>
+        </div>
+    `;
+
+    const overlay = document.createElement("div");
+    overlay.id = "legend-help-overlay";
+    overlay.className = "legend-help-overlay";
+    overlay.innerHTML = content;
+    document.body.appendChild(overlay);
+
+    // 닫기 이벤트
+    overlay.querySelector("#legend-help-close")?.addEventListener("click", () => overlay.remove());
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) overlay.remove();
+    });
+    // ESC 키로 닫기
+    const escHandler = (e) => {
+        if (e.key === "Escape") { overlay.remove(); document.removeEventListener("keydown", escHandler); }
+    };
+    document.addEventListener("keydown", escHandler);
 }
 
 /** 피자 원형 프로그레스를 0~100%로 업데이트 */
@@ -3029,10 +3299,10 @@ async function renderStep2Insight(forceRefresh = false) {
         badge: "Q1 Region",
         title: `${countryName} ${localCity}`,
         summary: currentLocale === "ko"
-            ? "도시 생활 프로필을 불러오는 중입니다..."
-            : "Loading city lifestyle profile...",
+            ? "AI를 통한 마켓 리서치 중입니다..."
+            : "AI market research in progress...",
         loading: true,
-        loadingLabel: currentLocale === "ko" ? "프로필 로딩 중" : "Loading profile"
+        loadingLabel: currentLocale === "ko" ? "AI를 통한 마켓 리서치 중..." : "AI market research in progress..."
     });
     updateQuestionHelpers();
 
@@ -3097,6 +3367,7 @@ async function renderStep2Insight(forceRefresh = false) {
             ? "AI 마켓 리서치 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요."
             : "AI market research response is delayed. Please try again shortly."
     ));
+    bindInsightRetryButton(stepInsight);
     updateQuestionHelpers();
     stepInsight.classList.remove("insight-refresh");
     void stepInsight.offsetWidth;
@@ -3161,6 +3432,10 @@ function renderCityProfileInsight(countryName, localCity, profile) {
         </button>
     `).join("");
 
+    const customPlaceholder = isKo
+        ? "예: 겨울철 한파 대비, 미세먼지 심한 지역, 다문화 가정, 반지하 습기 문제, 태풍 잦은 해안 도시..."
+        : "e.g. extreme winter cold, high pollution area, multicultural household, coastal typhoon zone...";
+
     return `
         <div class="magic-setup">
             <div class="magic-header">
@@ -3169,6 +3444,20 @@ function renderCityProfileInsight(countryName, localCity, profile) {
             </div>
             <div class="magic-tags">${tagsHtml}</div>
             <div class="magic-cards" id="magic-cards"></div>
+            <div class="magic-custom-research" id="magic-custom-research">
+                <div class="magic-custom-header">
+                    <span class="magic-custom-icon">🔎</span>
+                    <span class="magic-custom-label">${isKo ? "위 10개 외에 반영하고 싶은 지역 특색이 있나요?" : "Any local specifics beyond the 10 categories above?"}</span>
+                </div>
+                <div class="magic-custom-input-row">
+                    <input type="text" id="magic-custom-input" class="magic-custom-input"
+                        placeholder="${escapeHtml(customPlaceholder)}" />
+                    <button type="button" id="magic-custom-search-btn" class="magic-custom-search-btn">
+                        ${isKo ? "검색하기" : "Search"}
+                    </button>
+                </div>
+                <div id="magic-custom-result" class="magic-custom-result" style="display:none"></div>
+            </div>
             <div class="magic-actions" id="magic-actions" style="display:none">
                 <button type="button" class="magic-apply-btn" id="magic-apply-btn">
                     ${isKo ? "이 키워드를 시나리오에 반영하기" : "Apply these to scenario matching"}
@@ -3236,6 +3525,174 @@ function bindCityProfileDrawer(container) {
             }, 2500);
         });
     }
+
+    // ── 커스텀 리서치: 직접 입력 → AI 검색 ──
+    const customSearchBtn = container.querySelector("#magic-custom-search-btn");
+    const customInput = container.querySelector("#magic-custom-input");
+    const customResult = container.querySelector("#magic-custom-result");
+
+    if (customSearchBtn && customInput && customResult) {
+        customSearchBtn.addEventListener("click", () => {
+            const query = customInput.value.trim();
+            if (!query) return;
+            runCustomCityResearch(query, customResult, container);
+        });
+        // Enter키로도 검색
+        customInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                customSearchBtn.click();
+            }
+        });
+    }
+}
+
+/** 커스텀 도시 리서치 — AI 마켓 리서치 실행 */
+let _customResearchData = null;
+
+async function runCustomCityResearch(query, resultContainer, parentContainer) {
+    const isKo = currentLocale === "ko";
+
+    // 로딩 표시
+    resultContainer.style.display = "block";
+    resultContainer.innerHTML = `
+        <div class="magic-custom-loading">
+            <div class="insight-loading" role="status" style="justify-content:flex-start">
+                <div class="pizza-spinner" aria-hidden="true" style="width:28px;height:28px">
+                    <svg viewBox="0 0 40 40" class="pizza-svg">
+                        <circle cx="20" cy="20" r="18" class="pizza-track"/>
+                        <path d="" class="pizza-wedge" data-pizza-wedge/>
+                    </svg>
+                    <span class="pizza-pct" data-pizza-pct>0%</span>
+                </div>
+                <span class="pizza-label" style="font-size:.75rem">${isKo ? "AI 마켓 리서치 중..." : "AI market research..."}</span>
+            </div>
+        </div>`;
+
+    // 피자 프로그레스
+    let progress = 0;
+    const pizzaInterval = setInterval(() => {
+        progress += (90 - progress) * 0.04;
+        updatePizzaProgress(resultContainer, Math.min(progress, 90));
+    }, 200);
+
+    try {
+        await ensureBypassSession();
+        const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
+        const country = resolveCountry(selectedMarket);
+        const city = getCityValue();
+
+        const params = new URLSearchParams({
+            country: country.countryCode,
+            city: city || "",
+            locale: currentLocale,
+            custom_query: query
+        });
+
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 30000);
+
+        const response = await fetch(`/api/city-profile?${params}`, {
+            credentials: "include",
+            signal: controller.signal
+        });
+        clearTimeout(timer);
+        clearInterval(pizzaInterval);
+        updatePizzaProgress(resultContainer, 100);
+
+        if (response.ok) {
+            const result = await response.json();
+            if (result.ok && result.data) {
+                _customResearchData = { query, data: result.data };
+                await new Promise(r => setTimeout(r, 300));
+                renderCustomResearchResult(query, result.data, resultContainer);
+                return;
+            }
+        }
+    } catch (err) {
+        clearInterval(pizzaInterval);
+        console.warn("[custom-research] fetch failed:", err.message);
+    }
+
+    // 실패 시
+    resultContainer.innerHTML = `
+        <div class="magic-custom-error">
+            <p>${isKo ? "검색에 실패했습니다. 다시 시도해 주세요." : "Search failed. Please try again."}</p>
+            <button type="button" class="secondary-btn magic-custom-retry-btn">${isKo ? "다시 검색" : "Retry"}</button>
+        </div>`;
+    resultContainer.querySelector(".magic-custom-retry-btn")?.addEventListener("click", () => {
+        runCustomCityResearch(query, resultContainer, parentContainer);
+    });
+}
+
+function renderCustomResearchResult(query, data, resultContainer) {
+    const isKo = currentLocale === "ko";
+
+    // data에서 custom_query 관련 결과 추출
+    const customResult = data.custom || data.summary || "";
+    const displayText = typeof customResult === "string"
+        ? customResult
+        : JSON.stringify(customResult, null, 2);
+
+    // 10카테고리 중 관련 데이터 요약
+    const relatedCategories = CITY_PROFILE_CATEGORIES
+        .filter(cat => data[cat.key])
+        .map(cat => `<span class="magic-custom-cat-chip" style="border-color:${cat.color};color:${cat.color}">${cat.icon} ${isKo ? cat.labelKo : cat.labelEn}</span>`)
+        .join("");
+
+    resultContainer.innerHTML = `
+        <div class="magic-custom-result-content">
+            <div class="magic-custom-result-header">
+                <span class="magic-custom-result-badge">${isKo ? "AI 검색 결과" : "AI Research Result"}</span>
+                <span class="magic-custom-result-query">"${escapeHtml(query)}"</span>
+            </div>
+            <div class="magic-custom-result-body">
+                <p>${escapeHtml(displayText || (isKo ? "검색 결과를 기반으로 시나리오에 반영할 수 있습니다." : "Results can be applied to your scenario."))}</p>
+                ${relatedCategories ? `<div class="magic-custom-cats">${relatedCategories}</div>` : ""}
+            </div>
+            <div class="magic-custom-result-actions">
+                <button type="button" class="magic-custom-apply-btn" id="magic-custom-apply-btn">
+                    ${isKo ? "시나리오 반영" : "Apply to Scenario"}
+                </button>
+                <button type="button" class="secondary-btn magic-custom-retry-btn" id="magic-custom-retry-btn">
+                    ${isKo ? "다시 검색" : "Search Again"}
+                </button>
+                <button type="button" class="secondary-btn magic-custom-skip-btn" id="magic-custom-skip-btn">
+                    ${isKo ? "스킵하기" : "Skip"}
+                </button>
+            </div>
+        </div>`;
+
+    // 시나리오 반영 버튼
+    resultContainer.querySelector("#magic-custom-apply-btn")?.addEventListener("click", () => {
+        // purpose 필드에 커스텀 리서치 내용 추가
+        const purposeVal = purposeInput.value.trim();
+        const appendText = `[${isKo ? "지역 특색" : "Local insight"}] ${query}: ${displayText}`.substring(0, 300);
+        purposeInput.value = purposeVal ? `${purposeVal}\n${appendText}` : appendText;
+
+        // 시각 피드백
+        const applyBtn = resultContainer.querySelector("#magic-custom-apply-btn");
+        if (applyBtn) {
+            applyBtn.innerHTML = isKo
+                ? `<span style="color:#4caf50">&#10003;</span> 반영 완료`
+                : `<span style="color:#4caf50">&#10003;</span> Applied`;
+            applyBtn.disabled = true;
+        }
+        updateStatePreview();
+    });
+
+    // 다시 검색 버튼
+    resultContainer.querySelector("#magic-custom-retry-btn")?.addEventListener("click", () => {
+        const input = document.getElementById("magic-custom-input");
+        const query = input?.value.trim();
+        if (query) runCustomCityResearch(query, resultContainer);
+    });
+
+    // 스킵 버튼
+    resultContainer.querySelector("#magic-custom-skip-btn")?.addEventListener("click", () => {
+        resultContainer.style.display = "none";
+        _customResearchData = null;
+    });
 }
 
 function renderMagicCards(container) {
@@ -3717,6 +4174,16 @@ function inferCityCxProfile(countryCode, city, macro, local) {
         "Education and digital maturity (inferred): users are likely to respond better to comparison, proof, and review-style guidance than feature-only claims.",
         "Energy-use pattern (inferred): savings and automation narratives tend to convert better when seasonal heating or cooling costs become visible."
     ];
+}
+
+/** '다시 시도' 버튼 클릭 → Step 2 인사이트 재호출 */
+function bindInsightRetryButton(container) {
+    const retryBtn = container.querySelector("#region-insight-retry");
+    if (retryBtn) {
+        retryBtn.addEventListener("click", () => {
+            renderStep2Insight(true);
+        });
+    }
 }
 
 function buildStep2ErrorInsight(message) {
@@ -4421,6 +4888,7 @@ function buildStep3Insight() {
                         <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#16a34a"></span> ${isKo ? "건강·여가" : "Health & Leisure"}</span>
                         <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#2563eb"></span> ${isKo ? "안전·보안" : "Security"}</span>
                         <span class="q2-legend-item"><span class="q2-corro-badge" style="font-size:0.6rem">${isKo ? "교차검증 ×1.5" : "cross-validated ×1.5"}</span></span>
+                        <button type="button" class="q2-legend-help-btn" id="q2-legend-help-btn" title="${isKo ? "범례 보는 방법 안내" : "How to read this chart"}">?</button>
                     </div>
 
                     <div class="q2-score-section">
@@ -5512,6 +5980,7 @@ async function streamGenerateScenario(context) {
     // Show streaming UI
     resultDiv.innerHTML = buildStreamingUI(context);
     scrollToResult();
+    const _streamPizzaInterval = startStreamingPizzaProgress();
 
     // Fetch live region insight for grounding (best-effort)
     let regionInsight = null;
@@ -6076,10 +6545,15 @@ function buildStreamingUI(context) {
     return `
         <article class="scenario-output ai-streaming">
             <div class="smart-load-header">
-                <div class="smart-load-orbit">
-                    <span class="smart-load-dot"></span>
-                    <span class="smart-load-dot"></span>
-                    <span class="smart-load-dot"></span>
+                <div class="insight-loading" role="status" aria-live="polite" style="margin-bottom:12px">
+                    <div class="pizza-spinner" aria-hidden="true">
+                        <svg viewBox="0 0 40 40" class="pizza-svg">
+                            <circle cx="20" cy="20" r="18" class="pizza-track"/>
+                            <path d="" class="pizza-wedge" data-pizza-wedge/>
+                        </svg>
+                        <span class="pizza-pct" data-pizza-pct>0%</span>
+                    </div>
+                    <span class="pizza-label">${isKo ? "AI 시나리오 생성 중..." : "Generating AI scenario..."}</span>
                 </div>
                 <div class="smart-load-phrases">${phrasesHtml}</div>
             </div>
@@ -6087,6 +6561,21 @@ function buildStreamingUI(context) {
             <pre class="ai-stream-output" aria-live="polite" aria-label="AI generating scenario"></pre>
         </article>
     `;
+}
+
+/** 스트리밍 중 피자 프로그레스 시뮬레이션 시작 */
+function startStreamingPizzaProgress() {
+    let progress = 0;
+    const interval = setInterval(() => {
+        if (!aiGenerating) {
+            clearInterval(interval);
+            updatePizzaProgress(resultDiv, 100);
+            return;
+        }
+        progress += (90 - progress) * 0.025;
+        updatePizzaProgress(resultDiv, Math.min(progress, 90));
+    }, 300);
+    return interval;
 }
 
 function stripMetaPrompts(text) {
@@ -6387,16 +6876,12 @@ function setSectionStatusBadge(headingId, state) {
 }
 
 function scrollToResult() {
-    const tracker = document.getElementById("output-flow-tracker");
-    if (tracker && tracker.offsetParent !== null) {
-        tracker.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-        const curationFrame = document.getElementById("curation-frame");
-        if (curationFrame && curationFrame.offsetParent !== null) {
-            curationFrame.scrollIntoView({ behavior: "smooth", block: "start" });
-        } else {
-            resultDiv?.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+    // 결과 영역 바로 위로만 스크롤 — 맨 위로 올라가지 않도록
+    const resultFrame = resultDiv?.closest(".result-frame");
+    if (resultFrame) {
+        resultFrame.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (resultDiv) {
+        resultDiv.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 }
 
@@ -11153,11 +11638,52 @@ function renderCurationResults(results, selectedDevices) {
     };
     const localTagMap = scenarioTitleTranslations[currentLocale] || {};
 
-    // 간이 번역 함수: 영문 텍스트에서 알려진 키워드를 로케일로 치환
+    // 확장 구문 번역 맵 (한국어) — Explore 시나리오 본문에 자주 등장하는 문구
+    const bodyPhraseMapKo = {
+        "Give your pet customised care": "반려동물에게 맞춤형 케어를 제공하세요",
+        "Take care of your pet even while you're away": "외출 중에도 반려동물을 돌보세요",
+        "Check up on them": "반려동물 상태를 확인하세요",
+        "Start Pet Care with just a photo": "사진 한 장으로 펫 케어를 시작하세요",
+        "automatically identify the breed": "자동으로 품종을 식별합니다",
+        "reviewing the daily activity": "일일 활동을 확인합니다",
+        "Help your pet enjoy its time alone": "반려동물이 혼자 있는 시간을 즐길 수 있게 도와주세요",
+        "automatic feeder": "자동 급식기", "regular meals": "규칙적인 식사",
+        "perfect temperature": "최적 온도", "atmosphere": "분위기",
+        "barking is detected": "짖는 소리가 감지되면",
+        "Set the right temperature": "적정 온도를 설정하세요",
+        "save energy": "에너지를 절약하세요", "Save energy": "에너지를 절약하세요",
+        "while you're away": "외출 중에도", "when you come home": "집에 돌아오면",
+        "before you arrive": "도착하기 전에",
+        "Smart TV": "스마트 TV", "Vacuum Cleaner": "로봇청소기",
+        "Air Conditioner": "에어컨", "Air Purifier": "공기청정기",
+        "Galaxy Smartphone": "갤럭시 스마트폰", "Galaxy Watch": "갤럭시 워치",
+        "SmartThings": "스마트싱스",
+        "your home safe": "집을 안전하게",
+        "monitor your home": "집을 모니터링하세요",
+        "security camera": "보안 카메라",
+        "door lock": "도어락", "motion sensor": "동작 센서",
+        "automate your daily routine": "일상을 자동화하세요",
+        "control your lights": "조명을 제어하세요",
+        "fresh air": "신선한 공기", "air quality": "공기질",
+        "sleep better": "숙면을 취하세요", "good night's sleep": "좋은 수면",
+        "washing machine": "세탁기", "dryer": "건조기",
+        "robot vacuum": "로봇청소기", "dishwasher": "식기세척기",
+        "refrigerator": "냉장고", "oven": "오븐",
+        "family members": "가족 구성원", "children": "자녀", "kids": "아이",
+        "seniors": "시니어", "elderly": "어르신",
+        "Pet Accessory": "펫 액세서리", "Third-party": "서드파티",
+        "Jet Bot": "제트봇"
+    };
+
+    // 간이 번역 함수: 영문 텍스트에서 알려진 키워드 및 구문을 로케일로 치환
     function translateSnippet(text) {
         if (!text || !needsTranslation) return "";
         let translated = text;
-        for (const [en, local] of Object.entries(localTagMap)) {
+        // 긴 구문부터 먼저 치환 (더 정확한 매칭)
+        const phraseMap = currentLocale === "ko" ? bodyPhraseMapKo : {};
+        const allEntries = [...Object.entries(phraseMap), ...Object.entries(localTagMap)]
+            .sort((a, b) => b[0].length - a[0].length);
+        for (const [en, local] of allEntries) {
             translated = translated.replace(new RegExp(en.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), local);
         }
         return translated !== text ? translated : "";

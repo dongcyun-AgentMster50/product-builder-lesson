@@ -87,6 +87,7 @@ const PERSONA_CATEGORY_GROUPS = [
             { id: "t_long_away", label: "장시간 부재 잦음" },
             { id: "t_weekend_out", label: "주말 외출·여행 잦음" },
             { id: "t_night_shift", label: "야간·교대 생활" },
+            { id: "t_homebody", label: "홈 레저·집콕" },
             { id: "_divider_context", divider: true, label: "생활 테마" },
             { id: "int_energy", label: "에너지 절약" },
             { id: "int_air", label: "쾌적한 공기" },
@@ -131,7 +132,7 @@ const PERSONA_OPTION_LABEL_EN = {
     t_dual_income: "Dual income", t_single_income: "Single income", t_solo_parent: "Primary caregiver",
     t_multi_kids: "2+ children", t_pet: "Has pets",
     t_parent_away: "Parents live separately", t_parent_care: "Parent care needed", t_acc_needs: "Accessibility needs",
-    t_remote: "Remote / Hybrid work", t_long_away: "Often away", t_weekend_out: "Weekend outings", t_night_shift: "Night / Shift work",
+    t_remote: "Remote / Hybrid work", t_long_away: "Often away", t_weekend_out: "Weekend outings", t_night_shift: "Night / Shift work", t_homebody: "Homebody / Indoor leisure",
     t_security: "Security-focused", t_wellness: "Health & Wellness", t_efficiency: "Household efficiency",
     int_energy: "Save energy", int_air: "Fresh air", int_lights: "Light control", int_chores: "Help with chores",
     int_safe: "Home safety", int_sleep: "Sleep well", int_mood: "Enhanced mood",
@@ -313,8 +314,10 @@ const DEVICE_GROUP_TITLE_EN = {
     "dt-tvav": "TV / AV", "dt-lights": "Lighting / Switches",
     "dt-sensors": "Sensors / Others", "dt-hub": "Hubs / Connectivity",
     "dt-wearable": "Wearables", "dt-fitness": "Fitness / Health", "dt-personal": "Personal devices",
+    "dt-personal": "Mobile",
+    "dt-tvav": "TV / Video / Audio", "dt-home": "Living Appliances",
     "sec-kitchen": "Kitchen (extended)", "sec-living": "Living (extended)",
-    "sec-tvav": "TV/AV (extended)", "sec-it": "IT / Peripherals",
+    "sec-tvav": "TV/AV (extended)", "sec-it": "PC / Peripherals",
     "sec-smarthome": "Smart Home", "partner-wellness": "Partner Wellness"
 };
 
@@ -401,7 +404,19 @@ const DEVICE_OPTION_LABEL_EN = {
     "accessories": "Accessories",
     // Partner devices
     "partner-humidifier": "Humidifier (partner)",
-    "partner-sleep": "Sleep device (partner)"
+    "partner-sleep": "Sleep device (partner)",
+    "galaxy-ring": "Galaxy Ring",
+    "galaxy-xr": "Galaxy XR",
+    "galaxy-accessories": "Galaxy Accessories",
+    "galaxy-phone": "Galaxy Smartphone",
+    "galaxy-tab": "Galaxy Tab",
+    "music-frame": "Music Frame",
+    "dt-vacuum": "Vacuum Cleaner",
+    "dt-small-appliance": "Small Appliances",
+    "copilot-pc": "Copilot+ PC",
+    "desktop-pc": "Desktop PC",
+    "sec-moving-style": "The Freestyle / Moving Style",
+    "galaxy-book": "Galaxy Book"
 };
 
 function getLocalizedDeviceGroups(locale) {
@@ -514,7 +529,7 @@ const DEVICE_CATEGORY_GROUPS = [
     { id: "_section_device", section: true, title: "기기 유형별 선택", titleEn: "Select by Device Type" },
     {
         id: "dt-home",
-        title: "Home appliances",
+        title: "리빙가전",
         options: [
             { id: "air-conditioner", label: "에어컨", normalized: "에어컨" },
             { id: "air-purifier", label: "공기청정기", normalized: "에어컨" },
@@ -522,7 +537,9 @@ const DEVICE_CATEGORY_GROUPS = [
             { id: "ventilation", label: "환기 시스템", normalized: "에어컨" },
             { id: "dt-washer", label: "세탁기", normalized: "세탁기" },
             { id: "dt-dryer", label: "건조기", normalized: "건조기" },
-            { id: "dt-robot", label: "로봇청소기", normalized: "로봇청소기" }
+            { id: "dt-robot", label: "로봇청소기", normalized: "로봇청소기" },
+            { id: "dt-vacuum", label: "청소기", normalized: "로봇청소기" },
+            { id: "dt-small-appliance", label: "소형가전", normalized: "센서" }
         ]
     },
     {
@@ -538,13 +555,14 @@ const DEVICE_CATEGORY_GROUPS = [
     },
     {
         id: "dt-tvav",
-        title: "TV / AV",
+        title: "TV/영상/음향",
         options: [
             { id: "tv-premium", label: "TV", normalized: "TV" },
             { id: "projector", label: "프로젝터", normalized: "TV" },
             { id: "soundbar", label: "사운드바", normalized: "스피커" },
             { id: "dt-speaker", label: "스피커", normalized: "스피커" },
-            { id: "gaming-console", label: "게임 콘솔", normalized: "TV" }
+            { id: "gaming-console", label: "게임 콘솔", normalized: "TV" },
+            { id: "music-frame", label: "뮤직 프레임", normalized: "스피커" }
         ]
     },
     {
@@ -599,11 +617,14 @@ const DEVICE_CATEGORY_GROUPS = [
     },
     {
         id: "dt-personal",
-        title: "Personal devices",
+        title: "모바일",
         options: [
-            { id: "galaxy-phone", label: "Galaxy 스마트폰", normalized: "스마트폰" },
-            { id: "galaxy-tab", label: "Galaxy Tab", normalized: "태블릿" },
-            { id: "dt-tag", label: "SmartTag", normalized: "센서" }
+            { id: "galaxy-phone", label: "갤럭시 스마트폰", normalized: "스마트폰" },
+            { id: "galaxy-tab", label: "갤럭시 탭", normalized: "태블릿" },
+            { id: "dt-tag", label: "SmartTag", normalized: "센서" },
+            { id: "galaxy-ring", label: "갤럭시 링", normalized: "웨어러블" },
+            { id: "galaxy-xr", label: "갤럭시 XR", normalized: "웨어러블" },
+            { id: "galaxy-accessories", label: "갤럭시 액세서리", normalized: "센서" }
         ]
     },
 
@@ -636,12 +657,15 @@ const DEVICE_CATEGORY_GROUPS = [
     },
     {
         id: "sec-it",
-        title: "IT/주변기기",
+        title: "PC/주변기기",
         options: [
-            { id: "galaxy-book", label: "Galaxy Book", normalized: "태블릿" },
+            { id: "galaxy-book", label: "갤럭시북", normalized: "태블릿" },
+            { id: "copilot-pc", label: "Copilot+ PC", normalized: "태블릿" },
+            { id: "desktop-pc", label: "데스크탑", normalized: "태블릿" },
             { id: "monitor", label: "모니터", normalized: "TV" },
             { id: "printer", label: "프린터", normalized: "센서" },
-            { id: "memory-storage", label: "메모리/스토리지", normalized: "센서" }
+            { id: "memory-storage", label: "메모리/스토리지", normalized: "센서" },
+            { id: "sec-moving-style", label: "무빙스타일", normalized: "TV" }
         ]
     },
     {
