@@ -34,10 +34,9 @@
 body {
     margin: 0;
     background:
-        radial-gradient(circle at 84% 18%, rgba(41, 149, 213, 0.18), transparent 18%),
-        radial-gradient(circle at 10% 82%, rgba(0, 74, 153, 0.16), transparent 24%),
-        linear-gradient(135deg, rgba(0, 31, 64, 0.98), rgba(0, 51, 102, 0.94) 44%, rgba(6, 84, 140, 0.74)),
-        var(--bg);
+        radial-gradient(circle at 80% 12%, rgba(0, 180, 216, 0.10), transparent 22%),
+        radial-gradient(circle at 15% 85%, rgba(0, 74, 153, 0.12), transparent 28%),
+        linear-gradient(160deg, #060d1a 0%, #0a1628 30%, #0d2137 60%, #0f2b45 100%);
     color: var(--ink);
     font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
     min-height: 100vh;
@@ -50,7 +49,7 @@ body {
     margin: 2px auto;
     min-height: calc(100vh - 4px);
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: 1fr auto auto;
 }
 
 .hero,
@@ -71,10 +70,11 @@ body {
     padding: 32px 36px 24px;
     border-radius: 20px;
     background:
-        radial-gradient(circle at 86% 16%, rgba(58, 159, 220, 0.24), transparent 20%),
-        linear-gradient(135deg, rgba(0, 24, 52, 0.98), rgba(0, 51, 102, 0.96) 54%, rgba(13, 89, 143, 0.78));
-    border-color: rgba(255, 255, 255, 0.18);
+        linear-gradient(180deg, rgba(10, 22, 40, 0.55) 0%, rgba(10, 22, 40, 0.35) 40%, rgba(10, 22, 40, 0.60) 100%),
+        url('smartthings-hero-bg.png') center / cover no-repeat;
+    border-color: rgba(0, 180, 216, 0.15);
     color: #f7fbff;
+    overflow: hidden;
 }
 
 .locale-selector {
