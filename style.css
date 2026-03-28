@@ -3432,11 +3432,16 @@ textarea {
 .guide-head {
     flex-direction: column;
     align-items: flex-start;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    gap: 6px;
+}
+
+.guide-head .step {
+    font-size: 0.85rem;
 }
 
 .guide-head h2 {
-    font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
 }
 
 .guide-screen {
@@ -3444,24 +3449,25 @@ textarea {
 }
 
 .guide-screen > .guide-card {
-    padding: 20px 24px;
+    padding: 36px 40px;
+    border-radius: 20px;
 }
 
 .guide-actions {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 14px;
+    gap: 14px;
+    margin-bottom: 20px;
     align-items: stretch;
-    max-width: 320px;
+    max-width: 400px;
 }
 
 .guide-session-row {
     display: grid;
-    gap: 6px;
-    margin-bottom: 10px;
-    padding: 10px 16px;
-    border-radius: 12px;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 14px 20px;
+    border-radius: 14px;
     border: 1px solid rgba(0, 51, 102, 0.12);
     background: rgba(248, 251, 255, 0.82);
 }
@@ -3469,18 +3475,18 @@ textarea {
 .guide-session-note {
     margin: 0;
     color: var(--muted);
-    font-size: 0.88rem;
-    line-height: 1.45;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
 .guide-choice-btn {
-    min-width: 136px;
-    padding: 18px 30px;
+    min-width: 160px;
+    padding: 22px 36px;
     border-color: rgba(0, 51, 102, 0.18);
     background: rgba(248, 248, 248, 0.92);
     font-weight: 800;
-    font-size: 1.2rem;
-    border-radius: 14px;
+    font-size: 1.35rem;
+    border-radius: 16px;
     transition: all 0.15s ease;
 }
 
