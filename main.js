@@ -4240,7 +4240,32 @@ function inferTraitReason(trait) {
         "security and safety focus": "security / safety signals → monitoring and alert scenarios",
         "chore efficiency focus": "chore / efficiency signals → reducing repetitive tasks through automation",
         "sleep quality focus": "night-shift / sleep signals → better rest through environment automation",
-        "수면 품질 중시": "야간근무·수면 관련 선택에서 → 환경 자동화로 수면 질 개선"
+        "수면 품질 중시": "야간근무·수면 관련 선택에서 → 환경 자동화로 수면 질 개선",
+        // ── 신규 trait 추론 근거 ──
+        "공동주거 환경 최적화": "아파트·빌라 선택에서 → 층간소음·공용설비 고려한 자동화 시나리오 적합",
+        "소형 공간 효율화": "오피스텔·원룸 또는 1인 가구 선택에서 → 제한된 공간 내 기기 통합 자동화",
+        "독립 주거 자동화": "단독·타운하우스 선택에서 → 마당·다층 구조에 맞는 보안·에너지 시나리오",
+        "공용 공간 관리 니즈": "셰어하우스 선택에서 → 공용 공간 사용 규칙·환경 자동 관리",
+        "생활 동선 공유": "2인 가구 선택에서 → 두 사람의 생활 패턴을 고려한 동선 자동화",
+        "개인 공간·공용 공간 분리": "성인 자녀 동거 선택에서 → 개별 공간 환경을 독립 제어",
+        "접근성 배려 자동화": "접근성 배려 선택에서 → 음성·자동 제어 중심 시나리오",
+        "안정적 생활 루틴 중시": "안정기·안정된 가정 선택에서 → 예측 가능한 루틴 기반 자동화",
+        "외출 전·귀가 시 자동화 수요": "주말 외출 잦음 선택에서 → 출발·귀가 전후 일괄 제어 시나리오",
+        "실내 환경 민감": "쾌적한 공기 선택에서 → 공기질·환기 자동 제어 시나리오",
+        "분위기·조명 중시": "조명 제어 선택에서 → 시간대·활동별 조명 자동 전환",
+        "물건 위치 추적 수요": "물건 찾기 선택에서 → SmartTag 연동 위치 추적 시나리오",
+        "shared-building environment optimization": "apartment / villa → automation considering shared infrastructure",
+        "compact space efficiency": "studio / single → device integration in limited space",
+        "independent dwelling automation": "house / townhouse → multi-floor security & energy scenarios",
+        "shared space management needs": "shared housing → automated common area management",
+        "shared daily routine": "couple → routine automation considering two lifestyles",
+        "private and shared space separation": "adult children → independent zone control",
+        "accessibility-aware automation": "accessibility needs → voice & auto control centered scenarios",
+        "stable routine focus": "settled / established → predictable routine-based automation",
+        "pre-departure and return automation demand": "frequent outings → departure & return batch control",
+        "indoor environment sensitivity": "air quality focus → ventilation & air quality auto control",
+        "ambiance and lighting focus": "lighting control → time & activity based lighting shifts",
+        "object tracking demand": "find belongings → SmartTag location tracking scenarios"
     };
     return reasons[trait] || "";
 }
@@ -4522,36 +4547,45 @@ function buildStep3Insight() {
                 label: isKo ? "🏠 패밀리 케어" : "🏠 Family Care",
                 color: "#dc2626",
                 traits: isKo
-                    ? ["가구 운영 복잡도 높음", "케어/안심 니즈 큼", "원격 확인 수요 존재"]
-                    : ["high household complexity", "strong care and reassurance needs", "remote check-in demand"]
+                    ? ["가구 운영 복잡도 높음", "케어/안심 니즈 큼", "원격 확인 수요 존재", "접근성 배려 자동화"]
+                    : ["high household complexity", "strong care and reassurance needs", "remote check-in demand", "accessibility-aware automation"]
             },
             efficiency: {
                 label: isKo ? "⚡ 시간·효율" : "⚡ Time & Efficiency",
                 color: "#ea580c",
                 traits: isKo
-                    ? ["시간 가치 민감", "가사 효율 추구"]
-                    : ["time-value sensitivity", "chore efficiency focus"]
+                    ? ["시간 가치 민감", "가사 효율 추구", "외출 전·귀가 시 자동화 수요"]
+                    : ["time-value sensitivity", "chore efficiency focus", "pre-departure and return automation demand"]
             },
             savings: {
                 label: isKo ? "💰 절약·비용" : "💰 Savings",
                 color: "#d97706",
                 traits: isKo
-                    ? ["지출 민감도 높음"]
-                    : ["high spending sensitivity"]
+                    ? ["지출 민감도 높음", "즉시 체감 가치 선호"]
+                    : ["high spending sensitivity", "preference for immediate value"]
             },
             wellness: {
                 label: isKo ? "💚 건강·여가" : "💚 Health & Leisure",
                 color: "#16a34a",
                 traits: isKo
-                    ? ["건강·웰니스 중시", "여가 시간 품질 중시", "수면 품질 중시"]
-                    : ["health and wellness focus", "high value on leisure quality", "sleep quality focus"]
+                    ? ["건강·웰니스 중시", "여가 시간 품질 중시", "수면 품질 중시", "실내 환경 민감"]
+                    : ["health and wellness focus", "high value on leisure quality", "sleep quality focus", "indoor environment sensitivity"]
             },
             security: {
                 label: isKo ? "🔒 안전·보안" : "🔒 Security",
                 color: "#2563eb",
                 traits: isKo
-                    ? ["보안/안전 중시"]
-                    : ["security and safety focus"]
+                    ? ["보안/안전 중시", "물건 위치 추적 수요"]
+                    : ["security and safety focus", "object tracking demand"]
+            },
+            living: {
+                label: isKo ? "🏡 주거·생활" : "🏡 Living Space",
+                color: "#7c3aed",
+                traits: isKo
+                    ? ["공동주거 환경 최적화", "소형 공간 효율화", "독립 주거 자동화", "공용 공간 관리 니즈",
+                       "생활 동선 공유", "개인 공간·공용 공간 분리", "안정적 생활 루틴 중시", "분위기·조명 중시"]
+                    : ["shared-building environment optimization", "compact space efficiency", "independent dwelling automation", "shared space management needs",
+                       "shared daily routine", "private and shared space separation", "stable routine focus", "ambiance and lighting focus"]
             }
         };
 
@@ -5413,6 +5447,7 @@ function inferSegmentTraits(selectedSegment, purpose) {
     if (personaIds.has("t_homebody")) add("여가 시간 품질 중시", "high value on leisure quality");
     if (personaIds.has("int_air")) add("실내 환경 민감", "indoor environment sensitivity");
     if (personaIds.has("int_lights")) add("분위기·조명 중시", "ambiance and lighting focus");
+    if (personaIds.has("int_find")) add("물건 위치 추적 수요", "object tracking demand");
 
     // Q2 미선택 시 빈 배열 반환 — 근거 없는 기본값을 채우지 않음
     return traits;
@@ -11173,7 +11208,13 @@ function getIntegratedTagScores(input) {
         t_efficiency: ["Help with chores", "Time saving"],
         t_remote:     ["Help with chores", "Time saving"],
         t_dual_income:["Time saving", "Help with chores"],
+        t_solo_parent:["Time saving", "Care for kids"],
+        t_single_income:["Save energy"],
         t_night_shift:["Sleep well"],
+        t_long_away:  ["Keep your home safe", "Security"],
+        t_weekend_out:["Keep your home safe"],
+        t_homebody:   ["Enhanced mood", "Sleep well"],
+        t_acc_needs:  ["Easy to use"],
         int_energy:   ["Save energy", "Energy Saving"],
         int_pet:      ["Care for your pet", "Pet care"],
         int_kids:     ["Care for kids", "Family care"],
@@ -11182,7 +11223,10 @@ function getIntegratedTagScores(input) {
         int_safe:     ["Keep your home safe", "Security"],
         int_chores:   ["Help with chores", "Time saving"],
         int_sleep:    ["Sleep well"],
-        int_mood:     ["Enhanced mood"]
+        int_mood:     ["Enhanced mood"],
+        int_air:      ["Keep the air fresh"],
+        int_lights:   ["Easily control your lights", "Enhanced mood"],
+        int_find:     ["Keep your home safe"]
     };
     personaIds.forEach(id => {
         (PRIMARY_INTENT_MAP[id] || []).forEach(tag => addTagScore(tag, PRIMARY_WEIGHT, `primary_${id}`));
@@ -11196,7 +11240,8 @@ function getIntegratedTagScores(input) {
         hh_senior:      ["Care for seniors", "Keep your home safe", "Family care"],
         hh_multi_gen:   ["Care for seniors", "Care for kids", "Family care"],
         hh_solo:        ["Keep your home safe", "Save energy"],
-        hh_couple:      ["Enhanced mood", "Help with chores"]
+        hh_couple:      ["Enhanced mood", "Help with chores"],
+        hh_adult_kids:  ["Keep your home safe", "Save energy"]
     };
     (input.segments || []).forEach(id => {
         (HOUSEHOLD_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSEHOLD_WEIGHT, `hh_${id}`));
@@ -11221,10 +11266,12 @@ function getIntegratedTagScores(input) {
     const HOUSING_WEIGHT = 4;
     const HOUSING_MAP = {
         h_apt:       ["Save energy", "Keep the air fresh"],
-        h_compact:   ["Save energy"],
+        h_compact:   ["Save energy", "Easily control your lights"],
         h_villa:     ["Keep your home safe"],
-        h_house:     ["Keep your home safe"],
-        h_care:      ["Care for seniors"]
+        h_house:     ["Keep your home safe", "Save energy"],
+        h_townhouse: ["Keep your home safe", "Save energy"],
+        h_shared:    ["Keep your home safe", "Keep the air fresh"],
+        h_care:      ["Care for seniors", "Keep your home safe"]
     };
     (input.housing || []).forEach(id => {
         (HOUSING_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSING_WEIGHT, `housing_${id}`));
