@@ -3289,6 +3289,11 @@ async function renderStep2Insight(forceRefresh = false) {
             stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, profile);
             bindCityProfileDrawer(stepInsight);
             updateQuestionHelpers();
+            // 프로필 로드 후 다음 버튼이 보이도록 스크롤
+            requestAnimationFrame(() => {
+                const wizardActions = document.querySelector(".wizard-actions");
+                if (wizardActions) wizardActions.scrollIntoView({ behavior: "smooth", block: "end" });
+            });
             return;
         } catch { /* cache invalid, fetch fresh */ }
     }
@@ -3350,6 +3355,11 @@ async function renderStep2Insight(forceRefresh = false) {
                 stepInsight.classList.remove("insight-refresh");
                 void stepInsight.offsetWidth;
                 stepInsight.classList.add("insight-refresh");
+                // 프로필 로드 후 다음 버튼이 보이도록 스크롤
+                requestAnimationFrame(() => {
+                    const wizardActions = document.querySelector(".wizard-actions");
+                    if (wizardActions) wizardActions.scrollIntoView({ behavior: "smooth", block: "end" });
+                });
                 return;
             }
         }
@@ -5382,6 +5392,28 @@ function inferSegmentTraits(selectedSegment, purpose) {
     // 에너지
     if (personaIds.has("int_energy")) add("지출 민감도 높음", "high spending sensitivity");
 
+    // ── 거주지 유형 (A 그룹) 기반 추론 ──
+    if (personaIds.has("h_apt") || personaIds.has("h_villa")) add("공동주거 환경 최적화", "shared-building environment optimization");
+    if (personaIds.has("h_compact")) add("소형 공간 효율화", "compact space efficiency");
+    if (personaIds.has("h_house") || personaIds.has("h_townhouse")) add("독립 주거 자동화", "independent dwelling automation");
+    if (personaIds.has("h_shared")) add("공용 공간 관리 니즈", "shared space management needs");
+    if (personaIds.has("h_care")) add("케어/안심 니즈 큼", "strong care and reassurance needs");
+
+    // ── 세대 구성 (B 그룹) 미매핑 항목 ──
+    if (personaIds.has("hh_solo")) add("소형 공간 효율화", "compact space efficiency");
+    if (personaIds.has("hh_couple")) add("생활 동선 공유", "shared daily routine");
+    if (personaIds.has("hh_adult_kids")) add("개인 공간·공용 공간 분리", "private and shared space separation");
+    if (personaIds.has("t_single_income")) add("지출 민감도 높음", "high spending sensitivity");
+    if (personaIds.has("t_acc_needs")) add("접근성 배려 자동화", "accessibility-aware automation");
+
+    // ── 라이프스테이지 (C 그룹) 미매핑 항목 ──
+    if (personaIds.has("ls_starter")) add("즉시 체감 가치 선호", "preference for immediate value");
+    if (personaIds.has("ls_settled") || personaIds.has("ls_established")) add("안정적 생활 루틴 중시", "stable routine focus");
+    if (personaIds.has("t_weekend_out")) add("외출 전·귀가 시 자동화 수요", "pre-departure and return automation demand");
+    if (personaIds.has("t_homebody")) add("여가 시간 품질 중시", "high value on leisure quality");
+    if (personaIds.has("int_air")) add("실내 환경 민감", "indoor environment sensitivity");
+    if (personaIds.has("int_lights")) add("분위기·조명 중시", "ambiance and lighting focus");
+
     // Q2 미선택 시 빈 배열 반환 — 근거 없는 기본값을 채우지 않음
     return traits;
 }
@@ -5470,9 +5502,9 @@ function alignWizardStepViewport() {
     );
     focusTarget?.focus({ preventScroll: true });
 
-    // wizard-progress 바를 기준으로 스크롤하여 step 상단이 화면 최상단에 오도록
-    const progressBar = document.getElementById("wizard-progress");
-    const scrollTarget = progressBar || activeStep;
+    // wizard-screen 섹션 헤더(Step Flow 제목)부터 보이도록 스크롤
+    const wizardScreen = document.getElementById("wizard-screen");
+    const scrollTarget = wizardScreen || activeStep;
     const yOffset = scrollTarget.getBoundingClientRect().top + window.pageYOffset - 10;
     window.scrollTo({ top: yOffset, behavior: "smooth" });
 }

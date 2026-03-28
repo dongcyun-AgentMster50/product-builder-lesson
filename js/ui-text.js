@@ -119,7 +119,7 @@ const UI_TEXT = {
         outTitle09: "09. 시나리오 시장성 평가 (리스크 포함)",
         outTitle10: "10. 실행 확장 팩 — 고객 적용 가이드 + 성과 지표 연결",
         outTitle11: "11. 브랜드/AI/철학 품질 점검",
-        guideHeroTitle: "3단계 입력만으로<br>완성도 높은 시나리오를<br>만듭니다",
+        guideHeroTitle: "3단계 입력만으로 완성도 높은 시나리오를 만듭니다",
         guideLead: "핵심만 빠르게 선택하고, 필요한 정보만 더해 바로 검토할 수 있는 결과로 정리합니다.",
         guideInputsTitle: "먼저 기준이 되는 3가지를 정합니다",
         guideQ1: "Q1 국가·지역", guideQ1Desc: "대상 국가와 도시 또는 주를 함께 정합니다.",
