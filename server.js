@@ -2279,6 +2279,32 @@ const CITY_PROFILE_SYSTEM_PROMPT = `당신은 특정 도시의 '생활 밀착형
 9. mobility: 이동·부재·여행
 10. events: 문화 행사·시즌성 이벤트`;
 
+const CUSTOM_RESEARCH_SYSTEM_PROMPT = `당신은 특정 도시의 스마트홈 관련 시장 조사를 수행하는 전문 마켓 리서치 분석가입니다.
+사용자가 입력한 키워드를 기반으로, 해당 도시에서의 고객 니즈와 개선 방향을 분석하세요.
+
+엄격한 규칙:
+1. 반드시 요청된 도시와 키워드에 특화된 분석을 하세요. 일반론은 금지합니다.
+2. 출력은 반드시 아래 고정 JSON 구조로만 작성하세요. 설명 없이 JSON만 출력하세요.
+3. 요청된 locale 언어로 작성하되, tags 배열은 항상 영어로 작성하세요.
+
+JSON 구조:
+{
+  "keyword": "사용자 입력 키워드",
+  "customer_needs": "이 키워드와 관련해 해당 도시 거주자가 실제로 겪는 불편함이나 니즈 (2-3문장)",
+  "improvement": "스마트홈 관점에서 이 니즈를 어떻게 개선할 수 있는지 (2-3문장)",
+  "solutions": [
+    { "title": "솔루션 제목 1", "desc": "구체적 구현 방법과 기대 효과 (1-2문장)" },
+    { "title": "솔루션 제목 2", "desc": "구체적 구현 방법과 기대 효과 (1-2문장)" }
+  ],
+  "scenario_value": "이 분석이 시나리오 매칭에 어떤 가치를 줄 수 있는지 (1-2문장)",
+  "tags": ["Save energy", "Keep your home safe"]
+}
+
+tags 배열에는 아래 값 중 관련 있는 것만 포함하세요:
+Save energy, Keep your home safe, Help with chores, Care for kids, Care for seniors,
+Care for your pet, Sleep well, Enhanced mood, Stay fit & healthy, Easily control your lights,
+Keep the air fresh, Find your belongings, Time saving`;
+
 async function handleCityProfile(req, res) {
     const authState = requireAuthenticatedSession(req, res);
     if (!authState.ok) return;
@@ -2287,6 +2313,7 @@ async function handleCityProfile(req, res) {
     const country = parsed.searchParams.get("country") || "";
     const city = parsed.searchParams.get("city") || "";
     const locale = parsed.searchParams.get("locale") || "ko";
+    const customQuery = parsed.searchParams.get("custom_query") || "";
 
     if (!city || !country) {
         sendJson(res, 400, { ok: false, error: { code: "MISSING_PARAMS", message: "country and city required." } });
@@ -2300,6 +2327,52 @@ async function handleCityProfile(req, res) {
     }
 
     const model = process.env.OPENAI_MODEL || "gpt-5.4";
+
+    // custom_query가 있으면 커스텀 마켓 리서치 모드
+    if (customQuery) {
+        const maxTokens = 1200;
+        const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n위 도시에서 "${customQuery}" 키워드와 관련된 스마트홈 시장 조사를 수행하세요.`;
+
+        try {
+            const requestBody = {
+                model,
+                response_format: { type: "json_object" },
+                messages: [
+                    { role: "system", content: CUSTOM_RESEARCH_SYSTEM_PROMPT },
+                    { role: "user", content: userMessage }
+                ]
+            };
+            if (/^gpt-5/i.test(model)) {
+                requestBody.max_completion_tokens = maxTokens;
+            } else {
+                requestBody.max_tokens = maxTokens;
+            }
+
+            const apiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!apiRes.ok) {
+                const errText = await apiRes.text().catch(() => "");
+                sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: errText.substring(0, 200) } });
+                return;
+            }
+
+            const result = await apiRes.json();
+            const content = result.choices?.[0]?.message?.content || "{}";
+            let research;
+            try { research = JSON.parse(content); } catch { research = { raw: content }; }
+
+            sendJson(res, 200, { ok: true, data: research, mode: "custom_research", meta: { city, country, locale, model, query: customQuery } });
+        } catch (err) {
+            sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: err.message } });
+        }
+        return;
+    }
+
+    // 기본 도시 프로필 모드
     const maxTokens = 1500;
     const userMessage = `{ "city": "${city}", "country": "${country}", "locale": "${locale}" }에 대한 생활 밀착형 특징을 위의 규칙에 따라 JSON 형식으로 분석해 줘.`;
 

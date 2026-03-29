@@ -624,10 +624,27 @@ function bindEvents() {
     // ── Searchable City Dropdown 이벤트 ──
     initCitySearchDropdown();
     personaGroups.addEventListener("change", (event) => {
-        clearQ3AutoMode();
-        handleChecklistChange(event, personaGroups);
-        updateStatePreview();
-        updateStepInsight();
+        try {
+            clearQ3AutoMode();
+            handleChecklistChange(event, personaGroups);
+            updateStatePreview();
+        } catch (e) { console.error("[personaGroups change] handler error:", e); }
+        // 항상 insight 갱신 — 위에서 에러가 나도 실행
+        requestAnimationFrame(() => {
+            try { updateStepInsight(); } catch (e2) { console.error("[personaGroups change] insight error:", e2); }
+        });
+    });
+    // click 기반 백업 — 일부 브라우저에서 hidden checkbox의 change 이벤트가 누락되는 경우 대비
+    personaGroups.addEventListener("click", (event) => {
+        const chip = event.target.closest(".tree-chip");
+        const card = event.target.closest(".tree-card");
+        if (!chip && !card) return;
+        // change 이벤트와 겹쳐도 idempotent하므로 안전함
+        setTimeout(() => {
+            if (currentStep === 3) {
+                try { updateStepInsight(); } catch (e) { console.error("[personaGroups click] insight error:", e); }
+            }
+        }, 50);
     });
     personaGroups.addEventListener("input", (event) => {
         const input = event.target;
@@ -638,7 +655,7 @@ function bindEvents() {
         }
         clearQ3Error();
         updateStatePreview();
-        updateStepInsight();
+        requestAnimationFrame(() => { updateStepInsight(); });
     });
     purposeInput.addEventListener("input", () => {
         updateStatePreview();
@@ -3563,28 +3580,13 @@ let _customResearchData = null;
 async function runCustomCityResearch(query, resultContainer, parentContainer) {
     const isKo = currentLocale === "ko";
 
-    // 로딩 표시
+    // 로딩 표시 — 간결한 인라인 스피너
     resultContainer.style.display = "block";
     resultContainer.innerHTML = `
-        <div class="magic-custom-loading">
-            <div class="insight-loading" role="status" style="justify-content:flex-start">
-                <div class="pizza-spinner" aria-hidden="true" style="width:28px;height:28px">
-                    <svg viewBox="0 0 40 40" class="pizza-svg">
-                        <circle cx="20" cy="20" r="18" class="pizza-track"/>
-                        <path d="" class="pizza-wedge" data-pizza-wedge/>
-                    </svg>
-                    <span class="pizza-pct" data-pizza-pct>0%</span>
-                </div>
-                <span class="pizza-label" style="font-size:.75rem">${isKo ? "AI 마켓 리서치 중..." : "AI market research..."}</span>
-            </div>
+        <div class="magic-custom-loading" style="display:flex;align-items:center;gap:8px;padding:10px 0">
+            <span class="magic-research-spinner"></span>
+            <span style="font-size:.76rem;color:#003366;font-weight:600">${isKo ? `"${escapeHtml(query)}" 마켓 리서치 중...` : `Researching "${escapeHtml(query)}"...`}</span>
         </div>`;
-
-    // 피자 프로그레스
-    let progress = 0;
-    const pizzaInterval = setInterval(() => {
-        progress += (90 - progress) * 0.04;
-        updatePizzaProgress(resultContainer, Math.min(progress, 90));
-    }, 200);
 
     try {
         await ensureBypassSession();
@@ -3607,20 +3609,16 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
             signal: controller.signal
         });
         clearTimeout(timer);
-        clearInterval(pizzaInterval);
-        updatePizzaProgress(resultContainer, 100);
 
         if (response.ok) {
             const result = await response.json();
             if (result.ok && result.data) {
-                _customResearchData = { query, data: result.data };
-                await new Promise(r => setTimeout(r, 300));
+                _customResearchData = { query, data: result.data, tags: result.data.tags || [] };
                 renderCustomResearchResult(query, result.data, resultContainer);
                 return;
             }
         }
     } catch (err) {
-        clearInterval(pizzaInterval);
         console.warn("[custom-research] fetch failed:", err.message);
     }
 
@@ -3638,70 +3636,120 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
 function renderCustomResearchResult(query, data, resultContainer) {
     const isKo = currentLocale === "ko";
 
-    // data에서 custom_query 관련 결과 추출
-    const customResult = data.custom || data.summary || "";
-    const displayText = typeof customResult === "string"
-        ? customResult
-        : JSON.stringify(customResult, null, 2);
+    // 구조화된 데이터 추출
+    const needs = data.customer_needs || "";
+    const improvement = data.improvement || "";
+    const solutions = Array.isArray(data.solutions) ? data.solutions.slice(0, 2) : [];
+    const scenarioValue = data.scenario_value || "";
+    const tags = Array.isArray(data.tags) ? data.tags : [];
 
-    // 10카테고리 중 관련 데이터 요약
-    const relatedCategories = CITY_PROFILE_CATEGORIES
-        .filter(cat => data[cat.key])
-        .map(cat => `<span class="magic-custom-cat-chip" style="border-color:${cat.color};color:${cat.color}">${cat.icon} ${isKo ? cat.labelKo : cat.labelEn}</span>`)
-        .join("");
+    // 태그 → 한글 매핑
+    const tagKoMap = {
+        "Save energy": "에너지 절약", "Keep your home safe": "홈 안전·보안",
+        "Help with chores": "가사 자동화", "Care for kids": "자녀 케어",
+        "Care for seniors": "시니어 케어", "Care for your pet": "반려동물 케어",
+        "Sleep well": "수면 개선", "Enhanced mood": "분위기 연출",
+        "Stay fit & healthy": "건강·피트니스", "Easily control your lights": "조명 제어",
+        "Keep the air fresh": "공기질 관리", "Find your belongings": "분실물 찾기",
+        "Time saving": "시간 절약"
+    };
+
+    const tagsHtml = tags.map(t =>
+        `<span class="magic-research-tag">${escapeHtml(isKo ? (tagKoMap[t] || t) : t)}</span>`
+    ).join("");
+
+    const solutionsHtml = solutions.map((s, i) => `
+        <div class="magic-research-solution">
+            <span class="magic-research-solution-num">${i + 1}</span>
+            <div>
+                <strong>${escapeHtml(s.title || "")}</strong>
+                <p>${escapeHtml(s.desc || "")}</p>
+            </div>
+        </div>
+    `).join("");
 
     resultContainer.innerHTML = `
-        <div class="magic-custom-result-content">
+        <div class="magic-custom-result-content magic-research-structured">
             <div class="magic-custom-result-header">
-                <span class="magic-custom-result-badge">${isKo ? "AI 검색 결과" : "AI Research Result"}</span>
+                <span class="magic-custom-result-badge">${isKo ? "AI 마켓 리서치" : "AI Market Research"}</span>
                 <span class="magic-custom-result-query">"${escapeHtml(query)}"</span>
             </div>
-            <div class="magic-custom-result-body">
-                <p>${escapeHtml(displayText || (isKo ? "검색 결과를 기반으로 시나리오에 반영할 수 있습니다." : "Results can be applied to your scenario."))}</p>
-                ${relatedCategories ? `<div class="magic-custom-cats">${relatedCategories}</div>` : ""}
-            </div>
+
+            ${needs ? `<div class="magic-research-section">
+                <p class="magic-research-label">${isKo ? "🔍 고객 니즈" : "🔍 Customer Needs"}</p>
+                <p class="magic-research-text">${escapeHtml(needs)}</p>
+            </div>` : ""}
+
+            ${improvement ? `<div class="magic-research-section">
+                <p class="magic-research-label">${isKo ? "💡 개선 방향" : "💡 Improvement Direction"}</p>
+                <p class="magic-research-text">${escapeHtml(improvement)}</p>
+            </div>` : ""}
+
+            ${solutionsHtml ? `<div class="magic-research-section">
+                <p class="magic-research-label">${isKo ? "🛠️ 솔루션 예시" : "🛠️ Solution Examples"}</p>
+                ${solutionsHtml}
+            </div>` : ""}
+
+            ${scenarioValue ? `<div class="magic-research-section magic-research-value">
+                <p class="magic-research-label">${isKo ? "🎯 시나리오 매칭 가치" : "🎯 Scenario Matching Value"}</p>
+                <p class="magic-research-text">${escapeHtml(scenarioValue)}</p>
+                ${tagsHtml ? `<div class="magic-research-tags">${tagsHtml}</div>` : ""}
+            </div>` : ""}
+
             <div class="magic-custom-result-actions">
                 <button type="button" class="magic-custom-apply-btn" id="magic-custom-apply-btn">
                     ${isKo ? "시나리오 반영" : "Apply to Scenario"}
                 </button>
+                <button type="button" class="secondary-btn magic-custom-skip-btn" id="magic-custom-skip-btn">
+                    ${isKo ? "건너뛰기" : "Skip"}
+                </button>
                 <button type="button" class="secondary-btn magic-custom-retry-btn" id="magic-custom-retry-btn">
                     ${isKo ? "다시 검색" : "Search Again"}
-                </button>
-                <button type="button" class="secondary-btn magic-custom-skip-btn" id="magic-custom-skip-btn">
-                    ${isKo ? "스킵하기" : "Skip"}
                 </button>
             </div>
         </div>`;
 
-    // 시나리오 반영 버튼
+    // 시나리오 반영 — Q2 Audience 가중치에 반영
     resultContainer.querySelector("#magic-custom-apply-btn")?.addEventListener("click", () => {
-        // purpose 필드에 커스텀 리서치 내용 추가
+        // purpose 필드에 핵심 내용 추가
         const purposeVal = purposeInput.value.trim();
-        const appendText = `[${isKo ? "지역 특색" : "Local insight"}] ${query}: ${displayText}`.substring(0, 300);
-        purposeInput.value = purposeVal ? `${purposeVal}\n${appendText}` : appendText;
+        const summaryText = `[${isKo ? "마켓 리서치" : "Market Research"}] ${query}: ${needs}`.substring(0, 300);
+        purposeInput.value = purposeVal ? `${purposeVal}\n${summaryText}` : summaryText;
+
+        // 커스텀 리서치 태그를 Q2 가중치 엔진에 저장
+        _customResearchData = { query, data, tags, applied: true };
 
         // 시각 피드백
         const applyBtn = resultContainer.querySelector("#magic-custom-apply-btn");
         if (applyBtn) {
             applyBtn.innerHTML = isKo
-                ? `<span style="color:#4caf50">&#10003;</span> 반영 완료`
+                ? `<span style="color:#4caf50">&#10003;</span> 시나리오에 반영됨`
                 : `<span style="color:#4caf50">&#10003;</span> Applied`;
             applyBtn.disabled = true;
+            applyBtn.classList.add("magic-custom-applied");
         }
+        // 건너뛰기/다시 검색 비활성화
+        resultContainer.querySelectorAll(".magic-custom-skip-btn, .magic-custom-retry-btn").forEach(b => {
+            b.disabled = true;
+            b.style.opacity = "0.4";
+        });
+
         updateStatePreview();
+        // Q2 Audience 카드도 갱신되도록 insight 업데이트 트리거
+        if (currentStep === 3) updateStepInsight();
+    });
+
+    // 건너뛰기 버튼
+    resultContainer.querySelector("#magic-custom-skip-btn")?.addEventListener("click", () => {
+        resultContainer.style.display = "none";
+        _customResearchData = null;
     });
 
     // 다시 검색 버튼
     resultContainer.querySelector("#magic-custom-retry-btn")?.addEventListener("click", () => {
         const input = document.getElementById("magic-custom-input");
-        const query = input?.value.trim();
-        if (query) runCustomCityResearch(query, resultContainer);
-    });
-
-    // 스킵 버튼
-    resultContainer.querySelector("#magic-custom-skip-btn")?.addEventListener("click", () => {
-        resultContainer.style.display = "none";
-        _customResearchData = null;
+        const q = input?.value.trim();
+        if (q) runCustomCityResearch(q, resultContainer);
     });
 }
 
@@ -4794,6 +4842,15 @@ function buildStep3Insight() {
                 const catLbl = catObj ? (isKo ? catObj.labelKo : catObj.labelEn) : key;
                 (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTagScore(tag, q1Pts, `q1_${key}`, `Q1 ${catLbl} (${isKo ? "도시맥락" : "city"} +${q1Pts})`));
             }
+        }
+
+        // ── 커스텀 마켓 리서치 태그 반영 ──
+        if (_customResearchData?.applied && Array.isArray(_customResearchData.tags)) {
+            const CUSTOM_RESEARCH_WEIGHT = 12;
+            const crQuery = _customResearchData.query || "";
+            _customResearchData.tags.forEach(tag => {
+                addTagScore(tag, CUSTOM_RESEARCH_WEIGHT, `custom_research_${tag}`, `${isKo ? "마켓 리서치" : "Market Research"}: ${escapeHtml(crQuery)} (+${CUSTOM_RESEARCH_WEIGHT})`);
+            });
         }
 
         // ── purpose 텍스트 보너스 ──
@@ -11284,6 +11341,14 @@ function getIntegratedTagScores(input) {
             const q1Pts = Math.round(perQ1 * 0.8);
             (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTagScore(tag, q1Pts, `q1_${key}`));
         }
+    }
+
+    // 커스텀 마켓 리서치 태그 반영
+    if (_customResearchData?.applied && Array.isArray(_customResearchData.tags)) {
+        const CUSTOM_RESEARCH_WEIGHT = 12;
+        _customResearchData.tags.forEach(tag => {
+            addTagScore(tag, CUSTOM_RESEARCH_WEIGHT, `custom_research_${tag}`);
+        });
     }
 
     // 추가 텍스트 보너스
