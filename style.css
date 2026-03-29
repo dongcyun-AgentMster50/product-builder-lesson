@@ -2712,15 +2712,17 @@ textarea {
 }
 
 .q2-evidence-detail {
-    max-height: 0;
+    display: grid;
+    grid-template-rows: 0fr;
     overflow: hidden;
-    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.3s ease;
+    transition: grid-template-rows 0.3s ease, opacity 0.3s ease;
     opacity: 0;
 }
-
+.q2-evidence-detail > * {
+    overflow: hidden;
+}
 .q2-evidence-detail.open {
-    max-height: 200px;
+    grid-template-rows: 1fr;
     opacity: 1;
 }
 
@@ -2836,7 +2838,7 @@ textarea {
     height: 8px; border-radius: 4px; background: rgba(0,0,0,0.06); overflow: hidden;
 }
 .q2-score-bar-fill {
-    height: 100%; border-radius: 4px; transition: width 0.5s ease;
+    height: 100%; border-radius: 4px; transform-origin: left; transition: transform 0.5s ease; will-change: transform;
 }
 .q2-score-bar--q1 { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
 .q2-score-bar--q2 { background: linear-gradient(90deg, #ea580c, #f97316); }
@@ -3034,7 +3036,7 @@ textarea {
     height: 7px; border-radius: 4px; background: rgba(0,0,0,0.06); overflow: hidden;
 }
 .q2-tag-bar-fill {
-    height: 100%; border-radius: 4px; transition: width 0.5s ease;
+    height: 100%; border-radius: 4px; transform-origin: left; transition: transform 0.5s ease; will-change: transform;
 }
 .q2-tag-score {
     font-size: 0.68rem; font-weight: 800; color: var(--accent-strong); text-align: right;
@@ -8815,9 +8817,12 @@ a.source-tag-link:hover {
 }
 .mp-weight-bar {
     height: 100%;
+    width: 100%;
     border-radius: 4px;
-    background: linear-gradient(90deg, #003366, #0066cc);
-    transition: width 0.6s ease-out;
+    background: linear-gradient(90deg, var(--accent-strong), var(--accent-mid));
+    transform-origin: left;
+    transition: transform 0.6s ease-out;
+    will-change: transform;
 }
 .mp-weight-score {
     font-size: 0.68rem;
@@ -9167,14 +9172,17 @@ a.source-tag-link:hover {
 }
 .co-scenario-body {
     margin-top: 12px;
+    display: grid;
+    grid-template-rows: 1fr;
     overflow: hidden;
-    transition: max-height 0.3s ease;
+    transition: grid-template-rows 0.3s ease, opacity 0.3s ease;
 }
+.co-scenario-body > * { overflow: hidden; }
 .co-collapsed {
-    max-height: 0 !important;
+    grid-template-rows: 0fr !important;
     margin-top: 0;
     padding: 0;
-    overflow: hidden;
+    opacity: 0;
 }
 .co-scenario-desc {
     font-size: 0.82rem;

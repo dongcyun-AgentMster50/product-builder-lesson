@@ -915,9 +915,7 @@ function toggleAccessCodeVisibility() {
 
 function hydrateStaticUi() {
     renderExportActions();
-    exportActions.querySelectorAll(".action-btn").forEach((button) => {
-        button.addEventListener("click", () => handleExport(button.dataset.export));
-    });
+    // 이벤트 위임은 renderExportActions 내부에서 처리됨
 
     renderWizardProgress();
     updateStepInsight();
@@ -4742,7 +4740,7 @@ function buildStep3Insight() {
             return `<div class="q2-score-row">
                 <span class="q2-score-label">${clTag}<span class="q2-score-dot" style="background:${t.color}"></span>${escapeHtml(t.trait)}</span>
                 ${corroTag}
-                <div class="q2-score-bar-track"><div class="q2-score-bar-fill q2-score-bar--q1" style="width:${score}%"></div></div>
+                <div class="q2-score-bar-track"><div class="q2-score-bar-fill q2-score-bar--q1" style="width:100%;transform:scaleX(${score / 100})"></div></div>
                 <span class="q2-score-num">${score}${isKo ? "점" : "pt"}</span>
             </div>`;
         }).join("");
@@ -4758,7 +4756,7 @@ function buildStep3Insight() {
             return `<div class="q2-score-row">
                 <span class="q2-score-label">${clTag}<span class="q2-score-dot" style="background:${color}"></span>${escapeHtml(t.trait)}</span>
                 ${corroTag}
-                <div class="q2-score-bar-track"><div class="q2-score-bar-fill q2-score-bar--q2" style="width:${score}%"></div></div>
+                <div class="q2-score-bar-track"><div class="q2-score-bar-fill q2-score-bar--q2" style="width:100%;transform:scaleX(${score / 100})"></div></div>
                 <span class="q2-score-num">${score}${isKo ? "점" : "pt"}</span>
             </div>`;
         }).join("");
@@ -4984,7 +4982,7 @@ function buildStep3Insight() {
             return `<div class="q2-tag-row-wrap">
                 <div class="q2-tag-row">
                     <span class="q2-tag-label">${escapeHtml(display)}</span>
-                    <div class="q2-tag-bar-track"><div class="q2-tag-bar-fill" style="width:${norm}%;background:${barColor}"></div></div>
+                    <div class="q2-tag-bar-track"><div class="q2-tag-bar-fill" style="width:100%;transform:scaleX(${norm / 100});background:${barColor}"></div></div>
                     <span class="q2-tag-score">${norm}</span>
                     <button type="button" class="q2-tag-detail-btn q2-evidence-toggle" data-ev-target="${detailId}"><span class="q2-ev-arrow">▸</span></button>
                 </div>
@@ -6242,7 +6240,12 @@ async function streamGenerateScenario(context) {
                     aiOutputText += event.text;
                     if (streamOutput) {
                         streamOutput.textContent = aiOutputText;
-                        streamOutput.scrollTop = streamOutput.scrollHeight;
+                        if (!streamOutput._scrollRAF) {
+                            streamOutput._scrollRAF = requestAnimationFrame(() => {
+                                streamOutput.scrollTop = streamOutput.scrollHeight;
+                                streamOutput._scrollRAF = null;
+                            });
+                        }
                     }
                 } else if (event.type === "done") {
                     break;
@@ -6873,7 +6876,12 @@ function bindRefinementPrompt(previousOutput, context) {
                     if (event.type === "chunk") {
                         refineText += event.text;
                         answer.textContent = refineText;
-                        answer.scrollTop = answer.scrollHeight;
+                        if (!answer._scrollRAF) {
+                            answer._scrollRAF = requestAnimationFrame(() => {
+                                answer.scrollTop = answer.scrollHeight;
+                                answer._scrollRAF = null;
+                            });
+                        }
                     } else if (event.type === "done") {
                         break;
                     } else if (event.type === "error") {
@@ -10713,9 +10721,14 @@ function renderExportActions() {
             <span>${escapeHtml(labels[type].desc)}</span>
         </button>
     `).join("");
-    exportActions.querySelectorAll(".action-btn").forEach((button) => {
-        button.addEventListener("click", () => handleExport(button.dataset.export));
-    });
+    // 이벤트 위임 — 개별 리스너 대신 부모에 한 번만 등록
+    if (!exportActions._delegated) {
+        exportActions.addEventListener("click", (e) => {
+            const btn = e.target.closest("[data-export]");
+            if (btn) handleExport(btn.dataset.export);
+        });
+        exportActions._delegated = true;
+    }
 }
 
 function t(key) {
@@ -11670,7 +11683,7 @@ function buildMpCards(ctx, isKo) {
             : "";
         return `<div class="mp-weight-row">
             <span class="mp-weight-label">${escapeHtml(t.display)}${devBadge}</span>
-            <div class="mp-weight-bar-bg"><div class="mp-weight-bar" style="width:${pct}%"></div></div>
+            <div class="mp-weight-bar-bg"><div class="mp-weight-bar" style="transform:scaleX(${pct / 100})"></div></div>
             <span class="mp-weight-score">${t.score}${isKo ? "점" : "pt"}</span>
         </div>`;
     }).join("");
