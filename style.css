@@ -10534,3 +10534,52 @@ a.source-tag-link:hover {
         scroll-behavior: auto !important;
     }
 }
+
+/* --- Q2 cleanup overrides --- */
+#purpose {
+    display: none !important;
+}
+
+.q2-tag-row-wrap {
+    display: grid !important;
+    gap: 0 !important;
+    margin-bottom: 4px !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+}
+
+.q2-tag-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 120px 38px 76px !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 6px 0 !important;
+}
+
+.q2-tag-label {
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+}
+
+.q2-tag-score {
+    font-size: 0.74rem !important;
+}
+
+.q2-tag-detail-btn {
+    min-width: 70px !important;
+    min-height: 30px !important;
+    padding: 0 10px !important;
+    gap: 5px !important;
+}
+
+.q2-tag-source-detail {
+    margin: 2px 0 6px !important;
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+    background: rgba(37, 99, 235, 0.04) !important;
+    border: 1px solid rgba(59, 130, 246, 0.12) !important;
+    border-left: 3px solid #3b82f6 !important;
+}
+

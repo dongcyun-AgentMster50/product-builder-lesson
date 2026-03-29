@@ -2826,6 +2826,9 @@ function bindQ2EvidenceToggles(container) {
             if (!isOpen) {
                 detail.classList.add("open");
                 btn.classList.add("active");
+                requestAnimationFrame(() => {
+                    detail.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+                });
             }
         });
     });
@@ -3928,12 +3931,6 @@ function bindCustomResearchActions(query, needsText, data, tags, resultContainer
 
     // 시나리오 반영 — Q2 Audience 가중치에 반영
     resultContainer.querySelector("#magic-custom-apply-btn")?.addEventListener("click", () => {
-        const purposeVal = purposeInput.value.trim();
-        // 새 포맷: reflection points 포함, 구 포맷: needsText 사용
-        const points = Array.isArray(data.recommended_reflection_points) ? data.recommended_reflection_points : [];
-        const pointsSuffix = points.length ? ` | ${points.join("; ")}` : "";
-        const summaryText = `[${isKo ? "도시 맥락" : "City Context"}] ${query}: ${needsText || query}${pointsSuffix}`.substring(0, 500);
-        purposeInput.value = purposeVal ? `${purposeVal}\n${summaryText}` : summaryText;
 
         // 커스텀 리서치 태그를 Q2 가중치 엔진에 저장
         _customResearchData = { query, data, tags: tags || [], applied: true };
