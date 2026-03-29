@@ -3592,32 +3592,35 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
         const country = resolveCountry(selectedMarket);
         const city = getCityValue();
 
-        // base_profiles 요약 생성 — 중복 제거용
+        // base_profiles 요약 생성 — 중복 제거용 (카테고리별 앞 80자 요약)
         let baseProfilesSummary = "";
         if (_latestCityProfile?.profile) {
             const p = _latestCityProfile.profile;
             baseProfilesSummary = CITY_PROFILE_CATEGORIES
                 .filter(cat => p[cat.key])
-                .map(cat => `${cat.key}: ${p[cat.key]}`)
+                .map(cat => `${cat.key}: ${String(p[cat.key]).substring(0, 80)}`)
                 .join("\n");
         }
 
-        const params = new URLSearchParams({
+        // GET 파라미터는 city/country/locale만, custom_query+base_profiles는 POST body로 전송
+        const urlParams = new URLSearchParams({
             country: country.countryCode,
             city: city || "",
-            locale: currentLocale,
-            custom_query: query
+            locale: currentLocale
         });
-        if (baseProfilesSummary) {
-            params.set("base_profiles", baseProfilesSummary);
-        }
 
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 30000);
+        const timer = setTimeout(() => controller.abort(), 45000);
 
-        const response = await fetch(`/api/city-profile?${params}`, {
+        const response = await fetch(`/api/city-profile?${urlParams}`, {
+            method: "POST",
             credentials: "include",
-            signal: controller.signal
+            signal: controller.signal,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                custom_query: query,
+                base_profiles: baseProfilesSummary
+            })
         });
         clearTimeout(timer);
 
