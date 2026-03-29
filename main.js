@@ -198,6 +198,7 @@ let accessLockoutEndsAt = 0;
 let accessLockoutTimerId = null;
 let accessClientSessionId = "";
 let latestStep2InsightRequest = 0;
+let deferStep3InsightUntilInteraction = false;
 let bypassSessionReady = false;
 let bypassSessionPromise = null;
 let selectedProvider = sessionStorage.getItem("aiProvider") || "openai";
@@ -631,7 +632,10 @@ function bindEvents() {
         } catch (e) { console.error("[personaGroups change] handler error:", e); }
         // 항상 insight 갱신 — 위에서 에러가 나도 실행
         requestAnimationFrame(() => {
-            try { updateStepInsight(); } catch (e2) { console.error("[personaGroups change] insight error:", e2); }
+            try {
+                releaseDeferredStep3Insight();
+                updateStepInsight();
+            } catch (e2) { console.error("[personaGroups change] insight error:", e2); }
         });
     });
     // click 기반 백업 — 일부 브라우저에서 hidden checkbox의 change 이벤트가 누락되는 경우 대비
@@ -642,7 +646,10 @@ function bindEvents() {
         // change 이벤트와 겹쳐도 idempotent하므로 안전함
         setTimeout(() => {
             if (currentStep === 3) {
-                try { updateStepInsight(); } catch (e) { console.error("[personaGroups click] insight error:", e); }
+                try {
+                    releaseDeferredStep3Insight();
+                    updateStepInsight();
+                } catch (e) { console.error("[personaGroups click] insight error:", e); }
             }
         }, 50);
     });
@@ -655,9 +662,13 @@ function bindEvents() {
         }
         clearQ3Error();
         updateStatePreview();
-        requestAnimationFrame(() => { updateStepInsight(); });
+        requestAnimationFrame(() => {
+            releaseDeferredStep3Insight();
+            updateStepInsight();
+        });
     });
     purposeInput.addEventListener("input", () => {
+        releaseDeferredStep3Insight();
         updateStatePreview();
         updateStepInsight();
     });
@@ -695,6 +706,7 @@ function handleQ3AutoSelect() {
             ? "AI가 지역 트렌드 기반으로 최적 타겟 세그먼트를 자동 구성합니다."
             : "AI will auto-configure the optimal target segment based on regional trends.";
     }
+    deferStep3InsightUntilInteraction = false;
     updateStatePreview();
     updateStepInsight();
     // 버튼 활성 표시
@@ -2737,6 +2749,12 @@ function updateStepInsight() {
         return;
     }
 
+    if (currentStep === 3 && deferStep3InsightUntilInteraction) {
+        stepInsight.classList.add("hidden");
+        updateQuestionHelpers();
+        return;
+    }
+
     stepInsight.classList.remove("hidden");
     const insight = getStepInsight();
     stepInsight.innerHTML = buildInsightMarkup(insight);
@@ -3523,6 +3541,12 @@ function renderCityProfileInsight(countryName, localCity, profile) {
             ${buildQ1NextStepHelperCard(isKo)}
         </div>
     `;
+}
+
+function releaseDeferredStep3Insight() {
+    if (currentStep !== 3 || !deferStep3InsightUntilInteraction) return;
+    deferStep3InsightUntilInteraction = false;
+    updateStepInsight();
 }
 
 let _pendingCitySheetHtml = "";
@@ -6301,6 +6325,7 @@ function moveStep(delta) {
     if (delta > 0 && !validateCurrentStep()) return;
     const nextStep = Math.min(4, Math.max(2, currentStep + delta));
     if (nextStep === currentStep) return;
+    deferStep3InsightUntilInteraction = nextStep === 3;
     currentStep = nextStep;
     syncWizardUi();
     enforceStepViewportAlignment();
