@@ -3619,7 +3619,9 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 custom_query: query,
-                base_profiles: baseProfilesSummary
+                base_profiles: baseProfilesSummary,
+                country: country.countryCode,
+                city: city || ""
             })
         });
         clearTimeout(timer);

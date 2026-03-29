@@ -2326,10 +2326,22 @@ async function handleCityProfile(req, res) {
     if (!authState.ok) return;
 
     const parsed = new URL(req.url, `http://${req.headers.host || "localhost"}`);
-    const country = parsed.searchParams.get("country") || "";
-    const city = parsed.searchParams.get("city") || "";
     const locale = parsed.searchParams.get("locale") || "ko";
-    const customQuery = parsed.searchParams.get("custom_query") || "";
+
+    // POST body 먼저 파싱 — custom_query, base_profiles, city/country 폴백 추출
+    let postBody = null;
+    if (req.method === "POST") {
+        try {
+            postBody = await readJsonBody(req);
+        } catch (err) {
+            console.warn("[city-profile] POST body parse failed:", err.message);
+        }
+    }
+
+    const country = parsed.searchParams.get("country") || postBody?.country || "";
+    const city = parsed.searchParams.get("city") || postBody?.city || "";
+    const customQuery = parsed.searchParams.get("custom_query") || postBody?.custom_query || "";
+    const baseProfiles = postBody?.base_profiles || parsed.searchParams.get("base_profiles") || "";
 
     if (!city || !country) {
         sendJson(res, 400, { ok: false, error: { code: "MISSING_PARAMS", message: "country and city required." } });
@@ -2344,27 +2356,10 @@ async function handleCityProfile(req, res) {
 
     const model = process.env.OPENAI_MODEL || "gpt-5.4";
 
-    // POST body에서 custom research 파라미터 추출 (POST 방식 지원)
-    let postBody = null;
-    if (req.method === "POST") {
-        try {
-            const raw = await new Promise((resolve, reject) => {
-                let data = "";
-                req.on("data", chunk => { data += chunk; if (data.length > 50000) reject(new Error("too large")); });
-                req.on("end", () => resolve(data));
-                req.on("error", reject);
-            });
-            postBody = JSON.parse(raw);
-        } catch { postBody = null; }
-    }
-
-    const customQueryFinal = customQuery || (postBody?.custom_query || "");
-    const baseProfiles = postBody?.base_profiles || parsed.searchParams.get("base_profiles") || "";
-
     // custom_query가 있으면 커스텀 마켓 리서치 모드
-    if (customQueryFinal) {
+    if (customQuery) {
         const maxTokens = 2000;
-        const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQueryFinal}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}위 도시에서 "${customQueryFinal}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
+        const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}위 도시에서 "${customQuery}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
 
         try {
             const requestBody = {
@@ -2398,7 +2393,7 @@ async function handleCityProfile(req, res) {
             let research;
             try { research = JSON.parse(content); } catch { research = { raw: content }; }
 
-            sendJson(res, 200, { ok: true, data: research, mode: "custom_research", meta: { city, country, locale, model, query: customQueryFinal } });
+            sendJson(res, 200, { ok: true, data: research, mode: "custom_research", meta: { city, country, locale, model, query: customQuery } });
         } catch (err) {
             sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: err.message } });
         }
