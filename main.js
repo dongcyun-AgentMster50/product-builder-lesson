@@ -1325,6 +1325,27 @@ function renderQ4QuickChipButtons(optionIds, kind) {
     }).join("");
 }
 
+function applyPersonaExclusiveRules(target, group) {
+    if (!target.checked) return;
+
+    const relatedInputs = [...group.querySelectorAll('input[data-node-type="child"]')];
+    let exclusiveIds = [];
+
+    if (group.dataset.groupId === "housing") {
+        exclusiveIds = Q2_HOUSING_EXCLUSIVE_IDS;
+    } else if (group.dataset.groupId === "household" && Q2_HOUSEHOLD_CORE_IDS.includes(target.value)) {
+        exclusiveIds = Q2_HOUSEHOLD_CORE_IDS;
+    }
+
+    if (!exclusiveIds.length) return;
+
+    relatedInputs.forEach((input) => {
+        if (input !== target && exclusiveIds.includes(input.value)) {
+            input.checked = false;
+        }
+    });
+}
+
 function handleQ4PresetClick(event) {
     const button = event.target.closest("[data-preset-id]");
     if (!button) return;
@@ -1617,6 +1638,8 @@ function handleChecklistChange(event, container) {
         const parent = group.querySelector('input[data-node-type="parent"]');
         const children = [...group.querySelectorAll('input[data-node-type="child"]')];
 
+        applyPersonaExclusiveRules(target, group);
+
         if (target.dataset.nodeType === "parent") {
             children.forEach((child) => {
                 child.checked = target.checked;
@@ -1630,6 +1653,8 @@ function handleChecklistChange(event, container) {
 
         syncChecklistParent(group, parent, children);
     }
+
+    updatePersonaGroupFooters();
 
     // Clear Q3 validation error on interaction
     clearQ3Error();
@@ -2321,6 +2346,7 @@ function populateInputs(preserved = {}) {
     if (previousDeviceCustom) deviceCustomInput.value = previousDeviceCustom;
     syncAllChecklistParents(personaGroups);
     syncAllChecklistParents(deviceGrid);
+    decoratePersonaGroups();
     renderQ4Composer();
 }
 
@@ -4653,6 +4679,11 @@ function buildQ2CardGuideItemsHtml(isKo) {
     `).join("");
 }
 
+const Q2_HOUSING_EXCLUSIVE_IDS = ["h_apt", "h_compact", "h_villa", "h_house", "h_townhouse", "h_shared", "h_care"];
+const Q2_HOUSEHOLD_CORE_IDS = ["hh_solo", "hh_couple", "hh_young_kids", "hh_school_kids", "hh_adult_kids", "hh_multi_gen", "hh_senior"];
+const Q2_HOUSEHOLD_CONTEXT_IDS = ["t_dual_income", "t_single_income", "t_solo_parent", "t_multi_kids", "t_pet"];
+const Q2_HOUSEHOLD_CARE_IDS = ["t_parent_away", "t_parent_care", "t_acc_needs"];
+
 function buildQ1NextStepHelperCard(isKo) {
     return `
         <section class="q1-next-helper-card">
@@ -4670,24 +4701,161 @@ function buildQ1NextStepHelperCard(isKo) {
     `;
 }
 
+function extractInsightKeywords(text, limit = 3) {
+    const raw = String(text || "");
+    if (!raw) return [];
+    const parts = raw
+        .split(/[,\n/|]|·|ㆍ|:|;/)
+        .map((item) => item.replace(/\s+/g, " ").trim())
+        .filter((item) => item && item.length >= 2 && item.length <= 26);
+    return [...new Set(parts)].slice(0, limit);
+}
+
+function buildReferenceKeywordChips(text, fallbackLabel = "", limit = 3) {
+    const chips = extractInsightKeywords(text, limit);
+    if (chips.length > 0) return chips;
+    return fallbackLabel ? [fallbackLabel] : [];
+}
+
+function getPersonaSelectionFooterCopy(groupId, isKo) {
+    const checkedLabels = [...personaGroups.querySelectorAll(`.tree-group[data-group-id="${groupId}"] input[data-node-type="child"]:checked`)]
+        .map((input) => input.dataset.label || input.value)
+        .filter(Boolean);
+
+    if (groupId === "housing") {
+        return checkedLabels.length
+            ? { title: isKo ? "현재 적용 주거 유형" : "Current housing", chips: checkedLabels.slice(0, 2) }
+            : { title: isKo ? "선택 기준" : "Selection rule", chips: [isKo ? "주거 유형 1개 선택" : "Choose 1 housing type"] };
+    }
+
+    if (groupId === "household") {
+        const coreLabels = [...personaGroups.querySelectorAll('.tree-group[data-group-id="household"] input[data-node-type="child"]:checked')]
+            .filter((input) => Q2_HOUSEHOLD_CORE_IDS.includes(input.value))
+            .map((input) => input.dataset.label || input.value);
+        const extraCount = checkedLabels.filter((label) => !coreLabels.includes(label)).length;
+        if (coreLabels.length > 0 || extraCount > 0) {
+            const chips = [];
+            if (coreLabels[0]) chips.push(coreLabels[0]);
+            if (extraCount > 0) chips.push(isKo ? `추가 조건 ${extraCount}` : `${extraCount} extra conditions`);
+            return { title: isKo ? "현재 세대 구조" : "Current household structure", chips };
+        }
+        return { title: isKo ? "선택 기준" : "Selection rule", chips: [isKo ? "핵심 구조 1개 + 추가 조건 선택" : "1 core structure + extra conditions"] };
+    }
+
+    if (groupId === "lifestage") {
+        return checkedLabels.length
+            ? { title: isKo ? "현재 반영 생활맥락" : "Current life context", chips: checkedLabels.slice(0, 3) }
+            : { title: isKo ? "선택 기준" : "Selection rule", chips: [isKo ? "복수 선택 가능" : "Multiple selections allowed"] };
+    }
+
+    return { title: isKo ? "현재 선택" : "Current selection", chips: checkedLabels.slice(0, 3) };
+}
+
+function updatePersonaGroupFooters() {
+    const isKo = currentLocale === "ko";
+    personaGroups.querySelectorAll(".tree-group").forEach((group) => {
+        const groupId = group.dataset.groupId;
+        if (!["housing", "household", "lifestage"].includes(groupId)) return;
+
+        let footer = group.querySelector(".q2-persona-footer");
+        if (!footer) {
+            footer = document.createElement("div");
+            footer.className = "q2-persona-footer";
+            group.appendChild(footer);
+        }
+
+        const footerCopy = getPersonaSelectionFooterCopy(groupId, isKo);
+        footer.innerHTML = `
+            <span class="q2-persona-footer-label">${escapeHtml(footerCopy.title)}</span>
+            <div class="q2-persona-footer-chips">
+                ${footerCopy.chips.map((chip) => `<span class="q2-persona-footer-chip">${escapeHtml(chip)}</span>`).join("")}
+            </div>
+        `;
+    });
+}
+
+function groupHouseholdOptions() {
+    const householdGroup = personaGroups.querySelector('.tree-group[data-group-id="household"]');
+    if (!householdGroup || householdGroup.dataset.q2Structured === "true") return;
+
+    const children = householdGroup.querySelector(".tree-children");
+    if (!children) return;
+
+    const optionNodes = [...children.querySelectorAll('.tree-child')];
+    if (!optionNodes.length) return;
+
+    const findNode = (id) => optionNodes.find((node) => node.querySelector(`input[value="${id}"]`));
+    const isKo = currentLocale === "ko";
+    const sections = [
+        {
+            title: isKo ? "핵심 동거 구조" : "Core household structure",
+            desc: isKo ? "가장 가까운 기본 세대 구성을 1개 기준으로 선택" : "Choose the one base household structure that fits best",
+            className: "q2-household-grid q2-household-grid--core",
+            ids: Q2_HOUSEHOLD_CORE_IDS
+        },
+        {
+            title: isKo ? "운영·생활 조건" : "Household conditions",
+            desc: isKo ? "가족 운영 방식이나 생활 조건은 복수 선택 가능" : "You can add multiple operating or living conditions",
+            className: "q2-household-grid",
+            ids: Q2_HOUSEHOLD_CONTEXT_IDS
+        },
+        {
+            title: isKo ? "돌봄·배려 조건" : "Care and accessibility",
+            desc: isKo ? "부모 돌봄이나 접근성 배려처럼 추가로 고려할 상황" : "Add care or accessibility situations when relevant",
+            className: "q2-household-grid",
+            ids: Q2_HOUSEHOLD_CARE_IDS
+        }
+    ];
+
+    const shell = document.createElement("div");
+    shell.className = "q2-household-sections";
+
+    sections.forEach((section) => {
+        const nodes = section.ids.map(findNode).filter(Boolean);
+        if (!nodes.length) return;
+
+        const sectionEl = document.createElement("section");
+        sectionEl.className = "q2-household-section";
+        sectionEl.innerHTML = `
+            <div class="q2-household-section-head">
+                <strong>${escapeHtml(section.title)}</strong>
+                <p>${escapeHtml(section.desc)}</p>
+            </div>
+            <div class="${section.className}"></div>
+        `;
+        const grid = sectionEl.querySelector(`.${section.className.split(" ").join(".")}`);
+        nodes.forEach((node) => grid.appendChild(node));
+        shell.appendChild(sectionEl);
+    });
+
+    children.innerHTML = "";
+    children.appendChild(shell);
+    householdGroup.dataset.q2Structured = "true";
+}
+
+function decoratePersonaGroups() {
+    if (!personaGroups) return;
+    groupHouseholdOptions();
+    updatePersonaGroupFooters();
+}
+
 function buildQ2ReferencePanelHtml() {
     const isKo = currentLocale === "ko";
-    const q2Panel = document.getElementById("q2-reference-panel");
-    if (!q2Panel) return "";
-
     const profileRefs = getRelevantQ1ProfileReferences(3);
     const customSummary = getCustomResearchSummary();
+    const cityName = _latestCityProfile?.localCity || getCityValue() || "";
+    const countryName = _latestCityProfile?.countryName || getCountryName(countrySelect.value) || "";
+    const locationTitle = [countryName, cityName].filter(Boolean).join(" · ");
     const hasContent = profileRefs.length > 0 || customSummary;
 
     if (!hasContent) {
         return `
             <section class="q2-reference-shell q2-reference-shell--empty">
-                <div class="q2-reference-head">
-                    <span class="q2-reference-kicker">${isKo ? "Q1 참고 정보" : "Q1 reference context"}</span>
-                    <h4>${isKo ? "Q1에서 반영된 참고 정보가 여기에 쌓입니다" : "Q1 carry-over context will appear here"}</h4>
-                    <p>${isKo
-                        ? "도시 프로필 키워드나 커스텀 검색 결과를 반영하면, 이 패널에서 Q2 선택에 참고할 수 있도록 정리해 보여줍니다."
-                        : "Applied city-profile categories and custom research will be organized here to support Q2 selections."}</p>
+                <div class="q2-reference-topline">
+                    <div>
+                        <span class="q2-reference-kicker">${isKo ? "Q1 반영 대기" : "Waiting for Q1 reflection"}</span>
+                        <h4>${isKo ? "도시 프로필이나 커스텀 항목을 반영하면 여기에 요약됩니다" : "Applied city-profile and custom items will appear here"}</h4>
+                    </div>
                 </div>
             </section>
         `;
@@ -4695,50 +4863,59 @@ function buildQ2ReferencePanelHtml() {
 
     const profileHtml = profileRefs.length > 0
         ? profileRefs.map((item) => `
-            <article class="q2-ref-chip-card" style="--q2-ref-accent:${item.color}">
+            <article class="q2-ref-chip-card q2-ref-chip-card--keyword" style="--q2-ref-accent:${item.color}">
                 <div class="q2-ref-chip-top">
                     <span class="q2-ref-chip-icon">${item.icon}</span>
                     <span class="q2-ref-chip-title">${escapeHtml(item.label)}</span>
                 </div>
-                <p>${escapeHtml(item.text)}</p>
+                <div class="q2-ref-keyword-row">
+                    ${buildReferenceKeywordChips(item.text, item.label).map((chip) => `<span class="q2-ref-tag q2-ref-tag--soft">${escapeHtml(chip)}</span>`).join("")}
+                </div>
+                <p>${escapeHtml(summarizeInsightText(item.text, 72))}</p>
             </article>
         `).join("")
         : `<p class="q2-ref-empty">${isKo ? "아직 선택된 도시 프로필 요약이 없습니다." : "No city-profile references applied yet."}</p>`;
 
     const customHtml = customSummary
         ? `
-            <article class="q2-ref-custom-card">
+            <article class="q2-ref-custom-card q2-ref-custom-card--keyword">
                 <div class="q2-ref-custom-top">
                     <span class="q2-ref-custom-query">${escapeHtml(customSummary.query)}</span>
-                    ${customSummary.tags.length ? `<div class="q2-ref-tag-row">${customSummary.tags.map((tag) => `<span class="q2-ref-tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
                 </div>
-                ${customSummary.interpretation ? `<p class="q2-ref-custom-copy">${escapeHtml(customSummary.interpretation)}</p>` : ""}
-                ${customSummary.points.length ? `<ul class="q2-ref-point-list">${customSummary.points.map((point) => `<li>${escapeHtml(summarizeInsightText(point, 120))}</li>`).join("")}</ul>` : ""}
+                <div class="q2-ref-tag-row">
+                    ${(customSummary.tags.length ? customSummary.tags : buildReferenceKeywordChips(customSummary.interpretation, customSummary.query)).slice(0, 5).map((tag) => `<span class="q2-ref-tag">${escapeHtml(tag)}</span>`).join("")}
+                </div>
+                ${customSummary.interpretation ? `<p class="q2-ref-custom-copy">${escapeHtml(summarizeInsightText(customSummary.interpretation, 90))}</p>` : ""}
             </article>
         `
         : `<p class="q2-ref-empty">${isKo ? "커스텀 검색 반영이 없으면 여기에는 Q1 사용자 정의 맥락이 표시됩니다." : "Applied custom research from Q1 will appear here."}</p>`;
 
     return `
         <section class="q2-reference-shell">
-            <div class="q2-reference-head">
-                <span class="q2-reference-kicker">${isKo ? "Q1 참고 정보" : "Q1 reference context"}</span>
-                <h4>${isKo ? "Q2 선택 전에 이미 반영된 맥락을 빠르게 확인하세요" : "Review what is already carried into Q2 before selecting more inputs"}</h4>
-                <p>${isKo
-                    ? "아래 정보는 Q1에서 선택한 도시 프로필과 커스텀 검색 결과입니다. Q2 항목을 고를 때 어떤 생활 조건을 더 보강할지 판단하는 기준으로 사용하세요."
-                    : "These references come from Q1 city-profile choices and custom research. Use them to decide which Q2 conditions to reinforce."}</p>
+            <div class="q2-reference-topline">
+                <div>
+                    <span class="q2-reference-kicker">${isKo ? "Q1에서 이미 반영된 맥락" : "Context already reflected from Q1"}</span>
+                    <h4>${isKo
+                        ? `${locationTitle || "선택한 지역"} 기준으로 이런 조건이 들어와 있습니다`
+                        : `These conditions are already carried in for ${locationTitle || "the selected location"}`}</h4>
+                </div>
+                <div class="q2-reference-location">
+                    ${countryName ? `<span class="q2-reference-location-chip">${escapeHtml(countryName)}</span>` : ""}
+                    ${cityName ? `<span class="q2-reference-location-chip q2-reference-location-chip--strong">${escapeHtml(cityName)}</span>` : ""}
+                </div>
             </div>
             <div class="q2-reference-grid">
                 <section class="q2-ref-section">
                     <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "기본 도시 프로필" : "Base city profile"}</span>
-                        <strong>${isKo ? "선택/연관된 핵심 요약" : "Selected or relevant profile summaries"}</strong>
+                        <span class="q2-ref-section-kicker">${isKo ? "선택한 도시 프로필" : "Selected city profile"}</span>
+                        <strong>${isKo ? "Q1에서 고른 생활 특성" : "Lifestyle traits chosen in Q1"}</strong>
                     </div>
                     <div class="q2-ref-chip-grid">${profileHtml}</div>
                 </section>
                 <section class="q2-ref-section q2-ref-section--custom">
                     <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "커스텀 검색 반영" : "Custom research"}</span>
-                        <strong>${isKo ? "Q1 사용자 정의 맥락 요약" : "Q1 custom reflection summary"}</strong>
+                        <span class="q2-ref-section-kicker">${isKo ? "커스텀 반영" : "Custom reflection"}</span>
+                        <strong>${isKo ? "추가로 반영한 사용자 맥락" : "Additional user-defined context"}</strong>
                     </div>
                     ${customHtml}
                 </section>
@@ -6097,10 +6274,7 @@ function alignWizardStepViewport() {
         : activeStep.querySelector(".role-card.selected, .role-card, select, input[type='text'], textarea, input[type='checkbox']");
     focusTarget?.focus({ preventScroll: true });
 
-    const stepInsightEl = document.getElementById("step-insight");
-    const scrollTarget = currentStep === 3 && stepInsightEl && !stepInsightEl.classList.contains("hidden")
-        ? stepInsightEl
-        : activeStep;
+    const scrollTarget = activeStep;
     const yOffset = scrollTarget.getBoundingClientRect().top + window.pageYOffset - 12;
     window.scrollTo({ top: yOffset, behavior: "smooth" });
 }

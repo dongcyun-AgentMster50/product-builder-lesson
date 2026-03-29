@@ -3187,6 +3187,36 @@ textarea {
     gap: 14px;
 }
 
+.q2-reference-topline {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.q2-reference-location {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.q2-reference-location-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: rgba(0, 51, 102, 0.06);
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.q2-reference-location-chip--strong {
+    background: rgba(37, 99, 235, 0.12);
+}
+
 .q2-reference-grid {
     display: grid;
     gap: 12px;
@@ -3211,6 +3241,12 @@ textarea {
 .q2-ref-chip-grid {
     display: grid;
     gap: 10px;
+}
+
+.q2-ref-keyword-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
 .q2-ref-chip-card {
@@ -3275,6 +3311,11 @@ textarea {
     color: var(--accent-strong);
     font-size: 0.68rem;
     font-weight: 700;
+}
+
+.q2-ref-tag--soft {
+    background: rgba(0, 51, 102, 0.06);
+    color: var(--fg);
 }
 
 .q2-ref-point-list {
@@ -6559,7 +6600,7 @@ a.source-tag-link:hover {
 .persona-groups {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
-    align-items: start;
+    align-items: stretch;
 }
 
 .persona-groups .tree-group {
@@ -6567,6 +6608,9 @@ a.source-tag-link:hover {
     border-radius: var(--card-radius);
     gap: 6px;
     min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 2px 10px rgba(0, 27, 71, 0.05);
 }
 
@@ -6583,6 +6627,8 @@ a.source-tag-link:hover {
 .persona-groups .tree-children {
     grid-template-columns: 1fr;
     gap: 4px;
+    flex: 1;
+    align-content: start;
 }
 
 .persona-groups .tree-child {
@@ -6628,6 +6674,77 @@ a.source-tag-link:hover {
     font-size: 0.78rem;
     border-radius: 8px;
     min-height: 0;
+}
+
+.q2-household-sections,
+.q2-household-section {
+    display: grid;
+    gap: 8px;
+}
+
+.q2-household-section-head {
+    display: grid;
+    gap: 2px;
+}
+
+.q2-household-section-head strong {
+    font-size: 0.75rem;
+    color: var(--fg);
+}
+
+.q2-household-section-head p {
+    margin: 0;
+    font-size: 0.68rem;
+    line-height: 1.45;
+    color: var(--muted);
+}
+
+.q2-household-grid {
+    display: grid;
+    gap: 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.q2-household-grid--core {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.q2-household-grid .tree-child {
+    margin: 0;
+}
+
+.q2-persona-footer {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 51, 102, 0.08);
+    display: grid;
+    gap: 8px;
+}
+
+.q2-persona-footer-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.q2-persona-footer-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.q2-persona-footer-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: rgba(0, 51, 102, 0.06);
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 700;
 }
 
 /* Q3 가이드 텍스트 정돈 */
@@ -6946,6 +7063,10 @@ a.source-tag-link:hover {
 
     .persona-groups {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .q2-household-grid--core {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .scenario-case-grid {
