@@ -61,7 +61,7 @@
                             <p class="access-v2-subtitle">접근 코드를 입력하고 시작하세요</p>
                             <div class="access-v2-input-wrap">
                                 <input type="password" id="access-code" class="access-v2-input" placeholder="Access Code" autocomplete="off">
-                                <button type="button" id="access-toggle-btn" class="access-v2-toggle">보기</button>
+                                <button type="button" id="access-toggle-btn" class="access-v2-toggle" aria-label="비밀번호 표시 전환">보기</button>
                             </div>
                             <p id="access-status" class="access-status hidden" aria-live="polite"></p>
                             <button type="button" id="unlock-btn" class="access-v2-btn">Enter Agent</button>
@@ -101,7 +101,7 @@
                             <div class="field">
                                 <label>Q1. 어떤 관점에서 시나리오를 만들고 싶나요?</label>
                                 <div id="role-selection" class="role-selection-container">
-                                    <div class="role-card" data-role="retail" tabindex="0" role="button" aria-pressed="false">
+                                    <div class="role-card" data-role="retail" tabindex="0" role="button" aria-pressed="false" aria-label="Retailer — 매장 시연 시나리오 관점">
                                         <h3>Retailer</h3>
                                         <p class="role-mantra">"Make it Real, Make it Easy"</p>
                                         <p class="role-desc">"고객이 매장에서 '이게 나한테 왜 필요해요?'라고 물으면, 어떻게 설명하면 좋을까?" — 이런 고민이 있다면 여기를 선택하세요.</p>
@@ -111,7 +111,7 @@
                                             <p>매장 미팅 전날이라도, 몇 분 안에 설득력 있는 응대 시나리오를 완성할 수 있습니다.</p>
                                         </div>
                                     </div>
-                                    <div class="role-card" data-role="dotcom" tabindex="0" role="button" aria-pressed="false">
+                                    <div class="role-card" data-role="dotcom" tabindex="0" role="button" aria-pressed="false" aria-label="Dotcom — 온라인 전환 시나리오 관점">
                                         <h3>Dotcom</h3>
                                         <p class="role-mantra">"Guide the Journey, Prove the ROI"</p>
                                         <p class="role-desc">"상세페이지 문구를 어디서부터 시작해야 할지, 캠페인 전환율을 어떻게 올릴지 막막하다면?" — 이런 고민이 있다면 여기를 선택하세요.</p>
@@ -121,7 +121,7 @@
                                             <p>빈 페이지 앞에서 고민하는 시간을 줄이고, 바로 쓸 수 있는 초안부터 시작하세요.</p>
                                         </div>
                                     </div>
-                                    <div class="role-card" data-role="brand" tabindex="0" role="button" aria-pressed="false">
+                                    <div class="role-card" data-role="brand" tabindex="0" role="button" aria-pressed="false" aria-label="Brand — 브랜드 스토리텔링 관점">
                                         <h3>Brand</h3>
                                         <p class="role-mantra">"Build the Love, Tell the Story"</p>
                                         <p class="role-desc">"우리 브랜드만의 이야기를 어떤 감성으로 풀어야 고객의 마음에 남을까?" — 이런 고민이 있다면 여기를 선택하세요.</p>
@@ -141,8 +141,9 @@
                                 <label for="country">Q1. 어느 국가를 대상으로 하나요?</label>
                                 <select id="country" name="country"></select>
                                 <div class="city-search-wrap" id="city-search-wrap">
+                                    <label for="city-search-input" class="sr-only">도시 검색</label>
                                     <input type="text" id="city-search-input" autocomplete="off" placeholder="도시 검색 또는 입력" />
-                                    <span class="city-search-icon" id="city-search-icon"></span>
+                                    <span class="city-search-icon" id="city-search-icon" role="button" aria-label="입력 지우기"></span>
                                     <input type="hidden" id="city-value" name="city" />
                                     <div class="city-dropdown hidden" id="city-dropdown"></div>
                                 </div>
@@ -160,6 +161,7 @@
                                     <span class="q3-auto-text">지역 트렌드 기반 자동 구성 — AI가 국가·도시에 맞는 타겟 세그먼트를 선택합니다</span>
                                 </button>
                                 <div id="persona-groups" class="tree-groups persona-groups"></div>
+                                <label for="purpose" class="sr-only">추가 요구사항</label>
                                 <textarea id="purpose" name="purpose" rows="3" placeholder="위 선택 사항 외 추가로 필요한 사항이 있다면 자유롭게 적어 주세요"></textarea>
                                 <input type="text" id="segment-custom" name="segment-custom" class="hidden">
                             </div>
@@ -218,6 +220,7 @@
                                         <div class="q4-section-head">
                                             <h3>추가로 반영하고 싶은 기기</h3>
                                         </div>
+                                        <label for="device-custom" class="sr-only">추가 기기 입력</label>
                                         <input type="text" id="device-custom" name="device-custom"
                                             class="q4-extra-text"
                                             placeholder="예) 비스포크 냉장고, Galaxy Ring, 스마트 커튼 — 목록에 없는 기기를 자유롭게 입력하세요">
