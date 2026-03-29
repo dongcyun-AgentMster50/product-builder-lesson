@@ -3643,6 +3643,43 @@ function renderCustomResearchResult(query, data, resultContainer) {
     const scenarioValue = data.scenario_value || "";
     const tags = Array.isArray(data.tags) ? data.tags : [];
 
+    // 구조화 데이터가 전혀 없는 경우 (구 서버 포맷 fallback)
+    const hasStructured = !!(needs || improvement || solutions.length || scenarioValue);
+    if (!hasStructured) {
+        // 10카테고리 도시 프로필 데이터에서 관련 내용 추출 시도
+        const rawEntries = CITY_PROFILE_CATEGORIES
+            .filter(cat => data[cat.key])
+            .map(cat => `${cat.icon} **${isKo ? cat.labelKo : cat.labelEn}**: ${data[cat.key]}`);
+        const fallbackText = rawEntries.length > 0
+            ? rawEntries.join("\n")
+            : (data.raw || data.summary || data.custom || JSON.stringify(data).substring(0, 500));
+
+        resultContainer.innerHTML = `
+            <div class="magic-custom-result-content">
+                <div class="magic-custom-result-header">
+                    <span class="magic-custom-result-badge">${isKo ? "AI 마켓 리서치" : "AI Market Research"}</span>
+                    <span class="magic-custom-result-query">"${escapeHtml(query)}"</span>
+                </div>
+                <div class="magic-research-section">
+                    <p class="magic-research-label">${isKo ? "🔍 도시 맥락 분석 결과" : "🔍 City Context Analysis"}</p>
+                    <div class="magic-research-text" style="white-space:pre-line">${escapeHtml(typeof fallbackText === "string" ? fallbackText : JSON.stringify(fallbackText))}</div>
+                </div>
+                <div class="magic-custom-result-actions">
+                    <button type="button" class="magic-custom-apply-btn" id="magic-custom-apply-btn">
+                        ${isKo ? "시나리오 반영" : "Apply to Scenario"}
+                    </button>
+                    <button type="button" class="secondary-btn magic-custom-skip-btn" id="magic-custom-skip-btn">
+                        ${isKo ? "건너뛰기" : "Skip"}
+                    </button>
+                    <button type="button" class="secondary-btn magic-custom-retry-btn" id="magic-custom-retry-btn">
+                        ${isKo ? "다시 검색" : "Search Again"}
+                    </button>
+                </div>
+            </div>`;
+        bindCustomResearchActions(query, needs, data, tags, resultContainer);
+        return;
+    }
+
     // 태그 → 한글 매핑
     const tagKoMap = {
         "Save energy": "에너지 절약", "Keep your home safe": "홈 안전·보안",
@@ -3709,15 +3746,20 @@ function renderCustomResearchResult(query, data, resultContainer) {
             </div>
         </div>`;
 
+    bindCustomResearchActions(query, needs, data, tags, resultContainer);
+}
+
+function bindCustomResearchActions(query, needsText, data, tags, resultContainer) {
+    const isKo = currentLocale === "ko";
+
     // 시나리오 반영 — Q2 Audience 가중치에 반영
     resultContainer.querySelector("#magic-custom-apply-btn")?.addEventListener("click", () => {
-        // purpose 필드에 핵심 내용 추가
         const purposeVal = purposeInput.value.trim();
-        const summaryText = `[${isKo ? "마켓 리서치" : "Market Research"}] ${query}: ${needs}`.substring(0, 300);
+        const summaryText = `[${isKo ? "마켓 리서치" : "Market Research"}] ${query}: ${needsText || query}`.substring(0, 300);
         purposeInput.value = purposeVal ? `${purposeVal}\n${summaryText}` : summaryText;
 
         // 커스텀 리서치 태그를 Q2 가중치 엔진에 저장
-        _customResearchData = { query, data, tags, applied: true };
+        _customResearchData = { query, data, tags: tags || [], applied: true };
 
         // 시각 피드백
         const applyBtn = resultContainer.querySelector("#magic-custom-apply-btn");
@@ -3728,14 +3770,12 @@ function renderCustomResearchResult(query, data, resultContainer) {
             applyBtn.disabled = true;
             applyBtn.classList.add("magic-custom-applied");
         }
-        // 건너뛰기/다시 검색 비활성화
         resultContainer.querySelectorAll(".magic-custom-skip-btn, .magic-custom-retry-btn").forEach(b => {
             b.disabled = true;
             b.style.opacity = "0.4";
         });
 
         updateStatePreview();
-        // Q2 Audience 카드도 갱신되도록 insight 업데이트 트리거
         if (currentStep === 3) updateStepInsight();
     });
 
