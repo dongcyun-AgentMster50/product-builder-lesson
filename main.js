@@ -3592,12 +3592,25 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
         const country = resolveCountry(selectedMarket);
         const city = getCityValue();
 
+        // base_profiles 요약 생성 — 중복 제거용
+        let baseProfilesSummary = "";
+        if (_latestCityProfile?.profile) {
+            const p = _latestCityProfile.profile;
+            baseProfilesSummary = CITY_PROFILE_CATEGORIES
+                .filter(cat => p[cat.key])
+                .map(cat => `${cat.key}: ${p[cat.key]}`)
+                .join("\n");
+        }
+
         const params = new URLSearchParams({
             country: country.countryCode,
             city: city || "",
             locale: currentLocale,
             custom_query: query
         });
+        if (baseProfilesSummary) {
+            params.set("base_profiles", baseProfilesSummary);
+        }
 
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 30000);
@@ -3634,32 +3647,35 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
 function renderCustomResearchResult(query, data, resultContainer) {
     const isKo = currentLocale === "ko";
 
-    // 구조화된 데이터 추출
-    const needs = data.customer_needs || "";
-    const improvement = data.improvement || "";
-    const solutions = Array.isArray(data.solutions) ? data.solutions.slice(0, 2) : [];
-    const scenarioValue = data.scenario_value || "";
+    // 새 포맷 필드 추출
+    const interpretation = data.keyword_interpretation || "";
+    const searchIntents = Array.isArray(data.search_intents) ? data.search_intents : [];
+    const findings = Array.isArray(data.city_keyword_findings) ? data.city_keyword_findings.slice(0, 5) : [];
+    const dedupNote = data.dedup_note || "";
+    const reflectionPoints = Array.isArray(data.recommended_reflection_points) ? data.recommended_reflection_points : [];
     const tags = Array.isArray(data.tags) ? data.tags : [];
 
-    // 구조화 데이터가 전혀 없는 경우 (구 서버 포맷 fallback)
-    const hasStructured = !!(needs || improvement || solutions.length || scenarioValue);
-    if (!hasStructured) {
-        // 10카테고리 도시 프로필 데이터에서 관련 내용 추출 시도
-        const rawEntries = CITY_PROFILE_CATEGORIES
-            .filter(cat => data[cat.key])
-            .map(cat => `${cat.icon} **${isKo ? cat.labelKo : cat.labelEn}**: ${data[cat.key]}`);
-        const fallbackText = rawEntries.length > 0
-            ? rawEntries.join("\n")
-            : (data.raw || data.summary || data.custom || JSON.stringify(data).substring(0, 500));
+    // 구 포맷 호환: 새 포맷 데이터가 없으면 레거시 필드로 폴백
+    const hasNewFormat = !!(interpretation || findings.length || reflectionPoints.length);
+
+    if (!hasNewFormat) {
+        // 구 서버 포맷 (customer_needs 등) 또는 raw 데이터 폴백
+        const needs = data.customer_needs || "";
+        const improvement = data.improvement || "";
+        const solutions = Array.isArray(data.solutions) ? data.solutions.slice(0, 2) : [];
+        const scenarioValue = data.scenario_value || "";
+
+        const fallbackText = needs || improvement || scenarioValue
+            || (data.raw || data.summary || data.custom || JSON.stringify(data).substring(0, 500));
 
         resultContainer.innerHTML = `
             <div class="magic-custom-result-content">
                 <div class="magic-custom-result-header">
-                    <span class="magic-custom-result-badge">${isKo ? "AI 마켓 리서치" : "AI Market Research"}</span>
+                    <span class="magic-custom-result-badge">${isKo ? "AI 도시 맥락 분석" : "AI City Context"}</span>
                     <span class="magic-custom-result-query">"${escapeHtml(query)}"</span>
                 </div>
                 <div class="magic-research-section">
-                    <p class="magic-research-label">${isKo ? "🔍 도시 맥락 분석 결과" : "🔍 City Context Analysis"}</p>
+                    <p class="magic-research-label">${isKo ? "분석 결과" : "Analysis"}</p>
                     <div class="magic-research-text" style="white-space:pre-line">${escapeHtml(typeof fallbackText === "string" ? fallbackText : JSON.stringify(fallbackText))}</div>
                 </div>
                 <div class="magic-custom-result-actions">
@@ -3674,7 +3690,7 @@ function renderCustomResearchResult(query, data, resultContainer) {
                     </button>
                 </div>
             </div>`;
-        bindCustomResearchActions(query, needs, data, tags, resultContainer);
+        bindCustomResearchActions(query, interpretation || needs, data, tags, resultContainer);
         return;
     }
 
@@ -3689,45 +3705,59 @@ function renderCustomResearchResult(query, data, resultContainer) {
         "Time saving": "시간 절약"
     };
 
+    // 검색 의도 태그
+    const intentsHtml = searchIntents.map(intent =>
+        `<span class="magic-research-intent-tag">${escapeHtml(intent)}</span>`
+    ).join("");
+
+    // findings 카드
+    const findingsHtml = findings.map(f => `
+        <div class="magic-research-finding">
+            <div class="magic-research-finding-title">${escapeHtml(f.title || "")}</div>
+            <p class="magic-research-finding-summary">${escapeHtml(f.summary || "")}</p>
+            <p class="magic-research-finding-implication">${isKo ? "시나리오 반영" : "Scenario"}: ${escapeHtml(f.scenario_implication || "")}</p>
+        </div>
+    `).join("");
+
+    // 시나리오 반영 포인트
+    const pointsHtml = reflectionPoints.map(p =>
+        `<li>${escapeHtml(p)}</li>`
+    ).join("");
+
+    // 태그
     const tagsHtml = tags.map(t =>
         `<span class="magic-research-tag">${escapeHtml(isKo ? (tagKoMap[t] || t) : t)}</span>`
     ).join("");
 
-    const solutionsHtml = solutions.map((s, i) => `
-        <div class="magic-research-solution">
-            <span class="magic-research-solution-num">${i + 1}</span>
-            <div>
-                <strong>${escapeHtml(s.title || "")}</strong>
-                <p>${escapeHtml(s.desc || "")}</p>
-            </div>
-        </div>
-    `).join("");
-
     resultContainer.innerHTML = `
         <div class="magic-custom-result-content magic-research-structured">
             <div class="magic-custom-result-header">
-                <span class="magic-custom-result-badge">${isKo ? "AI 마켓 리서치" : "AI Market Research"}</span>
+                <span class="magic-custom-result-badge">${isKo ? "AI 도시 맥락 분석" : "AI City Context"}</span>
                 <span class="magic-custom-result-query">"${escapeHtml(query)}"</span>
             </div>
 
-            ${needs ? `<div class="magic-research-section">
-                <p class="magic-research-label">${isKo ? "🔍 고객 니즈" : "🔍 Customer Needs"}</p>
-                <p class="magic-research-text">${escapeHtml(needs)}</p>
+            ${interpretation ? `<div class="magic-research-section">
+                <p class="magic-research-label">${isKo ? "AI 해석" : "AI Interpretation"}</p>
+                <p class="magic-research-text">${escapeHtml(interpretation)}</p>
             </div>` : ""}
 
-            ${improvement ? `<div class="magic-research-section">
-                <p class="magic-research-label">${isKo ? "💡 개선 방향" : "💡 Improvement Direction"}</p>
-                <p class="magic-research-text">${escapeHtml(improvement)}</p>
+            ${intentsHtml ? `<div class="magic-research-section">
+                <p class="magic-research-label">${isKo ? "확장 검색 관점" : "Search Intents"}</p>
+                <div class="magic-research-intents">${intentsHtml}</div>
             </div>` : ""}
 
-            ${solutionsHtml ? `<div class="magic-research-section">
-                <p class="magic-research-label">${isKo ? "🛠️ 솔루션 예시" : "🛠️ Solution Examples"}</p>
-                ${solutionsHtml}
+            ${findingsHtml ? `<div class="magic-research-section">
+                <p class="magic-research-label">${isKo ? "추가 도시 맥락 결과" : "City-Keyword Findings"}</p>
+                <div class="magic-research-findings">${findingsHtml}</div>
             </div>` : ""}
 
-            ${scenarioValue ? `<div class="magic-research-section magic-research-value">
-                <p class="magic-research-label">${isKo ? "🎯 시나리오 매칭 가치" : "🎯 Scenario Matching Value"}</p>
-                <p class="magic-research-text">${escapeHtml(scenarioValue)}</p>
+            ${dedupNote ? `<div class="magic-research-section magic-research-dedup">
+                <p class="magic-research-dedup-text">${escapeHtml(dedupNote)}</p>
+            </div>` : ""}
+
+            ${pointsHtml ? `<div class="magic-research-section magic-research-value">
+                <p class="magic-research-label">${isKo ? "시나리오 반영 포인트" : "Scenario Reflection Points"}</p>
+                <ul class="magic-research-points">${pointsHtml}</ul>
                 ${tagsHtml ? `<div class="magic-research-tags">${tagsHtml}</div>` : ""}
             </div>` : ""}
 
@@ -3744,7 +3774,7 @@ function renderCustomResearchResult(query, data, resultContainer) {
             </div>
         </div>`;
 
-    bindCustomResearchActions(query, needs, data, tags, resultContainer);
+    bindCustomResearchActions(query, interpretation, data, tags, resultContainer);
 }
 
 function bindCustomResearchActions(query, needsText, data, tags, resultContainer) {
@@ -3753,7 +3783,10 @@ function bindCustomResearchActions(query, needsText, data, tags, resultContainer
     // 시나리오 반영 — Q2 Audience 가중치에 반영
     resultContainer.querySelector("#magic-custom-apply-btn")?.addEventListener("click", () => {
         const purposeVal = purposeInput.value.trim();
-        const summaryText = `[${isKo ? "마켓 리서치" : "Market Research"}] ${query}: ${needsText || query}`.substring(0, 300);
+        // 새 포맷: reflection points 포함, 구 포맷: needsText 사용
+        const points = Array.isArray(data.recommended_reflection_points) ? data.recommended_reflection_points : [];
+        const pointsSuffix = points.length ? ` | ${points.join("; ")}` : "";
+        const summaryText = `[${isKo ? "도시 맥락" : "City Context"}] ${query}: ${needsText || query}${pointsSuffix}`.substring(0, 500);
         purposeInput.value = purposeVal ? `${purposeVal}\n${summaryText}` : summaryText;
 
         // 커스텀 리서치 태그를 Q2 가중치 엔진에 저장

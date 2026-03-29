@@ -2279,26 +2279,42 @@ const CITY_PROFILE_SYSTEM_PROMPT = `당신은 특정 도시의 '생활 밀착형
 9. mobility: 이동·부재·여행
 10. events: 문화 행사·시즌성 이벤트`;
 
-const CUSTOM_RESEARCH_SYSTEM_PROMPT = `당신은 특정 도시의 스마트홈 관련 시장 조사를 수행하는 전문 마켓 리서치 분석가입니다.
-사용자가 입력한 키워드를 기반으로, 해당 도시에서의 고객 니즈와 개선 방향을 분석하세요.
+const CUSTOM_RESEARCH_SYSTEM_PROMPT = `당신은 특정 도시의 스마트홈 시나리오 기획을 위한 도시 맥락 분석 전문가입니다.
+사용자가 이미 보유한 도시 기본 프로필(10개 카테고리)은 "base_profiles"로 제공됩니다.
+당신의 역할은 사용자가 입력한 추가 키워드에 대해 기존 프로필과 중복되지 않는 새로운 도시 맥락을 도출하는 것입니다.
 
-엄격한 규칙:
-1. 반드시 요청된 도시와 키워드에 특화된 분석을 하세요. 일반론은 금지합니다.
-2. 출력은 반드시 아래 고정 JSON 구조로만 작성하세요. 설명 없이 JSON만 출력하세요.
-3. 요청된 locale 언어로 작성하되, tags 배열은 항상 영어로 작성하세요.
+핵심 원칙:
+1. base_profiles에 이미 있는 내용을 반복하지 마세요. 키워드로 인해 새롭게 드러나는 맥락만 출력하세요.
+2. 키워드를 해석한 뒤 4~8개의 검색 의도(search intent)로 확장하세요 — 모두 해당 도시에 특화되어야 합니다.
+3. 각 finding은 SmartThings 시나리오 기획에 직접 활용할 수 있도록 scenario_implication을 포함하세요.
+4. 일반론, 상식적 반복, 도시와 무관한 내용은 금지합니다.
+5. 키워드 관련성이 약하면 솔직히 밝히고 가장 가까운 해석을 제시하세요.
+6. 요청된 locale 언어로 작성하되, tags 배열은 항상 영어로 작성하세요.
+7. 출력은 반드시 아래 고정 JSON 구조로만 작성하세요. 설명 없이 JSON만 출력하세요.
+
+품질 기준:
+- 지역 행동 패턴, 이벤트, 이동 동선, 계절 리듬, 장소 유형, 라이프스타일 신호, 소비자 사용 맥락을 우선하세요.
+- 이벤트 키워드: 시기, 장소 패턴, 참여자 행동, 외출 전후 가정 행동에 집중
+- 가구/생활 키워드: 생활 패턴, 기기 사용, 일정 리듬, 페인포인트에 집중
+- 마케터와 시나리오 기획자가 바로 활용할 수 있을 만큼 구체적이고 간결하게
 
 JSON 구조:
 {
-  "keyword": "사용자 입력 키워드",
-  "customer_needs": "이 키워드와 관련해 해당 도시 거주자가 실제로 겪는 불편함이나 니즈 (2-3문장)",
-  "improvement": "스마트홈 관점에서 이 니즈를 어떻게 개선할 수 있는지 (2-3문장)",
-  "solutions": [
-    { "title": "솔루션 제목 1", "desc": "구체적 구현 방법과 기대 효과 (1-2문장)" },
-    { "title": "솔루션 제목 2", "desc": "구체적 구현 방법과 기대 효과 (1-2문장)" }
+  "keyword_interpretation": "키워드를 도시 맥락에서 해석한 1~2문장",
+  "search_intents": ["도시+키워드 결합 검색 의도 1", "검색 의도 2", "...(4~8개)"],
+  "city_keyword_findings": [
+    {
+      "title": "발견 제목",
+      "summary": "해당 도시에서 이 키워드와 관련해 새롭게 드러나는 맥락 (1~2문장)",
+      "scenario_implication": "SmartThings 시나리오 기획에 어떻게 반영할 수 있는지 (1문장)"
+    }
   ],
-  "scenario_value": "이 분석이 시나리오 매칭에 어떤 가치를 줄 수 있는지 (1-2문장)",
+  "dedup_note": "기존 base_profiles와의 중복 여부 및 차별점 설명 (1문장)",
+  "recommended_reflection_points": ["시나리오 반영 포인트 1", "포인트 2", "...(2~4개)"],
   "tags": ["Save energy", "Keep your home safe"]
 }
+
+city_keyword_findings는 2~5개가 적당합니다.
 
 tags 배열에는 아래 값 중 관련 있는 것만 포함하세요:
 Save energy, Keep your home safe, Help with chores, Care for kids, Care for seniors,
@@ -2330,8 +2346,9 @@ async function handleCityProfile(req, res) {
 
     // custom_query가 있으면 커스텀 마켓 리서치 모드
     if (customQuery) {
-        const maxTokens = 1200;
-        const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n위 도시에서 "${customQuery}" 키워드와 관련된 스마트홈 시장 조사를 수행하세요.`;
+        const baseProfiles = parsed.searchParams.get("base_profiles") || "";
+        const maxTokens = 2000;
+        const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}위 도시에서 "${customQuery}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
 
         try {
             const requestBody = {

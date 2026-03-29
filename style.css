@@ -8089,12 +8089,90 @@ a.source-tag-link:hover {
     background: #2e7d32 !important;
 }
 
+/* 확장 검색 관점 — intent 태그 */
+.magic-research-intents {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+.magic-research-intent-tag {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    background: var(--surface-alt, #f0f4f8);
+    color: var(--ink-light, #4a5568);
+    border: 1px solid var(--border-light, #e2e8f0);
+}
+
+/* 추가 도시 맥락 findings 카드 */
+.magic-research-findings {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+}
+.magic-research-finding {
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--surface-alt, #f8fafc);
+    border: 1px solid var(--border-light, #e8eef4);
+}
+.magic-research-finding-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--ink, #1a202c);
+    margin-bottom: 4px;
+}
+.magic-research-finding-summary {
+    font-size: 0.74rem;
+    color: var(--ink-light, #4a5568);
+    line-height: 1.45;
+    margin: 0 0 6px;
+}
+.magic-research-finding-implication {
+    font-size: 0.72rem;
+    color: var(--accent-strong, #003366);
+    font-weight: 600;
+    margin: 0;
+    padding-top: 4px;
+    border-top: 1px dashed var(--border-light, #e2e8f0);
+}
+
+/* 중복 노트 */
+.magic-research-dedup {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 4px;
+}
+.magic-research-dedup-text {
+    font-size: 0.68rem;
+    color: var(--muted, #8899aa);
+    font-style: italic;
+    margin: 0;
+}
+
+/* 시나리오 반영 포인트 리스트 */
+.magic-research-points {
+    list-style: disc;
+    padding-left: 18px;
+    margin: 4px 0 0;
+}
+.magic-research-points li {
+    font-size: 0.76rem;
+    color: var(--ink-light, #4a5568);
+    line-height: 1.5;
+    margin-bottom: 2px;
+}
+
 @media (max-width: 600px) {
     .magic-tags { gap: 6px; padding: 10px 14px; }
     .magic-tag { padding: 5px 10px; font-size: 0.72rem; }
     .magic-actions { flex-direction: column; }
     .magic-custom-input-row { flex-direction: column; }
     .magic-custom-result-actions { flex-direction: column; }
+    .magic-research-finding { padding: 8px 10px; }
 }
 
 /* ══════════════════════════════════════════════════════════════════════
