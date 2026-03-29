@@ -3494,6 +3494,7 @@ function renderCityProfileInsight(countryName, localCity, profile) {
                 </div>
                 <div id="magic-custom-result" class="magic-custom-result" style="display:none"></div>
             </div>
+            ${buildQ1NextStepHelperCard(isKo)}
         </div>
     `;
 }
@@ -4568,6 +4569,184 @@ function inferQ1Traits() {
     return result;
 }
 
+function summarizeInsightText(text, maxLength = 140) {
+    const normalized = String(text || "").replace(/\s+/g, " ").trim();
+    if (!normalized) return "";
+    if (normalized.length <= maxLength) return normalized;
+    return `${normalized.slice(0, maxLength - 1).trim()}…`;
+}
+
+function getRelevantQ1ProfileReferences(limit = 3) {
+    const profile = _latestCityProfile?.profile || {};
+    const selectedKeys = Array.from(_magicSelected || []);
+    const fallbackKeys = CITY_PROFILE_CATEGORIES
+        .filter((cat) => profile[cat.key])
+        .map((cat) => cat.key);
+    const targetKeys = [...new Set([...(selectedKeys.length ? selectedKeys : []), ...fallbackKeys])].slice(0, limit);
+
+    return targetKeys.map((key) => {
+        const cat = CITY_PROFILE_CATEGORIES.find((entry) => entry.key === key);
+        const text = profile[key] ? summarizeInsightText(profile[key], 160) : "";
+        return {
+            key,
+            color: cat?.color || "#2563eb",
+            icon: cat?.icon || "•",
+            label: currentLocale === "ko" ? (cat?.labelKo || key) : (cat?.labelEn || key),
+            text
+        };
+    }).filter((item) => item.text);
+}
+
+function getCustomResearchSummary() {
+    if (!_customResearchData?.applied || !_customResearchData?.data) return null;
+
+    const data = _customResearchData.data;
+    const points = Array.isArray(data.recommended_reflection_points)
+        ? data.recommended_reflection_points.filter(Boolean).slice(0, 3)
+        : [];
+    const findings = Array.isArray(data.city_keyword_findings)
+        ? data.city_keyword_findings.filter(Boolean).slice(0, 2)
+        : [];
+
+    return {
+        query: _customResearchData.query || "",
+        interpretation: summarizeInsightText(data.keyword_interpretation || "", 170),
+        points,
+        findings,
+        tags: Array.isArray(data.tags) ? data.tags.slice(0, 4) : []
+    };
+}
+
+function buildQ2CardGuideItemsHtml(isKo) {
+    const items = [
+        {
+            index: "01",
+            title: isKo ? "Q2 입력 가이드" : "Q2 guide",
+            desc: isKo
+                ? "이 페이지에서 무엇을 선택하면 시나리오 추천이 어떻게 정교해지는지 먼저 설명합니다."
+                : "Explains what to choose here and how it sharpens scenario recommendations."
+        },
+        {
+            index: "02",
+            title: isKo ? "Q1 반영 요약" : "Q1 carry-over summary",
+            desc: isKo
+                ? "Q1의 도시 프로필과 커스텀 검색 결과가 지금 어떤 참고 정보로 이어졌는지 보여줍니다."
+                : "Shows how Q1 city profile and custom research are carried into this step."
+        },
+        {
+            index: "03",
+            title: isKo ? "예상 시나리오 방향" : "Expected scenario direction",
+            desc: isKo
+                ? "Q1·Q2 신호가 어떤 카테고리로 묶이고, 어떤 가중치로 매칭되는지 읽기 쉽게 정리합니다."
+                : "Summarizes categories, weighting, and match direction from Q1 and Q2 signals."
+        }
+    ];
+
+    return items.map((item) => `
+        <article class="q2-guide-item">
+            <span class="q2-guide-index">${item.index}</span>
+            <div>
+                <h5>${escapeHtml(item.title)}</h5>
+                <p>${escapeHtml(item.desc)}</p>
+            </div>
+        </article>
+    `).join("");
+}
+
+function buildQ1NextStepHelperCard(isKo) {
+    return `
+        <section class="q1-next-helper-card">
+            <div class="q1-next-helper-head">
+                <span class="q1-next-helper-kicker">${isKo ? "다음 단계 미리 보기" : "Next step preview"}</span>
+                <h4>${isKo ? "Q2에서는 생활 조건을 더해 시나리오 방향을 정교하게 좁힙니다" : "Q2 refines scenario direction with additional life-context choices"}</h4>
+                <p>${isKo
+                    ? "다음 페이지에서는 주거 형태, 가족 구성, 라이프스테이지 같은 추가 조건을 선택합니다. Q1의 도시 프로필·커스텀 검색 결과와 Q2 선택을 함께 점수화해, 어떤 시나리오 카테고리가 유력한지와 왜 그렇게 매칭되는지를 보여줍니다."
+                    : "On the next page, you will add housing, household, and life-stage conditions. Those choices combine with the Q1 city profile and custom research to score scenario categories, weighting, and expected match direction."}</p>
+            </div>
+            <div class="q2-guide-grid">
+                ${buildQ2CardGuideItemsHtml(isKo)}
+            </div>
+        </section>
+    `;
+}
+
+function buildQ2ReferencePanelHtml() {
+    const isKo = currentLocale === "ko";
+    const q2Panel = document.getElementById("q2-reference-panel");
+    if (!q2Panel) return "";
+
+    const profileRefs = getRelevantQ1ProfileReferences(3);
+    const customSummary = getCustomResearchSummary();
+    const hasContent = profileRefs.length > 0 || customSummary;
+
+    if (!hasContent) {
+        return `
+            <section class="q2-reference-shell q2-reference-shell--empty">
+                <div class="q2-reference-head">
+                    <span class="q2-reference-kicker">${isKo ? "Q1 참고 정보" : "Q1 reference context"}</span>
+                    <h4>${isKo ? "Q1에서 반영된 참고 정보가 여기에 쌓입니다" : "Q1 carry-over context will appear here"}</h4>
+                    <p>${isKo
+                        ? "도시 프로필 키워드나 커스텀 검색 결과를 반영하면, 이 패널에서 Q2 선택에 참고할 수 있도록 정리해 보여줍니다."
+                        : "Applied city-profile categories and custom research will be organized here to support Q2 selections."}</p>
+                </div>
+            </section>
+        `;
+    }
+
+    const profileHtml = profileRefs.length > 0
+        ? profileRefs.map((item) => `
+            <article class="q2-ref-chip-card" style="--q2-ref-accent:${item.color}">
+                <div class="q2-ref-chip-top">
+                    <span class="q2-ref-chip-icon">${item.icon}</span>
+                    <span class="q2-ref-chip-title">${escapeHtml(item.label)}</span>
+                </div>
+                <p>${escapeHtml(item.text)}</p>
+            </article>
+        `).join("")
+        : `<p class="q2-ref-empty">${isKo ? "아직 선택된 도시 프로필 요약이 없습니다." : "No city-profile references applied yet."}</p>`;
+
+    const customHtml = customSummary
+        ? `
+            <article class="q2-ref-custom-card">
+                <div class="q2-ref-custom-top">
+                    <span class="q2-ref-custom-query">${escapeHtml(customSummary.query)}</span>
+                    ${customSummary.tags.length ? `<div class="q2-ref-tag-row">${customSummary.tags.map((tag) => `<span class="q2-ref-tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
+                </div>
+                ${customSummary.interpretation ? `<p class="q2-ref-custom-copy">${escapeHtml(customSummary.interpretation)}</p>` : ""}
+                ${customSummary.points.length ? `<ul class="q2-ref-point-list">${customSummary.points.map((point) => `<li>${escapeHtml(summarizeInsightText(point, 120))}</li>`).join("")}</ul>` : ""}
+            </article>
+        `
+        : `<p class="q2-ref-empty">${isKo ? "커스텀 검색 반영이 없으면 여기에는 Q1 사용자 정의 맥락이 표시됩니다." : "Applied custom research from Q1 will appear here."}</p>`;
+
+    return `
+        <section class="q2-reference-shell">
+            <div class="q2-reference-head">
+                <span class="q2-reference-kicker">${isKo ? "Q1 참고 정보" : "Q1 reference context"}</span>
+                <h4>${isKo ? "Q2 선택 전에 이미 반영된 맥락을 빠르게 확인하세요" : "Review what is already carried into Q2 before selecting more inputs"}</h4>
+                <p>${isKo
+                    ? "아래 정보는 Q1에서 선택한 도시 프로필과 커스텀 검색 결과입니다. Q2 항목을 고를 때 어떤 생활 조건을 더 보강할지 판단하는 기준으로 사용하세요."
+                    : "These references come from Q1 city-profile choices and custom research. Use them to decide which Q2 conditions to reinforce."}</p>
+            </div>
+            <div class="q2-reference-grid">
+                <section class="q2-ref-section">
+                    <div class="q2-ref-section-head">
+                        <span class="q2-ref-section-kicker">${isKo ? "기본 도시 프로필" : "Base city profile"}</span>
+                        <strong>${isKo ? "선택/연관된 핵심 요약" : "Selected or relevant profile summaries"}</strong>
+                    </div>
+                    <div class="q2-ref-chip-grid">${profileHtml}</div>
+                </section>
+                <section class="q2-ref-section q2-ref-section--custom">
+                    <div class="q2-ref-section-head">
+                        <span class="q2-ref-section-kicker">${isKo ? "커스텀 검색 반영" : "Custom research"}</span>
+                        <strong>${isKo ? "Q1 사용자 정의 맥락 요약" : "Q1 custom reflection summary"}</strong>
+                    </div>
+                    ${customHtml}
+                </section>
+            </div>
+        </section>
+    `;
+}
+
 /** 프로필 신뢰도 계산 (0–100) */
 function calculateConfidence() {
     let pct = 0;
@@ -4634,6 +4813,25 @@ function buildStep3Insight() {
                 <span class="q2-header-confidence q2-header-confidence--${confColor}">${escapeHtml(confLabel)}</span>
             </div>
         </div>`;
+
+    const q1ProfileRefs = getRelevantQ1ProfileReferences(3);
+    const customResearchSummary = getCustomResearchSummary();
+    const introCardHtml = `
+        <section class="q2-stage-card q2-stage-card--intro">
+            <div class="q2-stage-card-head">
+                <div>
+                    <span class="q2-stage-kicker">${isKo ? "Q2 안내" : "Q2 guide"}</span>
+                    <h4>${isKo ? "이 단계에서는 생활 조건을 더해 추천 시나리오를 좁힙니다" : "This step refines scenario recommendations with more lifestyle conditions"}</h4>
+                </div>
+                <span class="q2-stage-status q2-stage-status--${confColor}">${escapeHtml(confLabel)}</span>
+            </div>
+            <p class="q2-stage-copy">${isKo
+                ? "Q1에서 반영된 도시 프로필과 커스텀 검색 결과를 바탕으로, Q2에서는 주거 형태·가구 구성·라이프스테이지를 추가 선택합니다. 이 조합이 시나리오 카테고리 점수와 가중치, 매칭 방향을 정교하게 만듭니다."
+                : "Q2 builds on the city profile and custom research from Q1. Add housing, household, and life-stage conditions here so the scenario category scores, weighting, and match direction become more precise."}</p>
+            <div class="q2-guide-grid">
+                ${buildQ2CardGuideItemsHtml(isKo)}
+            </div>
+        </section>`;
 
     // ── Corroboration: Q2 trait labels that match Q1 trait labels ──
     const q2TraitLabels = new Set(q2Traits);
@@ -4739,6 +4937,79 @@ function buildStep3Insight() {
                 ${traitCards}
             </div>`;
     }
+
+    const q1ProfileRefHtml = q1ProfileRefs.length > 0
+        ? q1ProfileRefs.map((item) => `
+            <article class="q2-ref-chip-card" style="--q2-ref-accent:${item.color}">
+                <div class="q2-ref-chip-top">
+                    <span class="q2-ref-chip-icon">${item.icon}</span>
+                    <span class="q2-ref-chip-title">${escapeHtml(item.label)}</span>
+                </div>
+                <p>${escapeHtml(item.text)}</p>
+            </article>
+        `).join("")
+        : `<p class="q2-ref-empty">${isKo ? "Q1에서 선택한 도시 프로필 요약이 아직 없습니다." : "No Q1 city profile summaries have been selected yet."}</p>`;
+
+    const customSummaryHtml = customResearchSummary
+        ? `
+            <article class="q2-ref-custom-card">
+                <div class="q2-ref-custom-top">
+                    <span class="q2-ref-custom-query">${escapeHtml(customResearchSummary.query)}</span>
+                    ${customResearchSummary.tags.length ? `<div class="q2-ref-tag-row">${customResearchSummary.tags.map((tag) => `<span class="q2-ref-tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
+                </div>
+                ${customResearchSummary.interpretation ? `<p class="q2-ref-custom-copy">${escapeHtml(customResearchSummary.interpretation)}</p>` : ""}
+                ${customResearchSummary.points.length ? `<ul class="q2-ref-point-list">${customResearchSummary.points.map((point) => `<li>${escapeHtml(summarizeInsightText(point, 120))}</li>`).join("")}</ul>` : ""}
+            </article>
+        `
+        : `<p class="q2-ref-empty">${isKo ? "Q1에서 커스텀 검색을 반영하면 요약이 여기에 표시됩니다." : "Applied custom research from Q1 will appear here."}</p>`;
+
+    const currentSelectionSummaryHtml = hasAnyQ2Selection
+        ? `
+            <section class="q2-ref-current">
+                <div class="q2-ref-section-head">
+                    <span class="q2-ref-section-kicker">${isKo ? "현재 Q2 선택" : "Current Q2 selections"}</span>
+                    <strong>${isKo ? "선택이 만드는 생활 맥락 신호" : "Lifestyle signals created by your current choices"}</strong>
+                </div>
+                ${layer2Html || `<p class="q2-ref-empty">${isKo ? "선택 항목이 아직 신호로 정리되지 않았습니다." : "Selections are not yet summarized into signals."}</p>`}
+            </section>
+        `
+        : "";
+
+    const referenceCardHtml = `
+        <section class="q2-stage-card q2-stage-card--reference">
+            <div class="q2-stage-card-head">
+                <div>
+                    <span class="q2-stage-kicker">${isKo ? "Q1 반영 요약" : "Q1 carry-over summary"}</span>
+                    <h4>${isKo ? "도시 프로필과 커스텀 검색 결과가 Q2 판단 기준으로 이어집니다" : "City-profile and custom research now act as reference inputs for Q2"}</h4>
+                </div>
+            </div>
+            <div class="q2-reference-grid">
+                <section class="q2-ref-section">
+                    <div class="q2-ref-section-head">
+                        <span class="q2-ref-section-kicker">${isKo ? "기본 도시 프로필" : "Base city profile"}</span>
+                        <strong>${isKo ? "선택/연관된 핵심 요약" : "Selected or relevant profile summaries"}</strong>
+                    </div>
+                    <div class="q2-ref-chip-grid">${q1ProfileRefHtml}</div>
+                </section>
+                <section class="q2-ref-section q2-ref-section--custom">
+                    <div class="q2-ref-section-head">
+                        <span class="q2-ref-section-kicker">${isKo ? "커스텀 검색 반영" : "Custom research"}</span>
+                        <strong>${isKo ? "Q1 사용자 정의 맥락 요약" : "Q1 custom reflection summary"}</strong>
+                    </div>
+                    ${customSummaryHtml}
+                </section>
+            </div>
+            ${layer1Html ? `
+                <section class="q2-ref-current">
+                    <div class="q2-ref-section-head">
+                        <span class="q2-ref-section-kicker">${isKo ? "도시 프로필 해석" : "City-profile interpretation"}</span>
+                        <strong>${isKo ? "Q1 키워드가 만든 생활 신호" : "Lifestyle signals inferred from Q1"}</strong>
+                    </div>
+                    ${layer1Html}
+                </section>
+            ` : ""}
+            ${currentSelectionSummaryHtml}
+        </section>`;
 
     // ── Synthesis: 시나리오 추천 스코어보드 (신뢰도 >= 40%) ──
     let synthesisHtml = "";
@@ -5110,7 +5381,7 @@ function buildStep3Insight() {
                     <span class="q2-tag-label">${escapeHtml(display)}</span>
                     <div class="q2-tag-bar-track"><div class="q2-tag-bar-fill" style="width:100%;transform:scaleX(${norm / 100});background:${barColor}"></div></div>
                     <span class="q2-tag-score">${norm}</span>
-                    <button type="button" class="q2-tag-detail-btn q2-evidence-toggle" data-ev-target="${detailId}"><span class="q2-ev-arrow">▸</span></button>
+                    <button type="button" class="q2-tag-detail-btn q2-evidence-toggle" data-ev-target="${detailId}"><span class="q2-ev-arrow">▸</span><span>${isKo ? "근거" : "Details"}</span></button>
                 </div>
                 <div class="q2-evidence-detail q2-tag-source-detail" id="${detailId}">
                     <p class="q2-tag-source-title">${escapeHtml(display)} ${isKo ? "점수 산출 근거" : "score breakdown"}</p>
@@ -5131,17 +5402,62 @@ function buildStep3Insight() {
                 : `Scenarios focused on <strong>${top3Tags.join(", ")}</strong> are most likely to score highest.`)
             : "";
 
+        const topCategoryLabel = top3Tags[0] || (isKo ? "아직 없음" : "Not enough data");
+        const weightingSummary = isKo
+            ? `Q1 도시 신호 ${Q1_WEIGHT}점 + Q2 생활 신호 ${Q2_WEIGHT}점`
+            : `Q1 city signals ${Q1_WEIGHT}pt + Q2 lifestyle signals ${Q2_WEIGHT}pt`;
+        const boostSummary = isKo
+            ? `${activeClusterHtml ? "클러스터 시너지와 교차검증이 있으면 추가 가중" : "선택이 쌓이면 시너지/교차검증 가중 시작"}`
+            : `${activeClusterHtml ? "Cluster synergy and cross-validation apply extra weighting" : "More aligned selections unlock synergy and cross-validation boosts"}`;
+        const statusCopy = confidence >= 80
+            ? (isKo ? "현재 선택은 바로 시나리오 매칭에 들어가도 될 정도로 충분히 구체적입니다." : "Your current inputs are already specific enough for strong scenario matching.")
+            : confidence >= 40
+                ? (isKo ? "방향은 잡혔고, Q2 선택을 더하면 가중치와 매칭 정확도가 더 선명해집니다." : "The direction is visible, and more Q2 input will sharpen weighting and matching.")
+                : (isKo ? "아직 초기 방향입니다. Q2 선택이 늘어나면 예상 방향이 안정됩니다." : "This is still an early direction. More Q2 input will stabilize the prediction.");
+
         synthesisHtml = `
-            <div class="q2-synthesis">
+            <section class="q2-stage-card q2-stage-card--direction">
+                <div class="q2-stage-card-head">
+                    <div>
+                        <span class="q2-stage-kicker">${isKo ? "예상 시나리오 방향" : "Expected scenario direction"}</span>
+                        <h4>${isKo ? "현재 입력이 어떤 카테고리와 매칭되는지 한눈에 확인하세요" : "See at a glance which categories your current inputs map to"}</h4>
+                    </div>
+                    <span class="q2-stage-status q2-stage-status--${confColor}">${escapeHtml(confLabel)}</span>
+                </div>
                 ${caveat}
-                <p class="q2-synthesis-direction">${escapeHtml(direction)}</p>
-                <div class="q2-synthesis-values">${valuesPills}</div>
+                <div class="q2-direction-hero">
+                    <div class="q2-direction-main">
+                        <p class="q2-synthesis-direction">${escapeHtml(direction)}</p>
+                        <p class="q2-direction-copy">${escapeHtml(statusCopy)}</p>
+                        <div class="q2-synthesis-values">${valuesPills}</div>
+                    </div>
+                    <div class="q2-direction-summary-grid">
+                        <article class="q2-direction-summary-card">
+                            <span class="q2-direction-summary-label">${isKo ? "우선 카테고리" : "Leading category"}</span>
+                            <strong>${escapeHtml(topCategoryLabel)}</strong>
+                            <p>${isKo ? "현재 입력 기준으로 가장 높은 매칭 가능성" : "Highest current match likelihood"}</p>
+                        </article>
+                        <article class="q2-direction-summary-card">
+                            <span class="q2-direction-summary-label">${isKo ? "가중치 구조" : "Weighting"}</span>
+                            <strong>${escapeHtml(weightingSummary)}</strong>
+                            <p>${escapeHtml(boostSummary)}</p>
+                        </article>
+                        <article class="q2-direction-summary-card">
+                            <span class="q2-direction-summary-label">${isKo ? "매칭 해석" : "How to read it"}</span>
+                            <strong>${isKo ? "점수 + 근거 + 보정" : "Score + evidence + boosts"}</strong>
+                            <p>${isKo ? "아래에서 항목별 점수, 가중치, 산출 근거를 바로 확인할 수 있습니다." : "Check the item-level scores, weighting, and breakdowns below."}</p>
+                        </article>
+                    </div>
+                </div>
 
                 <div class="q2-scoreboard">
-                    <p class="q2-scoreboard-title">${isKo ? "📊 신호 가중치 분석 (100점 만점)" : "📊 Signal Weight Analysis (out of 100)"}</p>
+                    <div class="q2-scoreboard-topline">
+                        <p class="q2-scoreboard-title">${isKo ? "점수와 가중치 구조" : "Scoring and weighting structure"}</p>
+                        <button type="button" class="q2-legend-help-btn q2-legend-help-btn--loud" id="q2-legend-help-btn" title="${isKo ? "점수 읽는 방법 안내" : "How to read this score"}">${isKo ? "읽는 법" : "Guide"}</button>
+                    </div>
                     <p class="q2-scoreboard-method">${isKo
-                        ? "Q1(40점)과 Q2(60점) 신호를 합산합니다. 같은 테마 클러스터의 신호가 2개 이상이면 시너지(×1.2), Q1·Q2 양쪽에서 교차 검증된 신호는 강화(×1.5)됩니다. ▸로 산출 근거를 확인하세요."
-                        : "Q1 (40pt) + Q2 (60pt) signals. Cluster synergy (×1.2) when 2+ signals share a theme; cross-validated signals get ×1.5 boost. Click ▸ for score breakdown."}</p>
+                        ? "Q1(40점)과 Q2(60점) 신호를 합산합니다. 같은 테마 클러스터의 신호가 2개 이상이면 시너지(×1.2), Q1·Q2 양쪽에서 교차 검증된 신호는 강화(×1.5)됩니다. 각 행의 우측 버튼으로 산출 근거를 펼칠 수 있습니다."
+                        : "Q1 (40pt) + Q2 (60pt) signals are combined. Signals in the same theme cluster get synergy (×1.2), and signals validated by both Q1 and Q2 get a stronger ×1.5 boost. Use the right-side buttons to open the breakdown."}</p>
                     ${activeClusterHtml ? `<div class="q2-cluster-row">${activeClusterHtml}</div>` : ""}
 
                     <div class="q2-legend">
@@ -5152,28 +5468,31 @@ function buildStep3Insight() {
                         <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#d97706"></span> ${isKo ? "절약·비용" : "Savings"}</span>
                         <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#16a34a"></span> ${isKo ? "건강·여가" : "Health & Leisure"}</span>
                         <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#2563eb"></span> ${isKo ? "안전·보안" : "Security"}</span>
-                        <span class="q2-legend-item"><span class="q2-corro-badge" style="font-size:0.6rem">${isKo ? "교차검증 ×1.5" : "cross-validated ×1.5"}</span></span>
-                        <button type="button" class="q2-legend-help-btn" id="q2-legend-help-btn" title="${isKo ? "범례 보는 방법 안내" : "How to read this chart"}">?</button>
+                        <span class="q2-legend-item"><span class="q2-corro-badge">${isKo ? "교차검증 ×1.5" : "cross-validated ×1.5"}</span></span>
                     </div>
 
-                    <div class="q2-score-section">
-                        <p class="q2-score-section-label"><span class="q2-score-section-icon">📍</span> ${isKo ? "도시 맥락 (Q1)" : "City Context (Q1)"} <span class="q2-score-section-weight">${Q1_WEIGHT}${isKo ? "점" : "pt"}</span></p>
-                        ${q1ScoreBars || `<p class="q2-score-empty">${isKo ? "Q1 도시 프로필 미반영" : "No Q1 city profile applied"}</p>`}
-                    </div>
+                    <div class="q2-score-layout">
+                        <div class="q2-score-section q2-score-section--emphasis">
+                            <p class="q2-score-section-label"><span class="q2-score-section-icon">📍</span> ${isKo ? "도시 맥락 (Q1)" : "City Context (Q1)"} <span class="q2-score-section-weight">${Q1_WEIGHT}${isKo ? "점" : "pt"}</span></p>
+                            ${q1ScoreBars || `<p class="q2-score-empty">${isKo ? "Q1 도시 프로필 미반영" : "No Q1 city profile applied"}</p>`}
+                        </div>
 
-                    <div class="q2-score-section">
-                        <p class="q2-score-section-label"><span class="q2-score-section-icon">🎯</span> ${isKo ? "생활 맥락 (Q2)" : "Lifestyle Context (Q2)"} <span class="q2-score-section-weight">${Q2_WEIGHT}${isKo ? "점" : "pt"}</span></p>
-                        ${q2ScoreBars || `<p class="q2-score-empty">${isKo ? "⏳ 아직 Q2 항목을 선택하지 않았습니다. 위에서 A·B·C 항목을 선택하면 생활 맥락 신호가 여기에 표시됩니다." : "⏳ No Q2 selections yet. Choose items from A·B·C above to see lifestyle signals here."}</p>`}
+                        <div class="q2-score-section q2-score-section--emphasis">
+                            <p class="q2-score-section-label"><span class="q2-score-section-icon">🎯</span> ${isKo ? "생활 맥락 (Q2)" : "Lifestyle Context (Q2)"} <span class="q2-score-section-weight">${Q2_WEIGHT}${isKo ? "점" : "pt"}</span></p>
+                            ${q2ScoreBars || `<p class="q2-score-empty">${isKo ? "아직 Q2 항목을 선택하지 않았습니다. 위의 A·B·C 항목을 선택하면 생활 맥락 신호가 여기에 표시됩니다." : "No Q2 selections yet. Choose items from A·B·C above to see lifestyle signals here."}</p>`}
+                        </div>
                     </div>
 
                     <div class="q2-score-divider"></div>
 
-                    <p class="q2-scoreboard-title">${isKo ? "🎬 시나리오 매칭 예측" : "🎬 Scenario Match Prediction"}</p>
+                    <div class="q2-scoreboard-topline">
+                        <p class="q2-scoreboard-title">${isKo ? "시나리오 매칭 예측" : "Scenario match prediction"}</p>
+                        <span class="q2-scoreboard-mini">${isKo ? "클릭해서 산출 근거 확인" : "Open rows to inspect weighting"}</span>
+                    </div>
                     ${tagBarsHtml}
-
                     ${scenarioHint ? `<p class="q2-scenario-hint">${scenarioHint}</p>` : ""}
                 </div>
-            </div>`;
+            </section>`;
     }
 
     // ── CTA / Missing input ──
@@ -5213,6 +5532,27 @@ function buildStep3Insight() {
             <span class="q2-hint-icon">→</span>
             <span>${isKo ? "다음 단계(Q3)에서 기기를 고르면, 이 타겟에 맞는 자동화 흐름이 완성됩니다" : "Pick devices in Q3 to complete an automation flow for this target"}</span>
         </div>`;
+    const footerCardHtml = `
+        <section class="q2-stage-card q2-stage-card--footer">
+            ${ctaHtml}
+            ${q3HintHtml}
+        </section>`;
+
+    if (!synthesisHtml) {
+        synthesisHtml = `
+            <section class="q2-stage-card q2-stage-card--direction q2-stage-card--pending">
+                <div class="q2-stage-card-head">
+                    <div>
+                        <span class="q2-stage-kicker">${isKo ? "예상 시나리오 방향" : "Expected scenario direction"}</span>
+                        <h4>${isKo ? "Q2 선택이 쌓이면 가중치와 매칭 방향이 여기에서 정리됩니다" : "As Q2 selections accumulate, the weighting and match direction will be summarized here"}</h4>
+                    </div>
+                    <span class="q2-stage-status q2-stage-status--amber">${isKo ? "준비 중" : "Preparing"}</span>
+                </div>
+                <p class="q2-direction-copy">${isKo
+                    ? "아직 선택이 충분하지 않아 점수 구조를 계산하지 않았습니다. 위의 A·B·C 항목을 하나씩 고르면 어떤 카테고리로 분류되고, 어떤 가중치가 붙는지 바로 이 카드에 표시됩니다."
+                    : "There is not enough input yet to calculate the scoring structure. As you choose items from A·B·C above, this card will show which categories they belong to and how weighting is applied."}</p>
+            </section>`;
+    }
 
     const place = cityDisplay ? `${cityDisplay} ${isKo ? "생활권" : "area"}` : (isKo ? "이 타겟" : "this target");
 
@@ -5223,11 +5563,10 @@ function buildStep3Insight() {
         customHtml: `
             <div class="q2-redesign">
                 ${headerHtml}
-                ${layer1Html}
-                ${layer2Html}
+                ${introCardHtml}
+                ${referenceCardHtml}
                 ${synthesisHtml}
-                ${ctaHtml}
-                ${q3HintHtml}
+                ${footerCardHtml}
             </div>
         `
     };
@@ -5753,15 +6092,16 @@ function alignWizardStepViewport() {
     const activeStep = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
     if (!activeStep) return;
 
-    const focusTarget = activeStep.querySelector(
-        ".role-card.selected, .role-card, select, input[type='text'], textarea, input[type='checkbox']"
-    );
+    const focusTarget = currentStep === 3
+        ? activeStep.querySelector("button, input[type='radio']:checked, input[type='checkbox']:checked, textarea, input[type='text']")
+        : activeStep.querySelector(".role-card.selected, .role-card, select, input[type='text'], textarea, input[type='checkbox']");
     focusTarget?.focus({ preventScroll: true });
 
-    // wizard-screen 섹션 헤더(Step Flow 제목)부터 보이도록 스크롤
-    const wizardScreen = document.getElementById("wizard-screen");
-    const scrollTarget = wizardScreen || activeStep;
-    const yOffset = scrollTarget.getBoundingClientRect().top + window.pageYOffset - 10;
+    const stepInsightEl = document.getElementById("step-insight");
+    const scrollTarget = currentStep === 3 && stepInsightEl && !stepInsightEl.classList.contains("hidden")
+        ? stepInsightEl
+        : activeStep;
+    const yOffset = scrollTarget.getBoundingClientRect().top + window.pageYOffset - 12;
     window.scrollTo({ top: yOffset, behavior: "smooth" });
 }
 
@@ -6099,7 +6439,17 @@ function getRoleOptionGuide(id) {
 }
 
 function updateStatePreview() {
-    // Summary side panel intentionally removed.
+    const panel = document.getElementById("q2-reference-panel");
+    if (!panel) return;
+
+    if (currentStep !== 3) {
+        panel.innerHTML = "";
+        panel.classList.add("hidden");
+        return;
+    }
+
+    panel.classList.remove("hidden");
+    panel.innerHTML = buildQ2ReferencePanelHtml();
 }
 
 function inferMissionBucket(purpose, selectedDeviceGroups = []) {

@@ -3080,8 +3080,392 @@ textarea {
 }
 .q2-scenario-hint strong { font-weight: 800; }
 
+.q1-next-helper-card,
+.q2-reference-shell,
+.q2-stage-card {
+    border: 1px solid rgba(0, 51, 102, 0.12);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 250, 255, 0.98));
+    box-shadow: 0 10px 24px rgba(0, 27, 71, 0.08);
+}
+
+.q1-next-helper-card {
+    margin: 6px 20px 18px;
+    padding: 16px 18px;
+    display: grid;
+    gap: 14px;
+}
+
+.q1-next-helper-head h4,
+.q2-reference-head h4,
+.q2-stage-card-head h4 {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--fg);
+}
+
+.q1-next-helper-head p,
+.q2-reference-head p,
+.q2-stage-copy,
+.q2-direction-copy {
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+.q1-next-helper-kicker,
+.q2-reference-kicker,
+.q2-stage-kicker,
+.q2-ref-section-kicker {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+}
+
+.q2-guide-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.q2-guide-item {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 10px;
+    align-items: start;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(0, 51, 102, 0.04);
+    border: 1px solid rgba(0, 51, 102, 0.08);
+}
+
+.q2-guide-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--accent-strong);
+    color: var(--paper);
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.q2-guide-item h5,
+.q2-ref-section-head strong,
+.q2-direction-summary-card strong {
+    margin: 0;
+    font-size: 0.84rem;
+    color: var(--fg);
+}
+
+.q2-guide-item p,
+.q2-ref-chip-card p,
+.q2-ref-custom-copy,
+.q2-direction-summary-card p {
+    margin: 4px 0 0;
+    font-size: 0.76rem;
+    line-height: 1.55;
+    color: var(--muted);
+}
+
+.q2-reference-panel {
+    margin-top: 14px;
+}
+
+.q2-reference-shell {
+    padding: 16px 18px;
+    display: grid;
+    gap: 14px;
+}
+
+.q2-reference-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.q2-ref-section,
+.q2-ref-current {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 14px;
+    background: rgba(0, 51, 102, 0.04);
+    border: 1px solid rgba(0, 51, 102, 0.08);
+}
+
+.q2-ref-section-head {
+    display: grid;
+    gap: 2px;
+}
+
+.q2-ref-chip-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.q2-ref-chip-card {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 51, 102, 0.08);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.q2-ref-chip-card::before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 3px;
+    margin-bottom: 10px;
+    border-radius: 999px;
+    background: var(--q2-ref-accent, #2563eb);
+}
+
+.q2-ref-chip-top,
+.q2-ref-custom-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.q2-ref-chip-icon {
+    font-size: 0.95rem;
+}
+
+.q2-ref-chip-title,
+.q2-ref-custom-query {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--fg);
+}
+
+.q2-ref-custom-card {
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(0, 51, 102, 0.1);
+    display: grid;
+    gap: 10px;
+}
+
+.q2-ref-tag-row,
+.q2-synthesis-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.q2-ref-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--accent-strong);
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.q2-ref-point-list {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 5px;
+}
+
+.q2-ref-point-list li,
+.q2-ref-empty {
+    font-size: 0.76rem;
+    line-height: 1.55;
+    color: var(--muted);
+}
+
+.q2-stage-card {
+    padding: 16px 18px;
+    display: grid;
+    gap: 14px;
+}
+
+.q2-stage-card-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: start;
+}
+
+.q2-stage-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.q2-stage-status--amber { background: rgba(245, 158, 11, 0.12); color: #b45309; }
+.q2-stage-status--blue { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+.q2-stage-status--green { background: rgba(16, 185, 129, 0.12); color: #059669; }
+
+.q2-direction-hero {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+    align-items: start;
+}
+
+.q2-direction-main {
+    padding: 16px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(27, 54, 141, 0.1), rgba(44, 104, 186, 0.06));
+    border: 1px solid rgba(27, 54, 141, 0.12);
+    display: grid;
+    gap: 10px;
+}
+
+.q2-direction-summary-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.q2-direction-summary-card {
+    padding: 14px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(0, 51, 102, 0.08);
+}
+
+.q2-direction-summary-label,
+.q2-scoreboard-mini {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.q2-scoreboard-topline {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.q2-score-layout {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.q2-score-section--emphasis {
+    padding: 14px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(0, 51, 102, 0.08);
+}
+
+.q2-tag-row-wrap {
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(0, 51, 102, 0.08);
+}
+
+.q2-tag-row {
+    grid-template-columns: minmax(0, 1fr) 130px 42px 90px;
+    gap: 10px;
+    padding: 0;
+}
+
+.q2-tag-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.q2-tag-score {
+    font-size: 0.8rem;
+}
+
+.q2-tag-detail-btn,
+.q2-legend-help-btn--loud {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 51, 102, 0.14);
+    background: rgba(0, 51, 102, 0.06);
+    color: var(--accent-strong);
+    font-size: 0.74rem;
+    font-weight: 800;
+}
+
+.q2-tag-detail-btn {
+    min-width: 78px;
+    padding: 0 10px;
+    gap: 6px;
+}
+
+.q2-tag-detail-btn:hover,
+.q2-legend-help-btn--loud:hover {
+    background: rgba(0, 51, 102, 0.1);
+    border-color: rgba(0, 51, 102, 0.22);
+}
+
+.q2-tag-source-detail {
+    margin: 8px 0 0;
+    padding: 10px 12px;
+}
+
+.q2-stage-card--footer {
+    gap: 10px;
+}
+
+.q2-stage-card--pending {
+    background: linear-gradient(180deg, rgba(255, 250, 240, 0.96), rgba(255, 255, 255, 0.98));
+}
+
 /* --- Responsive --- */
 @media (max-width: 480px) {
+    .q1-next-helper-card { margin: 6px 14px 16px; padding: 14px; }
+    .q2-guide-grid,
+    .q2-reference-grid,
+    .q2-direction-hero,
+    .q2-score-layout {
+        grid-template-columns: 1fr;
+    }
+    .q2-stage-card,
+    .q2-reference-shell {
+        padding: 14px;
+    }
+    .q2-stage-card-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .q2-tag-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .q2-tag-score {
+        text-align: left;
+    }
+    .q2-tag-detail-btn {
+        justify-content: flex-start;
+    }
     .q2-hybrid-header { gap: 10px; }
     .q2-confidence-wrap { width: 44px; height: 44px; }
     .q2-confidence-ring { width: 44px; height: 44px; }
