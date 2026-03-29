@@ -4667,6 +4667,41 @@ function getCustomResearchSummary() {
     };
 }
 
+function getAppliedQ1ContextEntries() {
+    const isKo = currentLocale === "ko";
+    const entries = [];
+    const selectedKeys = Array.from(_magicSelected || []);
+    const profile = _latestCityProfile?.profile || {};
+
+    selectedKeys.forEach((key) => {
+        const cat = CITY_PROFILE_CATEGORIES.find((entry) => entry.key === key);
+        const text = profile[key] ? summarizeInsightText(profile[key], 90) : "";
+        if (!cat) return;
+        entries.push({
+            key: `profile_${key}`,
+            label: isKo ? (cat.labelKo || key) : (cat.labelEn || key),
+            detail: text || (isKo ? "도시 프로필 반영" : "City profile applied"),
+            color: cat.color || "#2563eb",
+            kind: "profile"
+        });
+    });
+
+    const customSummary = getCustomResearchSummary();
+    if (customSummary) {
+        entries.push({
+            key: "custom_research",
+            label: customSummary.query || (isKo ? "커스텀 반영" : "Custom reflection"),
+            detail: customSummary.tags.length
+                ? customSummary.tags.join(", ")
+                : (customSummary.interpretation || (isKo ? "사용자 정의 맥락 반영" : "User-defined context applied")),
+            color: "#7c3aed",
+            kind: "custom"
+        });
+    }
+
+    return entries;
+}
+
 function buildQ2CardGuideItemsHtml(isKo) {
     const items = [
         {
@@ -5276,6 +5311,7 @@ function buildStep3Insight() {
         // Q1/Q2 trait 세트
         const q1TraitSet = new Set(q1Traits.map(t => t.trait));
         const q2TraitSet = new Set(q2Traits);
+        const q1ContextEntries = getAppliedQ1ContextEntries();
 
         // 교차 검증 (Q1+Q2 중복) 감지
         const corroTraits = new Set();
@@ -6654,17 +6690,7 @@ function getRoleOptionGuide(id) {
 }
 
 function updateStatePreview() {
-    const panel = document.getElementById("q2-reference-panel");
-    if (!panel) return;
-
-    if (currentStep !== 3) {
-        panel.innerHTML = "";
-        panel.classList.add("hidden");
-        return;
-    }
-
-    panel.classList.remove("hidden");
-    panel.innerHTML = buildQ2ReferencePanelHtml();
+    return;
 }
 
 function inferMissionBucket(purpose, selectedDeviceGroups = []) {
