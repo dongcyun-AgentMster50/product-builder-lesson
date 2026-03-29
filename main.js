@@ -6270,13 +6270,31 @@ function alignWizardStepViewport() {
     if (!activeStep) return;
 
     const focusTarget = currentStep === 3
-        ? activeStep.querySelector("button, input[type='radio']:checked, input[type='checkbox']:checked, textarea, input[type='text']")
+        ? activeStep.querySelector("#q3-auto-btn, input[type='radio']:checked, input[type='checkbox']:checked, textarea, input[type='text']")
         : activeStep.querySelector(".role-card.selected, .role-card, select, input[type='text'], textarea, input[type='checkbox']");
     focusTarget?.focus({ preventScroll: true });
 
-    const scrollTarget = activeStep;
+    const scrollTarget = currentStep === 3
+        ? (activeStep.querySelector("#segment-label") || activeStep)
+        : activeStep;
     const yOffset = scrollTarget.getBoundingClientRect().top + window.pageYOffset - 12;
     window.scrollTo({ top: yOffset, behavior: "smooth" });
+}
+
+function enforceStepViewportAlignment() {
+    window.requestAnimationFrame(() => {
+        alignWizardStepViewport();
+        if (currentStep === 3) {
+            window.setTimeout(() => {
+                if (currentStep !== 3) return;
+                const activeStep = document.querySelector('.wizard-step[data-step="3"]');
+                const anchor = activeStep?.querySelector("#segment-label");
+                if (!anchor) return;
+                const yOffset = anchor.getBoundingClientRect().top + window.pageYOffset - 12;
+                window.scrollTo({ top: yOffset, behavior: "auto" });
+            }, 140);
+        }
+    });
 }
 
 function moveStep(delta) {
@@ -6285,9 +6303,7 @@ function moveStep(delta) {
     if (nextStep === currentStep) return;
     currentStep = nextStep;
     syncWizardUi();
-    window.requestAnimationFrame(() => {
-        alignWizardStepViewport();
-    });
+    enforceStepViewportAlignment();
 }
 
 function validateCurrentStep() {
