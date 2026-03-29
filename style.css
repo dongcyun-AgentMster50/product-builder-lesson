@@ -2599,6 +2599,12 @@ textarea {
     border-top: 1px solid rgba(0, 0, 0, 0.04);
 }
 
+.q2-trait-compact-grid {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .q2-trait-accent {
     width: 4px;
     border-radius: 2px;
@@ -2610,6 +2616,54 @@ textarea {
     display: grid;
     gap: 4px;
     padding: 0 12px 0 0;
+}
+
+.q2-hybrid-trait--compact {
+    min-height: 0;
+    padding: 0;
+    border: 1px solid rgba(0, 51, 102, 0.08);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.q2-hybrid-trait--compact + .q2-hybrid-trait--compact {
+    border-top: 1px solid rgba(0, 51, 102, 0.08);
+}
+
+.q2-hybrid-trait--compact .q2-trait-body {
+    gap: 6px;
+    padding: 10px 12px 10px 0;
+}
+
+.q2-hybrid-trait--compact .q2-trait-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.q2-hybrid-trait--compact .q2-trait-label {
+    font-size: 0.8rem;
+    line-height: 1.35;
+}
+
+.q2-hybrid-trait--compact .q2-trait-source {
+    font-size: 0.7rem;
+}
+
+.q2-evidence-toggle--compact {
+    width: fit-content;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 51, 102, 0.12);
+    background: rgba(0, 51, 102, 0.04);
+    color: var(--accent-strong);
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+.q2-evidence-toggle--compact:hover {
+    background: rgba(0, 51, 102, 0.08);
 }
 
 .q2-trait-label {
@@ -2732,6 +2786,15 @@ textarea {
 .q2-evidence-detail.open + .q2-evidence-toggle .q2-ev-arrow,
 .q2-evidence-toggle.active .q2-ev-arrow {
     transform: rotate(90deg);
+}
+
+.q2-hybrid-trait--compact .q2-evidence-detail {
+    margin-top: -2px;
+}
+
+.q2-hybrid-trait--compact .q2-ev-logic {
+    font-size: 0.72rem;
+    line-height: 1.45;
 }
 
 .q2-evidence-text {
@@ -3497,6 +3560,9 @@ textarea {
     .q2-stage-card-head {
         flex-direction: column;
         align-items: flex-start;
+    }
+    .q2-trait-compact-grid {
+        grid-template-columns: 1fr;
     }
     .q2-tag-row {
         grid-template-columns: minmax(0, 1fr);

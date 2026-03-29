@@ -5054,7 +5054,7 @@ function buildStep3Insight() {
                 ? `<p class="q2-ev-quote">"${escapeHtml(t.profileQuote)}${t.profileQuote.length >= 120 ? "…" : ""}"</p>`
                 : "";
             return `
-                <div class="q2-hybrid-trait">
+                <div class="q2-hybrid-trait q2-hybrid-trait--compact">
                     <div class="q2-trait-accent" style="background:${t.color}"></div>
                     <div class="q2-trait-body">
                         <div class="q2-trait-top">
@@ -5065,7 +5065,7 @@ function buildStep3Insight() {
                             <span class="q2-source-tag" style="background:${t.color}20;color:${t.color}">${escapeHtml(t.catLabel)}</span>
                             ${isKo ? `${escapeHtml(cityDisplay)} 도시 프로필에서 도출` : `From ${escapeHtml(cityDisplay)} city profile`}
                         </p>
-                        <button type="button" class="q2-evidence-toggle" data-ev-target="${uid}">
+                        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${uid}">
                             <span class="q2-ev-arrow">▸</span> ${isKo ? "추론 근거 보기" : "View reasoning"}
                         </button>
                         <div class="q2-evidence-detail" id="${uid}">
@@ -5085,7 +5085,7 @@ function buildStep3Insight() {
                 <p class="q2-layer-helper">${isKo
                     ? "선택하신 도시의 인프라와 거주 형태를 바탕으로 도출된 잠재 라이프스타일 힌트입니다."
                     : "Potential lifestyle hints inferred from your city context data."}</p>
-                ${traitCards}
+                <div class="q2-trait-compact-grid">${traitCards}</div>
             </div>`;
     }
 
@@ -5107,7 +5107,7 @@ function buildStep3Insight() {
                 ? `<span class="q2-trait-confirmed">${isKo ? "Q1 연계" : "Q1 linked"}</span>`
                 : "";
             return `
-                <div class="q2-hybrid-trait">
+                <div class="q2-hybrid-trait q2-hybrid-trait--compact">
                     <div class="q2-trait-accent" style="background:${warmColor}"></div>
                     <div class="q2-trait-body">
                         <div class="q2-trait-top">
@@ -5116,7 +5116,7 @@ function buildStep3Insight() {
                         </div>
                         <p class="q2-trait-source">${isKo ? "Q2 선택에서 도출" : "Derived from Q2 selections"}</p>
                         ${reason ? `
-                        <button type="button" class="q2-evidence-toggle" data-ev-target="${uid}">
+                        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${uid}">
                             <span class="q2-ev-arrow">▸</span> ${isKo ? "추론 근거 보기" : "View reasoning"}
                         </button>
                         <div class="q2-evidence-detail" id="${uid}">
@@ -5135,7 +5135,7 @@ function buildStep3Insight() {
                 <p class="q2-layer-helper">${isKo
                     ? "직접 선택한 타겟의 핵심 특성입니다. Q1의 잠정 신호와 일치(교차 검증)할수록 매칭 신뢰도가 시너지로 작용합니다."
                     : "Core lifestyle traits from your selections. Cross-validated traits with Q1 boost match confidence."}</p>
-                ${traitCards}
+                <div class="q2-trait-compact-grid">${traitCards}</div>
             </div>`;
     }
 
