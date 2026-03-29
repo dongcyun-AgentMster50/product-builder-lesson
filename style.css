@@ -1,26 +1,39 @@
 :root {
+    /* ── Core Palette ── */
     --bg: #eef3f9;
-    --paper: #ffffff;
-    --surface: #f8f8f8;
+    --paper: #fafbfd;
+    --surface: #f4f6f9;
     --ink: #121826;
+    --ink-light: #333d4d;
     --muted: #5d6677;
-    --line: rgba(10, 34, 68, 0.12);
-    --accent: #0000ff;
-    --accent-soft: rgba(0, 0, 255, 0.1);
-    --accent-strong: #003366;
-    --warn: #a33b16;
-    --shadow: 0 22px 48px rgba(8, 28, 60, 0.12);
+    --line: rgba(10, 34, 68, 0.10);
+    --line-strong: rgba(10, 34, 68, 0.18);
 
-    /* ── Design Tokens ── */
+    /* ── Brand Accent ── */
+    --accent: #1a3f6f;
+    --accent-soft: rgba(0, 51, 102, 0.08);
+    --accent-strong: #003366;
+    --accent-mid: #004d99;
+    --accent-hover: #002244;
+    --warn: #a33b16;
+    --success: #1b7a3d;
+
+    /* ── Elevation ── */
+    --shadow: 0 18px 40px rgba(8, 28, 60, 0.08);
+    --shadow-sm: 0 2px 8px rgba(8, 28, 60, 0.06);
+
+    /* ── Typography ── */
     --heading-font: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
     --body-font: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
     --heading-lg: 16pt;
     --heading-md: 14pt;
     --body-size: 11pt;
     --source-size: 9pt;
+
+    /* ── Layout ── */
     --section-bg: var(--surface);
     --section-title-bg: var(--accent-strong);
-    --section-title-color: #ffffff;
+    --section-title-color: var(--paper);
     --card-radius: 16px;
     --card-gap: 16px;
     --section-gap: 20px;
@@ -34,9 +47,9 @@
 body {
     margin: 0;
     background:
-        radial-gradient(circle at 80% 12%, rgba(0, 180, 216, 0.10), transparent 22%),
-        radial-gradient(circle at 15% 85%, rgba(0, 74, 153, 0.12), transparent 28%),
-        linear-gradient(160deg, #060d1a 0%, #0a1628 30%, #0d2137 60%, #0f2b45 100%);
+        radial-gradient(circle at 80% 12%, rgba(0, 51, 102, 0.08), transparent 22%),
+        radial-gradient(circle at 15% 85%, rgba(0, 51, 102, 0.06), transparent 28%),
+        linear-gradient(160deg, #0a1628 0%, #0d1f35 30%, #0f2640 60%, #102d4a 100%);
     color: var(--ink);
     font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
     min-height: 100vh;
@@ -56,9 +69,8 @@ body {
 .workspace,
 .result-frame {
     border: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     box-shadow: var(--shadow);
-    backdrop-filter: blur(14px);
 }
 
 .hero {
@@ -72,7 +84,7 @@ body {
     background:
         linear-gradient(180deg, rgba(10, 22, 40, 0.55) 0%, rgba(10, 22, 40, 0.35) 40%, rgba(10, 22, 40, 0.60) 100%),
         url('smartthings-hero-bg.png') center / cover no-repeat;
-    border-color: rgba(0, 180, 216, 0.15);
+    border-color: rgba(0, 51, 102, 0.2);
     color: #f7fbff;
     overflow: hidden;
 }
@@ -406,7 +418,7 @@ body {
     left: 0; right: 0;
     max-height: 340px;
     overflow-y: auto;
-    background: #fff;
+    background: var(--paper);
     border: 1px solid var(--line);
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.12);
@@ -541,7 +553,7 @@ textarea {
     border: 1px solid var(--line);
     border-radius: 999px;
     padding: 10px 14px;
-    background: #fff;
+    background: var(--paper);
     cursor: pointer;
     font-weight: 700;
 }
@@ -587,7 +599,7 @@ textarea {
     font-size: 0.76rem;
     font-weight: 800;
     letter-spacing: 0.08em;
-    color: #fff;
+    color: var(--paper);
     background: linear-gradient(135deg, #003366, #2b6ccf);
 }
 
@@ -608,7 +620,7 @@ textarea {
     padding: 12px;
     border-radius: 12px;
     border: 1px solid rgba(0, 51, 102, 0.1);
-    background: #fff;
+    background: var(--paper);
 }
 
 .role-brief-block h4 {
@@ -829,7 +841,7 @@ textarea {
 }
 
 .q4-preset-btn.active {
-    border-color: #003366;
+    border-color: var(--accent-strong);
     background: rgba(0, 51, 102, 0.06);
     box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.15);
 }
@@ -853,7 +865,7 @@ textarea {
 }
 
 .q4-preset-btn.active .q4-preset-title {
-    color: #003366;
+    color: var(--accent-strong);
 }
 
 /* ── Q3 로케일 헤더 ── */
@@ -1117,9 +1129,9 @@ textarea {
 }
 
 .q4-chip-btn.selected {
-    border-color: #003366;
+    border-color: var(--accent-strong);
     background: rgba(0, 51, 102, 0.06);
-    color: #003366;
+    color: var(--accent-strong);
 }
 
 .q4-chip-label {
@@ -1143,7 +1155,7 @@ textarea {
 }
 
 .q4-chip-btn.selected .q4-role-tag {
-    color: #003366;
+    color: var(--accent-strong);
     background: rgba(0, 51, 102, 0.1);
 }
 
@@ -1158,7 +1170,7 @@ textarea {
     border: 2px solid transparent;
     border-radius: 10px;
     background: linear-gradient(135deg, #1a237e, #0d47a1, #01579b);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.82rem;
     font-weight: 700;
     cursor: pointer;
@@ -1194,7 +1206,7 @@ textarea {
     border: 2px solid transparent;
     border-radius: 10px;
     background: linear-gradient(135deg, #1a237e, #0d47a1, #01579b);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.82rem;
     font-weight: 700;
     cursor: pointer;
@@ -1375,7 +1387,7 @@ textarea {
     padding: 5px 12px;
     border-radius: 999px;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.02em;
@@ -1459,7 +1471,7 @@ textarea {
     padding: 4px 12px;
     border-radius: 8px;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.02em;
@@ -1525,7 +1537,7 @@ textarea {
     margin-top: 4px;
     border-radius: 10px;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.03em;
@@ -1883,7 +1895,7 @@ textarea {
     border: 1.5px solid rgba(255, 255, 255, 0.35);
     font-size: 0.8rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--paper);
 }
 .hero-flow-label {
     font-size: 0.88rem;
@@ -1952,7 +1964,7 @@ textarea {
     gap: 0;
     border: 2px solid rgba(0, 51, 102, 0.15);
     border-radius: 16px;
-    background: #fff;
+    background: var(--paper);
     overflow: hidden;
     transition: border-color 0.2s;
 }
@@ -1996,7 +2008,7 @@ textarea {
     border: none;
     border-radius: 14px;
     background: linear-gradient(135deg, var(--accent-strong), #004d99);
-    color: #fff;
+    color: var(--paper);
     font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
@@ -2052,7 +2064,7 @@ textarea {
     height: 28px;
     border-radius: 8px;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.72rem;
     font-weight: 800;
     flex-shrink: 0;
@@ -2169,8 +2181,8 @@ textarea {
     min-height: 26px;
     padding: 0 10px;
     border-radius: 999px;
-    background: #003366;
-    color: #fff;
+    background: var(--accent-strong);
+    color: var(--paper);
     font-size: 0.8rem;
     font-weight: 800;
     letter-spacing: 0.04em;
@@ -2385,7 +2397,7 @@ textarea {
     gap: 8px;
     padding: 10px 14px;
     border-radius: 12px;
-    background: linear-gradient(135deg, rgba(25, 118, 210, 0.08), rgba(70, 194, 208, 0.06));
+    background: linear-gradient(135deg, rgba(0, 51, 102, 0.06), rgba(0, 51, 102, 0.03));
     border: 1px solid rgba(25, 118, 210, 0.18);
     font-size: 0.82rem;
     line-height: 1.5;
@@ -2523,7 +2535,7 @@ textarea {
 }
 
 .q2-layer--q1 {
-    background: linear-gradient(135deg, rgba(25, 118, 210, 0.06), rgba(70, 194, 208, 0.04));
+    background: linear-gradient(135deg, rgba(0, 51, 102, 0.04), rgba(0, 51, 102, 0.02));
     border: 1px solid rgba(25, 118, 210, 0.15);
 }
 
@@ -2849,13 +2861,13 @@ textarea {
 .q2-legend-help-btn {
     display: inline-flex; align-items: center; justify-content: center;
     width: 18px; height: 18px; border-radius: 50%;
-    border: 1px solid #aab; background: #fff; color: #555;
+    border: 1px solid #aab; background: var(--paper); color: var(--muted);
     font-size: 0.62rem; font-weight: 700; cursor: pointer;
     transition: all 0.15s; margin-left: 4px;
     line-height: 1;
 }
 .q2-legend-help-btn:hover {
-    background: #003366; color: #fff; border-color: #003366;
+    background: var(--accent-strong); color: var(--paper); border-color: var(--accent-strong);
 }
 
 /* 범례 도움말 팝업 오버레이 */
@@ -2871,7 +2883,7 @@ textarea {
 }
 
 .legend-help-popup {
-    background: #fff; border-radius: 16px;
+    background: var(--paper); border-radius: 16px;
     max-width: 600px; width: 92vw; max-height: 85vh;
     overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
     animation: legendPopupIn 0.25s ease;
@@ -2884,20 +2896,20 @@ textarea {
 .legend-help-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 18px 24px 14px; border-bottom: 1px solid #eee;
-    position: sticky; top: 0; background: #fff; border-radius: 16px 16px 0 0;
+    position: sticky; top: 0; background: var(--paper); border-radius: 16px 16px 0 0;
     z-index: 1;
 }
 .legend-help-header h3 {
-    margin: 0; font-size: 1rem; font-weight: 700; color: #003366;
+    margin: 0; font-size: 1rem; font-weight: 700; color: var(--accent-strong);
 }
 .legend-help-close {
     width: 30px; height: 30px; border: none; background: #f5f5f5;
-    border-radius: 50%; font-size: 1.2rem; color: #666;
+    border-radius: 50%; font-size: 1.2rem; color: var(--muted);
     cursor: pointer; display: flex; align-items: center; justify-content: center;
     transition: all 0.15s;
 }
 .legend-help-close:hover {
-    background: #e0e0e0; color: #333;
+    background: #e0e0e0; color: var(--ink-light);
 }
 
 .legend-help-body {
@@ -2910,10 +2922,10 @@ textarea {
 .legend-help-section:last-child { margin-bottom: 0; }
 .legend-help-section h4 {
     margin: 0 0 8px; font-size: 0.85rem; font-weight: 700;
-    color: #003366; border-bottom: 2px solid #e8edf5; padding-bottom: 6px;
+    color: var(--accent-strong); border-bottom: 2px solid #e8edf5; padding-bottom: 6px;
 }
 .legend-help-section p {
-    margin: 0 0 8px; font-size: 0.78rem; color: #444; line-height: 1.6;
+    margin: 0 0 8px; font-size: 0.78rem; color: var(--ink-light); line-height: 1.6;
 }
 
 .legend-help-table {
@@ -2921,7 +2933,7 @@ textarea {
 }
 .legend-help-row {
     display: flex; align-items: center; gap: 10px;
-    padding: 6px 0; font-size: 0.78rem; color: #333;
+    padding: 6px 0; font-size: 0.78rem; color: var(--ink-light);
 }
 .legend-help-desc {
     padding: 0 0 8px 42px; font-size: 0.72rem; color: #888;
@@ -2936,13 +2948,13 @@ textarea {
     padding: 12px 16px; margin: 8px 0;
 }
 .legend-help-example-title {
-    font-size: 0.76rem; font-weight: 700; color: #003366; margin: 0 0 6px;
+    font-size: 0.76rem; font-weight: 700; color: var(--accent-strong); margin: 0 0 6px;
 }
 .legend-help-example ul {
     margin: 4px 0 8px 0; padding-left: 18px;
 }
 .legend-help-example li {
-    font-size: 0.75rem; color: #444; line-height: 1.8;
+    font-size: 0.75rem; color: var(--ink-light); line-height: 1.8;
 }
 
 .legend-help-clusters {
@@ -2950,7 +2962,7 @@ textarea {
 }
 .legend-help-cluster {
     display: flex; align-items: center; gap: 8px;
-    font-size: 0.76rem; color: #333;
+    font-size: 0.76rem; color: var(--ink-light);
 }
 
 @media (max-width: 600px) {
@@ -2971,7 +2983,7 @@ textarea {
 .q2-cluster-count {
     display: inline-flex; align-items: center; justify-content: center;
     width: 16px; height: 16px; border-radius: 50%;
-    background: currentColor; color: #fff; font-size: 0.6rem; font-weight: 800;
+    background: currentColor; color: var(--paper); font-size: 0.6rem; font-weight: 800;
 }
 .q2-cluster-bonus {
     font-size: 0.6rem; font-weight: 600; opacity: 0.7;
@@ -3397,16 +3409,16 @@ textarea {
 
 /* Q2/Q3 힌트 카드 — 진한 배경 + 흰 글씨 */
 .insight-row:last-child {
-    background: #003366;
-    border-color: #003366;
-    color: #fff;
+    background: var(--accent-strong);
+    border-color: var(--accent-strong);
+    color: var(--paper);
     border-radius: 14px;
 }
 .insight-row:last-child .insight-label {
     color: rgba(255, 255, 255, 0.85);
 }
 .insight-row:last-child p {
-    color: #fff;
+    color: var(--paper);
 }
 
 .insight-label {
@@ -3509,12 +3521,11 @@ textarea {
     border-radius: 20px;
     border: 1px solid rgba(17, 19, 24, 0.08);
     background:
-        radial-gradient(circle at 88% 18%, rgba(55, 214, 207, 0.26), transparent 22%),
-        radial-gradient(circle at 8% 100%, rgba(99, 87, 201, 0.18), transparent 28%),
-        linear-gradient(135deg, rgba(27, 54, 141, 0.98), rgba(44, 104, 186, 0.92) 48%, rgba(70, 194, 208, 0.82));
+        radial-gradient(circle at 85% 15%, rgba(0, 51, 102, 0.12), transparent 25%),
+        linear-gradient(135deg, #0a1628 0%, #0f2640 48%, #14334f 100%);
     overflow: hidden;
     color: #f7fbff;
-    box-shadow: 0 24px 44px rgba(23, 43, 103, 0.18);
+    box-shadow: 0 24px 44px rgba(10, 22, 40, 0.2);
 }
 
 .guide-hero {
@@ -3637,9 +3648,9 @@ textarea {
 
 /* ── 시작 버튼 펄스 애니메이션 ── */
 @keyframes guidePulse {
-    0%   { transform: scale(1);     box-shadow: 0 0 0 0 rgba(255,255,255,0.6); }
-    30%  { transform: scale(1.12);  box-shadow: 0 0 28px 10px rgba(55,214,207,0.55), 0 0 60px 20px rgba(99,87,201,0.2); }
-    60%  { transform: scale(0.97);  box-shadow: 0 0 8px 2px rgba(55,214,207,0.3); }
+    0%   { transform: scale(1);     box-shadow: 0 0 0 0 rgba(255,255,255,0.5); }
+    30%  { transform: scale(1.08);  box-shadow: 0 0 20px 8px rgba(0, 51, 102, 0.3); }
+    60%  { transform: scale(0.98);  box-shadow: 0 0 6px 2px rgba(0, 51, 102, 0.15); }
     100% { transform: scale(1);     box-shadow: 0 0 0 0 rgba(255,255,255,0); }
 }
 
@@ -3717,7 +3728,7 @@ textarea {
 .generate-btn {
     border: 0;
     background: linear-gradient(135deg, var(--accent-strong), #2d72ff);
-    color: #fff;
+    color: var(--paper);
     box-shadow: 0 14px 24px rgba(20, 40, 160, 0.24);
 }
 
@@ -3766,7 +3777,7 @@ textarea {
 
 .provider-btn.active {
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
 }
 
 .provider-btn:hover:not(.active) {
@@ -3869,7 +3880,7 @@ pre {
     text-align: center;
     font-weight: 800;
     letter-spacing: -0.02em;
-    color: #003366;
+    color: var(--accent-strong);
     background: linear-gradient(
         90deg,
         #003366 0%,
@@ -3919,7 +3930,7 @@ pre {
     height: 20px;
     border-radius: 5px;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.6rem;
     font-weight: 800;
     margin-bottom: 4px;
@@ -4422,7 +4433,7 @@ pre {
     padding: 24px;
     border-radius: 28px;
     background: linear-gradient(135deg, #001a3d, #003366);
-    color: #fff;
+    color: var(--paper);
     box-shadow: 0 14px 36px rgba(0, 27, 71, 0.15);
 }
 
@@ -4479,7 +4490,7 @@ pre {
     padding: 4px 10px;
     border-radius: 999px;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.76rem;
     font-weight: 800;
 }
@@ -4570,7 +4581,7 @@ pre {
 .process-item {
     padding: 16px;
     border-radius: 20px;
-    background: #fff;
+    background: var(--paper);
     border: 1px solid var(--line);
     box-shadow: 0 8px 24px rgba(0, 27, 71, 0.04);
 }
@@ -4630,7 +4641,7 @@ pre {
 .reflection-item {
     padding: 14px;
     border-radius: 16px;
-    background: #fff;
+    background: var(--paper);
     border: 1px solid var(--line);
     display: grid;
     grid-template-columns: 1fr auto;
@@ -5124,13 +5135,13 @@ pre {
     gap: 10px;
     padding: 16px 24px;
     background: #1a1a2e;
-    color: #fff;
+    color: var(--paper);
     flex-wrap: wrap;
 }
 
 .ai-result-badge {
     background: #3a3a4a;
-    color: #fff;
+    color: var(--paper);
     font-size: 0.75rem;
     font-weight: 700;
     padding: 4px 12px;
@@ -5150,7 +5161,7 @@ pre {
     font-size: 0.8rem;
     padding: 5px 16px;
     background: rgba(255,255,255,.1);
-    color: #fff;
+    color: var(--paper);
     border: 1px solid rgba(255,255,255,.2);
     border-radius: 4px;
 }
@@ -5161,7 +5172,7 @@ pre {
 .ai-result-body {
     padding: 32px 36px;
     line-height: 1.75;
-    color: #222;
+    color: var(--ink);
 }
 
 /* ── 섹션 대제목 (01), (02) → #003366 배경 박스 + 14pt 흰색 ── */
@@ -5171,8 +5182,8 @@ pre {
     font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
     font-weight: 800;
     font-size: 14pt;
-    color: #fff;
-    background: #003366;
+    color: var(--paper);
+    background: var(--accent-strong);
     padding: 14px 20px;
     border-radius: 6px;
     border: none;
@@ -5210,7 +5221,7 @@ pre {
 .ai-result-body p {
     margin: 12px 0;
     line-height: 1.85;
-    color: #333;
+    color: var(--ink-light);
 }
 
 /* ── 리스트 → 카드 내 패딩 ── */
@@ -5218,7 +5229,7 @@ pre {
 .ai-result-body ol {
     padding-left: 22px;
     margin: 10px 0;
-    background: #fff;
+    background: var(--paper);
     border: 1px solid #eee;
     border-radius: 6px;
     padding-top: 14px;
@@ -5230,7 +5241,7 @@ pre {
     margin-bottom: 8px;
     line-height: 1.75;
     padding-left: 6px;
-    color: #333;
+    color: var(--ink-light);
 }
 
 .ai-result-body li::marker {
@@ -5269,7 +5280,7 @@ pre {
 
 .ai-result-body th {
     background: #1a1a2e;
-    color: #fff;
+    color: var(--paper);
     font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
     font-weight: 700;
     font-size: 0.84em;
@@ -5328,7 +5339,7 @@ pre {
 .ai-result-body p:has(.source-tag),
 .ai-result-body li:has(.source-tag) {
     font-size: 0.82em;
-    color: #666;
+    color: var(--muted);
 }
 
 /* ── strong 강조 ── */
@@ -5343,7 +5354,7 @@ pre {
     padding: 14px 20px;
     background: #f5f5f5;
     border-left: 4px solid #3a3a4a;
-    color: #333;
+    color: var(--ink-light);
     font-style: normal;
 }
 
@@ -5413,7 +5424,7 @@ pre {
 }
 .source-tag.active {
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     border-color: var(--accent-strong);
 }
 
@@ -5461,7 +5472,7 @@ pre {
 }
 .insight-evidence-chip.active {
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
 }
 .insight-evidence-detail {
     display: none;
@@ -5610,8 +5621,8 @@ a.source-tag-link:hover {
     padding: 16px 20px;
     margin: -16px -16px 12px;
     border-radius: 18px 18px 0 0;
-    background: #003366;
-    color: #fff;
+    background: var(--accent-strong);
+    color: var(--paper);
 }
 .curation-head .step {
     color: rgba(255, 255, 255, 0.7);
@@ -5623,7 +5634,7 @@ a.source-tag-link:hover {
 .curation-head h2 {
     font-family: var(--heading-font);
     font-size: var(--heading-lg);
-    color: #fff;
+    color: var(--paper);
 }
 
 /* 입력 정보 요약 */
@@ -5642,8 +5653,8 @@ a.source-tag-link:hover {
     padding: 2px 8px;
     margin: 2px 3px;
     border-radius: 6px;
-    background: #003366;
-    color: #fff;
+    background: var(--accent-strong);
+    color: var(--paper);
     font-size: 0.7rem;
     font-weight: 600;
 }
@@ -5695,7 +5706,7 @@ a.source-tag-link:hover {
     height: 28px;
     border-radius: 50%;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.78rem;
     font-weight: 800;
     display: flex;
@@ -5756,7 +5767,7 @@ a.source-tag-link:hover {
     padding: 3px 10px;
     border-radius: 20px;
     background: #f0f2f8;
-    color: #333;
+    color: var(--ink-light);
     border: 1px solid #e0e4ee;
 }
 
@@ -5772,9 +5783,9 @@ a.source-tag-link:hover {
     padding: 7px 10px;
     border-radius: 8px;
     border: 1px solid #e8e8e8;
-    background: #fff;
+    background: var(--paper);
     text-decoration: none;
-    color: #222;
+    color: var(--ink);
     font-size: 0.72rem;
     font-weight: 600;
     transition: all 0.15s;
@@ -5798,7 +5809,7 @@ a.source-tag-link:hover {
     border: 1.5px solid var(--accent-strong);
     border-radius: 10px;
     background: linear-gradient(135deg, var(--accent-strong), #004d99);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.82rem;
     font-weight: 700;
     cursor: pointer;
@@ -5939,7 +5950,7 @@ a.source-tag-link:hover {
 .q3-cta-box {
     padding: 10px 14px; border-radius: 10px;
     background: linear-gradient(135deg, var(--accent-strong, #003366), #004d99);
-    color: #fff;
+    color: var(--paper);
 }
 .q3-cta-text {
     font-size: 0.78rem; font-weight: 600; margin: 0; line-height: 1.55;
@@ -5994,7 +6005,7 @@ a.source-tag-link:hover {
     padding: 16px;
     border-radius: 14px;
     border: 2px solid var(--line);
-    background: #fff;
+    background: var(--paper);
     cursor: pointer;
     transition: all 0.2s;
     text-align: left;
@@ -6106,7 +6117,7 @@ a.source-tag-link:hover {
 .source-refs-summary ul li {
     font-size: var(--source-size);
     font-style: italic;
-    color: #666;
+    color: var(--muted);
     line-height: 1.6;
 }
 
@@ -6416,7 +6427,7 @@ a.source-tag-link:hover {
 .ai-result-body p:has(.source-tag),
 .ai-result-body li:has(.source-tag) {
     font-size: var(--source-size);
-    color: #666;
+    color: var(--muted);
     font-style: italic;
 }
 
@@ -6596,15 +6607,15 @@ a.source-tag-link:hover {
     text-align: left;
 }
 .preview-toggle:hover {
-    border-color: #003366;
+    border-color: var(--accent-strong);
     background: linear-gradient(135deg, #e8eef6 0%, #dde5f0 100%);
 }
 .preview-toggle.open {
     border-style: solid;
-    border-color: #003366;
+    border-color: var(--accent-strong);
     border-radius: 12px 12px 0 0;
     background: linear-gradient(135deg, #003366 0%, #004d99 100%);
-    color: #fff;
+    color: var(--paper);
 }
 .preview-toggle-icon {
     font-size: 1.3rem;
@@ -6621,7 +6632,7 @@ a.source-tag-link:hover {
     color: #1a1a2e;
 }
 .preview-toggle.open .preview-toggle-text strong {
-    color: #fff;
+    color: var(--paper);
 }
 .preview-toggle-text span {
     font-size: 0.72rem;
@@ -6636,7 +6647,7 @@ a.source-tag-link:hover {
     transition: transform 0.2s;
 }
 .preview-toggle.open .preview-toggle-chevron {
-    color: #fff;
+    color: var(--paper);
 }
 
 /* 접힌 상태 */
@@ -6734,7 +6745,7 @@ a.source-tag-link:hover {
     height: 20px;
     border-radius: 5px;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.6rem;
     font-weight: 800;
     flex-shrink: 0;
@@ -6844,7 +6855,7 @@ a.source-tag-link:hover {
     padding: 8px 10px;
     border-radius: 10px;
     border: 1px solid var(--line);
-    background: #fff;
+    background: var(--paper);
 }
 .preview-flow-item-num {
     display: inline-flex;
@@ -6854,7 +6865,7 @@ a.source-tag-link:hover {
     height: 22px;
     border-radius: 6px;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.64rem;
     font-weight: 800;
 }
@@ -7079,8 +7090,8 @@ a.source-tag-link:hover {
 
 /* 시나리오 하이라이트 */
 .sel-scenario-highlight {
-    background: #003366;
-    color: #fff;
+    background: var(--accent-strong);
+    color: var(--paper);
     border-radius: 10px;
     padding: 14px 18px;
     margin-bottom: 12px;
@@ -7094,7 +7105,7 @@ a.source-tag-link:hover {
     font-size: 0.68rem;
     font-weight: 600;
     background: rgba(255, 255, 255, 0.2);
-    color: #fff;
+    color: var(--paper);
     padding: 2px 10px;
     border-radius: 20px;
     text-transform: uppercase;
@@ -7105,7 +7116,7 @@ a.source-tag-link:hover {
 .sel-scenario-title {
     font-size: 0.95rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--paper);
     flex: 1;
     min-width: 120px;
 }
@@ -7140,7 +7151,7 @@ a.source-tag-link:hover {
 /* 선택 이유 */
 .sel-reason {
     font-size: 0.82rem;
-    color: #333;
+    color: var(--ink-light);
     line-height: 1.6;
     margin-bottom: 12px;
     padding: 10px 14px;
@@ -7201,8 +7212,8 @@ a.source-tag-link:hover {
 .sel-derived-tag {
     font-size: 0.72rem;
     font-weight: 500;
-    background: #003366;
-    color: #fff;
+    background: var(--accent-strong);
+    color: var(--paper);
     padding: 3px 12px;
     border-radius: 20px;
     cursor: default;
@@ -7235,7 +7246,7 @@ a.source-tag-link:hover {
     padding: 4px 12px;
     border-radius: 20px;
     background: var(--magic-accent, #003366);
-    color: #fff;
+    color: var(--paper);
 }
 
 .sel-confidence {
@@ -7307,8 +7318,8 @@ a.source-tag-link:hover {
 }
 
 .str-tab.active {
-    color: #003366;
-    border-bottom-color: #003366;
+    color: var(--accent-strong);
+    border-bottom-color: var(--accent-strong);
     background: rgba(0, 51, 102, 0.04);
 }
 
@@ -7333,15 +7344,15 @@ a.source-tag-link:hover {
     color: #1a1a2e;
     margin: 0 0 12px 0;
     line-height: 1.5;
-    background: #003366;
-    color: #fff;
+    background: var(--accent-strong);
+    color: var(--paper);
     padding: 14px 20px;
     border-radius: 10px;
 }
 
 .str-summary {
     font-size: 0.88rem;
-    color: #444;
+    color: var(--ink-light);
     line-height: 1.7;
     margin-bottom: 18px;
 }
@@ -7350,7 +7361,7 @@ a.source-tag-link:hover {
 .str-consumer h4 {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #003366;
+    color: var(--accent-strong);
     margin: 18px 0 8px 0;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -7373,13 +7384,13 @@ a.source-tag-link:hover {
 .str-channel-name {
     font-size: 0.78rem;
     font-weight: 700;
-    color: #003366;
+    color: var(--accent-strong);
     margin-bottom: 6px;
 }
 
 .str-channel-msg {
     font-size: 0.85rem;
-    color: #333;
+    color: var(--ink-light);
     line-height: 1.6;
     margin-bottom: 8px;
 }
@@ -7393,8 +7404,8 @@ a.source-tag-link:hover {
 }
 
 .str-tone-badge {
-    background: #003366;
-    color: #fff;
+    background: var(--accent-strong);
+    color: var(--paper);
     padding: 2px 10px;
     border-radius: 20px;
     font-size: 0.68rem;
@@ -7403,7 +7414,7 @@ a.source-tag-link:hover {
 
 /* 마케터: 카피 옵션 */
 .str-copy-option {
-    background: #fff;
+    background: var(--paper);
     border: 1px solid #e4e8ee;
     border-radius: 10px;
     padding: 14px;
@@ -7413,7 +7424,7 @@ a.source-tag-link:hover {
 .str-copy-num {
     font-size: 0.72rem;
     font-weight: 700;
-    color: #003366;
+    color: var(--accent-strong);
     margin-bottom: 6px;
     text-transform: uppercase;
 }
@@ -7448,7 +7459,7 @@ a.source-tag-link:hover {
 
 .str-why p, .str-target p, .str-local-insight p {
     font-size: 0.85rem;
-    color: #333;
+    color: var(--ink-light);
     line-height: 1.7;
     margin: 0;
 }
@@ -7462,7 +7473,7 @@ a.source-tag-link:hover {
 
 .str-role-diff div {
     font-size: 0.82rem;
-    color: #333;
+    color: var(--ink-light);
     line-height: 1.6;
     margin-bottom: 4px;
 }
@@ -7506,7 +7517,7 @@ a.source-tag-link:hover {
 
 .str-steps li, .str-cautions li, .str-conditions li {
     font-size: 0.85rem;
-    color: #333;
+    color: var(--ink-light);
     line-height: 1.8;
     margin-bottom: 4px;
 }
@@ -7548,7 +7559,7 @@ a.source-tag-link:hover {
     gap: 10px;
     margin-bottom: 6px;
     font-size: 0.82rem;
-    color: #333;
+    color: var(--ink-light);
 }
 
 /* O-I-I 인사이트 */
@@ -7560,13 +7571,13 @@ a.source-tag-link:hover {
 
 .str-oii {
     font-size: 0.82rem;
-    color: #333;
+    color: var(--ink-light);
     line-height: 1.7;
     margin-bottom: 4px;
 }
 
 .str-oii strong {
-    color: #003366;
+    color: var(--accent-strong);
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -7604,13 +7615,13 @@ a.source-tag-link:hover {
     border-radius: 14px;
     overflow: hidden;
     border: 1px solid #d0dae8;
-    background: #fff;
+    background: var(--paper);
 }
 
 .magic-header {
     padding: 10px 16px;
     background: linear-gradient(135deg, #003366 0%, #004d99 100%);
-    color: #fff;
+    color: var(--paper);
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -7638,7 +7649,7 @@ a.source-tag-link:hover {
     flex-wrap: wrap;
     gap: 6px;
     padding: 10px 16px;
-    background: #f8fafd;
+    background: var(--surface);
 }
 
 .magic-tag {
@@ -7648,12 +7659,12 @@ a.source-tag-link:hover {
     padding: 5px 12px;
     border-radius: 20px;
     border: 2px solid #e0e4ea;
-    background: #fff;
+    background: var(--paper);
     cursor: pointer;
     transition: all 0.2s;
     font-size: 0.78rem;
     font-weight: 500;
-    color: #444;
+    color: var(--ink-light);
 }
 
 .magic-tag:hover {
@@ -7664,7 +7675,7 @@ a.source-tag-link:hover {
 .magic-tag.selected {
     border-color: var(--magic-accent, #003366);
     background: var(--magic-accent, #003366);
-    color: #fff;
+    color: var(--paper);
     box-shadow: 0 2px 8px color-mix(in srgb, var(--magic-accent, #003366) 30%, transparent);
 }
 
@@ -7724,14 +7735,14 @@ a.source-tag-link:hover {
 
 .magic-card-text {
     font-size: 0.82rem;
-    color: #333;
+    color: var(--ink-light);
     line-height: 1.6;
     margin: 0 0 6px 0;
 }
 
 .magic-card-hint {
     font-size: 0.74rem;
-    color: #003366;
+    color: var(--accent-strong);
     font-weight: 500;
     margin: 0;
     padding: 6px 10px;
@@ -7756,7 +7767,7 @@ a.source-tag-link:hover {
     border: none;
     border-radius: 10px;
     background: linear-gradient(135deg, #003366, #004d99);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.82rem;
     font-weight: 700;
     cursor: pointer;
@@ -7778,7 +7789,7 @@ a.source-tag-link:hover {
     border: 1px solid #003366;
     border-radius: 10px;
     background: none;
-    color: #003366;
+    color: var(--accent-strong);
     font-size: 0.78rem;
     font-weight: 600;
     cursor: pointer;
@@ -7802,7 +7813,7 @@ a.source-tag-link:hover {
     margin-bottom: 8px;
     font-size: 0.78rem;
     font-weight: 600;
-    color: #333;
+    color: var(--ink-light);
 }
 
 .magic-custom-icon { font-size: 1rem; }
@@ -7819,8 +7830,8 @@ a.source-tag-link:hover {
     border: 1px solid #d0d5dd;
     border-radius: 8px;
     font-size: 0.78rem;
-    color: #333;
-    background: #fff;
+    color: var(--ink-light);
+    background: var(--paper);
     transition: border-color 0.2s;
 }
 
@@ -7840,7 +7851,7 @@ a.source-tag-link:hover {
     border: none;
     border-radius: 8px;
     background: linear-gradient(135deg, #003366, #004d99);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.78rem;
     font-weight: 700;
     cursor: pointer;
@@ -7864,7 +7875,7 @@ a.source-tag-link:hover {
     width: 18px;
     height: 18px;
     border: 2.5px solid #d0dae8;
-    border-top-color: #003366;
+    border-top-color: var(--accent-strong);
     border-radius: 50%;
     animation: magicSpin 0.7s linear infinite;
     flex-shrink: 0;
@@ -7890,8 +7901,8 @@ a.source-tag-link:hover {
 
 .magic-custom-result-badge {
     padding: 2px 8px;
-    background: #003366;
-    color: #fff;
+    background: var(--accent-strong);
+    color: var(--paper);
     border-radius: 4px;
     font-size: 0.68rem;
     font-weight: 700;
@@ -7899,13 +7910,13 @@ a.source-tag-link:hover {
 
 .magic-custom-result-query {
     font-size: 0.75rem;
-    color: #555;
+    color: var(--muted);
     font-style: italic;
 }
 
 .magic-custom-result-body {
     font-size: 0.8rem;
-    color: #333;
+    color: var(--ink-light);
     line-height: 1.6;
     margin-bottom: 10px;
 }
@@ -7940,7 +7951,7 @@ a.source-tag-link:hover {
     border: none;
     border-radius: 8px;
     background: linear-gradient(135deg, #003366, #004d99);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.76rem;
     font-weight: 700;
     cursor: pointer;
@@ -7986,12 +7997,12 @@ a.source-tag-link:hover {
 .magic-research-label {
     font-size: 0.72rem;
     font-weight: 800;
-    color: #003366;
+    color: var(--accent-strong);
     margin: 0 0 4px;
 }
 .magic-research-text {
     font-size: 0.78rem;
-    color: #333;
+    color: var(--ink-light);
     line-height: 1.6;
     margin: 0;
 }
@@ -8001,7 +8012,7 @@ a.source-tag-link:hover {
     align-items: flex-start;
     margin-top: 6px;
     padding: 8px 10px;
-    background: #fff;
+    background: var(--paper);
     border-radius: 8px;
     border: 1px solid #e0e8f0;
 }
@@ -8013,8 +8024,8 @@ a.source-tag-link:hover {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: #003366;
-    color: #fff;
+    background: var(--accent-strong);
+    color: var(--paper);
     font-size: 0.68rem;
     font-weight: 800;
 }
@@ -8022,12 +8033,12 @@ a.source-tag-link:hover {
     display: block;
     font-size: 0.76rem;
     font-weight: 700;
-    color: #003366;
+    color: var(--accent-strong);
     margin-bottom: 2px;
 }
 .magic-research-solution p {
     font-size: 0.74rem;
-    color: #555;
+    color: var(--muted);
     line-height: 1.5;
     margin: 0;
 }
@@ -8048,8 +8059,8 @@ a.source-tag-link:hover {
     border-radius: 10px;
     font-size: 0.66rem;
     font-weight: 700;
-    background: #003366;
-    color: #fff;
+    background: var(--accent-strong);
+    color: var(--paper);
 }
 .magic-custom-applied {
     background: #2e7d32 !important;
@@ -8078,7 +8089,7 @@ a.source-tag-link:hover {
 }
 .cpv2-compact-summary {
     font-size: 0.8rem;
-    color: #444;
+    color: var(--ink-light);
     flex: 1;
     min-width: 0;
     white-space: nowrap;
@@ -8095,14 +8106,14 @@ a.source-tag-link:hover {
     padding: 5px 14px;
     cursor: pointer;
     font-size: 0.74rem;
-    color: #003366;
+    color: var(--accent-strong);
     font-weight: 600;
     white-space: nowrap;
     transition: all 0.2s;
 }
 .cpv2-sheet-trigger:hover {
-    background: #003366;
-    color: #fff;
+    background: var(--accent-strong);
+    color: var(--paper);
 }
 
 /* 오버레이 */
@@ -8124,7 +8135,7 @@ a.source-tag-link:hover {
     left: 0;
     right: 0;
     max-height: 75vh;
-    background: #fff;
+    background: var(--paper);
     border-radius: 18px 18px 0 0;
     box-shadow: 0 -4px 30px rgba(0,0,0,0.15);
     z-index: 9999;
@@ -8156,14 +8167,14 @@ a.source-tag-link:hover {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #fff;
+    color: var(--paper);
 }
 .cpv2-sheet-title-row .cpv2-flag { font-size: 1.6rem; line-height: 1; }
-.cpv2-sheet-title-row .cpv2-city { font-size: 1.05rem; font-weight: 800; margin: 0; color: #fff; }
+.cpv2-sheet-title-row .cpv2-city { font-size: 1.05rem; font-weight: 800; margin: 0; color: var(--paper); }
 .cpv2-sheet-title-row .cpv2-country { font-size: 0.7rem; color: rgba(255,255,255,0.6); }
 .cpv2-sheet-title-row .cpv2-badge {
     font-size: 0.6rem; font-weight: 700;
-    background: rgba(255,255,255,0.18); color: #fff;
+    background: rgba(255,255,255,0.18); color: var(--paper);
     padding: 3px 10px; border-radius: 20px;
     text-transform: uppercase; letter-spacing: 0.04em;
 }
@@ -8171,7 +8182,7 @@ a.source-tag-link:hover {
     margin-left: auto;
     background: rgba(255,255,255,0.15);
     border: none;
-    color: #fff;
+    color: var(--paper);
     font-size: 1.3rem;
     width: 32px; height: 32px;
     border-radius: 50%;
@@ -8197,10 +8208,10 @@ a.source-tag-link:hover {
     padding: 14px 18px;
     border-bottom: 1px solid #f0f0f0;
     border-right: 1px solid #f0f0f0;
-    background: #fff;
+    background: var(--paper);
     transition: background 0.15s;
 }
-.cpv2-item:hover { background: #f8fafd; }
+.cpv2-item:hover { background: var(--surface); }
 .cpv2-item:nth-child(2n) { border-right: none; }
 .cpv2-item:nth-last-child(-n+2) { border-bottom: none; }
 
@@ -8218,7 +8229,7 @@ a.source-tag-link:hover {
     color: var(--cpv2-accent, #003366);
     letter-spacing: 0.03em;
 }
-.cpv2-text { font-size: 0.77rem; color: #444; line-height: 1.55; }
+.cpv2-text { font-size: 0.77rem; color: var(--ink-light); line-height: 1.55; }
 
 @media (max-width: 700px) {
     .cpv2-sheet { max-height: 85vh; }
@@ -8470,7 +8481,7 @@ a.source-tag-link:hover {
     gap: 8px;
     padding: 8px 16px;
     border-radius: 10px;
-    background: #fff;
+    background: var(--paper);
     border: 1.5px solid var(--line);
     transition: all 0.35s ease;
     position: relative;
@@ -8505,7 +8516,7 @@ a.source-tag-link:hover {
 .oft-step.active .oft-status {
     display: inline-block;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
 }
 
 .oft-step.done {
@@ -8516,7 +8527,7 @@ a.source-tag-link:hover {
 .oft-step.done .oft-status {
     display: inline-block;
     background: #43a047;
-    color: #fff;
+    color: var(--paper);
 }
 
 @keyframes oftPulse {
@@ -8597,11 +8608,11 @@ a.source-tag-link:hover {
 }
 .curation-head .section-status-badge.working {
     background: rgba(255, 255, 255, 0.2);
-    color: #fff;
+    color: var(--paper);
 }
 .curation-head .section-status-badge.done {
     background: rgba(255, 255, 255, 0.25);
-    color: #fff;
+    color: var(--paper);
 }
 @keyframes badgeIn {
     from { opacity: 0; transform: scale(0.85); }
@@ -8658,7 +8669,7 @@ a.source-tag-link:hover {
 .mp-card {
     border: 1.5px solid var(--line);
     border-radius: 16px;
-    background: #fff;
+    background: var(--paper);
     overflow: hidden;
     opacity: 0;
     transform: translateY(12px);
@@ -8690,7 +8701,7 @@ a.source-tag-link:hover {
     width: 28px; height: 28px;
     border-radius: 50%;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.78rem;
     font-weight: 800;
     flex-shrink: 0;
@@ -8815,7 +8826,7 @@ a.source-tag-link:hover {
     width: 24px; height: 24px;
     border-radius: 50%;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8853,7 +8864,7 @@ a.source-tag-link:hover {
     border: none;
     border-radius: 10px;
     background: linear-gradient(135deg, #003366, #005599);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.85rem;
     font-weight: 700;
     cursor: pointer;
@@ -8913,9 +8924,9 @@ a.source-tag-link:hover {
     white-space: nowrap;
     transition: all 0.2s;
 }
-.co-nav-item:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.co-nav-item:hover { color: var(--paper); background: rgba(255,255,255,0.1); }
 .co-nav-item.active {
-    color: #fff;
+    color: var(--paper);
     background: var(--accent);
     font-weight: 600;
 }
@@ -8949,7 +8960,7 @@ a.source-tag-link:hover {
     width: 32px; height: 32px;
     border-radius: 50%;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.76rem;
     font-weight: 700;
     flex-shrink: 0;
@@ -9115,7 +9126,7 @@ a.source-tag-link:hover {
     width: 36px; height: 36px;
     border-radius: 50%;
     background: var(--accent-strong);
-    color: #fff;
+    color: var(--paper);
     font-size: 0.9rem;
     font-weight: 800;
     flex-shrink: 0;
@@ -9285,7 +9296,7 @@ a.source-tag-link:hover {
 .co-retry-btn {
     padding: 6px 16px;
     background: var(--accent);
-    color: #fff;
+    color: var(--paper);
     border: none;
     border-radius: 8px;
     font-size: 0.76rem;
@@ -9371,7 +9382,7 @@ a.source-tag-link:hover {
 .co-tab-btn:hover { border-color: var(--accent); color: var(--accent); }
 .co-tab-btn.active {
     background: var(--accent);
-    color: #fff;
+    color: var(--paper);
     border-color: var(--accent);
 }
 .co-tab-btn--sm { padding: 5px 10px; font-size: 0.7rem; }
