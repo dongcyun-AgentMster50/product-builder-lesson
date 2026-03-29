@@ -3573,10 +3573,93 @@ function bindCityProfileDrawer(container) {
 }
 
 /** 커스텀 도시 리서치 — AI 마켓 리서치 실행 */
+function parseJsonObjectFromText(rawText) {
+    const text = typeof rawText === "string" ? rawText.trim() : "";
+    if (!text) return null;
+
+    const candidates = [
+        text,
+        text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim()
+    ];
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) candidates.push(jsonMatch[0].trim());
+
+    for (const candidate of candidates) {
+        if (!candidate) continue;
+        try {
+            return JSON.parse(candidate);
+        } catch {
+            continue;
+        }
+    }
+    return null;
+}
+
+function normalizeCustomResearchData(query, data) {
+    let source = data;
+    if (typeof source === "string") {
+        source = parseJsonObjectFromText(source) || { raw: source };
+    }
+    if (source?.raw && typeof source.raw === "string") {
+        const reparsed = parseJsonObjectFromText(source.raw);
+        if (reparsed) source = reparsed;
+    }
+    if (source?.data && typeof source.data === "object") source = source.data;
+    if (!source || typeof source !== "object") source = {};
+
+    const rawText = typeof source.raw === "string"
+        ? source.raw
+        : (typeof data === "string" ? data : JSON.stringify(source));
+    const profileKeys = ["climate", "housing", "family", "daily_rhythm", "safety", "energy", "health", "pets", "mobility", "events"];
+    const profileFindings = profileKeys
+        .filter((key) => typeof source[key] === "string" && source[key].trim())
+        .slice(0, 4)
+        .map((key) => ({
+            title: key.replace(/_/g, " "),
+            summary: String(source[key]).trim(),
+            scenario_implication: currentLocale === "ko"
+                ? `"${query}"와 관련된 사용 장면을 이 생활 맥락에 맞게 시나리오에 연결합니다.`
+                : `Connect "${query}" to this living context in the scenario.`
+        }));
+
+    const normalized = {
+        keyword_interpretation: typeof source.keyword_interpretation === "string" ? source.keyword_interpretation.trim() : "",
+        search_intents: Array.isArray(source.search_intents) ? source.search_intents.filter((item) => typeof item === "string" && item.trim()) : [],
+        city_keyword_findings: Array.isArray(source.city_keyword_findings)
+            ? source.city_keyword_findings.filter((item) => item && typeof item === "object")
+            : [],
+        dedup_note: typeof source.dedup_note === "string" ? source.dedup_note.trim() : "",
+        recommended_reflection_points: Array.isArray(source.recommended_reflection_points)
+            ? source.recommended_reflection_points.filter((item) => typeof item === "string" && item.trim())
+            : [],
+        tags: Array.isArray(source.tags) ? source.tags.filter((item) => typeof item === "string" && item.trim()) : [],
+        raw: rawText
+    };
+
+    if (!normalized.city_keyword_findings.length && profileFindings.length) {
+        normalized.city_keyword_findings = profileFindings;
+    }
+
+    if (!normalized.keyword_interpretation) {
+        normalized.keyword_interpretation = currentLocale === "ko"
+            ? `"${query}"와 연결되는 지역 생활 맥락을 정리했습니다.`
+            : `Summarized the local context connected to "${query}".`;
+    }
+
+    if (!normalized.recommended_reflection_points.length) {
+        normalized.recommended_reflection_points = currentLocale === "ko"
+            ? [`"${query}"가 필요한 시간대와 생활 조건을 시나리오 조건으로 반영합니다.`]
+            : [`Use the timing and living conditions behind "${query}" as scenario conditions.`];
+    }
+
+    return normalized;
+}
+
 let _customResearchData = null;
 
 async function runCustomCityResearch(query, resultContainer, parentContainer) {
     const isKo = currentLocale === "ko";
+    let failureMessage = "";
 
     // 로딩 표시 — 간결한 인라인 스피너
     resultContainer.style.display = "block";
@@ -3626,16 +3709,17 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
         });
         clearTimeout(timer);
 
-        if (response.ok) {
-            const result = await response.json();
-            if (result.ok && result.data) {
-                _customResearchData = { query, data: result.data, tags: result.data.tags || [] };
-                renderCustomResearchResult(query, result.data, resultContainer);
-                return;
-            }
+        const result = await response.json().catch(() => null);
+        if (response.ok && result?.ok && result?.data) {
+            const normalizedData = normalizeCustomResearchData(query, result.data);
+            _customResearchData = { query, data: normalizedData, tags: normalizedData.tags || [] };
+            renderCustomResearchResult(query, normalizedData, resultContainer);
+            return;
         }
+        if (result?.error?.message) failureMessage = result.error.message;
     } catch (err) {
         console.warn("[custom-research] fetch failed:", err.message);
+        failureMessage = err.message;
     }
 
     // 실패 시
@@ -3650,6 +3734,7 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
 }
 
 function renderCustomResearchResult(query, data, resultContainer) {
+    data = normalizeCustomResearchData(query, data);
     const isKo = currentLocale === "ko";
 
     // 새 포맷 필드 추출

@@ -2321,6 +2321,228 @@ Save energy, Keep your home safe, Help with chores, Care for kids, Care for seni
 Care for your pet, Sleep well, Enhanced mood, Stay fit & healthy, Easily control your lights,
 Keep the air fresh, Find your belongings, Time saving`;
 
+function parseJsonObjectFromModelText(rawText) {
+    const text = typeof rawText === "string" ? rawText.trim() : "";
+    if (!text) return null;
+
+    const candidates = [
+        text,
+        text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim()
+    ];
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) candidates.push(jsonMatch[0].trim());
+
+    for (const candidate of candidates) {
+        if (!candidate) continue;
+        try {
+            return JSON.parse(candidate);
+        } catch {
+            continue;
+        }
+    }
+
+    return null;
+}
+
+function normalizeStringList(value, maxItems = 8) {
+    if (!Array.isArray(value)) return [];
+    return value
+        .map((item) => typeof item === "string" ? item.trim() : "")
+        .filter(Boolean)
+        .slice(0, maxItems);
+}
+
+function inferCustomResearchTags(query, extraText = "") {
+    const haystack = `${query || ""} ${extraText || ""}`.toLowerCase();
+    const tagRules = [
+        { tag: "Care for seniors", terms: ["시니어", "노인", "고령", "어르신", "senior", "elder", "aging"] },
+        { tag: "Care for kids", terms: ["아이", "키즈", "어린이", "육아", "child", "kid", "baby"] },
+        { tag: "Care for your pet", terms: ["반려", "펫", "pet", "dog", "cat"] },
+        { tag: "Keep your home safe", terms: ["보안", "안전", "security", "safe", "cctv", "도난", "침입"] },
+        { tag: "Save energy", terms: ["에너지", "전기", "난방", "냉방", "절약", "energy", "utility", "bill"] },
+        { tag: "Sleep well", terms: ["수면", "숙면", "sleep", "bedtime"] },
+        { tag: "Stay fit & healthy", terms: ["건강", "웰니스", "fitness", "health", "air quality", "공기", "미세먼지"] },
+        { tag: "Find your belongings", terms: ["분실", "위치", "찾기", "tag", "tracker", "belonging"] },
+        { tag: "Time saving", terms: ["시간", "루틴", "자동", "automation", "commute", "출퇴근"] },
+        { tag: "Enhanced mood", terms: ["무드", "분위기", "mood", "ambience", "힐링"] },
+        { tag: "Help with chores", terms: ["집안일", "청소", "세탁", "요리", "chore", "cleaning", "laundry"] },
+        { tag: "Keep the air fresh", terms: ["환기", "공기", "air", "odor", "smell", "습도"] },
+        { tag: "Easily control your lights", terms: ["조명", "lights", "lighting", "lamp"] }
+    ];
+
+    const matched = tagRules
+        .filter((rule) => rule.terms.some((term) => haystack.includes(term)))
+        .map((rule) => rule.tag);
+
+    return [...new Set(matched)].slice(0, 4);
+}
+
+function toTitleFromProfileKey(key, locale) {
+    const koMap = {
+        climate: "기후·계절",
+        housing: "주거 형태",
+        family: "가족·돌봄",
+        daily_rhythm: "일상 리듬",
+        safety: "안전·보안",
+        energy: "에너지",
+        health: "건강·웰니스",
+        pets: "펫 라이프",
+        mobility: "이동·부재",
+        events: "문화 행사"
+    };
+    const enMap = {
+        climate: "Climate",
+        housing: "Housing",
+        family: "Family",
+        daily_rhythm: "Daily Rhythm",
+        safety: "Safety",
+        energy: "Energy",
+        health: "Health",
+        pets: "Pet Life",
+        mobility: "Mobility",
+        events: "Events"
+    };
+
+    return locale === "ko" ? (koMap[key] || key) : (enMap[key] || key);
+}
+
+function extractProfileHighlights(profileLike, locale) {
+    if (!profileLike || typeof profileLike !== "object") return [];
+
+    const keys = ["climate", "housing", "family", "daily_rhythm", "safety", "energy", "health", "pets", "mobility", "events"];
+    return keys
+        .filter((key) => typeof profileLike[key] === "string" && profileLike[key].trim())
+        .map((key) => ({
+            key,
+            title: toTitleFromProfileKey(key, locale),
+            text: profileLike[key].trim()
+        }));
+}
+
+function buildFallbackCustomResearch({ query, city, locale, baseProfiles, profileLike, raw }) {
+    const isKo = locale === "ko";
+    const highlights = extractProfileHighlights(profileLike, locale);
+    const profileLines = typeof baseProfiles === "string"
+        ? baseProfiles.split("\n").map((line) => line.trim()).filter(Boolean)
+        : [];
+
+    const findingSources = highlights.length > 0
+        ? highlights.slice(0, 3).map((item) => ({
+            title: item.title,
+            summary: item.text
+        }))
+        : profileLines.slice(0, 3).map((line) => {
+            const dividerIndex = line.indexOf(":");
+            const label = dividerIndex >= 0 ? line.slice(0, dividerIndex).trim() : (isKo ? "도시 맥락" : "City Context");
+            const summary = dividerIndex >= 0 ? line.slice(dividerIndex + 1).trim() : line;
+            return { title: label, summary };
+        });
+
+    const extraText = [
+        ...findingSources.map((item) => item.summary),
+        typeof raw === "string" ? raw : ""
+    ].join(" ");
+    const tags = inferCustomResearchTags(query, extraText);
+
+    const findings = (findingSources.length > 0 ? findingSources : [{
+        title: isKo ? "생활 패턴 보완 포인트" : "Life Pattern Opportunity",
+        summary: isKo
+            ? `${city} 생활 맥락에서 "${query}"와 연결되는 추가 사용 장면을 별도로 점검할 필요가 있습니다.`
+            : `There is room to connect "${query}" to additional everyday situations in ${city}.`
+    }]).map((item) => ({
+        title: item.title,
+        summary: item.summary,
+        scenario_implication: isKo
+            ? `"${query}" 관련 루틴과 알림, 원격 확인 흐름을 이 생활 맥락에 맞게 시나리오에 반영합니다.`
+            : `Reflect this context in routines, alerts, and remote-control flows tied to "${query}".`
+    }));
+
+    return {
+        keyword_interpretation: isKo
+            ? `"${query}"는 ${city} 생활 패턴 안에서 기존 10개 카테고리만으로 충분히 드러나지 않았던 추가 요구를 보완하는 키워드로 해석할 수 있습니다.`
+            : `"${query}" adds a layer of everyday context in ${city} that may not be fully covered by the default 10 categories.`,
+        search_intents: [
+            isKo ? `${city} ${query} 생활 패턴` : `${city} ${query} daily life`,
+            isKo ? `${city} ${query} 불편` : `${city} ${query} pain points`,
+            isKo ? `${city} ${query} 돌봄 시나리오` : `${city} ${query} care routines`
+        ],
+        city_keyword_findings: findings.slice(0, 3),
+        dedup_note: baseProfiles
+            ? (isKo
+                ? "기존 도시 프로필과 겹치는 설명은 줄이고, 추가 키워드가 만드는 새로운 사용 맥락만 추렸습니다."
+                : "Repeated points from the existing city profile were reduced to keep only the extra context introduced by this keyword.")
+            : "",
+        recommended_reflection_points: [
+            isKo
+                ? `"${query}"가 필요한 시간대와 부재/동거 상황을 루틴 조건으로 반영`
+                : `Reflect the time-of-day and presence conditions that make "${query}" relevant.`,
+            isKo
+                ? `"${query}"와 연결되는 모니터링·알림·자동화 장면을 우선 설계`
+                : `Prioritize monitoring, notification, and automation moments connected to "${query}".`
+        ],
+        tags
+    };
+}
+
+function normalizeCustomResearchPayload(payload, context) {
+    const { query, city, locale, baseProfiles } = context;
+
+    let source = payload;
+    if (typeof source === "string") {
+        source = parseJsonObjectFromModelText(source) || { raw: source };
+    }
+    if (source?.raw && typeof source.raw === "string") {
+        const reparsed = parseJsonObjectFromModelText(source.raw);
+        if (reparsed) source = reparsed;
+    }
+    if (source?.data && typeof source.data === "object") source = source.data;
+
+    if (!source || typeof source !== "object") {
+        return buildFallbackCustomResearch({ query, city, locale, baseProfiles, raw: payload });
+    }
+
+    const interpretation = typeof source.keyword_interpretation === "string" ? source.keyword_interpretation.trim() : "";
+    const searchIntents = normalizeStringList(source.search_intents, 8);
+    const reflectionPoints = normalizeStringList(source.recommended_reflection_points, 4);
+    const tags = normalizeStringList(source.tags, 6);
+    const findings = Array.isArray(source.city_keyword_findings)
+        ? source.city_keyword_findings
+            .filter((item) => item && typeof item === "object")
+            .map((item) => ({
+                title: typeof item.title === "string" ? item.title.trim() : "",
+                summary: typeof item.summary === "string" ? item.summary.trim() : "",
+                scenario_implication: typeof item.scenario_implication === "string" ? item.scenario_implication.trim() : ""
+            }))
+            .filter((item) => item.title || item.summary || item.scenario_implication)
+            .slice(0, 5)
+        : [];
+
+    if (interpretation || findings.length || reflectionPoints.length) {
+        return {
+            keyword_interpretation: interpretation,
+            search_intents: searchIntents,
+            city_keyword_findings: findings,
+            dedup_note: typeof source.dedup_note === "string" ? source.dedup_note.trim() : "",
+            recommended_reflection_points: reflectionPoints,
+            tags: tags.length ? tags : inferCustomResearchTags(query, JSON.stringify(source))
+        };
+    }
+
+    const fallbackProfile = extractProfileHighlights(source, locale).reduce((acc, item) => {
+        acc[item.key] = item.text;
+        return acc;
+    }, {});
+
+    return buildFallbackCustomResearch({
+        query,
+        city,
+        locale,
+        baseProfiles,
+        profileLike: fallbackProfile,
+        raw: source.raw || JSON.stringify(source)
+    });
+}
+
 async function handleCityProfile(req, res) {
     const authState = requireAuthenticatedSession(req, res);
     if (!authState.ok) return;
@@ -2349,12 +2571,28 @@ async function handleCityProfile(req, res) {
     }
 
     const apiKey = process.env.OPENAI_API_KEY || "";
+    const model = process.env.OPENAI_MODEL || "gpt-5.4";
+
+    if (customQuery && !apiKey) {
+        const fallbackResearch = normalizeCustomResearchPayload({ raw: "API_NOT_CONFIGURED" }, {
+            query: customQuery,
+            city,
+            locale,
+            baseProfiles
+        });
+        sendJson(res, 200, {
+            ok: true,
+            data: fallbackResearch,
+            mode: "custom_research",
+            meta: { city, country, locale, model, query: customQuery, fallback: true, fallback_reason: "API_NOT_CONFIGURED" }
+        });
+        return;
+    }
+
     if (!apiKey) {
         sendJson(res, 500, { ok: false, error: { code: "API_NOT_CONFIGURED" } });
         return;
     }
-
-    const model = process.env.OPENAI_MODEL || "gpt-5.4";
 
     // custom_query가 있으면 커스텀 마켓 리서치 모드
     if (customQuery) {
@@ -2384,18 +2622,45 @@ async function handleCityProfile(req, res) {
 
             if (!apiRes.ok) {
                 const errText = await apiRes.text().catch(() => "");
-                sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: errText.substring(0, 200) } });
+                const fallbackResearch = normalizeCustomResearchPayload({ raw: errText.substring(0, 200) || "UPSTREAM_ERROR" }, {
+                    query: customQuery,
+                    city,
+                    locale,
+                    baseProfiles
+                });
+                sendJson(res, 200, {
+                    ok: true,
+                    data: fallbackResearch,
+                    mode: "custom_research",
+                    meta: { city, country, locale, model, query: customQuery, fallback: true, fallback_reason: errText.substring(0, 200) || "UPSTREAM_ERROR" }
+                });
                 return;
             }
 
             const result = await apiRes.json();
             const content = result.choices?.[0]?.message?.content || "{}";
-            let research;
-            try { research = JSON.parse(content); } catch { research = { raw: content }; }
+            const parsedResearch = parseJsonObjectFromModelText(content) || { raw: content };
+            const research = normalizeCustomResearchPayload(parsedResearch, {
+                query: customQuery,
+                city,
+                locale,
+                baseProfiles
+            });
 
             sendJson(res, 200, { ok: true, data: research, mode: "custom_research", meta: { city, country, locale, model, query: customQuery } });
         } catch (err) {
-            sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: err.message } });
+            const fallbackResearch = normalizeCustomResearchPayload({ raw: err.message }, {
+                query: customQuery,
+                city,
+                locale,
+                baseProfiles
+            });
+            sendJson(res, 200, {
+                ok: true,
+                data: fallbackResearch,
+                mode: "custom_research",
+                meta: { city, country, locale, model, query: customQuery, fallback: true, fallback_reason: err.message }
+            });
         }
         return;
     }
@@ -2433,8 +2698,7 @@ async function handleCityProfile(req, res) {
 
         const result = await apiRes.json();
         const content = result.choices?.[0]?.message?.content || "{}";
-        let profile;
-        try { profile = JSON.parse(content); } catch { profile = { raw: content }; }
+        const profile = parseJsonObjectFromModelText(content) || { raw: content };
 
         res.setHeader("Cache-Control", "public, max-age=86400");
         sendJson(res, 200, { ok: true, data: profile, meta: { city, country, locale, model } });
