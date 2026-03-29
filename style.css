@@ -169,7 +169,7 @@ body {
     background: rgba(255, 255, 255, 0.12);
 }
 .locale-dropdown li.active {
-    color: #ffffff;
+    color: var(--paper);
     font-weight: 700;
 }
 .locale-dropdown li.active::before {
@@ -1942,7 +1942,7 @@ textarea {
     border-radius: 28px;
     background:
         radial-gradient(circle at 50% 0%, rgba(0, 51, 102, 0.06), transparent 60%),
-        linear-gradient(180deg, #fff 0%, #f8faff 100%);
+        linear-gradient(180deg, var(--paper) 0%, var(--surface) 100%);
     border: 1.5px solid rgba(0, 51, 102, 0.12);
     box-shadow:
         0 24px 60px rgba(0, 20, 60, 0.08),
@@ -2061,7 +2061,7 @@ textarea {
     padding: 14px;
     border-radius: 14px;
     border: 1px solid var(--line);
-    background: linear-gradient(180deg, #fff 0%, #f8faff 100%);
+    background: linear-gradient(180deg, var(--paper) 0%, var(--surface) 100%);
     box-shadow: 0 4px 12px rgba(0, 20, 60, 0.04);
     transition: all 0.2s;
     min-height: 90px;
@@ -3566,7 +3566,7 @@ textarea {
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #ffffff;
+    color: var(--paper);
 }
 
 .guide-hero h3 {
@@ -3937,7 +3937,7 @@ pre {
     padding: 8px 8px 6px;
     border: 1px solid rgba(0, 51, 102, 0.1);
     border-radius: 8px;
-    background: #ffffff;
+    background: var(--paper);
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 .preview-expect-card:hover {
@@ -4130,7 +4130,7 @@ pre {
     font-weight: 900;
     line-height: 1.2;
     letter-spacing: -0.03em;
-    color: #ffffff;
+    color: var(--paper);
 }
 .brief-card-meta {
     display: flex;
@@ -4621,7 +4621,7 @@ pre {
 .target-analysis {
     padding: 20px;
     border-radius: 22px;
-    background: linear-gradient(180deg, #fff, #f8faff);
+    background: linear-gradient(180deg, var(--paper), var(--surface));
     border: 1px solid var(--line);
 }
 
@@ -5986,7 +5986,7 @@ a.source-tag-link:hover {
     padding: 16px;
     border-radius: 20px;
     border: 1.5px solid rgba(0, 51, 102, 0.12);
-    background: linear-gradient(180deg, #fff 0%, #f8faff 100%);
+    background: linear-gradient(180deg, var(--paper) 0%, var(--surface) 100%);
     box-shadow: 0 12px 32px rgba(0, 20, 60, 0.06);
 }
 .output-category-frame.hidden { display: none; }
@@ -7692,7 +7692,7 @@ a.source-tag-link:hover {
 
 .magic-tag:hover {
     border-color: var(--magic-accent, #003366);
-    background: color-mix(in srgb, var(--magic-accent, #003366) 6%, #fff);
+    background: color-mix(in srgb, var(--magic-accent, #003366) 6%, var(--paper));
 }
 
 .magic-tag.selected {
@@ -8662,7 +8662,7 @@ a.source-tag-link:hover {
     padding: 20px;
     border-radius: 20px;
     border: 1.5px solid rgba(0, 51, 102, 0.15);
-    background: linear-gradient(180deg, #f8faff 0%, #fff 100%);
+    background: linear-gradient(180deg, var(--surface) 0%, var(--paper) 100%);
     box-shadow: 0 12px 36px rgba(0, 20, 60, 0.07);
 }
 .matching-process-frame.hidden { display: none; }
