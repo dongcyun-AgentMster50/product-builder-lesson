@@ -30,13 +30,29 @@
     --body-size: 11pt;
     --source-size: 9pt;
 
+    /* ── Spacing Scale ── */
+    --space-xs: 4px;
+    --space-sm: 6px;
+    --space-md: 10px;
+    --space-lg: 14px;
+    --space-xl: 20px;
+    --space-2xl: 28px;
+
+    /* ── Radius Scale ── */
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --radius-pill: 999px;
+
     /* ── Layout ── */
     --section-bg: var(--surface);
     --section-title-bg: var(--accent-strong);
     --section-title-color: var(--paper);
-    --card-radius: 16px;
+    --card-radius: var(--radius-lg);
     --card-gap: 16px;
-    --section-gap: 20px;
+    --section-gap: var(--space-xl);
     --min-card-height: 120px;
 }
 
@@ -600,7 +616,7 @@ textarea {
     font-weight: 800;
     letter-spacing: 0.08em;
     color: var(--paper);
-    background: linear-gradient(135deg, #003366, #2b6ccf);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-mid));
 }
 
 .role-brief-head p {
@@ -860,7 +876,7 @@ textarea {
 
 .q4-preset-desc {
     font-size: 0.65rem;
-    color: var(--muted, #889);
+    color: var(--muted);
     line-height: 1.3;
 }
 
@@ -889,7 +905,7 @@ textarea {
 .q4-locale-sub {
     margin: 6px 0 0;
     font-size: 0.78rem;
-    color: var(--muted, #5d6677);
+    color: var(--muted);
     line-height: 1.5;
 }
 .q4-locale-fallback {
@@ -907,7 +923,7 @@ textarea {
     display: block;
     font-size: 0.72rem;
     font-weight: 400;
-    color: var(--muted, #889);
+    color: var(--muted);
     margin-top: 2px;
 }
 
@@ -989,7 +1005,7 @@ textarea {
 
 /* ── 직접 선택 삼성/타사 섹션 분리 ── */
 .q4-direct-section {
-    border: 1px solid var(--line, #e0e0e0);
+    border: 1px solid var(--line);
     border-radius: 10px;
     padding: 12px;
     margin-bottom: 10px;
@@ -1147,7 +1163,7 @@ textarea {
 .q4-role-tag {
     font-size: 0.58rem;
     font-weight: 500;
-    color: var(--muted, #889);
+    color: var(--muted);
     background: rgba(0, 51, 102, 0.06);
     padding: 1px 6px;
     border-radius: 4px;
@@ -1169,7 +1185,7 @@ textarea {
     padding: 10px 16px;
     border: 2px solid transparent;
     border-radius: 10px;
-    background: linear-gradient(135deg, #1a237e, #0d47a1, #01579b);
+    background: linear-gradient(135deg, var(--accent-hover), var(--accent-strong), var(--accent-mid));
     color: var(--paper);
     font-size: 0.82rem;
     font-weight: 700;
@@ -1183,7 +1199,7 @@ textarea {
     box-shadow: 0 8px 24px rgba(13, 71, 161, 0.35);
 }
 .q3-auto-btn.active {
-    background: linear-gradient(135deg, #0d47a1, #01579b, #006064);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-mid), var(--accent));
     border-color: rgba(255,255,255,0.3);
     box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.2), 0 8px 24px rgba(13, 71, 161, 0.3);
 }
@@ -1205,7 +1221,7 @@ textarea {
     padding: 10px 16px;
     border: 2px solid transparent;
     border-radius: 10px;
-    background: linear-gradient(135deg, #1a237e, #0d47a1, #01579b);
+    background: linear-gradient(135deg, var(--accent-hover), var(--accent-strong), var(--accent-mid));
     color: var(--paper);
     font-size: 0.82rem;
     font-weight: 700;
@@ -1219,7 +1235,7 @@ textarea {
     box-shadow: 0 8px 24px rgba(13, 71, 161, 0.35);
 }
 .q4-auto-btn.active {
-    background: linear-gradient(135deg, #0d47a1, #01579b, #006064);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-mid), var(--accent));
     border-color: rgba(255,255,255,0.3);
     box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.2), 0 8px 24px rgba(13, 71, 161, 0.3);
 }
@@ -1295,8 +1311,8 @@ textarea {
     border: 1px dashed #c0c8d4;
     border-radius: 8px;
     font-size: 0.82rem;
-    color: var(--ink, #222);
-    background: var(--paper, #fff);
+    color: var(--ink);
+    background: var(--paper);
     transition: border-color 0.2s;
     box-sizing: border-box;
 }
@@ -2007,7 +2023,7 @@ textarea {
     padding: 17px;
     border: none;
     border-radius: 14px;
-    background: linear-gradient(135deg, var(--accent-strong), #004d99);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-mid));
     color: var(--paper);
     font-size: 1.1rem;
     font-weight: 700;
@@ -2237,7 +2253,7 @@ textarea {
 }
 
 .pizza-wedge {
-    fill: var(--accent, #1b368d);
+    fill: var(--accent);
     opacity: 0.85;
     transition: d 0.2s ease-out;
 }
@@ -2250,7 +2266,7 @@ textarea {
     justify-content: center;
     font-size: 0.55rem;
     font-weight: 800;
-    color: var(--accent-strong, #1b368d);
+    color: var(--accent-strong);
     pointer-events: none;
 }
 
@@ -2298,7 +2314,7 @@ textarea {
 .q2-trait-card {
     padding: 10px 14px;
     border-radius: 12px;
-    border-left: 3px solid var(--accent, #1b368d);
+    border-left: 3px solid var(--accent);
     background: rgba(0, 51, 102, 0.05);
 }
 
@@ -2306,7 +2322,7 @@ textarea {
     display: inline-block;
     font-weight: 800;
     font-size: 0.92rem;
-    color: var(--accent-strong, #1b368d);
+    color: var(--accent-strong);
 }
 
 .q2-trait-why {
@@ -2330,7 +2346,7 @@ textarea {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--accent, #1b368d);
+    color: var(--accent);
     margin-bottom: 4px;
 }
 
@@ -2376,7 +2392,7 @@ textarea {
     background: rgba(255, 255, 255, 0.5);
     font-weight: 800;
     font-size: 0.82rem;
-    color: var(--accent-strong, #1b368d);
+    color: var(--accent-strong);
     letter-spacing: 0.02em;
 }
 
@@ -2428,7 +2444,7 @@ textarea {
 
 .q2-hint-icon {
     font-weight: 800;
-    color: var(--accent, #1b368d);
+    color: var(--accent);
     font-size: 0.9rem;
     flex-shrink: 0;
 }
@@ -2665,7 +2681,7 @@ textarea {
 .q2-ev-logic {
     margin: 0;
     font-size: 0.78rem;
-    color: var(--accent-strong, #1b368d);
+    color: var(--accent-strong);
     font-weight: 600;
     line-height: 1.5;
 }
@@ -2674,7 +2690,7 @@ textarea {
 .q2-evidence-toggle {
     font-size: 0.74rem;
     font-weight: 600;
-    color: var(--accent, #1b368d);
+    color: var(--accent);
     cursor: pointer;
     background: none;
     border: none;
@@ -2771,7 +2787,7 @@ textarea {
     background: rgba(255, 255, 255, 0.55);
     font-weight: 800;
     font-size: 0.78rem;
-    color: var(--accent-strong, #1b368d);
+    color: var(--accent-strong);
     letter-spacing: 0.02em;
     border: 1px solid rgba(27, 54, 141, 0.12);
 }
@@ -2802,7 +2818,7 @@ textarea {
 .q2-score-section-weight {
     margin-left: auto;
     font-size: 0.7rem; font-weight: 800;
-    color: var(--accent-strong, #1b368d);
+    color: var(--accent-strong);
     background: rgba(27,54,141,0.08); padding: 1px 7px; border-radius: 4px;
 }
 .q2-score-row {
@@ -3021,7 +3037,7 @@ textarea {
     height: 100%; border-radius: 4px; transition: width 0.5s ease;
 }
 .q2-tag-score {
-    font-size: 0.68rem; font-weight: 800; color: var(--accent-strong, #1b368d); text-align: right;
+    font-size: 0.68rem; font-weight: 800; color: var(--accent-strong); text-align: right;
 }
 .q2-tag-detail-btn {
     background: none; border: none; cursor: pointer; padding: 0; font-size: 0.7rem;
@@ -3049,9 +3065,9 @@ textarea {
 .q2-tag-source-norm {
     font-size: 0.65rem; color: var(--muted); margin: 2px 0 0; line-height: 1.4;
 }
-.q2-tag-source-norm strong { font-weight: 800; color: var(--accent-strong, #1b368d); }
+.q2-tag-source-norm strong { font-weight: 800; color: var(--accent-strong); }
 .q2-scenario-hint {
-    font-size: 0.75rem; font-weight: 600; color: #1b368d;
+    font-size: 0.75rem; font-weight: 600; color: var(--accent-strong);
     margin: 4px 0 0; line-height: 1.5;
     padding: 8px 10px; border-radius: 8px;
     background: rgba(37,99,235,0.06);
@@ -5808,7 +5824,7 @@ a.source-tag-link:hover {
     padding: 10px 16px;
     border: 1.5px solid var(--accent-strong);
     border-radius: 10px;
-    background: linear-gradient(135deg, var(--accent-strong), #004d99);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-mid));
     color: var(--paper);
     font-size: 0.82rem;
     font-weight: 700;
@@ -5873,7 +5889,7 @@ a.source-tag-link:hover {
 }
 .curation-helper-desc strong {
     font-weight: 800;
-    color: var(--accent-strong, #1b368d);
+    color: var(--accent-strong);
 }
 .curation-helper-steps {
     margin: 4px 0 0;
@@ -5928,7 +5944,7 @@ a.source-tag-link:hover {
     color: var(--muted); font-size: 0.7rem; margin: 0 2px;
 }
 .q3-step-device {
-    font-weight: 700; color: var(--accent-strong, #1b368d);
+    font-weight: 700; color: var(--accent-strong);
     background: rgba(27,54,141,0.06); padding: 1px 6px; border-radius: 4px;
 }
 .q3-step-action {
@@ -6614,7 +6630,7 @@ a.source-tag-link:hover {
     border-style: solid;
     border-color: var(--accent-strong);
     border-radius: 12px 12px 0 0;
-    background: linear-gradient(135deg, #003366 0%, #004d99 100%);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-mid));
     color: var(--paper);
 }
 .preview-toggle-icon {
@@ -6636,14 +6652,14 @@ a.source-tag-link:hover {
 }
 .preview-toggle-text span {
     font-size: 0.72rem;
-    color: var(--muted, #889);
+    color: var(--muted);
 }
 .preview-toggle.open .preview-toggle-text span {
     color: rgba(255,255,255,0.7);
 }
 .preview-toggle-chevron {
     font-size: 0.9rem;
-    color: var(--muted, #889);
+    color: var(--muted);
     transition: transform 0.2s;
 }
 .preview-toggle.open .preview-toggle-chevron {
@@ -7446,7 +7462,7 @@ a.source-tag-link:hover {
 
 .str-copy-tone {
     font-size: 0.72rem;
-    color: var(--muted, #889);
+    color: var(--muted);
 }
 
 /* 마케터: 기타 */
@@ -7587,7 +7603,7 @@ a.source-tag-link:hover {
 .str-source-trace {
     padding: 10px 28px;
     font-size: 0.72rem;
-    color: var(--muted, #889);
+    color: var(--muted);
     border-top: 1px solid #f0f0f0;
 }
 
@@ -7620,7 +7636,7 @@ a.source-tag-link:hover {
 
 .magic-header {
     padding: 10px 16px;
-    background: linear-gradient(135deg, #003366 0%, #004d99 100%);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-mid));
     color: var(--paper);
     display: flex;
     flex-direction: column;
@@ -7766,7 +7782,7 @@ a.source-tag-link:hover {
     padding: 10px 20px;
     border: none;
     border-radius: 10px;
-    background: linear-gradient(135deg, #003366, #004d99);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-mid));
     color: var(--paper);
     font-size: 0.82rem;
     font-weight: 700;
@@ -7850,7 +7866,7 @@ a.source-tag-link:hover {
     padding: 9px 18px;
     border: none;
     border-radius: 8px;
-    background: linear-gradient(135deg, #003366, #004d99);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-mid));
     color: var(--paper);
     font-size: 0.78rem;
     font-weight: 700;
@@ -7950,7 +7966,7 @@ a.source-tag-link:hover {
     padding: 8px 16px;
     border: none;
     border-radius: 8px;
-    background: linear-gradient(135deg, #003366, #004d99);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-mid));
     color: var(--paper);
     font-size: 0.76rem;
     font-weight: 700;
@@ -8152,7 +8168,7 @@ a.source-tag-link:hover {
     position: sticky;
     top: 0;
     z-index: 1;
-    background: linear-gradient(135deg, #003366 0%, #004d99 100%);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-mid));
     padding: 10px 20px 14px;
     border-radius: 18px 18px 0 0;
 }
@@ -8863,7 +8879,7 @@ a.source-tag-link:hover {
     padding: 11px 0;
     border: none;
     border-radius: 10px;
-    background: linear-gradient(135deg, #003366, #005599);
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-mid));
     color: var(--paper);
     font-size: 0.85rem;
     font-weight: 700;
