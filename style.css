@@ -125,7 +125,8 @@ body {
     letter-spacing: 0.01em;
 }
 .locale-toggle-btn {
-    padding: 5px 14px;
+    padding: 8px 16px;
+    min-height: 36px;
     border: 1px solid rgba(255, 255, 255, 0.35);
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.12);
@@ -850,10 +851,11 @@ textarea {
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    padding: 10px 8px;
+    padding: 12px 10px;
     border-radius: 10px;
     text-align: center;
     min-width: 0;
+    min-height: 44px;
 }
 
 .q4-preset-btn.active {
@@ -1640,7 +1642,8 @@ textarea {
     display: inline-flex;
     align-items: center;
     gap: 0;
-    padding: 6px 14px;
+    padding: 8px 14px;
+    min-height: 36px;
     border-radius: 20px;
     border: 1.5px solid var(--line);
     background: var(--paper);
@@ -3735,7 +3738,8 @@ textarea {
 .tab-btn {
     border: 1px solid var(--line);
     border-radius: 999px;
-    padding: 7px 14px;
+    padding: 10px 18px;
+    min-height: 40px;
     background: rgba(255, 255, 255, 0.98);
     color: var(--ink);
     font-weight: 800;
@@ -3785,7 +3789,8 @@ textarea {
 .provider-btn {
     border: none;
     background: transparent;
-    padding: 8px 16px;
+    padding: 10px 18px;
+    min-height: 40px;
     font-size: 0.82rem;
     font-weight: 700;
     cursor: pointer;
@@ -9799,6 +9804,54 @@ a.source-tag-link:hover {
 @media (max-width: 480px) {
     .co-storyboard-strip { grid-template-columns: 1fr; }
     .co-actions-grid { grid-template-columns: 1fr; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Mobile Adaptation — 미커버 컴포넌트 반응형
+   ══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+    /* Q2 스코어보드 */
+    .q2-scoreboard { font-size: 0.72rem; }
+    .q2-score-row { gap: 4px; }
+    .q2-score-label { font-size: 0.66rem; min-width: 0; flex-shrink: 1; }
+    .q2-tag-row { gap: 4px; }
+    .q2-tag-label { font-size: 0.66rem; min-width: 0; flex-shrink: 1; }
+    .q2-cluster-row { gap: 4px; }
+    .q2-cluster-pill { font-size: 0.62rem; padding: 3px 8px; }
+    .q2-hybrid-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .q2-layer { padding: 10px; }
+
+    /* Q4 레이아웃 */
+    .q4-top-row { grid-template-columns: 1fr !important; }
+    .q4-summary-card { order: -1; }
+    .q4-preset-grid { grid-template-columns: repeat(2, 1fr); }
+
+    /* Magic Setup */
+    .magic-header { padding: 10px 14px; }
+    .magic-tags { padding: 8px 14px; gap: 5px; }
+    .magic-tag { padding: 6px 10px; font-size: 0.7rem; }
+    .magic-custom-input-row { flex-direction: column; gap: 6px; }
+    .magic-custom-search-btn { width: 100%; }
+    .magic-research-solution { flex-direction: column; gap: 6px; }
+
+    /* 위저드 액션 버튼 */
+    .wizard-actions { flex-wrap: wrap; gap: 6px; }
+    .wizard-actions .secondary-btn,
+    .wizard-actions .generate-btn { flex: 1; min-width: 0; text-align: center; }
+
+    /* 인사이트 카드 */
+    .insight-card { padding: 10px; }
+    .insight-badge { font-size: 0.68rem; min-height: 24px; padding: 0 8px; }
+
+    /* 히어로 */
+    .hero { padding: 20px 16px 16px; }
+    .hero h1 { font-size: 1.3rem; }
+}
+
+@media (max-width: 400px) {
+    .q4-preset-grid { grid-template-columns: 1fr; }
+    .tree-children--cards { grid-template-columns: 1fr; }
+    .q2-legend { flex-direction: column; gap: 3px; }
 }
 
 /* ══════════════════════════════════════════════════════════════════════
