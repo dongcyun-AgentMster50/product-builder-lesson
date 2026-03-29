@@ -3469,6 +3469,17 @@ function renderCityProfileInsight(countryName, localCity, profile) {
             </div>
             <div class="magic-tags">${tagsHtml}</div>
             <div class="magic-cards" id="magic-cards"></div>
+            <div class="magic-actions" id="magic-actions" style="display:none">
+                <div class="magic-action-block">
+                    <p class="magic-action-caption">${isKo ? "기본 선택 반영" : "Apply selected categories"}</p>
+                    <button type="button" class="magic-apply-btn" id="magic-apply-btn">
+                        ${isKo ? "선택한 기본 생활 키워드 반영" : "Apply selected base categories"}
+                    </button>
+                </div>
+                <button type="button" class="cpv2-sheet-trigger magic-all-btn">
+                    ${isKo ? "전체 도시 프로필 보기" : "View full city profile"}
+                </button>
+            </div>
             <div class="magic-custom-research" id="magic-custom-research">
                 <div class="magic-custom-header">
                     <span class="magic-custom-icon">🔎</span>
@@ -3482,14 +3493,6 @@ function renderCityProfileInsight(countryName, localCity, profile) {
                     </button>
                 </div>
                 <div id="magic-custom-result" class="magic-custom-result" style="display:none"></div>
-            </div>
-            <div class="magic-actions" id="magic-actions" style="display:none">
-                <button type="button" class="magic-apply-btn" id="magic-apply-btn">
-                    ${isKo ? "이 키워드를 시나리오에 반영하기" : "Apply these to scenario matching"}
-                </button>
-                <button type="button" class="cpv2-sheet-trigger magic-all-btn">
-                    ${isKo ? "전체 도시 프로필 보기" : "View full city profile"}
-                </button>
             </div>
         </div>
     `;
@@ -3545,7 +3548,7 @@ function bindCityProfileDrawer(container) {
             updateStatePreview();
 
             setTimeout(() => {
-                applyBtn.innerHTML = isKo ? "이 키워드를 시나리오에 반영하기" : "Apply these to scenario matching";
+                applyBtn.innerHTML = isKo ? "선택한 기본 생활 키워드 반영" : "Apply selected base categories";
                 applyBtn.disabled = false;
             }, 2500);
         });
@@ -3769,8 +3772,9 @@ function renderCustomResearchResult(query, data, resultContainer) {
                     <div class="magic-research-text" style="white-space:pre-line">${escapeHtml(typeof fallbackText === "string" ? fallbackText : JSON.stringify(fallbackText))}</div>
                 </div>
                 <div class="magic-custom-result-actions">
+                    <p class="magic-custom-action-caption">${isKo ? "커스텀 검색 반영" : "Apply this custom research"}</p>
                     <button type="button" class="magic-custom-apply-btn" id="magic-custom-apply-btn">
-                        ${isKo ? "시나리오 반영" : "Apply to Scenario"}
+                        ${isKo ? "이 검색 결과를 시나리오 조건에 추가" : "Add this research to scenario inputs"}
                     </button>
                     <button type="button" class="secondary-btn magic-custom-skip-btn" id="magic-custom-skip-btn">
                         ${isKo ? "건너뛰기" : "Skip"}
@@ -3852,8 +3856,9 @@ function renderCustomResearchResult(query, data, resultContainer) {
             </div>` : ""}
 
             <div class="magic-custom-result-actions">
+                <p class="magic-custom-action-caption">${isKo ? "커스텀 검색 반영" : "Apply this custom research"}</p>
                 <button type="button" class="magic-custom-apply-btn" id="magic-custom-apply-btn">
-                    ${isKo ? "시나리오 반영" : "Apply to Scenario"}
+                    ${isKo ? "이 검색 결과를 시나리오 조건에 추가" : "Add this research to scenario inputs"}
                 </button>
                 <button type="button" class="secondary-btn magic-custom-skip-btn" id="magic-custom-skip-btn">
                     ${isKo ? "건너뛰기" : "Skip"}
@@ -3886,8 +3891,8 @@ function bindCustomResearchActions(query, needsText, data, tags, resultContainer
         const applyBtn = resultContainer.querySelector("#magic-custom-apply-btn");
         if (applyBtn) {
             applyBtn.innerHTML = isKo
-                ? `<span style="color:#4caf50">&#10003;</span> 시나리오에 반영됨`
-                : `<span style="color:#4caf50">&#10003;</span> Applied`;
+                ? `<span style="color:#4caf50">&#10003;</span> 커스텀 검색 반영됨`
+                : `<span style="color:#4caf50">&#10003;</span> Custom research applied`;
             applyBtn.disabled = true;
             applyBtn.classList.add("magic-custom-applied");
         }

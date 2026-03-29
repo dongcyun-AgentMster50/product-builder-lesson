@@ -7781,10 +7781,24 @@ a.source-tag-link:hover {
     gap: 10px;
     flex-wrap: wrap;
     border-top: 1px solid #f0f0f0;
+    align-items: flex-end;
+}
+
+.magic-action-block {
+    flex: 1 1 320px;
+}
+
+.magic-action-caption,
+.magic-custom-action-caption {
+    margin: 0 0 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #5f6b7a;
+    letter-spacing: 0.01em;
 }
 
 .magic-apply-btn {
-    flex: 1;
+    width: 100%;
     min-width: 180px;
     padding: 10px 20px;
     border: none;
@@ -7967,6 +7981,12 @@ a.source-tag-link:hover {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
+    align-items: center;
+}
+
+.magic-custom-action-caption {
+    width: 100%;
+    margin-bottom: 2px;
 }
 
 .magic-custom-apply-btn {
