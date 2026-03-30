@@ -6332,9 +6332,10 @@ function alignWizardStepViewport() {
     focusTarget?.focus({ preventScroll: true });
 
     const scrollTarget = currentStep === 3
-        ? (activeStep.querySelector("#segment-label") || activeStep)
+        ? (activeStep.querySelector(".field") || activeStep)
         : activeStep;
-    const yOffset = scrollTarget.getBoundingClientRect().top + window.pageYOffset - 12;
+    const topPadding = currentStep === 3 ? 2 : 12;
+    const yOffset = Math.max(0, scrollTarget.getBoundingClientRect().top + window.pageYOffset - topPadding);
     window.scrollTo({ top: yOffset, behavior: "smooth" });
 }
 
@@ -6345,9 +6346,9 @@ function enforceStepViewportAlignment() {
             window.setTimeout(() => {
                 if (currentStep !== 3) return;
                 const activeStep = document.querySelector('.wizard-step[data-step="3"]');
-                const anchor = activeStep?.querySelector("#segment-label");
+                const anchor = activeStep?.querySelector(".field") || activeStep;
                 if (!anchor) return;
-                const yOffset = anchor.getBoundingClientRect().top + window.pageYOffset - 12;
+                const yOffset = Math.max(0, anchor.getBoundingClientRect().top + window.pageYOffset - 2);
                 window.scrollTo({ top: yOffset, behavior: "auto" });
             }, 140);
         }
