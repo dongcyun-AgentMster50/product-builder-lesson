@@ -6364,9 +6364,9 @@ function alignWizardStepViewport() {
     focusTarget?.focus({ preventScroll: true });
 
     const scrollTarget = currentStep === 3
-        ? (activeStep.querySelector(".field") || activeStep)
+        ? (document.getElementById("wizard-screen") || activeStep)
         : activeStep;
-    const topPadding = currentStep === 3 ? 2 : 12;
+    const topPadding = currentStep === 3 ? 0 : 12;
     const yOffset = Math.max(0, scrollTarget.getBoundingClientRect().top + window.pageYOffset - topPadding);
     window.scrollTo({ top: yOffset, behavior: "smooth" });
 }
@@ -6377,10 +6377,9 @@ function enforceStepViewportAlignment() {
         if (currentStep === 3) {
             window.setTimeout(() => {
                 if (currentStep !== 3) return;
-                const activeStep = document.querySelector('.wizard-step[data-step="3"]');
-                const anchor = activeStep?.querySelector(".field") || activeStep;
+                const anchor = document.getElementById("wizard-screen") || document.querySelector('.wizard-step[data-step="3"]');
                 if (!anchor) return;
-                const yOffset = Math.max(0, anchor.getBoundingClientRect().top + window.pageYOffset - 2);
+                const yOffset = Math.max(0, anchor.getBoundingClientRect().top + window.pageYOffset);
                 window.scrollTo({ top: yOffset, behavior: "auto" });
             }, 140);
         }
