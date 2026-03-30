@@ -5203,15 +5203,15 @@ function buildStep3Insight() {
             <section class="q2-stage-card q2-stage-card--current">
                 <div class="q2-stage-card-head">
                     <div>
-                        <span class="q2-stage-kicker">${isKo ? "?? Q2 ??" : "Current Q2 selections"}</span>
-                        <h4>${isKo ? "??? ?? ?? ?? ??? ???? ?? ?????" : "See how your current choices translate into lifestyle signals"}</h4>
+                        <span class="q2-stage-kicker">${isKo ? "현재 Q2 선택" : "Current Q2 selections"}</span>
+                        <h4>${isKo ? "선택이 어떤 생활 맥락 신호로 읽히는지 먼저 확인하세요" : "See how your current choices translate into lifestyle signals"}</h4>
                     </div>
                     <span class="q2-stage-status q2-stage-status--${confColor}">${escapeHtml(confLabel)}</span>
                 </div>
                 <p class="q2-stage-copy">${isKo
-                    ? "A?B?C ???? ?? ??? ?? ?? ?? ??? ????? ?? ?????. ? ??? ?? ???? ??? ?? ??? ?? ???? ???."
+                    ? "A·B·C 카드에서 고른 조건이 어떤 생활 맥락 신호로 번역되는지 먼저 보여줍니다. 이 신호가 아래 시나리오 방향과 점수 계산의 직접 입력값이 됩니다."
                     : "This card first shows how your A, B, and C choices are translated into lifestyle signals. Those signals then become the direct inputs for the scenario direction and scoring below."}</p>
-                ${layer2Html || `<p class="q2-ref-empty">${isKo ? "?? ??? ?? ??? ???? ?????." : "Selections are not yet summarized into signals."}</p>`}
+                ${layer2Html || `<p class="q2-ref-empty">${isKo ? "선택 항목이 아직 신호로 정리되지 않았습니다." : "Selections are not yet summarized into signals."}</p>`}
             </section>
         `
         : "";
