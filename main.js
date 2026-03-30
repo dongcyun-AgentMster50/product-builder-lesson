@@ -2822,10 +2822,10 @@ function bindQ2EvidenceToggles(container) {
             if (!detail) return;
             const isOpen = detail.classList.contains("open");
             // 같은 레이어 내 모든 열린 디테일 닫기
-            const layer = btn.closest(".q2-layer") || container;
-            layer.querySelectorAll(".q2-evidence-detail.open").forEach(d => d.classList.remove("open"));
-            layer.querySelectorAll(".q2-evidence-toggle.active").forEach(b => b.classList.remove("active"));
-            if (!isOpen) {
+            if (isOpen) {
+                detail.classList.remove("open");
+                btn.classList.remove("active");
+            } else {
                 detail.classList.add("open");
                 btn.classList.add("active");
                 requestAnimationFrame(() => {
@@ -4532,6 +4532,26 @@ function inferTraitReason(trait) {
     return reasons[trait] || "";
 }
 
+function getStep3SignalLegend(trait, isKo = currentLocale === "ko") {
+    const text = String(trait || "").toLowerCase();
+    if (/케어|안심|원격 확인|가구 운영 복잡도|care|reassurance|remote check|household complexity/.test(text)) {
+        return { label: isKo ? "돌봄·안심" : "Care & Reassurance", color: "#dc2626" };
+    }
+    if (/시간 가치|가사 효율|지출 민감|time|efficiency|chore|spending/.test(text)) {
+        return { label: isKo ? "시간·효율" : "Time & Efficiency", color: "#ea580c" };
+    }
+    if (/건강|웰니스|여가|수면|공기|health|wellness|leisure|sleep|air/.test(text)) {
+        return { label: isKo ? "건강·여가" : "Health & Leisure", color: "#16a34a" };
+    }
+    if (/보안|안전|물건 위치|security|safety|tracking/.test(text)) {
+        return { label: isKo ? "안전·보안" : "Safety & Security", color: "#2563eb" };
+    }
+    if (/주거|생활 동선|공간|공용|루틴|분위기|독립 주거|shared|space|living|routine|dwelling|ambiance/.test(text)) {
+        return { label: isKo ? "주거·공간" : "Living & Space", color: "#7c3aed" };
+    }
+    return { label: isKo ? "생활 운영" : "Lifestyle", color: "#475569" };
+}
+
 /** traits에서 4대 가치(Care, Play, Save, Secure)를 추론 */
 function inferCoreValues(traits, purpose) {
     const text = `${traits.join(" ")} ${purpose}`.toLowerCase();
@@ -5135,18 +5155,23 @@ function buildStep3Insight() {
         const traitCards = q2Traits.map((trait, i) => {
             const reason = inferTraitReason(trait);
             const uid = `q2-ev-${i}-${Date.now()}`;
-            const warmColor = warmColors[i % warmColors.length];
+            const legend = getStep3SignalLegend(trait, isKo);
+            const warmColor = legend.color || warmColors[i % warmColors.length];
             const isCorro = corroboratedLabels.has(trait);
             const statusTag = isCorro
                 ? `<span class="q2-trait-confirmed">${isKo ? "Q1 연계" : "Q1 linked"}</span>`
                 : "";
+            const legendTag = `<span class="q2-trait-legend" style="--q2-trait-legend:${warmColor}">${escapeHtml(legend.label)}</span>`;
             return `
                 <div class="q2-hybrid-trait q2-hybrid-trait--compact">
                     <div class="q2-trait-accent" style="background:${warmColor}"></div>
                     <div class="q2-trait-body">
                         <div class="q2-trait-top">
                             <span class="q2-trait-label">${escapeHtml(trait)}</span>
-                            ${statusTag}
+                            <div class="q2-trait-meta">
+                                ${legendTag}
+                                ${statusTag}
+                            </div>
                         </div>
                         <p class="q2-trait-source">${isKo ? "Q2 선택에서 도출" : "Derived from Q2 selections"}</p>
                         ${reason ? `
