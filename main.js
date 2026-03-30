@@ -5036,8 +5036,18 @@ function buildStep3Insight() {
     const cityDisplay = (country && cityRaw) ? (getCityDisplayValue(country.countryCode, cityRaw) || cityRaw) : cityRaw;
     const direction = inferScenarioDirection(q2Traits, purpose);
     const coreValues = inferCoreValues([...q2Traits, ...q1Traits.map(t => t.trait)], purpose);
-    const selectedLabels = getSelectedPersonaLabels();
-    const primaryPersona = selectedLabels[0] || (isKo ? "타겟 프로필 구성 중" : "Building target profile");
+    const countryDisplay = country ? getCountryName(country.countryCode) : "";
+    const audiencePlace = cityDisplay && countryDisplay
+        ? `${cityDisplay}(${countryDisplay})`
+        : (cityDisplay || countryDisplay || (isKo ? "선택 지역" : "the selected location"));
+    const audienceTitle = isKo
+        ? `${audiencePlace} 지역의 타겟 세그먼트에 반영할 항목`
+        : `Factors reflected into the target segment for ${audiencePlace}`;
+    const audienceSummary = isKo
+        ? "Q1에서 선택한 도시 프로필과 그로부터 읽히는 생활 맥락을 함께 정리했습니다. 이후 Q2 시나리오 판단의 참고 기준으로 사용됩니다."
+        : "This combines the city-profile factors chosen in Q1 with the grounded lifestyle implications they suggest for Q2 scenario judgment.";
+    const selectedLabels = [audienceTitle];
+    const primaryPersona = audienceTitle;
 
     // ── 신뢰도 색상/라벨 ──
     const confColor = confidence < 40 ? "amber" : confidence < 80 ? "blue" : "green";
@@ -5059,12 +5069,12 @@ function buildStep3Insight() {
         </div>`;
 
     // ── Header ──
-    const titleSuffix = selectedLabels.length > 1 ? (isKo ? ` 외 ${selectedLabels.length - 1}개` : ` +${selectedLabels.length - 1}`) : "";
+    const titleSuffix = "";
     const headerHtml = `
         <div class="q2-hybrid-header">
             ${ringHtml}
             <div class="q2-header-text">
-                <span class="q2-header-persona">${escapeHtml(primaryPersona)}${escapeHtml(titleSuffix)}</span>
+                <span class="q2-header-persona">${escapeHtml(audienceTitle)}</span>
                 <span class="q2-header-confidence q2-header-confidence--${confColor}">${escapeHtml(confLabel)}</span>
             </div>
         </div>`;
@@ -5205,10 +5215,30 @@ function buildStep3Insight() {
                     <span class="q2-ref-chip-icon">${item.icon}</span>
                     <span class="q2-ref-chip-title">${escapeHtml(item.label)}</span>
                 </div>
-                <p>${escapeHtml(item.text)}</p>
+                <p>${escapeHtml(summarizeInsightText(item.text, 88))}</p>
             </article>
         `).join("")
         : `<p class="q2-ref-empty">${isKo ? "Q1에서 선택한 도시 프로필 요약이 아직 없습니다." : "No Q1 city profile summaries have been selected yet."}</p>`;
+
+    const q1ImplicationHtml = q1Traits.length > 0
+        ? q1Traits.map((item) => {
+            const linked = corroboratedLabels.has(item.trait);
+            return `
+                <article class="q2-audience-implication" style="--q2-ref-accent:${item.color}">
+                    <div class="q2-audience-implication-top">
+                        <div class="q2-audience-implication-heading">
+                            <span class="q2-source-tag" style="background:${item.color}20;color:${item.color}">${escapeHtml(item.catLabel)}</span>
+                            <strong>${escapeHtml(item.trait)}</strong>
+                        </div>
+                        <span class="q2-audience-implication-badge ${linked ? "q2-audience-implication-badge--linked" : ""}">
+                            ${linked ? (isKo ? "Q2와 연결" : "Linked in Q2") : (isKo ? "Q1 기준" : "Q1 basis")}
+                        </span>
+                    </div>
+                    <p>${escapeHtml(summarizeInsightText(item.logic, 100))}</p>
+                </article>
+            `;
+        }).join("")
+        : `<p class="q2-ref-empty">${isKo ? "선택한 도시 프로필에서 읽히는 생활 맥락이 아직 정리되지 않았습니다." : "No lifestyle implications are available from the selected city profiles yet."}</p>`;
 
     const customSummaryHtml = customResearchSummary
         ? `
@@ -5277,6 +5307,46 @@ function buildStep3Insight() {
         </section>`;
 
     // ── Synthesis: 시나리오 추천 스코어보드 (신뢰도 >= 40%) ──
+    const mergedReferenceCardHtml = `
+        <section class="q2-stage-card q2-stage-card--reference">
+            <div class="q2-stage-card-head q2-stage-card-head--audience">
+                <div>
+                    <span class="q2-stage-kicker">${isKo ? "Q1 반영 참고" : "Q1 reference"}</span>
+                    <h4>${escapeHtml(audienceTitle)}</h4>
+                </div>
+                <span class="q2-stage-status q2-stage-status--${confColor}">${escapeHtml(confLabel)}</span>
+            </div>
+            <p class="q2-stage-copy">${escapeHtml(audienceSummary)}</p>
+            <div class="q2-reference-grid q2-reference-grid--audience">
+                <section class="q2-ref-section q2-ref-section--basis">
+                    <div class="q2-ref-section-head">
+                        <span class="q2-ref-section-kicker">${isKo ? "반영 기준" : "Reflected basis"}</span>
+                        <strong>${isKo ? "Q1에서 선택한 도시 프로필 요약" : "Selected city-profile basis from Q1"}</strong>
+                    </div>
+                    <p class="q2-ref-section-copy">${isKo ? "이 항목들이 지역 타겟 세그먼트 해석의 출발점이 됩니다." : "These selected items form the basis for the regional target-segment reference."}</p>
+                    <div class="q2-ref-chip-grid">${q1ProfileRefHtml}</div>
+                </section>
+                <section class="q2-ref-section q2-ref-section--implications">
+                    <div class="q2-ref-section-head">
+                        <span class="q2-ref-section-kicker">${isKo ? "생활상 시사점" : "Lifestyle implications"}</span>
+                        <strong>${isKo ? "선택 항목이 시사하는 생활 맥락과 우선순위" : "Likely lifestyle context and value priorities"}</strong>
+                    </div>
+                    <p class="q2-ref-section-copy">${isKo ? "과장된 해석이 아니라, 이후 시나리오 매칭에 참고할 만한 생활상과 중요 가치를 짧게 정리했습니다." : "These are grounded, practical implications to use as reference for later scenario matching."}</p>
+                    <div class="q2-audience-implication-grid">${q1ImplicationHtml}</div>
+                </section>
+            </div>
+            ${customResearchSummary ? `
+                <section class="q2-ref-section q2-ref-section--custom-inline">
+                    <div class="q2-ref-section-head">
+                        <span class="q2-ref-section-kicker">${isKo ? "사용자 추가 반영" : "Additional user reflection"}</span>
+                        <strong>${isKo ? "Q1 커스텀 검색에서 함께 참고할 맥락" : "Additional context from Q1 custom research"}</strong>
+                    </div>
+                    <p class="q2-ref-section-copy">${isKo ? "사용자가 직접 반영한 항목은 위 기준과 함께 참고됩니다." : "User-defined context is carried alongside the selected profile basis."}</p>
+                    ${customSummaryHtml}
+                </section>
+            ` : ""}
+        </section>`;
+
     let synthesisHtml = "";
     if (confidence >= 40) {
         const caveat = confidence < 80
@@ -5824,12 +5894,12 @@ function buildStep3Insight() {
 
     return {
         badge: "Q2 Audience",
-        title: `${primaryPersona}${titleSuffix}`,
-        summary: isKo ? `${place}의 타겟 프로필` : `Target profile in ${place}`,
+        title: audienceTitle,
+        summary: isKo ? "Q1 선택 근거와 생활상 시사점을 함께 보는 참고 카드" : "A compact reference card combining Q1 profile basis and lifestyle implications",
         customHtml: `
             <div class="q2-redesign">
                 ${headerHtml}
-                ${referenceCardHtml}
+                ${mergedReferenceCardHtml}
                 ${currentSelectionSummaryHtml || introCardHtml}
                 ${synthesisHtml}
                 ${footerCardHtml}
@@ -5840,7 +5910,7 @@ function buildStep3Insight() {
     console.error("[buildStep3Insight] error:", err);
     return {
         badge: "Q2 Audience",
-        title: currentLocale === "ko" ? "타겟 프로필" : "Target profile",
+        title: currentLocale === "ko" ? "지역 반영 항목" : "Regional reference factors",
         summary: currentLocale === "ko" ? "카드 렌더링 중 오류가 발생했습니다." : "Card rendering error.",
         body: String(err.message || err)
     };

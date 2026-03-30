@@ -2520,9 +2520,10 @@ textarea {
     font-size: 1.02rem;
     font-weight: 800;
     color: var(--fg);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.4;
 }
 
 .q2-header-confidence {
@@ -3324,9 +3325,91 @@ textarea {
     gap: 2px;
 }
 
+.q2-ref-section-copy {
+    margin: 0;
+    font-size: 0.76rem;
+    line-height: 1.55;
+    color: var(--muted);
+}
+
 .q2-ref-chip-grid {
     display: grid;
     gap: 10px;
+}
+
+.q2-reference-grid--audience {
+    align-items: start;
+}
+
+.q2-stage-card-head--audience {
+    align-items: start;
+}
+
+.q2-ref-section--basis,
+.q2-ref-section--implications,
+.q2-ref-section--custom-inline {
+    background: rgba(0, 51, 102, 0.04);
+}
+
+.q2-ref-section--custom-inline {
+    margin-top: 2px;
+}
+
+.q2-audience-implication-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.q2-audience-implication {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 51, 102, 0.08);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+    position: relative;
+}
+
+.q2-audience-implication::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    border-radius: 12px 0 0 12px;
+    background: var(--q2-ref-accent, #2563eb);
+}
+
+.q2-audience-implication-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.q2-audience-implication-heading {
+    display: grid;
+    gap: 6px;
+}
+
+.q2-audience-implication-heading strong {
+    font-size: 0.84rem;
+    color: var(--fg);
+}
+
+.q2-audience-implication-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.06);
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.q2-audience-implication-badge--linked {
+    background: rgba(22, 163, 74, 0.12);
+    color: #15803d;
 }
 
 .q2-ref-keyword-row {
@@ -3601,6 +3684,8 @@ textarea {
     .q2-confidence-ring { width: 44px; height: 44px; }
     .q2-ring-center { font-size: 0.6rem; }
     .q2-layer { padding: 12px 12px 10px; }
+    .q2-audience-implication-top { flex-direction: column; }
+    .q2-audience-implication-badge { white-space: normal; }
 }
 
 .insight-chips {
