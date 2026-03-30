@@ -5198,12 +5198,18 @@ function buildStep3Insight() {
 
     const currentSelectionSummaryHtml = hasAnyQ2Selection
         ? `
-            <section class="q2-ref-current">
-                <div class="q2-ref-section-head">
-                    <span class="q2-ref-section-kicker">${isKo ? "현재 Q2 선택" : "Current Q2 selections"}</span>
-                    <strong>${isKo ? "선택이 만드는 생활 맥락 신호" : "Lifestyle signals created by your current choices"}</strong>
+            <section class="q2-stage-card q2-stage-card--current">
+                <div class="q2-stage-card-head">
+                    <div>
+                        <span class="q2-stage-kicker">${isKo ? "?? Q2 ??" : "Current Q2 selections"}</span>
+                        <h4>${isKo ? "??? ?? ?? ?? ??? ???? ?? ?????" : "See how your current choices translate into lifestyle signals"}</h4>
+                    </div>
+                    <span class="q2-stage-status q2-stage-status--${confColor}">${escapeHtml(confLabel)}</span>
                 </div>
-                ${layer2Html || `<p class="q2-ref-empty">${isKo ? "선택 항목이 아직 신호로 정리되지 않았습니다." : "Selections are not yet summarized into signals."}</p>`}
+                <p class="q2-stage-copy">${isKo
+                    ? "A?B?C ???? ?? ??? ?? ?? ?? ??? ????? ?? ?????. ? ??? ?? ???? ??? ?? ??? ?? ???? ???."
+                    : "This card first shows how your A, B, and C choices are translated into lifestyle signals. Those signals then become the direct inputs for the scenario direction and scoring below."}</p>
+                ${layer2Html || `<p class="q2-ref-empty">${isKo ? "?? ??? ?? ??? ???? ?????." : "Selections are not yet summarized into signals."}</p>`}
             </section>
         `
         : "";
@@ -5241,7 +5247,6 @@ function buildStep3Insight() {
                     ${layer1Html}
                 </section>
             ` : ""}
-            ${currentSelectionSummaryHtml}
         </section>`;
 
     // ── Synthesis: 시나리오 추천 스코어보드 (신뢰도 >= 40%) ──
@@ -5797,8 +5802,8 @@ function buildStep3Insight() {
         customHtml: `
             <div class="q2-redesign">
                 ${headerHtml}
-                ${introCardHtml}
                 ${referenceCardHtml}
+                ${currentSelectionSummaryHtml || introCardHtml}
                 ${synthesisHtml}
                 ${footerCardHtml}
             </div>
