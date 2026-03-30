@@ -5033,7 +5033,9 @@ function buildStep3Insight() {
     const q2Traits = inferSegmentTraits(selectedSegment, purpose);
     const q1Traits = inferQ1Traits();
     const confidence = calculateConfidence();
-    const cityDisplay = (country && cityRaw) ? (getCityDisplayValue(country.countryCode, cityRaw) || cityRaw) : cityRaw;
+    const cityDisplay = _latestCityProfile?.localCityDisplay
+        || _latestCityProfile?.localCity
+        || ((country && cityRaw) ? (getCityDisplayValue(country.countryCode, cityRaw) || cityRaw) : cityRaw);
     const direction = inferScenarioDirection(q2Traits, purpose);
     const coreValues = inferCoreValues([...q2Traits, ...q1Traits.map(t => t.trait)], purpose);
     const countryDisplay = country ? getCountryName(country.countryCode) : "";
