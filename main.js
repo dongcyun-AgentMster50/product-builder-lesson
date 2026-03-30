@@ -2731,7 +2731,9 @@ function renderWizardProgress() {
         { label: t("progress3"), step: 3 },
         { label: t("progress4"), step: 4 }
     ];
-    document.getElementById("wizard-progress").innerHTML = steps.map(({ label, step }) => {
+    const progressEl = document.getElementById("wizard-progress");
+    progressEl.className = `wizard-progress wizard-progress--step-${currentStep}`;
+    progressEl.innerHTML = steps.map(({ label, step }) => {
         const state = step === currentStep ? "current" : step < currentStep ? "done" : "";
         return `<div class="progress-pill ${state}">${label}</div>`;
     }).join("");

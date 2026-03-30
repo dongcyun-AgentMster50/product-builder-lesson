@@ -10583,3 +10583,36 @@ a.source-tag-link:hover {
     border-left: 3px solid #3b82f6 !important;
 }
 
+
+/* --- Wizard progress sync --- */
+.wizard-progress {
+    padding: 8px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(0, 51, 102, 0.08);
+    box-shadow: 0 10px 24px rgba(0, 32, 84, 0.06);
+}
+
+.progress-pill {
+    border: 1px solid rgba(0, 51, 102, 0.1);
+    background: rgba(244, 247, 252, 0.92);
+    color: var(--ink-light);
+}
+
+.progress-pill.current {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: var(--accent);
+    color: var(--accent-strong);
+    box-shadow: 0 6px 18px rgba(15, 36, 96, 0.08);
+}
+
+.progress-pill.done {
+    background: rgba(20, 40, 160, 0.08);
+    color: var(--accent-strong);
+}
+
+.wizard-progress--step-2,
+.wizard-progress--step-3,
+.wizard-progress--step-4 {
+    background: rgba(255, 255, 255, 0.96);
+}
