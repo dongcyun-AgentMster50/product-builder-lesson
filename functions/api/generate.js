@@ -16,6 +16,32 @@ function buildGeneratePrompt(body) {
     const locale = String(body?.locale || "ko").trim();
     const regionCtx = body?.regionInsight ? JSON.stringify(body.regionInsight, null, 2) : null;
     const selectionSummary = body?.selectionSummary || null;
+    const isCampaignSection = body?.campaignSection === true;
+    const sectionPrompt = String(body?.sectionPrompt || "").trim();
+
+    if (isCampaignSection && sectionPrompt) {
+        const langInstruction = locale === "ko"
+            ? "Write entirely in Korean. English may appear only for unavoidable proper nouns."
+            : `Write entirely in ${locale}.`;
+
+        return [
+            `## Context`,
+            `- Role: ${role}`,
+            `- Country: ${country}${city ? ` / City: ${city}` : ""}`,
+            `- Target Segment: ${segment || "(not specified)"}`,
+            `- Devices: ${devices || "(none)"}`,
+            `- Mission / Value Focus: ${mission || "Discover"}`,
+            regionCtx ? `\n## Regional Data\n${regionCtx}\n` : "",
+            `\n## Task`,
+            sectionPrompt,
+            ``,
+            `IMPORTANT:`,
+            `- ${langInstruction}`,
+            `- Base the output on the selected scenario and provided context only. Do not invent unrelated scenario structures.`,
+            `- Return JSON only. No markdown, no prose before or after the JSON.`,
+            `- If a single object is needed, still wrap it in an array like [{...}].`
+        ].filter(Boolean).join("\n");
+    }
 
     // Selection Summary가 있으면 JSON 모드 (Part 5-A)
     if (selectionSummary && selectionSummary.selectedScenarios && selectionSummary.selectedScenarios.length > 0) {
@@ -180,7 +206,9 @@ export async function onRequestPost(context) {
 
     // Selection Summary 존재 시 JSON 모드 활성화
     const sel = body?.selectionSummary;
-    const jsonMode = !!(sel && sel.selectedScenarios && sel.selectedScenarios.length > 0);
+    const jsonMode = body?.campaignSection === true
+        ? true
+        : !!(sel && sel.selectedScenarios && sel.selectedScenarios.length > 0);
 
     console.info(JSON.stringify({
         type: "generate_request",

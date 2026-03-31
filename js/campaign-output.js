@@ -71,6 +71,69 @@ function _buildWhyExplanation(scenario, context, allResults) {
     }
 }
 
+function _localizeWhyTag(tag, isKo) {
+    if (!isKo) return tag || "";
+    const map = {
+        "Care for kids": "자녀 케어",
+        "Care for seniors": "시니어 케어",
+        "Care for your pet": "반려동물 케어",
+        "Keep your home safe": "홈 안전·보안",
+        "Save energy": "에너지 절약",
+        "Help with chores": "가사 자동화",
+        "Sleep well": "수면 개선",
+        "Enhanced mood": "분위기 연출",
+        "Stay fit & healthy": "건강·피트니스",
+        "Easily control your lights": "조명 제어",
+        "Keep the air fresh": "공기질 관리",
+        "Find your belongings": "분실물 찾기",
+        "Family care": "가족 돌봄",
+        "Multicultural family support": "다문화 가족 지원",
+        "Care": "돌봄",
+        "Save": "절약",
+        "Secure": "보안",
+        "Play": "여가",
+        "Discover": "탐색"
+    };
+    return map[tag] || tag;
+}
+
+function _buildWhyBreakdown(scenario, context, allResults) {
+    const f = _formatResult(scenario);
+    const isKo = (context?.locale || "ko") === "ko";
+    const maxScore = allResults.length > 0 ? (_formatResult(allResults[0]).score || 1) : 1;
+    const score = f.score || 0;
+    const scoreRatio = Math.round((score / Math.max(maxScore, 1)) * 100);
+    const market = [context?.country, context?.cityDisplay || context?.city].filter(Boolean).join(" / ");
+    const segment = context?.segment || (isKo ? "미입력" : "Not specified");
+    const mission = _localizeWhyTag(context?.missionBucket || "Discover", isKo);
+    const matchedSignals = (f.matchedTags || []).slice(0, 4).map((tag) => _localizeWhyTag(tag, isKo));
+    const valueSignals = (f.valueTags || []).slice(0, 3).map((tag) => _localizeWhyTag(tag, isKo));
+    const inputDevices = context?.devices || [];
+    const deviceFit = (f.devices || []).filter((device) =>
+        inputDevices.some((id) => id.toLowerCase().includes(device.toLowerCase()) || device.toLowerCase().includes(id.toLowerCase()))
+    );
+
+    return {
+        q1: isKo
+            ? `${market || "선택 시장"} 맥락에서 읽힌 생활 문제와 사용 환경이 이 시나리오의 배경 장면과 맞닿아 있습니다.`
+            : `Signals from ${market || "the selected market"} align with the situation this scenario assumes.`,
+        q2: isKo
+            ? `Q2에서 고른 "${segment}" 맥락이 ${matchedSignals.join(", ") || mission} 수요로 번역되며, 이 시나리오의 핵심 니즈와 직접 연결됩니다.`
+            : `Your Q2 segment "${segment}" translated into ${matchedSignals.join(", ") || mission} demand, which directly supports this scenario.`,
+        q3: isKo
+            ? `${deviceFit.length ? `${deviceFit.join(", ")} 기기` : "선택 기기 조합"}가 실제 실행 장면에 들어가서 아이디어 수준이 아니라 구현 가능한 시나리오로 판단했습니다.`
+            : `${deviceFit.length ? `${deviceFit.join(", ")} devices` : "The selected device mix"} can execute the routine, so this was treated as an actionable scenario rather than a loose idea.`,
+        fit: isKo
+            ? `최종적으로 ${matchedSignals.join(", ") || mission} 신호와 ${valueSignals.join(", ") || mission} 가치 정합성이 겹쳐 전체 대비 적합도 ${scoreRatio}% (${score}점)로 올라왔습니다.`
+            : `Combined signal overlap on ${matchedSignals.join(", ") || mission} and value alignment on ${valueSignals.join(", ") || mission} pushed this scenario to ${scoreRatio}% fit (${score} points).`,
+        matchedSignals,
+        valueSignals,
+        deviceFit,
+        score,
+        scoreRatio
+    };
+}
+
 function _buildDynamicSummaryNote(context, results) {
     const isKo = (context?.locale || "ko") === "ko";
     const mission = context?.missionBucket || "Discover";
@@ -292,7 +355,7 @@ function _renderSec02_Top5() {
                 </div>
                 <p class="co-scenario-fit"><strong>${isKo ? "추천 이유" : "Why It Fits"}:</strong> ${_esc(_buildWhyExplanation(scenario, _coContext, _coResults))}</p>
             </div>
-            ${!isTop ? `<button type="button" class="co-expand-btn" data-target="co-scenario-body-${idx}">${isKo ? "상세 보기" : "Expand"}</button>` : ""}
+            ${!isTop ? `<button type="button" class="co-expand-btn" data-target="co-scenario-body-${idx}" aria-expanded="false">${isKo ? "상세 보기" : "Expand"}</button>` : ""}
         </article>`;
     }).join("");
 
@@ -301,9 +364,28 @@ function _renderSec02_Top5() {
         btn.addEventListener("click", () => {
             const target = document.getElementById(btn.dataset.target);
             if (!target) return;
-            const isCollapsed = target.classList.toggle("co-collapsed");
             const isKo = (_coContext?.locale || "ko") === "ko";
-            btn.textContent = isCollapsed ? (isKo ? "상세 보기" : "Expand") : (isKo ? "접기" : "Collapse");
+            const shouldOpen = target.classList.contains("co-collapsed");
+
+            body.querySelectorAll(".co-scenario-body").forEach((panel) => {
+                if (panel === target || !panel.id) return;
+                panel.classList.add("co-collapsed");
+            });
+            body.querySelectorAll(".co-expand-btn").forEach((otherBtn) => {
+                if (otherBtn === btn) return;
+                otherBtn.textContent = isKo ? "상세 보기" : "Expand";
+                otherBtn.setAttribute("aria-expanded", "false");
+            });
+
+            target.classList.toggle("co-collapsed", !shouldOpen);
+            btn.textContent = shouldOpen ? (isKo ? "접기" : "Collapse") : (isKo ? "상세 보기" : "Expand");
+            btn.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+
+            if (shouldOpen) {
+                requestAnimationFrame(() => {
+                    target.closest(".co-scenario-card")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                });
+            }
         });
     });
 }
@@ -317,9 +399,10 @@ function _renderSec03_WhySelected() {
 
     body.innerHTML = `<div class="co-why-grid">` + _coResults.map((scenario, idx) => {
         const f = _formatResult(scenario);
-        const signals = (f.matchedTags || []).slice(0, 4);
+        const why = _buildWhyBreakdown(scenario, _coContext, _coResults);
+        const signals = why.matchedSignals;
         const devices = (f.devices || []).slice(0, 4);
-        const valueTags = f.valueTags || [];
+        const valueTags = why.valueSignals.length ? why.valueSignals : [_localizeWhyTag(_coContext?.missionBucket || "Discover", isKo)];
 
         return `
         <div class="co-why-card">
@@ -332,6 +415,24 @@ function _renderSec03_WhySelected() {
                 <p>${_esc(_buildWhyExplanation(scenario, _coContext, _coResults))}</p>
             </div>
             <div class="co-why-row">
+                <span class="co-why-label">${isKo ? "Q1 지역 맥락 반영" : "Q1 Context Applied"}</span>
+                <p>${_esc(why.q1)}</p>
+            </div>
+            <div class="co-why-row">
+                <span class="co-why-label">${isKo ? "Q2 생활맥락 근거" : "Q2 Lifestyle Evidence"}</span>
+                <p>${_esc(why.q2)}</p>
+                <div class="co-chip-row">${signals.map(s => _chip(s)).join("")}</div>
+            </div>
+            <div class="co-why-row">
+                <span class="co-why-label">${isKo ? "Q3 기기 실행 가능성" : "Q3 Device Feasibility"}</span>
+                <p>${_esc(why.q3)}</p>
+                <div class="co-chip-row">${devices.map(d => _chip(d)).join("")}</div>
+            </div>
+            <div class="co-why-row">
+                <span class="co-why-label">${isKo ? "최종 매칭 판단" : "Final Match Decision"}</span>
+                <p>${_esc(why.fit)}</p>
+            </div>
+            <div class="co-why-row">
                 <span class="co-why-label">${isKo ? "가장 크게 반영된 입력 신호" : "Strongest Input Signals"}</span>
                 <div class="co-chip-row">${signals.map(s => _chip(s)).join("")}</div>
             </div>
@@ -341,7 +442,7 @@ function _renderSec03_WhySelected() {
             </div>
             <div class="co-why-row">
                 <span class="co-why-label">${isKo ? "가치 정합성" : "Value Alignment"}</span>
-                <div class="co-chip-row">${valueTags.map(v => _valueBadge(v)).join("") || _valueBadge(_coContext?.missionBucket || "Discover")}</div>
+                <div class="co-chip-row">${valueTags.map(v => _valueBadge(v)).join("")}</div>
             </div>
         </div>`;
     }).join("") + `</div>`;

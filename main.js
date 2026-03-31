@@ -485,6 +485,10 @@ let Q4_PARTNER_IDS = new Set();
 let Q4_PRESETS = [];
 let q4ActivePresets = new Set();
 
+const Q4_PARTNER_CONTROL_IDS = ["smart-plug", "smart-switch", "lighting", "curtain", "mood-light", "sleep-light"];
+const Q4_PARTNER_SECURITY_IDS = ["camera", "door-lock", "activity-sensor", "doorbell", "open-sensor", "care-camera"];
+const Q4_PARTNER_WELLNESS_IDS = ["body-scale", "partner-humidifier", "partner-sleep", "sleep-sensor", "wearable-care", "pet-feeder"];
+
 // 모든 기기 ID (auto 해제용)
 const Q4_ALL_QUICK_IDS = [
     "tv-premium", "refrigerator", "washer", "dryer", "air-conditioner", "air-purifier",
@@ -494,8 +498,9 @@ const Q4_ALL_QUICK_IDS = [
     "microwave", "water-purifier", "hood", "airdresser", "system-aircon",
     "monitor", "printer", "memory-storage", "hub", "smartthings-product", "accessories",
     "smart-plug", "camera", "door-lock", "activity-sensor", "smart-switch",
-    "lighting", "body-scale", "partner-sleep", "partner-humidifier",
-    "care-camera", "sleep-sensor", "energy-monitor", "wearable-care",
+    "lighting", "curtain", "mood-light", "sleep-light",
+    "doorbell", "open-sensor", "body-scale", "partner-sleep", "partner-humidifier",
+    "care-camera", "sleep-sensor", "energy-monitor", "wearable-care", "pet-feeder",
     "galaxy-ring", "galaxy-xr", "galaxy-accessories", "music-frame",
     "dt-vacuum", "dt-small-appliance", "copilot-pc", "desktop-pc", "sec-moving-style"
 ];
@@ -520,7 +525,14 @@ const Q4_STYLE_CARDS = [
 function applyLocaleCatalog(siteCode) {
     const catalog = resolveLocaleCatalog(siteCode);
     Q4_SAMSUNG_GROUPS = catalog.samsung;
-    Q4_PARTNER_GROUPS = catalog.partner;
+    Q4_PARTNER_GROUPS = catalog.partner.map((group) => {
+        const labelKey = String(group.labelEn || "").toLowerCase();
+        let extraIds = [];
+        if (labelKey.includes("control")) extraIds = Q4_PARTNER_CONTROL_IDS;
+        else if (labelKey.includes("security")) extraIds = Q4_PARTNER_SECURITY_IDS;
+        else if (labelKey.includes("wellness")) extraIds = Q4_PARTNER_WELLNESS_IDS;
+        return { ...group, ids: [...new Set([...(group.ids || []), ...extraIds])] };
+    });
     Q4_SAMSUNG_IDS = new Set(Q4_SAMSUNG_GROUPS.flatMap(g => g.ids));
     Q4_PARTNER_IDS = new Set(Q4_PARTNER_GROUPS.flatMap(g => g.ids));
 
@@ -689,11 +701,13 @@ function bindEvents() {
         // curation은 Build 버튼 클릭 시에만 실행
     });
     deviceCustomInput.addEventListener("input", () => {
+        clearQ4AutoMode();
         updateStatePreview();
         updateStepInsight();
         renderQ4Summary();
         // curation은 Build 버튼 클릭 시에만 실행
     });
+    deviceCustomInput.addEventListener("keydown", handleDeviceCustomKeydown);
     q4Presets?.addEventListener("click", handleQ4PresetClick);
     q4AllChips?.addEventListener("click", handleQ4QuickChipClick);
     document.getElementById("q4-auto-btn")?.addEventListener("click", handleQ4AutoSelect);
@@ -1121,9 +1135,9 @@ function handleQ4AutoSelect() {
         if (reasonMap[id]) reasons.push(reasonMap[id]);
     });
 
-    // deviceCustom에 auto 마커 설정
+    // 직접 입력 칸은 비워 두고, 자동 선택 상태는 카드로만 설명
     const customInput = document.getElementById("device-custom");
-    if (customInput) customInput.value = "__auto__";
+    if (customInput) customInput.value = "";
     renderQ4Composer();
     updateStatePreview();
     updateStepInsight();
@@ -1134,12 +1148,29 @@ function handleQ4AutoSelect() {
 
     // 선택 이유 표시
     if (reasons.length > 0) {
+        const autoDeviceLabels = [...autoDevices].map((id) => getDeviceLabel(id)).filter(Boolean);
+        const primaryLabels = autoDeviceLabels.slice(0, 5).join(", ");
+        const supportingLabels = autoDeviceLabels.slice(5).join(", ");
+        const partnerAutoLabels = autoDeviceLabels.filter((label) => {
+            const input = [...(deviceGrid?.querySelectorAll('input[data-node-type="child"]') || [])]
+                .find((node) => (node.dataset.label || node.value) === label);
+            return input ? Q4_PARTNER_IDS.has(input.value) : false;
+        });
         const reasonHtml = `
             <div class="q4-auto-reason" style="margin-top:10px;padding:10px 14px;background:#f0f4ff;border-radius:8px;border-left:3px solid #1976d2;font-size:.75rem;color:#333;line-height:1.6">
                 <strong style="color:#1976d2">${isKo ? "자동 선택 근거" : "Auto-selection rationale"}</strong>
+                <p style="margin:6px 0 0;color:#234">${isKo
+                    ? `Q2에서 고른 생활맥락과 우선순위를 기준으로 <strong>${autoDevices.size}개 기기</strong>를 먼저 추렸습니다. 핵심 장면을 바로 만들 수 있는 ${escapeHtml(primaryLabels)} 조합을 먼저 세우고, 부족한 부분은 감지·보안·생활 편의 기기로 보강했습니다.`
+                    : `Based on the Q2 lifestyle context, the system first selected <strong>${autoDevices.size} devices</strong>. It starts with ${escapeHtml(primaryLabels)} for the core scene, then adds sensing, security, and convenience coverage where needed.`}</p>
+                ${supportingLabels ? `<p style="margin:6px 0 0;color:#425466">${isKo
+                    ? `보조 기기는 ${escapeHtml(supportingLabels)} 중심으로 붙여서, 단순 나열이 아니라 실제 트리거와 후속 동작이 이어지는 조합이 되도록 구성했습니다.`
+                    : `Supporting devices such as ${escapeHtml(supportingLabels)} were added so the setup forms a real trigger-to-action chain instead of a random bundle.`}</p>` : ""}
                 <ul style="margin:4px 0 0 16px;padding:0">
                     ${reasons.map(r => `<li>${escapeHtml(r)}</li>`).join("")}
                 </ul>
+                ${partnerAutoLabels.length > 0 ? `<p style="margin:8px 0 0;color:#4b5563;font-size:.69rem">${isKo
+                    ? `타사 호환 기기 ${partnerAutoLabels.join(", ")} 는 SmartThings에서 센싱 확장, 출입 감지, 생활 제어 범위를 넓히기 위해 포함했습니다.`
+                    : `Partner devices ${partnerAutoLabels.join(", ")} were included to extend trigger, sensing, or monitoring coverage in SmartThings.`}</p>` : ""}
                 <p style="margin:6px 0 0;color:#888;font-size:.68rem">${isKo ? "직접 조정이 필요하면 아래에서 기기를 추가/해제할 수 있습니다." : "You can adjust selections below if needed."}</p>
             </div>`;
         const autoBtn = document.getElementById("q4-auto-btn");
@@ -1151,11 +1182,22 @@ function handleQ4AutoSelect() {
 // auto 모드 해제: 기기 수동 선택 시
 function clearQ4AutoMode() {
     const customInput = document.getElementById("device-custom");
-    if (customInput?.value === "__auto__") customInput.value = "";
+    if (customInput && customInput.value === "__auto__") customInput.value = "";
     const btn = document.getElementById("q4-auto-btn");
     if (btn) btn.classList.remove("active");
     // 자동 선택 근거 카드 제거
     btn?.parentElement?.querySelector(".q4-auto-reason")?.remove();
+}
+
+function handleDeviceCustomKeydown(event) {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    const entries = getCustomEntries(deviceCustomInput.value);
+    deviceCustomInput.value = entries.join(", ");
+    clearQ4AutoMode();
+    updateStatePreview();
+    updateStepInsight();
+    renderQ4Summary();
 }
 
 function shouldBypassAccessForLocal() {
@@ -1767,11 +1809,10 @@ function renderQ4Summary() {
     syncQ4QuickChipSelection();
 
     const isKo = currentLocale === "ko";
-    const selectedIds = new Set(
-        [...(deviceGrid?.querySelectorAll('input[data-node-type="child"]:checked') || [])].map(i => i.value)
-    );
     const selectedLabels = getSelectedDeviceLabels();
     const selectedDevices = getSelectedDevices();
+    const breakdown = getSelectedDeviceBreakdown();
+    const selectedIds = new Set(breakdown.selectedIds);
 
     if (!selectedLabels.length) {
         const emptyMsg = isKo
@@ -1782,13 +1823,15 @@ function renderQ4Summary() {
     }
 
     // 삼성 / 타사 분류
-    const samsungSelected = [...selectedIds].filter(id => Q4_SAMSUNG_IDS.has(id));
-    const partnerSelected = [...selectedIds].filter(id => Q4_PARTNER_IDS.has(id));
-    const otherSelected = [...selectedIds].filter(id => !Q4_SAMSUNG_IDS.has(id) && !Q4_PARTNER_IDS.has(id));
+    const samsungSelected = breakdown.samsungIds;
+    const partnerSelected = breakdown.partnerIds;
+    const otherSelected = breakdown.otherIds;
+    const customSelected = breakdown.customEntries;
 
     const samsungChips = samsungSelected.map(id => `<span class="q4-summary-chip q4-chip-samsung">${escapeHtml(getDeviceLabel(id))}</span>`).join("");
     const partnerChips = partnerSelected.map(id => `<span class="q4-summary-chip q4-chip-partner">${escapeHtml(getDeviceLabel(id))}</span>`).join("");
     const otherChips = otherSelected.map(id => `<span class="q4-summary-chip">${escapeHtml(getDeviceLabel(id))}</span>`).join("");
+    const customChips = customSelected.map(label => `<span class="q4-summary-chip q4-chip-custom">${escapeHtml(label)}</span>`).join("");
 
     // 커스터마이징 상태
     let custStatusHtml = "";
@@ -1841,11 +1884,17 @@ function renderQ4Summary() {
     const capabilityMarkup = capabilitySummary.capabilities.slice(0, 3).map(item => `<li>${escapeHtml(item)}</li>`).join("");
     const limitMarkup = capabilitySummary.limits.slice(0, 2).map(item => `<li>${escapeHtml(item)}</li>`).join("");
 
-    const deviceCount = selectedLabels.length;
+    const deviceCount = breakdown.totalCount;
     const countLabel = isKo ? `기기 ${deviceCount}개 선택됨` : `${deviceCount} devices selected`;
+    const countSubLabel = isKo
+        ? `삼성 ${breakdown.samsungCount}개${breakdown.partnerCount ? ` · 타사 ${breakdown.partnerCount}개` : ""}${breakdown.customEntries.length ? ` · 직접입력 ${breakdown.customEntries.length}개` : ""}`
+        : `Samsung ${breakdown.samsungCount}${breakdown.partnerCount ? ` · Partner ${breakdown.partnerCount}` : ""}${breakdown.customEntries.length ? ` · Custom ${breakdown.customEntries.length}` : ""}`;
 
     q4Summary.innerHTML = `
-        <div class="q4-summary-count">${escapeHtml(countLabel)}</div>
+        <div class="q4-summary-count-wrap">
+            <div class="q4-summary-count">${escapeHtml(countLabel)}</div>
+            <div class="q4-summary-subcount">${escapeHtml(countSubLabel)}</div>
+        </div>
         <section class="q4-summary-block">
             <span class="q4-summary-label">${isKo ? "삼성 구매 가능 제품" : "Samsung Products"}</span>
             <div class="q4-summary-chip-row">${samsungChips || `<span class="q4-summary-empty-inline">${isKo ? "없음" : "None"}</span>`}</div>
@@ -1857,6 +1906,11 @@ function renderQ4Summary() {
         ${otherChips ? `<section class="q4-summary-block">
             <span class="q4-summary-label">${isKo ? "기타" : "Other"}</span>
             <div class="q4-summary-chip-row">${otherChips}</div>
+        </section>` : ""}
+        ${customChips ? `<section class="q4-summary-block q4-summary-block--tip">
+            <span class="q4-summary-label">${isKo ? "직접 추가한 기기" : "Custom devices"}</span>
+            <div class="q4-summary-chip-row">${customChips}</div>
+            <span class="q4-cust-note">${isKo ? "입력창에서 Enter로 확정한 기기명은 사용자 추가 항목으로 함께 반영됩니다." : "Device names confirmed with Enter are treated as user-added items."}</span>
         </section>` : ""}
         ${custStatusHtml}
         ${capabilityMarkup ? `<section class="q4-summary-block q4-summary-block--ok">
@@ -3069,6 +3123,7 @@ function updateStepInsight() {
     const insight = getStepInsight();
     stepInsight.innerHTML = buildInsightMarkup(insight);
     bindQ2EvidenceToggles(stepInsight);
+    bindQ3RoutineToggles(stepInsight);
     bindInsightRetryButton(stepInsight);
     bindLegendHelpButton(stepInsight);
     updateQuestionHelpers();
@@ -3157,6 +3212,25 @@ function bindQ2EvidenceToggles(container) {
                 requestAnimationFrame(() => {
                     (wrap || detail).scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
                 });
+            }
+        });
+    });
+}
+
+function bindQ3RoutineToggles(container) {
+    container.querySelectorAll(".q3-routine-toggle[data-routine-target]").forEach((button) => {
+        button.addEventListener("click", () => {
+            const detailId = button.dataset.routineTarget;
+            const detail = container.querySelector(`#${detailId}`);
+            if (!detail) return;
+            const isOpen = !detail.hasAttribute("hidden");
+
+            container.querySelectorAll(".q3-routine-detail").forEach((node) => node.setAttribute("hidden", ""));
+            container.querySelectorAll(".q3-routine-toggle").forEach((node) => node.setAttribute("aria-expanded", "false"));
+
+            if (!isOpen) {
+                detail.removeAttribute("hidden");
+                button.setAttribute("aria-expanded", "true");
             }
         });
     });
@@ -6297,22 +6371,18 @@ function getCitySignal(countryCode, city) {
 
 function buildStep4Insight() {
     const devices = getSelectedDeviceLabels();
-    const normalizedDevices = getSelectedDevices().map((device) => getCategoryName(device));
-    if (devices.length === 0 && normalizedDevices.length === 0) return STEP_INSIGHTS[4];
+    const selectedDevices = getSelectedDevices();
+    if (devices.length === 0 && selectedDevices.length === 0) return STEP_INSIGHTS[4];
 
-    const deviceCount = devices.length;
+    const breakdown = getSelectedDeviceBreakdown();
+    const deviceCount = breakdown.totalCount;
     const isKo = currentLocale === "ko";
-    const devSet = new Set(normalizedDevices);
-
-    // 삼성 / 타사 분류
-    const selectedIds = new Set(
-        [...(deviceGrid?.querySelectorAll('input[data-node-type="child"]:checked') || [])].map(i => i.value)
-    );
-    const samsungCount = typeof Q4_SAMSUNG_IDS !== "undefined" ? [...selectedIds].filter(id => Q4_SAMSUNG_IDS.has(id)).length : deviceCount;
-    const partnerCount = typeof Q4_PARTNER_IDS !== "undefined" ? [...selectedIds].filter(id => Q4_PARTNER_IDS.has(id)).length : 0;
+    const devSet = getSelectedDeviceSignalSet();
+    const samsungCount = breakdown.samsungCount;
+    const partnerCount = breakdown.partnerCount + breakdown.customEntries.length;
     const mixLabel = isKo
-        ? `삼성 ${samsungCount}개${partnerCount > 0 ? ` · 타사 ${partnerCount}개` : ""}`
-        : `Samsung ${samsungCount}${partnerCount > 0 ? ` · Partner ${partnerCount}` : ""}`;
+        ? `삼성 ${samsungCount}개${partnerCount > 0 ? ` · 타사/사용자 입력 ${partnerCount}개` : ""}`
+        : `Samsung ${samsungCount}${partnerCount > 0 ? ` · Partner/Custom ${partnerCount}` : ""}`;
 
     // ── 루틴 프리뷰 매핑 (기기 조합 → 구현 가능한 자동화 장면) ──
     const ROUTINE_DB = [
@@ -6447,8 +6517,24 @@ function buildStep4Insight() {
 
     // 구현 가능한 루틴 필터링
     const matchedRoutines = ROUTINE_DB.filter(r => r.needs.every(n => devSet.has(n)));
-    const routineHtml = matchedRoutines.slice(0, 3).map(r => {
+    const routineHtml = matchedRoutines.slice(0, 3).map((r, index) => {
         const steps = isKo ? r.stepsKo(devSet) : r.stepsEn(devSet);
+        const detailId = `q3-routine-detail-${r.id}-${index}`;
+        const triggerText = steps.length > 0 ? `${steps[0][0]} ${steps[0][1]}` : (isKo ? "조건 실행" : "Run condition");
+        const actionText = steps.slice(1).map(([dev, action]) => `${dev} ${action}`).join(", ");
+        const setupSteps = isKo
+            ? [
+                `SmartThings 앱에서 ${steps.map(([dev]) => dev).join(", ")} 기기를 같은 공간에 등록합니다.`,
+                `루틴 > 새 루틴에서 "만약" 조건을 ${triggerText} 기준으로 설정합니다.`,
+                `그 다음 "실행" 항목에 ${actionText || "후속 동작"}을 순서대로 추가합니다.`,
+                `설정 후 수동 테스트를 한 번 돌려 알림, 전원 제어, 자동 실행 타이밍을 검증합니다.`
+            ]
+            : [
+                `Register ${steps.map(([dev]) => dev).join(", ")} in the same SmartThings location.`,
+                `Create a new routine and use "${triggerText}" as the If condition.`,
+                `Add ${actionText || "the follow-up actions"} in the Then section.`,
+                `Run one manual test to verify notifications, power control, and timing.`
+            ];
         const stepsHtml = steps.map(([dev, action], i) =>
             `<span class="q3-step">${i > 0 ? '<span class="q3-step-arrow">➔</span>' : ''}<span class="q3-step-device">${escapeHtml(dev)}</span><span class="q3-step-action">${escapeHtml(action)}</span></span>`
         ).join("");
@@ -6456,8 +6542,15 @@ function buildStep4Insight() {
             <div class="q3-routine-head">
                 <span class="q3-routine-icon">${r.icon}</span>
                 <span class="q3-routine-name">${escapeHtml(isKo ? r.nameKo : r.nameEn)}</span>
+                <button type="button" class="q3-routine-toggle" data-routine-target="${detailId}" aria-expanded="false">${isKo ? "설치·설정 보기" : "View setup"}</button>
             </div>
             <div class="q3-routine-flow">${stepsHtml}</div>
+            <div class="q3-routine-detail" id="${detailId}" hidden>
+                <p class="q3-routine-detail-title">${isKo ? "구현 방법" : "How to implement"}</p>
+                <ol class="q3-routine-detail-list">
+                    ${setupSteps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                </ol>
+            </div>
         </div>`;
     }).join("");
 
@@ -6495,7 +6588,13 @@ function buildStep4Insight() {
         summary: isKo ? `${mixLabel}` : `${mixLabel}`,
         customHtml: `
             <div class="q3-insight-redesign">
-                <div class="q3-chips-row">${chipsHtml}${moreHtml}</div>
+                <div class="q3-topline">
+                    <div class="q3-topline-copy">
+                        <strong>${isKo ? `${deviceCount}개 기기 선택 완료` : `${deviceCount} devices ready`}</strong>
+                        <span>${escapeHtml(mixLabel)}</span>
+                    </div>
+                    <div class="q3-chips-row">${chipsHtml}${moreHtml}</div>
+                </div>
 
                 ${matchedRoutines.length > 0 ? `
                 <div class="q3-routines-section">
@@ -12145,6 +12244,36 @@ function getSelectedDevices() {
     return [...normalized];
 }
 
+function getSelectedDeviceBreakdown() {
+    const selectedIds = [...deviceGrid.querySelectorAll('input[data-node-type="child"]:checked')].map((input) => input.value);
+    const customEntries = getCustomEntries(deviceCustomInput.value);
+    const samsungIds = selectedIds.filter((id) => Q4_SAMSUNG_IDS.has(id));
+    const partnerIds = selectedIds.filter((id) => Q4_PARTNER_IDS.has(id));
+    const otherIds = selectedIds.filter((id) => !Q4_SAMSUNG_IDS.has(id) && !Q4_PARTNER_IDS.has(id));
+    return {
+        selectedIds,
+        samsungIds,
+        partnerIds,
+        otherIds,
+        customEntries,
+        samsungCount: samsungIds.length,
+        partnerCount: partnerIds.length,
+        otherCount: otherIds.length,
+        totalCount: selectedIds.length + customEntries.length
+    };
+}
+
+function getSelectedDeviceSignalSet() {
+    const signals = new Set();
+    [...deviceGrid.querySelectorAll('input[data-node-type="child"]:checked')].forEach((input) => {
+        [input.value, input.dataset.label, input.dataset.normalized, getCategoryName(input.value), getCategoryName(input.dataset.normalized || input.value)]
+            .filter(Boolean)
+            .forEach((value) => signals.add(String(value)));
+    });
+    getCustomEntries(deviceCustomInput.value).forEach((entry) => signals.add(entry));
+    return signals;
+}
+
 function getSelectedDeviceGroupIds() {
     return [...new Set(
         [...deviceGrid.querySelectorAll('input[data-node-type="child"]:checked')]
@@ -12180,7 +12309,7 @@ function getCustomEntries(value) {
     return String(value || "")
         .split(/[,\n/]|·/)
         .map((item) => item.trim())
-        .filter(Boolean);
+        .filter((item) => item && item !== "__auto__");
 }
 
 function localizeSentence(key, value = "") {
@@ -12767,22 +12896,22 @@ function buildMpCards(ctx, isKo) {
         "Care for seniors": "시니어 케어", "Care for your pet": "반려동물 케어",
         "Sleep well": "수면 개선", "Enhanced mood": "분위기 연출",
         "Stay fit & healthy": "건강·피트니스", "Easily control your lights": "조명 제어",
-        "Keep the air fresh": "공기질 관리", "Find your belongings": "분실물 찾기"
+        "Keep the air fresh": "공기질 관리", "Find your belongings": "분실물 찾기",
+        "Family care": "가족 돌봄", "Multicultural family support": "다문화 가족 지원"
     };
+    const localizeScenarioTag = (tag) => isKo ? (tagKoMap[tag] || tag) : tag;
 
     // ── Card 1: 🧩 매칭 컨텍스트 요약 ──
     const clusterNames = coreValues.slice(0, 2).join(" + ");
-    const deviceCount = deviceLabels.length || getSelectedDeviceLabels().length;
-    const deviceChips = deviceLabels.slice(0, 6).map(l =>
+    const deviceChips = [...new Set(deviceLabels.length ? deviceLabels : getSelectedDeviceLabels())].map(l =>
         `<span class="mp-tag"><span class="mp-tag-icon">📱</span>${escapeHtml(l)}</span>`
     ).join("");
-    const moreDevices = deviceCount > 6 ? `<span class="mp-tag" style="opacity:0.6">+${deviceCount - 6}</span>` : "";
 
     const card1 = {
         title: isKo ? "🧩 매칭 컨텍스트 요약" : "🧩 Matching Context Summary",
         helper: isKo
-            ? "Q1~Q3에서 확정된 타겟 프로필과 기기 풀을 기준으로 시나리오를 탐색합니다."
-            : "Searching scenarios based on your confirmed target profile and device pool from Q1–Q3.",
+            ? "Q1~Q3에서 확정된 타겟 프로필과 반영 기기를 기준으로 시나리오를 탐색합니다."
+            : "Searching scenarios based on your confirmed target profile and selected devices from Q1–Q3.",
         content: `
             <div class="mp-context-grid">
                 <div class="mp-context-item">
@@ -12794,8 +12923,8 @@ function buildMpCards(ctx, isKo) {
                     <span class="mp-context-value">${escapeHtml(direction)}</span>
                 </div>
                 <div class="mp-context-item">
-                    <span class="mp-context-label">${isKo ? "보유 기기 풀" : "Device Pool"}</span>
-                    <div class="mp-tags">${deviceChips}${moreDevices}</div>
+                    <span class="mp-context-label">${isKo ? "반영 기기" : "Selected Devices"}</span>
+                    <div class="mp-tags">${deviceChips}</div>
                 </div>
                 ${purpose ? `<div class="mp-context-item">
                     <span class="mp-context-label">${isKo ? "추가 요구사항" : "Additional Context"}</span>
@@ -12808,7 +12937,7 @@ function buildMpCards(ctx, isKo) {
     // ── Card 2: 🧮 시나리오 가중치 결합 (Q2 연장선) ──
     // Q2 스코어보드의 태그 점수를 기기 가능성과 결합
     const combinedScores = tagScores.map(t => {
-        const q2Display = isKo ? (tagKoMap[t.tag] || t.tag) : t.tag;
+        const q2Display = localizeScenarioTag(t.tag);
         // 기기 매칭 보너스 확인
         const devBonus = (typeof DEVICE_TO_EXPLORE_TAGS !== "undefined")
             ? getSelectedDevices().some(d => {
@@ -12852,23 +12981,29 @@ function buildMpCards(ctx, isKo) {
     const card3 = {
         title: isKo ? "⚡ 시나리오 스코어링" : "⚡ Scenario Scoring",
         helper: isKo
-            ? `위 가중치를 기준으로 ${totalPool}개 시나리오 DB를 탐색하여 적합도 점수를 매겼습니다.`
-            : `Scored ${totalPool} scenarios in the DB using the weights above.`,
+            ? `위 가중치를 기준으로 ${totalPool}개 시나리오 DB를 탐색해 적합도 점수를 계산했습니다. 아래 숫자는 매칭 개수, 최고 점수, 전체 탐색 풀을 뜻합니다.`
+            : `Scored ${totalPool} scenarios in the DB using the weights above. The numbers below show matched count, top fit score, and total search pool.`,
         content: `
             <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px">
                 <div style="text-align:center;padding:8px 16px;border-radius:10px;background:#e8f5e9;flex:1;min-width:100px">
                     <div style="font-size:1.4rem;font-weight:800;color:#2e7d32">${matchedCount}</div>
                     <div style="font-size:0.7rem;color:#558b2f">${isKo ? "매칭 시나리오" : "Matched"}</div>
+                    <div style="font-size:0.62rem;color:#6b8f5d;margin-top:2px">${isKo ? "조건을 통과한 추천 수" : "Scenarios that passed matching"}</div>
                 </div>
                 <div style="text-align:center;padding:8px 16px;border-radius:10px;background:#e3f2fd;flex:1;min-width:100px">
                     <div style="font-size:1.4rem;font-weight:800;color:#1565c0">${topScore}</div>
-                    <div style="font-size:0.7rem;color:#1976d2">${isKo ? "최고 적합도" : "Top score"}</div>
+                    <div style="font-size:0.7rem;color:#1976d2">${isKo ? "최고 적합도" : "Top fit score"}</div>
+                    <div style="font-size:0.62rem;color:#5b8bb8;margin-top:2px">${isKo ? "상위 1개 시나리오의 총점" : "Total score of the top scenario"}</div>
                 </div>
                 <div style="text-align:center;padding:8px 16px;border-radius:10px;background:#f3e5f5;flex:1;min-width:100px">
                     <div style="font-size:1.4rem;font-weight:800;color:#7b1fa2">${totalPool}</div>
                     <div style="font-size:0.7rem;color:#8e24aa">${isKo ? "전체 DB" : "Total DB"}</div>
+                    <div style="font-size:0.62rem;color:#9961b5;margin-top:2px">${isKo ? "이번에 비교한 전체 후보 수" : "All candidates compared this run"}</div>
                 </div>
             </div>
+            <div class="mp-score-note">${isKo
+                ? "최고 적합도는 100점 만점이 아니라, Q2 가중치와 Q3 기기 매칭 보너스를 합산한 상대 점수입니다. 숫자가 높을수록 현재 조건과 더 잘 맞습니다."
+                : "Top fit score is not a 100-point grade. It is a relative score combining Q2 weights and Q3 device-match bonuses. Higher means a better fit for your current inputs."}</div>
         `
     };
 
@@ -12876,7 +13011,7 @@ function buildMpCards(ctx, isKo) {
     const previewRows = results.slice(0, 5).map((r, i) => {
         const f = (typeof formatCurationResult === "function") ? formatCurationResult(r) : { title: r.story_title || "", source: r._source || "" };
         const tags = (r._matchedTags || []).slice(0, 3).map(t => typeof t === "object" ? t.tag : t);
-        const tagDisplay = tags.map(t => isKo ? (tagKoMap[t] || t) : t);
+        const tagDisplay = tags.map(t => localizeScenarioTag(t));
         return `<div class="mp-scenario-row">
             <span class="mp-scenario-rank">${i + 1}</span>
             <div class="mp-scenario-info">
