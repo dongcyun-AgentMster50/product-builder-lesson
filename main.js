@@ -3130,14 +3130,32 @@ function bindQ2EvidenceToggles(container) {
             if (!detail) return;
             const isOpen = detail.classList.contains("open");
             // 같은 레이어 내 모든 열린 디테일 닫기
+            const scope = btn.closest(".q2-scoreboard, .q2-stage-card, .q2-reference-shell") || container;
+            const wrap = detail.closest(".q2-tag-row-wrap");
+
+            scope.querySelectorAll(".q2-evidence-detail.open").forEach((openDetail) => {
+                if (openDetail === detail) return;
+                openDetail.classList.remove("open");
+                openDetail.closest(".q2-tag-row-wrap")?.classList.remove("q2-tag-row-wrap--open");
+            });
+            scope.querySelectorAll(".q2-evidence-toggle.active").forEach((activeBtn) => {
+                if (activeBtn === btn) return;
+                activeBtn.classList.remove("active");
+                activeBtn.setAttribute("aria-expanded", "false");
+            });
+
             if (isOpen) {
                 detail.classList.remove("open");
                 btn.classList.remove("active");
+                btn.setAttribute("aria-expanded", "false");
+                wrap?.classList.remove("q2-tag-row-wrap--open");
             } else {
                 detail.classList.add("open");
                 btn.classList.add("active");
+                btn.setAttribute("aria-expanded", "true");
+                wrap?.classList.add("q2-tag-row-wrap--open");
                 requestAnimationFrame(() => {
-                    detail.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+                    (wrap || detail).scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
                 });
             }
         });
@@ -6027,7 +6045,7 @@ function buildStep3Insight() {
                     <span class="q2-tag-label">${escapeHtml(display)}</span>
                     <div class="q2-tag-bar-track"><div class="q2-tag-bar-fill" style="width:100%;transform:scaleX(${norm / 100});background:${barColor}"></div></div>
                     <span class="q2-tag-score">${norm}</span>
-                    <button type="button" class="q2-tag-detail-btn q2-evidence-toggle" data-ev-target="${detailId}"><span class="q2-ev-arrow">▸</span><span>${isKo ? "근거" : "Details"}</span></button>
+                    <button type="button" class="q2-tag-detail-btn q2-evidence-toggle" data-ev-target="${detailId}" aria-expanded="false"><span class="q2-ev-arrow">▸</span><span>${isKo ? "근거" : "Details"}</span></button>
                 </div>
                 <div class="q2-evidence-detail q2-tag-source-detail" id="${detailId}">
                     <p class="q2-tag-source-title">${escapeHtml(display)} ${isKo ? "점수 산출 근거" : "score breakdown"}</p>
