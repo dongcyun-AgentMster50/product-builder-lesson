@@ -39,6 +39,7 @@ const cityCustomInput = { get value() { return citySearchInput.value; }, set val
 const cityCustomRow = null;
 const cityCustomConfirmBtn = null;
 const personaGroups = document.getElementById("persona-groups");
+const q3AutoSummary = document.getElementById("q3-auto-summary");
 const segmentCustomInput = document.getElementById("segment-custom");
 const deviceGrid = document.getElementById("device-grid");
 const deviceCustomInput = document.getElementById("device-custom");
@@ -53,6 +54,12 @@ const generateBtn = document.getElementById("generate-btn");
 const stepInsight = document.getElementById("step-insight");
 const aiProviderScreen = document.getElementById("ai-provider-screen");
 const CITY_CUSTOM_VALUE = "__custom__";
+const Q3_AUTO_TARGET_COUNTS = Object.freeze({ housing: 1, household: 3, lifestage: 5 });
+
+let q3AutoRecommendedIds = new Set();
+let q3ManualAddedIds = new Set();
+let q3ManualRemovedIds = new Set();
+let q3AutoRecommendationMeta = null;
 
 /* ── 한국 도시 마스터 데이터 (행정안전부 2024.04 주민등록인구) ── */
 const KR_CITY_MASTER = {
@@ -619,15 +626,17 @@ function bindEvents() {
     });
     document.querySelectorAll(".provider-btn").forEach((b) => b.classList.toggle("active", b.dataset.provider === selectedProvider));
     roleSelectionContainer?.addEventListener("click", handleRoleCardClick);
+    roleSelectionContainer?.addEventListener("click", clearQ3AutoMode);
     roleSelectionContainer?.addEventListener("keydown", handleRoleCardKeydown);
     countrySelect.addEventListener("change", updateStatePreview);
+    countrySelect.addEventListener("change", clearQ3AutoMode);
     countrySelect.addEventListener("change", updateLocaleFromCountry);
     // ── Searchable City Dropdown 이벤트 ──
     initCitySearchDropdown();
     personaGroups.addEventListener("change", (event) => {
         try {
-            clearQ3AutoMode();
             handleChecklistChange(event, personaGroups);
+            trackQ3AutoManualOverride(event);
             updateStatePreview();
         } catch (e) { console.error("[personaGroups change] handler error:", e); }
         // 항상 insight 갱신 — 위에서 에러가 나도 실행
@@ -719,6 +728,303 @@ function clearQ3AutoMode() {
     if (customInput?.value === "__auto__") customInput.value = "";
     const btn = document.getElementById("q3-auto-btn");
     if (btn) btn.classList.remove("active");
+}
+
+function handleQ3AutoSelect() {
+    const recommendation = inferQ3AutoRecommendation();
+    const nextIds = new Set(recommendation.ids);
+
+    q3AutoRecommendedIds = nextIds;
+    q3ManualAddedIds.clear();
+    q3ManualRemovedIds.clear();
+    q3AutoRecommendationMeta = recommendation;
+
+    personaGroups?.querySelectorAll('input[data-node-type="child"]').forEach((input) => {
+        input.checked = nextIds.has(input.value);
+    });
+
+    if (segmentCustomInput) segmentCustomInput.value = "__auto__";
+    deferStep3InsightUntilInteraction = false;
+    syncAllChecklistParents(personaGroups);
+    updatePersonaGroupFooters();
+    refreshQ3AutoSelectionUI();
+    updateStatePreview();
+    updateStepInsight();
+}
+
+function clearQ3AutoMode() {
+    q3AutoRecommendedIds.clear();
+    q3ManualAddedIds.clear();
+    q3ManualRemovedIds.clear();
+    q3AutoRecommendationMeta = null;
+    if (segmentCustomInput?.value === "__auto__") segmentCustomInput.value = "";
+    refreshQ3AutoSelectionUI();
+}
+
+function trackQ3AutoManualOverride(event) {
+    const target = event?.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    if (target.dataset.nodeType !== "child") return;
+    if (!q3AutoRecommendedIds.size) return;
+
+    const group = target.closest(".tree-group");
+    if (group) reconcileQ3AutoOverridesForGroup(group);
+    refreshQ3AutoSelectionUI();
+}
+
+function reconcileQ3AutoOverridesForGroup(group) {
+    if (!group || !q3AutoRecommendedIds.size) return;
+    group.querySelectorAll('input[data-node-type="child"]').forEach((input) => {
+        const optionId = input.value;
+        if (q3AutoRecommendedIds.has(optionId)) {
+            if (input.checked) q3ManualRemovedIds.delete(optionId);
+            else q3ManualRemovedIds.add(optionId);
+            q3ManualAddedIds.delete(optionId);
+            return;
+        }
+        if (input.checked) q3ManualAddedIds.add(optionId);
+        else q3ManualAddedIds.delete(optionId);
+    });
+}
+
+function refreshQ3AutoSelectionUI() {
+    const btn = document.getElementById("q3-auto-btn");
+    if (btn) btn.classList.toggle("active", q3AutoRecommendedIds.size > 0);
+    renderQ3AutoSummary();
+    updateQ3OptionBadges();
+}
+
+function renderQ3AutoSummary() {
+    if (!q3AutoSummary) return;
+    if (!q3AutoRecommendedIds.size || !q3AutoRecommendationMeta) {
+        q3AutoSummary.classList.add("hidden");
+        q3AutoSummary.innerHTML = "";
+        return;
+    }
+
+    const isKo = currentLocale === "ko";
+    const appliedIds = [...q3AutoRecommendedIds].filter((id) => {
+        const input = personaGroups?.querySelector(`input[data-node-type="child"][value="${id}"]`);
+        return !!input?.checked;
+    });
+    const counts = {
+        recommended: q3AutoRecommendedIds.size,
+        applied: appliedIds.length,
+        manual: [...q3ManualAddedIds].filter((id) => {
+            const input = personaGroups?.querySelector(`input[data-node-type="child"][value="${id}"]`);
+            return !!input?.checked;
+        }).length,
+        removed: q3ManualRemovedIds.size
+    };
+    const groupBreakdown = `A ${Q3_AUTO_TARGET_COUNTS.housing} / B ${Q3_AUTO_TARGET_COUNTS.household} / C ${Q3_AUTO_TARGET_COUNTS.lifestage}`;
+    const summaryBullets = (q3AutoRecommendationMeta.summary || []).slice(0, 3).map((line) => `<li>${escapeHtml(line)}</li>`).join("");
+
+    q3AutoSummary.classList.remove("hidden");
+    q3AutoSummary.innerHTML = `
+        <div class="q3-auto-summary-top">
+            <strong>${isKo ? "Q1 근거 기반 추천 세트" : "Q1-grounded recommendation set"}</strong>
+            <span class="q3-auto-summary-structure">${escapeHtml(groupBreakdown)}</span>
+        </div>
+        <div class="q3-auto-summary-stats">
+            <span class="q3-auto-summary-stat"><strong>${counts.recommended}</strong> ${isKo ? "AI 추천" : "AI picks"}</span>
+            <span class="q3-auto-summary-stat"><strong>${counts.applied}</strong> ${isKo ? "적용 중" : "applied"}</span>
+            <span class="q3-auto-summary-stat"><strong>${counts.manual}</strong> ${isKo ? "사용자 추가" : "manual adds"}</span>
+            <span class="q3-auto-summary-stat"><strong>${counts.removed}</strong> ${isKo ? "사용자 해제" : "user removed"}</span>
+        </div>
+        ${summaryBullets ? `<ul class="q3-auto-summary-list">${summaryBullets}</ul>` : ""}
+    `;
+}
+
+function updateQ3OptionBadges() {
+    if (!personaGroups) return;
+    const isKo = currentLocale === "ko";
+    personaGroups.querySelectorAll(".tree-chip, .tree-card").forEach((node) => {
+        node.classList.remove("q3-option--ai-applied", "q3-option--ai-suggested", "q3-option--manual-added");
+        node.removeAttribute("title");
+        node.querySelector(".q3-state-badge")?.remove();
+
+        const input = node.querySelector('input[data-node-type="child"]');
+        if (!input) return;
+        if (!q3AutoRecommendedIds.size) return;
+
+        const optionId = input.value;
+        const reason = q3AutoRecommendationMeta?.reasonById?.[optionId]?.[0] || "";
+        let badgeText = "";
+        let className = "";
+
+        if (q3AutoRecommendedIds.has(optionId) && input.checked) {
+            className = "q3-option--ai-applied";
+            badgeText = isKo ? "AI 추천" : "AI pick";
+        } else if (q3AutoRecommendedIds.has(optionId) && !input.checked) {
+            className = "q3-option--ai-suggested";
+            badgeText = isKo ? "AI 추천됨" : "AI suggested";
+        } else if (!q3AutoRecommendedIds.has(optionId) && input.checked) {
+            className = "q3-option--manual-added";
+            badgeText = isKo ? "사용자 추가" : "Added";
+        }
+
+        if (!className) return;
+        node.classList.add(className);
+        if (reason) node.title = reason;
+        const badge = document.createElement("span");
+        badge.className = "q3-state-badge";
+        badge.textContent = badgeText;
+        node.appendChild(badge);
+    });
+}
+
+function inferQ3AutoRecommendation() {
+    const isKo = currentLocale === "ko";
+    const roleId = roleSelect?.value || "";
+    const profile = _latestCityProfile?.profile || {};
+    const selectedKeys = Array.from(_magicSelected || []);
+    const profileText = selectedKeys.map((key) => String(profile[key] || "")).join(" ");
+    const customTags = Array.isArray(_customResearchData?.tags) ? _customResearchData.tags.filter(Boolean) : [];
+    const customText = [
+        _customResearchData?.query || "",
+        _customResearchData?.data?.keyword_interpretation || "",
+        customTags.join(" ")
+    ].join(" ");
+    const q1Text = `${profileText} ${customText}`.toLowerCase();
+    const reasonById = {};
+    const scoreMap = {};
+
+    personaGroups?.querySelectorAll('input[data-node-type="child"]').forEach((input) => {
+        scoreMap[input.value] = { score: 0, reasons: [] };
+    });
+
+    const addScore = (id, score, reasonKo, reasonEn) => {
+        if (!scoreMap[id]) return;
+        scoreMap[id].score += score;
+        scoreMap[id].reasons.push(isKo ? reasonKo : reasonEn);
+    };
+    const addBatch = (ids, score, reasonKo, reasonEn) => ids.forEach((id) => addScore(id, score, reasonKo, reasonEn));
+    const hasKey = (key) => selectedKeys.includes(key);
+    const hasText = (pattern) => new RegExp(pattern, "i").test(q1Text);
+    const hasCustomTag = (pattern) => customTags.some((tag) => new RegExp(pattern, "i").test(String(tag)));
+
+    addScore("h_apt", 8, "도시 기본값: 고밀 주거 적합성", "Urban default: dense housing fit");
+    addScore("hh_couple", 6, "도시 기본값: 범용 세대 구성", "Urban default: broad household fit");
+    addScore("ls_settled", 6, "도시 기본값: 안정적 생활 루틴", "Urban default: settled routine");
+    addScore("int_safe", 6, "기본값: 홈 안심 수요", "Default: home reassurance need");
+
+    if (roleId === "retail") {
+        addBatch(["ls_starter", "ls_settled"], 5, "Retail 관점: 즉시 체감되는 생활 단계 우선", "Retail lens: prioritize immediately legible life stages");
+        addBatch(["int_safe", "int_air"], 4, "Retail 관점: 데모하기 쉬운 효익 우선", "Retail lens: prioritize demo-friendly benefits");
+    } else if (roleId === "dotcom") {
+        addBatch(["t_dual_income", "t_remote", "t_efficiency", "int_chores", "int_energy"], 6, "Dotcom 관점: 전환에 유리한 효율/절감 포인트 강화", "Dotcom lens: strengthen efficiency and savings cues");
+    } else if (roleId === "brand") {
+        addBatch(["ls_newlywed", "int_mood", "int_air", "t_wellness"], 5, "Brand 관점: 감성적 생활 경험 신호 강화", "Brand lens: strengthen emotional living-experience cues");
+    }
+
+    if (hasKey("family")) {
+        addBatch(["hh_young_kids", "hh_school_kids", "ls_parenting", "int_kids", "t_multi_kids"], 18, "Q1 가족 신호 반영", "Reflecting Q1 family signal");
+        addBatch(["t_dual_income", "int_safe"], 8, "가족 운영 복잡도 반영", "Reflecting household complexity for families");
+    }
+    if (hasKey("pets") || hasCustomTag("pet")) {
+        addBatch(["t_pet", "int_pet"], 22, "Q1 반려동물 신호 반영", "Reflecting Q1 pet signal");
+        addBatch(["t_long_away", "int_safe", "h_house"], 8, "원격 확인과 케어 맥락 반영", "Reflecting remote check-in and care context");
+    }
+    if (hasKey("health") || hasCustomTag("health|wellness|senior|care")) {
+        addBatch(["hh_senior", "hh_multi_gen", "ls_senior", "t_parent_care", "int_senior", "int_health", "t_wellness", "t_acc_needs"], 18, "Q1 건강·케어 신호 반영", "Reflecting Q1 health and care signal");
+        addScore("h_care", 12, "케어형 주거 가능성 반영", "Reflecting care-oriented housing possibility");
+    }
+    if (hasKey("energy") || hasCustomTag("energy|saving")) {
+        addBatch(["int_energy", "t_efficiency"], 20, "Q1 에너지 절감 신호 반영", "Reflecting Q1 energy-saving signal");
+        addBatch(["h_apt", "h_compact", "ls_starter", "ls_settled"], 10, "에너지 효율 생활 패턴 반영", "Reflecting energy-efficient living patterns");
+    }
+    if (hasKey("safety") || hasCustomTag("security|safe")) {
+        addBatch(["int_safe", "t_security", "t_long_away"], 20, "Q1 안전·보안 신호 반영", "Reflecting Q1 safety and security signal");
+        addBatch(["h_house", "h_townhouse", "t_parent_away"], 10, "재실 확인과 출입 맥락 반영", "Reflecting presence checks and access context");
+    }
+    if (hasKey("daily_rhythm")) {
+        addBatch(["t_dual_income", "t_remote", "t_weekend_out", "int_chores", "t_efficiency", "ls_established"], 14, "Q1 일상 루틴 신호 반영", "Reflecting Q1 daily-rhythm signal");
+    }
+    if (hasKey("mobility")) {
+        addBatch(["t_long_away", "t_weekend_out", "hh_solo", "hh_couple"], 12, "Q1 이동성 신호 반영", "Reflecting Q1 mobility signal");
+        addBatch(["h_townhouse", "h_house"], 8, "통근·이동 중심 거주 맥락 반영", "Reflecting commute-led housing context");
+    }
+    if (hasKey("climate")) {
+        addBatch(["int_air", "int_sleep"], 14, "Q1 기후 신호 반영", "Reflecting Q1 climate signal");
+        addBatch(["h_apt", "h_house"], 6, "실내 환경 관리 필요 반영", "Reflecting indoor-environment management need");
+    }
+    if (hasKey("events")) {
+        addBatch(["ls_newlywed", "ls_settled", "t_homebody", "int_mood", "int_lights"], 10, "Q1 이벤트·라이프스타일 신호 반영", "Reflecting Q1 events and lifestyle signal");
+    }
+
+    if (hasText("apartment|high-rise|flat|condo|urban|dense|도심|아파트")) addBatch(["h_apt"], 14, "Q1 텍스트에서 아파트형 거주가 읽힘", "Q1 text suggests apartment living");
+    if (hasText("studio|officetel|compact|small space|1인|원룸")) addBatch(["h_compact", "hh_solo", "ls_starter"], 14, "Q1 텍스트에서 소형 주거 맥락이 읽힘", "Q1 text suggests compact living");
+    if (hasText("house|detached|yard|villa|suburb|townhouse|주택|단독")) addBatch(["h_house", "h_townhouse"], 14, "Q1 텍스트에서 독립 주거 맥락이 읽힘", "Q1 text suggests detached or townhouse living");
+    if (hasText("family|kids|child|school|육아|자녀")) addBatch(["hh_young_kids", "hh_school_kids", "ls_parenting", "int_kids"], 16, "Q1 텍스트에서 가족/자녀 맥락이 읽힘", "Q1 text suggests kids and family context");
+    if (hasText("senior|elder|aging|retire|부모|시니어")) addBatch(["hh_senior", "ls_senior", "t_parent_care", "int_senior"], 16, "Q1 텍스트에서 시니어/케어 맥락이 읽힘", "Q1 text suggests senior and care context");
+    if (hasText("remote|hybrid|work from home|재택|하이브리드")) addBatch(["t_remote", "int_chores"], 14, "Q1 텍스트에서 재택/하이브리드 패턴이 읽힘", "Q1 text suggests remote or hybrid work");
+    if (hasText("travel|weekend|commute|출장|외출")) addBatch(["t_long_away", "t_weekend_out", "int_safe"], 12, "Q1 텍스트에서 외출/이동 패턴이 읽힘", "Q1 text suggests away-from-home patterns");
+    if (hasText("night|shift|late|야간|교대")) addBatch(["t_night_shift", "int_sleep"], 14, "Q1 텍스트에서 야간 루틴이 읽힘", "Q1 text suggests night-shift routines");
+    if (hasText("air|pollution|humidity|heat|air quality|공기|미세먼지")) addBatch(["int_air", "int_sleep"], 12, "Q1 텍스트에서 실내 공기 관리 니즈가 읽힘", "Q1 text suggests indoor air-management needs");
+
+    const pickRanked = (ids, limit, fallbacks = []) => {
+        const ranked = ids
+            .filter((id) => scoreMap[id])
+            .sort((a, b) => {
+                const diff = (scoreMap[b]?.score || 0) - (scoreMap[a]?.score || 0);
+                return diff || ids.indexOf(a) - ids.indexOf(b);
+            });
+        const chosen = [];
+        ranked.forEach((id) => {
+            if (chosen.length >= limit) return;
+            if ((scoreMap[id]?.score || 0) > 0) chosen.push(id);
+        });
+        [...fallbacks, ...ranked].forEach((id) => {
+            if (chosen.length >= limit) return;
+            if (!chosen.includes(id)) chosen.push(id);
+        });
+        return chosen.slice(0, limit);
+    };
+
+    const lifeStageIds = ["ls_starter", "ls_newlywed", "ls_settled", "ls_parenting", "ls_established", "ls_empty_nest", "ls_senior"];
+    const lifePatternIds = ["t_remote", "t_long_away", "t_weekend_out", "t_night_shift", "t_homebody"];
+    const lifeThemeIds = ["int_energy", "int_air", "int_lights", "int_chores", "int_safe", "int_sleep", "int_mood", "int_senior", "int_kids", "int_pet", "int_find", "int_health", "t_security", "t_wellness", "t_efficiency"];
+
+    const ids = [
+        ...pickRanked(Q2_HOUSING_EXCLUSIVE_IDS, Q3_AUTO_TARGET_COUNTS.housing, ["h_apt", "h_house", "h_compact"]),
+        ...pickRanked(Q2_HOUSEHOLD_CORE_IDS, 1, ["hh_couple", "hh_solo", "hh_young_kids"]),
+        ...pickRanked([...Q2_HOUSEHOLD_CONTEXT_IDS, ...Q2_HOUSEHOLD_CARE_IDS], 2, ["t_dual_income", "t_pet", "t_parent_care"]),
+        ...pickRanked(lifeStageIds, 1, ["ls_settled", "ls_starter", "ls_established"]),
+        ...pickRanked(lifePatternIds, 2, ["t_remote", "t_weekend_out", "t_homebody"]),
+        ...pickRanked(lifeThemeIds, 2, ["int_safe", "int_air", "int_chores"])
+    ];
+
+    ids.forEach((id) => {
+        reasonById[id] = (scoreMap[id]?.reasons || []).slice(0, 2);
+        if (!reasonById[id].length) {
+            reasonById[id] = [isKo ? "Q1 생활 신호를 종합해 추천" : "Recommended from combined Q1 signals"];
+        }
+    });
+
+    const selectedCategoryLabels = selectedKeys
+        .map((key) => CITY_PROFILE_CATEGORIES.find((entry) => entry.key === key))
+        .filter(Boolean)
+        .map((entry) => isKo ? entry.labelKo : entry.labelEn)
+        .slice(0, 3);
+
+    const summary = [];
+    if (selectedCategoryLabels.length) {
+        summary.push(isKo
+            ? `Q1 도시 프로필 ${selectedCategoryLabels.join(", ")} 신호를 우선 반영했습니다.`
+            : `Prioritized Q1 city-profile signals from ${selectedCategoryLabels.join(", ")}.`);
+    }
+    if (customTags.length) {
+        summary.push(isKo
+            ? `커스텀 리서치 태그 ${customTags.slice(0, 3).join(", ")}를 생활맥락 보정에 사용했습니다.`
+            : `Used custom-research tags ${customTags.slice(0, 3).join(", ")} to refine lifestyle context.`);
+    }
+    if (roleId) {
+        summary.push(isKo
+            ? `${getRoleTitle(roleId)} 관점에서 설명력이 높은 조합으로 정렬했습니다.`
+            : `Sorted the set for higher explainability from the ${getRoleTitle(roleId)} lens.`);
+    }
+
+    return { ids, summary, reasonById };
 }
 
 function handleQ4AutoSelect() {
@@ -1630,6 +1936,8 @@ function handleChecklistChange(event, container) {
 
     const mode = group.dataset.mode;
 
+    applyPersonaExclusiveRules(target, group);
+
     // Radio groups: clear custom input + update card active state
     if (mode === "radio" && target.checked) {
         const customInput = group.querySelector('.tree-custom-input');
@@ -1649,8 +1957,6 @@ function handleChecklistChange(event, container) {
     if (!mode || mode === "checkbox") {
         const parent = group.querySelector('input[data-node-type="parent"]');
         const children = [...group.querySelectorAll('input[data-node-type="child"]')];
-
-        applyPersonaExclusiveRules(target, group);
 
         if (target.dataset.nodeType === "parent") {
             children.forEach((child) => {
@@ -2359,6 +2665,7 @@ function populateInputs(preserved = {}) {
     syncAllChecklistParents(personaGroups);
     syncAllChecklistParents(deviceGrid);
     decoratePersonaGroups();
+    refreshQ3AutoSelectionUI();
     renderQ4Composer();
 }
 
@@ -2613,6 +2920,7 @@ function resetToAccessScreen() {
         input.checked = false;
     });
     personaGroups.querySelectorAll('.tree-custom-input').forEach((input) => { input.value = ""; });
+    clearQ3AutoMode();
     segmentCustomInput.value = "";
     purposeInput.value = "";
     deviceGrid.querySelectorAll('input[type="checkbox"]').forEach((input) => {
