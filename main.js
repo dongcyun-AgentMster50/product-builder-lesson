@@ -2335,6 +2335,7 @@ function selectCity(value, label) {
     citySearchWrap.classList.toggle("has-value", !!value);
     closeCityDropdown();
     _magicSelected.clear();
+    _magicAppliedSelected.clear();
     _customResearchData = null;
     // Trigger downstream updates
     updateStatePreview();
@@ -3790,6 +3791,7 @@ function releaseDeferredStep3Insight() {
 let _pendingCitySheetHtml = "";
 let _latestCityProfile = null;
 let _magicSelected = new Set();
+let _magicAppliedSelected = new Set();
 
 /**
  * 정적 city_signals fallback
@@ -3813,7 +3815,6 @@ function bindCityProfileDrawer(container) {
                 tag.classList.add("selected");
             }
             renderMagicCards(container);
-            renderQ1ScenarioReferencePanel(container);
         });
     });
 
@@ -3823,6 +3824,7 @@ function bindCityProfileDrawer(container) {
         applyBtn.addEventListener("click", () => {
             if (_magicSelected.size === 0) return;
             const isKo = currentLocale === "ko";
+            _magicAppliedSelected = new Set(_magicSelected);
             const keywords = [..._magicSelected].map(key => {
                 const cat = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
                 return cat ? (isKo ? cat.labelKo : cat.labelEn) : key;
@@ -4825,7 +4827,7 @@ function inferCoreValues(traits, purpose) {
 
 /** Q1 도시 프로필 키워드 → 잠정 타겟 특성 추론 */
 function inferQ1Traits() {
-    if (!_magicSelected || _magicSelected.size === 0) return [];
+    if (!_magicAppliedSelected || _magicAppliedSelected.size === 0) return [];
     const isKo = currentLocale === "ko";
     const cityName = _latestCityProfile?.localCity || "";
     const { profile } = getQ1SelectionContext();
@@ -4859,7 +4861,7 @@ function inferQ1Traits() {
                          logic: isKo ? "펫 라이프 데이터 → 반려동물 가구 비중이 높을수록 외출 중 모니터링 시나리오 필수" : "Pet data → high pet ownership makes remote monitoring scenarios essential" }
     };
     const result = [];
-    for (const key of _magicSelected) {
+    for (const key of _magicAppliedSelected) {
         const entry = mapping[key];
         if (entry && !result.some(r => r.trait === entry.trait)) {
             const cat = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
@@ -4880,7 +4882,7 @@ function inferQ1Traits() {
 
 function getQ1SelectionContext() {
     const profile = _latestCityProfile?.profile || {};
-    const selectedKeys = Array.from(_magicSelected || []);
+    const selectedKeys = Array.from(_magicAppliedSelected || []);
     const customTags = Array.isArray(_customResearchData?.tags) ? _customResearchData.tags.filter(Boolean) : [];
     const customText = [
         _customResearchData?.query || "",
@@ -4913,10 +4915,7 @@ function summarizeInsightText(text, maxLength = 140) {
 
 function getRelevantQ1ProfileReferences(limit = 3) {
     const { profile, selectedKeys } = getQ1SelectionContext();
-    const fallbackKeys = CITY_PROFILE_CATEGORIES
-        .filter((cat) => profile[cat.key])
-        .map((cat) => cat.key);
-    const targetKeys = (selectedKeys.length > 0 ? selectedKeys : fallbackKeys).slice(0, limit);
+    const targetKeys = selectedKeys.slice(0, limit);
 
     return targetKeys.map((key) => {
         const cat = CITY_PROFILE_CATEGORIES.find((entry) => entry.key === key);
@@ -5502,7 +5501,7 @@ function calculateConfidence() {
     const cityRaw = getCityValue();
     if (cityRaw) pct += 20;
     // Q1 키워드 반영 = +20%
-    if (_magicSelected && _magicSelected.size > 0) pct += 20;
+    if (_magicAppliedSelected && _magicAppliedSelected.size > 0) pct += 20;
     // Q2 A/B/C 각 +20% (최대 60%)
     const { hasHousing, hasHousehold, hasLifestage } = getQ2SelectionState();
     if (hasHousing)   pct += 20;
@@ -6202,8 +6201,8 @@ function buildStep3Insight() {
         });
 
         // ── Q1 magic keywords → 태그 (도시 맥락) ──
-        if (typeof MAGIC_KEY_TO_EXPLORE_TAGS !== "undefined" && _magicSelected) {
-            for (const key of _magicSelected) {
+        if (typeof MAGIC_KEY_TO_EXPLORE_TAGS !== "undefined" && _magicAppliedSelected) {
+            for (const key of _magicAppliedSelected) {
                 const q1Pts = Math.round(perQ1 * 0.8);
                 const catObj = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
                 const catLbl = catObj ? (isKo ? catObj.labelKo : catObj.labelEn) : key;
@@ -12939,7 +12938,7 @@ function runCuration() {
 
     const selectedMarket = marketOptions.find(m => m.siteCode === countrySelect.value);
     const city = getCityValue();
-    const magicKeywords = [..._magicSelected];
+    const magicKeywords = [..._magicAppliedSelected];
 
     const input = {
         segments, interests, housing, devices, purpose,
@@ -13506,7 +13505,7 @@ function triggerAiFromCuration(scenario) {
         purpose: rawPurpose,
         devices: selectedDeviceLabels.length > 0 ? selectedDeviceLabels : selectedDevices.map(d => typeof getCategoryName === "function" ? getCategoryName(d) : d),
         deviceGroups: typeof getSelectedDeviceGroupIds === "function" ? getSelectedDeviceGroupIds() : [],
-        intentTags: [...(_magicSelected || [])],
+        intentTags: [...(_magicAppliedSelected || [])],
         missionBucket: typeof analyzeIntent === "function" ? analyzeIntent(rawPurpose, rawSelectedSegment, selectedDevices, []).missionBucket : "Discover",
         locale: currentLocale,
         provider: selectedProvider,
