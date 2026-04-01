@@ -1659,6 +1659,7 @@ textarea {
     flex-direction: column;
     gap: 3px;
     padding: 12px 14px;
+    min-height: 44px;
     border-radius: 12px;
     border: 1.5px solid var(--line);
     background: var(--paper);
@@ -1729,7 +1730,8 @@ textarea {
     background: rgba(15, 118, 110, 0.12);
     color: #0f766e;
 }
-.tree-card input[type="radio"] {
+.tree-card input[type="radio"],
+.tree-card input[type="checkbox"] {
     position: absolute;
     opacity: 0;
     width: 0;
@@ -1744,6 +1746,11 @@ textarea {
     border-color: var(--accent-strong);
     background: linear-gradient(135deg, rgba(0, 51, 102, 0.04), rgba(0, 80, 200, 0.06));
     box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.12);
+}
+.tree-card:has(input:focus-visible),
+.tree-chip:has(input:focus-visible) {
+    outline: 3px solid rgba(29, 78, 216, 0.28);
+    outline-offset: 2px;
 }
 .tree-card-label {
     font-size: 0.82rem;
@@ -1773,7 +1780,7 @@ textarea {
     align-items: center;
     gap: 0;
     padding: 8px 14px;
-    min-height: 36px;
+    min-height: 44px;
     border-radius: 20px;
     border: 1.5px solid var(--line);
     background: var(--paper);

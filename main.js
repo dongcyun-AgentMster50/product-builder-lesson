@@ -54,7 +54,7 @@ const generateBtn = document.getElementById("generate-btn");
 const stepInsight = document.getElementById("step-insight");
 const aiProviderScreen = document.getElementById("ai-provider-screen");
 const CITY_CUSTOM_VALUE = "__custom__";
-const Q3_AUTO_TARGET_COUNTS = Object.freeze({ housing: 1, household: 3, lifestage: 5 });
+const Q3_AUTO_TARGET_COUNTS = Object.freeze({ housing: 3, household: 3, lifestage: 5 });
 
 let q3AutoRecommendedIds = new Set();
 let q3ManualAddedIds = new Set();
@@ -887,7 +887,7 @@ function updateQ3OptionBadges() {
     });
 }
 
-function inferQ3AutoRecommendation() {
+function inferQ3AutoRecommendation_legacy() {
     const isKo = currentLocale === "ko";
     const roleId = roleSelect?.value || "";
     const profile = _latestCityProfile?.profile || {};
@@ -1393,6 +1393,7 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
         const isLegacy = !group.mode;
         const isChip = mode === "chip";
         const isRadio = mode === "radio";
+        const isCardMulti = mode === "card-multi";
         const inputType = isRadio ? "radio" : "checkbox";
         const radioName = isRadio ? `${kind}_${group.id}` : "";
 
@@ -1426,10 +1427,10 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
             }
 
             // Radio card mode — single select cards
-            if (isRadio) {
+            if (isRadio || isCardMulti) {
                 return `
                     <label class="tree-card ${childChecked ? "tree-card--active" : ""}">
-                        <input type="radio" name="${radioName}" value="${option.id}" data-kind="${kind}" data-node-type="child" data-group-id="${group.id}" data-label="${escapeHtml(option.label)}" ${childChecked ? "checked" : ""}>
+                        <input type="${isRadio ? "radio" : "checkbox"}" ${radioName ? `name="${radioName}"` : ""} value="${option.id}" data-kind="${kind}" data-node-type="child" data-group-id="${group.id}" data-label="${escapeHtml(option.label)}" ${childChecked ? "checked" : ""}>
                         <span class="tree-card-label">${escapeHtml(option.label)}</span>
                         ${descHtml}
                     </label>`;
@@ -1460,7 +1461,7 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
         ` : "";
 
         const scrollClass = group.scrollable ? " tree-children--scroll" : "";
-        const modeClass = isChip ? " tree-children--chips" : isRadio ? " tree-children--cards" : "";
+        const modeClass = isChip ? " tree-children--chips" : (isRadio || isCardMulti) ? " tree-children--cards" : "";
         return `
             <section class="tree-group" data-group-id="${group.id}" data-mode="${mode}">
                 ${parentHtml}
@@ -1691,9 +1692,7 @@ function applyPersonaExclusiveRules(target, group) {
     const relatedInputs = [...group.querySelectorAll('input[data-node-type="child"]')];
     let exclusiveIds = [];
 
-    if (group.dataset.groupId === "housing") {
-        exclusiveIds = Q2_HOUSING_EXCLUSIVE_IDS;
-    } else if (group.dataset.groupId === "household" && Q2_HOUSEHOLD_CORE_IDS.includes(target.value)) {
+    if (group.dataset.groupId === "household" && Q2_HOUSEHOLD_CORE_IDS.includes(target.value)) {
         exclusiveIds = Q2_HOUSEHOLD_CORE_IDS;
     }
 
@@ -5195,7 +5194,7 @@ function buildReferenceKeywordChips(text, fallbackLabel = "", limit = 3) {
     return fallbackLabel ? [fallbackLabel] : [];
 }
 
-function getPersonaSelectionFooterCopy(groupId, isKo) {
+function getPersonaSelectionFooterCopy_legacy(groupId, isKo) {
     const checkedLabels = [...personaGroups.querySelectorAll(`.tree-group[data-group-id="${groupId}"] input[data-node-type="child"]:checked`)]
         .map((input) => input.dataset.label || input.value)
         .filter(Boolean);
@@ -5250,6 +5249,244 @@ function updatePersonaGroupFooters() {
             </div>
         `;
     });
+}
+
+function getPersonaSelectionFooterCopy(groupId, isKo) {
+    const checkedLabels = [...personaGroups.querySelectorAll(`.tree-group[data-group-id="${groupId}"] input[data-node-type="child"]:checked`)]
+        .map((input) => input.dataset.label || input.value)
+        .filter(Boolean);
+
+    if (groupId === "housing") {
+        if (checkedLabels.length > 0) {
+            const chips = checkedLabels.slice(0, 3);
+            if (checkedLabels.length > 3) chips.push(isKo ? `외 ${checkedLabels.length - 3}개` : `+${checkedLabels.length - 3} more`);
+            return { title: isKo ? "현재 적용 주거 유형" : "Current housing", chips };
+        }
+        return { title: isKo ? "선택 기준" : "Selection rule", chips: [isKo ? "복수 선택 가능" : "Multiple selections allowed"] };
+    }
+
+    if (groupId === "household") {
+        const coreLabels = [...personaGroups.querySelectorAll('.tree-group[data-group-id="household"] input[data-node-type="child"]:checked')]
+            .filter((input) => Q2_HOUSEHOLD_CORE_IDS.includes(input.value))
+            .map((input) => input.dataset.label || input.value);
+        const extraCount = checkedLabels.filter((label) => !coreLabels.includes(label)).length;
+        if (coreLabels.length > 0 || extraCount > 0) {
+            const chips = [];
+            if (coreLabels[0]) chips.push(coreLabels[0]);
+            if (extraCount > 0) chips.push(isKo ? `추가 조건 ${extraCount}` : `${extraCount} extra conditions`);
+            return { title: isKo ? "현재 세대 구성" : "Current household structure", chips };
+        }
+        return { title: isKo ? "선택 기준" : "Selection rule", chips: [isKo ? "핵심 구조 1개 + 추가 조건 선택" : "1 core structure + extra conditions"] };
+    }
+
+    if (groupId === "lifestage") {
+        return checkedLabels.length
+            ? { title: isKo ? "현재 반영 생활맥락" : "Current life context", chips: checkedLabels.slice(0, 3) }
+            : { title: isKo ? "선택 기준" : "Selection rule", chips: [isKo ? "복수 선택 가능" : "Multiple selections allowed"] };
+    }
+
+    return { title: isKo ? "현재 선택" : "Current selection", chips: checkedLabels.slice(0, 3) };
+}
+
+function inferQ3AutoRecommendation() {
+    const isKo = currentLocale === "ko";
+    const roleId = roleSelect?.value || "";
+    const profile = _latestCityProfile?.profile || {};
+    const selectedKeys = Array.from(_magicSelected || []);
+    const profileText = selectedKeys.map((key) => String(profile[key] || "")).join(" ");
+    const customTags = Array.isArray(_customResearchData?.tags) ? _customResearchData.tags.filter(Boolean) : [];
+    const customText = [
+        _customResearchData?.query || "",
+        _customResearchData?.data?.keyword_interpretation || "",
+        customTags.join(" ")
+    ].join(" ");
+    const q1Text = `${profileText} ${customText}`.toLowerCase();
+    const reasonById = {};
+    const scoreMap = {};
+
+    personaGroups?.querySelectorAll('input[data-node-type="child"]').forEach((input) => {
+        scoreMap[input.value] = { score: 0, reasons: [] };
+    });
+
+    const addScore = (id, score, reasonKo, reasonEn) => {
+        if (!scoreMap[id]) return;
+        scoreMap[id].score += score;
+        scoreMap[id].reasons.push(isKo ? reasonKo : reasonEn);
+    };
+    const addBatch = (ids, score, reasonKo, reasonEn) => ids.forEach((id) => addScore(id, score, reasonKo, reasonEn));
+    const addPenalty = (ids, score) => ids.forEach((id) => {
+        if (!scoreMap[id]) return;
+        scoreMap[id].score -= score;
+    });
+    const hasKey = (key) => selectedKeys.includes(key);
+    const hasText = (pattern) => new RegExp(pattern, "i").test(q1Text);
+    const hasCustomTag = (pattern) => customTags.some((tag) => new RegExp(pattern, "i").test(String(tag)));
+
+    const hasSchoolAgeSignal = hasText("school|elementary|grade school|초등|방과 후|방과후|하교|귀가");
+    const hasYoungChildSignal = hasText("infant|toddler|preschool|daycare|영유아|유아|미취학");
+    const hasSeniorSignal = hasText("senior|elder|aging|retire|부모|시니어");
+    const hasDualIncomeSignal = hasText("dual income|working parents|맞벌이");
+    const hasRemoteWorkSignal = hasText("remote|hybrid|work from home|재택|하이브리드");
+    const hasAfterSchoolSafetySignal = hasText("after school|after-school|방과 후|방과후|귀가|하교|안전관리|안심귀가|safe return");
+    const hasChildCareSignal = hasText("family|kids|child|children|school|육아|자녀|아이|초등");
+
+    addScore("h_apt", 8, "도시 기본값: 고밀 주거 적합성", "Urban default: dense housing fit");
+    addScore("hh_couple", 6, "도시 기본값: 범용 세대 구성", "Urban default: broad household fit");
+    addScore("ls_settled", 6, "도시 기본값: 안정적 생활 루틴", "Urban default: settled routine");
+    addScore("int_safe", 6, "기본값: 집 안심 니즈", "Default: home reassurance need");
+
+    if (roleId === "retail") {
+        addBatch(["ls_starter", "ls_settled"], 5, "리테일 관점: 즉시 이해되는 생활단계 우선", "Retail lens: prioritize immediately legible life stages");
+        addBatch(["int_safe", "int_air"], 4, "리테일 관점: 체감 효익 우선", "Retail lens: prioritize demo-friendly benefits");
+    } else if (roleId === "dotcom") {
+        addBatch(["t_dual_income", "t_efficiency", "int_chores", "int_energy"], 6, "닷컴 관점: 편의와 효율 우선", "Dotcom lens: strengthen efficiency and savings cues");
+    } else if (roleId === "brand") {
+        addBatch(["ls_newlywed", "int_mood", "int_air", "t_wellness"], 5, "브랜드 관점: 감성적 생활경험 우선", "Brand lens: strengthen emotional living-experience cues");
+    }
+
+    if (hasKey("family")) {
+        addBatch(["hh_young_kids", "hh_school_kids", "ls_parenting", "int_kids", "t_multi_kids"], 18, "Q1 가족 신호 반영", "Reflecting Q1 family signal");
+        addBatch(["t_dual_income", "int_safe"], 8, "가족 운영 복잡도 반영", "Reflecting household complexity for families");
+    }
+    if (hasKey("pets") || hasCustomTag("pet")) {
+        addBatch(["t_pet", "int_pet"], 22, "Q1 반려동물 신호 반영", "Reflecting Q1 pet signal");
+        addBatch(["t_long_away", "int_safe", "h_house"], 8, "원격 확인 맥락 반영", "Reflecting remote check-in context");
+    }
+    if (hasKey("health") || hasCustomTag("health|wellness")) {
+        addBatch(["hh_senior", "hh_multi_gen", "ls_senior", "t_parent_care", "int_senior", "int_health", "t_wellness", "t_acc_needs"], 18, "Q1 건강 신호 반영", "Reflecting Q1 health signal");
+        addScore("h_care", 12, "케어형 주거 가능성 반영", "Reflecting care-oriented housing possibility");
+    }
+    if (hasSeniorSignal || hasCustomTag("senior|elder|aging|parent care|부모|시니어")) {
+        addBatch(["hh_senior", "hh_multi_gen", "ls_senior", "t_parent_care", "int_senior"], 18, "시니어 돌봄 신호 반영", "Reflecting senior-care signal");
+        addScore("h_care", 14, "시니어 케어 주거 가능성 반영", "Reflecting senior-care housing possibility");
+    }
+    if (hasKey("energy") || hasCustomTag("energy|saving")) {
+        addBatch(["int_energy", "t_efficiency"], 20, "Q1 에너지 절감 신호 반영", "Reflecting Q1 energy-saving signal");
+        addBatch(["h_apt", "h_compact", "ls_starter", "ls_settled"], 10, "효율형 생활 패턴 반영", "Reflecting energy-efficient living patterns");
+    }
+    if (hasKey("safety") || hasCustomTag("security|safe")) {
+        addBatch(["int_safe", "t_security", "t_long_away"], 20, "Q1 안전 신호 반영", "Reflecting Q1 safety and security signal");
+        addBatch(["h_house", "h_townhouse", "t_parent_away"], 10, "출입과 부재 확인 맥락 반영", "Reflecting presence checks and access context");
+    }
+    if (hasKey("daily_rhythm")) {
+        addBatch(["t_dual_income", "t_remote", "t_weekend_out", "int_chores", "t_efficiency", "ls_established"], 14, "Q1 일상 리듬 반영", "Reflecting Q1 daily-rhythm signal");
+    }
+    if (hasKey("mobility")) {
+        addBatch(["t_long_away", "t_weekend_out", "hh_solo", "hh_couple"], 12, "Q1 이동성 반영", "Reflecting Q1 mobility signal");
+        addBatch(["h_townhouse", "h_house"], 8, "통근 중심 거주 맥락 반영", "Reflecting commute-led housing context");
+    }
+    if (hasKey("climate")) {
+        addBatch(["int_air", "int_sleep"], 14, "Q1 기후 반영", "Reflecting Q1 climate signal");
+        addBatch(["h_apt", "h_house"], 6, "실내 환경 관리 니즈 반영", "Reflecting indoor-environment management need");
+    }
+    if (hasKey("events")) {
+        addBatch(["ls_newlywed", "ls_settled", "t_homebody", "int_mood", "int_lights"], 10, "Q1 이벤트/라이프스타일 신호 반영", "Reflecting Q1 events and lifestyle signal");
+    }
+
+    if (hasText("apartment|high-rise|flat|condo|urban|dense|아파트")) addBatch(["h_apt"], 14, "아파트형 거주 맥락 반영", "Q1 text suggests apartment living");
+    if (hasText("studio|officetel|compact|small space|원룸|오피스텔")) addBatch(["h_compact", "hh_solo", "ls_starter"], 14, "소형 주거 맥락 반영", "Q1 text suggests compact living");
+    if (hasText("house|detached|yard|villa|suburb|townhouse|주택|빌라")) addBatch(["h_house", "h_townhouse", "h_villa"], 14, "저층/단독 주거 맥락 반영", "Q1 text suggests detached, villa, or townhouse living");
+    if (hasChildCareSignal) addBatch(["hh_young_kids", "hh_school_kids", "ls_parenting", "int_kids"], 16, "가족/자녀 맥락 반영", "Q1 text suggests kids and family context");
+    if (hasSeniorSignal) addBatch(["hh_senior", "ls_senior", "t_parent_care", "int_senior"], 16, "시니어/케어 맥락 반영", "Q1 text suggests senior and care context");
+    if (hasRemoteWorkSignal) addBatch(["t_remote", "int_chores"], 14, "재택/하이브리드 패턴 반영", "Q1 text suggests remote or hybrid work");
+    if (hasText("travel|weekend|commute|출장|외출")) addBatch(["t_long_away", "t_weekend_out", "int_safe"], 12, "부재/이동 패턴 반영", "Q1 text suggests away-from-home patterns");
+    if (hasText("night|shift|late|야간|교대")) addBatch(["t_night_shift", "int_sleep"], 14, "야간 루틴 반영", "Q1 text suggests night-shift routines");
+    if (hasText("air|pollution|humidity|heat|air quality|공기|미세먼지")) addBatch(["int_air", "int_sleep"], 12, "공기질 니즈 반영", "Q1 text suggests indoor air-management needs");
+
+    if (hasSchoolAgeSignal) {
+        addBatch(["hh_school_kids", "ls_parenting", "int_kids", "int_safe"], 20, "초등학생/방과 후 문맥 반영", "Reflecting school-age and after-school context");
+        addBatch(["t_dual_income", "t_long_away"], 10, "부재 중 자녀 안전관리 맥락 반영", "Reflecting away-from-home child safety context");
+        addBatch(["h_apt", "h_villa", "h_house", "h_townhouse"], 10, "초등학생 거주 가능 주거 유형을 폭넓게 반영", "Reflecting broad housing fit for school-age children");
+        addPenalty(["hh_young_kids"], 18);
+    }
+    if (hasYoungChildSignal && !hasSchoolAgeSignal) {
+        addBatch(["hh_young_kids", "ls_parenting"], 18, "영유아 양육 문맥 반영", "Reflecting young-child parenting context");
+    }
+    if (hasDualIncomeSignal) {
+        addBatch(["t_dual_income", "t_efficiency", "int_chores"], 16, "맞벌이 운영 부담 반영", "Reflecting dual-income household complexity");
+    }
+    if (hasAfterSchoolSafetySignal) {
+        addBatch(["int_safe", "t_long_away", "t_security"], 18, "방과 후 안전관리 키워드 반영", "Reflecting after-school safety-management keywords");
+        addBatch(["h_apt", "h_villa", "h_house", "h_townhouse"], 8, "주거 형태 전반에 걸친 안전관리 수요 반영", "Reflecting safety needs across multiple housing types");
+    }
+    if ((hasSchoolAgeSignal || hasDualIncomeSignal || hasAfterSchoolSafetySignal) && !hasSeniorSignal) {
+        addPenalty(["h_care", "hh_senior", "ls_senior", "t_parent_care", "int_senior"], 28);
+    }
+    if ((hasSchoolAgeSignal || hasAfterSchoolSafetySignal) && !hasRemoteWorkSignal) {
+        addPenalty(["t_remote"], 18);
+    }
+
+    const pickRanked = (ids, limit, fallbacks = []) => {
+        const ranked = ids
+            .filter((id) => scoreMap[id])
+            .sort((a, b) => {
+                const diff = (scoreMap[b]?.score || 0) - (scoreMap[a]?.score || 0);
+                return diff || ids.indexOf(a) - ids.indexOf(b);
+            });
+        const chosen = [];
+        ranked.forEach((id) => {
+            if (chosen.length >= limit) return;
+            if ((scoreMap[id]?.score || 0) > 0) chosen.push(id);
+        });
+        [...fallbacks, ...ranked].forEach((id) => {
+            if (chosen.length >= limit) return;
+            if (!chosen.includes(id)) chosen.push(id);
+        });
+        return chosen.slice(0, limit);
+    };
+
+    const lifeStageIds = ["ls_starter", "ls_newlywed", "ls_settled", "ls_parenting", "ls_established", "ls_empty_nest", "ls_senior"];
+    const lifePatternIds = ["t_remote", "t_long_away", "t_weekend_out", "t_night_shift", "t_homebody"];
+    const lifeThemeIds = ["int_energy", "int_air", "int_lights", "int_chores", "int_safe", "int_sleep", "int_mood", "int_senior", "int_kids", "int_pet", "int_find", "int_health", "t_security", "t_wellness", "t_efficiency"];
+    const housingPool = (hasSchoolAgeSignal || hasAfterSchoolSafetySignal) && !hasSeniorSignal
+        ? ["h_apt", "h_villa", "h_house", "h_townhouse", "h_compact"]
+        : Q2_HOUSING_EXCLUSIVE_IDS;
+
+    const ids = [
+        ...pickRanked(housingPool, Q3_AUTO_TARGET_COUNTS.housing, ["h_apt", "h_house", "h_villa"]),
+        ...pickRanked(Q2_HOUSEHOLD_CORE_IDS, 1, hasSchoolAgeSignal ? ["hh_school_kids", "hh_couple"] : ["hh_couple", "hh_solo", "hh_young_kids"]),
+        ...pickRanked([...Q2_HOUSEHOLD_CONTEXT_IDS, ...Q2_HOUSEHOLD_CARE_IDS], 2, ["t_dual_income", "t_pet", "t_parent_care"]),
+        ...pickRanked(lifeStageIds, 1, hasSchoolAgeSignal ? ["ls_parenting", "ls_settled"] : ["ls_settled", "ls_starter", "ls_established"]),
+        ...pickRanked(lifePatternIds, 2, hasAfterSchoolSafetySignal ? ["t_long_away", "t_weekend_out"] : ["t_remote", "t_weekend_out", "t_homebody"]),
+        ...pickRanked(lifeThemeIds, 2, hasAfterSchoolSafetySignal ? ["int_safe", "int_kids", "int_chores"] : ["int_safe", "int_air", "int_chores"])
+    ];
+
+    ids.forEach((id) => {
+        reasonById[id] = (scoreMap[id]?.reasons || []).slice(0, 2);
+        if (!reasonById[id].length) {
+            reasonById[id] = [isKo ? "Q1 신호를 종합해 추천" : "Recommended from combined Q1 signals"];
+        }
+    });
+
+    const selectedCategoryLabels = selectedKeys
+        .map((key) => CITY_PROFILE_CATEGORIES.find((entry) => entry.key === key))
+        .filter(Boolean)
+        .map((entry) => isKo ? entry.labelKo : entry.labelEn)
+        .slice(0, 3);
+
+    const summary = [];
+    if (selectedCategoryLabels.length) {
+        summary.push(isKo
+            ? `Q1 도시 프로필의 ${selectedCategoryLabels.join(", ")} 신호를 우선 반영했습니다.`
+            : `Prioritized Q1 city-profile signals from ${selectedCategoryLabels.join(", ")}.`);
+    }
+    if (customTags.length) {
+        summary.push(isKo
+            ? `커스텀 리서치 태그 ${customTags.slice(0, 3).join(", ")}를 생활맥락 보정에 사용했습니다.`
+            : `Used custom-research tags ${customTags.slice(0, 3).join(", ")} to refine lifestyle context.`);
+    }
+    if (hasSchoolAgeSignal || hasAfterSchoolSafetySignal) {
+        summary.push(isKo
+            ? "초등학생 방과 후 안전관리 문맥을 우선 반영해 세대/생활맥락을 조정했습니다."
+            : "Prioritized school-age after-school safety context in household and life-context picks.");
+    }
+    if (roleId) {
+        summary.push(isKo
+            ? `${getRoleTitle(roleId)} 관점에서 설명력이 높은 조합으로 정렬했습니다.`
+            : `Sorted the set for higher explainability from the ${getRoleTitle(roleId)} lens.`);
+    }
+
+    return { ids, summary, reasonById };
 }
 
 function groupHouseholdOptions() {

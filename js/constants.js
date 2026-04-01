@@ -31,7 +31,7 @@ const PERSONA_CATEGORY_GROUPS = [
         id: "housing",
         title: "A. 거주지 유형",
         helper: "시나리오가 적용될 집의 형태를 골라 주세요",
-        mode: "radio",
+        mode: "card-multi",
         options: [
             { id: "h_apt", label: "아파트", desc: "아파트, 주상복합, 고층" },
             { id: "h_compact", label: "오피스텔·원룸", desc: "1인용 소형 독립 공간" },
