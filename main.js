@@ -714,35 +714,6 @@ function bindEvents() {
     document.getElementById("q3-auto-btn")?.addEventListener("click", handleQ3AutoSelect);
 }
 
-function handleQ3AutoSelect() {
-    // Q3 모든 체크박스/라디오 해제 → auto 마커 설정
-    const groups = document.getElementById("persona-groups");
-    if (groups) {
-        groups.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach((input) => { input.checked = false; });
-    }
-    const customInput = document.getElementById("segment-custom");
-    if (customInput) customInput.value = "__auto__";
-    // purpose에 auto 안내 삽입
-    const purposeInput = document.getElementById("purpose");
-    if (purposeInput && !purposeInput.value.trim()) {
-        purposeInput.value = currentLocale === "ko"
-            ? "AI가 지역 트렌드 기반으로 최적 타겟 세그먼트를 자동 구성합니다."
-            : "AI will auto-configure the optimal target segment based on regional trends.";
-    }
-    deferStep3InsightUntilInteraction = false;
-    updateStatePreview();
-    updateStepInsight();
-    // 버튼 활성 표시
-    const btn = document.getElementById("q3-auto-btn");
-    if (btn) btn.classList.add("active");
-}
-// Q3 auto 모드 해제: 수동 선택 시
-function clearQ3AutoMode() {
-    const customInput = document.getElementById("segment-custom");
-    if (customInput?.value === "__auto__") customInput.value = "";
-    const btn = document.getElementById("q3-auto-btn");
-    if (btn) btn.classList.remove("active");
-}
 
 function handleQ3AutoSelect() {
     const recommendation = inferQ3AutoRecommendation();
@@ -885,160 +856,6 @@ function updateQ3OptionBadges() {
         badge.textContent = badgeText;
         node.appendChild(badge);
     });
-}
-
-function inferQ3AutoRecommendation_legacy() {
-    const isKo = currentLocale === "ko";
-    const roleId = roleSelect?.value || "";
-    const profile = _latestCityProfile?.profile || {};
-    const selectedKeys = Array.from(_magicSelected || []);
-    const profileText = selectedKeys.map((key) => String(profile[key] || "")).join(" ");
-    const customTags = Array.isArray(_customResearchData?.tags) ? _customResearchData.tags.filter(Boolean) : [];
-    const customText = [
-        _customResearchData?.query || "",
-        _customResearchData?.data?.keyword_interpretation || "",
-        customTags.join(" ")
-    ].join(" ");
-    const q1Text = `${profileText} ${customText}`.toLowerCase();
-    const reasonById = {};
-    const scoreMap = {};
-
-    personaGroups?.querySelectorAll('input[data-node-type="child"]').forEach((input) => {
-        scoreMap[input.value] = { score: 0, reasons: [] };
-    });
-
-    const addScore = (id, score, reasonKo, reasonEn) => {
-        if (!scoreMap[id]) return;
-        scoreMap[id].score += score;
-        scoreMap[id].reasons.push(isKo ? reasonKo : reasonEn);
-    };
-    const addBatch = (ids, score, reasonKo, reasonEn) => ids.forEach((id) => addScore(id, score, reasonKo, reasonEn));
-    const hasKey = (key) => selectedKeys.includes(key);
-    const hasText = (pattern) => new RegExp(pattern, "i").test(q1Text);
-    const hasCustomTag = (pattern) => customTags.some((tag) => new RegExp(pattern, "i").test(String(tag)));
-
-    addScore("h_apt", 8, "도시 기본값: 고밀 주거 적합성", "Urban default: dense housing fit");
-    addScore("hh_couple", 6, "도시 기본값: 범용 세대 구성", "Urban default: broad household fit");
-    addScore("ls_settled", 6, "도시 기본값: 안정적 생활 루틴", "Urban default: settled routine");
-    addScore("int_safe", 6, "기본값: 홈 안심 수요", "Default: home reassurance need");
-
-    if (roleId === "retail") {
-        addBatch(["ls_starter", "ls_settled"], 5, "Retail 관점: 즉시 체감되는 생활 단계 우선", "Retail lens: prioritize immediately legible life stages");
-        addBatch(["int_safe", "int_air"], 4, "Retail 관점: 데모하기 쉬운 효익 우선", "Retail lens: prioritize demo-friendly benefits");
-    } else if (roleId === "dotcom") {
-        addBatch(["t_dual_income", "t_remote", "t_efficiency", "int_chores", "int_energy"], 6, "Dotcom 관점: 전환에 유리한 효율/절감 포인트 강화", "Dotcom lens: strengthen efficiency and savings cues");
-    } else if (roleId === "brand") {
-        addBatch(["ls_newlywed", "int_mood", "int_air", "t_wellness"], 5, "Brand 관점: 감성적 생활 경험 신호 강화", "Brand lens: strengthen emotional living-experience cues");
-    }
-
-    if (hasKey("family")) {
-        addBatch(["hh_young_kids", "hh_school_kids", "ls_parenting", "int_kids", "t_multi_kids"], 18, "Q1 가족 신호 반영", "Reflecting Q1 family signal");
-        addBatch(["t_dual_income", "int_safe"], 8, "가족 운영 복잡도 반영", "Reflecting household complexity for families");
-    }
-    if (hasKey("pets") || hasCustomTag("pet")) {
-        addBatch(["t_pet", "int_pet"], 22, "Q1 반려동물 신호 반영", "Reflecting Q1 pet signal");
-        addBatch(["t_long_away", "int_safe", "h_house"], 8, "원격 확인과 케어 맥락 반영", "Reflecting remote check-in and care context");
-    }
-    if (hasKey("health") || hasCustomTag("health|wellness|senior|care")) {
-        addBatch(["hh_senior", "hh_multi_gen", "ls_senior", "t_parent_care", "int_senior", "int_health", "t_wellness", "t_acc_needs"], 18, "Q1 건강·케어 신호 반영", "Reflecting Q1 health and care signal");
-        addScore("h_care", 12, "케어형 주거 가능성 반영", "Reflecting care-oriented housing possibility");
-    }
-    if (hasKey("energy") || hasCustomTag("energy|saving")) {
-        addBatch(["int_energy", "t_efficiency"], 20, "Q1 에너지 절감 신호 반영", "Reflecting Q1 energy-saving signal");
-        addBatch(["h_apt", "h_compact", "ls_starter", "ls_settled"], 10, "에너지 효율 생활 패턴 반영", "Reflecting energy-efficient living patterns");
-    }
-    if (hasKey("safety") || hasCustomTag("security|safe")) {
-        addBatch(["int_safe", "t_security", "t_long_away"], 20, "Q1 안전·보안 신호 반영", "Reflecting Q1 safety and security signal");
-        addBatch(["h_house", "h_townhouse", "t_parent_away"], 10, "재실 확인과 출입 맥락 반영", "Reflecting presence checks and access context");
-    }
-    if (hasKey("daily_rhythm")) {
-        addBatch(["t_dual_income", "t_remote", "t_weekend_out", "int_chores", "t_efficiency", "ls_established"], 14, "Q1 일상 루틴 신호 반영", "Reflecting Q1 daily-rhythm signal");
-    }
-    if (hasKey("mobility")) {
-        addBatch(["t_long_away", "t_weekend_out", "hh_solo", "hh_couple"], 12, "Q1 이동성 신호 반영", "Reflecting Q1 mobility signal");
-        addBatch(["h_townhouse", "h_house"], 8, "통근·이동 중심 거주 맥락 반영", "Reflecting commute-led housing context");
-    }
-    if (hasKey("climate")) {
-        addBatch(["int_air", "int_sleep"], 14, "Q1 기후 신호 반영", "Reflecting Q1 climate signal");
-        addBatch(["h_apt", "h_house"], 6, "실내 환경 관리 필요 반영", "Reflecting indoor-environment management need");
-    }
-    if (hasKey("events")) {
-        addBatch(["ls_newlywed", "ls_settled", "t_homebody", "int_mood", "int_lights"], 10, "Q1 이벤트·라이프스타일 신호 반영", "Reflecting Q1 events and lifestyle signal");
-    }
-
-    if (hasText("apartment|high-rise|flat|condo|urban|dense|도심|아파트")) addBatch(["h_apt"], 14, "Q1 텍스트에서 아파트형 거주가 읽힘", "Q1 text suggests apartment living");
-    if (hasText("studio|officetel|compact|small space|1인|원룸")) addBatch(["h_compact", "hh_solo", "ls_starter"], 14, "Q1 텍스트에서 소형 주거 맥락이 읽힘", "Q1 text suggests compact living");
-    if (hasText("house|detached|yard|villa|suburb|townhouse|주택|단독")) addBatch(["h_house", "h_townhouse"], 14, "Q1 텍스트에서 독립 주거 맥락이 읽힘", "Q1 text suggests detached or townhouse living");
-    if (hasText("family|kids|child|school|육아|자녀")) addBatch(["hh_young_kids", "hh_school_kids", "ls_parenting", "int_kids"], 16, "Q1 텍스트에서 가족/자녀 맥락이 읽힘", "Q1 text suggests kids and family context");
-    if (hasText("senior|elder|aging|retire|부모|시니어")) addBatch(["hh_senior", "ls_senior", "t_parent_care", "int_senior"], 16, "Q1 텍스트에서 시니어/케어 맥락이 읽힘", "Q1 text suggests senior and care context");
-    if (hasText("remote|hybrid|work from home|재택|하이브리드")) addBatch(["t_remote", "int_chores"], 14, "Q1 텍스트에서 재택/하이브리드 패턴이 읽힘", "Q1 text suggests remote or hybrid work");
-    if (hasText("travel|weekend|commute|출장|외출")) addBatch(["t_long_away", "t_weekend_out", "int_safe"], 12, "Q1 텍스트에서 외출/이동 패턴이 읽힘", "Q1 text suggests away-from-home patterns");
-    if (hasText("night|shift|late|야간|교대")) addBatch(["t_night_shift", "int_sleep"], 14, "Q1 텍스트에서 야간 루틴이 읽힘", "Q1 text suggests night-shift routines");
-    if (hasText("air|pollution|humidity|heat|air quality|공기|미세먼지")) addBatch(["int_air", "int_sleep"], 12, "Q1 텍스트에서 실내 공기 관리 니즈가 읽힘", "Q1 text suggests indoor air-management needs");
-
-    const pickRanked = (ids, limit, fallbacks = []) => {
-        const ranked = ids
-            .filter((id) => scoreMap[id])
-            .sort((a, b) => {
-                const diff = (scoreMap[b]?.score || 0) - (scoreMap[a]?.score || 0);
-                return diff || ids.indexOf(a) - ids.indexOf(b);
-            });
-        const chosen = [];
-        ranked.forEach((id) => {
-            if (chosen.length >= limit) return;
-            if ((scoreMap[id]?.score || 0) > 0) chosen.push(id);
-        });
-        [...fallbacks, ...ranked].forEach((id) => {
-            if (chosen.length >= limit) return;
-            if (!chosen.includes(id)) chosen.push(id);
-        });
-        return chosen.slice(0, limit);
-    };
-
-    const lifeStageIds = ["ls_starter", "ls_newlywed", "ls_settled", "ls_parenting", "ls_established", "ls_empty_nest", "ls_senior"];
-    const lifePatternIds = ["t_remote", "t_long_away", "t_weekend_out", "t_night_shift", "t_homebody"];
-    const lifeThemeIds = ["int_energy", "int_air", "int_lights", "int_chores", "int_safe", "int_sleep", "int_mood", "int_senior", "int_kids", "int_pet", "int_find", "int_health", "t_security", "t_wellness", "t_efficiency"];
-
-    const ids = [
-        ...pickRanked(Q2_HOUSING_EXCLUSIVE_IDS, Q3_AUTO_TARGET_COUNTS.housing, ["h_apt", "h_house", "h_compact"]),
-        ...pickRanked(Q2_HOUSEHOLD_CORE_IDS, 1, ["hh_couple", "hh_solo", "hh_young_kids"]),
-        ...pickRanked([...Q2_HOUSEHOLD_CONTEXT_IDS, ...Q2_HOUSEHOLD_CARE_IDS], 2, ["t_dual_income", "t_pet", "t_parent_care"]),
-        ...pickRanked(lifeStageIds, 1, ["ls_settled", "ls_starter", "ls_established"]),
-        ...pickRanked(lifePatternIds, 2, ["t_remote", "t_weekend_out", "t_homebody"]),
-        ...pickRanked(lifeThemeIds, 2, ["int_safe", "int_air", "int_chores"])
-    ];
-
-    ids.forEach((id) => {
-        reasonById[id] = (scoreMap[id]?.reasons || []).slice(0, 2);
-        if (!reasonById[id].length) {
-            reasonById[id] = [isKo ? "Q1 생활 신호를 종합해 추천" : "Recommended from combined Q1 signals"];
-        }
-    });
-
-    const selectedCategoryLabels = selectedKeys
-        .map((key) => CITY_PROFILE_CATEGORIES.find((entry) => entry.key === key))
-        .filter(Boolean)
-        .map((entry) => isKo ? entry.labelKo : entry.labelEn)
-        .slice(0, 3);
-
-    const summary = [];
-    if (selectedCategoryLabels.length) {
-        summary.push(isKo
-            ? `Q1 도시 프로필 ${selectedCategoryLabels.join(", ")} 신호를 우선 반영했습니다.`
-            : `Prioritized Q1 city-profile signals from ${selectedCategoryLabels.join(", ")}.`);
-    }
-    if (customTags.length) {
-        summary.push(isKo
-            ? `커스텀 리서치 태그 ${customTags.slice(0, 3).join(", ")}를 생활맥락 보정에 사용했습니다.`
-            : `Used custom-research tags ${customTags.slice(0, 3).join(", ")} to refine lifestyle context.`);
-    }
-    if (roleId) {
-        summary.push(isKo
-            ? `${getRoleTitle(roleId)} 관점에서 설명력이 높은 조합으로 정렬했습니다.`
-            : `Sorted the set for higher explainability from the ${getRoleTitle(roleId)} lens.`);
-    }
-
-    return { ids, summary, reasonById };
 }
 
 function handleQ4AutoSelect() {
@@ -2463,7 +2280,7 @@ function renderCityDropdownItems(query = "") {
             items.forEach((item) => {
                 const selected = cityHiddenInput.value === item.value ? " selected" : "";
                 const popStr = item.pop ? formatPopulation(item.pop) : "";
-                html += `<div class="city-option${selected}" data-idx="${idx}" data-value="${escapeHtml(item.value)}">
+                html += `<div class="city-option${selected}" data-idx="${idx}" data-value="${escapeHtml(item.value)}" role="option" aria-selected="${selected ? "true" : "false"}">
                     <span class="city-option-name">${highlightMatch(item.label, q)}</span>
                     ${popStr ? `<span class="city-option-pop">${popStr}</span>` : ""}
                 </div>`;
@@ -2473,7 +2290,7 @@ function renderCityDropdownItems(query = "") {
     } else {
         filtered.forEach((item, idx) => {
             const selected = cityHiddenInput.value === item.value ? " selected" : "";
-            html += `<div class="city-option${selected}" data-idx="${idx}" data-value="${escapeHtml(item.value)}">
+            html += `<div class="city-option${selected}" data-idx="${idx}" data-value="${escapeHtml(item.value)}" role="option" aria-selected="${selected ? "true" : "false"}">
                 <span class="city-option-name">${highlightMatch(item.label, q)}</span>
             </div>`;
         });
@@ -2484,7 +2301,7 @@ function renderCityDropdownItems(query = "") {
         const searchLabel = currentLocale === "ko"
             ? `"${escapeHtml(query.trim())}" 검색하기`
             : `Search for "${escapeHtml(query.trim())}"`;
-        html += `<div class="city-option city-option--custom" data-value="${escapeHtml(query.trim())}" data-custom="1">
+        html += `<div class="city-option city-option--custom" data-value="${escapeHtml(query.trim())}" data-custom="1" role="option" aria-selected="false">
             <span class="city-search-custom-icon"></span>
             <span class="city-option-name">${searchLabel}</span>
         </div>`;
@@ -2499,6 +2316,7 @@ function openCityDropdown() {
     _cityDropdownOpen = true;
     cityDropdown.classList.remove("hidden");
     citySearchWrap.classList.add("open");
+    citySearchInput?.setAttribute("aria-expanded", "true");
     renderCityDropdownItems(citySearchInput.value);
 }
 
@@ -2507,6 +2325,8 @@ function closeCityDropdown() {
     _cityFocusIdx = -1;
     cityDropdown.classList.add("hidden");
     citySearchWrap.classList.remove("open");
+    citySearchInput?.setAttribute("aria-expanded", "false");
+    citySearchInput?.removeAttribute("aria-activedescendant");
 }
 
 function selectCity(value, label) {
@@ -2535,11 +2355,16 @@ function selectCity(value, label) {
 function focusCityOption(idx) {
     const options = cityDropdown.querySelectorAll(".city-option");
     if (options.length === 0) return;
-    options.forEach((el) => el.classList.remove("focused"));
+    options.forEach((el) => {
+        el.classList.remove("focused");
+        el.removeAttribute("id");
+    });
     if (idx < 0) idx = options.length - 1;
     if (idx >= options.length) idx = 0;
     _cityFocusIdx = idx;
     options[idx].classList.add("focused");
+    options[idx].id = "city-option-active";
+    citySearchInput?.setAttribute("aria-activedescendant", "city-option-active");
     options[idx].scrollIntoView({ block: "nearest" });
 }
 
@@ -2618,12 +2443,19 @@ function initCitySearchDropdown() {
         }
     });
 
-    // X button → clear
+    // Search icon button → clear or toggle dropdown
     citySearchIcon.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         if (citySearchWrap.classList.contains("has-value")) {
-            e.stopPropagation();
             selectCity("", "");
             citySearchInput.value = "";
+            citySearchInput.focus();
+            return;
+        }
+        if (_cityDropdownOpen) closeCityDropdown();
+        else {
+            openCityDropdown();
             citySearchInput.focus();
         }
     });
@@ -4987,7 +4819,7 @@ function inferQ1Traits() {
     if (!_magicSelected || _magicSelected.size === 0) return [];
     const isKo = currentLocale === "ko";
     const cityName = _latestCityProfile?.localCity || "";
-    const profile = _latestCityProfile?.profile || {};
+    const { profile } = getQ1SelectionContext();
 
     const mapping = {
         family:        { trait: isKo ? "케어/안심 니즈 큼"     : "strong care and reassurance needs",
@@ -5037,6 +4869,32 @@ function inferQ1Traits() {
     return result;
 }
 
+function getQ1SelectionContext() {
+    const profile = _latestCityProfile?.profile || {};
+    const selectedKeys = Array.from(_magicSelected || []);
+    const customTags = Array.isArray(_customResearchData?.tags) ? _customResearchData.tags.filter(Boolean) : [];
+    const customText = [
+        _customResearchData?.query || "",
+        _customResearchData?.data?.keyword_interpretation || "",
+        customTags.join(" ")
+    ].join(" ");
+    const profileText = selectedKeys.map((key) => String(profile[key] || "")).join(" ");
+    const q1Text = `${profileText} ${customText}`.toLowerCase();
+    return { profile, selectedKeys, customTags, q1Text };
+}
+
+function getQ2SelectionState() {
+    const hasHousing = !!personaGroups.querySelector('[data-group-id="housing"] input:checked');
+    const hasHousehold = !!personaGroups.querySelector('[data-group-id="household"] input:checked');
+    const hasLifestage = !!personaGroups.querySelector('[data-group-id="lifestage"] input:checked');
+    return {
+        hasHousing,
+        hasHousehold,
+        hasLifestage,
+        hasAnyQ2Selection: hasHousing || hasHousehold || hasLifestage
+    };
+}
+
 function summarizeInsightText(text, maxLength = 140) {
     const normalized = String(text || "").replace(/\s+/g, " ").trim();
     if (!normalized) return "";
@@ -5045,12 +4903,11 @@ function summarizeInsightText(text, maxLength = 140) {
 }
 
 function getRelevantQ1ProfileReferences(limit = 3) {
-    const profile = _latestCityProfile?.profile || {};
-    const selectedKeys = Array.from(_magicSelected || []);
+    const { profile, selectedKeys } = getQ1SelectionContext();
     const fallbackKeys = CITY_PROFILE_CATEGORIES
         .filter((cat) => profile[cat.key])
         .map((cat) => cat.key);
-    const targetKeys = [...new Set([...(selectedKeys.length ? selectedKeys : []), ...fallbackKeys])].slice(0, limit);
+    const targetKeys = (selectedKeys.length > 0 ? selectedKeys : fallbackKeys).slice(0, limit);
 
     return targetKeys.map((key) => {
         const cat = CITY_PROFILE_CATEGORIES.find((entry) => entry.key === key);
@@ -5088,8 +4945,7 @@ function getCustomResearchSummary() {
 function getAppliedQ1ContextEntries() {
     const isKo = currentLocale === "ko";
     const entries = [];
-    const selectedKeys = Array.from(_magicSelected || []);
-    const profile = _latestCityProfile?.profile || {};
+    const { selectedKeys, profile } = getQ1SelectionContext();
 
     selectedKeys.forEach((key) => {
         const cat = CITY_PROFILE_CATEGORIES.find((entry) => entry.key === key);
@@ -5194,39 +5050,6 @@ function buildReferenceKeywordChips(text, fallbackLabel = "", limit = 3) {
     return fallbackLabel ? [fallbackLabel] : [];
 }
 
-function getPersonaSelectionFooterCopy_legacy(groupId, isKo) {
-    const checkedLabels = [...personaGroups.querySelectorAll(`.tree-group[data-group-id="${groupId}"] input[data-node-type="child"]:checked`)]
-        .map((input) => input.dataset.label || input.value)
-        .filter(Boolean);
-
-    if (groupId === "housing") {
-        return checkedLabels.length
-            ? { title: isKo ? "현재 적용 주거 유형" : "Current housing", chips: checkedLabels.slice(0, 2) }
-            : { title: isKo ? "선택 기준" : "Selection rule", chips: [isKo ? "주거 유형 1개 선택" : "Choose 1 housing type"] };
-    }
-
-    if (groupId === "household") {
-        const coreLabels = [...personaGroups.querySelectorAll('.tree-group[data-group-id="household"] input[data-node-type="child"]:checked')]
-            .filter((input) => Q2_HOUSEHOLD_CORE_IDS.includes(input.value))
-            .map((input) => input.dataset.label || input.value);
-        const extraCount = checkedLabels.filter((label) => !coreLabels.includes(label)).length;
-        if (coreLabels.length > 0 || extraCount > 0) {
-            const chips = [];
-            if (coreLabels[0]) chips.push(coreLabels[0]);
-            if (extraCount > 0) chips.push(isKo ? `추가 조건 ${extraCount}` : `${extraCount} extra conditions`);
-            return { title: isKo ? "현재 세대 구조" : "Current household structure", chips };
-        }
-        return { title: isKo ? "선택 기준" : "Selection rule", chips: [isKo ? "핵심 구조 1개 + 추가 조건 선택" : "1 core structure + extra conditions"] };
-    }
-
-    if (groupId === "lifestage") {
-        return checkedLabels.length
-            ? { title: isKo ? "현재 반영 생활맥락" : "Current life context", chips: checkedLabels.slice(0, 3) }
-            : { title: isKo ? "선택 기준" : "Selection rule", chips: [isKo ? "복수 선택 가능" : "Multiple selections allowed"] };
-    }
-
-    return { title: isKo ? "현재 선택" : "Current selection", chips: checkedLabels.slice(0, 3) };
-}
 
 function updatePersonaGroupFooters() {
     const isKo = currentLocale === "ko";
@@ -5291,16 +5114,7 @@ function getPersonaSelectionFooterCopy(groupId, isKo) {
 function inferQ3AutoRecommendation() {
     const isKo = currentLocale === "ko";
     const roleId = roleSelect?.value || "";
-    const profile = _latestCityProfile?.profile || {};
-    const selectedKeys = Array.from(_magicSelected || []);
-    const profileText = selectedKeys.map((key) => String(profile[key] || "")).join(" ");
-    const customTags = Array.isArray(_customResearchData?.tags) ? _customResearchData.tags.filter(Boolean) : [];
-    const customText = [
-        _customResearchData?.query || "",
-        _customResearchData?.data?.keyword_interpretation || "",
-        customTags.join(" ")
-    ].join(" ");
-    const q1Text = `${profileText} ${customText}`.toLowerCase();
+    const { profile, selectedKeys, customTags, q1Text } = getQ1SelectionContext();
     const reasonById = {};
     const scoreMap = {};
 
@@ -5648,9 +5462,7 @@ function calculateConfidence() {
     // Q1 키워드 반영 = +20%
     if (_magicSelected && _magicSelected.size > 0) pct += 20;
     // Q2 A/B/C 각 +20% (최대 60%)
-    const hasHousing   = !!personaGroups.querySelector('[data-group-id="housing"] input:checked');
-    const hasHousehold = !!personaGroups.querySelector('[data-group-id="household"] input:checked');
-    const hasLifestage = !!personaGroups.querySelector('[data-group-id="lifestage"] input:checked');
+    const { hasHousing, hasHousehold, hasLifestage } = getQ2SelectionState();
     if (hasHousing)   pct += 20;
     if (hasHousehold) pct += 20;
     if (hasLifestage) pct += 20;
@@ -5794,11 +5606,7 @@ function buildStep3Insight() {
 
     // ── Layer 2: Q2 타겟 생활 (모든 Q2 trait 표시, Q1 연계 시 배지) ──
     let layer2Html = "";
-    const hasAnyQ2Selection = !!(
-        personaGroups.querySelector('[data-group-id="housing"] input:checked') ||
-        personaGroups.querySelector('[data-group-id="household"] input:checked') ||
-        personaGroups.querySelector('[data-group-id="lifestage"] input:checked')
-    );
+    const { hasAnyQ2Selection } = getQ2SelectionState();
     if (hasAnyQ2Selection && q2Traits.length > 0) {
         const warmColors = ["#ea580c", "#f97316", "#fb923c", "#c2410c", "#d97706", "#b91c1c", "#dc2626"];
         const traitCards = q2Traits.map((trait, i) => {
@@ -5922,7 +5730,7 @@ function buildStep3Insight() {
                 <section class="q2-ref-section">
                     <div class="q2-ref-section-head">
                         <span class="q2-ref-section-kicker">${isKo ? "기본 도시 프로필" : "Base city profile"}</span>
-                        <strong>${isKo ? "선택/연관된 핵심 요약" : "Selected or relevant profile summaries"}</strong>
+                        <strong>${isKo ? "Q1에서 선택한 핵심 요약" : "Selected profile summaries from Q1"}</strong>
                     </div>
                     <div class="q2-ref-chip-grid">${q1ProfileRefHtml}</div>
                 </section>
@@ -5938,7 +5746,7 @@ function buildStep3Insight() {
                 <section class="q2-ref-current">
                     <div class="q2-ref-section-head">
                         <span class="q2-ref-section-kicker">${isKo ? "도시 프로필 해석" : "City-profile interpretation"}</span>
-                        <strong>${isKo ? "Q1 키워드가 만든 생활 신호" : "Lifestyle signals inferred from Q1"}</strong>
+                        <strong>${isKo ? "Q1 선택값이 시사하는 생활 신호" : "Lifestyle signals suggested by Q1 selections"}</strong>
                     </div>
                     ${layer1Html}
                 </section>
@@ -6471,9 +6279,7 @@ function buildStep3Insight() {
     }
 
     // ── CTA / Missing input ──
-    const hasHousing   = !!personaGroups.querySelector('[data-group-id="housing"] input:checked');
-    const hasHousehold = !!personaGroups.querySelector('[data-group-id="household"] input:checked');
-    const hasLifestage = !!personaGroups.querySelector('[data-group-id="lifestage"] input:checked');
+    const { hasHousing, hasHousehold, hasLifestage } = getQ2SelectionState();
     const missingParts = [];
     if (!hasHousing)   missingParts.push(isKo ? "거주지 유형(A)" : "Housing(A)");
     if (!hasHousehold) missingParts.push(isKo ? "세대 구성(B)"   : "Household(B)");

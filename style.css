@@ -411,8 +411,11 @@ body {
     right: 14px;
     top: 50%;
     transform: translateY(-50%);
-    width: 20px; height: 20px;
-    pointer-events: none;
+    width: 28px; height: 28px;
+    border: 0;
+    padding: 0;
+    appearance: none;
+    background-color: transparent;
     opacity: 0.35;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat;
     transition: transform 200ms ease, opacity 160ms ease;
@@ -423,11 +426,15 @@ body {
 }
 .city-search-wrap.has-value .city-search-icon {
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2'%3E%3Cpath d='M18 6L6 18M6 6l12 12'/%3E%3C/svg%3E") center/contain no-repeat;
-    pointer-events: auto;
     cursor: pointer;
     opacity: 0.4;
 }
 .city-search-wrap.has-value .city-search-icon:hover { opacity: 0.7; }
+.city-search-icon:focus-visible {
+    outline: 3px solid rgba(29, 78, 216, 0.28);
+    outline-offset: 2px;
+    opacity: 0.72;
+}
 
 .city-dropdown {
     position: absolute;
