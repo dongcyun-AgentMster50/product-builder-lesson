@@ -2334,6 +2334,8 @@ function selectCity(value, label) {
     citySearchInput.value = label || value;
     citySearchWrap.classList.toggle("has-value", !!value);
     closeCityDropdown();
+    _magicSelected.clear();
+    _customResearchData = null;
     // Trigger downstream updates
     updateStatePreview();
     if (value) {
@@ -3774,7 +3776,7 @@ function renderCityProfileInsight(countryName, localCity, profile) {
                 </div>
                 <div id="magic-custom-result" class="magic-custom-result" style="display:none"></div>
             </div>
-            ${buildQ1NextStepHelperCard(isKo)}
+            <div id="q1-scenario-reference-card">${buildQ1ScenarioReferencePanelHtml()}</div>
         </div>
     `;
 }
@@ -3811,6 +3813,7 @@ function bindCityProfileDrawer(container) {
                 tag.classList.add("selected");
             }
             renderMagicCards(container);
+            renderQ1ScenarioReferencePanel(container);
         });
     });
 
@@ -3838,6 +3841,8 @@ function bindCityProfileDrawer(container) {
                 applyBtn.innerHTML = isKo ? "선택한 기본 생활 키워드 반영" : "Apply selected base categories";
                 applyBtn.disabled = false;
             }, 2500);
+
+            renderQ1ScenarioReferencePanel(container);
         });
     }
 
@@ -3860,6 +3865,8 @@ function bindCityProfileDrawer(container) {
             }
         });
     }
+
+    renderQ1ScenarioReferencePanel(container);
 }
 
 /** 커스텀 도시 리서치 — AI 마켓 리서치 실행 */
@@ -4183,6 +4190,7 @@ function bindCustomResearchActions(query, needsText, data, tags, resultContainer
         });
 
         updateStatePreview();
+        renderQ1ScenarioReferencePanel(stepInsight);
         if (currentStep === 3) updateStepInsight();
     });
 
@@ -4190,6 +4198,7 @@ function bindCustomResearchActions(query, needsText, data, tags, resultContainer
     resultContainer.querySelector("#magic-custom-skip-btn")?.addEventListener("click", () => {
         resultContainer.style.display = "none";
         _customResearchData = null;
+        renderQ1ScenarioReferencePanel(stepInsight);
     });
 
     // 다시 검색 버튼
@@ -5368,22 +5377,24 @@ function decoratePersonaGroups() {
     updatePersonaGroupFooters();
 }
 
-function buildQ2ReferencePanelHtml() {
+function buildQ1ScenarioReferencePanelHtml() {
     const isKo = currentLocale === "ko";
     const profileRefs = getRelevantQ1ProfileReferences(3);
+    const q1Traits = inferQ1Traits().slice(0, 3);
     const customSummary = getCustomResearchSummary();
     const cityName = _latestCityProfile?.localCity || getCityValue() || "";
     const countryName = _latestCityProfile?.countryName || getCountryName(countrySelect.value) || "";
     const locationTitle = [countryName, cityName].filter(Boolean).join(" · ");
-    const hasContent = profileRefs.length > 0 || customSummary;
+    const hasContent = profileRefs.length > 0 || q1Traits.length > 0 || customSummary;
 
     if (!hasContent) {
         return `
             <section class="q2-reference-shell q2-reference-shell--empty">
                 <div class="q2-reference-topline">
                     <div>
-                        <span class="q2-reference-kicker">${isKo ? "Q1 반영 대기" : "Waiting for Q1 reflection"}</span>
-                        <h4>${isKo ? "도시 프로필이나 커스텀 항목을 반영하면 여기에 요약됩니다" : "Applied city-profile and custom items will appear here"}</h4>
+                        <span class="q2-reference-kicker">${isKo ? "Q1 시나리오 참고" : "Q1 scenario reference"}</span>
+                        <h4>${isKo ? "Q1에서 반영한 지역 신호가 아직 없습니다" : "No regional signals have been reflected from Q1 yet"}</h4>
+                        <p>${isKo ? "도시 프로필 키워드를 반영하거나 커스텀 검색 결과를 적용하면, 이후 시나리오 판단의 기준이 여기 정리됩니다." : "Apply city-profile keywords or custom research to summarize the scenario inputs carried forward from Q1."}</p>
                     </div>
                 </div>
             </section>
@@ -5419,14 +5430,32 @@ function buildQ2ReferencePanelHtml() {
         `
         : `<p class="q2-ref-empty">${isKo ? "커스텀 검색 반영이 없으면 여기에는 Q1 사용자 정의 맥락이 표시됩니다." : "Applied custom research from Q1 will appear here."}</p>`;
 
+    const implicationHtml = q1Traits.length > 0
+        ? q1Traits.map((item) => `
+            <article class="q2-audience-implication" style="--q2-ref-accent:${item.color}">
+                <div class="q2-audience-implication-top">
+                    <div class="q2-audience-implication-heading">
+                        <span class="q2-source-tag" style="background:${item.color}20;color:${item.color}">${escapeHtml(item.catLabel)}</span>
+                        <strong>${escapeHtml(item.trait)}</strong>
+                    </div>
+                    <span class="q2-audience-implication-badge">${isKo ? "Q1 반영됨" : "Reflected from Q1"}</span>
+                </div>
+                <p>${escapeHtml(summarizeInsightText(item.logic, 100))}</p>
+            </article>
+        `).join("")
+        : `<p class="q2-ref-empty">${isKo ? "선택한 도시 프로필에서 읽히는 생활상 시사점이 아직 없습니다." : "No lifestyle implications are available from the selected city profile yet."}</p>`;
+
     return `
-        <section class="q2-reference-shell">
+        <section class="q2-reference-shell q1-scenario-reference-shell">
             <div class="q2-reference-topline">
                 <div>
-                    <span class="q2-reference-kicker">${isKo ? "Q1에서 이미 반영된 맥락" : "Context already reflected from Q1"}</span>
+                    <span class="q2-reference-kicker">${isKo ? "Q1 시나리오 반영 카드" : "Q1 scenario reflection card"}</span>
                     <h4>${isKo
-                        ? `${locationTitle || "선택한 지역"} 기준으로 이런 조건이 들어와 있습니다`
-                        : `These conditions are already carried in for ${locationTitle || "the selected location"}`}</h4>
+                        ? `${locationTitle || "선택한 지역"} 시나리오에 반영할 핵심 기준`
+                        : `Key scenario inputs reflected for ${locationTitle || "the selected location"}`}</h4>
+                    <p>${isKo
+                        ? "Q1에서 반영한 도시 프로필 근거와 생활상 시사점이 이후 시나리오 판단의 출발점으로 이어집니다."
+                        : "The city-profile basis and lifestyle implications reflected in Q1 carry forward into later scenario decisions."}</p>
                 </div>
                 <div class="q2-reference-location">
                     ${countryName ? `<span class="q2-reference-location-chip">${escapeHtml(countryName)}</span>` : ""}
@@ -5436,21 +5465,34 @@ function buildQ2ReferencePanelHtml() {
             <div class="q2-reference-grid">
                 <section class="q2-ref-section">
                     <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "선택한 도시 프로필" : "Selected city profile"}</span>
-                        <strong>${isKo ? "Q1에서 고른 생활 특성" : "Lifestyle traits chosen in Q1"}</strong>
+                        <span class="q2-ref-section-kicker">${isKo ? "반영 근거" : "Reflected basis"}</span>
+                        <strong>${isKo ? "Q1에서 선택한 도시 프로필 요약" : "Selected city-profile basis from Q1"}</strong>
                     </div>
                     <div class="q2-ref-chip-grid">${profileHtml}</div>
                 </section>
+                <section class="q2-ref-section">
+                    <div class="q2-ref-section-head">
+                        <span class="q2-ref-section-kicker">${isKo ? "생활상 시사점" : "Lifestyle implications"}</span>
+                        <strong>${isKo ? "선택 항목이 시사하는 생활 맥락과 우선순위" : "Likely lifestyle context and value priorities"}</strong>
+                    </div>
+                    <div class="q2-audience-implication-grid">${implicationHtml}</div>
+                </section>
                 <section class="q2-ref-section q2-ref-section--custom">
                     <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "커스텀 반영" : "Custom reflection"}</span>
-                        <strong>${isKo ? "추가로 반영한 사용자 맥락" : "Additional user-defined context"}</strong>
+                        <span class="q2-ref-section-kicker">${isKo ? "사용자 추가 반영" : "Additional user reflection"}</span>
+                        <strong>${isKo ? "Q1 커스텀 검색에서 함께 참고할 맥락" : "Additional context from Q1 custom research"}</strong>
                     </div>
                     ${customHtml}
                 </section>
             </div>
         </section>
     `;
+}
+
+function renderQ1ScenarioReferencePanel(container = stepInsight) {
+    const anchor = container?.querySelector?.("#q1-scenario-reference-card");
+    if (!anchor) return;
+    anchor.innerHTML = buildQ1ScenarioReferencePanelHtml();
 }
 
 /** 프로필 신뢰도 계산 (0–100) */
@@ -5467,6 +5509,156 @@ function calculateConfidence() {
     if (hasHousehold) pct += 20;
     if (hasLifestage) pct += 20;
     return Math.min(100, pct);
+}
+
+function getStep3AudienceCopy(locale, audiencePlace) {
+    const audienceCardCopy = {
+        ko: {
+            title: `${audiencePlace} 타겟 세그먼트 참고`,
+            summary: "Q1에서 선택한 도시 프로필 근거와 생활상 시사점을 바탕으로, 이 지역 세그먼트에 반영할 핵심 항목을 정리했습니다.",
+            detailTitle: "타겟 세그먼트에 반영할 핵심 항목",
+            kicker: "Q1 반영 참고",
+            basisKicker: "반영 기준",
+            basisTitle: "Q1에서 선택한 도시 프로필 요약",
+            basisCopy: "선택한 항목들이 이 지역 타겟 세그먼트를 해석하는 출발점이 됩니다.",
+            implicationKicker: "생활상 시사점",
+            implicationTitle: "선택 항목이 시사하는 생활 맥락과 우선순위",
+            implicationCopy: "과장된 해석이 아니라, 이후 시나리오 매칭에 참고할 수 있는 현실적인 생활 신호를 정리했습니다.",
+            customKicker: "사용자 추가 반영",
+            customTitle: "Q1 커스텀 검색에서 함께 참고할 맥락",
+            customCopy: "사용자가 직접 반영한 항목도 기본 근거와 함께 참고됩니다.",
+            cardSummary: "Q1 선택 근거와 생활상 시사점을 함께 보는 참고 카드"
+        },
+        en: {
+            title: `Target segment reference for ${audiencePlace}`,
+            summary: "This summarizes the key factors to reflect in the regional target segment based on the Q1 profile basis and lifestyle implications.",
+            detailTitle: "Key factors reflected in the target segment",
+            kicker: "Q1 reference",
+            basisKicker: "Reflected basis",
+            basisTitle: "Selected city-profile basis from Q1",
+            basisCopy: "These selected items form the starting point for interpreting the regional target segment.",
+            implicationKicker: "Lifestyle implications",
+            implicationTitle: "Likely lifestyle context and value priorities",
+            implicationCopy: "These are grounded signals to use as reference for later scenario matching.",
+            customKicker: "Additional user reflection",
+            customTitle: "Additional context from Q1 custom research",
+            customCopy: "User-defined context is carried alongside the selected profile basis.",
+            cardSummary: "A compact reference card combining Q1 profile basis and lifestyle implications"
+        },
+        de: {
+            title: `Referenz zum Zielsegment für ${audiencePlace}`,
+            summary: "Diese Karte fasst die wichtigsten Punkte zusammen, die auf Basis der Q1-Profilgrundlage und der daraus abgeleiteten Alltagskontexte in das regionale Zielsegment einfließen sollten.",
+            detailTitle: "Zentrale Faktoren für das Zielsegment",
+            kicker: "Q1-Referenz",
+            basisKicker: "Grundlage",
+            basisTitle: "Ausgewählte Stadtprofil-Basis aus Q1",
+            basisCopy: "Diese ausgewählten Punkte bilden den Ausgangspunkt für die Interpretation des regionalen Zielsegments.",
+            implicationKicker: "Alltagsimplikationen",
+            implicationTitle: "Wahrscheinlicher Lebenskontext und Wertprioritäten",
+            implicationCopy: "Diese realistischen Signale dienen als Referenz für das spätere Szenario-Matching.",
+            customKicker: "Zusätzlicher Nutzereintrag",
+            customTitle: "Zusätzlicher Kontext aus der benutzerdefinierten Q1-Recherche",
+            customCopy: "Vom Nutzer definierter Kontext wird zusammen mit der ausgewählten Profilgrundlage berücksichtigt.",
+            cardSummary: "Eine kompakte Referenzkarte mit Q1-Grundlage und Alltagsimplikationen"
+        },
+        fr: {
+            title: `Référence du segment cible pour ${audiencePlace}`,
+            summary: "Cette carte résume les éléments clés à refléter dans le segment cible régional à partir de la base de profil Q1 et des implications de mode de vie qui en découlent.",
+            detailTitle: "Éléments clés à refléter dans le segment cible",
+            kicker: "Référence Q1",
+            basisKicker: "Base retenue",
+            basisTitle: "Base du profil urbain sélectionnée en Q1",
+            basisCopy: "Ces éléments sélectionnés constituent le point de départ pour interpréter le segment cible régional.",
+            implicationKicker: "Implications de mode de vie",
+            implicationTitle: "Contexte de vie probable et priorités de valeur",
+            implicationCopy: "Ces signaux concrets servent de référence pour la mise en correspondance ultérieure avec les scénarios.",
+            customKicker: "Apport utilisateur",
+            customTitle: "Contexte supplémentaire issu de la recherche personnalisée Q1",
+            customCopy: "Le contexte défini par l'utilisateur est conservé avec la base de profil sélectionnée.",
+            cardSummary: "Une carte de référence concise réunissant base Q1 et implications de mode de vie"
+        },
+        es: {
+            title: `Referencia del segmento objetivo para ${audiencePlace}`,
+            summary: "Esta tarjeta resume los factores clave que deben reflejarse en el segmento objetivo regional a partir de la base de perfil de Q1 y sus implicaciones de estilo de vida.",
+            detailTitle: "Factores clave reflejados en el segmento objetivo",
+            kicker: "Referencia Q1",
+            basisKicker: "Base reflejada",
+            basisTitle: "Base de perfil urbano seleccionada en Q1",
+            basisCopy: "Estos elementos seleccionados son el punto de partida para interpretar el segmento objetivo regional.",
+            implicationKicker: "Implicaciones de estilo de vida",
+            implicationTitle: "Contexto de vida probable y prioridades de valor",
+            implicationCopy: "Estas señales realistas sirven como referencia para el ajuste posterior de escenarios.",
+            customKicker: "Aporte adicional del usuario",
+            customTitle: "Contexto adicional de la investigación personalizada de Q1",
+            customCopy: "El contexto definido por el usuario se mantiene junto con la base de perfil seleccionada.",
+            cardSummary: "Tarjeta de referencia compacta con base Q1 e implicaciones de estilo de vida"
+        },
+        pt: {
+            title: `Referência do segmento-alvo para ${audiencePlace}`,
+            summary: "Este cartão resume os fatores principais a refletir no segmento-alvo regional com base no perfil selecionado em Q1 e nas implicações de estilo de vida derivadas.",
+            detailTitle: "Fatores centrais refletidos no segmento-alvo",
+            kicker: "Referência Q1",
+            basisKicker: "Base refletida",
+            basisTitle: "Base de perfil urbano selecionada em Q1",
+            basisCopy: "Esses itens selecionados formam o ponto de partida para interpretar o segmento-alvo regional.",
+            implicationKicker: "Implicações de estilo de vida",
+            implicationTitle: "Contexto de vida provável e prioridades de valor",
+            implicationCopy: "Esses sinais concretos servem como referência para a etapa posterior de correspondência de cenários.",
+            customKicker: "Contribuição adicional do usuário",
+            customTitle: "Contexto adicional da pesquisa personalizada de Q1",
+            customCopy: "O contexto definido pelo usuário é mantido junto com a base de perfil selecionada.",
+            cardSummary: "Cartão de referência compacto com base Q1 e implicações de estilo de vida"
+        },
+        it: {
+            title: `Riferimento del segmento target per ${audiencePlace}`,
+            summary: "Questa scheda riassume i fattori chiave da riflettere nel segmento target regionale sulla base del profilo Q1 e delle implicazioni di stile di vita che ne derivano.",
+            detailTitle: "Fattori chiave riflessi nel segmento target",
+            kicker: "Riferimento Q1",
+            basisKicker: "Base riflessa",
+            basisTitle: "Base del profilo urbano selezionata in Q1",
+            basisCopy: "Questi elementi selezionati rappresentano il punto di partenza per interpretare il segmento target regionale.",
+            implicationKicker: "Implicazioni di stile di vita",
+            implicationTitle: "Contesto di vita probabile e priorità di valore",
+            implicationCopy: "Questi segnali concreti fungono da riferimento per il successivo abbinamento degli scenari.",
+            customKicker: "Apporto aggiuntivo dell'utente",
+            customTitle: "Contesto aggiuntivo dalla ricerca personalizzata Q1",
+            customCopy: "Il contesto definito dall'utente viene mantenuto insieme alla base di profilo selezionata.",
+            cardSummary: "Scheda di riferimento compatta con base Q1 e implicazioni di stile di vita"
+        },
+        nl: {
+            title: `Doelsegmentreferentie voor ${audiencePlace}`,
+            summary: "Deze kaart vat de belangrijkste factoren samen die in het regionale doelsegment moeten worden meegenomen op basis van de Q1-profielbasis en de daaruit volgende leefstijlimplicaties.",
+            detailTitle: "Belangrijkste factoren in het doelsegment",
+            kicker: "Q1-referentie",
+            basisKicker: "Onderbouwing",
+            basisTitle: "Geselecteerde stadsprofielbasis uit Q1",
+            basisCopy: "Deze geselecteerde punten vormen het startpunt voor de interpretatie van het regionale doelsegment.",
+            implicationKicker: "Leefstijlimplicaties",
+            implicationTitle: "Waarschijnlijke leefcontext en waardeprioriteiten",
+            implicationCopy: "Deze realistische signalen dienen als referentie voor latere scenariomatching.",
+            customKicker: "Extra gebruikersinbreng",
+            customTitle: "Aanvullende context uit gepersonaliseerd Q1-onderzoek",
+            customCopy: "Door de gebruiker gedefinieerde context blijft gekoppeld aan de geselecteerde profielbasis.",
+            cardSummary: "Compacte referentiekaart met Q1-basis en leefstijlimplicaties"
+        },
+        ar: {
+            title: `مرجع الشريحة المستهدفة لـ ${audiencePlace}`,
+            summary: "تلخص هذه البطاقة العوامل الأساسية التي ينبغي عكسها في الشريحة المستهدفة الإقليمية استنادًا إلى أساس الملف المختار في Q1 وما يشير إليه من سياق معيشي.",
+            detailTitle: "العوامل الأساسية المنعكسة في الشريحة المستهدفة",
+            kicker: "مرجع Q1",
+            basisKicker: "أساس الانعكاس",
+            basisTitle: "أساس ملف المدينة المختار من Q1",
+            basisCopy: "تشكل هذه العناصر المختارة نقطة البداية لتفسير الشريحة المستهدفة الإقليمية.",
+            implicationKicker: "دلالات نمط الحياة",
+            implicationTitle: "السياق المعيشي المحتمل وأولويات القيمة",
+            implicationCopy: "هذه إشارات واقعية يمكن استخدامها كمرجع عند مطابقة السيناريوهات لاحقًا.",
+            customKicker: "إضافة المستخدم",
+            customTitle: "سياق إضافي من البحث المخصص في Q1",
+            customCopy: "يتم الاحتفاظ بالسياق الذي حدده المستخدم إلى جانب أساس الملف المختار.",
+            cardSummary: "بطاقة مرجعية موجزة تجمع أساس Q1 ودلالات نمط الحياة"
+        }
+    };
+    return audienceCardCopy[locale] || audienceCardCopy.en;
 }
 
 function buildStep3Insight() {
@@ -5491,14 +5683,12 @@ function buildStep3Insight() {
     const audiencePlace = cityDisplay && countryDisplay
         ? `${cityDisplay}(${countryDisplay})`
         : (cityDisplay || countryDisplay || (isKo ? "선택 지역" : "the selected location"));
-    const audienceTitle = isKo
-        ? `${audiencePlace} 지역의 타겟 세그먼트에 반영할 항목`
-        : `Factors reflected into the target segment for ${audiencePlace}`;
-    const audienceSummary = isKo
-        ? "Q1에서 선택한 도시 프로필과 그로부터 읽히는 생활 맥락을 함께 정리했습니다. 이후 Q2 시나리오 판단의 참고 기준으로 사용됩니다."
-        : "This combines the city-profile factors chosen in Q1 with the grounded lifestyle implications they suggest for Q2 scenario judgment.";
-    const selectedLabels = [audienceTitle];
-    const primaryPersona = audienceTitle;
+    const step3InsightTitle = isKo
+        ? `${audiencePlace} 시나리오 매칭 개요`
+        : `Scenario match overview for ${audiencePlace}`;
+    const step3InsightSummary = isKo
+        ? "Q2에서 고른 생활 조건을 바탕으로, 어떤 시나리오 방향이 유력한지와 가중치 구조를 정리합니다."
+        : "This summarizes likely scenario directions and weighting based on the life-context choices made in Q2.";
 
     // ── 신뢰도 색상/라벨 ──
     const confColor = confidence < 40 ? "amber" : confidence < 80 ? "blue" : "green";
@@ -5525,7 +5715,7 @@ function buildStep3Insight() {
         <div class="q2-hybrid-header">
             ${ringHtml}
             <div class="q2-header-text">
-                <span class="q2-header-persona">${escapeHtml(audienceTitle)}</span>
+                <span class="q2-header-persona">${escapeHtml(step3InsightTitle)}</span>
                 <span class="q2-header-confidence q2-header-confidence--${confColor}">${escapeHtml(confLabel)}</span>
             </div>
         </div>`;
@@ -5749,47 +5939,6 @@ function buildStep3Insight() {
                         <strong>${isKo ? "Q1 선택값이 시사하는 생활 신호" : "Lifestyle signals suggested by Q1 selections"}</strong>
                     </div>
                     ${layer1Html}
-                </section>
-            ` : ""}
-        </section>`;
-
-    // ── Synthesis: 시나리오 추천 스코어보드 (신뢰도 >= 40%) ──
-    const mergedReferenceCardHtml = `
-        <section class="q2-stage-card q2-stage-card--reference">
-            <div class="q2-stage-card-head q2-stage-card-head--audience">
-                <div>
-                    <span class="q2-stage-kicker">${isKo ? "Q1 반영 참고" : "Q1 reference"}</span>
-                    <h4>${escapeHtml(audienceTitle)}</h4>
-                </div>
-                <span class="q2-stage-status q2-stage-status--${confColor}">${escapeHtml(confLabel)}</span>
-            </div>
-            <p class="q2-stage-copy">${escapeHtml(audienceSummary)}</p>
-            <div class="q2-reference-grid q2-reference-grid--audience">
-                <section class="q2-ref-section q2-ref-section--basis">
-                    <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "반영 기준" : "Reflected basis"}</span>
-                        <strong>${isKo ? "Q1에서 선택한 도시 프로필 요약" : "Selected city-profile basis from Q1"}</strong>
-                    </div>
-                    <p class="q2-ref-section-copy">${isKo ? "이 항목들이 지역 타겟 세그먼트 해석의 출발점이 됩니다." : "These selected items form the basis for the regional target-segment reference."}</p>
-                    <div class="q2-ref-chip-grid">${q1ProfileRefHtml}</div>
-                </section>
-                <section class="q2-ref-section q2-ref-section--implications">
-                    <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "생활상 시사점" : "Lifestyle implications"}</span>
-                        <strong>${isKo ? "선택 항목이 시사하는 생활 맥락과 우선순위" : "Likely lifestyle context and value priorities"}</strong>
-                    </div>
-                    <p class="q2-ref-section-copy">${isKo ? "과장된 해석이 아니라, 이후 시나리오 매칭에 참고할 만한 생활상과 중요 가치를 짧게 정리했습니다." : "These are grounded, practical implications to use as reference for later scenario matching."}</p>
-                    <div class="q2-audience-implication-grid">${q1ImplicationHtml}</div>
-                </section>
-            </div>
-            ${customResearchSummary ? `
-                <section class="q2-ref-section q2-ref-section--custom-inline">
-                    <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "사용자 추가 반영" : "Additional user reflection"}</span>
-                        <strong>${isKo ? "Q1 커스텀 검색에서 함께 참고할 맥락" : "Additional context from Q1 custom research"}</strong>
-                    </div>
-                    <p class="q2-ref-section-copy">${isKo ? "사용자가 직접 반영한 항목은 위 기준과 함께 참고됩니다." : "User-defined context is carried alongside the selected profile basis."}</p>
-                    ${customSummaryHtml}
                 </section>
             ` : ""}
         </section>`;
@@ -6338,13 +6487,12 @@ function buildStep3Insight() {
     const place = cityDisplay ? `${cityDisplay} ${isKo ? "생활권" : "area"}` : (isKo ? "이 타겟" : "this target");
 
     return {
-        badge: "Q2 Audience",
-        title: audienceTitle,
-        summary: isKo ? "Q1 선택 근거와 생활상 시사점을 함께 보는 참고 카드" : "A compact reference card combining Q1 profile basis and lifestyle implications",
+        badge: currentLocale === "ko" ? "Q2 Match" : "Q2 Match",
+        title: step3InsightTitle,
+        summary: step3InsightSummary,
         customHtml: `
             <div class="q2-redesign">
                 ${headerHtml}
-                ${mergedReferenceCardHtml}
                 ${currentSelectionSummaryHtml || introCardHtml}
                 ${synthesisHtml}
                 ${footerCardHtml}
@@ -6354,8 +6502,8 @@ function buildStep3Insight() {
   } catch (err) {
     console.error("[buildStep3Insight] error:", err);
     return {
-        badge: "Q2 Audience",
-        title: currentLocale === "ko" ? "지역 반영 항목" : "Regional reference factors",
+        badge: currentLocale === "ko" ? "Q2 Match" : "Q2 Match",
+        title: currentLocale === "ko" ? "시나리오 매칭 개요" : "Scenario match overview",
         summary: currentLocale === "ko" ? "카드 렌더링 중 오류가 발생했습니다." : "Card rendering error.",
         body: String(err.message || err)
     };
