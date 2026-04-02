@@ -3580,12 +3580,13 @@ async function renderStep2Insight(forceRefresh = false) {
     // 1. sessionStorage 캐시 확인
     const cacheKey = `city-profile-${country.countryCode}-${city}-${currentLocale}`;
     const cached = sessionStorage.getItem(cacheKey);
-    if (cached && !forceRefresh) {
+            if (cached && !forceRefresh) {
         try {
             const profile = JSON.parse(cached);
             if (currentStep !== 2) return;
             stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, profile);
             bindCityProfileDrawer(stepInsight);
+            bindQ2EvidenceToggles(stepInsight);
             updateQuestionHelpers();
             // 프로필 로드 후 다음 버튼이 보이도록 스크롤
             requestAnimationFrame(() => {
@@ -3649,6 +3650,7 @@ async function renderStep2Insight(forceRefresh = false) {
                 if (currentStep !== 2) return;
                 stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, result.data);
                 bindCityProfileDrawer(stepInsight);
+                bindQ2EvidenceToggles(stepInsight);
                 updateQuestionHelpers();
                 stepInsight.classList.remove("insight-refresh");
                 void stepInsight.offsetWidth;
@@ -4913,6 +4915,24 @@ function summarizeInsightText(text, maxLength = 140) {
     return `${normalized.slice(0, maxLength - 1).trim()}…`;
 }
 
+function buildExpandableSummaryHtml(text, maxLength = 140, detailClassName = "") {
+    const normalized = String(text || "").replace(/\s+/g, " ").trim();
+    if (!normalized) return "";
+    const summary = summarizeInsightText(normalized, maxLength);
+    if (summary === normalized) return `<p>${escapeHtml(normalized)}</p>`;
+    const detailId = `q2-ref-detail-${Math.random().toString(36).slice(2, 10)}`;
+    const detailClass = detailClassName ? ` q2-evidence-detail--inline ${detailClassName}` : " q2-evidence-detail--inline";
+    return `
+        <p>${escapeHtml(summary)}</p>
+        <div class="q2-evidence-detail${detailClass}" id="${detailId}">
+            <p>${escapeHtml(normalized)}</p>
+        </div>
+        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${detailId}">
+            <span class="q2-ev-arrow">▸</span> ${currentLocale === "ko" ? "전체 보기" : "Show full text"}
+        </button>
+    `;
+}
+
 function getRelevantQ1ProfileReferences(limit = 3) {
     const { profile, selectedKeys } = getQ1SelectionContext();
     const targetKeys = selectedKeys.slice(0, limit);
@@ -5410,7 +5430,7 @@ function buildQ1ScenarioReferencePanelHtml() {
                 <div class="q2-ref-keyword-row">
                     ${buildReferenceKeywordChips(item.text, item.label).map((chip) => `<span class="q2-ref-tag q2-ref-tag--soft">${escapeHtml(chip)}</span>`).join("")}
                 </div>
-                <p>${escapeHtml(summarizeInsightText(item.text, 72))}</p>
+                ${buildExpandableSummaryHtml(item.text, 72)}
             </article>
         `).join("")
         : `<p class="q2-ref-empty">${isKo ? "아직 선택된 도시 프로필 요약이 없습니다." : "No city-profile references applied yet."}</p>`;
@@ -5424,7 +5444,7 @@ function buildQ1ScenarioReferencePanelHtml() {
                 <div class="q2-ref-tag-row">
                     ${(customSummary.tags.length ? customSummary.tags : buildReferenceKeywordChips(customSummary.interpretation, customSummary.query)).slice(0, 5).map((tag) => `<span class="q2-ref-tag">${escapeHtml(tag)}</span>`).join("")}
                 </div>
-                ${customSummary.interpretation ? `<p class="q2-ref-custom-copy">${escapeHtml(summarizeInsightText(customSummary.interpretation, 90))}</p>` : ""}
+                ${customSummary.interpretation ? `<div class="q2-ref-custom-copy">${buildExpandableSummaryHtml(customSummary.interpretation, 90)}</div>` : ""}
             </article>
         `
         : `<p class="q2-ref-empty">${isKo ? "커스텀 검색 반영이 없으면 여기에는 Q1 사용자 정의 맥락이 표시됩니다." : "Applied custom research from Q1 will appear here."}</p>`;
@@ -5439,7 +5459,7 @@ function buildQ1ScenarioReferencePanelHtml() {
                     </div>
                     <span class="q2-audience-implication-badge">${isKo ? "Q1 반영됨" : "Reflected from Q1"}</span>
                 </div>
-                <p>${escapeHtml(summarizeInsightText(item.logic, 100))}</p>
+                ${buildExpandableSummaryHtml(item.logic, 100)}
             </article>
         `).join("")
         : `<p class="q2-ref-empty">${isKo ? "선택한 도시 프로필에서 읽히는 생활상 시사점이 아직 없습니다." : "No lifestyle implications are available from the selected city profile yet."}</p>`;

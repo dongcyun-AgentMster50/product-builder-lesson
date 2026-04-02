@@ -3577,6 +3577,16 @@ textarea {
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 
+.q2-ref-chip-card p,
+.q2-ref-custom-copy p,
+.q2-audience-implication p {
+    margin: 0;
+}
+
+.q2-evidence-detail--inline {
+    margin-top: 8px;
+}
+
 .q2-ref-chip-card::before {
     content: "";
     display: block;
