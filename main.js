@@ -4933,6 +4933,12 @@ function buildExpandableSummaryHtml(text, maxLength = 140, detailClassName = "")
     `;
 }
 
+function buildInlineSummaryHtml(text) {
+    const normalized = String(text || "").replace(/\s+/g, " ").trim();
+    if (!normalized) return "";
+    return `<p>${escapeHtml(normalized)}</p>`;
+}
+
 function getRelevantQ1ProfileReferences(limit = 3) {
     const { profile, selectedKeys } = getQ1SelectionContext();
     const targetKeys = selectedKeys.slice(0, limit);
@@ -4968,6 +4974,60 @@ function getCustomResearchSummary() {
         findings,
         tags: Array.isArray(data.tags) ? data.tags.slice(0, 4) : []
     };
+}
+
+function buildQ1ImplicationConclusion(q1Traits, customSummary) {
+    const isKo = currentLocale === "ko";
+    const traitLabels = q1Traits.map((item) => item.trait).filter(Boolean);
+    const customTags = Array.isArray(customSummary?.tags) ? customSummary.tags.filter(Boolean) : [];
+    const customInterpretation = customSummary?.interpretation || "";
+
+    if (isKo) {
+        const baseText = traitLabels.length
+            ? `도시 프로필상 ${traitLabels.join(", ")} 성향이 읽히며`
+            : "도시 프로필에서 뚜렷한 생활 맥락 신호가 확인되며";
+        const customText = customSummary
+            ? `, 커스텀 검색${customSummary.query ? `(${customSummary.query})` : ""}에서는 ${customTags.length ? customTags.join(", ") : "사용자 정의 맥락"}이 추가로 확인됩니다.`
+            : ".";
+        const closing = customSummary
+            ? " 따라서 이후 시나리오는 기본 도시 특성 위에 사용자가 찾은 특수 상황을 함께 반영하는 방향으로 해석해야 합니다."
+            : " 따라서 이후 시나리오는 이 지역의 기본 생활 리듬과 우선순위를 중심으로 해석하는 것이 적절합니다.";
+        return `${baseText}${customText}${closing}${customInterpretation ? ` ${customInterpretation}` : ""}`;
+    }
+
+    const baseText = traitLabels.length
+        ? `The city profile suggests ${traitLabels.join(", ")} tendencies`
+        : "The city profile suggests clear lifestyle context signals";
+    const customText = customSummary
+        ? `, while custom research${customSummary.query ? ` (${customSummary.query})` : ""} adds ${customTags.length ? customTags.join(", ") : "user-defined context"}.`
+        : ".";
+    const closing = customSummary
+        ? " Scenario decisions should therefore reflect both the base city conditions and the additional user-specific context."
+        : " Scenario decisions should therefore follow the area's core routines and priorities.";
+    return `${baseText}${customText}${closing}${customInterpretation ? ` ${customInterpretation}` : ""}`;
+}
+
+function getQ1CombinedImplications(q1Traits, customSummary) {
+    const isKo = currentLocale === "ko";
+    const items = [...q1Traits];
+
+    if (customSummary) {
+        const detailParts = [
+            customSummary.interpretation,
+            ...(Array.isArray(customSummary.points) ? customSummary.points.slice(0, 2) : []),
+            ...(Array.isArray(customSummary.findings) ? customSummary.findings.slice(0, 1) : [])
+        ].filter(Boolean);
+
+        items.push({
+            trait: customSummary.query || (isKo ? "커스텀 검색 반영 맥락" : "Custom research context"),
+            logic: summarizeInsightText(detailParts.join(" "), 180),
+            catLabel: isKo ? "커스텀 검색" : "Custom research",
+            color: "#7c3aed",
+            sourceType: "custom"
+        });
+    }
+
+    return items.slice(0, 4);
 }
 
 function getAppliedQ1ContextEntries() {
@@ -5401,10 +5461,12 @@ function buildQ1ScenarioReferencePanelHtml() {
     const profileRefs = getRelevantQ1ProfileReferences(3);
     const q1Traits = inferQ1Traits().slice(0, 3);
     const customSummary = getCustomResearchSummary();
+    const combinedImplications = getQ1CombinedImplications(q1Traits, customSummary);
+    const implicationConclusion = buildQ1ImplicationConclusion(q1Traits, customSummary);
     const cityName = _latestCityProfile?.localCity || getCityValue() || "";
     const countryName = _latestCityProfile?.countryName || getCountryName(countrySelect.value) || "";
     const locationTitle = [countryName, cityName].filter(Boolean).join(" · ");
-    const hasContent = profileRefs.length > 0 || q1Traits.length > 0 || customSummary;
+    const hasContent = profileRefs.length > 0 || combinedImplications.length > 0 || customSummary;
 
     if (!hasContent) {
         return `
@@ -5430,7 +5492,7 @@ function buildQ1ScenarioReferencePanelHtml() {
                 <div class="q2-ref-keyword-row">
                     ${buildReferenceKeywordChips(item.text, item.label).map((chip) => `<span class="q2-ref-tag q2-ref-tag--soft">${escapeHtml(chip)}</span>`).join("")}
                 </div>
-                ${buildExpandableSummaryHtml(item.text, 72)}
+                ${buildInlineSummaryHtml(item.text)}
             </article>
         `).join("")
         : `<p class="q2-ref-empty">${isKo ? "아직 선택된 도시 프로필 요약이 없습니다." : "No city-profile references applied yet."}</p>`;
@@ -5444,25 +5506,25 @@ function buildQ1ScenarioReferencePanelHtml() {
                 <div class="q2-ref-tag-row">
                     ${(customSummary.tags.length ? customSummary.tags : buildReferenceKeywordChips(customSummary.interpretation, customSummary.query)).slice(0, 5).map((tag) => `<span class="q2-ref-tag">${escapeHtml(tag)}</span>`).join("")}
                 </div>
-                ${customSummary.interpretation ? `<div class="q2-ref-custom-copy">${buildExpandableSummaryHtml(customSummary.interpretation, 90)}</div>` : ""}
+                ${customSummary.interpretation ? `<div class="q2-ref-custom-copy">${buildInlineSummaryHtml(customSummary.interpretation)}</div>` : ""}
             </article>
         `
         : `<p class="q2-ref-empty">${isKo ? "커스텀 검색 반영이 없으면 여기에는 Q1 사용자 정의 맥락이 표시됩니다." : "Applied custom research from Q1 will appear here."}</p>`;
 
-    const implicationHtml = q1Traits.length > 0
-        ? q1Traits.map((item) => `
+    const implicationHtml = combinedImplications.length > 0
+        ? combinedImplications.map((item) => `
             <article class="q2-audience-implication" style="--q2-ref-accent:${item.color}">
                 <div class="q2-audience-implication-top">
                     <div class="q2-audience-implication-heading">
                         <span class="q2-source-tag" style="background:${item.color}20;color:${item.color}">${escapeHtml(item.catLabel)}</span>
                         <strong>${escapeHtml(item.trait)}</strong>
                     </div>
-                    <span class="q2-audience-implication-badge">${isKo ? "Q1 반영됨" : "Reflected from Q1"}</span>
+                    <span class="q2-audience-implication-badge">${item.sourceType === "custom" ? (isKo ? "커스텀 반영" : "Custom input") : (isKo ? "Q1 반영됨" : "Reflected from Q1")}</span>
                 </div>
-                ${buildExpandableSummaryHtml(item.logic, 100)}
+                ${buildInlineSummaryHtml(item.logic)}
             </article>
         `).join("")
-        : `<p class="q2-ref-empty">${isKo ? "선택한 도시 프로필에서 읽히는 생활상 시사점이 아직 없습니다." : "No lifestyle implications are available from the selected city profile yet."}</p>`;
+        : `<p class="q2-ref-empty">${isKo ? "선택한 도시 프로필과 커스텀 검색에서 읽히는 생활상 시사점이 아직 없습니다." : "No lifestyle implications are available from the selected city profile or custom research yet."}</p>`;
 
     return `
         <section class="q2-reference-shell q1-scenario-reference-shell">
@@ -5492,7 +5554,13 @@ function buildQ1ScenarioReferencePanelHtml() {
                 <section class="q2-ref-section">
                     <div class="q2-ref-section-head">
                         <span class="q2-ref-section-kicker">${isKo ? "생활상 시사점" : "Lifestyle implications"}</span>
-                        <strong>${isKo ? "선택 항목이 시사하는 생활 맥락과 우선순위" : "Likely lifestyle context and value priorities"}</strong>
+                        <strong>${isKo ? "도시 프로필과 커스텀 검색을 종합한 생활 맥락 결론" : "Combined lifestyle conclusion from city profile and custom research"}</strong>
+                    </div>
+                    <div class="q2-ref-custom-card q2-ref-custom-card--summary">
+                        <div class="q2-ref-custom-top">
+                            <span class="q2-ref-custom-query">${isKo ? "종합 결론" : "Combined conclusion"}</span>
+                        </div>
+                        ${buildInlineSummaryHtml(implicationConclusion)}
                     </div>
                     <div class="q2-audience-implication-grid">${implicationHtml}</div>
                 </section>
