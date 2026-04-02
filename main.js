@@ -5512,6 +5512,7 @@ function renderQ1ScenarioReferencePanel(container = stepInsight) {
     const anchor = container?.querySelector?.("#q1-scenario-reference-card");
     if (!anchor) return;
     anchor.innerHTML = buildQ1ScenarioReferencePanelHtml();
+    bindQ2EvidenceToggles(anchor);
 }
 
 /** 프로필 신뢰도 계산 (0–100) */
