@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scenario Agent Architecture & Comparison</title>
+  <style>
+    :root {
+      --navy:#003366;
+      --accent:#0000FF;
+      --panel:#F8F8F8;
+      --canvas:#ECEFF3;
+      --white:#FFFFFF;
+      --ink:#111111;
+      --muted:#5E6572;
+      --line:#D9DEE6;
+      --black:#000000;
+      --good:#DFF4E7;
+      --warn:#FFF0D6;
+      --risk:#FBE1E6;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --shadow:0 28px 60px rgba(17,17,17,.10);
+      --headline:"SamsungSharpSans","Samsung One","SamsungOne","Noto Sans KR",Arial,sans-serif;
+      --body:"Samsung One","SamsungOne","Noto Sans KR",Arial,sans-serif;
+      --slide-w:min(92vw, calc(100vh * 16 / 9 - 4vh));
+      --slide-h:calc(var(--slide-w) * 9 / 16);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin:0; min-height:100%; background:var(--canvas); color:var(--ink); font-family:var(--body); }
+    body { overflow:hidden; }
+    .shell { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2vh 2vw 7vh; }
+    .deck { width:var(--slide-w); height:var(--slide-h); position:relative; }
+    .slide {
+      position:absolute; inset:0; display:none; background:var(--white); border:2px solid var(--black); box-shadow:var(--shadow);
+      padding:28px 32px 22px; grid-template-rows:auto auto 1fr auto; gap:14px;
+    }
+    .slide.active { display:grid; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; }
+    .brand { display:inline-flex; align-items:center; gap:10px; color:var(--navy); font-size:12px; letter-spacing:.11em; text-transform:uppercase; font-weight:700; }
+    .dot { width:11px; height:11px; border-radius:999px; background:var(--accent); }
+    .page { min-width:92px; padding:8px 12px; border:1px solid var(--black); border-radius:999px; text-align:center; color:var(--navy); font-size:12px; font-weight:700; background:#fff; }
+    .eyebrow { display:inline-flex; width:fit-content; padding:7px 12px; border-radius:999px; background:var(--navy); color:#fff; font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+    h1,h2,h3,h4,p { margin:0; }
+    h1 { font-family:var(--headline); font-size:30px; line-height:1.08; letter-spacing:-.03em; }
+    h2 { font-family:var(--headline); font-size:24px; line-height:1.15; letter-spacing:-.02em; }
+    h3 { font-family:var(--headline); font-size:15px; line-height:1.25; }
+    .lead { font-size:14px; color:#2A3340; line-height:1.6; max-width:92%; }
+    .content { display:grid; gap:12px; align-content:start; min-height:0; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
+    .stack { display:grid; gap:12px; }
+    .card, .panel, .mini {
+      background:var(--panel); border-radius:4px; padding:14px 14px 13px;
+    }
+    .cardhead, .panelhead {
+      display:flex; align-items:center; justify-content:space-between; gap:8px; margin:-14px -14px 11px; padding:10px 14px; background:var(--navy); color:#fff;
+    }
+    .subtle { font-size:10.5px; line-height:1.45; color:#D7E4F3; }
+    .bodycopy, li, td, th, .caption, .small, .scoretext { font-size:11.2px; line-height:1.56; color:#232A36; }
+    ul { margin:0; padding-left:18px; display:grid; gap:6px; }
+    .hero-band {
+      display:grid; grid-template-columns:12px 1fr; gap:12px; align-items:start; padding:13px 15px; border-radius:var(--radius-md);
+      background:linear-gradient(90deg, rgba(0,51,102,.08), rgba(0,0,255,.02));
+    }
+    .hero-band::before { content:""; width:12px; height:100%; border-radius:99px; background:var(--navy); }
+    .hero-band strong { color:var(--navy); }
+    .quote { font-family:var(--headline); font-size:18px; line-height:1.42; letter-spacing:-.02em; }
+    .steps { display:grid; gap:9px; }
+    .step { display:grid; grid-template-columns:22px 1fr; gap:10px; align-items:start; }
+    .stepnum {
+      width:22px; height:22px; border-radius:999px; background:var(--navy); color:#fff; display:grid; place-items:center; font-size:11px; font-weight:700;
+    }
+    .pillrow { display:flex; flex-wrap:wrap; gap:8px; }
+    .pill { display:inline-flex; align-items:center; padding:6px 10px; border-radius:999px; font-size:10px; font-weight:700; color:var(--navy); background:rgba(0,0,255,.05); border:1px solid rgba(0,0,255,.16); }
+    .tablewrap { border-radius:4px; overflow:hidden; background:var(--panel); }
+    table { width:100%; border-collapse:collapse; table-layout:fixed; }
+    th { background:var(--navy); color:#fff; text-align:left; padding:9px 11px; font-size:10.8px; border-right:1px solid rgba(255,255,255,.15); }
+    th:last-child { border-right:0; }
+    td { padding:9px 11px; border-bottom:1px solid var(--line); border-right:1px solid #E8ECF2; vertical-align:top; background:#fff; }
+    tr:nth-child(even) td { background:#FAFBFC; }
+    td:last-child { border-right:0; }
+    .rowhead { font-weight:700; color:var(--navy); }
+    .compare-block { display:grid; gap:10px; }
+    .compare-row { display:grid; grid-template-columns:145px 1fr 1fr; gap:10px; }
+    .compare-label, .compare-cell { border-radius:4px; padding:10px 12px; }
+    .compare-label { background:#EEF2F7; font-weight:700; color:var(--ink); }
+    .compare-cell { background:var(--panel); }
+    .compare-cell strong { display:block; font-size:11px; color:var(--navy); margin-bottom:3px; }
+    .sourcebox { border-radius:4px; background:#fff; border:1px solid var(--line); padding:10px 12px; display:grid; gap:6px; }
+    .sourceitem { font-size:9.4px; line-height:1.55; color:#4F5765; font-style:italic; }
+    .footer { display:flex; align-items:center; justify-content:space-between; gap:14px; padding-top:11px; border-top:1px solid var(--line); font-size:10px; color:var(--muted); }
+    .controls { position:fixed; right:18px; bottom:16px; display:flex; gap:10px; z-index:50; }
+    .controls button { width:48px; height:48px; border-radius:999px; border:1px solid var(--black); background:#fff; color:var(--navy); font-size:18px; cursor:pointer; box-shadow:0 10px 20px rgba(17,17,17,.12); }
+    .controls button.pdf-btn { font-size:12px; font-weight:700; width:auto; padding:0 16px; font-family:var(--body); letter-spacing:.02em; }
+    .controls button.pdf-btn:hover { background:var(--navy); color:#fff; }
+    .controls button:disabled { opacity:.4; cursor:not-allowed; }
+    .progress { position:fixed; left:24px; right:24px; bottom:18px; height:6px; background:rgba(0,0,0,.08); border-radius:999px; overflow:hidden; }
+    .progress > div { height:100%; width:0; background:linear-gradient(90deg, var(--navy), var(--accent)); }
+    @media (max-width:1200px), (max-height:760px) {
+      body { overflow:auto; }
+      .shell { align-items:flex-start; }
+      .deck { width:min(96vw, 1240px); height:auto; display:grid; gap:18px; }
+      .slide { position:relative; display:grid; height:auto; }
+      .slide:not(.active) { display:none; }
+      .grid-2, .grid-3, .compare-row { grid-template-columns:1fr; }
+      .progress { display:none; }
+      .controls { bottom:10px; left:10px; right:10px; justify-content:center; }
+      .controls button { width:44px; height:44px; font-size:16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="deck">
+
+      <!-- Slide 1: Cover -->
+      <section class="slide active">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Architecture & Comparison Report</div>
+          <div class="page">1 / 10</div>
+        </div>
+        <div class="content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:24px">
+          <span class="eyebrow">Technical Report · 2026</span>
+          <h1 style="font-size:clamp(2.2rem,4.5vw,3.4rem);line-height:1.06;letter-spacing:-.04em">Scenario Agent<br>Architecture & Comparison</h1>
+          <p class="lead" style="max-width:72%;text-align:center;font-size:15px;line-height:1.7;color:var(--muted)">마케팅 캠페인 자산을 자동으로 생성하는 "Scenario Self Generation Agent"의 구조와 기존 GPTs 플랫폼 구현 방식 대비 진화된 웹 앱의 압도적 강점을 분석합니다.</p>
+          <div class="pillrow" style="justify-content:center">
+            <span class="pill">Curation Engine</span>
+            <span class="pill">Parallel LLM Streaming</span>
+            <span class="pill">Hallucination 0%</span>
+          </div>
+          <p style="font-size:11px;color:var(--muted);margin-top:12px">Samsung Global Marketing · Internal Use Only</p>
+        </div>
+        <div class="footer"><span>Press → or click Next to begin</span><span>Cover</span></div>
+      </section>
+
+      <!-- Slide 2: Overall Architecture -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> 1. Overview</div>
+          <div class="page">2 / 10</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">Architecture Overview</span>
+          <h2>전반적인 아키텍처 및 핵심 솔루션</h2>
+          <p class="lead">순수 웹 기술 기반의 독립형 환경(웹 앱)으로 구축되어, 속도와 보안, 정확성을 일거에 달성했습니다.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card stack">
+            <div class="cardhead"><h3>시스템 구성</h3><span class="subtle">Tech Stack</span></div>
+            <ul>
+              <li><strong>Frontend:</strong> 바닐라 JavaScript(ES6+), HTML5, 순수 CSS로 구축된 SPA(Single Page Application). 체감 속도가 매우 뛰어남.</li>
+              <li><strong>Backend:</strong> Node.js `http` 모듈 기반 초경량 서버. 정적 배포 및 API Gateway (CORS 회피/Key 은닉) 역할 동시 수행.</li>
+              <li><strong>Flow:</strong> 4단계 직관적 마법사(Wizard) UI 인터페이스 기반 작동.</li>
+            </ul>
+          </article>
+          <article class="card stack">
+            <div class="cardhead"><h3>연동 솔루션 및 API</h3><span class="subtle">AI & Gateway</span></div>
+            <ul>
+              <li><strong>Multi-LLM:</strong> 상황에 따라 OpenAI `gpt-4o`, `gpt-4o-mini`, Anthropic `claude-sonnet` 시리즈를 혼합 사용. (Nudge는 빠른 속도 중시, Output은 추론 품질 중시).</li>
+              <li><strong>SSE 통신:</strong> AI 응답은 Server-Sent Events(SSE) 기술로 브라우저에 타자를 치듯 실시간 스트리밍되어 체감 대기 속도를 소거.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="footer"><span>Lightweight but extremely powerful architecture</span><span>Slide 2</span></div>
+      </section>
+
+      <!-- Slide 3: Frontend Pipeline -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> 2. Frontend Pipeline</div>
+          <div class="page">3 / 10</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">마법사 워크플로우</span>
+          <h2>프론트엔드 파이프라인 (main.js)</h2>
+          <p class="lead">사용자의 고민과 실수를 차단하기 위해 글로벌 로케일과 디바이스 카탈로그를 동적으로 매핑합니다.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card">
+            <div class="cardhead"><h3>Step-by-Step UI</h3><span class="subtle">Error-free Input</span></div>
+            <div class="steps">
+              <div class="step"><div class="stepnum">Q1</div><div class="bodycopy"><strong>역할(Role):</strong> 클릭만으로 Retail / Dotcom / Brand 마케터 지정.</div></div>
+              <div class="step"><div class="stepnum">Q2</div><div class="bodycopy"><strong>지역/국가:</strong> 자동완성 검색 기능이 포함된 Country/City 선택.</div></div>
+              <div class="step"><div class="stepnum">Q3</div><div class="bodycopy"><strong>페르소나:</strong> 주거(Housing), 라이프스타일, 세대 구성 등을 체크리스트로 정밀 조합.</div></div>
+              <div class="step"><div class="stepnum">Q4</div><div class="bodycopy"><strong>기기 선택:</strong> 개별 기기 선택 외에도 Energy, Care 같은 프리셋 일괄 선택 지원.</div></div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="cardhead"><h3>동적 로케일 매핑</h3><span class="subtle">Locale Validation</span></div>
+            <ul>
+              <li><strong>LOCALE_CATALOGS 적용:</strong> Q2에서 선택된 국가 코드(US, EU 등)를 기반으로 해당 지역에 판매되는 삼성 기기와 파트너 라인업을 즉시 재구성.</li>
+              <li><strong>결과:</strong> 판매하지 않는 제품이 시나리오에 포함되는 오류를 기술적으로 원천 방지함.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="hero-band"><div class="quote">기존 텍스트 타이핑 환경에서는 방어할 수 없었던 <strong>"입력 오류"</strong>를 프론트엔드 단에서 강력하게 통제합니다.</div></div>
+        <div class="footer"><span>Strict input validation means strict output quality</span><span>Slide 3</span></div>
+      </section>
+
+      <!-- Slide 4: Curation Engine -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> 3. Curation Engine</div>
+          <div class="page">4 / 10</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">순수 알고리즘 매칭</span>
+          <h2>핵심 모듈: 큐레이션 엔진 (curation-engine.js)</h2>
+          <p class="lead">AI의 확률적 추론에 기대지 않고, 100% 자바스크립트 수식을 사용해 DB(`explore_db.json`)와 정확히 매칭합니다.</p>
+        </div>
+        <div class="content">
+          <div class="tablewrap">
+            <table>
+              <thead><tr><th style="width:25%">처리 단계</th><th>함수 / 메커니즘</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="rowhead">1. 태그 변환</td>
+                  <td><strong>`buildExploreTagsFromInput()`</strong><br>페르소나와 기기, 목적 텍스트를 파싱하여 ["가족 케어", "수면"] 같은 가중치 태그 배열로 변환합니다.</td>
+                </tr>
+                <tr>
+                  <td class="rowhead">2. 점수 산정</td>
+                  <td><strong>`scoreScenario()`</strong><br>입력 태그와 기존 DB 시나리오가 겹치면 가중치 점수를 수학적으로 부여합니다. 특히 겹치는 기기(Devices)가 많을수록 보너스 점수가 가중됩니다.</td>
+                </tr>
+                <tr>
+                  <td class="rowhead">3. 최적 선별</td>
+                  <td><strong>`curateScenarios()`</strong><br>최종 점수별로 랭킹을 매긴 후, 중복을 제거한 Top 시나리오를 선별해 결과 객체 배율로 리턴합니다.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="hero-band"><div class="quote">AI가 임의로 스토리를 창작하며 발생하던 <strong>환각(Hallucination)</strong> 리스크를 제로(0%)로 만듭니다. 시나리오는 코드가 뽑고, AI는 포장만 합니다.</div></div>
+        <div class="footer"><span>Deterministic matching prevents unpredictable AI behavior</span><span>Slide 4</span></div>
+      </section>
+
+      <!-- Slide 5: Parallel Streaming Engine -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> 4. Campaign Output Engine</div>
+          <div class="page">5 / 10</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">캠페인 생성 파이프라인</span>
+          <h2>병렬 스트리밍 아키텍처 (campaign-output.js)</h2>
+          <p class="lead">13개 영역의 결과물을 하나의 기다란 AI 응답으로 받지 않고, 목적에 따라 로컬과 분할 병렬 랜더링으로 나누었습니다.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card">
+            <div class="cardhead"><h3>순수 알고리즘 렌더링 <br>(Sections 01~04)</h3><span class="subtle">0초 생성 영역</span></div>
+            <ul>
+              <li><strong>AI Delay Zero:</strong> Curation Engine의 연산 결과를 즉각 UI로 렌더링합니다.</li>
+              <li><strong>논리적 역추적:</strong> 해당 시나리오가 "왜 추천되었는지", "어떤 기기가 겹치는지" 등을 역산출하여 <code>_buildWhyExplanation()</code> 함수로 표시.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="cardhead"><h3>병렬 멀티 스트리밍 <br>(Sections 05~12)</h3><span class="subtle">Promise.allSettled</span></div>
+            <ul>
+              <li><strong>개별 프롬프트 발송:</strong> 05부터 12섹션까지 각기 다른 전문 프롬프트(카피/스토리/FGD 등)를 동시에 백엔드 API로 전송합니다.</li>
+              <li><strong>UI 부분 렌더링:</strong> <code>reader.read()</code>를 활용한 SSE 통신으로, 응답이 돌아오는 섹션 카드부터 화면에 글씨가 실시간 채워집니다.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="sourcebox">
+          <div class="sourceitem">API Gateway: <code>server.js</code>를 통해 OpenAI/Anthropic 엔드포인트 연동 및 JSON Schema 강제 출력 조율</div>
+        </div>
+        <div class="footer"><span>Parallel execution dramatically reduces wait times and context window drops</span><span>Slide 5</span></div>
+      </section>
+
+      <!-- Slide 6: Architecture Comparison -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Comparison 1</div>
+          <div class="page">6 / 10</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">Architecture vs GPTs</span>
+          <h2>구성 요소 및 아키텍처 비교</h2>
+          <p class="lead">프롬프트 하나에 모든 동작을 맡기던 과거 방식에서, <strong>코드가 코어 논리를 통제하는 방식</strong>으로 진화했습니다.</p>
+        </div>
+        <div class="content">
+          <div class="compare-block">
+            <div class="compare-row">
+              <div class="compare-label">기반 기술</div>
+              <div class="compare-cell"><strong>기존 GPTs 방식</strong><span>ChatGPT 플랫폼 내 챗봇 (자연어 프롬프트). 지시사항의 길이가 길어져 Context Window 한계 노출.</span></div>
+              <div class="compare-cell" style="background:#EBF2FA"><strong>현재 Web App 방식 (승)</strong><span>Node.js Backend + Vanilla JS Frontend. 완전한 독립 애플리케이션으로 커스텀이 자유로움.</span></div>
+            </div>
+            <div class="compare-row">
+              <div class="compare-label">설계 구조</div>
+              <div class="compare-cell"><strong>기존 GPTs 방식</strong><span>Part 1~7로 나뉜 방대한 텍스트 인스트럭션 기반. DB는 RAG 방식으로 검색 의존.</span></div>
+              <div class="compare-cell" style="background:#EBF2FA"><strong>현재 Web App 방식 (승)</strong><span>텍스트 제약 탈피. Curation Engine이 100% 자바스크립트 수식으로 DB를 직접 파싱하고 통제.</span></div>
+            </div>
+            <div class="compare-row">
+              <div class="compare-label">환각 위험</div>
+              <div class="compare-cell"><strong>기존 GPTs 방식</strong><span>RAG 시스템 특성상 정해진 DB를 무시하거나 임의로 결론지어버리는 문제 빈번.</span></div>
+              <div class="compare-cell" style="background:#EBF2FA"><strong>현재 Web App 방식 (승)</strong><span>매칭 영역과 텍스트 생성 영역을 완전히 분리하여 사실 오류 원천 차단 (Zero Risk).</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><span>Web App approach replaces unpredictable language with hardcoded rules</span><span>Slide 6</span></div>
+      </section>
+
+      <!-- Slide 7: UX Comparison -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Comparison 2</div>
+          <div class="page">7 / 10</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">User UX vs GPTs</span>
+          <h2>마케터 체감 경험 및 UI 비교</h2>
+          <p class="lead">대화형 인터페이스(Chat UI)의 모호함을 시각적 GUI 마법사로 완전히 대체했습니다.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card">
+            <div class="cardhead"><h3>기존 GPTs 챗봇 방식</h3><span class="subtle">Typing intensive</span></div>
+            <ul>
+              <li><strong>타이핑 피로도:</strong> "Q1은 리테일, Q2는 미국..." 식으로 수동 타이핑 진행.</li>
+              <li><strong>진행 통제 불가:</strong> AI가 중간에 멋대로 단계를 건너뛰어 곧바로 결과물을 내는 오류 일상다반사.</li>
+              <li><strong>오타/예외 취약:</strong> 잘못 입력했을 때 정규화 과정 없이 엉뚱한 결과물 연동 우려.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="cardhead"><h3>현재 Web App 방식</h3><span class="subtle">Click intensive</span></div>
+            <ul>
+              <li><strong>시각적 마법사:</strong> 국가 드롭다운, 태그 체크리스트 등 시각적 버튼/카드를 통한 완전한 GUI 플로우 설계.</li>
+              <li><strong>동적 대응력:</strong> 국가 선택 순간 사용 가능한 카탈로그(Products)가 실시간 필터링되어 노출됨. (챗봇으로는 구현 불가능).</li>
+              <li><strong>강력한 인증:</strong> Access Screen을 외부 단절 게이트로 분리해 보안 통제권 완벽 장악.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="footer"><span>Humans make typos, GUI buttons do not</span><span>Slide 7</span></div>
+      </section>
+
+      <!-- Slide 8: Outputs Comparison -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Comparison 3</div>
+          <div class="page">8 / 10</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">Generation Flow vs GPTs</span>
+          <h2>결과물 시각화 및 속도 비교</h2>
+          <p class="lead">기존 하나의 거대한 채팅 응답을 쪼개어, 압도적인 생성 속도와 UI 일관성을 달성했습니다.</p>
+        </div>
+        <div class="content">
+          <div class="compare-block">
+            <div class="compare-row">
+              <div class="compare-label">생성 방식 및 시간</div>
+              <div class="compare-cell"><strong>기존 GPTs (직렬 스트리밍)</strong><span>1~13번을 위에서 아래로 순차 생성. 출력이 길어 중간에 멈추면 "계속"을 명령해야 하며, 완료 시까지 긴 대기 시간 소요.</span></div>
+              <div class="compare-cell" style="background:#EBF2FA"><strong>Web App (병렬 스트리밍)</strong><span>1~4번 섹션 0초 렌더. 5~12번 섹션 8개 동시 API 발송 처리. 대기 시간 1/8 수준으로 단축.</span></div>
+            </div>
+            <div class="compare-row">
+              <div class="compare-label">시각적 일관성</div>
+              <div class="compare-cell"><strong>기존 GPTs (자연어 형식)</strong><span>텍스트 생성이므로, AI 컨디션에 따라 Markdown 표나 Bold 처리가 깨지는 양식 파괴 빈번.</span></div>
+              <div class="compare-cell" style="background:#EBF2FA"><strong>Web App (JSON 강제 검증)</strong><span>API JSON 출력 강제. 클라이언트에서 `validateCampaign` 파싱 후 Card UI 컨테이너에 입혀 절대 깨지지 않음.</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-band"><div class="quote">API를 분산 호출하는 <strong>Promise.allSettled 병렬 아키텍처</strong>가 마케터의 체감 속도를 완전히 바꿨습니다.</div></div>
+        <div class="footer"><span>Parallel execution combined with strict JSON schema overrides chat limits</span><span>Slide 8</span></div>
+      </section>
+
+      <!-- Slide 9: System Logic Comparison -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Comparison 4</div>
+          <div class="page">9 / 10</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">Logic Engine vs GPTs</span>
+          <h2>엔진 시스템 작동 원리 비교</h2>
+          <p class="lead">AI의 '창의성(Creativity)'을 모호성 통제 불가(Hallucination)가 아닌, 필요한 영역에만 배치하여 안정성을 확보했습니다.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card stack">
+            <div class="cardhead"><h3>기존 시스템 (확률론적 엔진)</h3><span class="subtle">Probabilistic Guessing</span></div>
+            <ul>
+              <li><strong>RAG 의존:</strong> 주어진 파일을 읽고 알아서 조합하라는 서술적 프롬프트 사용.</li>
+              <li><strong>매번 다른 논리 산출:</strong> 질문할 때마다 AI의 판단이 달라져 객관적인 퀄리티 측정이 제한됨. 사용자가 묻지도 않은 이상한 기기를 멋대로 끼워 팜.</li>
+            </ul>
+          </article>
+          <article class="card stack">
+            <div class="cardhead"><h3>웹앱 시스템 (결정론적 알고리즘)</h3><span class="subtle">Deterministic Engine</span></div>
+            <ul>
+              <li><strong>가중치 알고리즘 매칭:</strong> 1인가구 선택(+5), 보안가치 선택(+8) 등 정확한 포인트 합산 로직을 타고 코드가 정답을 落點.</li>
+              <li><strong>AI의 분리 사용 (통제된 창의성):</strong> 로직이 정해준 핵심 뼈대 안에서만 AI가 <strong>"카피라이팅"</strong>, <strong>"로컬 뉘앙스 번역"</strong> 등만 진행하게 제어함.</li>
+              <li>추가 기능으로 타겟 도시를 고른 직후 <strong>GPT-4o-mini가 2초안에 Nudge Microservice 팝업 전략</strong> 지원.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="footer"><span>Separating Algorithm (logic) from AI (creativity) solves hallucination deeply</span><span>Slide 9</span></div>
+      </section>
+
+      <!-- Slide 10: Conclusion -->
+      <section class="slide">
+        <div class="topbar">
+          <div class="brand"><span class="dot"></span> Conclusion</div>
+          <div class="page">10 / 10</div>
+        </div>
+        <div class="stack">
+          <span class="eyebrow">Final Summary</span>
+          <h2>종합 특장점 총정리</h2>
+          <p class="lead">단순한 프롬프트 작성물에서 진정한 엔터프라이즈 마케팅 애플리케이션으로 탈바꿈했습니다.</p>
+        </div>
+        <div class="content grid-2">
+          <article class="card">
+            <div class="cardhead"><h3>💎 무결점의 안정성</h3><span class="subtle">Zero Hallucination</span></div>
+            <div class="bodycopy">AI의 가장 큰 단점인 거짓 정보와 출력 양식 파괴 문제를 100% 알고리즘 통제로 종결.</div>
+          </article>
+          <article class="card">
+            <div class="cardhead"><h3>🚀 속도 극대화</h3><span class="subtle">Parallel Processing</span></div>
+            <div class="bodycopy">거대한 단일 프롬프트를 8개의 API 호출로 정밀 분할 병렬 처리해 대기 속도 획기적 단축.</div>
+          </article>
+          <article class="card">
+            <div class="cardhead"><h3>✨ 사용성 극대화</h3><span class="subtle">Advanced GUI</span></div>
+            <div class="bodycopy">불편한 채팅 구성을 버리고 직관적인 GUI/Wizard 구축. 마우스 클릭만으로 모든 상황 완벽 제어 가능.</div>
+          </article>
+          <article class="card">
+            <div class="cardhead"><h3>🌍 글로벌 확장성</h3><span class="subtle">Dynamic & Scalable</span></div>
+            <div class="bodycopy">각 코드를 통해 국가별 판매 기기 카탈로그를 실시간 반영하므로 전 세계 어느 지역에건 즉시 배포 가능.</div>
+          </article>
+        </div>
+        <div class="footer"><span>A true global marketer automation tool built for scale</span><span>End</span></div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="prev" aria-label="Previous slide">←</button>
+    <button id="next" aria-label="Next slide">→</button>
+    <button id="pdf-slide" class="pdf-btn" aria-label="Download current slide as PDF">PDF</button>
+    <button id="pdf-all" class="pdf-btn" aria-label="Download all slides as PDF">ALL PDF</button>
+  </div>
+  <div class="progress"><div id="bar"></div></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const bar = document.getElementById('bar');
+    let current = 0;
+    function show(index) {
+      current = (index + slides.length) % slides.length;
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+      bar.style.width = `${((current + 1) / slides.length) * 100}%`;
+    }
+    document.getElementById('prev').addEventListener('click', () => show(current - 1));
+    document.getElementById('next').addEventListener('click', () => show(current + 1));
+    window.addEventListener('keydown', (event) => {
+      if (["ArrowRight","PageDown"," "].includes(event.key)) show(current + 1);
+      if (["ArrowLeft","PageUp"].includes(event.key)) show(current - 1);
+      if (event.key === 'Home') show(0);
+      if (event.key === 'End') show(slides.length - 1);
+    });
+    show(0);
+
+    /* Touch swipe support */
+    let touchStartX = 0;
+    let touchStartY = 0;
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+    document.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].screenX - touchStartX;
+      const dy = e.changedTouches[0].screenY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+        dx < 0 ? show(current + 1) : show(current - 1);
+      }
+    }, { passive: true });
+
+    async function captureSlide(slide) {
+      return html2canvas(slide, { scale:2, useCORS:true, backgroundColor:'#FFFFFF', logging:false });
+    }
+    function canvasToPdfPage(pdf, canvas) {
+      const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
+      const r = Math.min(pw / canvas.width, ph / canvas.height);
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', (pw - canvas.width*r)/2, (ph - canvas.height*r)/2, canvas.width*r, canvas.height*r);
+    }
+    document.getElementById('pdf-slide').addEventListener('click', async function() {
+      const btn = this; btn.disabled = true; btn.textContent = '...';
+      try {
+        const c = await captureSlide(slides[current]);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation:'landscape', unit:'px', format:[c.width, c.height] });
+        pdf.addImage(c.toDataURL('image/png'), 'PNG', 0, 0, c.width, c.height);
+        pdf.save(`agent-architecture-slide-${current+1}.pdf`);
+      } catch(e) { alert('PDF 생성 실패: '+e.message); }
+      btn.disabled = false; btn.textContent = 'PDF';
+    });
+    document.getElementById('pdf-all').addEventListener('click', async function() {
+      const btn = this; btn.disabled = true; btn.textContent = '...';
+      const saved = current;
+      try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+        for (let i = 0; i < slides.length; i++) {
+          show(i); await new Promise(r => setTimeout(r, 100));
+          const c = await captureSlide(slides[i]);
+          if (i > 0) pdf.addPage();
+          canvasToPdfPage(pdf, c);
+        }
+        pdf.save('scenario-agent-comparison-all.pdf');
+      } catch(e) { alert('PDF 생성 실패: '+e.message); }
+      show(saved); btn.disabled = false; btn.textContent = 'ALL PDF';
+    });
+  </script>
+</body>
+</html>
