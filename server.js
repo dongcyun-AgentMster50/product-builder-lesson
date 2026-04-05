@@ -2259,25 +2259,89 @@ function average(values) {
    City Profile — 10카테고리 도시 생활 특징 (경량 API)
    ══════════════════════════════════════════════════════════════════════ */
 
-const CITY_PROFILE_SYSTEM_PROMPT = `당신은 특정 도시의 '생활 밀착형 특징'을 분석하는 고도로 전문화된 지역 데이터 분석가입니다. 당신의 임무는 거시적 트렌드나 해결책이 아닌, 오직 주민의 실제 생활과 관련된 객관적인 사실만을 요약하는 것입니다.
+const CITY_PROFILE_SYSTEM_PROMPT = `You are a Geo-Localization Evidence Extractor for a scenario-generation system.
 
-엄격한 규칙:
-1. '특징'에만 집중: 트렌드, 문제점, 해결책, CX 시나리오 제안은 절대 생성하지 마세요. 오직 아래 10개 '생활 카테고리'의 렌즈를 통해 도시의 객관적인 특징만 설명해야 합니다.
-2. 철저한 지역화: 모든 설명은 국가 단위가 아닌, 요청된 도시에만 해당하는 구체적인 내용이어야 합니다.
-3. 간결한 출력: 각 카테고리 설명은 1-2 문장의 간결하고 자연스러운 문장으로 작성하세요. 요청된 locale의 언어로 작성합니다.
-4. 고정 JSON 출력: 최종 결과는 반드시 아래 키를 사용하는 유효한 JSON 객체여야 합니다. 설명 없이 JSON만 출력하세요.
+Your task is to produce a source-bound city evidence pack for consumer experience, smart home, automation, and local marketing scenario generation.
 
-10가지 생활 카테고리 (JSON Key):
-1. climate: 기후·계절
-2. housing: 주거 형태·생활 공간
-3. family: 가족 구성·돌봄 구조
-4. daily_rhythm: 일상 리듬·생활 패턴
-5. safety: 안전·보안
-6. energy: 에너지 비용·절약
-7. health: 건강·웰니스
-8. pets: 펫 라이프
-9. mobility: 이동·부재·여행
-10. events: 문화 행사·시즌성 이벤트`;
+Hard rules:
+1. No unsourced claims.
+2. No generic city language that could fit almost any city.
+3. Every accepted category must include at least one local anchor such as a district, station, line, road, mountain, river, official event, official facility, policy, statistic, or named local area.
+4. If evidence is weak or missing, output exactly: "Evidence insufficient for localized claim."
+5. Prefer official or primary sources. Community-style sources may only support discovery and must not be the sole proof unless explicitly labeled as weak support.
+6. Do not over-infer from a single place or event.
+7. Write concise output that is directly reusable by downstream scenario agents.
+8. Use the requested locale language for natural-language fields, but keep JSON keys in English.
+
+Required categories:
+- climate
+- housing
+- family
+- daily_rhythm
+- safety
+- energy
+- health
+- pets
+- mobility
+- events
+
+Return valid JSON only with this exact top-level structure:
+{
+  "climate": "localized category summary or Evidence insufficient for localized claim.",
+  "housing": "...",
+  "family": "...",
+  "daily_rhythm": "...",
+  "safety": "...",
+  "energy": "...",
+  "health": "...",
+  "pets": "...",
+  "mobility": "...",
+  "events": "...",
+  "source_map": [
+    {
+      "id": "S1",
+      "title": "source title",
+      "organization": "source organization",
+      "published_or_updated": "date if known",
+      "url": "https://...",
+      "tier": "A"
+    }
+  ],
+  "local_anchor_inventory": [
+    {
+      "anchor": "named local anchor",
+      "type": "station / district / festival / climate / policy / facility / etc.",
+      "why_it_matters": "why this anchor helps localization",
+      "source_ids": ["S1"]
+    }
+  ],
+  "evidence_pack": {
+    "climate": {
+      "localized_statement": "1-3 sentences with at least one local anchor, or Evidence insufficient for localized claim.",
+      "why_localized": "brief reason",
+      "evidence_ids": ["S1"],
+      "confidence": "High",
+      "reusability_for_scenario_agent": "brief scenario use",
+      "smart_home_relevance": "one sentence",
+      "marketing_relevance": "one sentence",
+      "missing_evidence": ""
+    }
+  },
+  "red_flag_check": ["claims intentionally excluded because they were generic, weak, or over-inferred"],
+  "scenario_agent_ready_summary": ["short city-specific reusable bullet"],
+  "strict_final_rule_check": {
+    "no_unsourced_claims": true,
+    "no_generic_city_language": true,
+    "every_accepted_category_has_local_anchor": true,
+    "community_sources_not_used_as_sole_proof_unless_labeled": true,
+    "weak_categories_marked_insufficient": true
+  }
+}
+
+Important:
+- The short category summaries at the top must also be source-bound and localized.
+- Do not claim a category is localized unless the evidence pack for that category includes a real local anchor and source IDs.
+- If unsure, mark the category insufficient instead of guessing.`;
 
 const CUSTOM_RESEARCH_SYSTEM_PROMPT = `당신은 특정 도시의 스마트홈 시나리오 기획을 위한 도시 맥락 분석 전문가입니다.
 사용자가 이미 보유한 도시 기본 프로필(10개 카테고리)은 "base_profiles"로 제공됩니다.
@@ -2417,6 +2481,113 @@ function extractProfileHighlights(profileLike, locale) {
             title: toTitleFromProfileKey(key, locale),
             text: profileLike[key].trim()
         }));
+}
+
+const CITY_PROFILE_FIELDS = ["climate", "housing", "family", "daily_rhythm", "safety", "energy", "health", "pets", "mobility", "events"];
+
+function normalizeLocalizedCategoryText(value) {
+    const text = typeof value === "string" ? value.trim() : "";
+    return text || "Evidence insufficient for localized claim.";
+}
+
+function normalizeEvidencePackEntry(entry) {
+    if (!entry || typeof entry !== "object") {
+        return {
+            localized_statement: "Evidence insufficient for localized claim.",
+            why_localized: "",
+            evidence_ids: [],
+            confidence: "Low",
+            reusability_for_scenario_agent: "",
+            smart_home_relevance: "",
+            marketing_relevance: "",
+            missing_evidence: ""
+        };
+    }
+
+    return {
+        localized_statement: normalizeLocalizedCategoryText(entry.localized_statement),
+        why_localized: typeof entry.why_localized === "string" ? entry.why_localized.trim() : "",
+        evidence_ids: normalizeStringList(entry.evidence_ids, 6),
+        confidence: typeof entry.confidence === "string" ? entry.confidence.trim() || "Low" : "Low",
+        reusability_for_scenario_agent: typeof entry.reusability_for_scenario_agent === "string" ? entry.reusability_for_scenario_agent.trim() : "",
+        smart_home_relevance: typeof entry.smart_home_relevance === "string" ? entry.smart_home_relevance.trim() : "",
+        marketing_relevance: typeof entry.marketing_relevance === "string" ? entry.marketing_relevance.trim() : "",
+        missing_evidence: typeof entry.missing_evidence === "string" ? entry.missing_evidence.trim() : ""
+    };
+}
+
+function normalizeCityProfilePayload(payload, { city, country, locale }) {
+    let source = payload;
+    if (typeof source === "string") source = parseJsonObjectFromModelText(source) || { raw: source };
+    if (source?.raw && typeof source.raw === "string") {
+        const reparsed = parseJsonObjectFromModelText(source.raw);
+        if (reparsed) source = reparsed;
+    }
+    if (!source || typeof source !== "object") source = {};
+
+    const normalized = {};
+    for (const key of CITY_PROFILE_FIELDS) {
+        const entry = normalizeEvidencePackEntry(source?.evidence_pack?.[key]);
+        const topLevel = normalizeLocalizedCategoryText(source[key]);
+        normalized[key] = topLevel !== "Evidence insufficient for localized claim."
+            ? topLevel
+            : entry.localized_statement;
+    }
+
+    normalized.source_map = Array.isArray(source.source_map)
+        ? source.source_map
+            .filter((item) => item && typeof item === "object")
+            .map((item, index) => ({
+                id: typeof item.id === "string" && item.id.trim() ? item.id.trim() : `S${index + 1}`,
+                title: typeof item.title === "string" ? item.title.trim() : "",
+                organization: typeof item.organization === "string" ? item.organization.trim() : "",
+                published_or_updated: typeof item.published_or_updated === "string" ? item.published_or_updated.trim() : "",
+                url: typeof item.url === "string" ? item.url.trim() : "",
+                tier: typeof item.tier === "string" ? item.tier.trim() : ""
+            }))
+            .filter((item) => item.title || item.url)
+            .slice(0, 20)
+        : [];
+
+    normalized.local_anchor_inventory = Array.isArray(source.local_anchor_inventory)
+        ? source.local_anchor_inventory
+            .filter((item) => item && typeof item === "object")
+            .map((item) => ({
+                anchor: typeof item.anchor === "string" ? item.anchor.trim() : "",
+                type: typeof item.type === "string" ? item.type.trim() : "",
+                why_it_matters: typeof item.why_it_matters === "string" ? item.why_it_matters.trim() : "",
+                source_ids: normalizeStringList(item.source_ids, 6)
+            }))
+            .filter((item) => item.anchor)
+            .slice(0, 20)
+        : [];
+
+    normalized.evidence_pack = {};
+    for (const key of CITY_PROFILE_FIELDS) {
+        normalized.evidence_pack[key] = normalizeEvidencePackEntry(source?.evidence_pack?.[key]);
+    }
+
+    normalized.red_flag_check = normalizeStringList(source.red_flag_check, 20);
+    normalized.scenario_agent_ready_summary = normalizeStringList(source.scenario_agent_ready_summary, 10);
+
+    const checks = source.strict_final_rule_check && typeof source.strict_final_rule_check === "object"
+        ? source.strict_final_rule_check
+        : {};
+    normalized.strict_final_rule_check = {
+        no_unsourced_claims: checks.no_unsourced_claims !== false,
+        no_generic_city_language: checks.no_generic_city_language !== false,
+        every_accepted_category_has_local_anchor: checks.every_accepted_category_has_local_anchor !== false,
+        community_sources_not_used_as_sole_proof_unless_labeled: checks.community_sources_not_used_as_sole_proof_unless_labeled !== false,
+        weak_categories_marked_insufficient: checks.weak_categories_marked_insufficient !== false
+    };
+
+    normalized.meta = {
+        city,
+        country,
+        locale
+    };
+
+    return normalized;
 }
 
 function buildFallbackCustomResearch({ query, city, locale, baseProfiles, profileLike, raw }) {
@@ -2666,8 +2837,13 @@ async function handleCityProfile(req, res) {
     }
 
     // 기본 도시 프로필 모드
-    const maxTokens = 1500;
-    const userMessage = `{ "city": "${city}", "country": "${country}", "locale": "${locale}" }에 대한 생활 밀착형 특징을 위의 규칙에 따라 JSON 형식으로 분석해 줘.`;
+    const maxTokens = 2000;
+    const userMessage = `Target country: ${country}
+Target city: ${city}
+Optional subregion: none
+Output locale: ${locale}
+
+Build a source-bound localization evidence pack for this city. Use only evidence-backed localized statements. If evidence is weak, mark that category as "Evidence insufficient for localized claim." Return valid JSON only.`;
 
     try {
         const requestBody = {
@@ -2698,7 +2874,11 @@ async function handleCityProfile(req, res) {
 
         const result = await apiRes.json();
         const content = result.choices?.[0]?.message?.content || "{}";
-        const profile = parseJsonObjectFromModelText(content) || { raw: content };
+        const profile = normalizeCityProfilePayload(parseJsonObjectFromModelText(content) || { raw: content }, {
+            city,
+            country,
+            locale
+        });
 
         res.setHeader("Cache-Control", "public, max-age=86400");
         sendJson(res, 200, { ok: true, data: profile, meta: { city, country, locale, model } });

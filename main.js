@@ -3701,6 +3701,61 @@ const CITY_PROFILE_CATEGORIES = [
     { key: "events",       icon: "?렕", labelKo: "臾명솕 ?됱궗",    labelEn: "Events",       color: "#d32f2f" }
 ];
 
+function getCityProfileSourceMap(profile) {
+    return Array.isArray(profile?.source_map) ? profile.source_map : [];
+}
+
+function getCityProfileEvidenceEntry(profile, key) {
+    return profile?.evidence_pack && typeof profile.evidence_pack === "object"
+        ? profile.evidence_pack[key] || null
+        : null;
+}
+
+function buildCityProfileEvidenceDetail(profile, key) {
+    const entry = getCityProfileEvidenceEntry(profile, key);
+    if (!entry || typeof entry !== "object") return "";
+
+    const statement = String(entry.localized_statement || "").trim();
+    const whyLocalized = String(entry.why_localized || "").trim();
+    const scenarioUse = String(entry.reusability_for_scenario_agent || "").trim();
+    const smartHome = String(entry.smart_home_relevance || "").trim();
+    const marketing = String(entry.marketing_relevance || "").trim();
+    const missingEvidence = String(entry.missing_evidence || "").trim();
+    const confidence = String(entry.confidence || "").trim();
+    const evidenceIds = Array.isArray(entry.evidence_ids) ? entry.evidence_ids.filter(Boolean) : [];
+    const sources = getCityProfileSourceMap(profile)
+        .filter((item) => evidenceIds.includes(item.id))
+        .slice(0, 4);
+
+    if (!whyLocalized && !scenarioUse && !smartHome && !marketing && !sources.length && !missingEvidence && !confidence) {
+        return "";
+    }
+
+    const detailId = `city-ev-${key}-${Math.random().toString(36).slice(2, 10)}`;
+    const sourceHtml = sources.length
+        ? `<ul class="q2-evidence-source-list">${sources.map((item) => {
+            const label = [item.id, item.organization || item.title].filter(Boolean).join(" · ");
+            const href = item.url ? ` href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer"` : "";
+            return `<li>${href ? `<a${href}>${escapeHtml(label)}</a>` : escapeHtml(label)}</li>`;
+        }).join("")}</ul>`
+        : "";
+
+    return `
+        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${detailId}">
+            <span class="q2-ev-arrow">▾</span> ${currentLocale === "ko" ? "근거 보기" : "View evidence"}
+        </button>
+        <div class="q2-evidence-detail" id="${detailId}">
+            ${whyLocalized ? `<p><strong>${currentLocale === "ko" ? "현지화 근거" : "Why localized"}</strong> ${escapeHtml(whyLocalized)}</p>` : ""}
+            ${confidence ? `<p><strong>${currentLocale === "ko" ? "신뢰도" : "Confidence"}</strong> ${escapeHtml(confidence)}</p>` : ""}
+            ${scenarioUse ? `<p><strong>${currentLocale === "ko" ? "시나리오 활용" : "Scenario use"}</strong> ${escapeHtml(scenarioUse)}</p>` : ""}
+            ${smartHome ? `<p><strong>${currentLocale === "ko" ? "스마트홈 연관성" : "Smart-home relevance"}</strong> ${escapeHtml(smartHome)}</p>` : ""}
+            ${marketing ? `<p><strong>${currentLocale === "ko" ? "마케팅 연관성" : "Marketing relevance"}</strong> ${escapeHtml(marketing)}</p>` : ""}
+            ${missingEvidence && statement === "Evidence insufficient for localized claim." ? `<p><strong>${currentLocale === "ko" ? "부족한 근거" : "Missing evidence"}</strong> ${escapeHtml(missingEvidence)}</p>` : ""}
+            ${sourceHtml}
+        </div>
+    `;
+}
+
 function renderCityProfileInsight(countryName, localCity, profile) {
     const isKo = currentLocale === "ko";
     const available = CITY_PROFILE_CATEGORIES.filter(cat => profile[cat.key]);
@@ -3715,6 +3770,7 @@ function renderCityProfileInsight(countryName, localCity, profile) {
             <div class="cpv2-content">
                 <span class="cpv2-label">${escapeHtml(isKo ? cat.labelKo : cat.labelEn)}</span>
                 <span class="cpv2-text">${escapeHtml(profile[cat.key])}</span>
+                ${buildCityProfileEvidenceDetail(profile, cat.key)}
             </div>
         </div>
     `).join("");
