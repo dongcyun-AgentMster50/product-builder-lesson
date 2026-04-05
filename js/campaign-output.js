@@ -323,7 +323,8 @@ function _renderSec02_Top5() {
 
     body.innerHTML = _coResults.map((scenario, idx) => {
         const f = _formatResult(scenario);
-        const bodyText = String(f.originalText || f.narrative || "").trim();
+        const bodyText = f.originalText || f.narrative || "";
+        const truncated = bodyText.length > 300 ? bodyText.substring(0, 300) + "..." : bodyText;
         const valueTags = (f.valueTags || f.matchedTags || []).slice(0, 4);
         const readinessLabel = _deriveReadinessLabel(scenario, _coResults);
         const isTop = idx === 0;
@@ -343,7 +344,7 @@ function _renderSec02_Top5() {
                 ${valueTags.map(t => _valueBadge(t)).join("")}
             </div>
             <div class="co-scenario-body${isTop ? "" : " co-collapsed"}" id="co-scenario-body-${idx}">
-                <p class="co-scenario-desc">${_esc(bodyText)}</p>
+                <p class="co-scenario-desc">${_esc(truncated)}</p>
                 <div class="co-scenario-signals">
                     <span class="co-input-label">${isKo ? "반영된 핵심 신호" : "Matched Signals"}</span>
                     <div class="co-chip-row">${(f.matchedTags || []).map(t => _chip(t)).join("")}</div>
