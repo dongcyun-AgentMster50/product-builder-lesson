@@ -3625,7 +3625,7 @@ async function renderStep2Insight(forceRefresh = false) {
         await ensureBypassSession();
         const params = new URLSearchParams({ country: country.countryCode, city, locale: currentLocale });
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 30000);
+        const timer = setTimeout(() => controller.abort(), 45000);
 
         const response = await fetch(`/api/city-profile?${params}`, {
             credentials: "include",
