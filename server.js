@@ -2348,6 +2348,11 @@ function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/* ── City Profile shared utilities ──────────────────────────────────────
+   These helpers are duplicated in functions/api/city-profile.js (Cloudflare Pages).
+   When modifying retry logic, normalize functions, or tag rules,
+   keep BOTH files in sync.  (CommonJS here vs ESM in functions/api)
+   ──────────────────────────────────────────────────────────────────────── */
 function shouldRetryOpenAiStatus(status) {
     return status === 408 || status === 409 || status === 429 || status >= 500;
 }
@@ -2836,8 +2841,7 @@ async function handleCityProfile(req, res) {
         const maxTokens = 2000;
         const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}위 도시에서 "${customQuery}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
 
-        try {
-            const requestBody = {
+        const requestBody = {
                 model,
                 response_format: { type: "json_object" },
                 messages: [
@@ -2851,30 +2855,8 @@ async function handleCityProfile(req, res) {
                 requestBody.max_tokens = maxTokens;
             }
 
-            const apiRes = await fetch("https://api.openai.com/v1/chat/completions", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
-                body: JSON.stringify(requestBody)
-            });
-
-            if (!apiRes.ok) {
-                const errText = await apiRes.text().catch(() => "");
-                const fallbackResearch = normalizeCustomResearchPayload({ raw: errText.substring(0, 200) || "UPSTREAM_ERROR" }, {
-                    query: customQuery,
-                    city,
-                    locale,
-                    baseProfiles
-                });
-                sendJson(res, 200, {
-                    ok: true,
-                    data: fallbackResearch,
-                    mode: "custom_research",
-                    meta: { city, country, locale, model, query: customQuery, fallback: true, fallback_reason: errText.substring(0, 200) || "UPSTREAM_ERROR" }
-                });
-                return;
-            }
-
-            const result = await apiRes.json();
+        try {
+            const result = await fetchOpenAiChatCompletionWithRetry({ apiKey, requestBody });
             const content = result.choices?.[0]?.message?.content || "{}";
             const parsedResearch = parseJsonObjectFromModelText(content) || { raw: content };
             const research = normalizeCustomResearchPayload(parsedResearch, {

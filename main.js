@@ -1,4 +1,4 @@
-
+﻿
 const ACCESS_API = {
     verifyEndpoint: "/api/access/verify",
     sessionEndpoint: "/api/access/session",
@@ -27,13 +27,13 @@ const roleSelectionContainer = document.getElementById("role-selection");
 const roleCards = [...document.querySelectorAll(".role-card")];
 const purposeInput = document.getElementById("purpose");
 const countrySelect = document.getElementById("country");
-/* ── Searchable city dropdown elements ── */
+/* ?? Searchable city dropdown elements ?? */
 const citySearchWrap = document.getElementById("city-search-wrap");
 const citySearchInput = document.getElementById("city-search-input");
 const cityHiddenInput = document.getElementById("city-value");
 const cityDropdown = document.getElementById("city-dropdown");
 const citySearchIcon = document.getElementById("city-search-icon");
-/* Legacy aliases — kept so downstream code that reads citySelect.value / cityCustomInput still compiles */
+/* Legacy aliases ??kept so downstream code that reads citySelect.value / cityCustomInput still compiles */
 const citySelect = { get value() { return cityHiddenInput.value; }, set value(v) { cityHiddenInput.value = v; }, options: [] };
 const cityCustomInput = { get value() { return citySearchInput.value; }, set value(v) { citySearchInput.value = v; }, disabled: false, focus() { citySearchInput.focus(); }, blur() { citySearchInput.blur(); } };
 const cityCustomRow = null;
@@ -61,112 +61,112 @@ let q3ManualAddedIds = new Set();
 let q3ManualRemovedIds = new Set();
 let q3AutoRecommendationMeta = null;
 
-/* ── 한국 도시 마스터 데이터 (행정안전부 2024.04 주민등록인구) ── */
+/* ?? ?쒓뎅 ?꾩떆 留덉뒪???곗씠??(?됱젙?덉쟾遺 2024.04 二쇰??깅줉?멸뎄) ?? */
 const KR_CITY_MASTER = {
-    "특별시·광역시·특별자치시": [
-        { en: "Seoul", ko: "서울특별시", pop: 9411453 },
-        { en: "Busan", ko: "부산광역시", pop: 3350000 },
-        { en: "Incheon", ko: "인천광역시", pop: 2960000 },
-        { en: "Daegu", ko: "대구광역시", pop: 2380000 },
-        { en: "Daejeon", ko: "대전광역시", pop: 1450000 },
-        { en: "Gwangju Metro", ko: "광주광역시", pop: 1430000 },
-        { en: "Ulsan", ko: "울산광역시", pop: 1100000 },
-        { en: "Sejong", ko: "세종특별자치시", pop: 380000 }
+    "?밸퀎?쑣룰킅??떆쨌?밸퀎?먯튂??: [
+        { en: "Seoul", ko: "?쒖슱?밸퀎??, pop: 9411453 },
+        { en: "Busan", ko: "遺?곌킅??떆", pop: 3350000 },
+        { en: "Incheon", ko: "?몄쿇愿묒뿭??, pop: 2960000 },
+        { en: "Daegu", ko: "?援ш킅??떆", pop: 2380000 },
+        { en: "Daejeon", ko: "??꾧킅??떆", pop: 1450000 },
+        { en: "Gwangju Metro", ko: "愿묒＜愿묒뿭??, pop: 1430000 },
+        { en: "Ulsan", ko: "?몄궛愿묒뿭??, pop: 1100000 },
+        { en: "Sejong", ko: "?몄쥌?밸퀎?먯튂??, pop: 380000 }
     ],
-    "경기도": [
-        { en: "Suwon", ko: "수원시", pop: 1223598 },
-        { en: "Yongin", ko: "용인시", pop: 1077883 },
-        { en: "Goyang", ko: "고양시", pop: 1072217 },
-        { en: "Hwaseong", ko: "화성시", pop: 948934 },
-        { en: "Seongnam", ko: "성남시", pop: 918122 },
-        { en: "Bucheon", ko: "부천시", pop: 785394 },
-        { en: "Namyangju", ko: "남양주시", pop: 733392 },
-        { en: "Ansan", ko: "안산시", pop: 627279 },
-        { en: "Pyeongtaek", ko: "평택시", pop: 592946 },
-        { en: "Anyang", ko: "안양시", pop: 545082 },
-        { en: "Siheung", ko: "시흥시", pop: 519956 },
-        { en: "Paju", ko: "파주시", pop: 504136 },
-        { en: "Gimpo", ko: "김포시", pop: 486952 },
-        { en: "Uijeongbu", ko: "의정부시", pop: 463059 },
-        { en: "Gwangju-si", ko: "광주시(경기)", pop: 393243 },
-        { en: "Hanam", ko: "하남시", pop: 331316 },
-        { en: "Gwangmyeong", ko: "광명시", pop: 283235 },
-        { en: "Yangju", ko: "양주시", pop: 280303 },
-        { en: "Gunpo", ko: "군포시", pop: 263164 },
-        { en: "Osan", ko: "오산시", pop: 239715 },
-        { en: "Icheon", ko: "이천시", pop: 222963 },
-        { en: "Anseong", ko: "안성시", pop: 190563 },
-        { en: "Guri", ko: "구리시", pop: 187709 },
-        { en: "Uiwang", ko: "의왕시", pop: 159384 },
-        { en: "Pocheon", ko: "포천시", pop: 146559 },
-        { en: "Yeoju", ko: "여주시", pop: 114646 },
-        { en: "Dongducheon", ko: "동두천시", pop: 88605 },
-        { en: "Gwacheon", ko: "과천시", pop: 78561 }
+    "寃쎄린??: [
+        { en: "Suwon", ko: "?섏썝??, pop: 1223598 },
+        { en: "Yongin", ko: "?⑹씤??, pop: 1077883 },
+        { en: "Goyang", ko: "怨좎뼇??, pop: 1072217 },
+        { en: "Hwaseong", ko: "?붿꽦??, pop: 948934 },
+        { en: "Seongnam", ko: "?깅궓??, pop: 918122 },
+        { en: "Bucheon", ko: "遺泥쒖떆", pop: 785394 },
+        { en: "Namyangju", ko: "?⑥뼇二쇱떆", pop: 733392 },
+        { en: "Ansan", ko: "?덉궛??, pop: 627279 },
+        { en: "Pyeongtaek", ko: "?됲깮??, pop: 592946 },
+        { en: "Anyang", ko: "?덉뼇??, pop: 545082 },
+        { en: "Siheung", ko: "?쒗씎??, pop: 519956 },
+        { en: "Paju", ko: "?뚯＜??, pop: 504136 },
+        { en: "Gimpo", ko: "源?ъ떆", pop: 486952 },
+        { en: "Uijeongbu", ko: "?섏젙遺??, pop: 463059 },
+        { en: "Gwangju-si", ko: "愿묒＜??寃쎄린)", pop: 393243 },
+        { en: "Hanam", ko: "?섎궓??, pop: 331316 },
+        { en: "Gwangmyeong", ko: "愿묐챸??, pop: 283235 },
+        { en: "Yangju", ko: "?묒＜??, pop: 280303 },
+        { en: "Gunpo", ko: "援고룷??, pop: 263164 },
+        { en: "Osan", ko: "?ㅼ궛??, pop: 239715 },
+        { en: "Icheon", ko: "?댁쿇??, pop: 222963 },
+        { en: "Anseong", ko: "?덉꽦??, pop: 190563 },
+        { en: "Guri", ko: "援щ━??, pop: 187709 },
+        { en: "Uiwang", ko: "?섏솗??, pop: 159384 },
+        { en: "Pocheon", ko: "?ъ쿇??, pop: 146559 },
+        { en: "Yeoju", ko: "?ъ＜??, pop: 114646 },
+        { en: "Dongducheon", ko: "?숇몢泥쒖떆", pop: 88605 },
+        { en: "Gwacheon", ko: "怨쇱쿇??, pop: 78561 }
     ],
-    "강원도": [
-        { en: "Wonju", ko: "원주시", pop: 362074 },
-        { en: "Chuncheon", ko: "춘천시", pop: 286812 },
-        { en: "Gangneung", ko: "강릉시", pop: 210037 },
-        { en: "Donghae", ko: "동해시", pop: 88574 },
-        { en: "Sokcho", ko: "속초시", pop: 82311 },
-        { en: "Samcheok", ko: "삼척시", pop: 62607 },
-        { en: "Taebaek", ko: "태백시", pop: 38710 }
+    "媛뺤썝??: [
+        { en: "Wonju", ko: "?먯＜??, pop: 362074 },
+        { en: "Chuncheon", ko: "異섏쿇??, pop: 286812 },
+        { en: "Gangneung", ko: "媛뺣쫱??, pop: 210037 },
+        { en: "Donghae", ko: "?숉빐??, pop: 88574 },
+        { en: "Sokcho", ko: "?띿큹??, pop: 82311 },
+        { en: "Samcheok", ko: "?쇱쿃??, pop: 62607 },
+        { en: "Taebaek", ko: "?쒕갚??, pop: 38710 }
     ],
-    "충청북도": [
-        { en: "Cheongju", ko: "청주시", pop: 849531 },
-        { en: "Chungju", ko: "충주시", pop: 208454 },
-        { en: "Jecheon", ko: "제천시", pop: 130937 }
+    "異⑹껌遺곷룄": [
+        { en: "Cheongju", ko: "泥?＜??, pop: 849531 },
+        { en: "Chungju", ko: "異⑹＜??, pop: 208454 },
+        { en: "Jecheon", ko: "?쒖쿇??, pop: 130937 }
     ],
-    "충청남도": [
-        { en: "Cheonan", ko: "천안시", pop: 659471 },
-        { en: "Asan", ko: "아산시", pop: 385827 },
-        { en: "Seosan", ko: "서산시", pop: 177690 },
-        { en: "Dangjin", ko: "당진시", pop: 171159 },
-        { en: "Nonsan", ko: "논산시", pop: 110653 },
-        { en: "Gongju", ko: "공주시", pop: 101617 },
-        { en: "Boryeong", ko: "보령시", pop: 95903 },
-        { en: "Gyeryong", ko: "계룡시", pop: 47065 }
+    "異⑹껌?⑤룄": [
+        { en: "Cheonan", ko: "泥쒖븞??, pop: 659471 },
+        { en: "Asan", ko: "?꾩궛??, pop: 385827 },
+        { en: "Seosan", ko: "?쒖궛??, pop: 177690 },
+        { en: "Dangjin", ko: "?뱀쭊??, pop: 171159 },
+        { en: "Nonsan", ko: "?쇱궛??, pop: 110653 },
+        { en: "Gongju", ko: "怨듭＜??, pop: 101617 },
+        { en: "Boryeong", ko: "蹂대졊??, pop: 95903 },
+        { en: "Gyeryong", ko: "怨꾨！??, pop: 47065 }
     ],
-    "전라북도": [
-        { en: "Jeonju", ko: "전주시", pop: 644146 },
-        { en: "Iksan", ko: "익산시", pop: 270129 },
-        { en: "Gunsan", ko: "군산시", pop: 260865 },
-        { en: "Jeongeup", ko: "정읍시", pop: 103048 },
-        { en: "Gimje", ko: "김제시", pop: 80729 },
-        { en: "Namwon", ko: "남원시", pop: 76462 }
+    "?꾨씪遺곷룄": [
+        { en: "Jeonju", ko: "?꾩＜??, pop: 644146 },
+        { en: "Iksan", ko: "?듭궛??, pop: 270129 },
+        { en: "Gunsan", ko: "援곗궛??, pop: 260865 },
+        { en: "Jeongeup", ko: "?뺤쓭??, pop: 103048 },
+        { en: "Gimje", ko: "源?쒖떆", pop: 80729 },
+        { en: "Namwon", ko: "?⑥썝??, pop: 76462 }
     ],
-    "전라남도": [
-        { en: "Suncheon", ko: "순천시", pop: 278085 },
-        { en: "Yeosu", ko: "여수시", pop: 271061 },
-        { en: "Mokpo", ko: "목포시", pop: 211878 },
-        { en: "Gwangyang", ko: "광양시", pop: 152001 },
-        { en: "Naju", ko: "나주시", pop: 114142 }
+    "?꾨씪?⑤룄": [
+        { en: "Suncheon", ko: "?쒖쿇??, pop: 278085 },
+        { en: "Yeosu", ko: "?ъ닔??, pop: 271061 },
+        { en: "Mokpo", ko: "紐⑺룷??, pop: 211878 },
+        { en: "Gwangyang", ko: "愿묒뼇??, pop: 152001 },
+        { en: "Naju", ko: "?섏＜??, pop: 114142 }
     ],
-    "경상북도": [
-        { en: "Pohang", ko: "포항시", pop: 492021 },
-        { en: "Gumi", ko: "구미시", pop: 406260 },
-        { en: "Gyeongsan", ko: "경산시", pop: 267823 },
-        { en: "Gyeongju", ko: "경주시", pop: 246144 },
-        { en: "Andong", ko: "안동시", pop: 153605 },
-        { en: "Gimcheon", ko: "김천시", pop: 137210 },
-        { en: "Yeongcheon", ko: "영천시", pop: 100248 },
-        { en: "Yeongju", ko: "영주시", pop: 100051 },
-        { en: "Sangju", ko: "상주시", pop: 93607 },
-        { en: "Mungyeong", ko: "문경시", pop: 68914 }
+    "寃쎌긽遺곷룄": [
+        { en: "Pohang", ko: "?ы빆??, pop: 492021 },
+        { en: "Gumi", ko: "援щ???, pop: 406260 },
+        { en: "Gyeongsan", ko: "寃쎌궛??, pop: 267823 },
+        { en: "Gyeongju", ko: "寃쎌＜??, pop: 246144 },
+        { en: "Andong", ko: "?덈룞??, pop: 153605 },
+        { en: "Gimcheon", ko: "源泥쒖떆", pop: 137210 },
+        { en: "Yeongcheon", ko: "?곸쿇??, pop: 100248 },
+        { en: "Yeongju", ko: "?곸＜??, pop: 100051 },
+        { en: "Sangju", ko: "?곸＜??, pop: 93607 },
+        { en: "Mungyeong", ko: "臾멸꼍??, pop: 68914 }
     ],
-    "경상남도": [
-        { en: "Changwon", ko: "창원시", pop: 1006692 },
-        { en: "Gimhae", ko: "김해시", pop: 531911 },
-        { en: "Yangsan", ko: "양산시", pop: 355519 },
-        { en: "Jinju", ko: "진주시", pop: 340736 },
-        { en: "Geoje", ko: "거제시", pop: 234310 },
-        { en: "Tongyeong", ko: "통영시", pop: 120419 },
-        { en: "Sacheon", ko: "사천시", pop: 109692 },
-        { en: "Miryang", ko: "밀양시", pop: 102689 }
+    "寃쎌긽?⑤룄": [
+        { en: "Changwon", ko: "李쎌썝??, pop: 1006692 },
+        { en: "Gimhae", ko: "源?댁떆", pop: 531911 },
+        { en: "Yangsan", ko: "?묒궛??, pop: 355519 },
+        { en: "Jinju", ko: "吏꾩＜??, pop: 340736 },
+        { en: "Geoje", ko: "嫄곗젣??, pop: 234310 },
+        { en: "Tongyeong", ko: "?듭쁺??, pop: 120419 },
+        { en: "Sacheon", ko: "?ъ쿇??, pop: 109692 },
+        { en: "Miryang", ko: "諛?묒떆", pop: 102689 }
     ],
-    "제주특별자치도": [
-        { en: "Jeju", ko: "제주시", pop: 493178 },
-        { en: "Seogwipo", ko: "서귀포시", pop: 184818 }
+    "?쒖＜?밸퀎?먯튂??: [
+        { en: "Jeju", ko: "?쒖＜??, pop: 493178 },
+        { en: "Seogwipo", ko: "?쒓??ъ떆", pop: 184818 }
     ]
 };
 
@@ -190,7 +190,7 @@ let serviceSupportMatrix = { markets: [] };
 let skuAvailabilityMatrix = { markets: [] };
 let productFeatureMatrix = { products: [] };
 let latestPayload = null;
-let latestStructuredOutput = null;  // 공통 JSON 스키마 기반 구조화 output
+let latestStructuredOutput = null;  // 怨듯넻 JSON ?ㅽ궎留?湲곕컲 援ъ“??output
 let activeLensTab = "overview";
 let currentStep = 1;
 let currentLocale = "en";
@@ -212,13 +212,13 @@ let selectedProvider = sessionStorage.getItem("aiProvider") || "openai";
 let userOverrideLocale = null;
 
 const SUPPORTED_UI_LOCALES = ["ko", "en", "de", "fr", "es", "pt", "it", "nl", "ar"];
-// ══════════════════════════════════════════════════════════════════
+// ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
 // Q3 Locale-Aware Product Catalog System
-// - dotcom mapping 전체를 source of truth로 사용
-// - 새 국가 추가 시 코드 수정 없이 자동 대응
-// ══════════════════════════════════════════════════════════════════
+// - dotcom mapping ?꾩껜瑜?source of truth濡??ъ슜
+// - ??援?? 異붽? ??肄붾뱶 ?섏젙 ?놁씠 ?먮룞 ???
+// ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
 
-// ── siteCode → region 매핑 (국가별 카탈로그 해상도) ──
+// ?? siteCode ??region 留ㅽ븨 (援??蹂?移댄깉濡쒓렇 ?댁긽?? ??
 const SITE_REGION_MAP = {
     // East Asia
     SEC: "KR", KR: "KR", JP: "JP",
@@ -250,24 +250,24 @@ const SITE_REGION_MAP = {
     RU: "CIS", UA: "CIS", KZ: "CIS", UZ: "CIS"
 };
 
-// ── 로케일별 제품 카탈로그 ──
-// 구조: { samsung: [...groups], partner: [...groups], styles: { cardId: {s:[],p:[]} } }
+// ?? 濡쒖??쇰퀎 ?쒗뭹 移댄깉濡쒓렇 ??
+// 援ъ“: { samsung: [...groups], partner: [...groups], styles: { cardId: {s:[],p:[]} } }
 // s = samsungIds, p = partnerIds
 const LOCALE_CATALOGS = {
-    // ── Global Default (모든 미정의 로케일의 fallback) ──
+    // ?? Global Default (紐⑤뱺 誘몄젙??濡쒖??쇱쓽 fallback) ??
     _default: {
         samsung: [
-            { label: "모바일", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab"] },
-            { label: "웨어러블", labelEn: "Wearable", ids: ["galaxy-watch", "galaxy-buds"] },
-            { label: "TV/오디오", labelEn: "TV / Audio", ids: ["tv-premium", "soundbar", "speaker"] },
-            { label: "주방", labelEn: "Kitchen", ids: ["refrigerator", "dishwasher", "oven", "microwave"] },
-            { label: "리빙", labelEn: "Living", ids: ["washer", "dryer", "air-conditioner", "air-purifier", "robot-vacuum"] },
-            { label: "스마트홈", labelEn: "Smart Home", ids: ["hub"] }
+            { label: "紐⑤컮??, labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab"] },
+            { label: "?⑥뼱?щ툝", labelEn: "Wearable", ids: ["galaxy-watch", "galaxy-buds"] },
+            { label: "TV/?ㅻ뵒??, labelEn: "TV / Audio", ids: ["tv-premium", "soundbar", "speaker"] },
+            { label: "二쇰갑", labelEn: "Kitchen", ids: ["refrigerator", "dishwasher", "oven", "microwave"] },
+            { label: "由щ튃", labelEn: "Living", ids: ["washer", "dryer", "air-conditioner", "air-purifier", "robot-vacuum"] },
+            { label: "?ㅻ쭏?명솃", labelEn: "Smart Home", ids: ["hub"] }
         ],
         partner: [
-            { label: "제어", labelEn: "Control", ids: ["smart-plug", "smart-switch", "lighting"] },
-            { label: "보안/감지", labelEn: "Security", ids: ["camera", "door-lock", "activity-sensor"] },
-            { label: "웰니스", labelEn: "Wellness", ids: ["body-scale", "partner-humidifier"] }
+            { label: "?쒖뼱", labelEn: "Control", ids: ["smart-plug", "smart-switch", "lighting"] },
+            { label: "蹂댁븞/媛먯?", labelEn: "Security", ids: ["camera", "door-lock", "activity-sensor"] },
+            { label: "?곕땲??, labelEn: "Wellness", ids: ["body-scale", "partner-humidifier"] }
         ],
         styles: {
             baseline: { s: ["tv-premium", "refrigerator", "washer", "air-conditioner"], p: [] },
@@ -281,21 +281,21 @@ const LOCALE_CATALOGS = {
         }
     },
 
-    // ── KR (한국 삼성닷컴 sec) ──
+    // ?? KR (?쒓뎅 ?쇱꽦?룹뺨 sec) ??
     KR: {
         samsung: [
-            { label: "모바일", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab", "galaxy-book"] },
-            { label: "웨어러블", labelEn: "Wearable", ids: ["galaxy-watch", "galaxy-buds"] },
-            { label: "TV/영상/음향", labelEn: "TV / Video / Audio", ids: ["tv-premium", "projector", "moving-style", "speaker", "soundbar", "harman-audio"] },
-            { label: "주방가전", labelEn: "Kitchen", ids: ["refrigerator", "kimchi-fridge", "dishwasher", "cooktop", "oven", "microwave", "water-purifier", "hood"] },
-            { label: "리빙가전", labelEn: "Living", ids: ["washer", "dryer", "airdresser", "air-conditioner", "system-aircon", "air-purifier", "robot-vacuum"] },
-            { label: "IT/주변기기", labelEn: "IT / Peripherals", ids: ["monitor", "printer", "memory-storage"] },
-            { label: "스마트홈 보조", labelEn: "Smart Home", ids: ["hub", "smartthings-product", "accessories"] }
+            { label: "紐⑤컮??, labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab", "galaxy-book"] },
+            { label: "?⑥뼱?щ툝", labelEn: "Wearable", ids: ["galaxy-watch", "galaxy-buds"] },
+            { label: "TV/?곸긽/?뚰뼢", labelEn: "TV / Video / Audio", ids: ["tv-premium", "projector", "moving-style", "speaker", "soundbar", "harman-audio"] },
+            { label: "二쇰갑媛??, labelEn: "Kitchen", ids: ["refrigerator", "kimchi-fridge", "dishwasher", "cooktop", "oven", "microwave", "water-purifier", "hood"] },
+            { label: "由щ튃媛??, labelEn: "Living", ids: ["washer", "dryer", "airdresser", "air-conditioner", "system-aircon", "air-purifier", "robot-vacuum"] },
+            { label: "IT/二쇰?湲곌린", labelEn: "IT / Peripherals", ids: ["monitor", "printer", "memory-storage"] },
+            { label: "?ㅻ쭏?명솃 蹂댁“", labelEn: "Smart Home", ids: ["hub", "smartthings-product", "accessories"] }
         ],
         partner: [
-            { label: "제어", labelEn: "Control", ids: ["smart-plug", "smart-switch", "lighting"] },
-            { label: "보안/감지", labelEn: "Security / Sensing", ids: ["camera", "door-lock", "activity-sensor"] },
-            { label: "웰니스/생활", labelEn: "Wellness / Living", ids: ["partner-sleep", "body-scale", "partner-humidifier"] }
+            { label: "?쒖뼱", labelEn: "Control", ids: ["smart-plug", "smart-switch", "lighting"] },
+            { label: "蹂댁븞/媛먯?", labelEn: "Security / Sensing", ids: ["camera", "door-lock", "activity-sensor"] },
+            { label: "?곕땲???앺솢", labelEn: "Wellness / Living", ids: ["partner-sleep", "body-scale", "partner-humidifier"] }
         ],
         styles: {
             baseline: { s: ["tv-premium", "refrigerator", "washer", "air-conditioner"], p: [] },
@@ -309,7 +309,7 @@ const LOCALE_CATALOGS = {
         }
     },
 
-    // ── US (미국 삼성닷컴) ──
+    // ?? US (誘멸뎅 ?쇱꽦?룹뺨) ??
     US: {
         samsung: [
             { label: "Mobile", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab", "galaxy-book"] },
@@ -337,7 +337,7 @@ const LOCALE_CATALOGS = {
         }
     },
 
-    // ── EU (유럽 공통) ──
+    // ?? EU (?좊읇 怨듯넻) ??
     EU: {
         samsung: [
             { label: "Mobile", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab", "galaxy-book"] },
@@ -364,7 +364,7 @@ const LOCALE_CATALOGS = {
         }
     },
 
-    // ── UK ──
+    // ?? UK ??
     UK: {
         samsung: [
             { label: "Mobile", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab", "galaxy-book"] },
@@ -391,7 +391,7 @@ const LOCALE_CATALOGS = {
         }
     },
 
-    // ── SEA (동남아) ── → air-conditioner 강세, 로봇청소기 보급 높음
+    // ?? SEA (?숇궓?? ?? ??air-conditioner 媛뺤꽭, 濡쒕큸泥?냼湲?蹂닿툒 ?믪쓬
     SEA: {
         samsung: [
             { label: "Mobile", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab"] },
@@ -418,7 +418,7 @@ const LOCALE_CATALOGS = {
         }
     },
 
-    // ── IN (인도) ── → 에어컨/공기청정기 비중 높음, 세탁기 보급 차이
+    // ?? IN (?몃룄) ?? ???먯뼱而?怨듦린泥?젙湲?鍮꾩쨷 ?믪쓬, ?명긽湲?蹂닿툒 李⑥씠
     IN: {
         samsung: [
             { label: "Mobile", labelEn: "Mobile", ids: ["galaxy-phone", "galaxy-tab"] },
@@ -444,24 +444,24 @@ const LOCALE_CATALOGS = {
             wellness: { s: ["galaxy-watch", "air-purifier", "air-conditioner", "tv-premium"], p: ["body-scale", "partner-humidifier"] }
         }
     }
-    // LATAM, ME, OCE, CIS, JP, CN → _default fallback
+    // LATAM, ME, OCE, CIS, JP, CN ??_default fallback
 };
 
-// ── Catalog resolver: siteCode → region → catalog (with fallback) ──
+// ?? Catalog resolver: siteCode ??region ??catalog (with fallback) ??
 let _activeLocaleKey = null;
 let _activeFallbackSource = null;
 
 function resolveLocaleCatalog(siteCode) {
     const code = (siteCode || "").toUpperCase().replace(/-.*$/, "");
-    // 1차: SITE_REGION_MAP에서 region 탐색
+    // 1李? SITE_REGION_MAP?먯꽌 region ?먯깋
     const region = SITE_REGION_MAP[code] || null;
-    // 2차: region catalog 존재 여부
+    // 2李? region catalog 議댁옱 ?щ?
     if (region && LOCALE_CATALOGS[region]) {
         _activeLocaleKey = region;
         _activeFallbackSource = null;
         return LOCALE_CATALOGS[region];
     }
-    // 3차: dotcom mapping의 language 기반 자동 추론
+    // 3李? dotcom mapping??language 湲곕컲 ?먮룞 異붾줎
     if (dotcomMapping?.markets) {
         const market = dotcomMapping.markets.find(m => m.siteCode?.toUpperCase() === code);
         if (market) {
@@ -470,14 +470,14 @@ function resolveLocaleCatalog(siteCode) {
             if (lang === "english" && LOCALE_CATALOGS.US) { _activeLocaleKey = "US"; _activeFallbackSource = "language"; return LOCALE_CATALOGS.US; }
         }
     }
-    // 4차: global default
+    // 4李? global default
     _activeLocaleKey = "_default";
     _activeFallbackSource = region ? `region:${region}` : "no-mapping";
     // fallback to _default catalog silently
     return LOCALE_CATALOGS._default;
 }
 
-// ── Dynamic Q3 state (locale에 따라 변경됨) ──
+// ?? Dynamic Q3 state (locale???곕씪 蹂寃쎈맖) ??
 let Q4_SAMSUNG_GROUPS = [];
 let Q4_PARTNER_GROUPS = [];
 let Q4_SAMSUNG_IDS = new Set();
@@ -489,7 +489,7 @@ const Q4_PARTNER_CONTROL_IDS = ["smart-plug", "smart-switch", "lighting", "curta
 const Q4_PARTNER_SECURITY_IDS = ["camera", "door-lock", "activity-sensor", "doorbell", "open-sensor", "care-camera"];
 const Q4_PARTNER_WELLNESS_IDS = ["body-scale", "partner-humidifier", "partner-sleep", "sleep-sensor", "wearable-care", "pet-feeder"];
 
-// 모든 기기 ID (auto 해제용)
+// 紐⑤뱺 湲곌린 ID (auto ?댁젣??
 const Q4_ALL_QUICK_IDS = [
     "tv-premium", "refrigerator", "washer", "dryer", "air-conditioner", "air-purifier",
     "ventilation", "robot-vacuum", "dishwasher", "eco-aircon", "speaker", "soundbar",
@@ -505,22 +505,22 @@ const Q4_ALL_QUICK_IDS = [
     "dt-vacuum", "dt-small-appliance", "copilot-pc", "desktop-pc", "sec-moving-style"
 ];
 
-// ── 스타일 카드 정의 (8개 공통 — locale 불변) ──
+// ?? ?ㅽ???移대뱶 ?뺤쓽 (8媛?怨듯넻 ??locale 遺덈?) ??
 const Q4_STYLE_CARDS = [
-    { id: "baseline", icon: "📦" },
-    { id: "energy",   icon: "⚡" },
-    { id: "care",     icon: "💛" },
-    { id: "mood",     icon: "🎵" },
-    { id: "security", icon: "🛡" },
-    { id: "chores",   icon: "🧹" },
-    { id: "comfort",  icon: "🌿" },
-    { id: "wellness", icon: "🧘" }
+    { id: "baseline", icon: "?벀" },
+    { id: "energy",   icon: "?? },
+    { id: "care",     icon: "?뮎" },
+    { id: "mood",     icon: "?렦" },
+    { id: "security", icon: "?썳" },
+    { id: "chores",   icon: "?㏏" },
+    { id: "comfort",  icon: "?뙼" },
+    { id: "wellness", icon: "?쭣" }
 ];
 
 /**
- * 현재 국가 기준으로 Q3 카탈로그를 적용
- * - Q4_SAMSUNG_GROUPS, Q4_PARTNER_GROUPS, Q4_PRESETS를 갱신
- * - 이전 선택 중 새 로케일에 없는 기기 자동 제거
+ * ?꾩옱 援?? 湲곗??쇰줈 Q3 移댄깉濡쒓렇瑜??곸슜
+ * - Q4_SAMSUNG_GROUPS, Q4_PARTNER_GROUPS, Q4_PRESETS瑜?媛깆떊
+ * - ?댁쟾 ?좏깮 以???濡쒖??쇱뿉 ?녿뒗 湲곌린 ?먮룞 ?쒓굅
  */
 function applyLocaleCatalog(siteCode) {
     const catalog = resolveLocaleCatalog(siteCode);
@@ -544,7 +544,7 @@ function applyLocaleCatalog(siteCode) {
     });
 }
 
-/** 현재 로케일의 dotcom 정보 반환 (헤더 표시용) */
+/** ?꾩옱 濡쒖??쇱쓽 dotcom ?뺣낫 諛섑솚 (?ㅻ뜑 ?쒖떆?? */
 function getActiveLocaleInfo() {
     const code = countrySelect?.value || "";
     const market = (dotcomMapping?.markets || []).find(m =>
@@ -560,23 +560,23 @@ function getActiveLocaleInfo() {
     };
 }
 
-// 기기별 역할 태그 (중복 역할 표현용 — locale 불변)
+// 湲곌린蹂???븷 ?쒓렇 (以묐났 ??븷 ?쒗쁽????locale 遺덈?)
 const DEVICE_ROLE_TAGS = {
-    "tv-premium":       { ko: ["엔터테인먼트", "알림 허브"], en: ["Entertainment", "Alert Hub"] },
-    "refrigerator":     { ko: ["주방", "가족 케어"], en: ["Kitchen", "Family Care"] },
-    "robot-vacuum":     { ko: ["가사", "모니터링"], en: ["Chores", "Monitoring"] },
-    "smart-plug":       { ko: ["에너지", "제어"], en: ["Energy", "Control"] },
-    "care-camera":      { ko: ["돌봄", "모니터링"], en: ["Care", "Monitoring"] },
-    "door-lock":        { ko: ["보안", "출입"], en: ["Security", "Access"] },
-    "activity-sensor":  { ko: ["안전", "시니어 케어"], en: ["Safety", "Senior Care"] },
-    "sleep-sensor":     { ko: ["수면", "웰니스"], en: ["Sleep", "Wellness"] },
-    "lighting":         { ko: ["무드", "자동화"], en: ["Mood", "Automation"] },
-    "energy-monitor":   { ko: ["에너지", "모니터링"], en: ["Energy", "Monitoring"] },
-    "wearable-care":    { ko: ["돌봄", "건강"], en: ["Care", "Health"] },
-    "eco-aircon":       { ko: ["절약", "AI 제어"], en: ["Saving", "AI Control"] }
+    "tv-premium":       { ko: ["?뷀꽣?뚯씤癒쇳듃", "?뚮┝ ?덈툕"], en: ["Entertainment", "Alert Hub"] },
+    "refrigerator":     { ko: ["二쇰갑", "媛議?耳??], en: ["Kitchen", "Family Care"] },
+    "robot-vacuum":     { ko: ["媛??, "紐⑤땲?곕쭅"], en: ["Chores", "Monitoring"] },
+    "smart-plug":       { ko: ["?먮꼫吏", "?쒖뼱"], en: ["Energy", "Control"] },
+    "care-camera":      { ko: ["?뚮큵", "紐⑤땲?곕쭅"], en: ["Care", "Monitoring"] },
+    "door-lock":        { ko: ["蹂댁븞", "異쒖엯"], en: ["Security", "Access"] },
+    "activity-sensor":  { ko: ["?덉쟾", "?쒕땲??耳??], en: ["Safety", "Senior Care"] },
+    "sleep-sensor":     { ko: ["?섎㈃", "?곕땲??], en: ["Sleep", "Wellness"] },
+    "lighting":         { ko: ["臾대뱶", "?먮룞??], en: ["Mood", "Automation"] },
+    "energy-monitor":   { ko: ["?먮꼫吏", "紐⑤땲?곕쭅"], en: ["Energy", "Monitoring"] },
+    "wearable-care":    { ko: ["?뚮큵", "嫄닿컯"], en: ["Care", "Health"] },
+    "eco-aircon":       { ko: ["?덉빟", "AI ?쒖뼱"], en: ["Saving", "AI Control"] }
 };
 
-// 초기 카탈로그 적용 (page load 시)
+// 珥덇린 移댄깉濡쒓렇 ?곸슜 (page load ??
 applyLocaleCatalog("SEC");
 
 function detectBrowserLocale() {
@@ -643,7 +643,7 @@ function bindEvents() {
     countrySelect.addEventListener("change", updateStatePreview);
     countrySelect.addEventListener("change", clearQ3AutoMode);
     countrySelect.addEventListener("change", updateLocaleFromCountry);
-    // ── Searchable City Dropdown 이벤트 ──
+    // ?? Searchable City Dropdown ?대깽????
     initCitySearchDropdown();
     personaGroups.addEventListener("change", (event) => {
         try {
@@ -651,7 +651,7 @@ function bindEvents() {
             trackQ3AutoManualOverride(event);
             updateStatePreview();
         } catch (e) { console.error("[personaGroups change] handler error:", e); }
-        // 항상 insight 갱신 — 위에서 에러가 나도 실행
+        // ??긽 insight 媛깆떊 ???꾩뿉???먮윭媛 ?섎룄 ?ㅽ뻾
         requestAnimationFrame(() => {
             try {
                 releaseDeferredStep3Insight();
@@ -659,12 +659,12 @@ function bindEvents() {
             } catch (e2) { console.error("[personaGroups change] insight error:", e2); }
         });
     });
-    // click 기반 백업 — 일부 브라우저에서 hidden checkbox의 change 이벤트가 누락되는 경우 대비
+    // click 湲곕컲 諛깆뾽 ???쇰? 釉뚮씪?곗??먯꽌 hidden checkbox??change ?대깽?멸? ?꾨씫?섎뒗 寃쎌슦 ?鍮?
     personaGroups.addEventListener("click", (event) => {
         const chip = event.target.closest(".tree-chip");
         const card = event.target.closest(".tree-card");
         if (!chip && !card) return;
-        // change 이벤트와 겹쳐도 idempotent하므로 안전함
+        // change ?대깽?몄? 寃뱀퀜??idempotent?섎?濡??덉쟾??
         setTimeout(() => {
             if (currentStep === 3) {
                 try {
@@ -698,14 +698,14 @@ function bindEvents() {
         updateStatePreview();
         updateStepInsight();
         renderQ4Composer();
-        // curation은 Build 버튼 클릭 시에만 실행
+        // curation? Build 踰꾪듉 ?대┃ ?쒖뿉留??ㅽ뻾
     });
     deviceCustomInput.addEventListener("input", () => {
         clearQ4AutoMode();
         updateStatePreview();
         updateStepInsight();
         renderQ4Summary();
-        // curation은 Build 버튼 클릭 시에만 실행
+        // curation? Build 踰꾪듉 ?대┃ ?쒖뿉留??ㅽ뻾
     });
     deviceCustomInput.addEventListener("keydown", handleDeviceCustomKeydown);
     q4Presets?.addEventListener("click", handleQ4PresetClick);
@@ -802,19 +802,19 @@ function renderQ3AutoSummary() {
         removed: q3ManualRemovedIds.size
     };
     const groupBreakdown = `A ${Q3_AUTO_TARGET_COUNTS.housing} / B ${Q3_AUTO_TARGET_COUNTS.household} / C ${Q3_AUTO_TARGET_COUNTS.lifestage}`;
-    const summaryBullets = (q3AutoRecommendationMeta.summary || []).slice(0, 3).map((line) => `<li>${escapeHtml(line)}</li>`).join("");
+    const summaryBullets = (q3AutoRecommendationMeta.summary || []).filter(Boolean).map((line) => `<li>${escapeHtml(line)}</li>`).join("");
 
     q3AutoSummary.classList.remove("hidden");
     q3AutoSummary.innerHTML = `
         <div class="q3-auto-summary-top">
-            <strong>${isKo ? "Q1 근거 기반 추천 세트" : "Q1-grounded recommendation set"}</strong>
+            <strong>${isKo ? "Q1 洹쇨굅 湲곕컲 異붿쿇 ?명듃" : "Q1-grounded recommendation set"}</strong>
             <span class="q3-auto-summary-structure">${escapeHtml(groupBreakdown)}</span>
         </div>
         <div class="q3-auto-summary-stats">
-            <span class="q3-auto-summary-stat"><strong>${counts.recommended}</strong> ${isKo ? "AI 추천" : "AI picks"}</span>
-            <span class="q3-auto-summary-stat"><strong>${counts.applied}</strong> ${isKo ? "적용 중" : "applied"}</span>
-            <span class="q3-auto-summary-stat"><strong>${counts.manual}</strong> ${isKo ? "사용자 추가" : "manual adds"}</span>
-            <span class="q3-auto-summary-stat"><strong>${counts.removed}</strong> ${isKo ? "사용자 해제" : "user removed"}</span>
+            <span class="q3-auto-summary-stat"><strong>${counts.recommended}</strong> ${isKo ? "AI 異붿쿇" : "AI picks"}</span>
+            <span class="q3-auto-summary-stat"><strong>${counts.applied}</strong> ${isKo ? "?곸슜 以? : "applied"}</span>
+            <span class="q3-auto-summary-stat"><strong>${counts.manual}</strong> ${isKo ? "?ъ슜??異붽?" : "manual adds"}</span>
+            <span class="q3-auto-summary-stat"><strong>${counts.removed}</strong> ${isKo ? "?ъ슜???댁젣" : "user removed"}</span>
         </div>
         ${summaryBullets ? `<ul class="q3-auto-summary-list">${summaryBullets}</ul>` : ""}
     `;
@@ -839,13 +839,13 @@ function updateQ3OptionBadges() {
 
         if (q3AutoRecommendedIds.has(optionId) && input.checked) {
             className = "q3-option--ai-applied";
-            badgeText = isKo ? "AI 추천" : "AI pick";
+            badgeText = isKo ? "AI 異붿쿇" : "AI pick";
         } else if (q3AutoRecommendedIds.has(optionId) && !input.checked) {
             className = "q3-option--ai-suggested";
-            badgeText = isKo ? "AI 추천됨" : "AI suggested";
+            badgeText = isKo ? "AI 異붿쿇?? : "AI suggested";
         } else if (!q3AutoRecommendedIds.has(optionId) && input.checked) {
             className = "q3-option--manual-added";
-            badgeText = isKo ? "사용자 추가" : "Added";
+            badgeText = isKo ? "?ъ슜??異붽?" : "Added";
         }
 
         if (!className) return;
@@ -859,17 +859,17 @@ function updateQ3OptionBadges() {
 }
 
 function handleQ4AutoSelect() {
-    // 모든 기기 해제
+    // 紐⑤뱺 湲곌린 ?댁젣
     q4ActivePresets.clear();
     Q4_ALL_QUICK_IDS.forEach((optionId) => setDeviceOptionChecked(optionId, false));
 
-    // Q1/Q2 기반 기기 자동 선택
+    // Q1/Q2 湲곕컲 湲곌린 ?먮룞 ?좏깮
     const personaIds = getSelectedPersonaOptionIds();
     const isKo = currentLocale === "ko";
 
-    // 페르소나 → 기기 매핑
+    // ?섎Ⅴ?뚮굹 ??湲곌린 留ㅽ븨
     const PERSONA_DEVICE_MAP = {
-        // 세대 구성
+        // ?몃? 援ъ꽦
         hh_solo: ["galaxy-phone", "galaxy-watch", "air-conditioner", "robot-vacuum", "lighting"],
         hh_couple: ["tv-premium", "soundbar", "air-conditioner", "robot-vacuum", "lighting"],
         hh_young_kids: ["camera", "air-purifier", "robot-vacuum", "galaxy-tab", "door-lock"],
@@ -877,12 +877,12 @@ function handleQ4AutoSelect() {
         hh_adult_kids: ["tv-premium", "galaxy-phone", "air-conditioner", "robot-vacuum"],
         hh_multi_gen: ["camera", "activity-sensor", "galaxy-watch", "tv-premium", "air-purifier"],
         hh_senior: ["activity-sensor", "galaxy-watch", "camera", "air-conditioner"],
-        // 가족 상황
+        // 媛議??곹솴
         t_dual_income: ["robot-vacuum", "washer", "dryer", "smart-plug", "door-lock"],
         t_pet: ["pet-camera", "pet-feeder", "robot-vacuum", "air-purifier"],
         t_parent_away: ["camera", "activity-sensor", "galaxy-phone"],
         t_parent_care: ["activity-sensor", "galaxy-watch", "camera"],
-        // 라이프스테이지
+        // ?쇱씠?꾩뒪?뚯씠吏
         ls_starter: ["galaxy-phone", "lighting", "smart-plug", "air-conditioner"],
         ls_newlywed: ["tv-premium", "soundbar", "robot-vacuum", "lighting", "air-conditioner"],
         ls_settled: ["air-conditioner", "air-purifier", "robot-vacuum", "tv-premium", "washer"],
@@ -890,13 +890,13 @@ function handleQ4AutoSelect() {
         ls_established: ["tv-premium", "air-conditioner", "robot-vacuum", "washer", "dryer"],
         ls_empty_nest: ["tv-premium", "galaxy-watch", "air-conditioner", "robot-vacuum"],
         ls_senior: ["galaxy-watch", "activity-sensor", "camera", "air-conditioner"],
-        // 생활 패턴
+        // ?앺솢 ?⑦꽩
         t_remote: ["galaxy-tab", "galaxy-phone", "air-purifier", "lighting", "speaker"],
         t_long_away: ["camera", "door-lock", "smart-plug", "robot-vacuum"],
         t_weekend_out: ["camera", "door-lock", "smart-plug", "robot-vacuum"],
         t_night_shift: ["sleep-sensor", "lighting", "air-conditioner"],
         t_homebody: ["tv-premium", "soundbar", "gaming-console", "air-purifier", "lighting"],
-        // 생활 테마
+        // ?앺솢 ?뚮쭏
         int_energy: ["smart-plug", "energy-monitor", "eco-aircon"],
         int_air: ["air-purifier", "ventilation"],
         int_lights: ["lighting", "smart-switch"],
@@ -904,7 +904,7 @@ function handleQ4AutoSelect() {
         int_sleep: ["sleep-sensor", "lighting", "air-conditioner"],
         int_pet: ["pet-camera", "pet-feeder", "robot-vacuum"],
         int_health: ["galaxy-watch", "galaxy-buds", "body-scale"],
-        // 거주지
+        // 嫄곗＜吏
         h_apt: ["air-conditioner", "air-purifier", "robot-vacuum"],
         h_house: ["camera", "door-lock", "doorbell", "smart-plug"],
         h_compact: ["air-conditioner", "robot-vacuum", "lighting"],
@@ -919,51 +919,51 @@ function handleQ4AutoSelect() {
         }
     });
 
-    // 기본 기기 (최소 선택)
+    // 湲곕낯 湲곌린 (理쒖냼 ?좏깮)
     if (autoDevices.size === 0) {
         ["galaxy-phone", "tv-premium", "air-conditioner", "robot-vacuum", "lighting"].forEach(d => autoDevices.add(d));
     }
 
-    // 실제 기기 선택
+    // ?ㅼ젣 湲곌린 ?좏깮
     autoDevices.forEach(deviceId => {
         setDeviceOptionChecked(deviceId, true);
     });
 
-    // 선택 이유 구성
+    // ?좏깮 ?댁쑀 援ъ꽦
     const reasonMap = {
-        hh_solo: isKo ? "1인 가구 → 스마트폰·워치 중심 간편 제어" : "Single → phone & watch centric control",
-        hh_couple: isKo ? "2인 가구 → 엔터테인먼트 + 생활 편의" : "Couple → entertainment + convenience",
-        hh_young_kids: isKo ? "영유아 가구 → 안전 모니터링 + 공기질" : "Young kids → safety monitoring + air",
-        hh_school_kids: isKo ? "학령기 자녀 → 학습 태블릿 + 안전" : "School kids → tablet + safety",
-        hh_senior: isKo ? "시니어 → 활동 감지 + 건강 모니터링" : "Senior → activity + health monitoring",
-        hh_multi_gen: isKo ? "다세대 → 돌봄 센서 + 공기질" : "Multi-gen → care sensors + air quality",
-        t_dual_income: isKo ? "맞벌이 → 가사 자동화 + 에너지 관리" : "Dual income → chore automation + energy",
-        t_pet: isKo ? "반려동물 → 펫 카메라 + 자동 급식" : "Pets → pet camera + auto feeder",
-        t_remote: isKo ? "재택근무 → 태블릿 + 공기질 + 조명" : "Remote work → tablet + air + lighting",
-        t_homebody: isKo ? "홈 레저 → TV + 사운드바 + 조명" : "Homebody → TV + soundbar + lighting",
-        ls_parenting: isKo ? "육아기 → 안전 카메라 + 공기청정" : "Parenting → safety camera + air purifier",
-        int_energy: isKo ? "에너지 절약 → 스마트 플러그 + 모니터" : "Energy saving → smart plug + monitor",
-        int_safe: isKo ? "안전 중시 → 카메라 + 도어락" : "Safety → camera + door lock",
-        int_pet: isKo ? "펫 케어 → 펫 카메라 + 급식기" : "Pet care → pet camera + feeder",
-        int_health: isKo ? "건강 관리 → 워치 + 체성분계" : "Health → watch + body scale",
+        hh_solo: isKo ? "1??媛援????ㅻ쭏?명룿쨌?뚯튂 以묒떖 媛꾪렪 ?쒖뼱" : "Single ??phone & watch centric control",
+        hh_couple: isKo ? "2??媛援????뷀꽣?뚯씤癒쇳듃 + ?앺솢 ?몄쓽" : "Couple ??entertainment + convenience",
+        hh_young_kids: isKo ? "?곸쑀??媛援????덉쟾 紐⑤땲?곕쭅 + 怨듦린吏? : "Young kids ??safety monitoring + air",
+        hh_school_kids: isKo ? "?숇졊湲??먮? ???숈뒿 ?쒕툝由?+ ?덉쟾" : "School kids ??tablet + safety",
+        hh_senior: isKo ? "?쒕땲?????쒕룞 媛먯? + 嫄닿컯 紐⑤땲?곕쭅" : "Senior ??activity + health monitoring",
+        hh_multi_gen: isKo ? "?ㅼ꽭? ???뚮큵 ?쇱꽌 + 怨듦린吏? : "Multi-gen ??care sensors + air quality",
+        t_dual_income: isKo ? "留욌쾶????媛???먮룞??+ ?먮꼫吏 愿由? : "Dual income ??chore automation + energy",
+        t_pet: isKo ? "諛섎젮?숇Ъ ????移대찓??+ ?먮룞 湲됱떇" : "Pets ??pet camera + auto feeder",
+        t_remote: isKo ? "?ы깮洹쇰Т ???쒕툝由?+ 怨듦린吏?+ 議곕챸" : "Remote work ??tablet + air + lighting",
+        t_homebody: isKo ? "???덉? ??TV + ?ъ슫?쒕컮 + 議곕챸" : "Homebody ??TV + soundbar + lighting",
+        ls_parenting: isKo ? "?≪븘湲????덉쟾 移대찓??+ 怨듦린泥?젙" : "Parenting ??safety camera + air purifier",
+        int_energy: isKo ? "?먮꼫吏 ?덉빟 ???ㅻ쭏???뚮윭洹?+ 紐⑤땲?? : "Energy saving ??smart plug + monitor",
+        int_safe: isKo ? "?덉쟾 以묒떆 ??移대찓??+ ?꾩뼱?? : "Safety ??camera + door lock",
+        int_pet: isKo ? "??耳??????移대찓??+ 湲됱떇湲? : "Pet care ??pet camera + feeder",
+        int_health: isKo ? "嫄닿컯 愿由????뚯튂 + 泥댁꽦遺꾧퀎" : "Health ??watch + body scale",
     };
 
     personaIds.forEach(id => {
         if (reasonMap[id]) reasons.push(reasonMap[id]);
     });
 
-    // 직접 입력 칸은 비워 두고, 자동 선택 상태는 카드로만 설명
+    // 吏곸젒 ?낅젰 移몄? 鍮꾩썙 ?먭퀬, ?먮룞 ?좏깮 ?곹깭??移대뱶濡쒕쭔 ?ㅻ챸
     const customInput = document.getElementById("device-custom");
     if (customInput) customInput.value = "";
     renderQ4Composer();
     updateStatePreview();
     updateStepInsight();
 
-    // 버튼 활성 표시
+    // 踰꾪듉 ?쒖꽦 ?쒖떆
     const btn = document.getElementById("q4-auto-btn");
     if (btn) btn.classList.add("active");
 
-    // 선택 이유 표시
+    // ?좏깮 ?댁쑀 ?쒖떆
     if (reasons.length > 0) {
         const autoDeviceLabels = [...autoDevices].map((id) => getDeviceLabel(id)).filter(Boolean);
         const primaryLabels = autoDeviceLabels.slice(0, 5).join(", ");
@@ -975,34 +975,34 @@ function handleQ4AutoSelect() {
         });
         const reasonHtml = `
             <div class="q4-auto-reason" style="margin-top:10px;padding:10px 14px;background:#f0f4ff;border-radius:8px;border-left:3px solid #1976d2;font-size:.75rem;color:#333;line-height:1.6">
-                <strong style="color:#1976d2">${isKo ? "자동 선택 근거" : "Auto-selection rationale"}</strong>
+                <strong style="color:#1976d2">${isKo ? "?먮룞 ?좏깮 洹쇨굅" : "Auto-selection rationale"}</strong>
                 <p style="margin:6px 0 0;color:#234">${isKo
-                    ? `Q2에서 고른 생활맥락과 우선순위를 기준으로 <strong>${autoDevices.size}개 기기</strong>를 먼저 추렸습니다. 핵심 장면을 바로 만들 수 있는 ${escapeHtml(primaryLabels)} 조합을 먼저 세우고, 부족한 부분은 감지·보안·생활 편의 기기로 보강했습니다.`
+                    ? `Q2?먯꽌 怨좊Ⅸ ?앺솢留λ씫怨??곗꽑?쒖쐞瑜?湲곗??쇰줈 <strong>${autoDevices.size}媛?湲곌린</strong>瑜?癒쇱? 異붾졇?듬땲?? ?듭떖 ?λ㈃??諛붾줈 留뚮뱾 ???덈뒗 ${escapeHtml(primaryLabels)} 議고빀??癒쇱? ?몄슦怨? 遺議깊븳 遺遺꾩? 媛먯?쨌蹂댁븞쨌?앺솢 ?몄쓽 湲곌린濡?蹂닿컯?덉뒿?덈떎.`
                     : `Based on the Q2 lifestyle context, the system first selected <strong>${autoDevices.size} devices</strong>. It starts with ${escapeHtml(primaryLabels)} for the core scene, then adds sensing, security, and convenience coverage where needed.`}</p>
                 ${supportingLabels ? `<p style="margin:6px 0 0;color:#425466">${isKo
-                    ? `보조 기기는 ${escapeHtml(supportingLabels)} 중심으로 붙여서, 단순 나열이 아니라 실제 트리거와 후속 동작이 이어지는 조합이 되도록 구성했습니다.`
+                    ? `蹂댁“ 湲곌린??${escapeHtml(supportingLabels)} 以묒떖?쇰줈 遺숈뿬?? ?⑥닚 ?섏뿴???꾨땲???ㅼ젣 ?몃━嫄곗? ?꾩냽 ?숈옉???댁뼱吏??議고빀???섎룄濡?援ъ꽦?덉뒿?덈떎.`
                     : `Supporting devices such as ${escapeHtml(supportingLabels)} were added so the setup forms a real trigger-to-action chain instead of a random bundle.`}</p>` : ""}
                 <ul style="margin:4px 0 0 16px;padding:0">
                     ${reasons.map(r => `<li>${escapeHtml(r)}</li>`).join("")}
                 </ul>
                 ${partnerAutoLabels.length > 0 ? `<p style="margin:8px 0 0;color:#4b5563;font-size:.69rem">${isKo
-                    ? `타사 호환 기기 ${partnerAutoLabels.join(", ")} 는 SmartThings에서 센싱 확장, 출입 감지, 생활 제어 범위를 넓히기 위해 포함했습니다.`
+                    ? `????명솚 湲곌린 ${partnerAutoLabels.join(", ")} ??SmartThings?먯꽌 ?쇱떛 ?뺤옣, 異쒖엯 媛먯?, ?앺솢 ?쒖뼱 踰붿쐞瑜??볧엳湲??꾪빐 ?ы븿?덉뒿?덈떎.`
                     : `Partner devices ${partnerAutoLabels.join(", ")} were included to extend trigger, sensing, or monitoring coverage in SmartThings.`}</p>` : ""}
-                <p style="margin:6px 0 0;color:#888;font-size:.68rem">${isKo ? "직접 조정이 필요하면 아래에서 기기를 추가/해제할 수 있습니다." : "You can adjust selections below if needed."}</p>
+                <p style="margin:6px 0 0;color:#888;font-size:.68rem">${isKo ? "吏곸젒 議곗젙???꾩슂?섎㈃ ?꾨옒?먯꽌 湲곌린瑜?異붽?/?댁젣?????덉뒿?덈떎." : "You can adjust selections below if needed."}</p>
             </div>`;
         const autoBtn = document.getElementById("q4-auto-btn");
-        // 기존 이유 카드 제거
+        // 湲곗〈 ?댁쑀 移대뱶 ?쒓굅
         autoBtn?.parentElement?.querySelector(".q4-auto-reason")?.remove();
         if (autoBtn) autoBtn.insertAdjacentHTML("afterend", reasonHtml);
     }
 }
-// auto 모드 해제: 기기 수동 선택 시
+// auto 紐⑤뱶 ?댁젣: 湲곌린 ?섎룞 ?좏깮 ??
 function clearQ4AutoMode() {
     const customInput = document.getElementById("device-custom");
     if (customInput && customInput.value === "__auto__") customInput.value = "";
     const btn = document.getElementById("q4-auto-btn");
     if (btn) btn.classList.remove("active");
-    // 자동 선택 근거 카드 제거
+    // ?먮룞 ?좏깮 洹쇨굅 移대뱶 ?쒓굅
     btn?.parentElement?.querySelector(".q4-auto-reason")?.remove();
 }
 
@@ -1079,7 +1079,7 @@ function enforceServerOrigin() {
         "accessUnavailable",
         "This page must be opened from http://127.0.0.1:8000/index.html, not from a file:// URL."
     );
-    resultDiv.innerHTML = '<p class="error">로컬 파일이 아니라 서버 주소 `http://127.0.0.1:8000/index.html` 로 열어야 합니다.</p>';
+    resultDiv.innerHTML = '<p class="error">濡쒖뺄 ?뚯씪???꾨땲???쒕쾭 二쇱냼 `http://127.0.0.1:8000/index.html` 濡??댁뼱???⑸땲??</p>';
     return true;
 }
 
@@ -1092,7 +1092,7 @@ function toggleAccessCodeVisibility() {
 
 function hydrateStaticUi() {
     renderExportActions();
-    // 이벤트 위임은 renderExportActions 내부에서 처리됨
+    // ?대깽???꾩엫? renderExportActions ?대??먯꽌 泥섎━??
 
     renderWizardProgress();
     updateStepInsight();
@@ -1168,7 +1168,7 @@ async function loadReferenceData() {
         updateRoleBrief();
         updateStatePreview();
     } catch (error) {
-        resultDiv.innerHTML = `<p class="error">데이터를 불러오지 못했습니다: ${escapeHtml(String(error?.message || error))}. 잠시 후 다시 시도해 주세요.</p>`;
+        resultDiv.innerHTML = `<p class="error">?곗씠?곕? 遺덈윭?ㅼ? 紐삵뻽?듬땲?? ${escapeHtml(String(error?.message || error))}. ?좎떆 ???ㅼ떆 ?쒕룄??二쇱꽭??</p>`;
         console.error("[loadReferenceData] Fatal error:", error);
     }
 }
@@ -1202,7 +1202,7 @@ function getDotcomMarketInfo(selectedMarket) {
 function renderChecklistGroups(groups, selectedIds = [], kind) {
     const selected = new Set(selectedIds);
     return groups.map((group) => {
-        // Section header — full-width label
+        // Section header ??full-width label
         if (group.section) {
             return `<div class="device-section-header" style="grid-column:1/-1"><span>${escapeHtml(group.title)}</span></div>`;
         }
@@ -1234,7 +1234,7 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
             const childChecked = selected.has(option.id);
             const descHtml = option.desc ? `<span class="tree-child-desc">${escapeHtml(option.desc)}</span>` : "";
 
-            // Chip mode — toggle chips
+            // Chip mode ??toggle chips
             if (isChip) {
                 return `
                     <label class="tree-chip ${childChecked ? "tree-chip--active" : ""}">
@@ -1243,7 +1243,7 @@ function renderChecklistGroups(groups, selectedIds = [], kind) {
                     </label>`;
             }
 
-            // Radio card mode — single select cards
+            // Radio card mode ??single select cards
             if (isRadio || isCardMulti) {
                 return `
                     <label class="tree-card ${childChecked ? "tree-card--active" : ""}">
@@ -1301,27 +1301,27 @@ function getDefaultDeviceSelectionsForCountry(siteCode) {
 
 function getQ4PresetCopy(presetId) {
     const titles = {
-        baseline: { ko: "기본 조합",       en: "Baseline" },
-        energy:   { ko: "에너지 절약형",    en: "Energy Saver" },
-        care:     { ko: "케어 확장형",     en: "Care+" },
-        mood:     { ko: "무드 확장형",     en: "Mood+" },
-        security: { ko: "홈 시큐리티형",    en: "Security" },
-        chores:   { ko: "가사 올인형",     en: "Chores All-in" },
-        comfort:  { ko: "쾌적 환경형",     en: "Air Comfort" },
-        wellness: { ko: "건강·웰니스형",    en: "Wellness" }
+        baseline: { ko: "湲곕낯 議고빀",       en: "Baseline" },
+        energy:   { ko: "?먮꼫吏 ?덉빟??,    en: "Energy Saver" },
+        care:     { ko: "耳???뺤옣??,     en: "Care+" },
+        mood:     { ko: "臾대뱶 ?뺤옣??,     en: "Mood+" },
+        security: { ko: "???쒗걧由ы떚??,    en: "Security" },
+        chores:   { ko: "媛???ъ씤??,     en: "Chores All-in" },
+        comfort:  { ko: "苡뚯쟻 ?섍꼍??,     en: "Air Comfort" },
+        wellness: { ko: "嫄닿컯쨌?곕땲?ㅽ삎",    en: "Wellness" }
     };
-    const icons = { baseline: "📦", energy: "⚡", care: "💛", mood: "🎵", security: "🛡", chores: "🧹", comfort: "🌿", wellness: "🧘" };
+    const icons = { baseline: "?벀", energy: "??, care: "?뮎", mood: "?렦", security: "?썳", chores: "?㏏", comfort: "?뙼", wellness: "?쭣" };
     const isKo = currentLocale === "ko";
     const title = (titles[presetId] || titles.baseline)[isKo ? "ko" : "en"];
-    const icon = icons[presetId] || "📦";
+    const icon = icons[presetId] || "?벀";
 
-    // desc는 현재 카탈로그의 실제 기기에서 동적 생성
+    // desc???꾩옱 移댄깉濡쒓렇???ㅼ젣 湲곌린?먯꽌 ?숈쟻 ?앹꽦
     const preset = Q4_PRESETS.find(p => p.id === presetId);
     let desc = "";
     if (preset) {
         const sLabels = preset.samsungIds.slice(0, 4).map(id => getDeviceLabel(id)).join(", ");
         const pLabels = preset.partnerIds.length > 0
-            ? " + " + preset.partnerIds.slice(0, 3).map(id => getDeviceLabel(id)).join("·")
+            ? " + " + preset.partnerIds.slice(0, 3).map(id => getDeviceLabel(id)).join("쨌")
             : "";
         desc = sLabels + pLabels;
     }
@@ -1331,11 +1331,11 @@ function getQ4PresetCopy(presetId) {
 function getQ4SummaryCopy() {
     if (currentLocale === "ko") {
         return {
-            selected: "현재 반영 기기",
-            capabilities: "가능한 기능",
-            limits: "현재 제한",
-            recommend: "추천 추가 기기",
-            empty: "기기를 고르면 여기서 가능한 시나리오 범위와 한계가 바로 보입니다."
+            selected: "?꾩옱 諛섏쁺 湲곌린",
+            capabilities: "媛?ν븳 湲곕뒫",
+            limits: "?꾩옱 ?쒗븳",
+            recommend: "異붿쿇 異붽? 湲곌린",
+            empty: "湲곌린瑜?怨좊Ⅴ硫??ш린??媛?ν븳 ?쒕굹由ъ삤 踰붿쐞? ?쒓퀎媛 諛붾줈 蹂댁엯?덈떎."
         };
     }
     return {
@@ -1350,26 +1350,26 @@ function getQ4SummaryCopy() {
 function renderQ4Composer() {
     if (!q4Presets) return;
 
-    // ── 현재 국가 기준 카탈로그 적용 ──
+    // ?? ?꾩옱 援?? 湲곗? 移댄깉濡쒓렇 ?곸슜 ??
     applyLocaleCatalog(countrySelect?.value || "SEC");
 
-    // ── 로케일 헤더 동적 갱신 ──
+    // ?? 濡쒖????ㅻ뜑 ?숈쟻 媛깆떊 ??
     const localeInfo = getActiveLocaleInfo();
     const localeHeader = document.querySelector(".q4-locale-header");
     if (localeHeader) {
         const isKoH = currentLocale === "ko";
         const fallbackNotice = localeInfo.isFallback
             ? `<p class="q4-locale-fallback">${isKoH
-                ? "현재 국가의 상세 제품 구성이 준비 중이어서 유사 로케일 기준 제품군을 우선 표시합니다."
+                ? "?꾩옱 援?????곸꽭 ?쒗뭹 援ъ꽦??以鍮?以묒씠?댁꽌 ?좎궗 濡쒖???湲곗? ?쒗뭹援곗쓣 ?곗꽑 ?쒖떆?⑸땲??"
                 : "Detailed product data for this market is being prepared. Showing similar locale products."}</p>`
             : "";
         localeHeader.innerHTML = `
             <div class="q4-locale-main">
-                <span class="q4-locale-icon">🌐</span>
-                <span class="q4-locale-label">${isKoH ? "현재 제품 기준" : "Product source"}: <strong>Samsung.com ${escapeHtml(localeInfo.country)} (${escapeHtml(localeInfo.siteCode.toLowerCase())})</strong></span>
+                <span class="q4-locale-icon">?뙋</span>
+                <span class="q4-locale-label">${isKoH ? "?꾩옱 ?쒗뭹 湲곗?" : "Product source"}: <strong>Samsung.com ${escapeHtml(localeInfo.country)} (${escapeHtml(localeInfo.siteCode.toLowerCase())})</strong></span>
             </div>
             <p class="q4-locale-sub">${isKoH
-                ? "아래 조합은 해당 국가 삼성닷컴 판매 제품을 우선 반영했습니다. 일부 기능은 SmartThings 호환 타사 기기가 추가로 필요할 수 있습니다."
+                ? "?꾨옒 議고빀? ?대떦 援?? ?쇱꽦?룹뺨 ?먮ℓ ?쒗뭹???곗꽑 諛섏쁺?덉뒿?덈떎. ?쇰? 湲곕뒫? SmartThings ?명솚 ???湲곌린媛 異붽?濡??꾩슂?????덉뒿?덈떎."
                 : "Products below prioritize this market's Samsung.com lineup. Some features may require SmartThings-compatible partner devices."}</p>
             ${fallbackNotice}
         `;
@@ -1380,18 +1380,18 @@ function renderQ4Composer() {
     );
     const isKo = currentLocale === "ko";
 
-    // ── 스타일 조합 카드 8개 ──
+    // ?? ?ㅽ???議고빀 移대뱶 8媛???
     q4Presets.innerHTML = Q4_PRESETS.map((preset) => {
         const copy = getQ4PresetCopy(preset.id);
         const isActive = q4ActivePresets.has(preset.id);
         const custState = getPresetCustomizationState(preset, selectedDeviceIds);
         const custBadge = isActive && custState.customized
-            ? `<span class="q4-cust-badge">${isKo ? "직접 조정됨" : "Customized"}</span>`
+            ? `<span class="q4-cust-badge">${isKo ? "吏곸젒 議곗젙?? : "Customized"}</span>`
             : isActive && custState.expanded
-                ? `<span class="q4-cust-badge q4-cust-expanded">${isKo ? "확장됨" : "Expanded"}</span>`
+                ? `<span class="q4-cust-badge q4-cust-expanded">${isKo ? "?뺤옣?? : "Expanded"}</span>`
                 : "";
 
-        // 삼성/호환 배지
+        // ?쇱꽦/?명솚 諛곗?
         const samsungBadges = preset.samsungIds.map(id => {
             const lbl = getDeviceLabel(id);
             const removed = isActive && !selectedDeviceIds.has(id);
@@ -1407,7 +1407,7 @@ function renderQ4Composer() {
 
         return `
             <button type="button" class="q4-preset-btn${isActive ? " active" : ""}${isActive && custState.customized ? " customized" : ""}" data-preset-id="${preset.id}">
-                <span class="q4-preset-icon">${copy.icon || "📦"}</span>
+                <span class="q4-preset-icon">${copy.icon || "?벀"}</span>
                 <strong class="q4-preset-title">${escapeHtml(copy.title)}</strong>
                 ${custBadge}
                 <div class="q4-card-badges">
@@ -1415,13 +1415,13 @@ function renderQ4Composer() {
                     ${partnerBadges ? `<span class="q4-badge-divider">+</span>${partnerBadges}` : ""}
                 </div>
                 ${preset.partnerIds.length === 0
-                    ? `<span class="q4-card-tag q4-tag-samsung-only">${isKo ? "삼성 중심" : "Samsung only"}</span>`
-                    : `<span class="q4-card-tag q4-tag-partner-needed">${isKo ? "타사 확장 가능" : "Partner expandable"}</span>`}
+                    ? `<span class="q4-card-tag q4-tag-samsung-only">${isKo ? "?쇱꽦 以묒떖" : "Samsung only"}</span>`
+                    : `<span class="q4-card-tag q4-tag-partner-needed">${isKo ? "????뺤옣 媛?? : "Partner expandable"}</span>`}
             </button>
         `;
     }).join("");
 
-    // ── 직접 기기 선택: 삼성 / 타사 분리 ──
+    // ?? 吏곸젒 湲곌린 ?좏깮: ?쇱꽦 / ???遺꾨━ ??
     const allChipsEl = document.getElementById("q4-all-chips");
     if (allChipsEl) {
         const samsungHtml = renderQ4ChipSection(Q4_SAMSUNG_GROUPS, "samsung");
@@ -1430,15 +1430,15 @@ function renderQ4Composer() {
         allChipsEl.innerHTML = `
             <div class="q4-direct-section q4-direct-samsung">
                 <div class="q4-direct-section-head">
-                    <span class="q4-direct-section-icon">🏢</span>
-                    <span class="q4-direct-section-title">${isKo ? "삼성닷컴 Korea (sec) 기준 구매 가능 제품" : "Samsung.com Korea Products"}</span>
+                    <span class="q4-direct-section-icon">?룫</span>
+                    <span class="q4-direct-section-title">${isKo ? "?쇱꽦?룹뺨 Korea (sec) 湲곗? 援щℓ 媛???쒗뭹" : "Samsung.com Korea Products"}</span>
                 </div>
                 ${samsungHtml}
             </div>
             <div class="q4-direct-section q4-direct-partner">
                 <div class="q4-direct-section-head">
-                    <span class="q4-direct-section-icon">🔗</span>
-                    <span class="q4-direct-section-title">${isKo ? "SmartThings 호환 타사/파트너 기기" : "SmartThings Partner Devices"}</span>
+                    <span class="q4-direct-section-icon">?뵕</span>
+                    <span class="q4-direct-section-title">${isKo ? "SmartThings ?명솚 ????뚰듃??湲곌린" : "SmartThings Partner Devices"}</span>
                 </div>
                 ${partnerHtml}
             </div>
@@ -1469,7 +1469,7 @@ function getPresetCustomizationState(preset, selectedDeviceIds) {
     const expectedIds = new Set(preset.deviceIds);
     const removedFromPreset = preset.deviceIds.filter(id => !selectedDeviceIds.has(id));
     const addedBeyondPresets = [...selectedDeviceIds].filter(id => {
-        // 이 기기가 어떤 활성 프리셋에도 속하지 않는 경우 = 사용자 직접 추가
+        // ??湲곌린媛 ?대뼡 ?쒖꽦 ?꾨━?뗭뿉???랁븯吏 ?딅뒗 寃쎌슦 = ?ъ슜??吏곸젒 異붽?
         for (const pid of q4ActivePresets) {
             const p = Q4_PRESETS.find(x => x.id === pid);
             if (p && p.deviceIds.includes(id)) return false;
@@ -1532,7 +1532,7 @@ function handleQ4PresetClick(event) {
     const isActive = q4ActivePresets.has(preset.id);
     if (isActive) {
         q4ActivePresets.delete(preset.id);
-        // 이 프리셋의 고유 기기만 해제 (다른 활성 프리셋과 겹치는 기기는 유지)
+        // ???꾨━?뗭쓽 怨좎쑀 湲곌린留??댁젣 (?ㅻⅨ ?쒖꽦 ?꾨━?뗪낵 寃뱀튂??湲곌린???좎?)
         const otherPresetDevices = new Set();
         for (const pid of q4ActivePresets) {
             const p = Q4_PRESETS.find(x => x.id === pid);
@@ -1548,7 +1548,7 @@ function handleQ4PresetClick(event) {
     renderQ4Composer();
     updateStatePreview();
     updateStepInsight();
-    // curation은 "시나리오 매칭 시작" 버튼 클릭 시에만 실행
+    // curation? "?쒕굹由ъ삤 留ㅼ묶 ?쒖옉" 踰꾪듉 ?대┃ ?쒖뿉留??ㅽ뻾
 }
 
 function handleQ4QuickChipClick(event) {
@@ -1562,7 +1562,7 @@ function handleQ4QuickChipClick(event) {
     renderQ4Composer();
     updateStatePreview();
     updateStepInsight();
-    // curation은 "시나리오 매칭 시작" 버튼 클릭 시에만 실행
+    // curation? "?쒕굹由ъ삤 留ㅼ묶 ?쒖옉" 踰꾪듉 ?대┃ ?쒖뿉留??ㅽ뻾
 }
 
 function setDeviceOptionChecked(optionId, shouldCheck) {
@@ -1595,26 +1595,26 @@ function buildQ4CapabilitySummary(selectedNormalizedDevices) {
     const limits = [];
     const recommendations = [];
 
-    if (deviceSet.has("TV")) capabilities.push(currentLocale === "ko" ? "TV를 알림 허브나 장면 연출 포인트로 활용 가능" : "TV can act as a visible alert and scene anchor");
-    else recommendations.push(currentLocale === "ko" ? "TV를 넣으면 집 안 장면 연출과 알림 전달이 쉬워집니다." : "Add a TV to make alerts and scene storytelling more visible.");
+    if (deviceSet.has("TV")) capabilities.push(currentLocale === "ko" ? "TV瑜??뚮┝ ?덈툕???λ㈃ ?곗텧 ?ъ씤?몃줈 ?쒖슜 媛?? : "TV can act as a visible alert and scene anchor");
+    else recommendations.push(currentLocale === "ko" ? "TV瑜??ｌ쑝硫?吏????λ㈃ ?곗텧怨??뚮┝ ?꾨떖???ъ썙吏묐땲??" : "Add a TV to make alerts and scene storytelling more visible.");
 
-    if (deviceSet.has("세탁기") || deviceSet.has("세탁기/건조기")) capabilities.push(currentLocale === "ko" ? "가사 자동화와 세탁 루틴 중심 시나리오 구성 가능" : "Laundry-driven automation becomes credible");
-    else limits.push(currentLocale === "ko" ? "가사 자동화 축이 약해져 생활 밀착감이 줄어듭니다." : "Without laundry devices, chore automation feels weaker.");
+    if (deviceSet.has("?명긽湲?) || deviceSet.has("?명긽湲?嫄댁“湲?)) capabilities.push(currentLocale === "ko" ? "媛???먮룞?붿? ?명긽 猷⑦떞 以묒떖 ?쒕굹由ъ삤 援ъ꽦 媛?? : "Laundry-driven automation becomes credible");
+    else limits.push(currentLocale === "ko" ? "媛???먮룞??異뺤씠 ?쏀빐???앺솢 諛李⑷컧??以꾩뼱??땲??" : "Without laundry devices, chore automation feels weaker.");
 
-    if (deviceSet.has("냉장고")) capabilities.push(currentLocale === "ko" ? "식생활/푸드 케어 장면까지 자연스럽게 확장 가능" : "Food-care and kitchen routines can be included");
-    else recommendations.push(currentLocale === "ko" ? "냉장고를 넣으면 주방·식생활 메시지까지 확장됩니다." : "Add a refrigerator to extend into food-care routines.");
+    if (deviceSet.has("?됱옣怨?)) capabilities.push(currentLocale === "ko" ? "?앹깮???몃뱶 耳???λ㈃源뚯? ?먯뿰?ㅻ읇寃??뺤옣 媛?? : "Food-care and kitchen routines can be included");
+    else recommendations.push(currentLocale === "ko" ? "?됱옣怨좊? ?ｌ쑝硫?二쇰갑쨌?앹깮??硫붿떆吏源뚯? ?뺤옣?⑸땲??" : "Add a refrigerator to extend into food-care routines.");
 
-    if (deviceSet.has("에어컨")) capabilities.push(currentLocale === "ko" ? "쾌적성·에너지 절감 메시지를 바로 연결 가능" : "Comfort and energy-saving scenarios become immediate");
-    else limits.push(currentLocale === "ko" ? "귀가 직후 쾌적성 장면이 약해질 수 있습니다." : "Arrival comfort moments will be weaker without climate control.");
+    if (deviceSet.has("?먯뼱而?)) capabilities.push(currentLocale === "ko" ? "苡뚯쟻?굿룹뿉?덉? ?덇컧 硫붿떆吏瑜?諛붾줈 ?곌껐 媛?? : "Comfort and energy-saving scenarios become immediate");
+    else limits.push(currentLocale === "ko" ? "洹媛 吏곹썑 苡뚯쟻???λ㈃???쏀빐吏????덉뒿?덈떎." : "Arrival comfort moments will be weaker without climate control.");
 
-    if (deviceSet.has("센서")) capabilities.push(currentLocale === "ko" ? "재실·부재·감지 기반 자동 실행 설계 가능" : "Presence and trigger-based automation becomes possible");
+    if (deviceSet.has("?쇱꽌")) capabilities.push(currentLocale === "ko" ? "?ъ떎쨌遺??룰컧吏 湲곕컲 ?먮룞 ?ㅽ뻾 ?ㅺ퀎 媛?? : "Presence and trigger-based automation becomes possible");
     else {
-        limits.push(currentLocale === "ko" ? "센서가 없으면 감지 기반 자동화는 보수적으로 설명해야 합니다." : "Without sensors, trigger automation must stay conservative.");
-        recommendations.push(currentLocale === "ko" ? "센서나 허브를 추가하면 자동화 설득력이 크게 올라갑니다." : "Add sensors or a hub to unlock stronger automation logic.");
+        limits.push(currentLocale === "ko" ? "?쇱꽌媛 ?놁쑝硫?媛먯? 湲곕컲 ?먮룞?붾뒗 蹂댁닔?곸쑝濡??ㅻ챸?댁빞 ?⑸땲??" : "Without sensors, trigger automation must stay conservative.");
+        recommendations.push(currentLocale === "ko" ? "?쇱꽌???덈툕瑜?異붽??섎㈃ ?먮룞???ㅻ뱷?μ씠 ?ш쾶 ?щ씪媛묐땲??" : "Add sensors or a hub to unlock stronger automation logic.");
     }
 
-    if (!deviceSet.has("스피커")) {
-        recommendations.push(currentLocale === "ko" ? "스피커를 넣으면 음성·무드 경험을 더 쉽게 연결할 수 있습니다." : "Add a speaker to support voice and mood-driven scenes.");
+    if (!deviceSet.has("?ㅽ뵾而?)) {
+        recommendations.push(currentLocale === "ko" ? "?ㅽ뵾而ㅻ? ?ｌ쑝硫??뚯꽦쨌臾대뱶 寃쏀뿕?????쎄쾶 ?곌껐?????덉뒿?덈떎." : "Add a speaker to support voice and mood-driven scenes.");
     }
 
     return { capabilities, limits, recommendations };
@@ -1632,13 +1632,13 @@ function renderQ4Summary() {
 
     if (!selectedLabels.length) {
         const emptyMsg = isKo
-            ? "기기를 고르면 여기서 가능한 시나리오 범위와 한계가 바로 보입니다."
+            ? "湲곌린瑜?怨좊Ⅴ硫??ш린??媛?ν븳 ?쒕굹由ъ삤 踰붿쐞? ?쒓퀎媛 諛붾줈 蹂댁엯?덈떎."
             : "Choose devices to see what the scenario can realistically do.";
         q4Summary.innerHTML = `<p class="q4-summary-empty">${escapeHtml(emptyMsg)}</p>`;
         return;
     }
 
-    // 삼성 / 타사 분류
+    // ?쇱꽦 / ???遺꾨쪟
     const samsungSelected = breakdown.samsungIds;
     const partnerSelected = breakdown.partnerIds;
     const otherSelected = breakdown.otherIds;
@@ -1649,7 +1649,7 @@ function renderQ4Summary() {
     const otherChips = otherSelected.map(id => `<span class="q4-summary-chip">${escapeHtml(getDeviceLabel(id))}</span>`).join("");
     const customChips = customSelected.map(label => `<span class="q4-summary-chip q4-chip-custom">${escapeHtml(label)}</span>`).join("");
 
-    // 커스터마이징 상태
+    // 而ㅼ뒪?곕쭏?댁쭠 ?곹깭
     let custStatusHtml = "";
     if (q4ActivePresets.size > 0) {
         const allExpected = new Set();
@@ -1662,49 +1662,49 @@ function renderQ4Summary() {
 
         if (removed.length > 0 || added.length > 0) {
             const removedText = removed.length > 0
-                ? `<span class="q4-cust-removed">${isKo ? "제거됨" : "Removed"}: ${removed.map(id => escapeHtml(getDeviceLabel(id))).join(", ")}</span>`
+                ? `<span class="q4-cust-removed">${isKo ? "?쒓굅?? : "Removed"}: ${removed.map(id => escapeHtml(getDeviceLabel(id))).join(", ")}</span>`
                 : "";
             const addedText = added.length > 0
-                ? `<span class="q4-cust-added">${isKo ? "추가됨" : "Added"}: ${added.map(id => escapeHtml(getDeviceLabel(id))).join(", ")}</span>`
+                ? `<span class="q4-cust-added">${isKo ? "異붽??? : "Added"}: ${added.map(id => escapeHtml(getDeviceLabel(id))).join(", ")}</span>`
                 : "";
             custStatusHtml = `
                 <section class="q4-summary-block q4-summary-block--cust">
-                    <span class="q4-summary-label">${isKo ? "커스터마이징 상태" : "Customization"}</span>
+                    <span class="q4-summary-label">${isKo ? "而ㅼ뒪?곕쭏?댁쭠 ?곹깭" : "Customization"}</span>
                     <div class="q4-cust-details">${removedText}${addedText}</div>
-                    <span class="q4-cust-note">${isKo ? "직접 기기 선택에서 일부 항목이 변경되었습니다." : "Some items have been changed from the default card selection."}</span>
+                    <span class="q4-cust-note">${isKo ? "吏곸젒 湲곌린 ?좏깮?먯꽌 ?쇰? ??ぉ??蹂寃쎈릺?덉뒿?덈떎." : "Some items have been changed from the default card selection."}</span>
                 </section>
             `;
         }
     }
 
-    // 검증 상태
+    // 寃利??곹깭
     const hasCoreSamsung = samsungSelected.length >= 1;
     const needsPartner = partnerSelected.length > 0;
     let validationHtml = "";
     if (!hasCoreSamsung) {
         validationHtml = `<div class="q4-validation q4-validation--warn">${isKo
-            ? "이 스타일 조합을 생성하려면 최소 1개 이상의 핵심 삼성 제품이 필요합니다."
+            ? "???ㅽ???議고빀???앹꽦?섎젮硫?理쒖냼 1媛??댁긽???듭떖 ?쇱꽦 ?쒗뭹???꾩슂?⑸땲??"
             : "At least one core Samsung product is required to generate a scenario."}</div>`;
     } else if (needsPartner) {
         validationHtml = `<div class="q4-validation q4-validation--info">${isKo
-            ? "현재 선택한 조합에는 SmartThings 호환 타사 기기가 포함되어 있습니다. 실제 구현 시 추가 구매 또는 호환 여부 확인이 필요합니다."
+            ? "?꾩옱 ?좏깮??議고빀?먮뒗 SmartThings ?명솚 ???湲곌린媛 ?ы븿?섏뼱 ?덉뒿?덈떎. ?ㅼ젣 援ы쁽 ??異붽? 援щℓ ?먮뒗 ?명솚 ?щ? ?뺤씤???꾩슂?⑸땲??"
             : "Your selection includes SmartThings partner devices. Compatibility verification may be needed."}</div>`;
     } else {
         validationHtml = `<div class="q4-validation q4-validation--ok">${isKo
-            ? "현재 선택한 조합은 한국 삼성닷컴 판매 제품 중심으로 구성되어 바로 시나리오 생성이 가능합니다."
+            ? "?꾩옱 ?좏깮??議고빀? ?쒓뎅 ?쇱꽦?룹뺨 ?먮ℓ ?쒗뭹 以묒떖?쇰줈 援ъ꽦?섏뼱 諛붾줈 ?쒕굹由ъ삤 ?앹꽦??媛?ν빀?덈떎."
             : "Your selection is based on Samsung.com Korea products and is ready for scenario generation."}</div>`;
     }
 
-    // 기존 capability summary
+    // 湲곗〈 capability summary
     const capabilitySummary = buildQ4CapabilitySummary(selectedDevices);
     const capabilityMarkup = capabilitySummary.capabilities.slice(0, 3).map(item => `<li>${escapeHtml(item)}</li>`).join("");
     const limitMarkup = capabilitySummary.limits.slice(0, 2).map(item => `<li>${escapeHtml(item)}</li>`).join("");
 
     const deviceCount = breakdown.totalCount;
-    const countLabel = isKo ? `기기 ${deviceCount}개 선택됨` : `${deviceCount} devices selected`;
+    const countLabel = isKo ? `湲곌린 ${deviceCount}媛??좏깮?? : `${deviceCount} devices selected`;
     const countSubLabel = isKo
-        ? `삼성 ${breakdown.samsungCount}개${breakdown.partnerCount ? ` · 타사 ${breakdown.partnerCount}개` : ""}${breakdown.customEntries.length ? ` · 직접입력 ${breakdown.customEntries.length}개` : ""}`
-        : `Samsung ${breakdown.samsungCount}${breakdown.partnerCount ? ` · Partner ${breakdown.partnerCount}` : ""}${breakdown.customEntries.length ? ` · Custom ${breakdown.customEntries.length}` : ""}`;
+        ? `?쇱꽦 ${breakdown.samsungCount}媛?{breakdown.partnerCount ? ` 쨌 ???${breakdown.partnerCount}媛? : ""}${breakdown.customEntries.length ? ` 쨌 吏곸젒?낅젰 ${breakdown.customEntries.length}媛? : ""}`
+        : `Samsung ${breakdown.samsungCount}${breakdown.partnerCount ? ` 쨌 Partner ${breakdown.partnerCount}` : ""}${breakdown.customEntries.length ? ` 쨌 Custom ${breakdown.customEntries.length}` : ""}`;
 
     q4Summary.innerHTML = `
         <div class="q4-summary-count-wrap">
@@ -1712,29 +1712,29 @@ function renderQ4Summary() {
             <div class="q4-summary-subcount">${escapeHtml(countSubLabel)}</div>
         </div>
         <section class="q4-summary-block">
-            <span class="q4-summary-label">${isKo ? "삼성 구매 가능 제품" : "Samsung Products"}</span>
-            <div class="q4-summary-chip-row">${samsungChips || `<span class="q4-summary-empty-inline">${isKo ? "없음" : "None"}</span>`}</div>
+            <span class="q4-summary-label">${isKo ? "?쇱꽦 援щℓ 媛???쒗뭹" : "Samsung Products"}</span>
+            <div class="q4-summary-chip-row">${samsungChips || `<span class="q4-summary-empty-inline">${isKo ? "?놁쓬" : "None"}</span>`}</div>
         </section>
         ${partnerChips ? `<section class="q4-summary-block q4-summary-block--partner">
-            <span class="q4-summary-label">${isKo ? "타사/호환기기" : "Partner Devices"}</span>
+            <span class="q4-summary-label">${isKo ? "????명솚湲곌린" : "Partner Devices"}</span>
             <div class="q4-summary-chip-row">${partnerChips}</div>
         </section>` : ""}
         ${otherChips ? `<section class="q4-summary-block">
-            <span class="q4-summary-label">${isKo ? "기타" : "Other"}</span>
+            <span class="q4-summary-label">${isKo ? "湲고?" : "Other"}</span>
             <div class="q4-summary-chip-row">${otherChips}</div>
         </section>` : ""}
         ${customChips ? `<section class="q4-summary-block q4-summary-block--tip">
-            <span class="q4-summary-label">${isKo ? "직접 추가한 기기" : "Custom devices"}</span>
+            <span class="q4-summary-label">${isKo ? "吏곸젒 異붽???湲곌린" : "Custom devices"}</span>
             <div class="q4-summary-chip-row">${customChips}</div>
-            <span class="q4-cust-note">${isKo ? "입력창에서 Enter로 확정한 기기명은 사용자 추가 항목으로 함께 반영됩니다." : "Device names confirmed with Enter are treated as user-added items."}</span>
+            <span class="q4-cust-note">${isKo ? "?낅젰李쎌뿉??Enter濡??뺤젙??湲곌린紐낆? ?ъ슜??異붽? ??ぉ?쇰줈 ?④퍡 諛섏쁺?⑸땲??" : "Device names confirmed with Enter are treated as user-added items."}</span>
         </section>` : ""}
         ${custStatusHtml}
         ${capabilityMarkup ? `<section class="q4-summary-block q4-summary-block--ok">
-            <span class="q4-summary-label">${isKo ? "가능한 기능" : "What this enables"}</span>
+            <span class="q4-summary-label">${isKo ? "媛?ν븳 湲곕뒫" : "What this enables"}</span>
             <ul class="q4-summary-list">${capabilityMarkup}</ul>
         </section>` : ""}
         ${limitMarkup ? `<section class="q4-summary-block q4-summary-block--warn">
-            <span class="q4-summary-label">${isKo ? "현재 제한" : "Current limits"}</span>
+            <span class="q4-summary-label">${isKo ? "?꾩옱 ?쒗븳" : "Current limits"}</span>
             <ul class="q4-summary-list">${limitMarkup}</ul>
         </section>` : ""}
         ${validationHtml}
@@ -1752,24 +1752,24 @@ function renderQ4DotcomProducts() {
     const dotcom = (dotcomMapping?.markets || []).find((m) => normalizeSiteCode(m.siteCode) === baseCode);
     const baseUrl = dotcom?.fullUrl || `https://www.samsung.com/${siteCode}`;
 
-    // Samsung.com 표준 카테고리 경로 — 대부분 국가에서 동일 패턴 사용
-    // 링크가 404인 경우 Samsung.com이 자체 리다이렉트 처리함
+    // Samsung.com ?쒖? 移댄뀒怨좊━ 寃쎈줈 ???遺遺?援???먯꽌 ?숈씪 ?⑦꽩 ?ъ슜
+    // 留곹겕媛 404??寃쎌슦 Samsung.com???먯껜 由щ떎?대젆??泥섎━??
     const i = (ko, en) => currentLocale === "ko" ? ko : en;
     const categories = [
-        { label: "TV", icon: "📺", path: "/tvs/all-tvs/" },
-        { label: i("냉장고", "Refrigerators"), icon: "🧊", path: "/refrigerators/all-refrigerators/" },
-        { label: i("세탁·건조", "Washers & Dryers"), icon: "🫧", path: "/washers-and-dryers/all-washers-and-dryers/" },
-        { label: i("에어컨", "Air Conditioners"), icon: "❄️", path: "/air-conditioners/all-air-conditioners/" },
-        { label: i("공기청정기", "Air Care"), icon: "🌬️", path: "/air-care/all-air-care/" },
-        { label: i("청소기", "Vacuums"), icon: "🤖", path: "/vacuum-cleaners/all-vacuum-cleaners/" },
-        { label: i("식기세척기", "Dishwashers"), icon: "🍽️", path: "/dishwashers/all-dishwashers/" },
-        { label: "SmartThings", icon: "🏠", path: "/smartthings/all-smartthings/" },
-        { label: i("전체 보기", "All Products"), icon: "🛒", path: "/offer/" }
+        { label: "TV", icon: "?벟", path: "/tvs/all-tvs/" },
+        { label: i("?됱옣怨?, "Refrigerators"), icon: "?쭒", path: "/refrigerators/all-refrigerators/" },
+        { label: i("?명긽쨌嫄댁“", "Washers & Dryers"), icon: "?ェ", path: "/washers-and-dryers/all-washers-and-dryers/" },
+        { label: i("?먯뼱而?, "Air Conditioners"), icon: "?꾬툘", path: "/air-conditioners/all-air-conditioners/" },
+        { label: i("怨듦린泥?젙湲?, "Air Care"), icon: "?뙩截?, path: "/air-care/all-air-care/" },
+        { label: i("泥?냼湲?, "Vacuums"), icon: "?쨼", path: "/vacuum-cleaners/all-vacuum-cleaners/" },
+        { label: i("?앷린?몄쿃湲?, "Dishwashers"), icon: "?띂截?, path: "/dishwashers/all-dishwashers/" },
+        { label: "SmartThings", icon: "?룧", path: "/smartthings/all-smartthings/" },
+        { label: i("?꾩껜 蹂닿린", "All Products"), icon: "?썟", path: "/offer/" }
     ];
 
-    const title = i("Samsung 판매 제품 보기", "Browse Samsung Products");
+    const title = i("Samsung ?먮ℓ ?쒗뭹 蹂닿린", "Browse Samsung Products");
     const desc = i(
-        "해당 국가 Samsung.com에서 판매 중인 제품을 카테고리별로 확인할 수 있습니다. 시나리오에 반영할 기기를 직접 탐색하고, 실제 판매 가격과 스펙을 비교해 보세요.",
+        "?대떦 援?? Samsung.com?먯꽌 ?먮ℓ 以묒씤 ?쒗뭹??移댄뀒怨좊━蹂꾨줈 ?뺤씤?????덉뒿?덈떎. ?쒕굹由ъ삤??諛섏쁺??湲곌린瑜?吏곸젒 ?먯깋?섍퀬, ?ㅼ젣 ?먮ℓ 媛寃⑷낵 ?ㅽ럺??鍮꾧탳??蹂댁꽭??",
         "Browse products currently available on Samsung.com for this market. Explore devices by category, compare specs and pricing to inform your scenario."
     );
     const domain = baseUrl.replace("https://", "");
@@ -1850,7 +1850,7 @@ function handleChecklistChange(event, container) {
 
 function clearQ3Error() {
     const errEl = resultDiv.querySelector('.error');
-    if (errEl && (errEl.textContent.includes("영역에서") || errEl.textContent.includes("select at least"))) {
+    if (errEl && (errEl.textContent.includes("?곸뿭?먯꽌") || errEl.textContent.includes("select at least"))) {
         resultDiv.innerHTML = "";
     }
 }
@@ -1960,10 +1960,10 @@ function renderCityProfileCard() {
     const countryName = selectedMarket?.label || country.countryCode;
     const role = normalizeRoleId(roleSelect.value) || "retail";
 
-    // 도시명 로케일 변환 — getCityDisplayValue가 city_signals + KR_CITY_MASTER 모두 검색
+    // ?꾩떆紐?濡쒖???蹂????getCityDisplayValue媛 city_signals + KR_CITY_MASTER 紐⑤몢 寃??
     const localDisplayCity = getCityDisplayValue(country.countryCode, cityName) || cityName;
 
-    // 항상 라이브 넛지 API로 최신 트렌드 정보를 가져옴
+    // ??긽 ?쇱씠釉??쏆? API濡?理쒖떊 ?몃젋???뺣낫瑜?媛?몄샂
     profileCard.innerHTML = buildNudgeCardHTML({
         flag, displayCity: localDisplayCity, countryName,
         situation: "", need: "", opportunity: "",
@@ -2084,19 +2084,20 @@ function getLocalizedCityName(entry) {
     }
     if (["de", "fr", "es", "pt", "it", "nl"].includes(currentLocale)) {
         const local = aliases.find((a) =>
-            a !== a.toLowerCase() || /[àáâãäåæçèéêëìíîïðñòóôõöùúûüýþÿ]/i.test(a)
+            a !== a.toLowerCase() || /[횪찼창찾채책챈챌챔챕챗챘챙챠챤챦챨챰챵처척천철첫첬청체첵첸첼]/i.test(a)
         );
         if (local && local.toLowerCase() !== name.toLowerCase()) return local;
     }
     return name;
 }
 
-/* ══════════════════════════════════════════════════════
-   Searchable City Dropdown — core logic
-   ══════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Searchable City Dropdown ??core logic
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 let _cityItems = [];          // current items for dropdown
 let _cityFocusIdx = -1;       // keyboard navigation index
 let _cityDropdownOpen = false;
+let _citySearchDebounceTimer = 0;
 
 function getCityMasterFlat(master, useLocal) {
     const result = [];
@@ -2109,7 +2110,7 @@ function getCityMasterFlat(master, useLocal) {
 function getAvailableCitiesByCountry(countryCode) {
     if (!countryCode) return [];
 
-    // KR — use master data with region groups + population
+    // KR ??use master data with region groups + population
     if (countryCode === "KR") {
         return getKrCityMasterFlat().map((c) => ({
             value: c.en,
@@ -2120,7 +2121,7 @@ function getAvailableCitiesByCountry(countryCode) {
         }));
     }
 
-    // Countries with CITY_MASTER data — region-grouped dropdown
+    // Countries with CITY_MASTER data ??region-grouped dropdown
     const CITY_MASTERS = {
         US: typeof US_CITY_MASTER !== "undefined" ? US_CITY_MASTER : null,
         DE: typeof DE_CITY_MASTER !== "undefined" ? DE_CITY_MASTER : null,
@@ -2152,7 +2153,7 @@ function getAvailableCitiesByCountry(countryCode) {
         }));
     }
 
-    // Other countries — use city_signals.json
+    // Other countries ??use city_signals.json
     const cityEntries = Array.isArray(citySignals?.cities) ? citySignals.cities : [];
     const seen = new Set();
     const results = [];
@@ -2221,7 +2222,7 @@ function setCityValue(city) {
 function populateCityOptions(countryCode, preservedCity = "") {
     _cityItems = getAvailableCitiesByCountry(countryCode);
     const placeholder = currentLocale === "ko"
-        ? "도시 검색 또는 입력"
+        ? "?꾩떆 寃???먮뒗 ?낅젰"
         : currentLocale === "de"
             ? "Stadt suchen oder eingeben"
             : "Search or type a city";
@@ -2233,11 +2234,11 @@ function populateCityOptions(countryCode, preservedCity = "") {
     if (preservedCity) setCityValue(preservedCity);
 }
 
-/* ── Dropdown rendering ── */
+/* ?? Dropdown rendering ?? */
 function formatPopulation(pop) {
     if (!pop) return "";
-    if (pop >= 1000000) return `${(pop / 10000).toFixed(0)}만`;
-    if (pop >= 10000) return `${(pop / 10000).toFixed(1)}만`;
+    if (pop >= 1000000) return `${(pop / 10000).toFixed(0)}留?;
+    if (pop >= 10000) return `${(pop / 10000).toFixed(1)}留?;
     return pop.toLocaleString();
 }
 
@@ -2259,7 +2260,7 @@ function renderCityDropdownItems(query = "") {
         : _cityItems;
 
     if (filtered.length === 0 && !q) {
-        cityDropdown.innerHTML = `<div class="city-empty-msg">${currentLocale === "ko" ? "등록된 도시가 없습니다" : "No cities available"}</div>`;
+        cityDropdown.innerHTML = `<div class="city-empty-msg">${currentLocale === "ko" ? "?깅줉???꾩떆媛 ?놁뒿?덈떎" : "No cities available"}</div>`;
         return;
     }
 
@@ -2296,10 +2297,10 @@ function renderCityDropdownItems(query = "") {
         });
     }
 
-    // Custom search option — always show when user typed something
+    // Custom search option ??always show when user typed something
     if (q) {
         const searchLabel = currentLocale === "ko"
-            ? `"${escapeHtml(query.trim())}" 검색하기`
+            ? `"${escapeHtml(query.trim())}" 寃?됲븯湲?
             : `Search for "${escapeHtml(query.trim())}"`;
         html += `<div class="city-option city-option--custom" data-value="${escapeHtml(query.trim())}" data-custom="1" role="option" aria-selected="false">
             <span class="city-search-custom-icon"></span>
@@ -2341,9 +2342,9 @@ function selectCity(value, label) {
     updateStatePreview();
     if (value) {
         updateStepInsight();
-        // renderCityProfileCard(); — 넛지 3카드 스킵, 리전 인사이트로 바로 이동
+        // renderCityProfileCard(); ???쏆? 3移대뱶 ?ㅽ궢, 由ъ쟾 ?몄궗?댄듃濡?諛붾줈 ?대룞
     } else {
-        // No city — show guide
+        // No city ??show guide
         ++latestStep2InsightRequest;
         const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
         if (selectedMarket && currentStep === 2) {
@@ -2372,21 +2373,24 @@ function focusCityOption(idx) {
 }
 
 function initCitySearchDropdown() {
-    // Focus → open dropdown
+    // Focus ??open dropdown
     citySearchInput.addEventListener("focus", () => {
         openCityDropdown();
         // If has value, select text for easy re-search
         if (cityHiddenInput.value) citySearchInput.select();
     });
 
-    // Input → filter
+    // Input ??filter (debounced dropdown render for performance)
     citySearchInput.addEventListener("input", () => {
-        // Clear selection while typing (will be re-set on pick)
+        // Clear selection immediately while typing (will be re-set on pick)
         cityHiddenInput.value = "";
         citySearchWrap.classList.remove("has-value");
         openCityDropdown();
-        renderCityDropdownItems(citySearchInput.value);
-        updateStatePreview();
+        clearTimeout(_citySearchDebounceTimer);
+        _citySearchDebounceTimer = setTimeout(() => {
+            renderCityDropdownItems(citySearchInput.value);
+            updateStatePreview();
+        }, 80);
     });
 
     // Keyboard navigation
@@ -2411,7 +2415,7 @@ function initCitySearchDropdown() {
                 const opt = options[_cityFocusIdx];
                 selectCity(opt.dataset.value, opt.querySelector(".city-option-name")?.textContent || opt.dataset.value);
             } else {
-                // Enter with typed text → use as custom city
+                // Enter with typed text ??use as custom city
                 const val = citySearchInput.value.trim();
                 if (val) selectCity(val, val);
             }
@@ -2431,7 +2435,7 @@ function initCitySearchDropdown() {
         selectCity(val, opt.dataset.custom ? val : label);
     });
 
-    // Click outside → close
+    // Click outside ??close
     document.addEventListener("mousedown", (e) => {
         if (_cityDropdownOpen && !citySearchWrap.contains(e.target)) {
             // Restore previous value if nothing selected
@@ -2446,7 +2450,7 @@ function initCitySearchDropdown() {
         }
     });
 
-    // Search icon button → clear or toggle dropdown
+    // Search icon button ??clear or toggle dropdown
     citySearchIcon.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -2465,7 +2469,7 @@ function initCitySearchDropdown() {
 }
 
 function toggleCityCustomInput() {
-    // No-op — kept for backward compat
+    // No-op ??kept for backward compat
 }
 
 function normalizeRoleId(value) {
@@ -2652,7 +2656,7 @@ function openWizard() {
     accessScreen.classList.add("hidden");
     guideScreen.classList.add("hidden");
     wizardScreen.classList.remove("hidden");
-    // Q1 직무 선택 스킵 — 기본값 "retail" 자동 설정, Q2부터 시작
+    // Q1 吏곷Т ?좏깮 ?ㅽ궢 ??湲곕낯媛?"retail" ?먮룞 ?ㅼ젙, Q2遺???쒖옉
     if (!roleSelect.value) {
         roleSelect.value = "retail";
         const defaultCard = roleSelectionContainer?.querySelector('[data-role="retail"]');
@@ -2671,7 +2675,7 @@ function openWizard() {
 function showGuideCopy() {
     setGuideChoice("no");
 
-    // 질문 헤더, Yes/No 버튼, 로그아웃 영역 숨기기
+    // 吏덈Ц ?ㅻ뜑, Yes/No 踰꾪듉, 濡쒓렇?꾩썐 ?곸뿭 ?④린湲?
     const guideHead = guideScreen.querySelector(".guide-head");
     const guideActions = guideScreen.querySelector(".guide-actions");
     const guideSessionRow = guideScreen.querySelector(".guide-session-row");
@@ -2688,7 +2692,7 @@ function showGuideCopy() {
         footerStartBtn.addEventListener("click", openWizard);
     }
 
-    // 가이드 카드를 화면 맨 위로 스크롤
+    // 媛?대뱶 移대뱶瑜??붾㈃ 留??꾨줈 ?ㅽ겕濡?
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -2726,7 +2730,7 @@ function buildGuideMarkup() {
         </div>
         <div class="guide-footer">
             <p class="guide-note">${escapeHtml(t("guideNote"))}</p>
-            <button type="button" class="generate-btn guide-footer-start-btn" id="guide-footer-start-btn">${currentLocale === "ko" ? "시작" : "Start"}</button>
+            <button type="button" class="generate-btn guide-footer-start-btn" id="guide-footer-start-btn">${currentLocale === "ko" ? "?쒖옉" : "Start"}</button>
         </div>
     `;
 }
@@ -2740,7 +2744,7 @@ function showGuideScreen() {
     guideScreen.classList.remove("hidden");
     logoutBtn.classList.remove("hidden");
 
-    // No로 숨겼던 요소 복원
+    // No濡??④꼈???붿냼 蹂듭썝
     const guideHead = guideScreen.querySelector(".guide-head");
     const guideActions = guideScreen.querySelector(".guide-actions");
     const guideSessionRow = guideScreen.querySelector(".guide-session-row");
@@ -2841,14 +2845,14 @@ function formatDuration(totalSeconds) {
 
     if (minutes <= 0) {
         return currentLocale === "ko"
-            ? `${seconds}초`
+            ? `${seconds}珥?
             : currentLocale === "de"
                 ? `${seconds} Sek.`
                 : `${seconds}s`;
     }
 
     return currentLocale === "ko"
-        ? `${minutes}분 ${seconds}초`
+        ? `${minutes}遺?${seconds}珥?
         : currentLocale === "de"
             ? `${minutes} Min. ${seconds} Sek.`
             : `${minutes}m ${seconds}s`;
@@ -2921,7 +2925,7 @@ function syncAccessControlState() {
 }
 
 function renderWizardProgress() {
-    // Q1 스킵 — Q2(2), Q3(3), Q4(4)만 표시
+    // Q1 ?ㅽ궢 ??Q2(2), Q3(3), Q4(4)留??쒖떆
     const steps = [
         { label: t("progress2"), step: 2 },
         { label: t("progress3"), step: 3 },
@@ -3010,7 +3014,7 @@ function bindSourceTags(container) {
     });
 }
 
-/** Q2 Hybrid 카드 — 근거 보기 아코디언 바인딩 */
+/** Q2 Hybrid 移대뱶 ??洹쇨굅 蹂닿린 ?꾩퐫?붿뼵 諛붿씤??*/
 function bindQ2EvidenceToggles(container) {
     container.querySelectorAll(".q2-evidence-toggle[data-ev-target]").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -3018,7 +3022,7 @@ function bindQ2EvidenceToggles(container) {
             const detail = document.getElementById(targetId);
             if (!detail) return;
             const isOpen = detail.classList.contains("open");
-            // 같은 레이어 내 모든 열린 디테일 닫기
+            // 媛숈? ?덉씠????紐⑤뱺 ?대┛ ?뷀뀒???リ린
             const scope = btn.closest(".q2-scoreboard, .q2-stage-card, .q2-reference-shell") || container;
             const wrap = detail.closest(".q2-tag-row-wrap");
 
@@ -3070,7 +3074,7 @@ function bindQ3RoutineToggles(container) {
     });
 }
 
-/** 스코어보드 범례 도움말 팝업 바인딩 */
+/** ?ㅼ퐫?대낫??踰붾? ?꾩?留??앹뾽 諛붿씤??*/
 function bindLegendHelpButton(container) {
     const helpBtn = container.querySelector("#q2-legend-help-btn");
     if (!helpBtn) return;
@@ -3080,7 +3084,7 @@ function bindLegendHelpButton(container) {
 }
 
 function showLegendHelpPopup() {
-    // 기존 팝업이 있으면 제거
+    // 湲곗〈 ?앹뾽???덉쑝硫??쒓굅
     const existing = document.getElementById("legend-help-overlay");
     if (existing) { existing.remove(); return; }
 
@@ -3089,76 +3093,76 @@ function showLegendHelpPopup() {
     const content = isKo ? `
         <div class="legend-help-popup">
             <div class="legend-help-header">
-                <h3>스코어보드 범례 보는 방법</h3>
+                <h3>?ㅼ퐫?대낫??踰붾? 蹂대뒗 諛⑸쾿</h3>
                 <button type="button" class="legend-help-close" id="legend-help-close">&times;</button>
             </div>
             <div class="legend-help-body">
                 <section class="legend-help-section">
-                    <h4>막대 바 (2열 구조)</h4>
-                    <p>각 Explore 태그 옆에 <strong>2개의 막대</strong>가 표시됩니다.</p>
+                    <h4>留됰? 諛?(2??援ъ“)</h4>
+                    <p>媛?Explore ?쒓렇 ?놁뿉 <strong>2媛쒖쓽 留됰?</strong>媛 ?쒖떆?⑸땲??</p>
                     <div class="legend-help-table">
                         <div class="legend-help-row">
                             <span class="legend-help-bar-sample q2-score-bar--q1"></span>
-                            <span><strong>좌측 (파랑)</strong> — Q1 도시 맥락 점수</span>
+                            <span><strong>醫뚯륫 (?뚮옉)</strong> ??Q1 ?꾩떆 留λ씫 ?먯닔</span>
                         </div>
-                        <div class="legend-help-desc">선택한 도시의 기후, 인프라, 거주 형태 등에서 추론된 점수</div>
+                        <div class="legend-help-desc">?좏깮???꾩떆??湲고썑, ?명봽?? 嫄곗＜ ?뺥깭 ?깆뿉??異붾줎???먯닔</div>
                         <div class="legend-help-row">
                             <span class="legend-help-bar-sample q2-score-bar--q2"></span>
-                            <span><strong>우측 (초록)</strong> — Q2 생활 맥락 점수</span>
+                            <span><strong>?곗륫 (珥덈줉)</strong> ??Q2 ?앺솢 留λ씫 ?먯닔</span>
                         </div>
-                        <div class="legend-help-desc">세대 구성, 라이프스테이지, 생활 패턴 등 직접 선택한 항목에서 부여된 점수</div>
+                        <div class="legend-help-desc">?몃? 援ъ꽦, ?쇱씠?꾩뒪?뚯씠吏, ?앺솢 ?⑦꽩 ??吏곸젒 ?좏깮????ぉ?먯꽌 遺?щ맂 ?먯닔</div>
                     </div>
                     <div class="legend-help-example">
-                        <p class="legend-help-example-title">예시: "에너지 절약" 태그</p>
+                        <p class="legend-help-example-title">?덉떆: "?먮꼫吏 ?덉빟" ?쒓렇</p>
                         <ul>
-                            <li><span class="legend-help-bar-sample q2-score-bar--q1" style="width:60px"></span> Q1 파란 바가 길다 → 도시 프로필에서 "에너지 비용이 높은 지역"이라는 신호가 잡혀서 높은 점수</li>
-                            <li><span class="legend-help-bar-sample q2-score-bar--q2" style="width:20px"></span> Q2 초록 바가 짧다 → Q2에서 에너지 관련 선택을 하지 않아 낮은 점수</li>
+                            <li><span class="legend-help-bar-sample q2-score-bar--q1" style="width:60px"></span> Q1 ?뚮? 諛붽? 湲몃떎 ???꾩떆 ?꾨줈?꾩뿉??"?먮꼫吏 鍮꾩슜???믪? 吏???대씪???좏샇媛 ?≫????믪? ?먯닔</li>
+                            <li><span class="legend-help-bar-sample q2-score-bar--q2" style="width:20px"></span> Q2 珥덈줉 諛붽? 吏㏓떎 ??Q2?먯꽌 ?먮꼫吏 愿???좏깮???섏? ?딆븘 ??? ?먯닔</li>
                         </ul>
-                        <p class="legend-help-example-title">예시: "가족 돌봄" 태그</p>
+                        <p class="legend-help-example-title">?덉떆: "媛議??뚮큵" ?쒓렇</p>
                         <ul>
-                            <li><span class="legend-help-bar-sample q2-score-bar--q1" style="width:10px"></span> Q1 바가 짧음 → 도시 자체에서는 가족 돌봄 신호가 약함</li>
-                            <li><span class="legend-help-bar-sample q2-score-bar--q2" style="width:70px"></span> Q2 바가 길다 → 영유아 자녀 가구 + 맞벌이를 선택해서 높은 점수</li>
+                            <li><span class="legend-help-bar-sample q2-score-bar--q1" style="width:10px"></span> Q1 諛붽? 吏㏃쓬 ???꾩떆 ?먯껜?먯꽌??媛議??뚮큵 ?좏샇媛 ?쏀븿</li>
+                            <li><span class="legend-help-bar-sample q2-score-bar--q2" style="width:70px"></span> Q2 諛붽? 湲몃떎 ???곸쑀???먮? 媛援?+ 留욌쾶?대? ?좏깮?댁꽌 ?믪? ?먯닔</li>
                         </ul>
                     </div>
                 </section>
 
                 <section class="legend-help-section">
-                    <h4>색상 점 (클러스터 분류)</h4>
-                    <p>각 태그는 아래 <strong>5개 클러스터</strong> 중 하나에 속합니다. 같은 클러스터에 신호가 2개 이상이면 시너지(x1.2)가 적용됩니다.</p>
+                    <h4>?됱긽 ??(?대윭?ㅽ꽣 遺꾨쪟)</h4>
+                    <p>媛??쒓렇???꾨옒 <strong>5媛??대윭?ㅽ꽣</strong> 以??섎굹???랁빀?덈떎. 媛숈? ?대윭?ㅽ꽣???좏샇媛 2媛??댁긽?대㈃ ?쒕꼫吏(x1.2)媛 ?곸슜?⑸땲??</p>
                     <div class="legend-help-clusters">
-                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#dc2626"></span> <strong>패밀리 케어</strong> — 아이 돌봄, 시니어 케어, 가족 돌봄</div>
-                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#ea580c"></span> <strong>시간·효율</strong> — 가사 도움, 시간 절약, 간편 사용</div>
-                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#d97706"></span> <strong>절약·비용</strong> — 에너지 절약, 에너지 절감</div>
-                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#16a34a"></span> <strong>건강·여가</strong> — 건강 관리, 숙면 도움, 분위기 연출</div>
-                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#2563eb"></span> <strong>안전·보안</strong> — 집 안전, 보안, 분실물 찾기</div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#dc2626"></span> <strong>?⑤?由?耳??/strong> ???꾩씠 ?뚮큵, ?쒕땲??耳?? 媛議??뚮큵</div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#ea580c"></span> <strong>?쒓컙쨌?⑥쑉</strong> ??媛???꾩?, ?쒓컙 ?덉빟, 媛꾪렪 ?ъ슜</div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#d97706"></span> <strong>?덉빟쨌鍮꾩슜</strong> ???먮꼫吏 ?덉빟, ?먮꼫吏 ?덇컧</div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#16a34a"></span> <strong>嫄닿컯쨌?ш?</strong> ??嫄닿컯 愿由? ?숇㈃ ?꾩?, 遺꾩쐞湲??곗텧</div>
+                        <div class="legend-help-cluster"><span class="q2-legend-dot" style="background:#2563eb"></span> <strong>?덉쟾쨌蹂댁븞</strong> ??吏??덉쟾, 蹂댁븞, 遺꾩떎臾?李얘린</div>
                     </div>
                 </section>
 
                 <section class="legend-help-section">
-                    <h4>교차검증 x1.5</h4>
-                    <p>Q1(도시)과 Q2(생활) <strong>양쪽에서 같은 태그가 도출</strong>되면 교차검증 배지가 붙고 점수가 <strong>1.5배</strong>로 가산됩니다.</p>
+                    <h4>援먯감寃利?x1.5</h4>
+                    <p>Q1(?꾩떆)怨?Q2(?앺솢) <strong>?묒そ?먯꽌 媛숈? ?쒓렇媛 ?꾩텧</strong>?섎㈃ 援먯감寃利?諛곗?媛 遺숆퀬 ?먯닔媛 <strong>1.5諛?/strong>濡?媛?곕맗?덈떎.</p>
                     <div class="legend-help-example">
-                        <p class="legend-help-example-title">예시</p>
+                        <p class="legend-help-example-title">?덉떆</p>
                         <ul>
-                            <li>서울 선택 → Q1에서 "공기질 관리" 도출 (미세먼지 신호)</li>
-                            <li>Q2에서 "쾌적한 공기" 테마도 선택</li>
-                            <li>→ "Keep the air fresh" 태그에 <span class="q2-corro-badge" style="font-size:0.6rem">교차검증 ×1.5</span> 적용</li>
+                            <li>?쒖슱 ?좏깮 ??Q1?먯꽌 "怨듦린吏?愿由? ?꾩텧 (誘몄꽭癒쇱? ?좏샇)</li>
+                            <li>Q2?먯꽌 "苡뚯쟻??怨듦린" ?뚮쭏???좏깮</li>
+                            <li>??"Keep the air fresh" ?쒓렇??<span class="q2-corro-badge" style="font-size:0.6rem">援먯감寃利?횞1.5</span> ?곸슜</li>
                         </ul>
                     </div>
                 </section>
 
                 <section class="legend-help-section">
-                    <h4>종합 읽기</h4>
+                    <h4>醫낇빀 ?쎄린</h4>
                     <div class="legend-help-example" style="background:#f0f4ff">
                         <p style="font-family:monospace;font-size:0.75rem;line-height:1.8;margin:0">
-                            <strong>"Keep your home safe" (홈 안전·보안)</strong><br>
-                            <span class="legend-help-bar-sample q2-score-bar--q1" style="width:40px"></span> Q1: 8점 — 도시에 빈집 보안 이슈 신호<br>
-                            <span class="legend-help-bar-sample q2-score-bar--q2" style="width:70px"></span> Q2: 14점 — 장시간 부재 + 시니어 케어 선택<br>
-                            <span class="q2-legend-dot" style="background:#2563eb;vertical-align:middle"></span> 안전·보안 클러스터<br>
-                            <span class="q2-corro-badge" style="font-size:0.6rem">교차검증 ×1.5</span> → 최종: (8+14) × 1.5 = <strong>33점</strong>
+                            <strong>"Keep your home safe" (???덉쟾쨌蹂댁븞)</strong><br>
+                            <span class="legend-help-bar-sample q2-score-bar--q1" style="width:40px"></span> Q1: 8?????꾩떆??鍮덉쭛 蹂댁븞 ?댁뒋 ?좏샇<br>
+                            <span class="legend-help-bar-sample q2-score-bar--q2" style="width:70px"></span> Q2: 14?????μ떆媛?遺??+ ?쒕땲??耳???좏깮<br>
+                            <span class="q2-legend-dot" style="background:#2563eb;vertical-align:middle"></span> ?덉쟾쨌蹂댁븞 ?대윭?ㅽ꽣<br>
+                            <span class="q2-corro-badge" style="font-size:0.6rem">援먯감寃利?횞1.5</span> ??理쒖쥌: (8+14) 횞 1.5 = <strong>33??/strong>
                         </p>
                     </div>
-                    <p style="margin-top:8px;color:#666;font-size:0.75rem">두 열의 비율을 보면 "이 시나리오가 도시 특성 때문에 올라온 건지, 내가 선택한 생활 맥락 때문인지"를 바로 파악할 수 있습니다.</p>
+                    <p style="margin-top:8px;color:#666;font-size:0.75rem">???댁쓽 鍮꾩쑉??蹂대㈃ "???쒕굹由ъ삤媛 ?꾩떆 ?뱀꽦 ?뚮Ц???щ씪??嫄댁?, ?닿? ?좏깮???앺솢 留λ씫 ?뚮Ц?몄?"瑜?諛붾줈 ?뚯븙?????덉뒿?덈떎.</p>
                 </section>
             </div>
         </div>
@@ -3175,12 +3179,12 @@ function showLegendHelpPopup() {
                     <div class="legend-help-table">
                         <div class="legend-help-row">
                             <span class="legend-help-bar-sample q2-score-bar--q1"></span>
-                            <span><strong>Left (blue)</strong> — Q1 City Context score</span>
+                            <span><strong>Left (blue)</strong> ??Q1 City Context score</span>
                         </div>
                         <div class="legend-help-desc">Score inferred from city climate, infrastructure, and housing</div>
                         <div class="legend-help-row">
                             <span class="legend-help-bar-sample q2-score-bar--q2"></span>
-                            <span><strong>Right (green)</strong> — Q2 Lifestyle score</span>
+                            <span><strong>Right (green)</strong> ??Q2 Lifestyle score</span>
                         </div>
                         <div class="legend-help-desc">Score from your household, life stage, and lifestyle selections</div>
                     </div>
@@ -3210,19 +3214,19 @@ function showLegendHelpPopup() {
     overlay.innerHTML = content;
     document.body.appendChild(overlay);
 
-    // 닫기 이벤트
+    // ?リ린 ?대깽??
     overlay.querySelector("#legend-help-close")?.addEventListener("click", () => overlay.remove());
     overlay.addEventListener("click", (e) => {
         if (e.target === overlay) overlay.remove();
     });
-    // ESC 키로 닫기
+    // ESC ?ㅻ줈 ?リ린
     const escHandler = (e) => {
         if (e.key === "Escape") { overlay.remove(); document.removeEventListener("keydown", escHandler); }
     };
     document.addEventListener("keydown", escHandler);
 }
 
-/** 피자 원형 프로그레스를 0~100%로 업데이트 */
+/** ?쇱옄 ?먰삎 ?꾨줈洹몃젅?ㅻ? 0~100%濡??낅뜲?댄듃 */
 function updatePizzaProgress(container, pct) {
     const wedge = container.querySelector("[data-pizza-wedge]");
     const label = container.querySelector("[data-pizza-pct]");
@@ -3232,7 +3236,7 @@ function updatePizzaProgress(container, pct) {
     if (clamped <= 0) {
         wedge.setAttribute("d", "");
     } else if (clamped >= 100) {
-        // 완전한 원
+        // ?꾩쟾????
         wedge.setAttribute("d",
             `M${cx},${cy - r} A${r},${r} 0 1,1 ${cx - 0.001},${cy - r} Z`);
     } else {
@@ -3276,11 +3280,11 @@ function buildInsightMarkup(insight) {
         `).join("")
         : [
             insight.action ? {
-                label: currentLocale === "ko" ? "다음 액션" : currentLocale === "de" ? "Nächster Schritt" : "Next move",
+                label: currentLocale === "ko" ? "?ㅼ쓬 ?≪뀡" : currentLocale === "de" ? "N채chster Schritt" : "Next move",
                 value: insight.action
             } : null,
             insight.signal ? {
-                label: currentLocale === "ko" ? "현재 신호" : currentLocale === "de" ? "Aktuelles Signal" : "Current signal",
+                label: currentLocale === "ko" ? "?꾩옱 ?좏샇" : currentLocale === "de" ? "Aktuelles Signal" : "Current signal",
                 value: insight.signal
             } : null
         ].filter(Boolean).map((row) => `
@@ -3289,7 +3293,7 @@ function buildInsightMarkup(insight) {
                 <p>${escapeHtml(row.value)}</p>
             </div>
         `).join("");
-    // [Source] {Title} — {Publisher/Org}, {YYYY-MM-DD}. {짧은 도메인 URL}
+    // [Source] {Title} ??{Publisher/Org}, {YYYY-MM-DD}. {吏㏃? ?꾨찓??URL}
     const formatSourceCitation = (item) => {
         const title = String(item.source_title || "").trim();
         const org = String(item.source_org || "").trim();
@@ -3298,19 +3302,19 @@ function buildInsightMarkup(insight) {
         if (!title && !org) return "";
         const shortDomain = rawUrl ? rawUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "") : "";
         const linkUrl = rawUrl || `https://www.google.com/search?q=${encodeURIComponent([title, org, date].filter(Boolean).join(" "))}`;
-        // 인라인 출처 텍스트
+        // ?몃씪??異쒖쿂 ?띿뒪??
         const parts = [];
         if (title) parts.push(title);
-        if (org) parts.push(`— ${org}`);
+        if (org) parts.push(`??${org}`);
         if (date) parts.push(date);
         const citation = parts.join(", ");
-        // 도메인 태그 (클릭 시 원문으로 이동)
+        // ?꾨찓???쒓렇 (?대┃ ???먮Ц?쇰줈 ?대룞)
         const domainLabel = shortDomain || org || "source";
         const domainTag = `<a class="evidence-source-tag" href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(domainLabel)}</a>`;
         return `<span class="trend-source-line">[Source] ${escapeHtml(citation)} ${domainTag}</span>`;
     };
 
-    // 섹션별 각주 수집기
+    // ?뱀뀡蹂?媛곸＜ ?섏쭛湲?
     let _footnotes = [];
     let _footnoteIdx = 0;
 
@@ -3323,7 +3327,7 @@ function buildInsightMarkup(insight) {
         _footnoteIdx++;
         const parts = [];
         if (title) parts.push(title);
-        if (org) parts.push(`— ${org}`);
+        if (org) parts.push(`??${org}`);
         if (date) parts.push(date);
         const shortDomain = rawUrl ? rawUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "") : "";
         const linkUrl = rawUrl || `https://www.google.com/search?q=${encodeURIComponent([title, org].filter(Boolean).join(" "))}`;
@@ -3355,11 +3359,11 @@ function buildInsightMarkup(insight) {
                         : "";
                     return `<li>${label}${footnoteRef}${evidenceHtml}</li>`;
                 }
-                // pains/solutions: "text\n💡 insight" 형태 지원
-                if (typeof item === "string" && item.includes("\n💡")) {
-                    const [mainText, ...insightParts] = item.split("\n💡");
-                    const insightText = insightParts.join("\n💡").trim();
-                    return `<li>${escapeHtml(mainText)}${insightText ? `<span class="trend-evidence">💡 ${escapeHtml(insightText)}</span>` : ""}</li>`;
+                // pains/solutions: "text\n?뮕 insight" ?뺥깭 吏??
+                if (typeof item === "string" && item.includes("\n?뮕")) {
+                    const [mainText, ...insightParts] = item.split("\n?뮕");
+                    const insightText = insightParts.join("\n?뮕").trim();
+                    return `<li>${escapeHtml(mainText)}${insightText ? `<span class="trend-evidence">?뮕 ${escapeHtml(insightText)}</span>` : ""}</li>`;
                 }
                 return `<li>${escapeHtml(item)}</li>`;
             }).join("")}</ul>`
@@ -3378,10 +3382,10 @@ function buildInsightMarkup(insight) {
         ? `<div class="insight-evidence">${insight.evidence.map((item, idx) => {
             const detailId = `ev-detail-${idx}-${Date.now()}`;
             const domainLabel = (item.source_domain || "").replace(/^https?:\/\//, "").replace(/\/.*$/, "");
-            const confidenceBadge = item.confidence === "high" ? "✅" : item.confidence === "medium" ? "⚠️" : "ℹ️";
+            const confidenceBadge = item.confidence === "high" ? "?? : item.confidence === "medium" ? "?좑툘" : "?뱄툘";
             const sourceUrl = item.source_url || "";
             const urlLink = sourceUrl
-                ? `<a class="source-detail-url" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">🔗 ${escapeHtml(sourceUrl.length > 80 ? sourceUrl.slice(0, 80) + "…" : sourceUrl)}</a>`
+                ? `<a class="source-detail-url" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">?뵕 ${escapeHtml(sourceUrl.length > 80 ? sourceUrl.slice(0, 80) + "?? : sourceUrl)}</a>`
                 : "";
             return `
                 <span class="insight-evidence-chip" data-ev-detail="${detailId}">
@@ -3389,8 +3393,8 @@ function buildInsightMarkup(insight) {
                 </span>
                 <div class="insight-evidence-detail" id="${detailId}">
                     <p class="source-detail-label">${escapeHtml(item.title || domainLabel)}</p>
-                    <p class="source-detail-snippet">${escapeHtml(item.snippet || "—")}</p>
-                    <p class="source-detail-meta">${currentLocale === "ko" ? "신뢰도" : "Confidence"}: ${confidenceBadge} ${escapeHtml(item.confidence || "—")} · ${escapeHtml(item.collected_at_utc ? new Date(item.collected_at_utc).toLocaleString() : "—")}</p>
+                    <p class="source-detail-snippet">${escapeHtml(item.snippet || "??)}</p>
+                    <p class="source-detail-meta">${currentLocale === "ko" ? "?좊ː?? : "Confidence"}: ${confidenceBadge} ${escapeHtml(item.confidence || "??)} 쨌 ${escapeHtml(item.collected_at_utc ? new Date(item.collected_at_utc).toLocaleString() : "??)}</p>
                     ${urlLink}
                 </div>
             `;
@@ -3459,7 +3463,7 @@ function buildInsightMarkup(insight) {
                 <div class="insight-grid">${rows}</div>
             `);
 
-    // customHtml이 있으면 전용 렌더링
+    // customHtml???덉쑝硫??꾩슜 ?뚮뜑留?
     if (insight.customHtml) {
         return `
             <div class="insight-head">
@@ -3494,26 +3498,26 @@ function buildStep1Insight() {
 
     return {
         badge: currentLocale === "ko" ? "Q1 Lens" : currentLocale === "de" ? "Q1 Perspektive" : "Q1 Lens",
-        title: currentLocale === "ko" ? `${getRoleTitle(role.id)} 관점에서는 이런 흐름이 유리합니다` : currentLocale === "de" ? `Aus der Perspektive ${getRoleTitle(role.id)} wirkt dieser Aufbau stärker` : `${getRoleTitle(role.id)} is likely to respond better to this flow`,
+        title: currentLocale === "ko" ? `${getRoleTitle(role.id)} 愿?먯뿉?쒕뒗 ?대윴 ?먮쫫???좊━?⑸땲?? : currentLocale === "de" ? `Aus der Perspektive ${getRoleTitle(role.id)} wirkt dieser Aufbau st채rker` : `${getRoleTitle(role.id)} is likely to respond better to this flow`,
         summary: currentLocale === "ko"
-            ? `${getRoleFocus(role.id)} 기준으로 결과물의 구조를 먼저 정렬했습니다.`
+            ? `${getRoleFocus(role.id)} 湲곗??쇰줈 寃곌낵臾쇱쓽 援ъ“瑜?癒쇱? ?뺣젹?덉뒿?덈떎.`
             : currentLocale === "de"
                 ? `Die Ergebnisstruktur wurde zuerst an ${getRoleFocus(role.id)} ausgerichtet.`
                 : `The output structure is now aligned to ${getRoleFocus(role.id)} first.`,
         body: currentLocale === "ko"
-            ? `${getRoleFocus(role.id)} 관점에서는 기능 소개보다 ${getRoleBrief(role.id).replace(".", "")} 흐름이 더 설득력 있습니다. 다음 단계에서는 이 관점에 맞는 지역과 타겟을 잡아보면 됩니다.`
+            ? `${getRoleFocus(role.id)} 愿?먯뿉?쒕뒗 湲곕뒫 ?뚭컻蹂대떎 ${getRoleBrief(role.id).replace(".", "")} ?먮쫫?????ㅻ뱷???덉뒿?덈떎. ?ㅼ쓬 ?④퀎?먯꽌????愿?먯뿉 留욌뒗 吏??낵 ?寃잛쓣 ?≪븘蹂대㈃ ?⑸땲??`
             : currentLocale === "de"
-                ? `Aus Sicht von ${getRoleFocus(role.id)} ist dieser Aufbau meist überzeugender: ${getRoleBrief(role.id)} Als Nächstes lohnt es sich, Markt und Zielgruppe passend dazu einzugrenzen.`
+                ? `Aus Sicht von ${getRoleFocus(role.id)} ist dieser Aufbau meist 체berzeugender: ${getRoleBrief(role.id)} Als N채chstes lohnt es sich, Markt und Zielgruppe passend dazu einzugrenzen.`
                 : `From a ${getRoleFocus(role.id)} perspective, this path is usually stronger: ${getRoleBrief(role.id)} Next, narrow the market and audience to match that lens.`,
         spotlight: currentLocale === "ko"
-            ? `${getRoleTitle(role.id)}는 결과물의 첫 문장과 정보 밀도를 결정합니다.`
+            ? `${getRoleTitle(role.id)}??寃곌낵臾쇱쓽 泥?臾몄옣怨??뺣낫 諛?꾨? 寃곗젙?⑸땲??`
             : currentLocale === "de"
                 ? `${getRoleTitle(role.id)} bestimmt den ersten Satz und die Informationsdichte des Ergebnisses.`
                 : `${getRoleTitle(role.id)} will shape the first line and information density of the output.`,
         chips: [getRoleTitle(role.id), getRoleFocus(role.id)],
         rows: [
             {
-                label: currentLocale === "ko" ? "강하게 가야 할 포인트" : currentLocale === "de" ? "Stärker betonen" : "Lean into",
+                label: currentLocale === "ko" ? "媛뺥븯寃?媛?????ъ씤?? : currentLocale === "de" ? "St채rker betonen" : "Lean into",
                 value: currentLocale === "ko"
                     ? getRoleBrief(role.id)
                     : currentLocale === "de"
@@ -3521,11 +3525,11 @@ function buildStep1Insight() {
                         : getRoleBrief(role.id)
             },
             {
-                label: currentLocale === "ko" ? "다음에 정할 것" : currentLocale === "de" ? "Als Nächstes festlegen" : "Next decision",
+                label: currentLocale === "ko" ? "?ㅼ쓬???뺥븷 寃? : currentLocale === "de" ? "Als N채chstes festlegen" : "Next decision",
                 value: currentLocale === "ko"
-                    ? "Q1에서 국가와 도시를 구체화해 이 관점이 가장 잘 먹히는 장면을 좁혀보세요."
+                    ? "Q1?먯꽌 援??? ?꾩떆瑜?援ъ껜?뷀빐 ??愿?먯씠 媛????癒뱁엳???λ㈃??醫곹?蹂댁꽭??"
                     : currentLocale === "de"
-                        ? "Präzisieren Sie in Q1 Land und Region, damit der stärkste Nutzungsmoment klarer wird."
+                        ? "Pr채zisieren Sie in Q1 Land und Region, damit der st채rkste Nutzungsmoment klarer wird."
                         : "Use Q1 to narrow the country and city so the strongest usage moment becomes clearer."
             }
         ]
@@ -3535,9 +3539,9 @@ function buildStep1Insight() {
 function buildStep2Insight() {
     return {
         badge: currentLocale === "ko" ? "Q1 Region" : "Q1 Region",
-        title: currentLocale === "ko" ? "국가와 도시를 선택해 주세요" : "Select a country and city",
+        title: currentLocale === "ko" ? "援??? ?꾩떆瑜??좏깮??二쇱꽭?? : "Select a country and city",
         summary: currentLocale === "ko"
-            ? "도시를 선택하면 기본 지역 프로필이 표시됩니다. 상세 인사이트는 Build 시 AI가 자동 수집합니다."
+            ? "?꾩떆瑜??좏깮?섎㈃ 湲곕낯 吏???꾨줈?꾩씠 ?쒖떆?⑸땲?? ?곸꽭 ?몄궗?댄듃??Build ??AI媛 ?먮룞 ?섏쭛?⑸땲??"
             : "Select a city to see its basic profile. Detailed insights will be collected by AI during Build."
     };
 }
@@ -3547,16 +3551,16 @@ function buildStep2CitySelectGuide(countryCode) {
     return {
         badge: currentLocale === "ko" ? "Q1 City" : "Q1 City",
         title: currentLocale === "ko"
-            ? `${countryName} 도시를 선택해 주세요`
+            ? `${countryName} ?꾩떆瑜??좏깮??二쇱꽭??
             : `Select a city in ${countryName}`,
         summary: currentLocale === "ko"
-            ? "도시를 선택하면 해당 국가+도시 기준의 역할별 실무 인사이트가 바로 표시됩니다."
+            ? "?꾩떆瑜??좏깮?섎㈃ ?대떦 援??+?꾩떆 湲곗?????븷蹂??ㅻТ ?몄궗?댄듃媛 諛붾줈 ?쒖떆?⑸땲??"
             : "Choose a city to load role-specific execution insight for that country and city."
     };
 }
 
 async function renderStep2Insight(forceRefresh = false) {
-    // Q1(step 2)이 아니면 렌더링하지 않음
+    // Q1(step 2)???꾨땲硫??뚮뜑留곹븯吏 ?딆쓬
     if (currentStep !== 2) return;
     stepInsight.classList.remove("hidden");
     const selectedMarket = marketOptions.find((market) => market.siteCode === countrySelect.value);
@@ -3577,7 +3581,7 @@ async function renderStep2Insight(forceRefresh = false) {
     const localCity = getCityDisplayValue(country.countryCode, city) || city;
     const countryName = selectedMarket?.label || getCountryName(country.countryCode);
 
-    // 1. sessionStorage 캐시 확인
+    // 1. sessionStorage 罹먯떆 ?뺤씤
     const cacheKey = `city-profile-${country.countryCode}-${city}-${currentLocale}`;
     const cached = sessionStorage.getItem(cacheKey);
             if (cached && !forceRefresh) {
@@ -3588,7 +3592,7 @@ async function renderStep2Insight(forceRefresh = false) {
             bindCityProfileDrawer(stepInsight);
             bindQ2EvidenceToggles(stepInsight);
             updateQuestionHelpers();
-            // 프로필 로드 후 다음 버튼이 보이도록 스크롤
+            // ?꾨줈??濡쒕뱶 ???ㅼ쓬 踰꾪듉??蹂댁씠?꾨줉 ?ㅽ겕濡?
             requestAnimationFrame(() => {
                 const wizardActions = document.querySelector(".wizard-actions");
                 if (wizardActions) wizardActions.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -3597,30 +3601,30 @@ async function renderStep2Insight(forceRefresh = false) {
         } catch { /* cache invalid, fetch fresh */ }
     }
 
-    // 2. 로딩 표시
+    // 2. 濡쒕뵫 ?쒖떆
     if (currentStep !== 2) return;
     stepInsight.innerHTML = buildInsightMarkup({
         badge: "Q1 Region",
         title: `${countryName} ${localCity}`,
         summary: currentLocale === "ko"
-            ? "AI를 통한 마켓 리서치 중입니다..."
+            ? "AI瑜??듯븳 留덉폆 由ъ꽌移?以묒엯?덈떎..."
             : "AI market research in progress...",
         loading: true,
-        loadingLabel: currentLocale === "ko" ? "AI를 통한 마켓 리서치 중..." : "AI market research in progress..."
+        loadingLabel: currentLocale === "ko" ? "AI瑜??듯븳 留덉폆 由ъ꽌移?以?.." : "AI market research in progress..."
     });
     updateQuestionHelpers();
 
-    // 피자 프로그레스 시뮬레이션 (0→90% 구간을 서서히 채움)
+    // ?쇱옄 ?꾨줈洹몃젅???쒕??덉씠??(0??0% 援ш컙???쒖꽌??梨꾩?)
     let pizzaProgress = 0;
     let pizzaDone = false;
     const pizzaInterval = setInterval(() => {
         if (pizzaDone || currentStep !== 2) { clearInterval(pizzaInterval); return; }
-        // 점점 느려지며 90%까지 접근 (30초 타임아웃에 맞춤)
+        // ?먯젏 ?먮젮吏硫?90%源뚯? ?묎렐 (30珥???꾩븘?껋뿉 留욎땄)
         pizzaProgress += (90 - pizzaProgress) * 0.035;
         updatePizzaProgress(stepInsight, Math.min(pizzaProgress, 90));
     }, 200);
 
-    // 3. 라이브 API 호출
+    // 3. ?쇱씠釉?API ?몄텧
     try {
         await ensureBypassSession();
         const params = new URLSearchParams({ country: country.countryCode, city, locale: currentLocale });
@@ -3640,9 +3644,9 @@ async function renderStep2Insight(forceRefresh = false) {
         if (response.ok) {
             const result = await response.json();
             if (result.ok && result.data) {
-                // 캐시 저장 (step과 무관하게)
+                // 罹먯떆 ???(step怨?臾닿??섍쾶)
                 sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
-                // 100%로 채우고 완료
+                // 100%濡?梨꾩슦怨??꾨즺
                 pizzaDone = true; clearInterval(pizzaInterval);
                 if (currentStep !== 2) return;
                 updatePizzaProgress(stepInsight, 100);
@@ -3655,7 +3659,7 @@ async function renderStep2Insight(forceRefresh = false) {
                 stepInsight.classList.remove("insight-refresh");
                 void stepInsight.offsetWidth;
                 stepInsight.classList.add("insight-refresh");
-                // 프로필 로드 후 다음 버튼이 보이도록 스크롤
+                // ?꾨줈??濡쒕뱶 ???ㅼ쓬 踰꾪듉??蹂댁씠?꾨줉 ?ㅽ겕濡?
                 requestAnimationFrame(() => {
                     const wizardActions = document.querySelector(".wizard-actions");
                     if (wizardActions) wizardActions.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -3671,10 +3675,10 @@ async function renderStep2Insight(forceRefresh = false) {
 
     if (requestId !== latestStep2InsightRequest || currentStep !== 2) return;
 
-    // 4. API 실패 시 — 정적 데이터 없이 재시도 안내만 표시
+    // 4. API ?ㅽ뙣 ?????뺤쟻 ?곗씠???놁씠 ?ъ떆???덈궡留??쒖떆
     stepInsight.innerHTML = buildInsightMarkup(buildStep2ErrorInsight(
         currentLocale === "ko"
-            ? "AI 마켓 리서치 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요."
+            ? "AI 留덉폆 由ъ꽌移??묐떟??吏?곕릺怨??덉뒿?덈떎. ?좎떆 ???ㅼ떆 ?쒕룄??二쇱꽭??"
             : "AI market research response is delayed. Please try again shortly."
     ));
     bindInsightRetryButton(stepInsight);
@@ -3685,20 +3689,20 @@ async function renderStep2Insight(forceRefresh = false) {
 }
 
 /**
- * 10카테고리 도시 프로필을 인사이트 카드 HTML로 렌더링
+ * 10移댄뀒怨좊━ ?꾩떆 ?꾨줈?꾩쓣 ?몄궗?댄듃 移대뱶 HTML濡??뚮뜑留?
  */
-/** 10카테고리 정의 — renderCityProfileInsight + 스마트 로딩에서 공유 */
+/** 10移댄뀒怨좊━ ?뺤쓽 ??renderCityProfileInsight + ?ㅻ쭏??濡쒕뵫?먯꽌 怨듭쑀 */
 const CITY_PROFILE_CATEGORIES = [
-    { key: "climate",      icon: "🌤", labelKo: "기후·계절",    labelEn: "Climate",      color: "#1976d2" },
-    { key: "housing",      icon: "🏢", labelKo: "주거 형태",    labelEn: "Housing",      color: "#6d4c41" },
-    { key: "family",       icon: "👨‍👩‍👧", labelKo: "가족·돌봄",    labelEn: "Family",       color: "#e91e63" },
-    { key: "daily_rhythm", icon: "⏰", labelKo: "일상 리듬",    labelEn: "Daily Rhythm", color: "#ff6f00" },
-    { key: "safety",       icon: "🛡", labelKo: "안전·보안",    labelEn: "Safety",       color: "#2e7d32" },
-    { key: "energy",       icon: "⚡", labelKo: "에너지",       labelEn: "Energy",       color: "#f9a825" },
-    { key: "health",       icon: "💪", labelKo: "건강·웰니스",  labelEn: "Health",       color: "#00897b" },
-    { key: "pets",         icon: "🐾", labelKo: "펫 라이프",    labelEn: "Pets",         color: "#8d6e63" },
-    { key: "mobility",     icon: "🚇", labelKo: "이동·부재",    labelEn: "Mobility",     color: "#5c6bc0" },
-    { key: "events",       icon: "🎪", labelKo: "문화 행사",    labelEn: "Events",       color: "#d32f2f" }
+    { key: "climate",      icon: "?뙟", labelKo: "湲고썑쨌怨꾩젅",    labelEn: "Climate",      color: "#1976d2" },
+    { key: "housing",      icon: "?룫", labelKo: "二쇨굅 ?뺥깭",    labelEn: "Housing",      color: "#6d4c41" },
+    { key: "family",       icon: "?뫅?랅윉⒱랅윉?, labelKo: "媛議굿룸룎遊?,    labelEn: "Family",       color: "#e91e63" },
+    { key: "daily_rhythm", icon: "??, labelKo: "?쇱긽 由щ벉",    labelEn: "Daily Rhythm", color: "#ff6f00" },
+    { key: "safety",       icon: "?썳", labelKo: "?덉쟾쨌蹂댁븞",    labelEn: "Safety",       color: "#2e7d32" },
+    { key: "energy",       icon: "??, labelKo: "?먮꼫吏",       labelEn: "Energy",       color: "#f9a825" },
+    { key: "health",       icon: "?뮞", labelKo: "嫄닿컯쨌?곕땲??,  labelEn: "Health",       color: "#00897b" },
+    { key: "pets",         icon: "?맽", labelKo: "???쇱씠??,    labelEn: "Pets",         color: "#8d6e63" },
+    { key: "mobility",     icon: "?쉯", labelKo: "?대룞쨌遺??,    labelEn: "Mobility",     color: "#5c6bc0" },
+    { key: "events",       icon: "?렕", labelKo: "臾명솕 ?됱궗",    labelEn: "Events",       color: "#d32f2f" }
 ];
 
 function getCityProfileSourceMap(profile) {
@@ -3735,13 +3739,14 @@ function buildCityProfileEvidenceDetail(profile, key) {
     const sourceHtml = sources.length
         ? `<ul class="q2-evidence-source-list">${sources.map((item) => {
             const label = [item.id, item.organization || item.title].filter(Boolean).join(" · ");
-            const href = item.url ? ` href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer"` : "";
+            const safeUrl = item.url && /^https?:\/\//i.test(item.url) ? item.url : "";
+            const href = safeUrl ? ` href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer"` : "";
             return `<li>${href ? `<a${href}>${escapeHtml(label)}</a>` : escapeHtml(label)}</li>`;
         }).join("")}</ul>`
         : "";
 
     return `
-        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${detailId}">
+        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${detailId}" aria-expanded="false" aria-controls="${detailId}">
             <span class="q2-ev-arrow">▾</span> ${currentLocale === "ko" ? "근거 보기" : "View evidence"}
         </button>
         <div class="q2-evidence-detail" id="${detailId}">
@@ -3760,10 +3765,10 @@ function renderCityProfileInsight(countryName, localCity, profile) {
     const isKo = currentLocale === "ko";
     const available = CITY_PROFILE_CATEGORIES.filter(cat => profile[cat.key]);
 
-    // 도시 프로필을 전역 저장 (태그 선택 후 카드 렌더에 사용)
+    // ?꾩떆 ?꾨줈?꾩쓣 ?꾩뿭 ???(?쒓렇 ?좏깮 ??移대뱶 ?뚮뜑???ъ슜)
     _latestCityProfile = { countryName, localCity, profile, available };
 
-    // 바텀시트 콘텐츠 준비
+    // 諛뷀??쒗듃 肄섑뀗痢?以鍮?
     const categoriesHtml = available.map(cat => `
         <div class="cpv2-item" style="--cpv2-accent:${cat.color}">
             <div class="cpv2-icon">${cat.icon}</div>
@@ -3783,14 +3788,14 @@ function renderCityProfileInsight(countryName, localCity, profile) {
                 ${flag ? `<span class="cpv2-flag">${flag}</span>` : ""}
                 <h3 class="cpv2-city">${escapeHtml(localCity)}</h3>
                 <span class="cpv2-country">${escapeHtml(countryName)}</span>
-                <span class="cpv2-badge">${isKo ? "AI 도시 프로필" : "AI City Profile"}</span>
+                <span class="cpv2-badge">${isKo ? "AI ?꾩떆 ?꾨줈?? : "AI City Profile"}</span>
                 <button type="button" class="cpv2-sheet-close" aria-label="Close">&times;</button>
             </div>
         </div>
         <div class="city-profile-grid">${categoriesHtml}</div>
     `;
 
-    // Magic Setup: 태그 선택형 UI
+    // Magic Setup: ?쒓렇 ?좏깮??UI
     const tagsHtml = available.map(cat => `
         <button type="button" class="magic-tag" data-cat-key="${cat.key}" style="--magic-accent:${cat.color}">
             <span class="magic-tag-icon">${cat.icon}</span>
@@ -3799,38 +3804,38 @@ function renderCityProfileInsight(countryName, localCity, profile) {
     `).join("");
 
     const customPlaceholder = isKo
-        ? "예: 겨울철 한파 대비, 미세먼지 심한 지역, 다문화 가정, 반지하 습기 문제, 태풍 잦은 해안 도시..."
+        ? "?? 寃⑥슱泥??쒗뙆 ?鍮? 誘몄꽭癒쇱? ?ы븳 吏?? ?ㅻЦ??媛?? 諛섏????듦린 臾몄젣, ?쒗뭾 ??? ?댁븞 ?꾩떆..."
         : "e.g. extreme winter cold, high pollution area, multicultural household, coastal typhoon zone...";
 
     return `
         <div class="magic-setup">
             <div class="magic-header">
                 <span class="magic-city">${flag} ${escapeHtml(localCity)}</span>
-                <span class="magic-prompt">${isKo ? "지금 가장 고민되는 키워드를 골라주세요" : "Pick the topics that matter most to you"} <em>(${isKo ? "최대 3개" : "up to 3"})</em></span>
+                <span class="magic-prompt">${isKo ? "吏湲?媛??怨좊??섎뒗 ?ㅼ썙?쒕? 怨⑤씪二쇱꽭?? : "Pick the topics that matter most to you"} <em>(${isKo ? "理쒕? 3媛? : "up to 3"})</em></span>
             </div>
             <div class="magic-tags">${tagsHtml}</div>
             <div class="magic-cards" id="magic-cards"></div>
             <div class="magic-actions" id="magic-actions" style="display:none">
                 <div class="magic-action-block">
-                    <p class="magic-action-caption">${isKo ? "기본 선택 반영" : "Apply selected categories"}</p>
+                    <p class="magic-action-caption">${isKo ? "湲곕낯 ?좏깮 諛섏쁺" : "Apply selected categories"}</p>
                     <button type="button" class="magic-apply-btn" id="magic-apply-btn">
-                        ${isKo ? "선택한 기본 생활 키워드 반영" : "Apply selected base categories"}
+                        ${isKo ? "?좏깮??湲곕낯 ?앺솢 ?ㅼ썙??諛섏쁺" : "Apply selected base categories"}
                     </button>
                 </div>
                 <button type="button" class="cpv2-sheet-trigger magic-all-btn">
-                    ${isKo ? "전체 도시 프로필 보기" : "View full city profile"}
+                    ${isKo ? "?꾩껜 ?꾩떆 ?꾨줈??蹂닿린" : "View full city profile"}
                 </button>
             </div>
             <div class="magic-custom-research" id="magic-custom-research">
                 <div class="magic-custom-header">
-                    <span class="magic-custom-icon">🔎</span>
-                    <span class="magic-custom-label">${isKo ? "위 10개 외에 반영하고 싶은 지역 특색이 있나요?" : "Any local specifics beyond the 10 categories above?"}</span>
+                    <span class="magic-custom-icon">?뵊</span>
+                    <span class="magic-custom-label">${isKo ? "??10媛??몄뿉 諛섏쁺?섍퀬 ?띠? 吏???뱀깋???덈굹??" : "Any local specifics beyond the 10 categories above?"}</span>
                 </div>
                 <div class="magic-custom-input-row">
                     <input type="text" id="magic-custom-input" class="magic-custom-input"
                         placeholder="${escapeHtml(customPlaceholder)}" />
                     <button type="button" id="magic-custom-search-btn" class="magic-custom-search-btn">
-                        ${isKo ? "검색하기" : "Search"}
+                        ${isKo ? "寃?됲븯湲? : "Search"}
                     </button>
                 </div>
                 <div id="magic-custom-result" class="magic-custom-result" style="display:none"></div>
@@ -3852,15 +3857,15 @@ let _magicSelected = new Set();
 let _magicAppliedSelected = new Set();
 
 /**
- * 정적 city_signals fallback
+ * ?뺤쟻 city_signals fallback
  */
 function bindCityProfileDrawer(container) {
-    // 바텀시트 "전체 보기" 트리거
+    // 諛뷀??쒗듃 "?꾩껜 蹂닿린" ?몃━嫄?
     container.querySelectorAll(".cpv2-sheet-trigger").forEach(btn => {
         btn.addEventListener("click", () => openCitySheet());
     });
 
-    // Magic Setup 태그 선택
+    // Magic Setup ?쒓렇 ?좏깮
     _magicSelected.clear();
     container.querySelectorAll(".magic-tag").forEach(tag => {
         tag.addEventListener("click", () => {
@@ -3876,7 +3881,7 @@ function bindCityProfileDrawer(container) {
         });
     });
 
-    // "시나리오에 반영하기" 버튼
+    // "?쒕굹由ъ삤??諛섏쁺?섍린" 踰꾪듉
     const applyBtn = container.querySelector("#magic-apply-btn");
     if (applyBtn) {
         applyBtn.addEventListener("click", () => {
@@ -3888,17 +3893,17 @@ function bindCityProfileDrawer(container) {
                 return cat ? (isKo ? cat.labelKo : cat.labelEn) : key;
             });
 
-            // 시각 피드백: 반영 확인 + 어디에 반영되는지 설명
+            // ?쒓컖 ?쇰뱶諛? 諛섏쁺 ?뺤씤 + ?대뵒??諛섏쁺?섎뒗吏 ?ㅻ챸
             applyBtn.innerHTML = isKo
-                ? `<span style="color:#4caf50">&#10003;</span> 반영 완료 — 시나리오 매칭 + AI 생성에 적용됩니다`
-                : `<span style="color:#4caf50">&#10003;</span> Applied — will influence matching + AI generation`;
+                ? `<span style="color:#4caf50">&#10003;</span> 諛섏쁺 ?꾨즺 ???쒕굹由ъ삤 留ㅼ묶 + AI ?앹꽦???곸슜?⑸땲??
+                : `<span style="color:#4caf50">&#10003;</span> Applied ??will influence matching + AI generation`;
             applyBtn.disabled = true;
 
-            // state preview 업데이트 (있다면)
+            // state preview ?낅뜲?댄듃 (?덈떎硫?
             updateStatePreview();
 
             setTimeout(() => {
-                applyBtn.innerHTML = isKo ? "선택한 기본 생활 키워드 반영" : "Apply selected base categories";
+                applyBtn.innerHTML = isKo ? "?좏깮??湲곕낯 ?앺솢 ?ㅼ썙??諛섏쁺" : "Apply selected base categories";
                 applyBtn.disabled = false;
             }, 2500);
 
@@ -3906,7 +3911,7 @@ function bindCityProfileDrawer(container) {
         });
     }
 
-    // ── 커스텀 리서치: 직접 입력 → AI 검색 ──
+    // ?? 而ㅼ뒪? 由ъ꽌移? 吏곸젒 ?낅젰 ??AI 寃????
     const customSearchBtn = container.querySelector("#magic-custom-search-btn");
     const customInput = container.querySelector("#magic-custom-input");
     const customResult = container.querySelector("#magic-custom-result");
@@ -3917,7 +3922,7 @@ function bindCityProfileDrawer(container) {
             if (!query) return;
             runCustomCityResearch(query, customResult, container);
         });
-        // Enter키로도 검색
+        // Enter?ㅻ줈??寃??
         customInput.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
                 e.preventDefault();
@@ -3929,7 +3934,7 @@ function bindCityProfileDrawer(container) {
     renderQ1ScenarioReferencePanel(container);
 }
 
-/** 커스텀 도시 리서치 — AI 마켓 리서치 실행 */
+/** 而ㅼ뒪? ?꾩떆 由ъ꽌移???AI 留덉폆 由ъ꽌移??ㅽ뻾 */
 function parseJsonObjectFromText(rawText) {
     const text = typeof rawText === "string" ? rawText.trim() : "";
     if (!text) return null;
@@ -3975,7 +3980,7 @@ function normalizeCustomResearchData(query, data) {
             title: key.replace(/_/g, " "),
             summary: String(source[key]).trim(),
             scenario_implication: currentLocale === "ko"
-                ? `"${query}"와 관련된 사용 장면을 이 생활 맥락에 맞게 시나리오에 연결합니다.`
+                ? `"${query}"? 愿?⑤맂 ?ъ슜 ?λ㈃?????앺솢 留λ씫??留욊쾶 ?쒕굹由ъ삤???곌껐?⑸땲??`
                 : `Connect "${query}" to this living context in the scenario.`
         }));
 
@@ -3999,13 +4004,13 @@ function normalizeCustomResearchData(query, data) {
 
     if (!normalized.keyword_interpretation) {
         normalized.keyword_interpretation = currentLocale === "ko"
-            ? `"${query}"와 연결되는 지역 생활 맥락을 정리했습니다.`
+            ? `"${query}"? ?곌껐?섎뒗 吏???앺솢 留λ씫???뺣━?덉뒿?덈떎.`
             : `Summarized the local context connected to "${query}".`;
     }
 
     if (!normalized.recommended_reflection_points.length) {
         normalized.recommended_reflection_points = currentLocale === "ko"
-            ? [`"${query}"가 필요한 시간대와 생활 조건을 시나리오 조건으로 반영합니다.`]
+            ? [`"${query}"媛 ?꾩슂???쒓컙?? ?앺솢 議곌굔???쒕굹由ъ삤 議곌굔?쇰줈 諛섏쁺?⑸땲??`]
             : [`Use the timing and living conditions behind "${query}" as scenario conditions.`];
     }
 
@@ -4018,12 +4023,12 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
     const isKo = currentLocale === "ko";
     let failureMessage = "";
 
-    // 로딩 표시 — 간결한 인라인 스피너
+    // 濡쒕뵫 ?쒖떆 ??媛꾧껐???몃씪???ㅽ뵾??
     resultContainer.style.display = "block";
     resultContainer.innerHTML = `
         <div class="magic-custom-loading" style="display:flex;align-items:center;gap:8px;padding:10px 0">
             <span class="magic-research-spinner"></span>
-            <span style="font-size:.76rem;color:#003366;font-weight:600">${isKo ? `"${escapeHtml(query)}" 마켓 리서치 중...` : `Researching "${escapeHtml(query)}"...`}</span>
+            <span style="font-size:.76rem;color:#003366;font-weight:600">${isKo ? `"${escapeHtml(query)}" 留덉폆 由ъ꽌移?以?..` : `Researching "${escapeHtml(query)}"...`}</span>
         </div>`;
 
     try {
@@ -4032,7 +4037,7 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
         const country = resolveCountry(selectedMarket);
         const city = getCityValue();
 
-        // base_profiles 요약 생성 — 중복 제거용 (카테고리별 앞 80자 요약)
+        // base_profiles ?붿빟 ?앹꽦 ??以묐났 ?쒓굅??(移댄뀒怨좊━蹂???80???붿빟)
         let baseProfilesSummary = "";
         if (_latestCityProfile?.profile) {
             const p = _latestCityProfile.profile;
@@ -4042,7 +4047,7 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
                 .join("\n");
         }
 
-        // GET 파라미터는 city/country/locale만, custom_query+base_profiles는 POST body로 전송
+        // GET ?뚮씪誘명꽣??city/country/locale留? custom_query+base_profiles??POST body濡??꾩넚
         const urlParams = new URLSearchParams({
             country: country.countryCode,
             city: city || "",
@@ -4079,11 +4084,11 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
         failureMessage = err.message;
     }
 
-    // 실패 시
+    // ?ㅽ뙣 ??
     resultContainer.innerHTML = `
         <div class="magic-custom-error">
-            <p>${isKo ? "검색에 실패했습니다. 다시 시도해 주세요." : "Search failed. Please try again."}</p>
-            <button type="button" class="secondary-btn magic-custom-retry-btn">${isKo ? "다시 검색" : "Retry"}</button>
+            <p>${isKo ? "寃?됱뿉 ?ㅽ뙣?덉뒿?덈떎. ?ㅼ떆 ?쒕룄??二쇱꽭??" : "Search failed. Please try again."}</p>
+            <button type="button" class="secondary-btn magic-custom-retry-btn">${isKo ? "?ㅼ떆 寃?? : "Retry"}</button>
         </div>`;
     resultContainer.querySelector(".magic-custom-retry-btn")?.addEventListener("click", () => {
         runCustomCityResearch(query, resultContainer, parentContainer);
@@ -4094,7 +4099,7 @@ function renderCustomResearchResult(query, data, resultContainer) {
     data = normalizeCustomResearchData(query, data);
     const isKo = currentLocale === "ko";
 
-    // 새 포맷 필드 추출
+    // ???щ㎎ ?꾨뱶 異붿텧
     const interpretation = data.keyword_interpretation || "";
     const searchIntents = Array.isArray(data.search_intents) ? data.search_intents : [];
     const findings = Array.isArray(data.city_keyword_findings) ? data.city_keyword_findings.slice(0, 5) : [];
@@ -4102,11 +4107,11 @@ function renderCustomResearchResult(query, data, resultContainer) {
     const reflectionPoints = Array.isArray(data.recommended_reflection_points) ? data.recommended_reflection_points : [];
     const tags = Array.isArray(data.tags) ? data.tags : [];
 
-    // 구 포맷 호환: 새 포맷 데이터가 없으면 레거시 필드로 폴백
+    // 援??щ㎎ ?명솚: ???щ㎎ ?곗씠?곌? ?놁쑝硫??덇굅???꾨뱶濡??대갚
     const hasNewFormat = !!(interpretation || findings.length || reflectionPoints.length);
 
     if (!hasNewFormat) {
-        // 구 서버 포맷 (customer_needs 등) 또는 raw 데이터 폴백
+        // 援??쒕쾭 ?щ㎎ (customer_needs ?? ?먮뒗 raw ?곗씠???대갚
         const needs = data.customer_needs || "";
         const improvement = data.improvement || "";
         const solutions = Array.isArray(data.solutions) ? data.solutions.slice(0, 2) : [];
@@ -4118,23 +4123,23 @@ function renderCustomResearchResult(query, data, resultContainer) {
         resultContainer.innerHTML = `
             <div class="magic-custom-result-content">
                 <div class="magic-custom-result-header">
-                    <span class="magic-custom-result-badge">${isKo ? "AI 도시 맥락 분석" : "AI City Context"}</span>
+                    <span class="magic-custom-result-badge">${isKo ? "AI ?꾩떆 留λ씫 遺꾩꽍" : "AI City Context"}</span>
                     <span class="magic-custom-result-query">"${escapeHtml(query)}"</span>
                 </div>
                 <div class="magic-research-section">
-                    <p class="magic-research-label">${isKo ? "분석 결과" : "Analysis"}</p>
+                    <p class="magic-research-label">${isKo ? "遺꾩꽍 寃곌낵" : "Analysis"}</p>
                     <div class="magic-research-text" style="white-space:pre-line">${escapeHtml(typeof fallbackText === "string" ? fallbackText : JSON.stringify(fallbackText))}</div>
                 </div>
                 <div class="magic-custom-result-actions">
-                    <p class="magic-custom-action-caption">${isKo ? "커스텀 검색 반영" : "Apply this custom research"}</p>
+                    <p class="magic-custom-action-caption">${isKo ? "而ㅼ뒪? 寃??諛섏쁺" : "Apply this custom research"}</p>
                     <button type="button" class="magic-custom-apply-btn" id="magic-custom-apply-btn">
-                        ${isKo ? "이 검색 결과를 시나리오 조건에 추가" : "Add this research to scenario inputs"}
+                        ${isKo ? "??寃??寃곌낵瑜??쒕굹由ъ삤 議곌굔??異붽?" : "Add this research to scenario inputs"}
                     </button>
                     <button type="button" class="secondary-btn magic-custom-skip-btn" id="magic-custom-skip-btn">
-                        ${isKo ? "건너뛰기" : "Skip"}
+                        ${isKo ? "嫄대꼫?곌린" : "Skip"}
                     </button>
                     <button type="button" class="secondary-btn magic-custom-retry-btn" id="magic-custom-retry-btn">
-                        ${isKo ? "다시 검색" : "Search Again"}
+                        ${isKo ? "?ㅼ떆 寃?? : "Search Again"}
                     </button>
                 </div>
             </div>`;
@@ -4142,37 +4147,37 @@ function renderCustomResearchResult(query, data, resultContainer) {
         return;
     }
 
-    // 태그 → 한글 매핑
+    // ?쒓렇 ???쒓? 留ㅽ븨
     const tagKoMap = {
-        "Save energy": "에너지 절약", "Keep your home safe": "홈 안전·보안",
-        "Help with chores": "가사 자동화", "Care for kids": "자녀 케어",
-        "Care for seniors": "시니어 케어", "Care for your pet": "반려동물 케어",
-        "Sleep well": "수면 개선", "Enhanced mood": "분위기 연출",
-        "Stay fit & healthy": "건강·피트니스", "Easily control your lights": "조명 제어",
-        "Keep the air fresh": "공기질 관리", "Find your belongings": "분실물 찾기",
-        "Time saving": "시간 절약"
+        "Save energy": "?먮꼫吏 ?덉빟", "Keep your home safe": "???덉쟾쨌蹂댁븞",
+        "Help with chores": "媛???먮룞??, "Care for kids": "?먮? 耳??,
+        "Care for seniors": "?쒕땲??耳??, "Care for your pet": "諛섎젮?숇Ъ 耳??,
+        "Sleep well": "?섎㈃ 媛쒖꽑", "Enhanced mood": "遺꾩쐞湲??곗텧",
+        "Stay fit & healthy": "嫄닿컯쨌?쇳듃?덉뒪", "Easily control your lights": "議곕챸 ?쒖뼱",
+        "Keep the air fresh": "怨듦린吏?愿由?, "Find your belongings": "遺꾩떎臾?李얘린",
+        "Time saving": "?쒓컙 ?덉빟"
     };
 
-    // 검색 의도 태그
+    // 寃???섎룄 ?쒓렇
     const intentsHtml = searchIntents.map(intent =>
         `<span class="magic-research-intent-tag">${escapeHtml(intent)}</span>`
     ).join("");
 
-    // findings 카드
+    // findings 移대뱶
     const findingsHtml = findings.map(f => `
         <div class="magic-research-finding">
             <div class="magic-research-finding-title">${escapeHtml(f.title || "")}</div>
             <p class="magic-research-finding-summary">${escapeHtml(f.summary || "")}</p>
-            <p class="magic-research-finding-implication">${isKo ? "시나리오 반영" : "Scenario"}: ${escapeHtml(f.scenario_implication || "")}</p>
+            <p class="magic-research-finding-implication">${isKo ? "?쒕굹由ъ삤 諛섏쁺" : "Scenario"}: ${escapeHtml(f.scenario_implication || "")}</p>
         </div>
     `).join("");
 
-    // 시나리오 반영 포인트
+    // ?쒕굹由ъ삤 諛섏쁺 ?ъ씤??
     const pointsHtml = reflectionPoints.map(p =>
         `<li>${escapeHtml(p)}</li>`
     ).join("");
 
-    // 태그
+    // ?쒓렇
     const tagsHtml = tags.map(t =>
         `<span class="magic-research-tag">${escapeHtml(isKo ? (tagKoMap[t] || t) : t)}</span>`
     ).join("");
@@ -4180,22 +4185,22 @@ function renderCustomResearchResult(query, data, resultContainer) {
     resultContainer.innerHTML = `
         <div class="magic-custom-result-content magic-research-structured">
             <div class="magic-custom-result-header">
-                <span class="magic-custom-result-badge">${isKo ? "AI 도시 맥락 분석" : "AI City Context"}</span>
+                <span class="magic-custom-result-badge">${isKo ? "AI ?꾩떆 留λ씫 遺꾩꽍" : "AI City Context"}</span>
                 <span class="magic-custom-result-query">"${escapeHtml(query)}"</span>
             </div>
 
             ${interpretation ? `<div class="magic-research-section">
-                <p class="magic-research-label">${isKo ? "AI 해석" : "AI Interpretation"}</p>
+                <p class="magic-research-label">${isKo ? "AI ?댁꽍" : "AI Interpretation"}</p>
                 <p class="magic-research-text">${escapeHtml(interpretation)}</p>
             </div>` : ""}
 
             ${intentsHtml ? `<div class="magic-research-section">
-                <p class="magic-research-label">${isKo ? "확장 검색 관점" : "Search Intents"}</p>
+                <p class="magic-research-label">${isKo ? "?뺤옣 寃??愿?? : "Search Intents"}</p>
                 <div class="magic-research-intents">${intentsHtml}</div>
             </div>` : ""}
 
             ${findingsHtml ? `<div class="magic-research-section">
-                <p class="magic-research-label">${isKo ? "추가 도시 맥락 결과" : "City-Keyword Findings"}</p>
+                <p class="magic-research-label">${isKo ? "異붽? ?꾩떆 留λ씫 寃곌낵" : "City-Keyword Findings"}</p>
                 <div class="magic-research-findings">${findingsHtml}</div>
             </div>` : ""}
 
@@ -4204,21 +4209,21 @@ function renderCustomResearchResult(query, data, resultContainer) {
             </div>` : ""}
 
             ${pointsHtml ? `<div class="magic-research-section magic-research-value">
-                <p class="magic-research-label">${isKo ? "시나리오 반영 포인트" : "Scenario Reflection Points"}</p>
+                <p class="magic-research-label">${isKo ? "?쒕굹由ъ삤 諛섏쁺 ?ъ씤?? : "Scenario Reflection Points"}</p>
                 <ul class="magic-research-points">${pointsHtml}</ul>
                 ${tagsHtml ? `<div class="magic-research-tags">${tagsHtml}</div>` : ""}
             </div>` : ""}
 
             <div class="magic-custom-result-actions">
-                <p class="magic-custom-action-caption">${isKo ? "커스텀 검색 반영" : "Apply this custom research"}</p>
+                <p class="magic-custom-action-caption">${isKo ? "而ㅼ뒪? 寃??諛섏쁺" : "Apply this custom research"}</p>
                 <button type="button" class="magic-custom-apply-btn" id="magic-custom-apply-btn">
-                    ${isKo ? "이 검색 결과를 시나리오 조건에 추가" : "Add this research to scenario inputs"}
+                    ${isKo ? "??寃??寃곌낵瑜??쒕굹由ъ삤 議곌굔??異붽?" : "Add this research to scenario inputs"}
                 </button>
                 <button type="button" class="secondary-btn magic-custom-skip-btn" id="magic-custom-skip-btn">
-                    ${isKo ? "건너뛰기" : "Skip"}
+                    ${isKo ? "嫄대꼫?곌린" : "Skip"}
                 </button>
                 <button type="button" class="secondary-btn magic-custom-retry-btn" id="magic-custom-retry-btn">
-                    ${isKo ? "다시 검색" : "Search Again"}
+                    ${isKo ? "?ㅼ떆 寃?? : "Search Again"}
                 </button>
             </div>
         </div>`;
@@ -4229,17 +4234,17 @@ function renderCustomResearchResult(query, data, resultContainer) {
 function bindCustomResearchActions(query, needsText, data, tags, resultContainer) {
     const isKo = currentLocale === "ko";
 
-    // 시나리오 반영 — Q2 Audience 가중치에 반영
+    // ?쒕굹由ъ삤 諛섏쁺 ??Q2 Audience 媛以묒튂??諛섏쁺
     resultContainer.querySelector("#magic-custom-apply-btn")?.addEventListener("click", () => {
 
-        // 커스텀 리서치 태그를 Q2 가중치 엔진에 저장
+        // 而ㅼ뒪? 由ъ꽌移??쒓렇瑜?Q2 媛以묒튂 ?붿쭊?????
         _customResearchData = { query, data, tags: tags || [], applied: true };
 
-        // 시각 피드백
+        // ?쒓컖 ?쇰뱶諛?
         const applyBtn = resultContainer.querySelector("#magic-custom-apply-btn");
         if (applyBtn) {
             applyBtn.innerHTML = isKo
-                ? `<span style="color:#4caf50">&#10003;</span> 커스텀 검색 반영됨`
+                ? `<span style="color:#4caf50">&#10003;</span> 而ㅼ뒪? 寃??諛섏쁺??
                 : `<span style="color:#4caf50">&#10003;</span> Custom research applied`;
             applyBtn.disabled = true;
             applyBtn.classList.add("magic-custom-applied");
@@ -4254,14 +4259,14 @@ function bindCustomResearchActions(query, needsText, data, tags, resultContainer
         if (currentStep === 3) updateStepInsight();
     });
 
-    // 건너뛰기 버튼
+    // 嫄대꼫?곌린 踰꾪듉
     resultContainer.querySelector("#magic-custom-skip-btn")?.addEventListener("click", () => {
         resultContainer.style.display = "none";
         _customResearchData = null;
         renderQ1ScenarioReferencePanel(stepInsight);
     });
 
-    // 다시 검색 버튼
+    // ?ㅼ떆 寃??踰꾪듉
     resultContainer.querySelector("#magic-custom-retry-btn")?.addEventListener("click", () => {
         const input = document.getElementById("magic-custom-input");
         const q = input?.value.trim();
@@ -4305,16 +4310,16 @@ function renderMagicCards(container) {
 
 function buildMagicHint(key, city, isKo) {
     const hints = isKo ? {
-        climate: `${city}의 계절 특성에 맞춘 자동 냉난방·공기질 루틴을 설계할 수 있습니다.`,
-        housing: `${city} 주거 환경에 최적화된 스마트홈 자동화를 추천합니다.`,
-        family: `${city} 가구 구성에 맞는 돌봄·안심 시나리오를 연결합니다.`,
-        daily_rhythm: `${city} 주민의 출퇴근·생활 패턴에 맞춘 루틴을 설계합니다.`,
-        safety: `${city} 보안 환경에 맞는 안전·모니터링 시나리오를 추천합니다.`,
-        energy: `${city} 에너지 비용 구조에 맞는 절약 자동화를 제안합니다.`,
-        health: `${city} 생활 환경에 맞는 건강·웰니스 루틴을 연결합니다.`,
-        pets: `${city} 반려 생활에 맞는 펫 케어 자동화를 추천합니다.`,
-        mobility: `${city} 이동·부재 패턴에 맞는 외출 모드를 설계합니다.`,
-        events: `${city} 계절 행사에 맞춘 시즌별 캠페인 시나리오를 연결합니다.`
+        climate: `${city}??怨꾩젅 ?뱀꽦??留욎텣 ?먮룞 ?됰궃諛㈑룰났湲곗쭏 猷⑦떞???ㅺ퀎?????덉뒿?덈떎.`,
+        housing: `${city} 二쇨굅 ?섍꼍??理쒖쟻?붾맂 ?ㅻ쭏?명솃 ?먮룞?붾? 異붿쿇?⑸땲??`,
+        family: `${city} 媛援?援ъ꽦??留욌뒗 ?뚮큵쨌?덉떖 ?쒕굹由ъ삤瑜??곌껐?⑸땲??`,
+        daily_rhythm: `${city} 二쇰???異쒗눜洹셋룹깮???⑦꽩??留욎텣 猷⑦떞???ㅺ퀎?⑸땲??`,
+        safety: `${city} 蹂댁븞 ?섍꼍??留욌뒗 ?덉쟾쨌紐⑤땲?곕쭅 ?쒕굹由ъ삤瑜?異붿쿇?⑸땲??`,
+        energy: `${city} ?먮꼫吏 鍮꾩슜 援ъ“??留욌뒗 ?덉빟 ?먮룞?붾? ?쒖븞?⑸땲??`,
+        health: `${city} ?앺솢 ?섍꼍??留욌뒗 嫄닿컯쨌?곕땲??猷⑦떞???곌껐?⑸땲??`,
+        pets: `${city} 諛섎젮 ?앺솢??留욌뒗 ??耳???먮룞?붾? 異붿쿇?⑸땲??`,
+        mobility: `${city} ?대룞쨌遺???⑦꽩??留욌뒗 ?몄텧 紐⑤뱶瑜??ㅺ퀎?⑸땲??`,
+        events: `${city} 怨꾩젅 ?됱궗??留욎텣 ?쒖쫵蹂?罹좏럹???쒕굹由ъ삤瑜??곌껐?⑸땲??`
     } : {
         climate: `Design auto climate & air routines for ${city}'s seasonal patterns.`,
         housing: `Recommend smart home automation optimized for ${city} housing.`,
@@ -4333,10 +4338,10 @@ function buildMagicHint(key, city, isKo) {
 function openCitySheet() {
     if (!_pendingCitySheetHtml) return;
 
-    // 기존 시트가 있으면 제거
+    // 湲곗〈 ?쒗듃媛 ?덉쑝硫??쒓굅
     closeCitySheet();
 
-    // overlay + sheet 생성
+    // overlay + sheet ?앹꽦
     const overlay = document.createElement("div");
     overlay.className = "cpv2-overlay";
     overlay.addEventListener("click", closeCitySheet);
@@ -4349,13 +4354,13 @@ function openCitySheet() {
     document.body.appendChild(overlay);
     document.body.appendChild(sheet);
 
-    // 닫기 버튼
+    // ?リ린 踰꾪듉
     sheet.querySelector(".cpv2-sheet-close")?.addEventListener("click", closeCitySheet);
 
-    // ESC 키
+    // ESC ??
     document.addEventListener("keydown", _citySheetEscHandler);
 
-    // 트리거 애니메이션 (다음 프레임에서 open 클래스 추가)
+    // ?몃━嫄??좊땲硫붿씠??(?ㅼ쓬 ?꾨젅?꾩뿉??open ?대옒??異붽?)
     requestAnimationFrame(() => {
         overlay.classList.add("open");
         sheet.classList.add("open");
@@ -4376,14 +4381,14 @@ function _citySheetEscHandler(e) {
 
 function renderCityProfileFromStatic(countryName, localCity, content) {
     const isKo = currentLocale === "ko";
-    // content가 객체이면 필드들을 카테고리처럼 표시
+    // content媛 媛앹껜?대㈃ ?꾨뱶?ㅼ쓣 移댄뀒怨좊━泥섎읆 ?쒖떆
     if (typeof content === "object" && content !== null) {
         const FIELD_LABELS = {
-            region: isKo ? "지역 특성" : "Region",
-            climate: isKo ? "기후·계절" : "Climate",
-            housing: isKo ? "주거 형태" : "Housing",
-            behavior: isKo ? "생활 패턴" : "Behavior",
-            implication: isKo ? "시사점" : "Implication"
+            region: isKo ? "吏???뱀꽦" : "Region",
+            climate: isKo ? "湲고썑쨌怨꾩젅" : "Climate",
+            housing: isKo ? "二쇨굅 ?뺥깭" : "Housing",
+            behavior: isKo ? "?앺솢 ?⑦꽩" : "Behavior",
+            implication: isKo ? "?쒖궗?? : "Implication"
         };
         const items = Object.entries(content)
             .filter(([key, val]) => typeof val === "string" && FIELD_LABELS[key])
@@ -4396,7 +4401,7 @@ function renderCityProfileFromStatic(countryName, localCity, content) {
 
         return `
             <div class="insight-card city-profile-card-v2">
-                <div class="insight-badge-row"><span class="insight-badge">Q1 Region</span><span class="insight-badge" style="background:#e65100;color:#fff">${isKo ? "정적 데이터" : "Static"}</span></div>
+                <div class="insight-badge-row"><span class="insight-badge">Q1 Region</span><span class="insight-badge" style="background:#e65100;color:#fff">${isKo ? "?뺤쟻 ?곗씠?? : "Static"}</span></div>
                 <h3 class="insight-title">${escapeHtml(countryName)} ${escapeHtml(localCity)}</h3>
                 <div class="city-profile-grid">${items}</div>
             </div>
@@ -4410,7 +4415,7 @@ function renderCityProfileFromStatic(countryName, localCity, content) {
 }
 
 async function fetchLiveStep2Insight(countryCode, city, role, forceRefresh = false) {
-    // 로케일 기반 도시명 조회 — getCityDisplayValue가 city_signals + KR_CITY_MASTER 모두 검색
+    // 濡쒖???湲곕컲 ?꾩떆紐?議고쉶 ??getCityDisplayValue媛 city_signals + KR_CITY_MASTER 紐⑤몢 寃??
     const cityLocal = city ? (getCityDisplayValue(countryCode, city) || city) : city;
 
     const params = new URLSearchParams({
@@ -4450,7 +4455,7 @@ async function fetchLiveStep2Insight(countryCode, city, role, forceRefresh = fal
         }
         if (!response.ok || !payload?.ok || !payload?.data) {
             const message = payload?.error?.message || (currentLocale === "ko"
-                ? "실시간 지역 인사이트를 불러오지 못했습니다."
+                ? "?ㅼ떆媛?吏???몄궗?댄듃瑜?遺덈윭?ㅼ? 紐삵뻽?듬땲??"
                 : "Failed to load live regional insight.");
             return buildStep2ErrorInsight(message);
         }
@@ -4458,7 +4463,7 @@ async function fetchLiveStep2Insight(countryCode, city, role, forceRefresh = fal
         return mapLiveStep2Insight(payload.data, countryCode, city);
     } catch {
         const timeoutMessage = currentLocale === "ko"
-            ? "실시간 지역 인사이트 요청이 시간 제한(60초)을 초과했습니다."
+            ? "?ㅼ떆媛?吏???몄궗?댄듃 ?붿껌???쒓컙 ?쒗븳(60珥???珥덇낵?덉뒿?덈떎."
             : "Live regional insight timed out after 60 seconds.";
         return buildStep2ErrorInsight(timeoutMessage);
     } finally {
@@ -4469,17 +4474,17 @@ async function fetchLiveStep2Insight(countryCode, city, role, forceRefresh = fal
 function mapLiveStep2Insight(data, countryCode, city) {
     const selectedRoleId = normalizeRoleId(data.role || roleSelect.value);
     const roleLens = data.role_lens || {};
-    const roleTitle = selectedRoleId ? getRoleTitle(selectedRoleId) : (currentLocale === "ko" ? "마케터" : "Marketer");
+    const roleTitle = selectedRoleId ? getRoleTitle(selectedRoleId) : (currentLocale === "ko" ? "留덉??? : "Marketer");
     const queryCity = String(data?.meta?.query_city || city || "").trim();
 
-    // 도시명 로케일 변환: getCityDisplayValue가 city_signals + KR_CITY_MASTER 모두 검색
+    // ?꾩떆紐?濡쒖???蹂?? getCityDisplayValue媛 city_signals + KR_CITY_MASTER 紐⑤몢 寃??
     const resolvedDisplay = queryCity ? getCityDisplayValue(countryCode, queryCity) : "";
     const localCity = resolvedDisplay || String(data?.local?.city_display || queryCity || city || "").trim();
     const marketLabel = localCity ? `${getCountryName(countryCode)} ${localCity}` : getCountryName(countryCode);
     const local = data.local || null;
     const evidence = Array.isArray(data.evidence) ? data.evidence : [];
 
-    // 라이브 데이터만 사용 — 정적 city_signals fallback 제거
+    // ?쇱씠釉??곗씠?곕쭔 ?ъ슜 ???뺤쟻 city_signals fallback ?쒓굅
     const livePains = toList(data.live_pains).slice(0, 3);
     const liveSolutions = toList(data.live_solutions).slice(0, 3);
     const staticPains = toList(roleLens.pain_points).slice(0, 3);
@@ -4487,18 +4492,18 @@ function mapLiveStep2Insight(data, countryCode, city) {
     const mustKnow = toList(roleLens.must_know).slice(0, 3);
     const executionPoints = toList(roleLens.execution_points).slice(0, 3);
 
-    // live_trends: 객체 배열({text, evidence, category, source_*}) 또는 문자열 배열 모두 지원
+    // live_trends: 媛앹껜 諛곗뿴({text, evidence, category, source_*}) ?먮뒗 臾몄옄??諛곗뿴 紐⑤몢 吏??
     const CATEGORY_LABELS = {
-        climate: currentLocale === "ko" ? "기후·계절" : "Climate",
-        housing: currentLocale === "ko" ? "주거 형태" : "Housing",
-        family: currentLocale === "ko" ? "가족·돌봄" : "Family",
-        routine: currentLocale === "ko" ? "일상 리듬" : "Routine",
-        security: currentLocale === "ko" ? "안전·보안" : "Security",
-        energy: currentLocale === "ko" ? "에너지" : "Energy",
-        wellness: currentLocale === "ko" ? "건강·웰니스" : "Wellness",
-        pet: currentLocale === "ko" ? "펫 라이프" : "Pet",
-        mobility: currentLocale === "ko" ? "이동·부재" : "Mobility",
-        events: currentLocale === "ko" ? "문화 행사" : "Events"
+        climate: currentLocale === "ko" ? "湲고썑쨌怨꾩젅" : "Climate",
+        housing: currentLocale === "ko" ? "二쇨굅 ?뺥깭" : "Housing",
+        family: currentLocale === "ko" ? "媛議굿룸룎遊? : "Family",
+        routine: currentLocale === "ko" ? "?쇱긽 由щ벉" : "Routine",
+        security: currentLocale === "ko" ? "?덉쟾쨌蹂댁븞" : "Security",
+        energy: currentLocale === "ko" ? "?먮꼫吏" : "Energy",
+        wellness: currentLocale === "ko" ? "嫄닿컯쨌?곕땲?? : "Wellness",
+        pet: currentLocale === "ko" ? "???쇱씠?? : "Pet",
+        mobility: currentLocale === "ko" ? "?대룞쨌遺?? : "Mobility",
+        events: currentLocale === "ko" ? "臾명솕 ?됱궗" : "Events"
     };
     const rawLiveTrends = Array.isArray(data.live_trends) ? data.live_trends : [];
     const liveTrends = rawLiveTrends.map((t) => {
@@ -4518,29 +4523,29 @@ function mapLiveStep2Insight(data, countryCode, city) {
         return { text: String(t || "").trim(), evidence: "", source_title: "", source_org: "", source_date: "", source_url: "" };
     }).filter((t) => t.text);
 
-    // 트렌드가 없어도 pains/events/role_lens가 있으면 카드를 보여줌 (에러 대신 partial 표시)
+    // ?몃젋?쒓? ?놁뼱??pains/events/role_lens媛 ?덉쑝硫?移대뱶瑜?蹂댁뿬以?(?먮윭 ???partial ?쒖떆)
     const hasSomeData = liveTrends.length || livePains.length || liveSolutions.length || staticPains.length;
     if (!hasSomeData) {
         return buildStep2ErrorInsight(
             currentLocale === "ko"
-                ? `"${localCity || queryCity || city}" 지역 데이터를 가져오지 못했습니다. 다시 시도해 주세요.`
+                ? `"${localCity || queryCity || city}" 吏???곗씠?곕? 媛?몄삤吏 紐삵뻽?듬땲?? ?ㅼ떆 ?쒕룄??二쇱꽭??`
                 : `Could not fetch regional data for "${localCity || queryCity || city}". Please retry.`
         );
     }
 
-    // 라이브 AI 결과만 사용 — role_lens는 pains/solutions 부재 시에만 보강
+    // ?쇱씠釉?AI 寃곌낵留??ъ슜 ??role_lens??pains/solutions 遺???쒖뿉留?蹂닿컯
     const realPains = livePains.length ? livePains : (staticPains.length ? staticPains : mustKnow);
     const realSolutions = liveSolutions.length ? liveSolutions : (staticSolutions.length ? staticSolutions : executionPoints);
     const formatQ2MetricHint = (metric) => {
         const normalizedMetric = String(metric || "").trim();
         if (!normalizedMetric) return "";
         if (currentLocale === "ko") {
-            if (normalizedMetric === "시연 완료율 → 상담 전환율") {
-                return "[KPI] 매장 시연을 끝까지 본 고객이 실제 상담까지 이어지도록 만드는 흐름";
+            if (normalizedMetric === "?쒖뿰 ?꾨즺?????곷떞 ?꾪솚??) {
+                return "[KPI] 留ㅼ옣 ?쒖뿰???앷퉴吏 蹂?怨좉컼???ㅼ젣 ?곷떞源뚯? ?댁뼱吏?꾨줉 留뚮뱶???먮쫫";
             }
             return `[KPI] ${normalizedMetric}`;
         }
-        if (normalizedMetric === "Demo completion → consultation conversion") {
+        if (normalizedMetric === "Demo completion ??consultation conversion") {
             return "[KPI] Turn completed demos into actual consultation conversations";
         }
         return `[KPI] ${normalizedMetric}`;
@@ -4548,13 +4553,13 @@ function mapLiveStep2Insight(data, countryCode, city) {
 
     const sections = [];
 
-    // 1) 지역 트렌드 섹션: 라이브 API 전용 (정적 fallback 없음)
+    // 1) 吏???몃젋???뱀뀡: ?쇱씠釉?API ?꾩슜 (?뺤쟻 fallback ?놁쓬)
     const trendItems = liveTrends;
     if (trendItems.length) {
         sections.push({
             title: currentLocale === "ko"
-                ? `🏠 <strong class="city-accent">${localCity || marketLabel}</strong> 생활 밀착 이슈`
-                : `🏠 Life context in <strong class="city-accent">${localCity || marketLabel}</strong>`,
+                ? `?룧 <strong class="city-accent">${localCity || marketLabel}</strong> ?앺솢 諛李??댁뒋`
+                : `?룧 Life context in <strong class="city-accent">${localCity || marketLabel}</strong>`,
             items: trendItems.map((trend) => ({
                 text: trend.text,
                 evidence: trend.evidence || "",
@@ -4566,51 +4571,51 @@ function mapLiveStep2Insight(data, countryCode, city) {
         });
     }
 
-    // 2) 근처 행사/이벤트 섹션: 실시간 API
+    // 2) 洹쇱쿂 ?됱궗/?대깽???뱀뀡: ?ㅼ떆媛?API
     const liveEvents = Array.isArray(data.live_events) ? data.live_events.slice(0, 3) : [];
     if (liveEvents.length) {
         sections.push({
             title: currentLocale === "ko"
-                ? `📅 시즌/문화 참고 포인트`
-                : `📅 Season & culture signals`,
+                ? `?뱟 ?쒖쫵/臾명솕 李멸퀬 ?ъ씤??
+                : `?뱟 Season & culture signals`,
             items: liveEvents.map(ev =>
-                `${ev.name} (${ev.when}) — ${ev.hook}`
+                `${ev.name} (${ev.when}) ??${ev.hook}`
             )
         });
     }
 
-    // 3) 트렌드 기반 고민 섹션
+    // 3) ?몃젋??湲곕컲 怨좊? ?뱀뀡
     if (realPains.length) {
         sections.push({
             title: currentLocale === "ko"
-                ? `😟 고객이 느끼는 불편과 기대`
-                : `😟 Customer pain points & expectations`,
+                ? `?삜 怨좉컼???먮겮??遺덊렪怨?湲곕?`
+                : `?삜 Customer pain points & expectations`,
             items: realPains
         });
     }
 
-    // 4) CX 시나리오 힌트 섹션 (SUB — 트렌드 기반 세그먼트/기기/시나리오 방향 제안)
+    // 4) CX ?쒕굹由ъ삤 ?뚰듃 ?뱀뀡 (SUB ???몃젋??湲곕컲 ?멸렇癒쇳듃/湲곌린/?쒕굹由ъ삤 諛⑺뼢 ?쒖븞)
     if (realSolutions.length) {
         sections.push({
             title: currentLocale === "ko"
-                ? `💡 시나리오 연결 기회`
-                : `💡 Scenario opportunities`,
+                ? `?뮕 ?쒕굹由ъ삤 ?곌껐 湲고쉶`
+                : `?뮕 Scenario opportunities`,
             items: realSolutions
         });
     }
 
     const rows = [];
     rows.push({
-        label: currentLocale === "ko" ? "Q2 힌트" : "Q2 hint",
+        label: currentLocale === "ko" ? "Q2 ?뚰듃" : "Q2 hint",
         value: currentLocale === "ko"
-            ? "Q2에서 타겟 고객과 거주지, 생활 맥락을 추가하면 이 지역에 딱 맞는 시나리오가 자동으로 완성됩니다."
+            ? "Q2?먯꽌 ?寃?怨좉컼怨?嫄곗＜吏, ?앺솢 留λ씫??異붽??섎㈃ ??吏??뿉 ??留욌뒗 ?쒕굹由ъ삤媛 ?먮룞?쇰줈 ?꾩꽦?⑸땲??"
             : "Add target audience, housing, and life context in Q2 to auto-generate a scenario tailored to this region."
     });
 
     return {
-        badge: currentLocale === "ko" ? "Q1 생활 맥락" : "Q1 Life Context",
+        badge: currentLocale === "ko" ? "Q1 ?앺솢 留λ씫" : "Q1 Life Context",
         title: currentLocale === "ko"
-            ? `<strong class="city-accent">${marketLabel}</strong>에서 시나리오를 기획할 때 먼저 참고하세요`
+            ? `<strong class="city-accent">${marketLabel}</strong>?먯꽌 ?쒕굹由ъ삤瑜?湲고쉷????癒쇱? 李멸퀬?섏꽭??
             : `Key life-context signals for scenario planning in <strong class="city-accent">${marketLabel}</strong>`,
         chips: [
             queryCity || localCity || marketLabel,
@@ -4681,7 +4686,7 @@ function buildLandmarkFallbackImage(city, countryName) {
             <rect x="662" y="252" width="76" height="248" fill="rgba(8,20,35,0.6)"/>
             <rect x="0" y="500" width="960" height="40" fill="rgba(0,0,0,0.28)"/>
             <text x="36" y="80" fill="#f3f8ff" font-family="Segoe UI, Arial, sans-serif" font-size="38" font-weight="700">${escapeHtml(city)}</text>
-            <text x="36" y="116" fill="#d7e9ff" font-family="Segoe UI, Arial, sans-serif" font-size="21">${escapeHtml(countryName)} • Landmark image unavailable</text>
+            <text x="36" y="116" fill="#d7e9ff" font-family="Segoe UI, Arial, sans-serif" font-size="21">${escapeHtml(countryName)} ??Landmark image unavailable</text>
         </svg>
     `.trim();
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
@@ -4703,7 +4708,7 @@ function buildMapFallbackImage({ countryName, city, areaText, countryPopText, ci
             <circle cx="500" cy="278" r="23" fill="none" stroke="rgba(227,62,62,0.34)" stroke-width="7"/>
             <rect x="26" y="26" width="908" height="150" rx="12" fill="rgba(0,39,77,0.84)"/>
             <text x="54" y="72" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">${escapeHtml(countryName)} / ${escapeHtml(city)}</text>
-            <text x="54" y="108" fill="#deecff" font-family="Segoe UI, Arial, sans-serif" font-size="20">Area ${escapeHtml(areaText)} • Country pop ${escapeHtml(countryPopText)} • City pop ${escapeHtml(cityPopText)} (${escapeHtml(cityShareText)})</text>
+            <text x="54" y="108" fill="#deecff" font-family="Segoe UI, Arial, sans-serif" font-size="20">Area ${escapeHtml(areaText)} ??Country pop ${escapeHtml(countryPopText)} ??City pop ${escapeHtml(cityPopText)} (${escapeHtml(cityShareText)})</text>
             <text x="54" y="138" fill="#deecff" font-family="Segoe UI, Arial, sans-serif" font-size="18">Neighbors: ${escapeHtml(neighborsText)}</text>
         </svg>
     `.trim();
@@ -4718,23 +4723,23 @@ function inferCityCxProfile(countryCode, city, macro, local) {
 
     if (currentLocale === "ko") {
         return [
-            `기후/계절: ${climateLine || `${city}는 계절 요인에 따라 냉난방·실내쾌적 니즈가 크게 달라질 수 있습니다.`}`,
-            `생활 패턴: ${urbanLine || `${city}는 출퇴근 이후 즉시 편의(빠른 집 상태 전환)에 반응할 가능성이 높습니다.`}`,
-            `주기적 이벤트: 출근 재개 시기·명절/휴가 시즌·연말 쇼핑 시즌에 체험형 메시지 반응이 커질 가능성이 큽니다.`,
-            `기술 인프라: ${isMetro ? "앱/커넥티드 서비스 수용도가 높은 도시형 환경으로 가정" : "생활권별 디지털 편차를 고려한 단계형 온보딩 필요"}입니다.`,
-            `교육/디지털 성숙도(추정): 기능 설명보다 비교·근거·리뷰형 정보에 반응할 가능성이 높습니다.`,
-            `에너지 사용 패턴(추정): 계절성 냉난방 부담이 체감되는 시점에 절감 메시지와 자동화 루틴 제안의 설득력이 높아집니다.`
+            `湲고썑/怨꾩젅: ${climateLine || `${city}??怨꾩젅 ?붿씤???곕씪 ?됰궃諛㈑룹떎?댁풄???덉쫰媛 ?ш쾶 ?щ씪吏????덉뒿?덈떎.`}`,
+            `?앺솢 ?⑦꽩: ${urbanLine || `${city}??異쒗눜洹??댄썑 利됱떆 ?몄쓽(鍮좊Ⅸ 吏??곹깭 ?꾪솚)??諛섏쓳??媛?μ꽦???믪뒿?덈떎.`}`,
+            `二쇨린???대깽?? 異쒓렐 ?ш컻 ?쒓린쨌紐낆젅/?닿? ?쒖쫵쨌?곕쭚 ?쇳븨 ?쒖쫵??泥댄뿕??硫붿떆吏 諛섏쓳??而ㅼ쭏 媛?μ꽦???쎈땲??`,
+            `湲곗닠 ?명봽?? ${isMetro ? "??而ㅻ꽖?곕뱶 ?쒕퉬???섏슜?꾧? ?믪? ?꾩떆???섍꼍?쇰줈 媛?? : "?앺솢沅뚮퀎 ?붿????몄감瑜?怨좊젮???④퀎???⑤낫???꾩슂"}?낅땲??`,
+            `援먯쑁/?붿????깆닕??異붿젙): 湲곕뒫 ?ㅻ챸蹂대떎 鍮꾧탳쨌洹쇨굅쨌由щ럭???뺣낫??諛섏쓳??媛?μ꽦???믪뒿?덈떎.`,
+            `?먮꼫吏 ?ъ슜 ?⑦꽩(異붿젙): 怨꾩젅???됰궃諛?遺?댁씠 泥닿컧?섎뒗 ?쒖젏???덇컧 硫붿떆吏? ?먮룞??猷⑦떞 ?쒖븞???ㅻ뱷?μ씠 ?믪븘吏묐땲??`
         ];
     }
 
     if (currentLocale === "de") {
         return [
-            `Klima/Saisonalität: ${climateLine || `${city} zeigt je nach Saison wechselnde Bedürfnisse bei Heizen, Kühlen und Komfort.`}`,
+            `Klima/Saisonalit채t: ${climateLine || `${city} zeigt je nach Saison wechselnde Bed체rfnisse bei Heizen, K체hlen und Komfort.`}`,
             `Lebensrhythmus: ${urbanLine || `${city} reagiert voraussichtlich stark auf unmittelbare Convenience nach dem Heimkommen.`}`,
-            "Wiederkehrende Events: Pendelspitzen, Ferienphasen und Jahresend-Saisons erhöhen die Wirkung erlebbarer Botschaften.",
+            "Wiederkehrende Events: Pendelspitzen, Ferienphasen und Jahresend-Saisons erh철hen die Wirkung erlebbarer Botschaften.",
             `Technische Infrastruktur: ${isMetro ? "metro-typische hohe App- und Connected-Adoption wahrscheinlich" : "stufenweises Onboarding wegen digitaler Unterschiede empfohlen"}.`,
-            "Bildung/Digitalreife (abgeleitet): Vergleich, Nachweis und Reviews wirken meist stärker als reine Feature-Claims.",
-            "Energienutzungsmuster (abgeleitet): In Phasen spürbarer Heiz-/Kühlkosten sind Savings- und Automationsbotschaften besonders wirksam."
+            "Bildung/Digitalreife (abgeleitet): Vergleich, Nachweis und Reviews wirken meist st채rker als reine Feature-Claims.",
+            "Energienutzungsmuster (abgeleitet): In Phasen sp체rbarer Heiz-/K체hlkosten sind Savings- und Automationsbotschaften besonders wirksam."
         ];
     }
 
@@ -4748,7 +4753,7 @@ function inferCityCxProfile(countryCode, city, macro, local) {
     ];
 }
 
-/** '다시 시도' 버튼 클릭 → Step 2 인사이트 재호출 */
+/** '?ㅼ떆 ?쒕룄' 踰꾪듉 ?대┃ ??Step 2 ?몄궗?댄듃 ?ы샇異?*/
 function bindInsightRetryButton(container) {
     const retryBtn = container.querySelector("#region-insight-retry");
     if (retryBtn) {
@@ -4761,13 +4766,13 @@ function bindInsightRetryButton(container) {
 function buildStep2ErrorInsight(message) {
     return {
         badge: currentLocale === "ko" ? "Q1 Live Error" : "Q1 Live Error",
-        title: currentLocale === "ko" ? "실시간 지역 인사이트를 불러오지 못했습니다" : "Failed to load live regional insight",
+        title: currentLocale === "ko" ? "?ㅼ떆媛?吏???몄궗?댄듃瑜?遺덈윭?ㅼ? 紐삵뻽?듬땲?? : "Failed to load live regional insight",
         summary: message,
         body: currentLocale === "ko"
-            ? "네트워크 또는 외부 소스 상태를 확인한 뒤 다시 시도해 주세요."
+            ? "?ㅽ듃?뚰겕 ?먮뒗 ?몃? ?뚯뒪 ?곹깭瑜??뺤씤?????ㅼ떆 ?쒕룄??二쇱꽭??"
             : "Check network or upstream source status, then retry.",
         retry: true,
-        retryLabel: currentLocale === "ko" ? "다시 시도" : "Retry now"
+        retryLabel: currentLocale === "ko" ? "?ㅼ떆 ?쒕룄" : "Retry now"
     };
 }
 
@@ -4775,100 +4780,100 @@ function toList(value) {
     return Array.isArray(value) ? value.filter(Boolean) : [];
 }
 
-/** 선택된 세그먼트 키워드별 "왜 이 특징이 도출되었는지" 설명 */
+/** ?좏깮???멸렇癒쇳듃 ?ㅼ썙?쒕퀎 "?????뱀쭠???꾩텧?섏뿀?붿?" ?ㅻ챸 */
 function inferTraitReason(trait) {
     const reasons = {
-        "시간 가치 민감": "맞벌이·퇴근 키워드에서 → 시간이 곧 비용인 생활 패턴",
-        "가구 운영 복잡도 높음": "육아·가족 키워드에서 → 동시에 챙겨야 할 대상이 많음",
-        "케어/안심 니즈 큼": "부모·시니어·돌봄 키워드에서 → 멀리서도 확인·케어 필요",
-        "지출 민감도 높음": "에너지·생활비 키워드에서 → 절감 효과가 바로 체감되어야 함",
-        "여가 시간 품질 중시": "주말·여가·웰니스 키워드에서 → 쉬는 시간의 질이 핵심",
-        "원격 확인 수요 존재": "펫·반려 키워드에서 → 외출 중에도 상태 확인 필수",
-        "즉시 체감 가치 선호": "기본 타겟 프로필 → 복잡한 설정 없이 바로 효과 체감",
-        "설정 피로도 낮추기 중요": "기본 타겟 프로필 → 쉬운 시작이 지속 사용으로 연결",
-        "건강·웰니스 중시": "웰니스·피트니스 선택에서 → 공기질·수면·운동 연동 시나리오 적합",
-        "보안/안전 중시": "보안·안전 선택에서 → 모니터링·알림 시나리오 유효",
-        "가사 효율 추구": "가사·효율 선택에서 → 자동화로 반복 작업을 줄이는 방향",
+        "?쒓컙 媛移?誘쇨컧": "留욌쾶?는룻눜洹??ㅼ썙?쒖뿉?????쒓컙??怨?鍮꾩슜???앺솢 ?⑦꽩",
+        "媛援??댁쁺 蹂듭옟???믪쓬": "?≪븘쨌媛議??ㅼ썙?쒖뿉?????숈떆??梨숆꺼??????곸씠 留롮쓬",
+        "耳???덉떖 ?덉쫰 ??: "遺紐㉱룹떆?덉뼱쨌?뚮큵 ?ㅼ썙?쒖뿉????硫由ъ꽌???뺤씤쨌耳???꾩슂",
+        "吏異?誘쇨컧???믪쓬": "?먮꼫吏쨌?앺솢鍮??ㅼ썙?쒖뿉?????덇컧 ?④낵媛 諛붾줈 泥닿컧?섏뼱????,
+        "?ш? ?쒓컙 ?덉쭏 以묒떆": "二쇰쭚쨌?ш?쨌?곕땲???ㅼ썙?쒖뿉?????щ뒗 ?쒓컙??吏덉씠 ?듭떖",
+        "?먭꺽 ?뺤씤 ?섏슂 議댁옱": "?ヂ룸컲???ㅼ썙?쒖뿉?????몄텧 以묒뿉???곹깭 ?뺤씤 ?꾩닔",
+        "利됱떆 泥닿컧 媛移??좏샇": "湲곕낯 ?寃??꾨줈????蹂듭옟???ㅼ젙 ?놁씠 諛붾줈 ?④낵 泥닿컧",
+        "?ㅼ젙 ?쇰줈????텛湲?以묒슂": "湲곕낯 ?寃??꾨줈?????ъ슫 ?쒖옉??吏???ъ슜?쇰줈 ?곌껐",
+        "嫄닿컯쨌?곕땲??以묒떆": "?곕땲?ㅒ룻뵾?몃땲???좏깮?먯꽌 ??怨듦린吏댟룹닔硫는룹슫???곕룞 ?쒕굹由ъ삤 ?곹빀",
+        "蹂댁븞/?덉쟾 以묒떆": "蹂댁븞쨌?덉쟾 ?좏깮?먯꽌 ??紐⑤땲?곕쭅쨌?뚮┝ ?쒕굹由ъ삤 ?좏슚",
+        "媛???⑥쑉 異붽뎄": "媛??룻슚???좏깮?먯꽌 ???먮룞?붾줈 諛섎났 ?묒뾽??以꾩씠??諛⑺뼢",
         // EN
-        "time-value sensitivity": "dual-income / commute signals → time equals cost",
-        "high household complexity": "parenting / family signals → many things to manage at once",
-        "strong care and reassurance needs": "parent / senior / care signals → remote monitoring needed",
-        "high spending sensitivity": "energy / cost signals → savings must be immediately visible",
-        "high value on leisure quality": "weekend / wellness signals → quality of downtime matters most",
-        "remote check-in demand": "pet / companion signals → must check status while away",
-        "preference for immediate value": "default profile → value must be felt instantly",
-        "importance of reducing setup fatigue": "default profile → easy start leads to sustained usage",
-        "health and wellness focus": "wellness / fitness signals → air quality, sleep, exercise integration",
-        "security and safety focus": "security / safety signals → monitoring and alert scenarios",
-        "chore efficiency focus": "chore / efficiency signals → reducing repetitive tasks through automation",
-        "sleep quality focus": "night-shift / sleep signals → better rest through environment automation",
-        "수면 품질 중시": "야간근무·수면 관련 선택에서 → 환경 자동화로 수면 질 개선",
-        // ── 신규 trait 추론 근거 ──
-        "공동주거 환경 최적화": "아파트·빌라 선택에서 → 층간소음·공용설비 고려한 자동화 시나리오 적합",
-        "소형 공간 효율화": "오피스텔·원룸 또는 1인 가구 선택에서 → 제한된 공간 내 기기 통합 자동화",
-        "독립 주거 자동화": "단독·타운하우스 선택에서 → 마당·다층 구조에 맞는 보안·에너지 시나리오",
-        "공용 공간 관리 니즈": "셰어하우스 선택에서 → 공용 공간 사용 규칙·환경 자동 관리",
-        "생활 동선 공유": "2인 가구 선택에서 → 두 사람의 생활 패턴을 고려한 동선 자동화",
-        "개인 공간·공용 공간 분리": "성인 자녀 동거 선택에서 → 개별 공간 환경을 독립 제어",
-        "접근성 배려 자동화": "접근성 배려 선택에서 → 음성·자동 제어 중심 시나리오",
-        "안정적 생활 루틴 중시": "안정기·안정된 가정 선택에서 → 예측 가능한 루틴 기반 자동화",
-        "외출 전·귀가 시 자동화 수요": "주말 외출 잦음 선택에서 → 출발·귀가 전후 일괄 제어 시나리오",
-        "실내 환경 민감": "쾌적한 공기 선택에서 → 공기질·환기 자동 제어 시나리오",
-        "분위기·조명 중시": "조명 제어 선택에서 → 시간대·활동별 조명 자동 전환",
-        "물건 위치 추적 수요": "물건 찾기 선택에서 → SmartTag 연동 위치 추적 시나리오",
-        "shared-building environment optimization": "apartment / villa → automation considering shared infrastructure",
-        "compact space efficiency": "studio / single → device integration in limited space",
-        "independent dwelling automation": "house / townhouse → multi-floor security & energy scenarios",
-        "shared space management needs": "shared housing → automated common area management",
-        "shared daily routine": "couple → routine automation considering two lifestyles",
-        "private and shared space separation": "adult children → independent zone control",
-        "accessibility-aware automation": "accessibility needs → voice & auto control centered scenarios",
-        "stable routine focus": "settled / established → predictable routine-based automation",
-        "pre-departure and return automation demand": "frequent outings → departure & return batch control",
-        "indoor environment sensitivity": "air quality focus → ventilation & air quality auto control",
-        "ambiance and lighting focus": "lighting control → time & activity based lighting shifts",
-        "object tracking demand": "find belongings → SmartTag location tracking scenarios"
+        "time-value sensitivity": "dual-income / commute signals ??time equals cost",
+        "high household complexity": "parenting / family signals ??many things to manage at once",
+        "strong care and reassurance needs": "parent / senior / care signals ??remote monitoring needed",
+        "high spending sensitivity": "energy / cost signals ??savings must be immediately visible",
+        "high value on leisure quality": "weekend / wellness signals ??quality of downtime matters most",
+        "remote check-in demand": "pet / companion signals ??must check status while away",
+        "preference for immediate value": "default profile ??value must be felt instantly",
+        "importance of reducing setup fatigue": "default profile ??easy start leads to sustained usage",
+        "health and wellness focus": "wellness / fitness signals ??air quality, sleep, exercise integration",
+        "security and safety focus": "security / safety signals ??monitoring and alert scenarios",
+        "chore efficiency focus": "chore / efficiency signals ??reducing repetitive tasks through automation",
+        "sleep quality focus": "night-shift / sleep signals ??better rest through environment automation",
+        "?섎㈃ ?덉쭏 以묒떆": "?쇨컙洹쇰Т쨌?섎㈃ 愿???좏깮?먯꽌 ???섍꼍 ?먮룞?붾줈 ?섎㈃ 吏?媛쒖꽑",
+        // ?? ?좉퇋 trait 異붾줎 洹쇨굅 ??
+        "怨듬룞二쇨굅 ?섍꼍 理쒖쟻??: "?꾪뙆?맞룸퉴???좏깮?먯꽌 ??痢듦컙?뚯쓬쨌怨듭슜?ㅻ퉬 怨좊젮???먮룞???쒕굹由ъ삤 ?곹빀",
+        "?뚰삎 怨듦컙 ?⑥쑉??: "?ㅽ뵾?ㅽ뀛쨌?먮８ ?먮뒗 1??媛援??좏깮?먯꽌 ???쒗븳??怨듦컙 ??湲곌린 ?듯빀 ?먮룞??,
+        "?낅┰ 二쇨굅 ?먮룞??: "?⑤룆쨌??댄븯?곗뒪 ?좏깮?먯꽌 ??留덈떦쨌?ㅼ링 援ъ“??留욌뒗 蹂댁븞쨌?먮꼫吏 ?쒕굹由ъ삤",
+        "怨듭슜 怨듦컙 愿由??덉쫰": "?곗뼱?섏슦???좏깮?먯꽌 ??怨듭슜 怨듦컙 ?ъ슜 洹쒖튃쨌?섍꼍 ?먮룞 愿由?,
+        "?앺솢 ?숈꽑 怨듭쑀": "2??媛援??좏깮?먯꽌 ?????щ엺???앺솢 ?⑦꽩??怨좊젮???숈꽑 ?먮룞??,
+        "媛쒖씤 怨듦컙쨌怨듭슜 怨듦컙 遺꾨━": "?깆씤 ?먮? ?숆굅 ?좏깮?먯꽌 ??媛쒕퀎 怨듦컙 ?섍꼍???낅┰ ?쒖뼱",
+        "?묎렐??諛곕젮 ?먮룞??: "?묎렐??諛곕젮 ?좏깮?먯꽌 ???뚯꽦쨌?먮룞 ?쒖뼱 以묒떖 ?쒕굹由ъ삤",
+        "?덉젙???앺솢 猷⑦떞 以묒떆": "?덉젙湲걔룹븞?뺣맂 媛???좏깮?먯꽌 ???덉륫 媛?ν븳 猷⑦떞 湲곕컲 ?먮룞??,
+        "?몄텧 ?꽷룰?媛 ???먮룞???섏슂": "二쇰쭚 ?몄텧 ??쓬 ?좏깮?먯꽌 ??異쒕컻쨌洹媛 ?꾪썑 ?쇨큵 ?쒖뼱 ?쒕굹由ъ삤",
+        "?ㅻ궡 ?섍꼍 誘쇨컧": "苡뚯쟻??怨듦린 ?좏깮?먯꽌 ??怨듦린吏댟룻솚湲??먮룞 ?쒖뼱 ?쒕굹由ъ삤",
+        "遺꾩쐞湲걔룹“紐?以묒떆": "議곕챸 ?쒖뼱 ?좏깮?먯꽌 ???쒓컙?쨌?쒕룞蹂?議곕챸 ?먮룞 ?꾪솚",
+        "臾쇨굔 ?꾩튂 異붿쟻 ?섏슂": "臾쇨굔 李얘린 ?좏깮?먯꽌 ??SmartTag ?곕룞 ?꾩튂 異붿쟻 ?쒕굹由ъ삤",
+        "shared-building environment optimization": "apartment / villa ??automation considering shared infrastructure",
+        "compact space efficiency": "studio / single ??device integration in limited space",
+        "independent dwelling automation": "house / townhouse ??multi-floor security & energy scenarios",
+        "shared space management needs": "shared housing ??automated common area management",
+        "shared daily routine": "couple ??routine automation considering two lifestyles",
+        "private and shared space separation": "adult children ??independent zone control",
+        "accessibility-aware automation": "accessibility needs ??voice & auto control centered scenarios",
+        "stable routine focus": "settled / established ??predictable routine-based automation",
+        "pre-departure and return automation demand": "frequent outings ??departure & return batch control",
+        "indoor environment sensitivity": "air quality focus ??ventilation & air quality auto control",
+        "ambiance and lighting focus": "lighting control ??time & activity based lighting shifts",
+        "object tracking demand": "find belongings ??SmartTag location tracking scenarios"
     };
     return reasons[trait] || "";
 }
 
 function getStep3SignalLegend(trait, isKo = currentLocale === "ko") {
     const text = String(trait || "").toLowerCase();
-    if (/케어|안심|원격 확인|가구 운영 복잡도|care|reassurance|remote check|household complexity/.test(text)) {
-        return { label: isKo ? "돌봄·안심" : "Care & Reassurance", color: "#dc2626" };
+    if (/耳???덉떖|?먭꺽 ?뺤씤|媛援??댁쁺 蹂듭옟??care|reassurance|remote check|household complexity/.test(text)) {
+        return { label: isKo ? "?뚮큵쨌?덉떖" : "Care & Reassurance", color: "#dc2626" };
     }
-    if (/시간 가치|가사 효율|지출 민감|time|efficiency|chore|spending/.test(text)) {
-        return { label: isKo ? "시간·효율" : "Time & Efficiency", color: "#ea580c" };
+    if (/?쒓컙 媛移?媛???⑥쑉|吏異?誘쇨컧|time|efficiency|chore|spending/.test(text)) {
+        return { label: isKo ? "?쒓컙쨌?⑥쑉" : "Time & Efficiency", color: "#ea580c" };
     }
-    if (/건강|웰니스|여가|수면|공기|health|wellness|leisure|sleep|air/.test(text)) {
-        return { label: isKo ? "건강·여가" : "Health & Leisure", color: "#16a34a" };
+    if (/嫄닿컯|?곕땲???ш?|?섎㈃|怨듦린|health|wellness|leisure|sleep|air/.test(text)) {
+        return { label: isKo ? "嫄닿컯쨌?ш?" : "Health & Leisure", color: "#16a34a" };
     }
-    if (/보안|안전|물건 위치|security|safety|tracking/.test(text)) {
-        return { label: isKo ? "안전·보안" : "Safety & Security", color: "#2563eb" };
+    if (/蹂댁븞|?덉쟾|臾쇨굔 ?꾩튂|security|safety|tracking/.test(text)) {
+        return { label: isKo ? "?덉쟾쨌蹂댁븞" : "Safety & Security", color: "#2563eb" };
     }
-    if (/주거|생활 동선|공간|공용|루틴|분위기|독립 주거|shared|space|living|routine|dwelling|ambiance/.test(text)) {
-        return { label: isKo ? "주거·공간" : "Living & Space", color: "#7c3aed" };
+    if (/二쇨굅|?앺솢 ?숈꽑|怨듦컙|怨듭슜|猷⑦떞|遺꾩쐞湲??낅┰ 二쇨굅|shared|space|living|routine|dwelling|ambiance/.test(text)) {
+        return { label: isKo ? "二쇨굅쨌怨듦컙" : "Living & Space", color: "#7c3aed" };
     }
-    return { label: isKo ? "생활 운영" : "Lifestyle", color: "#475569" };
+    return { label: isKo ? "?앺솢 ?댁쁺" : "Lifestyle", color: "#475569" };
 }
 
-/** traits에서 4대 가치(Care, Play, Save, Secure)를 추론 */
+/** traits?먯꽌 4? 媛移?Care, Play, Save, Secure)瑜?異붾줎 */
 function inferCoreValues(traits, purpose) {
     const text = `${traits.join(" ")} ${purpose}`.toLowerCase();
     const personaIds = new Set(getSelectedPersonaOptionIds());
     const scores = { Care: 0, Play: 0, Save: 0, Secure: 0, Health: 0 };
 
-    // 텍스트 기반
-    if (text.includes("케어") || text.includes("안심") || text.includes("돌봄") || text.includes("care")) scores.Care += 2;
-    if (text.includes("여가") || text.includes("웰니스") || text.includes("play") || text.includes("엔터")) scores.Play += 2;
-    if (text.includes("에너지") || text.includes("지출") || text.includes("절감") || text.includes("save") || text.includes("비용")) scores.Save += 2;
-    if (text.includes("보안") || text.includes("안전") || text.includes("secure")) scores.Secure += 2;
-    if (text.includes("건강") || text.includes("피트니스") || text.includes("health") || text.includes("wellness")) scores.Health += 2;
-    if (text.includes("펫") || text.includes("반려") || text.includes("pet")) scores.Care += 3;
-    if (text.includes("자녀") || text.includes("아이") || text.includes("kid") || text.includes("가구 운영")) scores.Care += 2;
-    if (text.includes("원격 확인") || text.includes("remote")) scores.Care += 1;
+    // ?띿뒪??湲곕컲
+    if (text.includes("耳??) || text.includes("?덉떖") || text.includes("?뚮큵") || text.includes("care")) scores.Care += 2;
+    if (text.includes("?ш?") || text.includes("?곕땲??) || text.includes("play") || text.includes("?뷀꽣")) scores.Play += 2;
+    if (text.includes("?먮꼫吏") || text.includes("吏異?) || text.includes("?덇컧") || text.includes("save") || text.includes("鍮꾩슜")) scores.Save += 2;
+    if (text.includes("蹂댁븞") || text.includes("?덉쟾") || text.includes("secure")) scores.Secure += 2;
+    if (text.includes("嫄닿컯") || text.includes("?쇳듃?덉뒪") || text.includes("health") || text.includes("wellness")) scores.Health += 2;
+    if (text.includes("??) || text.includes("諛섎젮") || text.includes("pet")) scores.Care += 3;
+    if (text.includes("?먮?") || text.includes("?꾩씠") || text.includes("kid") || text.includes("媛援??댁쁺")) scores.Care += 2;
+    if (text.includes("?먭꺽 ?뺤씤") || text.includes("remote")) scores.Care += 1;
 
-    // 명시적 persona ID 기반 (가장 강력한 신호)
+    // 紐낆떆??persona ID 湲곕컲 (媛??媛뺣젰???좏샇)
     if (personaIds.has("t_pet")) scores.Care += 4;
     if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting") || personaIds.has("int_kids")) scores.Care += 3;
     if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("t_parent_care") || personaIds.has("int_senior")) scores.Care += 3;
@@ -4883,7 +4888,7 @@ function inferCoreValues(traits, purpose) {
     return sorted.slice(0, 3).map(([v]) => v);
 }
 
-/** Q1 도시 프로필 키워드 → 잠정 타겟 특성 추론 */
+/** Q1 ?꾩떆 ?꾨줈???ㅼ썙?????좎젙 ?寃??뱀꽦 異붾줎 */
 function inferQ1Traits() {
     if (!_magicAppliedSelected || _magicAppliedSelected.size === 0) return [];
     const isKo = currentLocale === "ko";
@@ -4891,32 +4896,32 @@ function inferQ1Traits() {
     const { profile } = getQ1SelectionContext();
 
     const mapping = {
-        family:        { trait: isKo ? "케어/안심 니즈 큼"     : "strong care and reassurance needs",
-                         logic: isKo ? "가족·돌봄 데이터 → 시니어나 아이가 있는 가구가 많을수록 원격 케어·안심 확인 수요 상승" : "Family/care data → more multi-gen households = higher remote care demand" },
-        energy:        { trait: isKo ? "지출 민감도 높음"       : "high spending sensitivity",
-                         logic: isKo ? "에너지 소비 패턴 → 계절별 냉난방 비용 체감이 클수록 절약형 자동화 시나리오 적합" : "Energy data → high seasonal utility costs drive savings automation scenarios" },
-        safety:        { trait: isKo ? "보안/안전 중시"         : "security and safety focus",
-                         logic: isKo ? "안전·보안 인프라 → 주거 밀집도와 외출 빈도에 따라 모니터링·알림 시나리오 유효" : "Safety data → density + outing frequency drive monitoring scenarios" },
-        daily_rhythm:  { trait: isKo ? "시간 가치 민감"         : "time-value sensitivity",
-                         logic: isKo ? "일상 리듬 데이터 → 출퇴근 패턴이 뚜렷할수록 '귀가 직후 자동화' 시나리오 효과적" : "Daily rhythm → clear commute patterns make return-home automation effective" },
-        housing:       { trait: isKo ? "주거 환경 최적화"       : "housing environment optimization",
-                         logic: isKo ? "주거 형태 데이터 → 아파트·빌라 등 구조에 따라 적합한 기기 배치와 연동 방식이 달라짐" : "Housing data → dwelling type determines optimal device placement" },
-        climate:       { trait: isKo ? "계절 민감 생활"         : "seasonal living sensitivity",
-                         logic: isKo ? "기후·계절 데이터 → 한서 차이가 클수록 실내 환경 자동 조절 시나리오의 체감 가치 상승" : "Climate data → wider temp swings increase indoor automation perceived value" },
-        culture_event: { trait: isKo ? "여가 시간 품질 중시"    : "high value on leisure quality",
-                         logic: isKo ? "문화 행사 데이터 → 여가·문화 소비가 활발할수록 '집에서의 몰입 경험' 시나리오 유효" : "Culture data → active leisure patterns support immersive home scenarios" },
-        events:        { trait: isKo ? "여가 시간 품질 중시"    : "high value on leisure quality",
-                         logic: isKo ? "문화 행사 데이터 → 여가·문화 소비가 활발할수록 '집에서의 몰입 경험' 시나리오 유효" : "Culture data → active leisure patterns support immersive home scenarios" },
-        health:        { trait: isKo ? "건강·웰니스 중시"       : "health and wellness focus",
-                         logic: isKo ? "건강 데이터 → 웰니스 관심도가 높을수록 공기질·수면·운동 연동 시나리오 설득력 상승" : "Health data → wellness interest drives air quality, sleep, fitness scenarios" },
-        shopping:      { trait: isKo ? "소비 트렌드 민감"       : "consumer trend sensitivity",
-                         logic: isKo ? "쇼핑 데이터 → 온라인 구매 활발 지역일수록 제품 연동·자동 재주문 시나리오 적합" : "Shopping data → active e-commerce regions suit auto-reorder scenarios" },
-        transport:     { trait: isKo ? "이동 효율 중시"         : "mobility efficiency focus",
-                         logic: isKo ? "교통 데이터 → 이동 시간이 길수록 외출 전·귀가 시 자동화 시나리오 가치 상승" : "Transport data → longer commutes increase pre-departure automation value" },
-        mobility:      { trait: isKo ? "이동 효율 중시"         : "mobility efficiency focus",
-                         logic: isKo ? "교통 데이터 → 이동 시간이 길수록 외출 전·귀가 시 자동화 시나리오 가치 상승" : "Transport data → longer commutes increase pre-departure automation value" },
-        pets:          { trait: isKo ? "원격 확인 수요 존재"    : "remote check-in demand",
-                         logic: isKo ? "펫 라이프 데이터 → 반려동물 가구 비중이 높을수록 외출 중 모니터링 시나리오 필수" : "Pet data → high pet ownership makes remote monitoring scenarios essential" }
+        family:        { trait: isKo ? "耳???덉떖 ?덉쫰 ??     : "strong care and reassurance needs",
+                         logic: isKo ? "媛議굿룸룎遊??곗씠?????쒕땲?대굹 ?꾩씠媛 ?덈뒗 媛援ш? 留롮쓣?섎줉 ?먭꺽 耳?는룹븞???뺤씤 ?섏슂 ?곸듅" : "Family/care data ??more multi-gen households = higher remote care demand" },
+        energy:        { trait: isKo ? "吏異?誘쇨컧???믪쓬"       : "high spending sensitivity",
+                         logic: isKo ? "?먮꼫吏 ?뚮퉬 ?⑦꽩 ??怨꾩젅蹂??됰궃諛?鍮꾩슜 泥닿컧???댁닔濡??덉빟???먮룞???쒕굹由ъ삤 ?곹빀" : "Energy data ??high seasonal utility costs drive savings automation scenarios" },
+        safety:        { trait: isKo ? "蹂댁븞/?덉쟾 以묒떆"         : "security and safety focus",
+                         logic: isKo ? "?덉쟾쨌蹂댁븞 ?명봽????二쇨굅 諛吏묐룄? ?몄텧 鍮덈룄???곕씪 紐⑤땲?곕쭅쨌?뚮┝ ?쒕굹由ъ삤 ?좏슚" : "Safety data ??density + outing frequency drive monitoring scenarios" },
+        daily_rhythm:  { trait: isKo ? "?쒓컙 媛移?誘쇨컧"         : "time-value sensitivity",
+                         logic: isKo ? "?쇱긽 由щ벉 ?곗씠????異쒗눜洹??⑦꽩???쒕졆?좎닔濡?'洹媛 吏곹썑 ?먮룞?? ?쒕굹由ъ삤 ?④낵?? : "Daily rhythm ??clear commute patterns make return-home automation effective" },
+        housing:       { trait: isKo ? "二쇨굅 ?섍꼍 理쒖쟻??       : "housing environment optimization",
+                         logic: isKo ? "二쇨굅 ?뺥깭 ?곗씠?????꾪뙆?맞룸퉴????援ъ“???곕씪 ?곹빀??湲곌린 諛곗튂? ?곕룞 諛⑹떇???щ씪吏? : "Housing data ??dwelling type determines optimal device placement" },
+        climate:       { trait: isKo ? "怨꾩젅 誘쇨컧 ?앺솢"         : "seasonal living sensitivity",
+                         logic: isKo ? "湲고썑쨌怨꾩젅 ?곗씠?????쒖꽌 李⑥씠媛 ?댁닔濡??ㅻ궡 ?섍꼍 ?먮룞 議곗젅 ?쒕굹由ъ삤??泥닿컧 媛移??곸듅" : "Climate data ??wider temp swings increase indoor automation perceived value" },
+        culture_event: { trait: isKo ? "?ш? ?쒓컙 ?덉쭏 以묒떆"    : "high value on leisure quality",
+                         logic: isKo ? "臾명솕 ?됱궗 ?곗씠?????ш?쨌臾명솕 ?뚮퉬媛 ?쒕컻?좎닔濡?'吏묒뿉?쒖쓽 紐곗엯 寃쏀뿕' ?쒕굹由ъ삤 ?좏슚" : "Culture data ??active leisure patterns support immersive home scenarios" },
+        events:        { trait: isKo ? "?ш? ?쒓컙 ?덉쭏 以묒떆"    : "high value on leisure quality",
+                         logic: isKo ? "臾명솕 ?됱궗 ?곗씠?????ш?쨌臾명솕 ?뚮퉬媛 ?쒕컻?좎닔濡?'吏묒뿉?쒖쓽 紐곗엯 寃쏀뿕' ?쒕굹由ъ삤 ?좏슚" : "Culture data ??active leisure patterns support immersive home scenarios" },
+        health:        { trait: isKo ? "嫄닿컯쨌?곕땲??以묒떆"       : "health and wellness focus",
+                         logic: isKo ? "嫄닿컯 ?곗씠?????곕땲??愿?щ룄媛 ?믪쓣?섎줉 怨듦린吏댟룹닔硫는룹슫???곕룞 ?쒕굹由ъ삤 ?ㅻ뱷???곸듅" : "Health data ??wellness interest drives air quality, sleep, fitness scenarios" },
+        shopping:      { trait: isKo ? "?뚮퉬 ?몃젋??誘쇨컧"       : "consumer trend sensitivity",
+                         logic: isKo ? "?쇳븨 ?곗씠?????⑤씪??援щℓ ?쒕컻 吏??씪?섎줉 ?쒗뭹 ?곕룞쨌?먮룞 ?ъ＜臾??쒕굹由ъ삤 ?곹빀" : "Shopping data ??active e-commerce regions suit auto-reorder scenarios" },
+        transport:     { trait: isKo ? "?대룞 ?⑥쑉 以묒떆"         : "mobility efficiency focus",
+                         logic: isKo ? "援먰넻 ?곗씠?????대룞 ?쒓컙??湲몄닔濡??몄텧 ?꽷룰?媛 ???먮룞???쒕굹由ъ삤 媛移??곸듅" : "Transport data ??longer commutes increase pre-departure automation value" },
+        mobility:      { trait: isKo ? "?대룞 ?⑥쑉 以묒떆"         : "mobility efficiency focus",
+                         logic: isKo ? "援먰넻 ?곗씠?????대룞 ?쒓컙??湲몄닔濡??몄텧 ?꽷룰?媛 ???먮룞???쒕굹由ъ삤 媛移??곸듅" : "Transport data ??longer commutes increase pre-departure automation value" },
+        pets:          { trait: isKo ? "?먭꺽 ?뺤씤 ?섏슂 議댁옱"    : "remote check-in demand",
+                         logic: isKo ? "???쇱씠???곗씠????諛섎젮?숇Ъ 媛援?鍮꾩쨷???믪쓣?섎줉 ?몄텧 以?紐⑤땲?곕쭅 ?쒕굹由ъ삤 ?꾩닔" : "Pet data ??high pet ownership makes remote monitoring scenarios essential" }
     };
     const result = [];
     for (const key of _magicAppliedSelected) {
@@ -4924,7 +4929,7 @@ function inferQ1Traits() {
         if (entry && !result.some(r => r.trait === entry.trait)) {
             const cat = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
             const catLabel = cat ? (isKo ? cat.labelKo : cat.labelEn) : key;
-            // 실제 도시 프로필 텍스트 인용 (있으면)
+            // ?ㅼ젣 ?꾩떆 ?꾨줈???띿뒪???몄슜 (?덉쑝硫?
             const profileText = profile[key] ? String(profile[key]).slice(0, 120) : "";
             result.push({
                 ...entry,
@@ -4968,7 +4973,7 @@ function summarizeInsightText(text, maxLength = 140) {
     const normalized = String(text || "").replace(/\s+/g, " ").trim();
     if (!normalized) return "";
     if (normalized.length <= maxLength) return normalized;
-    return `${normalized.slice(0, maxLength - 1).trim()}…`;
+    return `${normalized.slice(0, maxLength - 1).trim()}??;
 }
 
 function buildExpandableSummaryHtml(text, maxLength = 140, detailClassName = "") {
@@ -4984,7 +4989,7 @@ function buildExpandableSummaryHtml(text, maxLength = 140, detailClassName = "")
             <p>${escapeHtml(normalized)}</p>
         </div>
         <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${detailId}">
-            <span class="q2-ev-arrow">▸</span> ${currentLocale === "ko" ? "전체 보기" : "Show full text"}
+            <span class="q2-ev-arrow">??/span> ${currentLocale === "ko" ? "?꾩껜 蹂닿린" : "Show full text"}
         </button>
     `;
 }
@@ -5005,7 +5010,7 @@ function getRelevantQ1ProfileReferences(limit = 3) {
         return {
             key,
             color: cat?.color || "#2563eb",
-            icon: cat?.icon || "•",
+            icon: cat?.icon || "??,
             label: currentLocale === "ko" ? (cat?.labelKo || key) : (cat?.labelEn || key),
             text
         };
@@ -5040,14 +5045,14 @@ function buildQ1ImplicationConclusion(q1Traits, customSummary) {
 
     if (isKo) {
         const baseText = traitLabels.length
-            ? `도시 프로필상 ${traitLabels.join(", ")} 성향이 읽히며`
-            : "도시 프로필에서 뚜렷한 생활 맥락 신호가 확인되며";
+            ? `?꾩떆 ?꾨줈?꾩긽 ${traitLabels.join(", ")} ?깊뼢???쏀엳硫?
+            : "?꾩떆 ?꾨줈?꾩뿉???쒕졆???앺솢 留λ씫 ?좏샇媛 ?뺤씤?섎ŉ";
         const customText = customSummary
-            ? `, 커스텀 검색${customSummary.query ? `(${customSummary.query})` : ""}에서는 ${customTags.length ? customTags.join(", ") : "사용자 정의 맥락"}이 추가로 확인됩니다.`
+            ? `, 而ㅼ뒪? 寃??{customSummary.query ? `(${customSummary.query})` : ""}?먯꽌??${customTags.length ? customTags.join(", ") : "?ъ슜???뺤쓽 留λ씫"}??異붽?濡??뺤씤?⑸땲??`
             : ".";
         const closing = customSummary
-            ? " 따라서 이후 시나리오는 기본 도시 특성 위에 사용자가 찾은 특수 상황을 함께 반영하는 방향으로 해석해야 합니다."
-            : " 따라서 이후 시나리오는 이 지역의 기본 생활 리듬과 우선순위를 중심으로 해석하는 것이 적절합니다.";
+            ? " ?곕씪???댄썑 ?쒕굹由ъ삤??湲곕낯 ?꾩떆 ?뱀꽦 ?꾩뿉 ?ъ슜?먭? 李얠? ?뱀닔 ?곹솴???④퍡 諛섏쁺?섎뒗 諛⑺뼢?쇰줈 ?댁꽍?댁빞 ?⑸땲??"
+            : " ?곕씪???댄썑 ?쒕굹由ъ삤????吏??쓽 湲곕낯 ?앺솢 由щ벉怨??곗꽑?쒖쐞瑜?以묒떖?쇰줈 ?댁꽍?섎뒗 寃껋씠 ?곸젅?⑸땲??";
         return `${baseText}${customText}${closing}${customInterpretation ? ` ${customInterpretation}` : ""}`;
     }
 
@@ -5075,9 +5080,9 @@ function getQ1CombinedImplications(q1Traits, customSummary) {
         ].filter(Boolean);
 
         items.push({
-            trait: customSummary.query || (isKo ? "커스텀 검색 반영 맥락" : "Custom research context"),
+            trait: customSummary.query || (isKo ? "而ㅼ뒪? 寃??諛섏쁺 留λ씫" : "Custom research context"),
             logic: summarizeInsightText(detailParts.join(" "), 180),
-            catLabel: isKo ? "커스텀 검색" : "Custom research",
+            catLabel: isKo ? "而ㅼ뒪? 寃?? : "Custom research",
             color: "#7c3aed",
             sourceType: "custom"
         });
@@ -5098,7 +5103,7 @@ function getAppliedQ1ContextEntries() {
         entries.push({
             key: `profile_${key}`,
             label: isKo ? (cat.labelKo || key) : (cat.labelEn || key),
-            detail: text || (isKo ? "도시 프로필 반영" : "City profile applied"),
+            detail: text || (isKo ? "?꾩떆 ?꾨줈??諛섏쁺" : "City profile applied"),
             color: cat.color || "#2563eb",
             kind: "profile"
         });
@@ -5108,10 +5113,10 @@ function getAppliedQ1ContextEntries() {
     if (customSummary) {
         entries.push({
             key: "custom_research",
-            label: customSummary.query || (isKo ? "커스텀 반영" : "Custom reflection"),
+            label: customSummary.query || (isKo ? "而ㅼ뒪? 諛섏쁺" : "Custom reflection"),
             detail: customSummary.tags.length
                 ? customSummary.tags.join(", ")
-                : (customSummary.interpretation || (isKo ? "사용자 정의 맥락 반영" : "User-defined context applied")),
+                : (customSummary.interpretation || (isKo ? "?ъ슜???뺤쓽 留λ씫 諛섏쁺" : "User-defined context applied")),
             color: "#7c3aed",
             kind: "custom"
         });
@@ -5124,23 +5129,23 @@ function buildQ2CardGuideItemsHtml(isKo) {
     const items = [
         {
             index: "01",
-            title: isKo ? "Q2 입력 가이드" : "Q2 guide",
+            title: isKo ? "Q2 ?낅젰 媛?대뱶" : "Q2 guide",
             desc: isKo
-                ? "이 페이지에서 무엇을 선택하면 시나리오 추천이 어떻게 정교해지는지 먼저 설명합니다."
+                ? "???섏씠吏?먯꽌 臾댁뾿???좏깮?섎㈃ ?쒕굹由ъ삤 異붿쿇???대뼸寃??뺢탳?댁??붿? 癒쇱? ?ㅻ챸?⑸땲??"
                 : "Explains what to choose here and how it sharpens scenario recommendations."
         },
         {
             index: "02",
-            title: isKo ? "Q1 반영 요약" : "Q1 carry-over summary",
+            title: isKo ? "Q1 諛섏쁺 ?붿빟" : "Q1 carry-over summary",
             desc: isKo
-                ? "Q1의 도시 프로필과 커스텀 검색 결과가 지금 어떤 참고 정보로 이어졌는지 보여줍니다."
+                ? "Q1???꾩떆 ?꾨줈?꾧낵 而ㅼ뒪? 寃??寃곌낵媛 吏湲??대뼡 李멸퀬 ?뺣낫濡??댁뼱議뚮뒗吏 蹂댁뿬以띾땲??"
                 : "Shows how Q1 city profile and custom research are carried into this step."
         },
         {
             index: "03",
-            title: isKo ? "예상 시나리오 방향" : "Expected scenario direction",
+            title: isKo ? "?덉긽 ?쒕굹由ъ삤 諛⑺뼢" : "Expected scenario direction",
             desc: isKo
-                ? "Q1·Q2 신호가 어떤 카테고리로 묶이고, 어떤 가중치로 매칭되는지 읽기 쉽게 정리합니다."
+                ? "Q1쨌Q2 ?좏샇媛 ?대뼡 移댄뀒怨좊━濡?臾띠씠怨? ?대뼡 媛以묒튂濡?留ㅼ묶?섎뒗吏 ?쎄린 ?쎄쾶 ?뺣━?⑸땲??"
                 : "Summarizes categories, weighting, and match direction from Q1 and Q2 signals."
         }
     ];
@@ -5165,10 +5170,10 @@ function buildQ1NextStepHelperCard(isKo) {
     return `
         <section class="q1-next-helper-card">
             <div class="q1-next-helper-head">
-                <span class="q1-next-helper-kicker">${isKo ? "다음 단계 미리 보기" : "Next step preview"}</span>
-                <h4>${isKo ? "Q2에서는 생활 조건을 더해 시나리오 방향을 정교하게 좁힙니다" : "Q2 refines scenario direction with additional life-context choices"}</h4>
+                <span class="q1-next-helper-kicker">${isKo ? "?ㅼ쓬 ?④퀎 誘몃━ 蹂닿린" : "Next step preview"}</span>
+                <h4>${isKo ? "Q2?먯꽌???앺솢 議곌굔???뷀빐 ?쒕굹由ъ삤 諛⑺뼢???뺢탳?섍쾶 醫곹옓?덈떎" : "Q2 refines scenario direction with additional life-context choices"}</h4>
                 <p>${isKo
-                    ? "다음 페이지에서는 주거 형태, 가족 구성, 라이프스테이지 같은 추가 조건을 선택합니다. Q1의 도시 프로필·커스텀 검색 결과와 Q2 선택을 함께 점수화해, 어떤 시나리오 카테고리가 유력한지와 왜 그렇게 매칭되는지를 보여줍니다."
+                    ? "?ㅼ쓬 ?섏씠吏?먯꽌??二쇨굅 ?뺥깭, 媛議?援ъ꽦, ?쇱씠?꾩뒪?뚯씠吏 媛숈? 異붽? 議곌굔???좏깮?⑸땲?? Q1???꾩떆 ?꾨줈?꽷룹빱?ㅽ? 寃??寃곌낵? Q2 ?좏깮???④퍡 ?먯닔?뷀빐, ?대뼡 ?쒕굹由ъ삤 移댄뀒怨좊━媛 ?좊젰?쒖?? ??洹몃젃寃?留ㅼ묶?섎뒗吏瑜?蹂댁뿬以띾땲??"
                     : "On the next page, you will add housing, household, and life-stage conditions. Those choices combine with the Q1 city profile and custom research to score scenario categories, weighting, and expected match direction."}</p>
             </div>
             <div class="q2-guide-grid">
@@ -5182,7 +5187,7 @@ function extractInsightKeywords(text, limit = 3) {
     const raw = String(text || "");
     if (!raw) return [];
     const parts = raw
-        .split(/[,\n/|]|·|ㆍ|:|;/)
+        .split(/[,\n/|]|쨌|??:|;/)
         .map((item) => item.replace(/\s+/g, " ").trim())
         .filter((item) => item && item.length >= 2 && item.length <= 26);
     return [...new Set(parts)].slice(0, limit);
@@ -5226,10 +5231,10 @@ function getPersonaSelectionFooterCopy(groupId, isKo) {
     if (groupId === "housing") {
         if (checkedLabels.length > 0) {
             const chips = checkedLabels.slice(0, 3);
-            if (checkedLabels.length > 3) chips.push(isKo ? `외 ${checkedLabels.length - 3}개` : `+${checkedLabels.length - 3} more`);
-            return { title: isKo ? "현재 적용 주거 유형" : "Current housing", chips };
+            if (checkedLabels.length > 3) chips.push(isKo ? `??${checkedLabels.length - 3}媛? : `+${checkedLabels.length - 3} more`);
+            return { title: isKo ? "?꾩옱 ?곸슜 二쇨굅 ?좏삎" : "Current housing", chips };
         }
-        return { title: isKo ? "선택 기준" : "Selection rule", chips: [isKo ? "복수 선택 가능" : "Multiple selections allowed"] };
+        return { title: isKo ? "?좏깮 湲곗?" : "Selection rule", chips: [isKo ? "蹂듭닔 ?좏깮 媛?? : "Multiple selections allowed"] };
     }
 
     if (groupId === "household") {
@@ -5240,19 +5245,19 @@ function getPersonaSelectionFooterCopy(groupId, isKo) {
         if (coreLabels.length > 0 || extraCount > 0) {
             const chips = [];
             if (coreLabels[0]) chips.push(coreLabels[0]);
-            if (extraCount > 0) chips.push(isKo ? `추가 조건 ${extraCount}` : `${extraCount} extra conditions`);
-            return { title: isKo ? "현재 세대 구성" : "Current household structure", chips };
+            if (extraCount > 0) chips.push(isKo ? `異붽? 議곌굔 ${extraCount}` : `${extraCount} extra conditions`);
+            return { title: isKo ? "?꾩옱 ?몃? 援ъ꽦" : "Current household structure", chips };
         }
-        return { title: isKo ? "선택 기준" : "Selection rule", chips: [isKo ? "핵심 구조 1개 + 추가 조건 선택" : "1 core structure + extra conditions"] };
+        return { title: isKo ? "?좏깮 湲곗?" : "Selection rule", chips: [isKo ? "?듭떖 援ъ“ 1媛?+ 異붽? 議곌굔 ?좏깮" : "1 core structure + extra conditions"] };
     }
 
     if (groupId === "lifestage") {
         return checkedLabels.length
-            ? { title: isKo ? "현재 반영 생활맥락" : "Current life context", chips: checkedLabels.slice(0, 3) }
-            : { title: isKo ? "선택 기준" : "Selection rule", chips: [isKo ? "복수 선택 가능" : "Multiple selections allowed"] };
+            ? { title: isKo ? "?꾩옱 諛섏쁺 ?앺솢留λ씫" : "Current life context", chips: checkedLabels.slice(0, 3) }
+            : { title: isKo ? "?좏깮 湲곗?" : "Selection rule", chips: [isKo ? "蹂듭닔 ?좏깮 媛?? : "Multiple selections allowed"] };
     }
 
-    return { title: isKo ? "현재 선택" : "Current selection", chips: checkedLabels.slice(0, 3) };
+    return { title: isKo ? "?꾩옱 ?좏깮" : "Current selection", chips: checkedLabels.slice(0, 3) };
 }
 
 function inferQ3AutoRecommendation() {
@@ -5280,92 +5285,92 @@ function inferQ3AutoRecommendation() {
     const hasText = (pattern) => new RegExp(pattern, "i").test(q1Text);
     const hasCustomTag = (pattern) => customTags.some((tag) => new RegExp(pattern, "i").test(String(tag)));
 
-    const hasSchoolAgeSignal = hasText("school|elementary|grade school|초등|방과 후|방과후|하교|귀가");
-    const hasYoungChildSignal = hasText("infant|toddler|preschool|daycare|영유아|유아|미취학");
-    const hasSeniorSignal = hasText("senior|elder|aging|retire|부모|시니어");
-    const hasDualIncomeSignal = hasText("dual income|working parents|맞벌이");
-    const hasRemoteWorkSignal = hasText("remote|hybrid|work from home|재택|하이브리드");
-    const hasAfterSchoolSafetySignal = hasText("after school|after-school|방과 후|방과후|귀가|하교|안전관리|안심귀가|safe return");
-    const hasChildCareSignal = hasText("family|kids|child|children|school|육아|자녀|아이|초등");
+    const hasSchoolAgeSignal = hasText("school|elementary|grade school|珥덈벑|諛⑷낵 ??諛⑷낵???섍탳|洹媛");
+    const hasYoungChildSignal = hasText("infant|toddler|preschool|daycare|?곸쑀???좎븘|誘몄랬??);
+    const hasSeniorSignal = hasText("senior|elder|aging|retire|遺紐??쒕땲??);
+    const hasDualIncomeSignal = hasText("dual income|working parents|留욌쾶??);
+    const hasRemoteWorkSignal = hasText("remote|hybrid|work from home|?ы깮|?섏씠釉뚮━??);
+    const hasAfterSchoolSafetySignal = hasText("after school|after-school|諛⑷낵 ??諛⑷낵??洹媛|?섍탳|?덉쟾愿由??덉떖洹媛|safe return");
+    const hasChildCareSignal = hasText("family|kids|child|children|school|?≪븘|?먮?|?꾩씠|珥덈벑");
 
-    addScore("h_apt", 8, "도시 기본값: 고밀 주거 적합성", "Urban default: dense housing fit");
-    addScore("hh_couple", 6, "도시 기본값: 범용 세대 구성", "Urban default: broad household fit");
-    addScore("ls_settled", 6, "도시 기본값: 안정적 생활 루틴", "Urban default: settled routine");
-    addScore("int_safe", 6, "기본값: 집 안심 니즈", "Default: home reassurance need");
+    addScore("h_apt", 8, "?꾩떆 湲곕낯媛? 怨좊? 二쇨굅 ?곹빀??, "Urban default: dense housing fit");
+    addScore("hh_couple", 6, "?꾩떆 湲곕낯媛? 踰붿슜 ?몃? 援ъ꽦", "Urban default: broad household fit");
+    addScore("ls_settled", 6, "?꾩떆 湲곕낯媛? ?덉젙???앺솢 猷⑦떞", "Urban default: settled routine");
+    addScore("int_safe", 6, "湲곕낯媛? 吏??덉떖 ?덉쫰", "Default: home reassurance need");
 
     if (roleId === "retail") {
-        addBatch(["ls_starter", "ls_settled"], 5, "리테일 관점: 즉시 이해되는 생활단계 우선", "Retail lens: prioritize immediately legible life stages");
-        addBatch(["int_safe", "int_air"], 4, "리테일 관점: 체감 효익 우선", "Retail lens: prioritize demo-friendly benefits");
+        addBatch(["ls_starter", "ls_settled"], 5, "由ы뀒??愿?? 利됱떆 ?댄빐?섎뒗 ?앺솢?④퀎 ?곗꽑", "Retail lens: prioritize immediately legible life stages");
+        addBatch(["int_safe", "int_air"], 4, "由ы뀒??愿?? 泥닿컧 ?⑥씡 ?곗꽑", "Retail lens: prioritize demo-friendly benefits");
     } else if (roleId === "dotcom") {
-        addBatch(["t_dual_income", "t_efficiency", "int_chores", "int_energy"], 6, "닷컴 관점: 편의와 효율 우선", "Dotcom lens: strengthen efficiency and savings cues");
+        addBatch(["t_dual_income", "t_efficiency", "int_chores", "int_energy"], 6, "?룹뺨 愿?? ?몄쓽? ?⑥쑉 ?곗꽑", "Dotcom lens: strengthen efficiency and savings cues");
     } else if (roleId === "brand") {
-        addBatch(["ls_newlywed", "int_mood", "int_air", "t_wellness"], 5, "브랜드 관점: 감성적 생활경험 우선", "Brand lens: strengthen emotional living-experience cues");
+        addBatch(["ls_newlywed", "int_mood", "int_air", "t_wellness"], 5, "釉뚮옖??愿?? 媛먯꽦???앺솢寃쏀뿕 ?곗꽑", "Brand lens: strengthen emotional living-experience cues");
     }
 
     if (hasKey("family")) {
-        addBatch(["hh_young_kids", "hh_school_kids", "ls_parenting", "int_kids", "t_multi_kids"], 18, "Q1 가족 신호 반영", "Reflecting Q1 family signal");
-        addBatch(["t_dual_income", "int_safe"], 8, "가족 운영 복잡도 반영", "Reflecting household complexity for families");
+        addBatch(["hh_young_kids", "hh_school_kids", "ls_parenting", "int_kids", "t_multi_kids"], 18, "Q1 媛議??좏샇 諛섏쁺", "Reflecting Q1 family signal");
+        addBatch(["t_dual_income", "int_safe"], 8, "媛議??댁쁺 蹂듭옟??諛섏쁺", "Reflecting household complexity for families");
     }
     if (hasKey("pets") || hasCustomTag("pet")) {
-        addBatch(["t_pet", "int_pet"], 22, "Q1 반려동물 신호 반영", "Reflecting Q1 pet signal");
-        addBatch(["t_long_away", "int_safe", "h_house"], 8, "원격 확인 맥락 반영", "Reflecting remote check-in context");
+        addBatch(["t_pet", "int_pet"], 22, "Q1 諛섎젮?숇Ъ ?좏샇 諛섏쁺", "Reflecting Q1 pet signal");
+        addBatch(["t_long_away", "int_safe", "h_house"], 8, "?먭꺽 ?뺤씤 留λ씫 諛섏쁺", "Reflecting remote check-in context");
     }
     if (hasKey("health") || hasCustomTag("health|wellness")) {
-        addBatch(["hh_senior", "hh_multi_gen", "ls_senior", "t_parent_care", "int_senior", "int_health", "t_wellness", "t_acc_needs"], 18, "Q1 건강 신호 반영", "Reflecting Q1 health signal");
-        addScore("h_care", 12, "케어형 주거 가능성 반영", "Reflecting care-oriented housing possibility");
+        addBatch(["hh_senior", "hh_multi_gen", "ls_senior", "t_parent_care", "int_senior", "int_health", "t_wellness", "t_acc_needs"], 18, "Q1 嫄닿컯 ?좏샇 諛섏쁺", "Reflecting Q1 health signal");
+        addScore("h_care", 12, "耳?댄삎 二쇨굅 媛?μ꽦 諛섏쁺", "Reflecting care-oriented housing possibility");
     }
-    if (hasSeniorSignal || hasCustomTag("senior|elder|aging|parent care|부모|시니어")) {
-        addBatch(["hh_senior", "hh_multi_gen", "ls_senior", "t_parent_care", "int_senior"], 18, "시니어 돌봄 신호 반영", "Reflecting senior-care signal");
-        addScore("h_care", 14, "시니어 케어 주거 가능성 반영", "Reflecting senior-care housing possibility");
+    if (hasSeniorSignal || hasCustomTag("senior|elder|aging|parent care|遺紐??쒕땲??)) {
+        addBatch(["hh_senior", "hh_multi_gen", "ls_senior", "t_parent_care", "int_senior"], 18, "?쒕땲???뚮큵 ?좏샇 諛섏쁺", "Reflecting senior-care signal");
+        addScore("h_care", 14, "?쒕땲??耳??二쇨굅 媛?μ꽦 諛섏쁺", "Reflecting senior-care housing possibility");
     }
     if (hasKey("energy") || hasCustomTag("energy|saving")) {
-        addBatch(["int_energy", "t_efficiency"], 20, "Q1 에너지 절감 신호 반영", "Reflecting Q1 energy-saving signal");
-        addBatch(["h_apt", "h_compact", "ls_starter", "ls_settled"], 10, "효율형 생활 패턴 반영", "Reflecting energy-efficient living patterns");
+        addBatch(["int_energy", "t_efficiency"], 20, "Q1 ?먮꼫吏 ?덇컧 ?좏샇 諛섏쁺", "Reflecting Q1 energy-saving signal");
+        addBatch(["h_apt", "h_compact", "ls_starter", "ls_settled"], 10, "?⑥쑉???앺솢 ?⑦꽩 諛섏쁺", "Reflecting energy-efficient living patterns");
     }
     if (hasKey("safety") || hasCustomTag("security|safe")) {
-        addBatch(["int_safe", "t_security", "t_long_away"], 20, "Q1 안전 신호 반영", "Reflecting Q1 safety and security signal");
-        addBatch(["h_house", "h_townhouse", "t_parent_away"], 10, "출입과 부재 확인 맥락 반영", "Reflecting presence checks and access context");
+        addBatch(["int_safe", "t_security", "t_long_away"], 20, "Q1 ?덉쟾 ?좏샇 諛섏쁺", "Reflecting Q1 safety and security signal");
+        addBatch(["h_house", "h_townhouse", "t_parent_away"], 10, "異쒖엯怨?遺???뺤씤 留λ씫 諛섏쁺", "Reflecting presence checks and access context");
     }
     if (hasKey("daily_rhythm")) {
-        addBatch(["t_dual_income", "t_remote", "t_weekend_out", "int_chores", "t_efficiency", "ls_established"], 14, "Q1 일상 리듬 반영", "Reflecting Q1 daily-rhythm signal");
+        addBatch(["t_dual_income", "t_remote", "t_weekend_out", "int_chores", "t_efficiency", "ls_established"], 14, "Q1 ?쇱긽 由щ벉 諛섏쁺", "Reflecting Q1 daily-rhythm signal");
     }
     if (hasKey("mobility")) {
-        addBatch(["t_long_away", "t_weekend_out", "hh_solo", "hh_couple"], 12, "Q1 이동성 반영", "Reflecting Q1 mobility signal");
-        addBatch(["h_townhouse", "h_house"], 8, "통근 중심 거주 맥락 반영", "Reflecting commute-led housing context");
+        addBatch(["t_long_away", "t_weekend_out", "hh_solo", "hh_couple"], 12, "Q1 ?대룞??諛섏쁺", "Reflecting Q1 mobility signal");
+        addBatch(["h_townhouse", "h_house"], 8, "?듦렐 以묒떖 嫄곗＜ 留λ씫 諛섏쁺", "Reflecting commute-led housing context");
     }
     if (hasKey("climate")) {
-        addBatch(["int_air", "int_sleep"], 14, "Q1 기후 반영", "Reflecting Q1 climate signal");
-        addBatch(["h_apt", "h_house"], 6, "실내 환경 관리 니즈 반영", "Reflecting indoor-environment management need");
+        addBatch(["int_air", "int_sleep"], 14, "Q1 湲고썑 諛섏쁺", "Reflecting Q1 climate signal");
+        addBatch(["h_apt", "h_house"], 6, "?ㅻ궡 ?섍꼍 愿由??덉쫰 諛섏쁺", "Reflecting indoor-environment management need");
     }
     if (hasKey("events")) {
-        addBatch(["ls_newlywed", "ls_settled", "t_homebody", "int_mood", "int_lights"], 10, "Q1 이벤트/라이프스타일 신호 반영", "Reflecting Q1 events and lifestyle signal");
+        addBatch(["ls_newlywed", "ls_settled", "t_homebody", "int_mood", "int_lights"], 10, "Q1 ?대깽???쇱씠?꾩뒪????좏샇 諛섏쁺", "Reflecting Q1 events and lifestyle signal");
     }
 
-    if (hasText("apartment|high-rise|flat|condo|urban|dense|아파트")) addBatch(["h_apt"], 14, "아파트형 거주 맥락 반영", "Q1 text suggests apartment living");
-    if (hasText("studio|officetel|compact|small space|원룸|오피스텔")) addBatch(["h_compact", "hh_solo", "ls_starter"], 14, "소형 주거 맥락 반영", "Q1 text suggests compact living");
-    if (hasText("house|detached|yard|villa|suburb|townhouse|주택|빌라")) addBatch(["h_house", "h_townhouse", "h_villa"], 14, "저층/단독 주거 맥락 반영", "Q1 text suggests detached, villa, or townhouse living");
-    if (hasChildCareSignal) addBatch(["hh_young_kids", "hh_school_kids", "ls_parenting", "int_kids"], 16, "가족/자녀 맥락 반영", "Q1 text suggests kids and family context");
-    if (hasSeniorSignal) addBatch(["hh_senior", "ls_senior", "t_parent_care", "int_senior"], 16, "시니어/케어 맥락 반영", "Q1 text suggests senior and care context");
-    if (hasRemoteWorkSignal) addBatch(["t_remote", "int_chores"], 14, "재택/하이브리드 패턴 반영", "Q1 text suggests remote or hybrid work");
-    if (hasText("travel|weekend|commute|출장|외출")) addBatch(["t_long_away", "t_weekend_out", "int_safe"], 12, "부재/이동 패턴 반영", "Q1 text suggests away-from-home patterns");
-    if (hasText("night|shift|late|야간|교대")) addBatch(["t_night_shift", "int_sleep"], 14, "야간 루틴 반영", "Q1 text suggests night-shift routines");
-    if (hasText("air|pollution|humidity|heat|air quality|공기|미세먼지")) addBatch(["int_air", "int_sleep"], 12, "공기질 니즈 반영", "Q1 text suggests indoor air-management needs");
+    if (hasText("apartment|high-rise|flat|condo|urban|dense|?꾪뙆??)) addBatch(["h_apt"], 14, "?꾪뙆?명삎 嫄곗＜ 留λ씫 諛섏쁺", "Q1 text suggests apartment living");
+    if (hasText("studio|officetel|compact|small space|?먮８|?ㅽ뵾?ㅽ뀛")) addBatch(["h_compact", "hh_solo", "ls_starter"], 14, "?뚰삎 二쇨굅 留λ씫 諛섏쁺", "Q1 text suggests compact living");
+    if (hasText("house|detached|yard|villa|suburb|townhouse|二쇳깮|鍮뚮씪")) addBatch(["h_house", "h_townhouse", "h_villa"], 14, "?痢??⑤룆 二쇨굅 留λ씫 諛섏쁺", "Q1 text suggests detached, villa, or townhouse living");
+    if (hasChildCareSignal) addBatch(["hh_young_kids", "hh_school_kids", "ls_parenting", "int_kids"], 16, "媛議??먮? 留λ씫 諛섏쁺", "Q1 text suggests kids and family context");
+    if (hasSeniorSignal) addBatch(["hh_senior", "ls_senior", "t_parent_care", "int_senior"], 16, "?쒕땲??耳??留λ씫 諛섏쁺", "Q1 text suggests senior and care context");
+    if (hasRemoteWorkSignal) addBatch(["t_remote", "int_chores"], 14, "?ы깮/?섏씠釉뚮━???⑦꽩 諛섏쁺", "Q1 text suggests remote or hybrid work");
+    if (hasText("travel|weekend|commute|異쒖옣|?몄텧")) addBatch(["t_long_away", "t_weekend_out", "int_safe"], 12, "遺???대룞 ?⑦꽩 諛섏쁺", "Q1 text suggests away-from-home patterns");
+    if (hasText("night|shift|late|?쇨컙|援먮?")) addBatch(["t_night_shift", "int_sleep"], 14, "?쇨컙 猷⑦떞 諛섏쁺", "Q1 text suggests night-shift routines");
+    if (hasText("air|pollution|humidity|heat|air quality|怨듦린|誘몄꽭癒쇱?")) addBatch(["int_air", "int_sleep"], 12, "怨듦린吏??덉쫰 諛섏쁺", "Q1 text suggests indoor air-management needs");
 
     if (hasSchoolAgeSignal) {
-        addBatch(["hh_school_kids", "ls_parenting", "int_kids", "int_safe"], 20, "초등학생/방과 후 문맥 반영", "Reflecting school-age and after-school context");
-        addBatch(["t_dual_income", "t_long_away"], 10, "부재 중 자녀 안전관리 맥락 반영", "Reflecting away-from-home child safety context");
-        addBatch(["h_apt", "h_villa", "h_house", "h_townhouse"], 10, "초등학생 거주 가능 주거 유형을 폭넓게 반영", "Reflecting broad housing fit for school-age children");
+        addBatch(["hh_school_kids", "ls_parenting", "int_kids", "int_safe"], 20, "珥덈벑?숈깮/諛⑷낵 ??臾몃㎘ 諛섏쁺", "Reflecting school-age and after-school context");
+        addBatch(["t_dual_income", "t_long_away"], 10, "遺??以??먮? ?덉쟾愿由?留λ씫 諛섏쁺", "Reflecting away-from-home child safety context");
+        addBatch(["h_apt", "h_villa", "h_house", "h_townhouse"], 10, "珥덈벑?숈깮 嫄곗＜ 媛??二쇨굅 ?좏삎????꼻寃?諛섏쁺", "Reflecting broad housing fit for school-age children");
         addPenalty(["hh_young_kids"], 18);
     }
     if (hasYoungChildSignal && !hasSchoolAgeSignal) {
-        addBatch(["hh_young_kids", "ls_parenting"], 18, "영유아 양육 문맥 반영", "Reflecting young-child parenting context");
+        addBatch(["hh_young_kids", "ls_parenting"], 18, "?곸쑀???묒쑁 臾몃㎘ 諛섏쁺", "Reflecting young-child parenting context");
     }
     if (hasDualIncomeSignal) {
-        addBatch(["t_dual_income", "t_efficiency", "int_chores"], 16, "맞벌이 운영 부담 반영", "Reflecting dual-income household complexity");
+        addBatch(["t_dual_income", "t_efficiency", "int_chores"], 16, "留욌쾶???댁쁺 遺??諛섏쁺", "Reflecting dual-income household complexity");
     }
     if (hasAfterSchoolSafetySignal) {
-        addBatch(["int_safe", "t_long_away", "t_security"], 18, "방과 후 안전관리 키워드 반영", "Reflecting after-school safety-management keywords");
-        addBatch(["h_apt", "h_villa", "h_house", "h_townhouse"], 8, "주거 형태 전반에 걸친 안전관리 수요 반영", "Reflecting safety needs across multiple housing types");
+        addBatch(["int_safe", "t_long_away", "t_security"], 18, "諛⑷낵 ???덉쟾愿由??ㅼ썙??諛섏쁺", "Reflecting after-school safety-management keywords");
+        addBatch(["h_apt", "h_villa", "h_house", "h_townhouse"], 8, "二쇨굅 ?뺥깭 ?꾨컲??嫄몄튇 ?덉쟾愿由??섏슂 諛섏쁺", "Reflecting safety needs across multiple housing types");
     }
     if ((hasSchoolAgeSignal || hasDualIncomeSignal || hasAfterSchoolSafetySignal) && !hasSeniorSignal) {
         addPenalty(["h_care", "hh_senior", "ls_senior", "t_parent_care", "int_senior"], 28);
@@ -5412,7 +5417,7 @@ function inferQ3AutoRecommendation() {
     ids.forEach((id) => {
         reasonById[id] = (scoreMap[id]?.reasons || []).slice(0, 2);
         if (!reasonById[id].length) {
-            reasonById[id] = [isKo ? "Q1 신호를 종합해 추천" : "Recommended from combined Q1 signals"];
+            reasonById[id] = [isKo ? "Q1 ?좏샇瑜?醫낇빀??異붿쿇" : "Recommended from combined Q1 signals"];
         }
     });
 
@@ -5425,22 +5430,22 @@ function inferQ3AutoRecommendation() {
     const summary = [];
     if (selectedCategoryLabels.length) {
         summary.push(isKo
-            ? `Q1 도시 프로필의 ${selectedCategoryLabels.join(", ")} 신호를 우선 반영했습니다.`
+            ? `Q1 ?꾩떆 ?꾨줈?꾩쓽 ${selectedCategoryLabels.join(", ")} ?좏샇瑜??곗꽑 諛섏쁺?덉뒿?덈떎.`
             : `Prioritized Q1 city-profile signals from ${selectedCategoryLabels.join(", ")}.`);
     }
     if (customTags.length) {
         summary.push(isKo
-            ? `커스텀 리서치 태그 ${customTags.slice(0, 3).join(", ")}를 생활맥락 보정에 사용했습니다.`
+            ? `而ㅼ뒪? 由ъ꽌移??쒓렇 ${customTags.slice(0, 3).join(", ")}瑜??앺솢留λ씫 蹂댁젙???ъ슜?덉뒿?덈떎.`
             : `Used custom-research tags ${customTags.slice(0, 3).join(", ")} to refine lifestyle context.`);
     }
     if (hasSchoolAgeSignal || hasAfterSchoolSafetySignal) {
         summary.push(isKo
-            ? "초등학생 방과 후 안전관리 문맥을 우선 반영해 세대/생활맥락을 조정했습니다."
+            ? "珥덈벑?숈깮 諛⑷낵 ???덉쟾愿由?臾몃㎘???곗꽑 諛섏쁺???몃?/?앺솢留λ씫??議곗젙?덉뒿?덈떎."
             : "Prioritized school-age after-school safety context in household and life-context picks.");
     }
     if (roleId) {
         summary.push(isKo
-            ? `${getRoleTitle(roleId)} 관점에서 설명력이 높은 조합으로 정렬했습니다.`
+            ? `${getRoleTitle(roleId)} 愿?먯뿉???ㅻ챸?μ씠 ?믪? 議고빀?쇰줈 ?뺣젹?덉뒿?덈떎.`
             : `Sorted the set for higher explainability from the ${getRoleTitle(roleId)} lens.`);
     }
 
@@ -5461,20 +5466,20 @@ function groupHouseholdOptions() {
     const isKo = currentLocale === "ko";
     const sections = [
         {
-            title: isKo ? "핵심 동거 구조" : "Core household structure",
-            desc: isKo ? "가장 가까운 기본 세대 구성을 1개 기준으로 선택" : "Choose the one base household structure that fits best",
+            title: isKo ? "?듭떖 ?숆굅 援ъ“" : "Core household structure",
+            desc: isKo ? "媛??媛源뚯슫 湲곕낯 ?몃? 援ъ꽦??1媛?湲곗??쇰줈 ?좏깮" : "Choose the one base household structure that fits best",
             className: "q2-household-grid q2-household-grid--core",
             ids: Q2_HOUSEHOLD_CORE_IDS
         },
         {
-            title: isKo ? "운영·생활 조건" : "Household conditions",
-            desc: isKo ? "가족 운영 방식이나 생활 조건은 복수 선택 가능" : "You can add multiple operating or living conditions",
+            title: isKo ? "?댁쁺쨌?앺솢 議곌굔" : "Household conditions",
+            desc: isKo ? "媛議??댁쁺 諛⑹떇?대굹 ?앺솢 議곌굔? 蹂듭닔 ?좏깮 媛?? : "You can add multiple operating or living conditions",
             className: "q2-household-grid",
             ids: Q2_HOUSEHOLD_CONTEXT_IDS
         },
         {
-            title: isKo ? "돌봄·배려 조건" : "Care and accessibility",
-            desc: isKo ? "부모 돌봄이나 접근성 배려처럼 추가로 고려할 상황" : "Add care or accessibility situations when relevant",
+            title: isKo ? "?뚮큵쨌諛곕젮 議곌굔" : "Care and accessibility",
+            desc: isKo ? "遺紐??뚮큵?대굹 ?묎렐??諛곕젮泥섎읆 異붽?濡?怨좊젮???곹솴" : "Add care or accessibility situations when relevant",
             className: "q2-household-grid",
             ids: Q2_HOUSEHOLD_CARE_IDS
         }
@@ -5521,7 +5526,7 @@ function buildQ1ScenarioReferencePanelHtml() {
     const implicationConclusion = buildQ1ImplicationConclusion(q1Traits, customSummary);
     const cityName = _latestCityProfile?.localCity || getCityValue() || "";
     const countryName = _latestCityProfile?.countryName || getCountryName(countrySelect.value) || "";
-    const locationTitle = [countryName, cityName].filter(Boolean).join(" · ");
+    const locationTitle = [countryName, cityName].filter(Boolean).join(" 쨌 ");
     const hasContent = profileRefs.length > 0 || combinedImplications.length > 0 || customSummary;
 
     if (!hasContent) {
@@ -5529,9 +5534,9 @@ function buildQ1ScenarioReferencePanelHtml() {
             <section class="q2-reference-shell q2-reference-shell--empty">
                 <div class="q2-reference-topline">
                     <div>
-                        <span class="q2-reference-kicker">${isKo ? "Q1 시나리오 참고" : "Q1 scenario reference"}</span>
-                        <h4>${isKo ? "Q1에서 반영한 지역 신호가 아직 없습니다" : "No regional signals have been reflected from Q1 yet"}</h4>
-                        <p>${isKo ? "도시 프로필 키워드를 반영하거나 커스텀 검색 결과를 적용하면, 이후 시나리오 판단의 기준이 여기 정리됩니다." : "Apply city-profile keywords or custom research to summarize the scenario inputs carried forward from Q1."}</p>
+                        <span class="q2-reference-kicker">${isKo ? "Q1 ?쒕굹由ъ삤 李멸퀬" : "Q1 scenario reference"}</span>
+                        <h4>${isKo ? "Q1?먯꽌 諛섏쁺??吏???좏샇媛 ?꾩쭅 ?놁뒿?덈떎" : "No regional signals have been reflected from Q1 yet"}</h4>
+                        <p>${isKo ? "?꾩떆 ?꾨줈???ㅼ썙?쒕? 諛섏쁺?섍굅??而ㅼ뒪? 寃??寃곌낵瑜??곸슜?섎㈃, ?댄썑 ?쒕굹由ъ삤 ?먮떒??湲곗????ш린 ?뺣━?⑸땲??" : "Apply city-profile keywords or custom research to summarize the scenario inputs carried forward from Q1."}</p>
                     </div>
                 </div>
             </section>
@@ -5551,7 +5556,7 @@ function buildQ1ScenarioReferencePanelHtml() {
                 ${buildInlineSummaryHtml(item.text)}
             </article>
         `).join("")
-        : `<p class="q2-ref-empty">${isKo ? "아직 선택된 도시 프로필 요약이 없습니다." : "No city-profile references applied yet."}</p>`;
+        : `<p class="q2-ref-empty">${isKo ? "?꾩쭅 ?좏깮???꾩떆 ?꾨줈???붿빟???놁뒿?덈떎." : "No city-profile references applied yet."}</p>`;
 
     const customHtml = customSummary
         ? `
@@ -5565,7 +5570,7 @@ function buildQ1ScenarioReferencePanelHtml() {
                 ${customSummary.interpretation ? `<div class="q2-ref-custom-copy">${buildInlineSummaryHtml(customSummary.interpretation)}</div>` : ""}
             </article>
         `
-        : `<p class="q2-ref-empty">${isKo ? "커스텀 검색 반영이 없으면 여기에는 Q1 사용자 정의 맥락이 표시됩니다." : "Applied custom research from Q1 will appear here."}</p>`;
+        : `<p class="q2-ref-empty">${isKo ? "而ㅼ뒪? 寃??諛섏쁺???놁쑝硫??ш린?먮뒗 Q1 ?ъ슜???뺤쓽 留λ씫???쒖떆?⑸땲??" : "Applied custom research from Q1 will appear here."}</p>`;
 
     const implicationHtml = combinedImplications.length > 0
         ? combinedImplications.map((item) => `
@@ -5575,23 +5580,23 @@ function buildQ1ScenarioReferencePanelHtml() {
                         <span class="q2-source-tag" style="background:${item.color}20;color:${item.color}">${escapeHtml(item.catLabel)}</span>
                         <strong>${escapeHtml(item.trait)}</strong>
                     </div>
-                    <span class="q2-audience-implication-badge">${item.sourceType === "custom" ? (isKo ? "커스텀 반영" : "Custom input") : (isKo ? "Q1 반영됨" : "Reflected from Q1")}</span>
+                    <span class="q2-audience-implication-badge">${item.sourceType === "custom" ? (isKo ? "而ㅼ뒪? 諛섏쁺" : "Custom input") : (isKo ? "Q1 諛섏쁺?? : "Reflected from Q1")}</span>
                 </div>
                 ${buildInlineSummaryHtml(item.logic)}
             </article>
         `).join("")
-        : `<p class="q2-ref-empty">${isKo ? "선택한 도시 프로필과 커스텀 검색에서 읽히는 생활상 시사점이 아직 없습니다." : "No lifestyle implications are available from the selected city profile or custom research yet."}</p>`;
+        : `<p class="q2-ref-empty">${isKo ? "?좏깮???꾩떆 ?꾨줈?꾧낵 而ㅼ뒪? 寃?됱뿉???쏀엳???앺솢???쒖궗?먯씠 ?꾩쭅 ?놁뒿?덈떎." : "No lifestyle implications are available from the selected city profile or custom research yet."}</p>`;
 
     return `
         <section class="q2-reference-shell q1-scenario-reference-shell">
             <div class="q2-reference-topline">
                 <div>
-                    <span class="q2-reference-kicker">${isKo ? "Q1 시나리오 반영 카드" : "Q1 scenario reflection card"}</span>
+                    <span class="q2-reference-kicker">${isKo ? "Q1 ?쒕굹由ъ삤 諛섏쁺 移대뱶" : "Q1 scenario reflection card"}</span>
                     <h4>${isKo
-                        ? `${locationTitle || "선택한 지역"} 시나리오에 반영할 핵심 기준`
+                        ? `${locationTitle || "?좏깮??吏??} ?쒕굹由ъ삤??諛섏쁺???듭떖 湲곗?`
                         : `Key scenario inputs reflected for ${locationTitle || "the selected location"}`}</h4>
                     <p>${isKo
-                        ? "Q1에서 반영한 도시 프로필 근거와 생활상 시사점이 이후 시나리오 판단의 출발점으로 이어집니다."
+                        ? "Q1?먯꽌 諛섏쁺???꾩떆 ?꾨줈??洹쇨굅? ?앺솢???쒖궗?먯씠 ?댄썑 ?쒕굹由ъ삤 ?먮떒??異쒕컻?먯쑝濡??댁뼱吏묐땲??"
                         : "The city-profile basis and lifestyle implications reflected in Q1 carry forward into later scenario decisions."}</p>
                 </div>
                 <div class="q2-reference-location">
@@ -5602,19 +5607,19 @@ function buildQ1ScenarioReferencePanelHtml() {
             <div class="q2-reference-grid">
                 <section class="q2-ref-section">
                     <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "반영 근거" : "Reflected basis"}</span>
-                        <strong>${isKo ? "Q1에서 선택한 도시 프로필 요약" : "Selected city-profile basis from Q1"}</strong>
+                        <span class="q2-ref-section-kicker">${isKo ? "諛섏쁺 洹쇨굅" : "Reflected basis"}</span>
+                        <strong>${isKo ? "Q1?먯꽌 ?좏깮???꾩떆 ?꾨줈???붿빟" : "Selected city-profile basis from Q1"}</strong>
                     </div>
                     <div class="q2-ref-chip-grid">${profileHtml}</div>
                 </section>
                 <section class="q2-ref-section">
                     <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "생활상 시사점" : "Lifestyle implications"}</span>
-                        <strong>${isKo ? "도시 프로필과 커스텀 검색을 종합한 생활 맥락 결론" : "Combined lifestyle conclusion from city profile and custom research"}</strong>
+                        <span class="q2-ref-section-kicker">${isKo ? "?앺솢???쒖궗?? : "Lifestyle implications"}</span>
+                        <strong>${isKo ? "?꾩떆 ?꾨줈?꾧낵 而ㅼ뒪? 寃?됱쓣 醫낇빀???앺솢 留λ씫 寃곕줎" : "Combined lifestyle conclusion from city profile and custom research"}</strong>
                     </div>
                     <div class="q2-ref-custom-card q2-ref-custom-card--summary">
                         <div class="q2-ref-custom-top">
-                            <span class="q2-ref-custom-query">${isKo ? "종합 결론" : "Combined conclusion"}</span>
+                            <span class="q2-ref-custom-query">${isKo ? "醫낇빀 寃곕줎" : "Combined conclusion"}</span>
                         </div>
                         ${buildInlineSummaryHtml(implicationConclusion)}
                     </div>
@@ -5622,8 +5627,8 @@ function buildQ1ScenarioReferencePanelHtml() {
                 </section>
                 <section class="q2-ref-section q2-ref-section--custom">
                     <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "사용자 추가 반영" : "Additional user reflection"}</span>
-                        <strong>${isKo ? "Q1 커스텀 검색에서 함께 참고할 맥락" : "Additional context from Q1 custom research"}</strong>
+                        <span class="q2-ref-section-kicker">${isKo ? "?ъ슜??異붽? 諛섏쁺" : "Additional user reflection"}</span>
+                        <strong>${isKo ? "Q1 而ㅼ뒪? 寃?됱뿉???④퍡 李멸퀬??留λ씫" : "Additional context from Q1 custom research"}</strong>
                     </div>
                     ${customHtml}
                 </section>
@@ -5639,15 +5644,15 @@ function renderQ1ScenarioReferencePanel(container = stepInsight) {
     bindQ2EvidenceToggles(anchor);
 }
 
-/** 프로필 신뢰도 계산 (0–100) */
+/** ?꾨줈???좊ː??怨꾩궛 (0??00) */
 function calculateConfidence() {
     let pct = 0;
-    // 도시 선택 = base 20%
+    // ?꾩떆 ?좏깮 = base 20%
     const cityRaw = getCityValue();
     if (cityRaw) pct += 20;
-    // Q1 키워드 반영 = +20%
+    // Q1 ?ㅼ썙??諛섏쁺 = +20%
     if (_magicAppliedSelected && _magicAppliedSelected.size > 0) pct += 20;
-    // Q2 A/B/C 각 +20% (최대 60%)
+    // Q2 A/B/C 媛?+20% (理쒕? 60%)
     const { hasHousing, hasHousehold, hasLifestage } = getQ2SelectionState();
     if (hasHousing)   pct += 20;
     if (hasHousehold) pct += 20;
@@ -5658,20 +5663,20 @@ function calculateConfidence() {
 function getStep3AudienceCopy(locale, audiencePlace) {
     const audienceCardCopy = {
         ko: {
-            title: `${audiencePlace} 타겟 세그먼트 참고`,
-            summary: "Q1에서 선택한 도시 프로필 근거와 생활상 시사점을 바탕으로, 이 지역 세그먼트에 반영할 핵심 항목을 정리했습니다.",
-            detailTitle: "타겟 세그먼트에 반영할 핵심 항목",
-            kicker: "Q1 반영 참고",
-            basisKicker: "반영 기준",
-            basisTitle: "Q1에서 선택한 도시 프로필 요약",
-            basisCopy: "선택한 항목들이 이 지역 타겟 세그먼트를 해석하는 출발점이 됩니다.",
-            implicationKicker: "생활상 시사점",
-            implicationTitle: "선택 항목이 시사하는 생활 맥락과 우선순위",
-            implicationCopy: "과장된 해석이 아니라, 이후 시나리오 매칭에 참고할 수 있는 현실적인 생활 신호를 정리했습니다.",
-            customKicker: "사용자 추가 반영",
-            customTitle: "Q1 커스텀 검색에서 함께 참고할 맥락",
-            customCopy: "사용자가 직접 반영한 항목도 기본 근거와 함께 참고됩니다.",
-            cardSummary: "Q1 선택 근거와 생활상 시사점을 함께 보는 참고 카드"
+            title: `${audiencePlace} ?寃??멸렇癒쇳듃 李멸퀬`,
+            summary: "Q1?먯꽌 ?좏깮???꾩떆 ?꾨줈??洹쇨굅? ?앺솢???쒖궗?먯쓣 諛뷀깢?쇰줈, ??吏???멸렇癒쇳듃??諛섏쁺???듭떖 ??ぉ???뺣━?덉뒿?덈떎.",
+            detailTitle: "?寃??멸렇癒쇳듃??諛섏쁺???듭떖 ??ぉ",
+            kicker: "Q1 諛섏쁺 李멸퀬",
+            basisKicker: "諛섏쁺 湲곗?",
+            basisTitle: "Q1?먯꽌 ?좏깮???꾩떆 ?꾨줈???붿빟",
+            basisCopy: "?좏깮????ぉ?ㅼ씠 ??吏???寃??멸렇癒쇳듃瑜??댁꽍?섎뒗 異쒕컻?먯씠 ?⑸땲??",
+            implicationKicker: "?앺솢???쒖궗??,
+            implicationTitle: "?좏깮 ??ぉ???쒖궗?섎뒗 ?앺솢 留λ씫怨??곗꽑?쒖쐞",
+            implicationCopy: "怨쇱옣???댁꽍???꾨땲?? ?댄썑 ?쒕굹由ъ삤 留ㅼ묶??李멸퀬?????덈뒗 ?꾩떎?곸씤 ?앺솢 ?좏샇瑜??뺣━?덉뒿?덈떎.",
+            customKicker: "?ъ슜??異붽? 諛섏쁺",
+            customTitle: "Q1 而ㅼ뒪? 寃?됱뿉???④퍡 李멸퀬??留λ씫",
+            customCopy: "?ъ슜?먭? 吏곸젒 諛섏쁺????ぉ??湲곕낯 洹쇨굅? ?④퍡 李멸퀬?⑸땲??",
+            cardSummary: "Q1 ?좏깮 洹쇨굅? ?앺솢???쒖궗?먯쓣 ?④퍡 蹂대뒗 李멸퀬 移대뱶"
         },
         en: {
             title: `Target segment reference for ${audiencePlace}`,
@@ -5690,36 +5695,36 @@ function getStep3AudienceCopy(locale, audiencePlace) {
             cardSummary: "A compact reference card combining Q1 profile basis and lifestyle implications"
         },
         de: {
-            title: `Referenz zum Zielsegment für ${audiencePlace}`,
-            summary: "Diese Karte fasst die wichtigsten Punkte zusammen, die auf Basis der Q1-Profilgrundlage und der daraus abgeleiteten Alltagskontexte in das regionale Zielsegment einfließen sollten.",
-            detailTitle: "Zentrale Faktoren für das Zielsegment",
+            title: `Referenz zum Zielsegment f체r ${audiencePlace}`,
+            summary: "Diese Karte fasst die wichtigsten Punkte zusammen, die auf Basis der Q1-Profilgrundlage und der daraus abgeleiteten Alltagskontexte in das regionale Zielsegment einflie횩en sollten.",
+            detailTitle: "Zentrale Faktoren f체r das Zielsegment",
             kicker: "Q1-Referenz",
             basisKicker: "Grundlage",
-            basisTitle: "Ausgewählte Stadtprofil-Basis aus Q1",
-            basisCopy: "Diese ausgewählten Punkte bilden den Ausgangspunkt für die Interpretation des regionalen Zielsegments.",
+            basisTitle: "Ausgew채hlte Stadtprofil-Basis aus Q1",
+            basisCopy: "Diese ausgew채hlten Punkte bilden den Ausgangspunkt f체r die Interpretation des regionalen Zielsegments.",
             implicationKicker: "Alltagsimplikationen",
-            implicationTitle: "Wahrscheinlicher Lebenskontext und Wertprioritäten",
-            implicationCopy: "Diese realistischen Signale dienen als Referenz für das spätere Szenario-Matching.",
-            customKicker: "Zusätzlicher Nutzereintrag",
-            customTitle: "Zusätzlicher Kontext aus der benutzerdefinierten Q1-Recherche",
-            customCopy: "Vom Nutzer definierter Kontext wird zusammen mit der ausgewählten Profilgrundlage berücksichtigt.",
+            implicationTitle: "Wahrscheinlicher Lebenskontext und Wertpriorit채ten",
+            implicationCopy: "Diese realistischen Signale dienen als Referenz f체r das sp채tere Szenario-Matching.",
+            customKicker: "Zus채tzlicher Nutzereintrag",
+            customTitle: "Zus채tzlicher Kontext aus der benutzerdefinierten Q1-Recherche",
+            customCopy: "Vom Nutzer definierter Kontext wird zusammen mit der ausgew채hlten Profilgrundlage ber체cksichtigt.",
             cardSummary: "Eine kompakte Referenzkarte mit Q1-Grundlage und Alltagsimplikationen"
         },
         fr: {
-            title: `Référence du segment cible pour ${audiencePlace}`,
-            summary: "Cette carte résume les éléments clés à refléter dans le segment cible régional à partir de la base de profil Q1 et des implications de mode de vie qui en découlent.",
-            detailTitle: "Éléments clés à refléter dans le segment cible",
-            kicker: "Référence Q1",
+            title: `R챕f챕rence du segment cible pour ${audiencePlace}`,
+            summary: "Cette carte r챕sume les 챕l챕ments cl챕s 횪 refl챕ter dans le segment cible r챕gional 횪 partir de la base de profil Q1 et des implications de mode de vie qui en d챕coulent.",
+            detailTitle: "횋l챕ments cl챕s 횪 refl챕ter dans le segment cible",
+            kicker: "R챕f챕rence Q1",
             basisKicker: "Base retenue",
-            basisTitle: "Base du profil urbain sélectionnée en Q1",
-            basisCopy: "Ces éléments sélectionnés constituent le point de départ pour interpréter le segment cible régional.",
+            basisTitle: "Base du profil urbain s챕lectionn챕e en Q1",
+            basisCopy: "Ces 챕l챕ments s챕lectionn챕s constituent le point de d챕part pour interpr챕ter le segment cible r챕gional.",
             implicationKicker: "Implications de mode de vie",
-            implicationTitle: "Contexte de vie probable et priorités de valeur",
-            implicationCopy: "Ces signaux concrets servent de référence pour la mise en correspondance ultérieure avec les scénarios.",
+            implicationTitle: "Contexte de vie probable et priorit챕s de valeur",
+            implicationCopy: "Ces signaux concrets servent de r챕f챕rence pour la mise en correspondance ult챕rieure avec les sc챕narios.",
             customKicker: "Apport utilisateur",
-            customTitle: "Contexte supplémentaire issu de la recherche personnalisée Q1",
-            customCopy: "Le contexte défini par l'utilisateur est conservé avec la base de profil sélectionnée.",
-            cardSummary: "Une carte de référence concise réunissant base Q1 et implications de mode de vie"
+            customTitle: "Contexte suppl챕mentaire issu de la recherche personnalis챕e Q1",
+            customCopy: "Le contexte d챕fini par l'utilisateur est conserv챕 avec la base de profil s챕lectionn챕e.",
+            cardSummary: "Une carte de r챕f챕rence concise r챕unissant base Q1 et implications de mode de vie"
         },
         es: {
             title: `Referencia del segmento objetivo para ${audiencePlace}`,
@@ -5731,27 +5736,27 @@ function getStep3AudienceCopy(locale, audiencePlace) {
             basisCopy: "Estos elementos seleccionados son el punto de partida para interpretar el segmento objetivo regional.",
             implicationKicker: "Implicaciones de estilo de vida",
             implicationTitle: "Contexto de vida probable y prioridades de valor",
-            implicationCopy: "Estas señales realistas sirven como referencia para el ajuste posterior de escenarios.",
+            implicationCopy: "Estas se챰ales realistas sirven como referencia para el ajuste posterior de escenarios.",
             customKicker: "Aporte adicional del usuario",
-            customTitle: "Contexto adicional de la investigación personalizada de Q1",
+            customTitle: "Contexto adicional de la investigaci처n personalizada de Q1",
             customCopy: "El contexto definido por el usuario se mantiene junto con la base de perfil seleccionada.",
             cardSummary: "Tarjeta de referencia compacta con base Q1 e implicaciones de estilo de vida"
         },
         pt: {
-            title: `Referência do segmento-alvo para ${audiencePlace}`,
-            summary: "Este cartão resume os fatores principais a refletir no segmento-alvo regional com base no perfil selecionado em Q1 e nas implicações de estilo de vida derivadas.",
+            title: `Refer챗ncia do segmento-alvo para ${audiencePlace}`,
+            summary: "Este cart찾o resume os fatores principais a refletir no segmento-alvo regional com base no perfil selecionado em Q1 e nas implica챌천es de estilo de vida derivadas.",
             detailTitle: "Fatores centrais refletidos no segmento-alvo",
-            kicker: "Referência Q1",
+            kicker: "Refer챗ncia Q1",
             basisKicker: "Base refletida",
             basisTitle: "Base de perfil urbano selecionada em Q1",
             basisCopy: "Esses itens selecionados formam o ponto de partida para interpretar o segmento-alvo regional.",
-            implicationKicker: "Implicações de estilo de vida",
-            implicationTitle: "Contexto de vida provável e prioridades de valor",
-            implicationCopy: "Esses sinais concretos servem como referência para a etapa posterior de correspondência de cenários.",
-            customKicker: "Contribuição adicional do usuário",
+            implicationKicker: "Implica챌천es de estilo de vida",
+            implicationTitle: "Contexto de vida prov찼vel e prioridades de valor",
+            implicationCopy: "Esses sinais concretos servem como refer챗ncia para a etapa posterior de correspond챗ncia de cen찼rios.",
+            customKicker: "Contribui챌찾o adicional do usu찼rio",
             customTitle: "Contexto adicional da pesquisa personalizada de Q1",
-            customCopy: "O contexto definido pelo usuário é mantido junto com a base de perfil selecionada.",
-            cardSummary: "Cartão de referência compacto com base Q1 e implicações de estilo de vida"
+            customCopy: "O contexto definido pelo usu찼rio 챕 mantido junto com a base de perfil selecionada.",
+            cardSummary: "Cart찾o de refer챗ncia compacto com base Q1 e implica챌천es de estilo de vida"
         },
         it: {
             title: `Riferimento del segmento target per ${audiencePlace}`,
@@ -5762,7 +5767,7 @@ function getStep3AudienceCopy(locale, audiencePlace) {
             basisTitle: "Base del profilo urbano selezionata in Q1",
             basisCopy: "Questi elementi selezionati rappresentano il punto di partenza per interpretare il segmento target regionale.",
             implicationKicker: "Implicazioni di stile di vita",
-            implicationTitle: "Contesto di vita probabile e priorità di valore",
+            implicationTitle: "Contesto di vita probabile e priorit횪 di valore",
             implicationCopy: "Questi segnali concreti fungono da riferimento per il successivo abbinamento degli scenari.",
             customKicker: "Apporto aggiuntivo dell'utente",
             customTitle: "Contesto aggiuntivo dalla ricerca personalizzata Q1",
@@ -5786,20 +5791,20 @@ function getStep3AudienceCopy(locale, audiencePlace) {
             cardSummary: "Compacte referentiekaart met Q1-basis en leefstijlimplicaties"
         },
         ar: {
-            title: `مرجع الشريحة المستهدفة لـ ${audiencePlace}`,
-            summary: "تلخص هذه البطاقة العوامل الأساسية التي ينبغي عكسها في الشريحة المستهدفة الإقليمية استنادًا إلى أساس الملف المختار في Q1 وما يشير إليه من سياق معيشي.",
-            detailTitle: "العوامل الأساسية المنعكسة في الشريحة المستهدفة",
-            kicker: "مرجع Q1",
-            basisKicker: "أساس الانعكاس",
-            basisTitle: "أساس ملف المدينة المختار من Q1",
-            basisCopy: "تشكل هذه العناصر المختارة نقطة البداية لتفسير الشريحة المستهدفة الإقليمية.",
-            implicationKicker: "دلالات نمط الحياة",
-            implicationTitle: "السياق المعيشي المحتمل وأولويات القيمة",
-            implicationCopy: "هذه إشارات واقعية يمكن استخدامها كمرجع عند مطابقة السيناريوهات لاحقًا.",
-            customKicker: "إضافة المستخدم",
-            customTitle: "سياق إضافي من البحث المخصص في Q1",
-            customCopy: "يتم الاحتفاظ بالسياق الذي حدده المستخدم إلى جانب أساس الملف المختار.",
-            cardSummary: "بطاقة مرجعية موجزة تجمع أساس Q1 ودلالات نمط الحياة"
+            title: `?邈寞晩 碼?娩邈?幕馬 碼??卍魔?膜?馬 ?? ${audiencePlace}`,
+            summary: "魔?漠巒 ?莫? 碼?磨慢碼?馬 碼?晩?碼?? 碼?粒卍碼卍?馬 碼?魔? ??磨曼? 晩?卍?碼 ?? 碼?娩邈?幕馬 碼??卍魔?膜?馬 碼?瑪?????馬 碼卍魔?碼膜?碼 瑪?? 粒卍碼卍 碼???? 碼??漠魔碼邈 ?? Q1 ??碼 ?娩?邈 瑪??? ?? 卍?碼? ?晩?娩?.",
+            detailTitle: "碼?晩?碼?? 碼?粒卍碼卍?馬 碼???晩?卍馬 ?? 碼?娩邈?幕馬 碼??卍魔?膜?馬",
+            kicker: "?邈寞晩 Q1",
+            basisKicker: "粒卍碼卍 碼?碼?晩?碼卍",
+            basisTitle: "粒卍碼卍 ??? 碼??膜??馬 碼??漠魔碼邈 ?? Q1",
+            basisCopy: "魔娩?? ?莫? 碼?晩?碼巒邈 碼??漠魔碼邈馬 ??慢馬 碼?磨膜碼?馬 ?魔?卍?邈 碼?娩邈?幕馬 碼??卍魔?膜?馬 碼?瑪?????馬.",
+            implicationKicker: "膜?碼?碼魔 ??慢 碼?幕?碼馬",
+            implicationTitle: "碼?卍?碼? 碼??晩?娩? 碼??幕魔?? ?粒????碼魔 碼????馬",
+            implicationCopy: "?莫? 瑪娩碼邈碼魔 ?碼?晩?馬 ???? 碼卍魔漠膜碼??碼 ??邈寞晩 晩?膜 ?慢碼磨?馬 碼?卍??碼邈???碼魔 ?碼幕??碼.",
+            customKicker: "瑪彎碼?馬 碼??卍魔漠膜?",
+            customTitle: "卍?碼? 瑪彎碼?? ?? 碼?磨幕麻 碼??漠巒巒 ?? Q1",
+            customCopy: "?魔? 碼?碼幕魔?碼挽 磨碼?卍?碼? 碼?莫? 幕膜膜? 碼??卍魔漠膜? 瑪?? 寞碼?磨 粒卍碼卍 碼???? 碼??漠魔碼邈.",
+            cardSummary: "磨慢碼?馬 ?邈寞晩?馬 ??寞万馬 魔寞?晩 粒卍碼卍 Q1 ?膜?碼?碼魔 ??慢 碼?幕?碼馬"
         }
     };
     return audienceCardCopy[locale] || audienceCardCopy.en;
@@ -5814,7 +5819,7 @@ function buildStep3Insight() {
     const country = selectedMarket ? resolveCountry(selectedMarket) : null;
     const isKo = currentLocale === "ko";
 
-    // ── 기본 데이터 ──
+    // ?? 湲곕낯 ?곗씠????
     const q2Traits = inferSegmentTraits(selectedSegment, purpose);
     const q1Traits = inferQ1Traits();
     const confidence = calculateConfidence();
@@ -5826,23 +5831,23 @@ function buildStep3Insight() {
     const countryDisplay = country ? getCountryName(country.countryCode) : "";
     const audiencePlace = cityDisplay && countryDisplay
         ? `${cityDisplay}(${countryDisplay})`
-        : (cityDisplay || countryDisplay || (isKo ? "선택 지역" : "the selected location"));
+        : (cityDisplay || countryDisplay || (isKo ? "?좏깮 吏?? : "the selected location"));
     const step3InsightTitle = isKo
-        ? `${audiencePlace} 시나리오 매칭 개요`
+        ? `${audiencePlace} ?쒕굹由ъ삤 留ㅼ묶 媛쒖슂`
         : `Scenario match overview for ${audiencePlace}`;
     const step3InsightSummary = isKo
-        ? "Q2에서 고른 생활 조건을 바탕으로, 어떤 시나리오 방향이 유력한지와 가중치 구조를 정리합니다."
+        ? "Q2?먯꽌 怨좊Ⅸ ?앺솢 議곌굔??諛뷀깢?쇰줈, ?대뼡 ?쒕굹由ъ삤 諛⑺뼢???좊젰?쒖?? 媛以묒튂 援ъ“瑜??뺣━?⑸땲??"
         : "This summarizes likely scenario directions and weighting based on the life-context choices made in Q2.";
 
-    // ── 신뢰도 색상/라벨 ──
+    // ?? ?좊ː???됱긽/?쇰꺼 ??
     const confColor = confidence < 40 ? "amber" : confidence < 80 ? "blue" : "green";
     const confLabel = confidence < 40
-        ? (isKo ? "신뢰도 낮음" : "Low confidence")
+        ? (isKo ? "?좊ː????쓬" : "Low confidence")
         : confidence < 80
-            ? (isKo ? "구체화 중" : "Refining")
-            : (isKo ? "프로필 완성" : "Profile complete");
+            ? (isKo ? "援ъ껜??以? : "Refining")
+            : (isKo ? "?꾨줈???꾩꽦" : "Profile complete");
 
-    // ── Confidence ring SVG ──
+    // ?? Confidence ring SVG ??
     const ringHtml = `
         <div class="q2-confidence-wrap">
             <svg viewBox="0 0 36 36" class="q2-confidence-ring">
@@ -5853,7 +5858,7 @@ function buildStep3Insight() {
             <span class="q2-ring-center">${confidence}%</span>
         </div>`;
 
-    // ── Header ──
+    // ?? Header ??
     const titleSuffix = "";
     const headerHtml = `
         <div class="q2-hybrid-header">
@@ -5870,37 +5875,37 @@ function buildStep3Insight() {
         <section class="q2-stage-card q2-stage-card--intro">
             <div class="q2-stage-card-head">
                 <div>
-                    <span class="q2-stage-kicker">${isKo ? "Q2 안내" : "Q2 guide"}</span>
-                    <h4>${isKo ? "이 단계에서는 생활 조건을 더해 추천 시나리오를 좁힙니다" : "This step refines scenario recommendations with more lifestyle conditions"}</h4>
+                    <span class="q2-stage-kicker">${isKo ? "Q2 ?덈궡" : "Q2 guide"}</span>
+                    <h4>${isKo ? "???④퀎?먯꽌???앺솢 議곌굔???뷀빐 異붿쿇 ?쒕굹由ъ삤瑜?醫곹옓?덈떎" : "This step refines scenario recommendations with more lifestyle conditions"}</h4>
                 </div>
                 <span class="q2-stage-status q2-stage-status--${confColor}">${escapeHtml(confLabel)}</span>
             </div>
             <p class="q2-stage-copy">${isKo
-                ? "Q1에서 반영된 도시 프로필과 커스텀 검색 결과를 바탕으로, Q2에서는 주거 형태·가구 구성·라이프스테이지를 추가 선택합니다. 이 조합이 시나리오 카테고리 점수와 가중치, 매칭 방향을 정교하게 만듭니다."
+                ? "Q1?먯꽌 諛섏쁺???꾩떆 ?꾨줈?꾧낵 而ㅼ뒪? 寃??寃곌낵瑜?諛뷀깢?쇰줈, Q2?먯꽌??二쇨굅 ?뺥깭쨌媛援?援ъ꽦쨌?쇱씠?꾩뒪?뚯씠吏瑜?異붽? ?좏깮?⑸땲?? ??議고빀???쒕굹由ъ삤 移댄뀒怨좊━ ?먯닔? 媛以묒튂, 留ㅼ묶 諛⑺뼢???뺢탳?섍쾶 留뚮벊?덈떎."
                 : "Q2 builds on the city profile and custom research from Q1. Add housing, household, and life-stage conditions here so the scenario category scores, weighting, and match direction become more precise."}</p>
             <div class="q2-guide-grid">
                 ${buildQ2CardGuideItemsHtml(isKo)}
             </div>
         </section>`;
 
-    // ── Corroboration: Q2 trait labels that match Q1 trait labels ──
+    // ?? Corroboration: Q2 trait labels that match Q1 trait labels ??
     const q2TraitLabels = new Set(q2Traits);
     const corroboratedLabels = new Set();
     q1Traits.forEach(t => { if (q2TraitLabels.has(t.trait)) corroboratedLabels.add(t.trait); });
 
-    // ── Layer 1: Q1 도시 맥락 ──
+    // ?? Layer 1: Q1 ?꾩떆 留λ씫 ??
     let layer1Html = "";
     if (q1Traits.length > 0) {
-        const hasAnyQ2 = q2Traits.length > 0 && (q2Traits[0] !== (isKo ? "즉시 체감 가치 선호" : "preference for immediate value"));
+        const hasAnyQ2 = q2Traits.length > 0 && (q2Traits[0] !== (isKo ? "利됱떆 泥닿컧 媛移??좏샇" : "preference for immediate value"));
         const tentativeClass = hasAnyQ2 ? "" : " q2-layer--tentative";
         const traitCards = q1Traits.map((t, i) => {
             const isCorro = corroboratedLabels.has(t.trait);
             const statusTag = isCorro
-                ? `<span class="q2-trait-confirmed">${isKo ? "Q2 검증됨" : "Q2 confirmed"}</span>`
-                : `<span class="q2-trait-tentative">${isKo ? "잠정" : "tentative"}</span>`;
+                ? `<span class="q2-trait-confirmed">${isKo ? "Q2 寃利앸맖" : "Q2 confirmed"}</span>`
+                : `<span class="q2-trait-tentative">${isKo ? "?좎젙" : "tentative"}</span>`;
             const uid = `q1-ev-${i}-${Date.now()}`;
             const quoteHtml = t.profileQuote
-                ? `<p class="q2-ev-quote">"${escapeHtml(t.profileQuote)}${t.profileQuote.length >= 120 ? "…" : ""}"</p>`
+                ? `<p class="q2-ev-quote">"${escapeHtml(t.profileQuote)}${t.profileQuote.length >= 120 ? "?? : ""}"</p>`
                 : "";
             return `
                 <div class="q2-hybrid-trait q2-hybrid-trait--compact">
@@ -5912,10 +5917,10 @@ function buildStep3Insight() {
                         </div>
                         <p class="q2-trait-source">
                             <span class="q2-source-tag" style="background:${t.color}20;color:${t.color}">${escapeHtml(t.catLabel)}</span>
-                            ${isKo ? `${escapeHtml(cityDisplay)} 도시 프로필에서 도출` : `From ${escapeHtml(cityDisplay)} city profile`}
+                            ${isKo ? `${escapeHtml(cityDisplay)} ?꾩떆 ?꾨줈?꾩뿉???꾩텧` : `From ${escapeHtml(cityDisplay)} city profile`}
                         </p>
                         <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${uid}">
-                            <span class="q2-ev-arrow">▸</span> ${isKo ? "추론 근거 보기" : "View reasoning"}
+                            <span class="q2-ev-arrow">??/span> ${isKo ? "異붾줎 洹쇨굅 蹂닿린" : "View reasoning"}
                         </button>
                         <div class="q2-evidence-detail" id="${uid}">
                             ${quoteHtml}
@@ -5928,17 +5933,17 @@ function buildStep3Insight() {
         layer1Html = `
             <div class="q2-layer q2-layer--q1${tentativeClass}">
                 <p class="q2-layer-header">
-                    <span class="q2-layer-header-icon">📍</span>
-                    ${isKo ? "도시 맥락에서 추론한 잠정 신호 (Q1 기반)" : "Tentative signals from city context (Q1)"}
+                    <span class="q2-layer-header-icon">?뱧</span>
+                    ${isKo ? "?꾩떆 留λ씫?먯꽌 異붾줎???좎젙 ?좏샇 (Q1 湲곕컲)" : "Tentative signals from city context (Q1)"}
                 </p>
                 <p class="q2-layer-helper">${isKo
-                    ? "선택하신 도시의 인프라와 거주 형태를 바탕으로 도출된 잠재 라이프스타일 힌트입니다."
+                    ? "?좏깮?섏떊 ?꾩떆???명봽?쇱? 嫄곗＜ ?뺥깭瑜?諛뷀깢?쇰줈 ?꾩텧???좎옱 ?쇱씠?꾩뒪????뚰듃?낅땲??"
                     : "Potential lifestyle hints inferred from your city context data."}</p>
                 <div class="q2-trait-compact-grid">${traitCards}</div>
             </div>`;
     }
 
-    // ── Layer 2: Q2 타겟 생활 (모든 Q2 trait 표시, Q1 연계 시 배지) ──
+    // ?? Layer 2: Q2 ?寃??앺솢 (紐⑤뱺 Q2 trait ?쒖떆, Q1 ?곌퀎 ??諛곗?) ??
     let layer2Html = "";
     const { hasAnyQ2Selection } = getQ2SelectionState();
     if (hasAnyQ2Selection && q2Traits.length > 0) {
@@ -5950,7 +5955,7 @@ function buildStep3Insight() {
             const warmColor = legend.color || warmColors[i % warmColors.length];
             const isCorro = corroboratedLabels.has(trait);
             const statusTag = isCorro
-                ? `<span class="q2-trait-confirmed">${isKo ? "Q1 연계" : "Q1 linked"}</span>`
+                ? `<span class="q2-trait-confirmed">${isKo ? "Q1 ?곌퀎" : "Q1 linked"}</span>`
                 : "";
             const legendTag = `<span class="q2-trait-legend" style="--q2-trait-legend:${warmColor}">${escapeHtml(legend.label)}</span>`;
             return `
@@ -5964,10 +5969,10 @@ function buildStep3Insight() {
                                 ${statusTag}
                             </div>
                         </div>
-                        <p class="q2-trait-source">${isKo ? "Q2 선택에서 도출" : "Derived from Q2 selections"}</p>
+                        <p class="q2-trait-source">${isKo ? "Q2 ?좏깮?먯꽌 ?꾩텧" : "Derived from Q2 selections"}</p>
                         ${reason ? `
                         <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${uid}">
-                            <span class="q2-ev-arrow">▸</span> ${isKo ? "추론 근거 보기" : "View reasoning"}
+                            <span class="q2-ev-arrow">??/span> ${isKo ? "異붾줎 洹쇨굅 蹂닿린" : "View reasoning"}
                         </button>
                         <div class="q2-evidence-detail" id="${uid}">
                             <p class="q2-ev-logic">${escapeHtml(reason)}</p>
@@ -5979,11 +5984,11 @@ function buildStep3Insight() {
         layer2Html = `
             <div class="q2-layer q2-layer--q2">
                 <p class="q2-layer-header">
-                    <span class="q2-layer-header-icon">🎯</span>
-                    ${isKo ? `타겟 생활 맥락 신호 (Q2 선택 기반) — ${q2Traits.length}개` : `Target lifestyle signals (Q2) — ${q2Traits.length} signals`}
+                    <span class="q2-layer-header-icon">?렞</span>
+                    ${isKo ? `?寃??앺솢 留λ씫 ?좏샇 (Q2 ?좏깮 湲곕컲) ??${q2Traits.length}媛? : `Target lifestyle signals (Q2) ??${q2Traits.length} signals`}
                 </p>
                 <p class="q2-layer-helper">${isKo
-                    ? "직접 선택한 타겟의 핵심 특성입니다. Q1의 잠정 신호와 일치(교차 검증)할수록 매칭 신뢰도가 시너지로 작용합니다."
+                    ? "吏곸젒 ?좏깮???寃잛쓽 ?듭떖 ?뱀꽦?낅땲?? Q1???좎젙 ?좏샇? ?쇱튂(援먯감 寃利??좎닔濡?留ㅼ묶 ?좊ː?꾧? ?쒕꼫吏濡??묒슜?⑸땲??"
                     : "Core lifestyle traits from your selections. Cross-validated traits with Q1 boost match confidence."}</p>
                 <div class="q2-trait-compact-grid">${traitCards}</div>
             </div>`;
@@ -5999,7 +6004,7 @@ function buildStep3Insight() {
                 <p>${escapeHtml(summarizeInsightText(item.text, 88))}</p>
             </article>
         `).join("")
-        : `<p class="q2-ref-empty">${isKo ? "Q1에서 선택한 도시 프로필 요약이 아직 없습니다." : "No Q1 city profile summaries have been selected yet."}</p>`;
+        : `<p class="q2-ref-empty">${isKo ? "Q1?먯꽌 ?좏깮???꾩떆 ?꾨줈???붿빟???꾩쭅 ?놁뒿?덈떎." : "No Q1 city profile summaries have been selected yet."}</p>`;
 
     const q1ImplicationHtml = q1Traits.length > 0
         ? q1Traits.map((item) => {
@@ -6012,14 +6017,14 @@ function buildStep3Insight() {
                             <strong>${escapeHtml(item.trait)}</strong>
                         </div>
                         <span class="q2-audience-implication-badge ${linked ? "q2-audience-implication-badge--linked" : ""}">
-                            ${linked ? (isKo ? "Q2와 연결" : "Linked in Q2") : (isKo ? "Q1 기준" : "Q1 basis")}
+                            ${linked ? (isKo ? "Q2? ?곌껐" : "Linked in Q2") : (isKo ? "Q1 湲곗?" : "Q1 basis")}
                         </span>
                     </div>
                     <p>${escapeHtml(summarizeInsightText(item.logic, 100))}</p>
                 </article>
             `;
         }).join("")
-        : `<p class="q2-ref-empty">${isKo ? "선택한 도시 프로필에서 읽히는 생활 맥락이 아직 정리되지 않았습니다." : "No lifestyle implications are available from the selected city profiles yet."}</p>`;
+        : `<p class="q2-ref-empty">${isKo ? "?좏깮???꾩떆 ?꾨줈?꾩뿉???쏀엳???앺솢 留λ씫???꾩쭅 ?뺣━?섏? ?딆븯?듬땲??" : "No lifestyle implications are available from the selected city profiles yet."}</p>`;
 
     const customSummaryHtml = customResearchSummary
         ? `
@@ -6032,22 +6037,22 @@ function buildStep3Insight() {
                 ${customResearchSummary.points.length ? `<ul class="q2-ref-point-list">${customResearchSummary.points.map((point) => `<li>${escapeHtml(summarizeInsightText(point, 120))}</li>`).join("")}</ul>` : ""}
             </article>
         `
-        : `<p class="q2-ref-empty">${isKo ? "Q1에서 커스텀 검색을 반영하면 요약이 여기에 표시됩니다." : "Applied custom research from Q1 will appear here."}</p>`;
+        : `<p class="q2-ref-empty">${isKo ? "Q1?먯꽌 而ㅼ뒪? 寃?됱쓣 諛섏쁺?섎㈃ ?붿빟???ш린???쒖떆?⑸땲??" : "Applied custom research from Q1 will appear here."}</p>`;
 
     const currentSelectionSummaryHtml = hasAnyQ2Selection
         ? `
             <section class="q2-stage-card q2-stage-card--current">
                 <div class="q2-stage-card-head">
                     <div>
-                        <span class="q2-stage-kicker">${isKo ? "현재 Q2 선택" : "Current Q2 selections"}</span>
-                        <h4>${isKo ? "선택이 어떤 생활 맥락 신호로 읽히는지 먼저 확인하세요" : "See how your current choices translate into lifestyle signals"}</h4>
+                        <span class="q2-stage-kicker">${isKo ? "?꾩옱 Q2 ?좏깮" : "Current Q2 selections"}</span>
+                        <h4>${isKo ? "?좏깮???대뼡 ?앺솢 留λ씫 ?좏샇濡??쏀엳?붿? 癒쇱? ?뺤씤?섏꽭?? : "See how your current choices translate into lifestyle signals"}</h4>
                     </div>
                     <span class="q2-stage-status q2-stage-status--${confColor}">${escapeHtml(confLabel)}</span>
                 </div>
                 <p class="q2-stage-copy">${isKo
-                    ? "A·B·C 카드에서 고른 조건이 어떤 생활 맥락 신호로 번역되는지 먼저 보여줍니다. 이 신호가 아래 시나리오 방향과 점수 계산의 직접 입력값이 됩니다."
+                    ? "A쨌B쨌C 移대뱶?먯꽌 怨좊Ⅸ 議곌굔???대뼡 ?앺솢 留λ씫 ?좏샇濡?踰덉뿭?섎뒗吏 癒쇱? 蹂댁뿬以띾땲?? ???좏샇媛 ?꾨옒 ?쒕굹由ъ삤 諛⑺뼢怨??먯닔 怨꾩궛??吏곸젒 ?낅젰媛믪씠 ?⑸땲??"
                     : "This card first shows how your A, B, and C choices are translated into lifestyle signals. Those signals then become the direct inputs for the scenario direction and scoring below."}</p>
-                ${layer2Html || `<p class="q2-ref-empty">${isKo ? "선택 항목이 아직 신호로 정리되지 않았습니다." : "Selections are not yet summarized into signals."}</p>`}
+                ${layer2Html || `<p class="q2-ref-empty">${isKo ? "?좏깮 ??ぉ???꾩쭅 ?좏샇濡??뺣━?섏? ?딆븯?듬땲??" : "Selections are not yet summarized into signals."}</p>`}
             </section>
         `
         : "";
@@ -6056,22 +6061,22 @@ function buildStep3Insight() {
         <section class="q2-stage-card q2-stage-card--reference">
             <div class="q2-stage-card-head">
                 <div>
-                    <span class="q2-stage-kicker">${isKo ? "Q1 반영 요약" : "Q1 carry-over summary"}</span>
-                    <h4>${isKo ? "도시 프로필과 커스텀 검색 결과가 Q2 판단 기준으로 이어집니다" : "City-profile and custom research now act as reference inputs for Q2"}</h4>
+                    <span class="q2-stage-kicker">${isKo ? "Q1 諛섏쁺 ?붿빟" : "Q1 carry-over summary"}</span>
+                    <h4>${isKo ? "?꾩떆 ?꾨줈?꾧낵 而ㅼ뒪? 寃??寃곌낵媛 Q2 ?먮떒 湲곗??쇰줈 ?댁뼱吏묐땲?? : "City-profile and custom research now act as reference inputs for Q2"}</h4>
                 </div>
             </div>
             <div class="q2-reference-grid">
                 <section class="q2-ref-section">
                     <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "기본 도시 프로필" : "Base city profile"}</span>
-                        <strong>${isKo ? "Q1에서 선택한 핵심 요약" : "Selected profile summaries from Q1"}</strong>
+                        <span class="q2-ref-section-kicker">${isKo ? "湲곕낯 ?꾩떆 ?꾨줈?? : "Base city profile"}</span>
+                        <strong>${isKo ? "Q1?먯꽌 ?좏깮???듭떖 ?붿빟" : "Selected profile summaries from Q1"}</strong>
                     </div>
                     <div class="q2-ref-chip-grid">${q1ProfileRefHtml}</div>
                 </section>
                 <section class="q2-ref-section q2-ref-section--custom">
                     <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "커스텀 검색 반영" : "Custom research"}</span>
-                        <strong>${isKo ? "Q1 사용자 정의 맥락 요약" : "Q1 custom reflection summary"}</strong>
+                        <span class="q2-ref-section-kicker">${isKo ? "而ㅼ뒪? 寃??諛섏쁺" : "Custom research"}</span>
+                        <strong>${isKo ? "Q1 ?ъ슜???뺤쓽 留λ씫 ?붿빟" : "Q1 custom reflection summary"}</strong>
                     </div>
                     ${customSummaryHtml}
                 </section>
@@ -6079,8 +6084,8 @@ function buildStep3Insight() {
             ${layer1Html ? `
                 <section class="q2-ref-current">
                     <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "도시 프로필 해석" : "City-profile interpretation"}</span>
-                        <strong>${isKo ? "Q1 선택값이 시사하는 생활 신호" : "Lifestyle signals suggested by Q1 selections"}</strong>
+                        <span class="q2-ref-section-kicker">${isKo ? "?꾩떆 ?꾨줈???댁꽍" : "City-profile interpretation"}</span>
+                        <strong>${isKo ? "Q1 ?좏깮媛믪씠 ?쒖궗?섎뒗 ?앺솢 ?좏샇" : "Lifestyle signals suggested by Q1 selections"}</strong>
                     </div>
                     ${layer1Html}
                 </section>
@@ -6090,78 +6095,78 @@ function buildStep3Insight() {
     let synthesisHtml = "";
     if (confidence >= 40) {
         const caveat = confidence < 80
-            ? `<p class="q2-synthesis-caveat">${isKo ? "예상 시나리오 방향 (추가 선택 시 변경 가능)" : "Expected scenario direction (may change with more selections)"}</p>`
+            ? `<p class="q2-synthesis-caveat">${isKo ? "?덉긽 ?쒕굹由ъ삤 諛⑺뼢 (異붽? ?좏깮 ??蹂寃?媛??" : "Expected scenario direction (may change with more selections)"}</p>`
             : "";
         const valuesPills = coreValues.map(v => `<span class="q2-value-pill">${escapeHtml(v)}</span>`).join("");
 
-        // ── 클러스터 기반 신호 가중치 (100점 만점) ──
+        // ?? ?대윭?ㅽ꽣 湲곕컲 ?좏샇 媛以묒튂 (100??留뚯젏) ??
         const hasQ2 = q2Traits.length > 0;
         const Q1_WEIGHT = hasQ2 ? 40 : (q1Traits.length > 0 ? 100 : 0);
         const Q2_WEIGHT = hasQ2 ? 60 : 0;
 
-        // 테마 클러스터 정의
+        // ?뚮쭏 ?대윭?ㅽ꽣 ?뺤쓽
         const SIGNAL_CLUSTERS = {
             family_care: {
-                label: isKo ? "🏠 패밀리 케어" : "🏠 Family Care",
+                label: isKo ? "?룧 ?⑤?由?耳?? : "?룧 Family Care",
                 color: "#dc2626",
                 traits: isKo
-                    ? ["가구 운영 복잡도 높음", "케어/안심 니즈 큼", "원격 확인 수요 존재", "접근성 배려 자동화"]
+                    ? ["媛援??댁쁺 蹂듭옟???믪쓬", "耳???덉떖 ?덉쫰 ??, "?먭꺽 ?뺤씤 ?섏슂 議댁옱", "?묎렐??諛곕젮 ?먮룞??]
                     : ["high household complexity", "strong care and reassurance needs", "remote check-in demand", "accessibility-aware automation"]
             },
             efficiency: {
-                label: isKo ? "⚡ 시간·효율" : "⚡ Time & Efficiency",
+                label: isKo ? "???쒓컙쨌?⑥쑉" : "??Time & Efficiency",
                 color: "#ea580c",
                 traits: isKo
-                    ? ["시간 가치 민감", "가사 효율 추구", "외출 전·귀가 시 자동화 수요"]
+                    ? ["?쒓컙 媛移?誘쇨컧", "媛???⑥쑉 異붽뎄", "?몄텧 ?꽷룰?媛 ???먮룞???섏슂"]
                     : ["time-value sensitivity", "chore efficiency focus", "pre-departure and return automation demand"]
             },
             savings: {
-                label: isKo ? "💰 절약·비용" : "💰 Savings",
+                label: isKo ? "?뮥 ?덉빟쨌鍮꾩슜" : "?뮥 Savings",
                 color: "#d97706",
                 traits: isKo
-                    ? ["지출 민감도 높음", "즉시 체감 가치 선호"]
+                    ? ["吏異?誘쇨컧???믪쓬", "利됱떆 泥닿컧 媛移??좏샇"]
                     : ["high spending sensitivity", "preference for immediate value"]
             },
             wellness: {
-                label: isKo ? "💚 건강·여가" : "💚 Health & Leisure",
+                label: isKo ? "?뮍 嫄닿컯쨌?ш?" : "?뮍 Health & Leisure",
                 color: "#16a34a",
                 traits: isKo
-                    ? ["건강·웰니스 중시", "여가 시간 품질 중시", "수면 품질 중시", "실내 환경 민감"]
+                    ? ["嫄닿컯쨌?곕땲??以묒떆", "?ш? ?쒓컙 ?덉쭏 以묒떆", "?섎㈃ ?덉쭏 以묒떆", "?ㅻ궡 ?섍꼍 誘쇨컧"]
                     : ["health and wellness focus", "high value on leisure quality", "sleep quality focus", "indoor environment sensitivity"]
             },
             security: {
-                label: isKo ? "🔒 안전·보안" : "🔒 Security",
+                label: isKo ? "?뵏 ?덉쟾쨌蹂댁븞" : "?뵏 Security",
                 color: "#2563eb",
                 traits: isKo
-                    ? ["보안/안전 중시", "물건 위치 추적 수요"]
+                    ? ["蹂댁븞/?덉쟾 以묒떆", "臾쇨굔 ?꾩튂 異붿쟻 ?섏슂"]
                     : ["security and safety focus", "object tracking demand"]
             },
             living: {
-                label: isKo ? "🏡 주거·생활" : "🏡 Living Space",
+                label: isKo ? "?룪 二쇨굅쨌?앺솢" : "?룪 Living Space",
                 color: "#7c3aed",
                 traits: isKo
-                    ? ["공동주거 환경 최적화", "소형 공간 효율화", "독립 주거 자동화", "공용 공간 관리 니즈",
-                       "생활 동선 공유", "개인 공간·공용 공간 분리", "안정적 생활 루틴 중시", "분위기·조명 중시"]
+                    ? ["怨듬룞二쇨굅 ?섍꼍 理쒖쟻??, "?뚰삎 怨듦컙 ?⑥쑉??, "?낅┰ 二쇨굅 ?먮룞??, "怨듭슜 怨듦컙 愿由??덉쫰",
+                       "?앺솢 ?숈꽑 怨듭쑀", "媛쒖씤 怨듦컙쨌怨듭슜 怨듦컙 遺꾨━", "?덉젙???앺솢 猷⑦떞 以묒떆", "遺꾩쐞湲걔룹“紐?以묒떆"]
                     : ["shared-building environment optimization", "compact space efficiency", "independent dwelling automation", "shared space management needs",
                        "shared daily routine", "private and shared space separation", "stable routine focus", "ambiance and lighting focus"]
             }
         };
 
-        // Q1/Q2 trait 세트
+        // Q1/Q2 trait ?명듃
         const q1TraitSet = new Set(q1Traits.map(t => t.trait));
         const q2TraitSet = new Set(q2Traits);
         const q1ContextEntries = getAppliedQ1ContextEntries();
 
-        // 교차 검증 (Q1+Q2 중복) 감지
+        // 援먯감 寃利?(Q1+Q2 以묐났) 媛먯?
         const corroTraits = new Set();
         for (const t of q2Traits) { if (q1TraitSet.has(t)) corroTraits.add(t); }
 
-        // 클러스터별 신호 점수 계산
+        // ?대윭?ㅽ꽣蹂??좏샇 ?먯닔 怨꾩궛
         function calcSignalScore(trait, pool, count, source) {
             let base = pool / Math.max(count, 1);
-            // 교차 검증 보너스: Q1+Q2 모두에서 나온 신호는 1.5배
+            // 援먯감 寃利?蹂대꼫?? Q1+Q2 紐⑤몢?먯꽌 ?섏삩 ?좏샇??1.5諛?
             if (corroTraits.has(trait)) base *= 1.5;
-            // 클러스터 시너지: 같은 클러스터에 2개 이상 신호가 있으면 +20%
+            // ?대윭?ㅽ꽣 ?쒕꼫吏: 媛숈? ?대윭?ㅽ꽣??2媛??댁긽 ?좏샇媛 ?덉쑝硫?+20%
             for (const cl of Object.values(SIGNAL_CLUSTERS)) {
                 const allTraits = source === "q1" ? q1Traits.map(t => t.trait) : q2Traits;
                 const inCluster = cl.traits.filter(ct => allTraits.includes(ct));
@@ -6173,17 +6178,17 @@ function buildStep3Insight() {
             return base;
         }
 
-        // Q1 점수 계산 (교차검증 + 클러스터 시너지 반영)
+        // Q1 ?먯닔 怨꾩궛 (援먯감寃利?+ ?대윭?ㅽ꽣 ?쒕꼫吏 諛섏쁺)
         const q1Scores = q1Traits.map(t => ({
             ...t,
             score: calcSignalScore(t.trait, Q1_WEIGHT, q1Traits.length, "q1"),
             isCorro: corroTraits.has(t.trait)
         }));
-        // Q1 총합이 풀을 초과하면 정규화
+        // Q1 珥앺빀?????珥덇낵?섎㈃ ?뺢퇋??
         const q1Total = q1Scores.reduce((s, t) => s + t.score, 0);
         if (q1Total > 0) q1Scores.forEach(t => { t.score = (t.score / q1Total) * Q1_WEIGHT; });
 
-        // Q2 점수 계산
+        // Q2 ?먯닔 怨꾩궛
         const q2Scores = q2Traits.map(trait => ({
             trait,
             score: calcSignalScore(trait, Q2_WEIGHT, q2Traits.length, "q2"),
@@ -6192,11 +6197,11 @@ function buildStep3Insight() {
         const q2Total = q2Scores.reduce((s, t) => s + t.score, 0);
         if (q2Total > 0) q2Scores.forEach(t => { t.score = (t.score / q2Total) * Q2_WEIGHT; });
 
-        // perQ1/perQ2 — 태그 계산용 평균
+        // perQ1/perQ2 ???쒓렇 怨꾩궛???됯퇏
         const perQ1 = Q1_WEIGHT / Math.max(q1Traits.length, 1);
         const perQ2 = Q2_WEIGHT / Math.max(q2Traits.length, 1);
 
-        // 클러스터 매핑 함수
+        // ?대윭?ㅽ꽣 留ㅽ븨 ?⑥닔
         function findCluster(trait) {
             for (const [key, cl] of Object.entries(SIGNAL_CLUSTERS)) {
                 if (cl.traits.includes(trait)) return { key, ...cl };
@@ -6204,37 +6209,37 @@ function buildStep3Insight() {
             return null;
         }
 
-        // 신호 → 점수 바 HTML (Q1) — 클러스터 그룹핑
+        // ?좏샇 ???먯닔 諛?HTML (Q1) ???대윭?ㅽ꽣 洹몃９??
         const q1ScoreBars = q1Scores.map(t => {
             const score = Math.round(t.score);
             const cl = findCluster(t.trait);
-            const corroTag = t.isCorro ? `<span class="q2-corro-badge">${isKo ? "Q2 교차검증 ×1.5" : "Q2 corroborated ×1.5"}</span>` : "";
+            const corroTag = t.isCorro ? `<span class="q2-corro-badge">${isKo ? "Q2 援먯감寃利?횞1.5" : "Q2 corroborated 횞1.5"}</span>` : "";
             const clTag = cl ? `<span class="q2-cluster-dot" style="background:${cl.color}" title="${cl.label}"></span>` : "";
             return `<div class="q2-score-row">
                 <span class="q2-score-label">${clTag}<span class="q2-score-dot" style="background:${t.color}"></span>${escapeHtml(t.trait)}</span>
                 ${corroTag}
                 <div class="q2-score-bar-track"><div class="q2-score-bar-fill q2-score-bar--q1" style="width:100%;transform:scaleX(${score / 100})"></div></div>
-                <span class="q2-score-num">${score}${isKo ? "점" : "pt"}</span>
+                <span class="q2-score-num">${score}${isKo ? "?? : "pt"}</span>
             </div>`;
         }).join("");
 
-        // 신호 → 점수 바 HTML (Q2) — 클러스터 그룹핑
+        // ?좏샇 ???먯닔 諛?HTML (Q2) ???대윭?ㅽ꽣 洹몃９??
         const warmColors = ["#ea580c", "#f97316", "#fb923c", "#c2410c", "#d97706", "#b91c1c", "#dc2626"];
         const q2ScoreBars = q2Scores.map((t, i) => {
             const score = Math.round(t.score);
             const color = warmColors[i % warmColors.length];
             const cl = findCluster(t.trait);
-            const corroTag = t.isCorro ? `<span class="q2-corro-badge">${isKo ? "Q1 교차검증 ×1.5" : "Q1 corroborated ×1.5"}</span>` : "";
+            const corroTag = t.isCorro ? `<span class="q2-corro-badge">${isKo ? "Q1 援먯감寃利?횞1.5" : "Q1 corroborated 횞1.5"}</span>` : "";
             const clTag = cl ? `<span class="q2-cluster-dot" style="background:${cl.color}" title="${cl.label}"></span>` : "";
             return `<div class="q2-score-row">
                 <span class="q2-score-label">${clTag}<span class="q2-score-dot" style="background:${color}"></span>${escapeHtml(t.trait)}</span>
                 ${corroTag}
                 <div class="q2-score-bar-track"><div class="q2-score-bar-fill q2-score-bar--q2" style="width:100%;transform:scaleX(${score / 100})"></div></div>
-                <span class="q2-score-num">${score}${isKo ? "점" : "pt"}</span>
+                <span class="q2-score-num">${score}${isKo ? "?? : "pt"}</span>
             </div>`;
         }).join("");
 
-        // 클러스터 요약 (활성 클러스터만)
+        // ?대윭?ㅽ꽣 ?붿빟 (?쒖꽦 ?대윭?ㅽ꽣留?
         const activeClusterHtml = Object.entries(SIGNAL_CLUSTERS).map(([key, cl]) => {
             const q1Hits = q1Traits.filter(t => cl.traits.includes(t.trait));
             const q2Hits = q2Traits.filter(t => cl.traits.includes(t));
@@ -6243,18 +6248,18 @@ function buildStep3Insight() {
             const hasSynergy = total >= 2;
             const hasCorro = q1Hits.some(t => q2Hits.includes(t.trait));
             const badges = [];
-            if (hasSynergy) badges.push(isKo ? "시너지 ×1.2" : "synergy ×1.2");
-            if (hasCorro) badges.push(isKo ? "교차검증 ×1.5" : "corroborated ×1.5");
+            if (hasSynergy) badges.push(isKo ? "?쒕꼫吏 횞1.2" : "synergy 횞1.2");
+            if (hasCorro) badges.push(isKo ? "援먯감寃利?횞1.5" : "corroborated 횞1.5");
             return `<span class="q2-cluster-pill" style="border-color:${cl.color};color:${cl.color}">
                 ${cl.label} <span class="q2-cluster-count">${total}</span>
                 ${badges.length ? `<span class="q2-cluster-bonus">${badges.join(" + ")}</span>` : ""}
             </span>`;
         }).filter(Boolean).join("");
 
-        // ── 시나리오 태그 스코어 집계 (고급 추론) ──
+        // ?? ?쒕굹由ъ삤 ?쒓렇 ?ㅼ퐫??吏묎퀎 (怨좉툒 異붾줎) ??
         const tagScoreMap = {};
-        const tagSourceCount = {}; // 중복 누적 방지용
-        const tagSources = {};    // 태그별 기여 소스 추적
+        const tagSourceCount = {}; // 以묐났 ?꾩쟻 諛⑹???
+        const tagSources = {};    // ?쒓렇蹂?湲곗뿬 ?뚯뒪 異붿쟻
         function addTagScore(tag, pts, sourceId, sourceLabel) {
             const key = `${sourceId}|${tag}`;
             if (!tagSourceCount[key]) {
@@ -6265,8 +6270,8 @@ function buildStep3Insight() {
             }
         }
 
-        // ── 명시적 선택 (Primary Intent) — 가중치 최고 ──
-        // 사용자가 명시적으로 선택한 특성 태그는 직접적 의도를 나타냄
+        // ?? 紐낆떆???좏깮 (Primary Intent) ??媛以묒튂 理쒓퀬 ??
+        // ?ъ슜?먭? 紐낆떆?곸쑝濡??좏깮???뱀꽦 ?쒓렇??吏곸젒???섎룄瑜??섑???
         const personaIds = getSelectedPersonaOptionIds();
         const PRIMARY_INTENT_MAP = {
             t_pet:        ["Care for your pet", "Pet care"],
@@ -6289,18 +6294,18 @@ function buildStep3Insight() {
             int_sleep:    ["Sleep well"],
             int_mood:     ["Enhanced mood"]
         };
-        const PRIMARY_WEIGHT = 15; // 명시적 선택은 높은 가중치
-        // persona ID → 표시 라벨
+        const PRIMARY_WEIGHT = 15; // 紐낆떆???좏깮? ?믪? 媛以묒튂
+        // persona ID ???쒖떆 ?쇰꺼
         function getPersonaLabel(id) {
             const el = document.querySelector(`input[value="${id}"]`);
             return el?.dataset?.label || id;
         }
         personaIds.forEach(id => {
             const lbl = getPersonaLabel(id);
-            (PRIMARY_INTENT_MAP[id] || []).forEach(tag => addTagScore(tag, PRIMARY_WEIGHT, `primary_${id}`, `${lbl} (${isKo ? "명시선택" : "explicit"} +${PRIMARY_WEIGHT})`));
+            (PRIMARY_INTENT_MAP[id] || []).forEach(tag => addTagScore(tag, PRIMARY_WEIGHT, `primary_${id}`, `${lbl} (${isKo ? "紐낆떆?좏깮" : "explicit"} +${PRIMARY_WEIGHT})`));
         });
 
-        // ── 세대 구성 (B) — 생활 맥락 신호 ──
+        // ?? ?몃? 援ъ꽦 (B) ???앺솢 留λ씫 ?좏샇 ??
         const HOUSEHOLD_WEIGHT = 10;
         const HOUSEHOLD_MAP = {
             hh_young_kids:  ["Care for kids", "Keep your home safe", "Family care"],
@@ -6312,10 +6317,10 @@ function buildStep3Insight() {
         };
         personaIds.forEach(id => {
             const lbl = getPersonaLabel(id);
-            (HOUSEHOLD_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSEHOLD_WEIGHT, `hh_${id}`, `${lbl} (${isKo ? "세대구성" : "household"} +${HOUSEHOLD_WEIGHT})`));
+            (HOUSEHOLD_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSEHOLD_WEIGHT, `hh_${id}`, `${lbl} (${isKo ? "?몃?援ъ꽦" : "household"} +${HOUSEHOLD_WEIGHT})`));
         });
 
-        // ── 라이프스테이지 (C) — 맥락 보강 ──
+        // ?? ?쇱씠?꾩뒪?뚯씠吏 (C) ??留λ씫 蹂닿컯 ??
         const LIFESTAGE_WEIGHT = 8;
         const LIFESTAGE_MAP = {
             ls_parenting:    ["Care for kids", "Keep your home safe", "Family care"],
@@ -6328,10 +6333,10 @@ function buildStep3Insight() {
         };
         personaIds.forEach(id => {
             const lbl = getPersonaLabel(id);
-            (LIFESTAGE_MAP[id] || []).forEach(tag => addTagScore(tag, LIFESTAGE_WEIGHT, `ls_${id}`, `${lbl} (${isKo ? "라이프스테이지" : "lifestage"} +${LIFESTAGE_WEIGHT})`));
+            (LIFESTAGE_MAP[id] || []).forEach(tag => addTagScore(tag, LIFESTAGE_WEIGHT, `ls_${id}`, `${lbl} (${isKo ? "?쇱씠?꾩뒪?뚯씠吏" : "lifestage"} +${LIFESTAGE_WEIGHT})`));
         });
 
-        // ── 거주지 유형 (A) — 배경 환경 (낮은 가중치) ──
+        // ?? 嫄곗＜吏 ?좏삎 (A) ??諛곌꼍 ?섍꼍 (??? 媛以묒튂) ??
         const HOUSING_WEIGHT = 4;
         const HOUSING_MAP = {
             h_apt:       ["Save energy", "Keep the air fresh"],
@@ -6342,46 +6347,46 @@ function buildStep3Insight() {
         };
         personaIds.forEach(id => {
             const lbl = getPersonaLabel(id);
-            (HOUSING_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSING_WEIGHT, `housing_${id}`, `${lbl} (${isKo ? "거주지" : "housing"} +${HOUSING_WEIGHT})`));
+            (HOUSING_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSING_WEIGHT, `housing_${id}`, `${lbl} (${isKo ? "嫄곗＜吏" : "housing"} +${HOUSING_WEIGHT})`));
         });
 
-        // ── Q1 magic keywords → 태그 (도시 맥락) ──
+        // ?? Q1 magic keywords ???쒓렇 (?꾩떆 留λ씫) ??
         if (typeof MAGIC_KEY_TO_EXPLORE_TAGS !== "undefined" && _magicAppliedSelected) {
             for (const key of _magicAppliedSelected) {
                 const q1Pts = Math.round(perQ1 * 0.8);
                 const catObj = CITY_PROFILE_CATEGORIES.find(c => c.key === key);
                 const catLbl = catObj ? (isKo ? catObj.labelKo : catObj.labelEn) : key;
-                (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTagScore(tag, q1Pts, `q1_${key}`, `Q1 ${catLbl} (${isKo ? "도시맥락" : "city"} +${q1Pts})`));
+                (MAGIC_KEY_TO_EXPLORE_TAGS[key] || []).forEach(tag => addTagScore(tag, q1Pts, `q1_${key}`, `Q1 ${catLbl} (${isKo ? "?꾩떆留λ씫" : "city"} +${q1Pts})`));
             }
         }
 
-        // ── 커스텀 마켓 리서치 태그 반영 ──
+        // ?? 而ㅼ뒪? 留덉폆 由ъ꽌移??쒓렇 諛섏쁺 ??
         if (_customResearchData?.applied && Array.isArray(_customResearchData.tags)) {
             const CUSTOM_RESEARCH_WEIGHT = 12;
             const crQuery = _customResearchData.query || "";
             _customResearchData.tags.forEach(tag => {
-                addTagScore(tag, CUSTOM_RESEARCH_WEIGHT, `custom_research_${tag}`, `${isKo ? "마켓 리서치" : "Market Research"}: ${escapeHtml(crQuery)} (+${CUSTOM_RESEARCH_WEIGHT})`);
+                addTagScore(tag, CUSTOM_RESEARCH_WEIGHT, `custom_research_${tag}`, `${isKo ? "留덉폆 由ъ꽌移? : "Market Research"}: ${escapeHtml(crQuery)} (+${CUSTOM_RESEARCH_WEIGHT})`);
             });
         }
 
-        // ── purpose 텍스트 보너스 ──
+        // ?? purpose ?띿뒪??蹂대꼫????
         const purposeL = purpose.toLowerCase();
         const purposeBonus = {
-            "반려|펫|pet|dog|cat": "Care for your pet",
-            "부모|시니어|senior": "Care for seniors",
-            "아이|자녀|kid|child": "Care for kids",
-            "에너지|절약|energy|save": "Save energy",
-            "보안|안전|security|safe": "Keep your home safe",
-            "수면|잠|sleep": "Sleep well",
-            "게임|영화|music": "Enhanced mood",
-            "세탁|청소|가사|chore": "Help with chores",
-            "운동|건강|health": "Stay fit & healthy"
+            "諛섎젮|??pet|dog|cat": "Care for your pet",
+            "遺紐??쒕땲??senior": "Care for seniors",
+            "?꾩씠|?먮?|kid|child": "Care for kids",
+            "?먮꼫吏|?덉빟|energy|save": "Save energy",
+            "蹂댁븞|?덉쟾|security|safe": "Keep your home safe",
+            "?섎㈃|??sleep": "Sleep well",
+            "寃뚯엫|?곹솕|music": "Enhanced mood",
+            "?명긽|泥?냼|媛??chore": "Help with chores",
+            "?대룞|嫄닿컯|health": "Stay fit & healthy"
         };
         Object.entries(purposeBonus).forEach(([pattern, tag]) => {
-            if (new RegExp(pattern, "i").test(purposeL)) addTagScore(tag, 8, `purpose_${tag}`, `${isKo ? "추가 설명 텍스트" : "context text"} (+8)`);
+            if (new RegExp(pattern, "i").test(purposeL)) addTagScore(tag, 8, `purpose_${tag}`, `${isKo ? "異붽? ?ㅻ챸 ?띿뒪?? : "context text"} (+8)`);
         });
 
-        // ── 유사 태그 병합 (에너지 절약 + 에너지 절감 → 에너지 절약으로 통합) ──
+        // ?? ?좎궗 ?쒓렇 蹂묓빀 (?먮꼫吏 ?덉빟 + ?먮꼫吏 ?덇컧 ???먮꼫吏 ?덉빟?쇰줈 ?듯빀) ??
         const TAG_MERGE = {
             "Energy Saving": "Save energy",
             "Security": "Keep your home safe",
@@ -6396,7 +6401,7 @@ function buildStep3Insight() {
             if (tagScoreMap[from]) {
                 tagScoreMap[to] = (tagScoreMap[to] || 0) + tagScoreMap[from];
                 delete tagScoreMap[from];
-                // 소스도 병합 + 라벨 기준 중복 제거 (중복 시 점수 뻥튀기 방지)
+                // ?뚯뒪??蹂묓빀 + ?쇰꺼 湲곗? 以묐났 ?쒓굅 (以묐났 ???먯닔 六ν?湲?諛⑹?)
                 if (tagSources[from]) {
                     if (!tagSources[to]) tagSources[to] = [];
                     const existingLabels = new Set(tagSources[to].map(s => s.label));
@@ -6405,8 +6410,8 @@ function buildStep3Insight() {
                             tagSources[to].push(s);
                             existingLabels.add(s.label);
                         } else {
-                            // 중복된 소스(동일한 이유로 여러 태그에 점수가 중복 부여된 경우)
-                            // 병합 과정에서 원점수가 뻥튀기되지 않도록 합산된 점수에서 차감
+                            // 以묐났???뚯뒪(?숈씪???댁쑀濡??щ윭 ?쒓렇???먯닔媛 以묐났 遺?щ맂 寃쎌슦)
+                            // 蹂묓빀 怨쇱젙?먯꽌 ?먯젏?섍? 六ν?湲곕릺吏 ?딅룄濡??⑹궛???먯닔?먯꽌 李④컧
                             tagScoreMap[to] -= s.pts;
                         }
                     }
@@ -6415,88 +6420,88 @@ function buildStep3Insight() {
             }
         }
 
-        // 정렬 & 100점 정규화
+        // ?뺣젹 & 100???뺢퇋??
         const sortedTags = Object.entries(tagScoreMap).sort((a, b) => b[1] - a[1]);
         const maxRaw = sortedTags.length > 0 ? sortedTags[0][1] : 1;
         const topTags = sortedTags.slice(0, 6);
 
-        // 시나리오 태그 → 한글 매핑
+        // ?쒕굹由ъ삤 ?쒓렇 ???쒓? 留ㅽ븨
         const tagKoMap = {
-            "Save energy": "에너지 절약", "Keep your home safe": "홈 안전·보안",
-            "Help with chores": "가사 자동화", "Care for kids": "자녀 케어",
-            "Care for seniors": "시니어 케어", "Care for your pet": "반려동물 케어",
-            "Sleep well": "수면 개선", "Enhanced mood": "분위기 연출",
-            "Stay fit & healthy": "건강·피트니스", "Easily control your lights": "조명 제어",
-            "Keep the air fresh": "공기질 관리", "Find your belongings": "분실물 찾기",
-            "Time saving": "시간 절약", "Energy Saving": "에너지 절감",
-            "Security": "보안", "Family care": "가족 돌봄", "Easy to use": "간편 사용",
-            "Health": "건강", "Pet care": "펫 케어", "Sleep": "수면"
+            "Save energy": "?먮꼫吏 ?덉빟", "Keep your home safe": "???덉쟾쨌蹂댁븞",
+            "Help with chores": "媛???먮룞??, "Care for kids": "?먮? 耳??,
+            "Care for seniors": "?쒕땲??耳??, "Care for your pet": "諛섎젮?숇Ъ 耳??,
+            "Sleep well": "?섎㈃ 媛쒖꽑", "Enhanced mood": "遺꾩쐞湲??곗텧",
+            "Stay fit & healthy": "嫄닿컯쨌?쇳듃?덉뒪", "Easily control your lights": "議곕챸 ?쒖뼱",
+            "Keep the air fresh": "怨듦린吏?愿由?, "Find your belongings": "遺꾩떎臾?李얘린",
+            "Time saving": "?쒓컙 ?덉빟", "Energy Saving": "?먮꼫吏 ?덇컧",
+            "Security": "蹂댁븞", "Family care": "媛議??뚮큵", "Easy to use": "媛꾪렪 ?ъ슜",
+            "Health": "嫄닿컯", "Pet care": "??耳??, "Sleep": "?섎㈃"
         };
 
         const tagBarsHtml = topTags.map(([tag, rawScore], idx) => {
             const norm = Math.round((rawScore / maxRaw) * 100);
             const display = isKo ? (tagKoMap[tag] || tag) : tag;
             const barColor = norm >= 70 ? "#2563eb" : norm >= 40 ? "#3b82f6" : "#93c5fd";
-            // 산출 근거 (어떤 소스에서 몇 점)
+            // ?곗텧 洹쇨굅 (?대뼡 ?뚯뒪?먯꽌 紐???
             const sources = (tagSources[tag] || []).sort((a, b) => b.pts - a.pts);
             const sourceSum = sources.reduce((s, x) => s + x.pts, 0);
             const detailId = `tag-detail-${idx}-${Date.now()}`;
             const sourceLines = sources.map(s =>
-                `<span class="q2-tag-source-item">+${s.pts} ← ${escapeHtml(s.label)}</span>`
+                `<span class="q2-tag-source-item">+${s.pts} ??${escapeHtml(s.label)}</span>`
             ).join("");
-            // 정규화 설명
+            // ?뺢퇋???ㅻ챸
             const normExplain = isKo
                 ? (idx === 0
-                    ? `원점수 합계 ${sourceSum} → 1위 기준점이므로 <strong>100점</strong>으로 표시`
-                    : `원점수 합계 ${sourceSum} ÷ 1위 원점수 ${Math.round(maxRaw)} × 100 = <strong>${norm}점</strong>`)
+                    ? `?먯젏???⑷퀎 ${sourceSum} ??1??湲곗??먯씠誘濡?<strong>100??/strong>?쇰줈 ?쒖떆`
+                    : `?먯젏???⑷퀎 ${sourceSum} 첨 1???먯젏??${Math.round(maxRaw)} 횞 100 = <strong>${norm}??/strong>`)
                 : (idx === 0
-                    ? `Raw total ${sourceSum} → top scorer, displayed as <strong>100</strong>`
-                    : `Raw total ${sourceSum} ÷ top raw ${Math.round(maxRaw)} × 100 = <strong>${norm}</strong>`);
+                    ? `Raw total ${sourceSum} ??top scorer, displayed as <strong>100</strong>`
+                    : `Raw total ${sourceSum} 첨 top raw ${Math.round(maxRaw)} 횞 100 = <strong>${norm}</strong>`);
             return `<div class="q2-tag-row-wrap">
                 <div class="q2-tag-row">
                     <span class="q2-tag-label">${escapeHtml(display)}</span>
                     <div class="q2-tag-bar-track"><div class="q2-tag-bar-fill" style="width:100%;transform:scaleX(${norm / 100});background:${barColor}"></div></div>
                     <span class="q2-tag-score">${norm}</span>
-                    <button type="button" class="q2-tag-detail-btn q2-evidence-toggle" data-ev-target="${detailId}" aria-expanded="false"><span class="q2-ev-arrow">▸</span><span>${isKo ? "근거" : "Details"}</span></button>
+                    <button type="button" class="q2-tag-detail-btn q2-evidence-toggle" data-ev-target="${detailId}" aria-expanded="false"><span class="q2-ev-arrow">??/span><span>${isKo ? "洹쇨굅" : "Details"}</span></button>
                 </div>
                 <div class="q2-evidence-detail q2-tag-source-detail" id="${detailId}">
-                    <p class="q2-tag-source-title">${escapeHtml(display)} ${isKo ? "점수 산출 근거" : "score breakdown"}</p>
+                    <p class="q2-tag-source-title">${escapeHtml(display)} ${isKo ? "?먯닔 ?곗텧 洹쇨굅" : "score breakdown"}</p>
                     ${sourceLines}
                     <div class="q2-tag-source-total">
-                        <span>${isKo ? "합계" : "Total"}: ${sourceSum}${isKo ? "점" : "pt"}</span>
+                        <span>${isKo ? "?⑷퀎" : "Total"}: ${sourceSum}${isKo ? "?? : "pt"}</span>
                     </div>
                     <p class="q2-tag-source-norm">${normExplain}</p>
                 </div>
             </div>`;
         }).join("");
 
-        // ── 후보 시나리오 방향 요약 ──
+        // ?? ?꾨낫 ?쒕굹由ъ삤 諛⑺뼢 ?붿빟 ??
         const top3Tags = topTags.slice(0, 3).map(([tag]) => isKo ? (tagKoMap[tag] || tag) : tag);
         const scenarioHint = top3Tags.length > 0
             ? (isKo
-                ? `이 조합이면 <strong>${top3Tags.join(", ")}</strong> 중심의 시나리오가 높은 점수로 매칭될 가능성이 큽니다.`
+                ? `??議고빀?대㈃ <strong>${top3Tags.join(", ")}</strong> 以묒떖???쒕굹由ъ삤媛 ?믪? ?먯닔濡?留ㅼ묶??媛?μ꽦???쎈땲??`
                 : `Scenarios focused on <strong>${top3Tags.join(", ")}</strong> are most likely to score highest.`)
             : "";
 
-        const topCategoryLabel = top3Tags[0] || (isKo ? "아직 없음" : "Not enough data");
+        const topCategoryLabel = top3Tags[0] || (isKo ? "?꾩쭅 ?놁쓬" : "Not enough data");
         const weightingSummary = isKo
-            ? `Q1 도시 신호 ${Q1_WEIGHT}점 + Q2 생활 신호 ${Q2_WEIGHT}점`
+            ? `Q1 ?꾩떆 ?좏샇 ${Q1_WEIGHT}??+ Q2 ?앺솢 ?좏샇 ${Q2_WEIGHT}??
             : `Q1 city signals ${Q1_WEIGHT}pt + Q2 lifestyle signals ${Q2_WEIGHT}pt`;
         const boostSummary = isKo
-            ? `${activeClusterHtml ? "클러스터 시너지와 교차검증이 있으면 추가 가중" : "선택이 쌓이면 시너지/교차검증 가중 시작"}`
+            ? `${activeClusterHtml ? "?대윭?ㅽ꽣 ?쒕꼫吏? 援먯감寃利앹씠 ?덉쑝硫?異붽? 媛以? : "?좏깮???볦씠硫??쒕꼫吏/援먯감寃利?媛以??쒖옉"}`
             : `${activeClusterHtml ? "Cluster synergy and cross-validation apply extra weighting" : "More aligned selections unlock synergy and cross-validation boosts"}`;
         const statusCopy = confidence >= 80
-            ? (isKo ? "현재 선택은 바로 시나리오 매칭에 들어가도 될 정도로 충분히 구체적입니다." : "Your current inputs are already specific enough for strong scenario matching.")
+            ? (isKo ? "?꾩옱 ?좏깮? 諛붾줈 ?쒕굹由ъ삤 留ㅼ묶???ㅼ뼱媛?????뺣룄濡?異⑸텇??援ъ껜?곸엯?덈떎." : "Your current inputs are already specific enough for strong scenario matching.")
             : confidence >= 40
-                ? (isKo ? "방향은 잡혔고, Q2 선택을 더하면 가중치와 매칭 정확도가 더 선명해집니다." : "The direction is visible, and more Q2 input will sharpen weighting and matching.")
-                : (isKo ? "아직 초기 방향입니다. Q2 선택이 늘어나면 예상 방향이 안정됩니다." : "This is still an early direction. More Q2 input will stabilize the prediction.");
+                ? (isKo ? "諛⑺뼢? ?≫삍怨? Q2 ?좏깮???뷀븯硫?媛以묒튂? 留ㅼ묶 ?뺥솗?꾧? ???좊챸?댁쭛?덈떎." : "The direction is visible, and more Q2 input will sharpen weighting and matching.")
+                : (isKo ? "?꾩쭅 珥덇린 諛⑺뼢?낅땲?? Q2 ?좏깮???섏뼱?섎㈃ ?덉긽 諛⑺뼢???덉젙?⑸땲??" : "This is still an early direction. More Q2 input will stabilize the prediction.");
 
         synthesisHtml = `
             <section class="q2-stage-card q2-stage-card--direction">
                 <div class="q2-stage-card-head">
                     <div>
-                        <span class="q2-stage-kicker">${isKo ? "예상 시나리오 방향" : "Expected scenario direction"}</span>
-                        <h4>${isKo ? "현재 입력이 어떤 카테고리와 매칭되는지 한눈에 확인하세요" : "See at a glance which categories your current inputs map to"}</h4>
+                        <span class="q2-stage-kicker">${isKo ? "?덉긽 ?쒕굹由ъ삤 諛⑺뼢" : "Expected scenario direction"}</span>
+                        <h4>${isKo ? "?꾩옱 ?낅젰???대뼡 移댄뀒怨좊━? 留ㅼ묶?섎뒗吏 ?쒕늿???뺤씤?섏꽭?? : "See at a glance which categories your current inputs map to"}</h4>
                     </div>
                     <span class="q2-stage-status q2-stage-status--${confColor}">${escapeHtml(confLabel)}</span>
                 </div>
@@ -6509,61 +6514,61 @@ function buildStep3Insight() {
                     </div>
                     <div class="q2-direction-summary-grid">
                         <article class="q2-direction-summary-card">
-                            <span class="q2-direction-summary-label">${isKo ? "우선 카테고리" : "Leading category"}</span>
+                            <span class="q2-direction-summary-label">${isKo ? "?곗꽑 移댄뀒怨좊━" : "Leading category"}</span>
                             <strong>${escapeHtml(topCategoryLabel)}</strong>
-                            <p>${isKo ? "현재 입력 기준으로 가장 높은 매칭 가능성" : "Highest current match likelihood"}</p>
+                            <p>${isKo ? "?꾩옱 ?낅젰 湲곗??쇰줈 媛???믪? 留ㅼ묶 媛?μ꽦" : "Highest current match likelihood"}</p>
                         </article>
                         <article class="q2-direction-summary-card">
-                            <span class="q2-direction-summary-label">${isKo ? "가중치 구조" : "Weighting"}</span>
+                            <span class="q2-direction-summary-label">${isKo ? "媛以묒튂 援ъ“" : "Weighting"}</span>
                             <strong>${escapeHtml(weightingSummary)}</strong>
                             <p>${escapeHtml(boostSummary)}</p>
                         </article>
                         <article class="q2-direction-summary-card">
-                            <span class="q2-direction-summary-label">${isKo ? "매칭 해석" : "How to read it"}</span>
-                            <strong>${isKo ? "점수 + 근거 + 보정" : "Score + evidence + boosts"}</strong>
-                            <p>${isKo ? "아래에서 항목별 점수, 가중치, 산출 근거를 바로 확인할 수 있습니다." : "Check the item-level scores, weighting, and breakdowns below."}</p>
+                            <span class="q2-direction-summary-label">${isKo ? "留ㅼ묶 ?댁꽍" : "How to read it"}</span>
+                            <strong>${isKo ? "?먯닔 + 洹쇨굅 + 蹂댁젙" : "Score + evidence + boosts"}</strong>
+                            <p>${isKo ? "?꾨옒?먯꽌 ??ぉ蹂??먯닔, 媛以묒튂, ?곗텧 洹쇨굅瑜?諛붾줈 ?뺤씤?????덉뒿?덈떎." : "Check the item-level scores, weighting, and breakdowns below."}</p>
                         </article>
                     </div>
                 </div>
 
                 <div class="q2-scoreboard">
                     <div class="q2-scoreboard-topline">
-                        <p class="q2-scoreboard-title">${isKo ? "점수와 가중치 구조" : "Scoring and weighting structure"}</p>
-                        <button type="button" class="q2-legend-help-btn q2-legend-help-btn--loud" id="q2-legend-help-btn" title="${isKo ? "점수 읽는 방법 안내" : "How to read this score"}">${isKo ? "읽는 법" : "Guide"}</button>
+                        <p class="q2-scoreboard-title">${isKo ? "?먯닔? 媛以묒튂 援ъ“" : "Scoring and weighting structure"}</p>
+                        <button type="button" class="q2-legend-help-btn q2-legend-help-btn--loud" id="q2-legend-help-btn" title="${isKo ? "?먯닔 ?쎈뒗 諛⑸쾿 ?덈궡" : "How to read this score"}">${isKo ? "?쎈뒗 踰? : "Guide"}</button>
                     </div>
                     <p class="q2-scoreboard-method">${isKo
-                        ? "Q1(40점)과 Q2(60점) 신호를 합산합니다. 같은 테마 클러스터의 신호가 2개 이상이면 시너지(×1.2), Q1·Q2 양쪽에서 교차 검증된 신호는 강화(×1.5)됩니다. 각 행의 우측 버튼으로 산출 근거를 펼칠 수 있습니다."
-                        : "Q1 (40pt) + Q2 (60pt) signals are combined. Signals in the same theme cluster get synergy (×1.2), and signals validated by both Q1 and Q2 get a stronger ×1.5 boost. Use the right-side buttons to open the breakdown."}</p>
+                        ? "Q1(40??怨?Q2(60?? ?좏샇瑜??⑹궛?⑸땲?? 媛숈? ?뚮쭏 ?대윭?ㅽ꽣???좏샇媛 2媛??댁긽?대㈃ ?쒕꼫吏(횞1.2), Q1쨌Q2 ?묒そ?먯꽌 援먯감 寃利앸맂 ?좏샇??媛뺥솕(횞1.5)?⑸땲?? 媛??됱쓽 ?곗륫 踰꾪듉?쇰줈 ?곗텧 洹쇨굅瑜??쇱튌 ???덉뒿?덈떎."
+                        : "Q1 (40pt) + Q2 (60pt) signals are combined. Signals in the same theme cluster get synergy (횞1.2), and signals validated by both Q1 and Q2 get a stronger 횞1.5 boost. Use the right-side buttons to open the breakdown."}</p>
                     ${activeClusterHtml ? `<div class="q2-cluster-row">${activeClusterHtml}</div>` : ""}
 
                     <div class="q2-legend">
-                        <span class="q2-legend-item"><span class="q2-legend-bar q2-score-bar--q1"></span> ${isKo ? "Q1 도시 맥락 점수" : "Q1 city context score"}</span>
-                        <span class="q2-legend-item"><span class="q2-legend-bar q2-score-bar--q2"></span> ${isKo ? "Q2 생활 맥락 점수" : "Q2 lifestyle score"}</span>
-                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#dc2626"></span> ${isKo ? "패밀리 케어" : "Family Care"}</span>
-                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#ea580c"></span> ${isKo ? "시간·효율" : "Time & Efficiency"}</span>
-                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#d97706"></span> ${isKo ? "절약·비용" : "Savings"}</span>
-                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#16a34a"></span> ${isKo ? "건강·여가" : "Health & Leisure"}</span>
-                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#2563eb"></span> ${isKo ? "안전·보안" : "Security"}</span>
-                        <span class="q2-legend-item"><span class="q2-corro-badge">${isKo ? "교차검증 ×1.5" : "cross-validated ×1.5"}</span></span>
+                        <span class="q2-legend-item"><span class="q2-legend-bar q2-score-bar--q1"></span> ${isKo ? "Q1 ?꾩떆 留λ씫 ?먯닔" : "Q1 city context score"}</span>
+                        <span class="q2-legend-item"><span class="q2-legend-bar q2-score-bar--q2"></span> ${isKo ? "Q2 ?앺솢 留λ씫 ?먯닔" : "Q2 lifestyle score"}</span>
+                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#dc2626"></span> ${isKo ? "?⑤?由?耳?? : "Family Care"}</span>
+                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#ea580c"></span> ${isKo ? "?쒓컙쨌?⑥쑉" : "Time & Efficiency"}</span>
+                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#d97706"></span> ${isKo ? "?덉빟쨌鍮꾩슜" : "Savings"}</span>
+                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#16a34a"></span> ${isKo ? "嫄닿컯쨌?ш?" : "Health & Leisure"}</span>
+                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#2563eb"></span> ${isKo ? "?덉쟾쨌蹂댁븞" : "Security"}</span>
+                        <span class="q2-legend-item"><span class="q2-corro-badge">${isKo ? "援먯감寃利?횞1.5" : "cross-validated 횞1.5"}</span></span>
                     </div>
 
                     <div class="q2-score-layout">
                         <div class="q2-score-section q2-score-section--emphasis">
-                            <p class="q2-score-section-label"><span class="q2-score-section-icon">📍</span> ${isKo ? "도시 맥락 (Q1)" : "City Context (Q1)"} <span class="q2-score-section-weight">${Q1_WEIGHT}${isKo ? "점" : "pt"}</span></p>
-                            ${q1ScoreBars || `<p class="q2-score-empty">${isKo ? "Q1 도시 프로필 미반영" : "No Q1 city profile applied"}</p>`}
+                            <p class="q2-score-section-label"><span class="q2-score-section-icon">?뱧</span> ${isKo ? "?꾩떆 留λ씫 (Q1)" : "City Context (Q1)"} <span class="q2-score-section-weight">${Q1_WEIGHT}${isKo ? "?? : "pt"}</span></p>
+                            ${q1ScoreBars || `<p class="q2-score-empty">${isKo ? "Q1 ?꾩떆 ?꾨줈??誘몃컲?? : "No Q1 city profile applied"}</p>`}
                         </div>
 
                         <div class="q2-score-section q2-score-section--emphasis">
-                            <p class="q2-score-section-label"><span class="q2-score-section-icon">🎯</span> ${isKo ? "생활 맥락 (Q2)" : "Lifestyle Context (Q2)"} <span class="q2-score-section-weight">${Q2_WEIGHT}${isKo ? "점" : "pt"}</span></p>
-                            ${q2ScoreBars || `<p class="q2-score-empty">${isKo ? "아직 Q2 항목을 선택하지 않았습니다. 위의 A·B·C 항목을 선택하면 생활 맥락 신호가 여기에 표시됩니다." : "No Q2 selections yet. Choose items from A·B·C above to see lifestyle signals here."}</p>`}
+                            <p class="q2-score-section-label"><span class="q2-score-section-icon">?렞</span> ${isKo ? "?앺솢 留λ씫 (Q2)" : "Lifestyle Context (Q2)"} <span class="q2-score-section-weight">${Q2_WEIGHT}${isKo ? "?? : "pt"}</span></p>
+                            ${q2ScoreBars || `<p class="q2-score-empty">${isKo ? "?꾩쭅 Q2 ??ぉ???좏깮?섏? ?딆븯?듬땲?? ?꾩쓽 A쨌B쨌C ??ぉ???좏깮?섎㈃ ?앺솢 留λ씫 ?좏샇媛 ?ш린???쒖떆?⑸땲??" : "No Q2 selections yet. Choose items from A쨌B쨌C above to see lifestyle signals here."}</p>`}
                         </div>
                     </div>
 
                     <div class="q2-score-divider"></div>
 
                     <div class="q2-scoreboard-topline">
-                        <p class="q2-scoreboard-title">${isKo ? "시나리오 매칭 예측" : "Scenario match prediction"}</p>
-                        <span class="q2-scoreboard-mini">${isKo ? "클릭해서 산출 근거 확인" : "Open rows to inspect weighting"}</span>
+                        <p class="q2-scoreboard-title">${isKo ? "?쒕굹由ъ삤 留ㅼ묶 ?덉륫" : "Scenario match prediction"}</p>
+                        <span class="q2-scoreboard-mini">${isKo ? "?대┃?댁꽌 ?곗텧 洹쇨굅 ?뺤씤" : "Open rows to inspect weighting"}</span>
                     </div>
                     ${tagBarsHtml}
                     ${scenarioHint ? `<p class="q2-scenario-hint">${scenarioHint}</p>` : ""}
@@ -6571,40 +6576,40 @@ function buildStep3Insight() {
             </section>`;
     }
 
-    // ── CTA / Missing input ──
+    // ?? CTA / Missing input ??
     const { hasHousing, hasHousehold, hasLifestage } = getQ2SelectionState();
     const missingParts = [];
-    if (!hasHousing)   missingParts.push(isKo ? "거주지 유형(A)" : "Housing(A)");
-    if (!hasHousehold) missingParts.push(isKo ? "세대 구성(B)"   : "Household(B)");
-    if (!hasLifestage) missingParts.push(isKo ? "라이프스테이지(C)" : "Life stage(C)");
+    if (!hasHousing)   missingParts.push(isKo ? "嫄곗＜吏 ?좏삎(A)" : "Housing(A)");
+    if (!hasHousehold) missingParts.push(isKo ? "?몃? 援ъ꽦(B)"   : "Household(B)");
+    if (!hasLifestage) missingParts.push(isKo ? "?쇱씠?꾩뒪?뚯씠吏(C)" : "Life stage(C)");
 
     let ctaHtml;
     if (missingParts.length > 0) {
         ctaHtml = `<div class="q2-action-prompt q2-action-warn">
-            <span class="q2-action-icon">⚠️</span>
+            <span class="q2-action-icon">?좑툘</span>
             <p>${isKo
-                ? `<strong>${missingParts.join(", ")}</strong>을(를) 아직 선택하지 않으셨습니다. 선택할수록 시나리오가 정확해집니다.`
+                ? `<strong>${missingParts.join(", ")}</strong>??瑜? ?꾩쭅 ?좏깮?섏? ?딆쑝?⑥뒿?덈떎. ?좏깮?좎닔濡??쒕굹由ъ삤媛 ?뺥솗?댁쭛?덈떎.`
                 : `<strong>${missingParts.join(", ")}</strong> not yet selected. More selections lead to better scenarios.`}</p>
         </div>`;
     } else if (!purpose) {
         ctaHtml = `<div class="q2-action-prompt q2-action-todo">
-            <span class="q2-action-icon">✍️</span>
+            <span class="q2-action-icon">?랃툘</span>
             <p>${isKo
-                ? "라이프 스타일이나 현재 불편한 상황이 있다면, <strong>위 빈칸에 자유롭게 적어주세요.</strong> 시나리오 정확도가 크게 올라갑니다."
+                ? "?쇱씠???ㅽ??쇱씠???꾩옱 遺덊렪???곹솴???덈떎硫? <strong>??鍮덉뭏???먯쑀濡?쾶 ?곸뼱二쇱꽭??</strong> ?쒕굹由ъ삤 ?뺥솗?꾧? ?ш쾶 ?щ씪媛묐땲??"
                 : "If you have a specific lifestyle or pain point, <strong>describe it in the text area above.</strong> It greatly improves scenario accuracy."}</p>
         </div>`;
     } else {
         ctaHtml = `<div class="q2-action-prompt q2-action-done">
-            <span class="q2-action-icon">✅</span>
-            <p>${isKo ? "상황 반영 완료 — <strong>다음</strong> 버튼을 눌러 기기를 선택하세요" : "Context applied — press <strong>Next</strong> to select devices"}</p>
+            <span class="q2-action-icon">??/span>
+            <p>${isKo ? "?곹솴 諛섏쁺 ?꾨즺 ??<strong>?ㅼ쓬</strong> 踰꾪듉???뚮윭 湲곌린瑜??좏깮?섏꽭?? : "Context applied ??press <strong>Next</strong> to select devices"}</p>
         </div>`;
     }
 
-    // ── Q3 힌트 배너 ──
+    // ?? Q3 ?뚰듃 諛곕꼫 ??
     const q3HintHtml = `
         <div class="q2-hint-banner">
-            <span class="q2-hint-icon">→</span>
-            <span>${isKo ? "다음 단계(Q3)에서 기기를 고르면, 이 타겟에 맞는 자동화 흐름이 완성됩니다" : "Pick devices in Q3 to complete an automation flow for this target"}</span>
+            <span class="q2-hint-icon">??/span>
+            <span>${isKo ? "?ㅼ쓬 ?④퀎(Q3)?먯꽌 湲곌린瑜?怨좊Ⅴ硫? ???寃잛뿉 留욌뒗 ?먮룞???먮쫫???꾩꽦?⑸땲?? : "Pick devices in Q3 to complete an automation flow for this target"}</span>
         </div>`;
     const footerCardHtml = `
         <section class="q2-stage-card q2-stage-card--footer">
@@ -6617,18 +6622,18 @@ function buildStep3Insight() {
             <section class="q2-stage-card q2-stage-card--direction q2-stage-card--pending">
                 <div class="q2-stage-card-head">
                     <div>
-                        <span class="q2-stage-kicker">${isKo ? "예상 시나리오 방향" : "Expected scenario direction"}</span>
-                        <h4>${isKo ? "Q2 선택이 쌓이면 가중치와 매칭 방향이 여기에서 정리됩니다" : "As Q2 selections accumulate, the weighting and match direction will be summarized here"}</h4>
+                        <span class="q2-stage-kicker">${isKo ? "?덉긽 ?쒕굹由ъ삤 諛⑺뼢" : "Expected scenario direction"}</span>
+                        <h4>${isKo ? "Q2 ?좏깮???볦씠硫?媛以묒튂? 留ㅼ묶 諛⑺뼢???ш린?먯꽌 ?뺣━?⑸땲?? : "As Q2 selections accumulate, the weighting and match direction will be summarized here"}</h4>
                     </div>
-                    <span class="q2-stage-status q2-stage-status--amber">${isKo ? "준비 중" : "Preparing"}</span>
+                    <span class="q2-stage-status q2-stage-status--amber">${isKo ? "以鍮?以? : "Preparing"}</span>
                 </div>
                 <p class="q2-direction-copy">${isKo
-                    ? "아직 선택이 충분하지 않아 점수 구조를 계산하지 않았습니다. 위의 A·B·C 항목을 하나씩 고르면 어떤 카테고리로 분류되고, 어떤 가중치가 붙는지 바로 이 카드에 표시됩니다."
-                    : "There is not enough input yet to calculate the scoring structure. As you choose items from A·B·C above, this card will show which categories they belong to and how weighting is applied."}</p>
+                    ? "?꾩쭅 ?좏깮??異⑸텇?섏? ?딆븘 ?먯닔 援ъ“瑜?怨꾩궛?섏? ?딆븯?듬땲?? ?꾩쓽 A쨌B쨌C ??ぉ???섎굹??怨좊Ⅴ硫??대뼡 移댄뀒怨좊━濡?遺꾨쪟?섍퀬, ?대뼡 媛以묒튂媛 遺숇뒗吏 諛붾줈 ??移대뱶???쒖떆?⑸땲??"
+                    : "There is not enough input yet to calculate the scoring structure. As you choose items from A쨌B쨌C above, this card will show which categories they belong to and how weighting is applied."}</p>
             </section>`;
     }
 
-    const place = cityDisplay ? `${cityDisplay} ${isKo ? "생활권" : "area"}` : (isKo ? "이 타겟" : "this target");
+    const place = cityDisplay ? `${cityDisplay} ${isKo ? "?앺솢沅? : "area"}` : (isKo ? "???寃? : "this target");
 
     return {
         badge: currentLocale === "ko" ? "Q2 Match" : "Q2 Match",
@@ -6647,8 +6652,8 @@ function buildStep3Insight() {
     console.error("[buildStep3Insight] error:", err);
     return {
         badge: currentLocale === "ko" ? "Q2 Match" : "Q2 Match",
-        title: currentLocale === "ko" ? "시나리오 매칭 개요" : "Scenario match overview",
-        summary: currentLocale === "ko" ? "카드 렌더링 중 오류가 발생했습니다." : "Card rendering error.",
+        title: currentLocale === "ko" ? "?쒕굹由ъ삤 留ㅼ묶 媛쒖슂" : "Scenario match overview",
+        summary: currentLocale === "ko" ? "移대뱶 ?뚮뜑留?以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎." : "Card rendering error.",
         body: String(err.message || err)
     };
   }
@@ -6656,12 +6661,12 @@ function buildStep3Insight() {
 
 function inferRegionalDirection(countryCode) {
     const directions = {
-        KR: currentLocale === "ko" ? "빠른 저녁 전환과 집안 리듬 정리" : "a fast transition into the evening routine",
-        US: currentLocale === "ko" ? "복수 기기 연결의 생활 편익을 한 장면으로 압축" : "compressing multi-device value into one clear life moment",
-        GB: currentLocale === "ko" ? "실용성과 절감 효과가 바로 읽히는 흐름" : "a flow where practicality and savings are immediately clear",
-        DE: currentLocale === "ko" ? "효율과 신뢰를 함께 주는 자동화 흐름" : "an automation flow that conveys both efficiency and trust"
+        KR: currentLocale === "ko" ? "鍮좊Ⅸ ????꾪솚怨?吏묒븞 由щ벉 ?뺣━" : "a fast transition into the evening routine",
+        US: currentLocale === "ko" ? "蹂듭닔 湲곌린 ?곌껐???앺솢 ?몄씡?????λ㈃?쇰줈 ?뺤텞" : "compressing multi-device value into one clear life moment",
+        GB: currentLocale === "ko" ? "?ㅼ슜?깃낵 ?덇컧 ?④낵媛 諛붾줈 ?쏀엳???먮쫫" : "a flow where practicality and savings are immediately clear",
+        DE: currentLocale === "ko" ? "?⑥쑉怨??좊ː瑜??④퍡 二쇰뒗 ?먮룞???먮쫫" : "an automation flow that conveys both efficiency and trust"
     };
-    return directions[countryCode] || (currentLocale === "ko" ? "지역 생활 맥락에 맞는 직관적 사용 장면" : "an intuitive usage moment fitted to the local context");
+    return directions[countryCode] || (currentLocale === "ko" ? "吏???앺솢 留λ씫??留욌뒗 吏곴????ъ슜 ?λ㈃" : "an intuitive usage moment fitted to the local context");
 }
 
 function getLocalizedContent(record) {
@@ -6674,7 +6679,7 @@ function normalizeCityValue(value) {
         .toLowerCase()
         .normalize("NFKD")
         .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9가-힣]+/g, " ")
+        .replace(/[^a-z0-9媛-??+/g, " ")
         .trim();
 }
 
@@ -6716,153 +6721,153 @@ function buildStep4Insight() {
     const samsungCount = breakdown.samsungCount;
     const partnerCount = breakdown.partnerCount + breakdown.customEntries.length;
     const mixLabel = isKo
-        ? `삼성 ${samsungCount}개${partnerCount > 0 ? ` · 타사/사용자 입력 ${partnerCount}개` : ""}`
-        : `Samsung ${samsungCount}${partnerCount > 0 ? ` · Partner/Custom ${partnerCount}` : ""}`;
+        ? `?쇱꽦 ${samsungCount}媛?{partnerCount > 0 ? ` 쨌 ????ъ슜???낅젰 ${partnerCount}媛? : ""}`
+        : `Samsung ${samsungCount}${partnerCount > 0 ? ` 쨌 Partner/Custom ${partnerCount}` : ""}`;
 
-    // ── 루틴 프리뷰 매핑 (기기 조합 → 구현 가능한 자동화 장면) ──
+    // ?? 猷⑦떞 ?꾨━酉?留ㅽ븨 (湲곌린 議고빀 ??援ы쁽 媛?ν븳 ?먮룞???λ㈃) ??
     const ROUTINE_DB = [
-        { id: "away_security", icon: "🛡️",
-          nameKo: "외출 안심 모니터링", nameEn: "Away Security Monitoring",
-          needs: ["카메라/CCTV"],
-          optional: ["도어락", "스마트 플러그", "센서"],
+        { id: "away_security", icon: "?썳截?,
+          nameKo: "?몄텧 ?덉떖 紐⑤땲?곕쭅", nameEn: "Away Security Monitoring",
+          needs: ["移대찓??CCTV"],
+          optional: ["?꾩뼱??, "?ㅻ쭏???뚮윭洹?, "?쇱꽌"],
           stepsKo: d => {
               const s = [];
-              if (d.has("도어락")) s.push(["도어락", "외출 잠금"]);
-              s.push(["카메라/CCTV", "움직임 감지 녹화"]);
-              if (d.has("스마트 플러그")) s.push(["스마트 플러그", "대기전력 차단"]);
-              if (d.has("센서")) s.push(["센서", "침입 알림"]);
+              if (d.has("?꾩뼱??)) s.push(["?꾩뼱??, "?몄텧 ?좉툑"]);
+              s.push(["移대찓??CCTV", "?吏곸엫 媛먯? ?뱁솕"]);
+              if (d.has("?ㅻ쭏???뚮윭洹?)) s.push(["?ㅻ쭏???뚮윭洹?, "?湲곗쟾??李⑤떒"]);
+              if (d.has("?쇱꽌")) s.push(["?쇱꽌", "移⑥엯 ?뚮┝"]);
               return s;
           },
           stepsEn: d => {
               const s = [];
-              if (d.has("도어락")) s.push(["Door Lock", "lock on leave"]);
+              if (d.has("?꾩뼱??)) s.push(["Door Lock", "lock on leave"]);
               s.push(["Camera", "motion recording"]);
-              if (d.has("스마트 플러그")) s.push(["Smart Plug", "standby power off"]);
-              if (d.has("센서")) s.push(["Sensor", "intrusion alert"]);
+              if (d.has("?ㅻ쭏???뚮윭洹?)) s.push(["Smart Plug", "standby power off"]);
+              if (d.has("?쇱꽌")) s.push(["Sensor", "intrusion alert"]);
               return s;
           }
         },
-        { id: "sleep_mood", icon: "🌙",
-          nameKo: "취침 무드 연출", nameEn: "Sleep Mood Automation",
-          needs: ["조명"],
-          optional: ["TV", "에어컨", "스피커"],
+        { id: "sleep_mood", icon: "?뙔",
+          nameKo: "痍⑥묠 臾대뱶 ?곗텧", nameEn: "Sleep Mood Automation",
+          needs: ["議곕챸"],
+          optional: ["TV", "?먯뼱而?, "?ㅽ뵾而?],
           stepsKo: d => {
-              const s = [["조명", "조도 10% 디밍"]];
-              if (d.has("TV")) s.push(["TV", "화면 Off / 앰비언트"]);
-              if (d.has("에어컨")) s.push(["에어컨", "수면 모드 전환"]);
-              if (d.has("스피커")) s.push(["스피커", "백색소음 재생"]);
+              const s = [["議곕챸", "議곕룄 10% ?붾컢"]];
+              if (d.has("TV")) s.push(["TV", "?붾㈃ Off / ?곕퉬?명듃"]);
+              if (d.has("?먯뼱而?)) s.push(["?먯뼱而?, "?섎㈃ 紐⑤뱶 ?꾪솚"]);
+              if (d.has("?ㅽ뵾而?)) s.push(["?ㅽ뵾而?, "諛깆깋?뚯쓬 ?ъ깮"]);
               return s;
           },
           stepsEn: d => {
               const s = [["Lights", "dim to 10%"]];
               if (d.has("TV")) s.push(["TV", "screen off / ambient"]);
-              if (d.has("에어컨")) s.push(["AC", "sleep mode"]);
-              if (d.has("스피커")) s.push(["Speaker", "white noise"]);
+              if (d.has("?먯뼱而?)) s.push(["AC", "sleep mode"]);
+              if (d.has("?ㅽ뵾而?)) s.push(["Speaker", "white noise"]);
               return s;
           }
         },
-        { id: "welcome_home", icon: "🏠",
-          nameKo: "귀가 웰컴 루틴", nameEn: "Welcome Home Routine",
-          needs: ["센서", "조명"],
-          optional: ["에어컨", "TV", "스피커"],
+        { id: "welcome_home", icon: "?룧",
+          nameKo: "洹媛 ?곗뺨 猷⑦떞", nameEn: "Welcome Home Routine",
+          needs: ["?쇱꽌", "議곕챸"],
+          optional: ["?먯뼱而?, "TV", "?ㅽ뵾而?],
           stepsKo: d => {
-              const s = [["센서", "현관 움직임 감지"], ["조명", "자동 점등"]];
-              if (d.has("에어컨")) s.push(["에어컨", "쾌적 온도 가동"]);
-              if (d.has("TV")) s.push(["TV", "뉴스/음악 자동 재생"]);
+              const s = [["?쇱꽌", "?꾧? ?吏곸엫 媛먯?"], ["議곕챸", "?먮룞 ?먮벑"]];
+              if (d.has("?먯뼱而?)) s.push(["?먯뼱而?, "苡뚯쟻 ?⑤룄 媛??]);
+              if (d.has("TV")) s.push(["TV", "?댁뒪/?뚯븙 ?먮룞 ?ъ깮"]);
               return s;
           },
           stepsEn: d => {
               const s = [["Sensor", "entrance motion detected"], ["Lights", "auto on"]];
-              if (d.has("에어컨")) s.push(["AC", "comfort temp on"]);
+              if (d.has("?먯뼱而?)) s.push(["AC", "comfort temp on"]);
               if (d.has("TV")) s.push(["TV", "auto play news/music"]);
               return s;
           }
         },
-        { id: "energy_save", icon: "⚡",
-          nameKo: "에너지 절약 자동화", nameEn: "Energy Saving Automation",
-          needs: ["에어컨"],
-          optional: ["스마트 플러그", "조명", "센서"],
+        { id: "energy_save", icon: "??,
+          nameKo: "?먮꼫吏 ?덉빟 ?먮룞??, nameEn: "Energy Saving Automation",
+          needs: ["?먯뼱而?],
+          optional: ["?ㅻ쭏???뚮윭洹?, "議곕챸", "?쇱꽌"],
           stepsKo: d => {
-              const s = [["에어컨", "외출 시 자동 절전"]];
-              if (d.has("스마트 플러그")) s.push(["스마트 플러그", "대기전력 모니터링"]);
-              if (d.has("조명")) s.push(["조명", "부재 시 자동 소등"]);
-              if (d.has("센서")) s.push(["센서", "재실 감지 연동"]);
+              const s = [["?먯뼱而?, "?몄텧 ???먮룞 ?덉쟾"]];
+              if (d.has("?ㅻ쭏???뚮윭洹?)) s.push(["?ㅻ쭏???뚮윭洹?, "?湲곗쟾??紐⑤땲?곕쭅"]);
+              if (d.has("議곕챸")) s.push(["議곕챸", "遺?????먮룞 ?뚮벑"]);
+              if (d.has("?쇱꽌")) s.push(["?쇱꽌", "?ъ떎 媛먯? ?곕룞"]);
               return s;
           },
           stepsEn: d => {
               const s = [["AC", "auto eco on leave"]];
-              if (d.has("스마트 플러그")) s.push(["Smart Plug", "standby monitoring"]);
-              if (d.has("조명")) s.push(["Lights", "auto off when away"]);
-              if (d.has("센서")) s.push(["Sensor", "occupancy detection"]);
+              if (d.has("?ㅻ쭏???뚮윭洹?)) s.push(["Smart Plug", "standby monitoring"]);
+              if (d.has("議곕챸")) s.push(["Lights", "auto off when away"]);
+              if (d.has("?쇱꽌")) s.push(["Sensor", "occupancy detection"]);
               return s;
           }
         },
-        { id: "pet_care", icon: "🐾",
-          nameKo: "반려동물 케어 모니터링", nameEn: "Pet Care Monitoring",
-          needs: ["카메라/CCTV"],
-          optional: ["센서", "에어컨", "공기청정기"],
+        { id: "pet_care", icon: "?맽",
+          nameKo: "諛섎젮?숇Ъ 耳??紐⑤땲?곕쭅", nameEn: "Pet Care Monitoring",
+          needs: ["移대찓??CCTV"],
+          optional: ["?쇱꽌", "?먯뼱而?, "怨듦린泥?젙湲?],
           stepsKo: d => {
-              const s = [["카메라/CCTV", "실시간 펫 모니터링"]];
-              if (d.has("센서")) s.push(["센서", "활동량 감지"]);
-              if (d.has("에어컨")) s.push(["에어컨", "실내 온도 자동 유지"]);
-              if (d.has("공기청정기")) s.push(["공기청정기", "공기질 자동 관리"]);
+              const s = [["移대찓??CCTV", "?ㅼ떆媛???紐⑤땲?곕쭅"]];
+              if (d.has("?쇱꽌")) s.push(["?쇱꽌", "?쒕룞??媛먯?"]);
+              if (d.has("?먯뼱而?)) s.push(["?먯뼱而?, "?ㅻ궡 ?⑤룄 ?먮룞 ?좎?"]);
+              if (d.has("怨듦린泥?젙湲?)) s.push(["怨듦린泥?젙湲?, "怨듦린吏??먮룞 愿由?]);
               return s;
           },
           stepsEn: d => {
               const s = [["Camera", "live pet monitoring"]];
-              if (d.has("센서")) s.push(["Sensor", "activity detection"]);
-              if (d.has("에어컨")) s.push(["AC", "auto temp control"]);
-              if (d.has("공기청정기")) s.push(["Air Purifier", "auto air quality"]);
+              if (d.has("?쇱꽌")) s.push(["Sensor", "activity detection"]);
+              if (d.has("?먯뼱而?)) s.push(["AC", "auto temp control"]);
+              if (d.has("怨듦린泥?젙湲?)) s.push(["Air Purifier", "auto air quality"]);
               return s;
           }
         },
-        { id: "laundry", icon: "🫧",
-          nameKo: "세탁 완료 알림 루틴", nameEn: "Laundry Done Routine",
-          needs: ["세탁기"],
-          optional: ["TV", "스피커", "스마트폰"],
+        { id: "laundry", icon: "?ェ",
+          nameKo: "?명긽 ?꾨즺 ?뚮┝ 猷⑦떞", nameEn: "Laundry Done Routine",
+          needs: ["?명긽湲?],
+          optional: ["TV", "?ㅽ뵾而?, "?ㅻ쭏?명룿"],
           stepsKo: d => {
-              const s = [["세탁기", "세탁 완료 감지"]];
-              if (d.has("TV")) s.push(["TV", "화면 알림 팝업"]);
-              if (d.has("스피커")) s.push(["스피커", "음성 알림"]);
+              const s = [["?명긽湲?, "?명긽 ?꾨즺 媛먯?"]];
+              if (d.has("TV")) s.push(["TV", "?붾㈃ ?뚮┝ ?앹뾽"]);
+              if (d.has("?ㅽ뵾而?)) s.push(["?ㅽ뵾而?, "?뚯꽦 ?뚮┝"]);
               return s;
           },
           stepsEn: d => {
               const s = [["Washer", "cycle complete"]];
               if (d.has("TV")) s.push(["TV", "on-screen notification"]);
-              if (d.has("스피커")) s.push(["Speaker", "voice alert"]);
+              if (d.has("?ㅽ뵾而?)) s.push(["Speaker", "voice alert"]);
               return s;
           }
         },
-        { id: "kids_safety", icon: "👶",
-          nameKo: "자녀 안전 모니터링", nameEn: "Kids Safety Monitoring",
-          needs: ["카메라/CCTV", "센서"],
-          optional: ["도어락", "스마트폰"],
+        { id: "kids_safety", icon: "?뫔",
+          nameKo: "?먮? ?덉쟾 紐⑤땲?곕쭅", nameEn: "Kids Safety Monitoring",
+          needs: ["移대찓??CCTV", "?쇱꽌"],
+          optional: ["?꾩뼱??, "?ㅻ쭏?명룿"],
           stepsKo: d => {
-              const s = [["센서", "아이 방 출입 감지"], ["카메라/CCTV", "실시간 확인"]];
-              if (d.has("도어락")) s.push(["도어락", "자녀 귀가 알림"]);
+              const s = [["?쇱꽌", "?꾩씠 諛?異쒖엯 媛먯?"], ["移대찓??CCTV", "?ㅼ떆媛??뺤씤"]];
+              if (d.has("?꾩뼱??)) s.push(["?꾩뼱??, "?먮? 洹媛 ?뚮┝"]);
               return s;
           },
           stepsEn: d => {
               const s = [["Sensor", "child room entry"], ["Camera", "live check"]];
-              if (d.has("도어락")) s.push(["Door Lock", "child return alert"]);
+              if (d.has("?꾩뼱??)) s.push(["Door Lock", "child return alert"]);
               return s;
           }
         }
     ];
 
-    // 구현 가능한 루틴 필터링
+    // 援ы쁽 媛?ν븳 猷⑦떞 ?꾪꽣留?
     const matchedRoutines = ROUTINE_DB.filter(r => r.needs.every(n => devSet.has(n)));
     const routineHtml = matchedRoutines.slice(0, 3).map((r, index) => {
         const steps = isKo ? r.stepsKo(devSet) : r.stepsEn(devSet);
         const detailId = `q3-routine-detail-${r.id}-${index}`;
-        const triggerText = steps.length > 0 ? `${steps[0][0]} ${steps[0][1]}` : (isKo ? "조건 실행" : "Run condition");
+        const triggerText = steps.length > 0 ? `${steps[0][0]} ${steps[0][1]}` : (isKo ? "議곌굔 ?ㅽ뻾" : "Run condition");
         const actionText = steps.slice(1).map(([dev, action]) => `${dev} ${action}`).join(", ");
         const setupSteps = isKo
             ? [
-                `SmartThings 앱에서 ${steps.map(([dev]) => dev).join(", ")} 기기를 같은 공간에 등록합니다.`,
-                `루틴 > 새 루틴에서 "만약" 조건을 ${triggerText} 기준으로 설정합니다.`,
-                `그 다음 "실행" 항목에 ${actionText || "후속 동작"}을 순서대로 추가합니다.`,
-                `설정 후 수동 테스트를 한 번 돌려 알림, 전원 제어, 자동 실행 타이밍을 검증합니다.`
+                `SmartThings ?깆뿉??${steps.map(([dev]) => dev).join(", ")} 湲곌린瑜?媛숈? 怨듦컙???깅줉?⑸땲??`,
+                `猷⑦떞 > ??猷⑦떞?먯꽌 "留뚯빟" 議곌굔??${triggerText} 湲곗??쇰줈 ?ㅼ젙?⑸땲??`,
+                `洹??ㅼ쓬 "?ㅽ뻾" ??ぉ??${actionText || "?꾩냽 ?숈옉"}???쒖꽌?濡?異붽??⑸땲??`,
+                `?ㅼ젙 ???섎룞 ?뚯뒪?몃? ??踰??뚮젮 ?뚮┝, ?꾩썝 ?쒖뼱, ?먮룞 ?ㅽ뻾 ??대컢??寃利앺빀?덈떎.`
             ]
             : [
                 `Register ${steps.map(([dev]) => dev).join(", ")} in the same SmartThings location.`,
@@ -6871,17 +6876,17 @@ function buildStep4Insight() {
                 `Run one manual test to verify notifications, power control, and timing.`
             ];
         const stepsHtml = steps.map(([dev, action], i) =>
-            `<span class="q3-step">${i > 0 ? '<span class="q3-step-arrow">➔</span>' : ''}<span class="q3-step-device">${escapeHtml(dev)}</span><span class="q3-step-action">${escapeHtml(action)}</span></span>`
+            `<span class="q3-step">${i > 0 ? '<span class="q3-step-arrow">??/span>' : ''}<span class="q3-step-device">${escapeHtml(dev)}</span><span class="q3-step-action">${escapeHtml(action)}</span></span>`
         ).join("");
         return `<div class="q3-routine-card">
             <div class="q3-routine-head">
                 <span class="q3-routine-icon">${r.icon}</span>
                 <span class="q3-routine-name">${escapeHtml(isKo ? r.nameKo : r.nameEn)}</span>
-                <button type="button" class="q3-routine-toggle" data-routine-target="${detailId}" aria-expanded="false">${isKo ? "설치·설정 보기" : "View setup"}</button>
+                <button type="button" class="q3-routine-toggle" data-routine-target="${detailId}" aria-expanded="false">${isKo ? "?ㅼ튂쨌?ㅼ젙 蹂닿린" : "View setup"}</button>
             </div>
             <div class="q3-routine-flow">${stepsHtml}</div>
             <div class="q3-routine-detail" id="${detailId}" hidden>
-                <p class="q3-routine-detail-title">${isKo ? "구현 방법" : "How to implement"}</p>
+                <p class="q3-routine-detail-title">${isKo ? "援ы쁽 諛⑸쾿" : "How to implement"}</p>
                 <ol class="q3-routine-detail-list">
                     ${setupSteps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
                 </ol>
@@ -6889,7 +6894,7 @@ function buildStep4Insight() {
         </div>`;
     }).join("");
 
-    // ── 확장 제안 (1개 기기 추가 시 해금되는 루틴) ──
+    // ?? ?뺤옣 ?쒖븞 (1媛?湲곌린 異붽? ???닿툑?섎뒗 猷⑦떞) ??
     const unmatchedRoutines = ROUTINE_DB.filter(r => !r.needs.every(n => devSet.has(n)));
     let expansionHtml = "";
     for (const r of unmatchedRoutines) {
@@ -6898,34 +6903,34 @@ function buildStep4Insight() {
             const missingDev = missing[0];
             const name = isKo ? r.nameKo : r.nameEn;
             expansionHtml = `<div class="q3-expansion">
-                <span class="q3-expansion-icon">💡</span>
+                <span class="q3-expansion-icon">?뮕</span>
                 <p>${isKo
-                    ? `현재 조합에 <strong>${escapeHtml(missingDev)}</strong>을(를) 1개만 추가하면 <strong>'${escapeHtml(name)}'</strong> 장면까지 구현할 수 있습니다.`
+                    ? `?꾩옱 議고빀??<strong>${escapeHtml(missingDev)}</strong>??瑜? 1媛쒕쭔 異붽??섎㈃ <strong>'${escapeHtml(name)}'</strong> ?λ㈃源뚯? 援ы쁽?????덉뒿?덈떎.`
                     : `Add just <strong>${escapeHtml(missingDev)}</strong> to unlock the <strong>'${escapeHtml(name)}'</strong> routine.`}</p>
             </div>`;
             break;
         }
     }
 
-    // 칩 HTML
+    // 移?HTML
     const chipsHtml = devices.slice(0, 8).map(d => `<span class="insight-chip">${escapeHtml(d)}</span>`).join("");
     const moreCount = devices.length > 8 ? devices.length - 8 : 0;
     const moreHtml = moreCount > 0 ? `<span class="insight-chip insight-chip--more">+${moreCount}</span>` : "";
 
-    // 시나리오 DB 수 (curation DB가 있으면)
+    // ?쒕굹由ъ삤 DB ??(curation DB媛 ?덉쑝硫?
     const dbCount = (typeof curationDbV1 !== "undefined" && curationDbV1?.scenarios ? curationDbV1.scenarios.length : 0)
         + (typeof curationDbV2 !== "undefined" && curationDbV2?.scenarios ? curationDbV2.scenarios.length : 0);
     const dbLabel = dbCount > 0 ? `${dbCount}+` : "270+";
 
     return {
         badge: "Q3 Devices",
-        title: isKo ? `${deviceCount}개 기기 선택 완료` : `${deviceCount} devices selected`,
+        title: isKo ? `${deviceCount}媛?湲곌린 ?좏깮 ?꾨즺` : `${deviceCount} devices selected`,
         summary: isKo ? `${mixLabel}` : `${mixLabel}`,
         customHtml: `
             <div class="q3-insight-redesign">
                 <div class="q3-topline">
                     <div class="q3-topline-copy">
-                        <strong>${isKo ? `${deviceCount}개 기기 선택 완료` : `${deviceCount} devices ready`}</strong>
+                        <strong>${isKo ? `${deviceCount}媛?湲곌린 ?좏깮 ?꾨즺` : `${deviceCount} devices ready`}</strong>
                         <span>${escapeHtml(mixLabel)}</span>
                     </div>
                     <div class="q3-chips-row">${chipsHtml}${moreHtml}</div>
@@ -6933,8 +6938,8 @@ function buildStep4Insight() {
 
                 ${matchedRoutines.length > 0 ? `
                 <div class="q3-routines-section">
-                    <p class="q3-routines-title">${isKo ? "✨ 현재 조합으로 구현 가능한 대표 자동화 장면" : "✨ Automation scenes possible with your devices"}</p>
-                    <p class="q3-routines-helper">${isKo ? "선택한 기기들의 기능을 연결하면 이런 루틴을 바로 만들 수 있습니다." : "These routines can be built by connecting your selected devices."}</p>
+                    <p class="q3-routines-title">${isKo ? "???꾩옱 議고빀?쇰줈 援ы쁽 媛?ν븳 ????먮룞???λ㈃" : "??Automation scenes possible with your devices"}</p>
+                    <p class="q3-routines-helper">${isKo ? "?좏깮??湲곌린?ㅼ쓽 湲곕뒫???곌껐?섎㈃ ?대윴 猷⑦떞??諛붾줈 留뚮뱾 ???덉뒿?덈떎." : "These routines can be built by connecting your selected devices."}</p>
                     ${routineHtml}
                 </div>` : ""}
 
@@ -6942,7 +6947,7 @@ function buildStep4Insight() {
 
                 <div class="q3-cta-box">
                     <p class="q3-cta-text">${isKo
-                        ? `아래 <strong>시나리오 매칭 시작</strong> 버튼을 누르면, 이 기기 조합에 맞는 검증된 시나리오를 <strong>${dbLabel}개 DB</strong>에서 탐색합니다.`
+                        ? `?꾨옒 <strong>?쒕굹由ъ삤 留ㅼ묶 ?쒖옉</strong> 踰꾪듉???꾨Ⅴ硫? ??湲곌린 議고빀??留욌뒗 寃利앸맂 ?쒕굹由ъ삤瑜?<strong>${dbLabel}媛?DB</strong>?먯꽌 ?먯깋?⑸땲??`
                         : `Click <strong>Start Scenario Matching</strong> below to search <strong>${dbLabel} verified scenarios</strong> for this device combination.`}</p>
                 </div>
             </div>
@@ -6963,10 +6968,10 @@ function updateQuestionHelpers() {
 
 function buildCountryHelperText() {
     if (currentLocale === "ko") {
-        return "국가와 도시를 선택하면 아래 카드에 역할별 실행 인사이트가 바로 표시됩니다.";
+        return "援??? ?꾩떆瑜??좏깮?섎㈃ ?꾨옒 移대뱶????븷蹂??ㅽ뻾 ?몄궗?댄듃媛 諛붾줈 ?쒖떆?⑸땲??";
     }
     if (currentLocale === "de") {
-        return "Wählen Sie Land und Stadt, dann erscheint unten sofort die rollenbezogene Ausführungs-Insight.";
+        return "W채hlen Sie Land und Stadt, dann erscheint unten sofort die rollenbezogene Ausf체hrungs-Insight.";
     }
     return "Select country and city to load role-specific execution insight below.";
 }
@@ -6979,15 +6984,15 @@ function buildPersonaHelperText() {
     const sample = personas.slice(0, 2).join(", ");
     if (currentLocale === "ko") {
         if (personas.length && !purpose) {
-            return `${sample}${personas.length > 2 ? " 외" : ""} 조합은 좋습니다. 이제 집에 들어오는 순간이나 반복되는 불편 1가지만 적으면 타겟 해석이 훨씬 선명해집니다.`;
+            return `${sample}${personas.length > 2 ? " ?? : ""} 議고빀? 醫뗭뒿?덈떎. ?댁젣 吏묒뿉 ?ㅼ뼱?ㅻ뒗 ?쒓컙?대굹 諛섎났?섎뒗 遺덊렪 1媛吏留??곸쑝硫??寃??댁꽍???⑥뵮 ?좊챸?댁쭛?덈떎.`;
         }
-        return `${sample || "현재 타겟"} 기준으로 맥락이 잡히고 있습니다. 지금 입력한 상황 설명이 결과 톤과 메시지 우선순위를 직접 바꾸게 됩니다.`;
+        return `${sample || "?꾩옱 ?寃?} 湲곗??쇰줈 留λ씫???≫엳怨??덉뒿?덈떎. 吏湲??낅젰???곹솴 ?ㅻ챸??寃곌낵 ?ㅺ낵 硫붿떆吏 ?곗꽑?쒖쐞瑜?吏곸젒 諛붽씀寃??⑸땲??`;
     }
     if (currentLocale === "de") {
         if (personas.length && !purpose) {
-            return `Die Kombination ${sample}${personas.length > 2 ? " und weitere" : ""} ist gut. Ergänzen Sie jetzt nur noch einen konkreten Moment oder ein wiederkehrendes Problem.`;
+            return `Die Kombination ${sample}${personas.length > 2 ? " und weitere" : ""} ist gut. Erg채nzen Sie jetzt nur noch einen konkreten Moment oder ein wiederkehrendes Problem.`;
         }
-        return `Für ${sample || "diese Zielgruppe"} entsteht bereits ein klarerer Kontext. Ihre Situationsbeschreibung beeinflusst jetzt direkt Ton und Prioritäten des Ergebnisses.`;
+        return `F체r ${sample || "diese Zielgruppe"} entsteht bereits ein klarerer Kontext. Ihre Situationsbeschreibung beeinflusst jetzt direkt Ton und Priorit채ten des Ergebnisses.`;
     }
     if (personas.length && !purpose) {
         return `${sample}${personas.length > 2 ? " and more" : ""} is a strong start. Add one concrete life moment or recurring friction point and the target read will sharpen quickly.`;
@@ -7001,10 +7006,10 @@ function buildDeviceHelperText() {
 
     const sample = devices.slice(0, 3).join(", ");
     if (currentLocale === "ko") {
-        return `${sample}${devices.length > 3 ? " 외" : ""} 조합으로 읽히고 있습니다. 상위를 먼저 체크한 뒤 필요 없는 기기만 빼면 시나리오의 밀도가 자연스럽게 정리됩니다.`;
+        return `${sample}${devices.length > 3 ? " ?? : ""} 議고빀?쇰줈 ?쏀엳怨??덉뒿?덈떎. ?곸쐞瑜?癒쇱? 泥댄겕?????꾩슂 ?녿뒗 湲곌린留?鍮쇰㈃ ?쒕굹由ъ삤??諛?꾧? ?먯뿰?ㅻ읇寃??뺣━?⑸땲??`;
     }
     if (currentLocale === "de") {
-        return `Aktuell ist die Kombination ${sample}${devices.length > 3 ? " und weitere" : ""} gewählt. Aktivieren Sie zuerst die Oberkategorie und entfernen Sie dann nur die irrelevanten Geräte.`;
+        return `Aktuell ist die Kombination ${sample}${devices.length > 3 ? " und weitere" : ""} gew채hlt. Aktivieren Sie zuerst die Oberkategorie und entfernen Sie dann nur die irrelevanten Ger채te.`;
     }
     return `The current mix is reading as ${sample}${devices.length > 3 ? " and more" : ""}. Start broad with the parent category, then remove only the devices that do not belong in the scene.`;
 }
@@ -7012,29 +7017,29 @@ function buildDeviceHelperText() {
 function inferFirstUseScene(devices) {
     const set = new Set(devices);
 
-    if (set.has("TV") && set.has("에어컨")) {
+    if (set.has("TV") && set.has("?먯뼱而?)) {
         return currentLocale === "ko"
-            ? '"퇴근 후 집에 들어오자마자 TV에 맞춤 추천이 뜨고, 실내 환경이 바로 쾌적하게 맞춰지는 장면"'
+            ? '"?닿렐 ??吏묒뿉 ?ㅼ뼱?ㅼ옄留덉옄 TV??留욎땄 異붿쿇???④퀬, ?ㅻ궡 ?섍꼍??諛붾줈 苡뚯쟻?섍쾶 留욎떠吏???λ㈃"'
             : '"coming home to a tailored prompt on the TV while the room climate adjusts right away"';
     }
-    if (set.has("냉장고") && (set.has("세탁기") || set.has("건조기"))) {
+    if (set.has("?됱옣怨?) && (set.has("?명긽湲?) || set.has("嫄댁“湲?))) {
         return currentLocale === "ko"
-            ? '"저녁 준비와 집안일 시작을 동시에 가볍게 여는 장면"'
+            ? '"???以鍮꾩? 吏묒븞???쒖옉???숈떆??媛蹂띻쾶 ?щ뒗 ?λ㈃"'
             : '"starting dinner prep and household chores in one lighter flow"';
     }
-    if (set.has("로봇청소기") && set.has("센서")) {
+    if (set.has("濡쒕큸泥?냼湲?) && set.has("?쇱꽌")) {
         return currentLocale === "ko"
-            ? '"외출 중에도 집 상태를 안심하고 관리하는 장면"'
+            ? '"?몄텧 以묒뿉??吏??곹깭瑜??덉떖?섍퀬 愿由ы븯???λ㈃"'
             : '"managing the home with reassurance even while away"';
     }
-    if (set.has("조명") && set.has("스피커")) {
+    if (set.has("議곕챸") && set.has("?ㅽ뵾而?)) {
         return currentLocale === "ko"
-            ? '"말 한마디로 저녁 분위기와 루틴이 함께 바뀌는 장면"'
+            ? '"留??쒕쭏?붾줈 ???遺꾩쐞湲곗? 猷⑦떞???④퍡 諛붾뚮뒗 ?λ㈃"'
             : '"changing the evening mood and routine together with one voice prompt"';
     }
 
     return currentLocale === "ko"
-        ? '"사용자가 복잡한 설정 없이 바로 체감 가치를 느끼는 첫 순간"'
+        ? '"?ъ슜?먭? 蹂듭옟???ㅼ젙 ?놁씠 諛붾줈 泥닿컧 媛移섎? ?먮겮??泥??쒓컙"'
         : '"the first moment when the user feels immediate value without complex setup"';
 }
 
@@ -7049,65 +7054,65 @@ function inferSegmentTraits(selectedSegment, purpose) {
         if (!added.has(t)) { added.add(t); traits.push(t); }
     }
 
-    // ── 텍스트 기반 추론 (기존) ──
-    if (text.includes("맞벌이") || text.includes("퇴근") || text.includes("재택") || text.includes("하이브리드")) add("시간 가치 민감", "time-value sensitivity");
-    if (text.includes("아이") || text.includes("육아") || text.includes("가족") || text.includes("자녀")) add("가구 운영 복잡도 높음", "high household complexity");
-    if (text.includes("부모") || text.includes("시니어") || text.includes("돌봄")) add("케어/안심 니즈 큼", "strong care and reassurance needs");
-    if (text.includes("에너지") || text.includes("생활비") || text.includes("절감") || text.includes("비용")) add("지출 민감도 높음", "high spending sensitivity");
-    if (text.includes("주말") || text.includes("여가") || text.includes("웰니스")) add("여가 시간 품질 중시", "high value on leisure quality");
-    if (text.includes("펫") || text.includes("반려") || text.includes("pet")) add("원격 확인 수요 존재", "remote check-in demand");
-    if (text.includes("건강") || text.includes("피트니스") || text.includes("health") || text.includes("wellness")) add("건강·웰니스 중시", "health and wellness focus");
+    // ?? ?띿뒪??湲곕컲 異붾줎 (湲곗〈) ??
+    if (text.includes("留욌쾶??) || text.includes("?닿렐") || text.includes("?ы깮") || text.includes("?섏씠釉뚮━??)) add("?쒓컙 媛移?誘쇨컧", "time-value sensitivity");
+    if (text.includes("?꾩씠") || text.includes("?≪븘") || text.includes("媛議?) || text.includes("?먮?")) add("媛援??댁쁺 蹂듭옟???믪쓬", "high household complexity");
+    if (text.includes("遺紐?) || text.includes("?쒕땲??) || text.includes("?뚮큵")) add("耳???덉떖 ?덉쫰 ??, "strong care and reassurance needs");
+    if (text.includes("?먮꼫吏") || text.includes("?앺솢鍮?) || text.includes("?덇컧") || text.includes("鍮꾩슜")) add("吏異?誘쇨컧???믪쓬", "high spending sensitivity");
+    if (text.includes("二쇰쭚") || text.includes("?ш?") || text.includes("?곕땲??)) add("?ш? ?쒓컙 ?덉쭏 以묒떆", "high value on leisure quality");
+    if (text.includes("??) || text.includes("諛섎젮") || text.includes("pet")) add("?먭꺽 ?뺤씤 ?섏슂 議댁옱", "remote check-in demand");
+    if (text.includes("嫄닿컯") || text.includes("?쇳듃?덉뒪") || text.includes("health") || text.includes("wellness")) add("嫄닿컯쨌?곕땲??以묒떆", "health and wellness focus");
 
-    // ── 실제 선택된 persona ID 기반 추론 (강화) ──
+    // ?? ?ㅼ젣 ?좏깮??persona ID 湲곕컲 異붾줎 (媛뺥솕) ??
     const personaIds = new Set(getSelectedPersonaOptionIds());
 
-    // 펫 케어 (t_pet + int_pet 모두)
-    if (personaIds.has("t_pet") || personaIds.has("int_pet")) add("원격 확인 수요 존재", "remote check-in demand");
-    // 자녀 관련 (hh_ + ls_ + t_ + int_)
-    if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting") || personaIds.has("int_kids")) add("가구 운영 복잡도 높음", "high household complexity");
-    // 시니어 케어 (hh_ + ls_ + t_ + int_)
-    if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("ls_senior") || personaIds.has("t_parent_care") || personaIds.has("t_parent_away") || personaIds.has("int_senior")) add("케어/안심 니즈 큼", "strong care and reassurance needs");
-    // 건강/웰니스
-    if (personaIds.has("t_wellness") || personaIds.has("ls_empty_nest") || personaIds.has("int_health")) add("건강·웰니스 중시", "health and wellness focus");
-    // 재택/하이브리드
-    if (personaIds.has("t_remote") || personaIds.has("t_dual_income")) add("시간 가치 민감", "time-value sensitivity");
-    // 보안
-    if (personaIds.has("t_security") || personaIds.has("t_long_away") || personaIds.has("int_safe")) add("보안/안전 중시", "security and safety focus");
-    // 가사 효율
-    if (personaIds.has("t_efficiency") || personaIds.has("int_chores")) add("가사 효율 추구", "chore efficiency focus");
-    // 맞벌이
-    if (personaIds.has("t_dual_income") || personaIds.has("t_solo_parent")) add("시간 가치 민감", "time-value sensitivity");
-    // 수면
-    if (personaIds.has("t_night_shift") || personaIds.has("int_sleep")) add("수면 품질 중시", "sleep quality focus");
-    // 여가/분위기
-    if (personaIds.has("int_mood") || personaIds.has("ls_newlywed")) add("여가 시간 품질 중시", "high value on leisure quality");
-    // 에너지
-    if (personaIds.has("int_energy")) add("지출 민감도 높음", "high spending sensitivity");
+    // ??耳??(t_pet + int_pet 紐⑤몢)
+    if (personaIds.has("t_pet") || personaIds.has("int_pet")) add("?먭꺽 ?뺤씤 ?섏슂 議댁옱", "remote check-in demand");
+    // ?먮? 愿??(hh_ + ls_ + t_ + int_)
+    if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting") || personaIds.has("int_kids")) add("媛援??댁쁺 蹂듭옟???믪쓬", "high household complexity");
+    // ?쒕땲??耳??(hh_ + ls_ + t_ + int_)
+    if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("ls_senior") || personaIds.has("t_parent_care") || personaIds.has("t_parent_away") || personaIds.has("int_senior")) add("耳???덉떖 ?덉쫰 ??, "strong care and reassurance needs");
+    // 嫄닿컯/?곕땲??
+    if (personaIds.has("t_wellness") || personaIds.has("ls_empty_nest") || personaIds.has("int_health")) add("嫄닿컯쨌?곕땲??以묒떆", "health and wellness focus");
+    // ?ы깮/?섏씠釉뚮━??
+    if (personaIds.has("t_remote") || personaIds.has("t_dual_income")) add("?쒓컙 媛移?誘쇨컧", "time-value sensitivity");
+    // 蹂댁븞
+    if (personaIds.has("t_security") || personaIds.has("t_long_away") || personaIds.has("int_safe")) add("蹂댁븞/?덉쟾 以묒떆", "security and safety focus");
+    // 媛???⑥쑉
+    if (personaIds.has("t_efficiency") || personaIds.has("int_chores")) add("媛???⑥쑉 異붽뎄", "chore efficiency focus");
+    // 留욌쾶??
+    if (personaIds.has("t_dual_income") || personaIds.has("t_solo_parent")) add("?쒓컙 媛移?誘쇨컧", "time-value sensitivity");
+    // ?섎㈃
+    if (personaIds.has("t_night_shift") || personaIds.has("int_sleep")) add("?섎㈃ ?덉쭏 以묒떆", "sleep quality focus");
+    // ?ш?/遺꾩쐞湲?
+    if (personaIds.has("int_mood") || personaIds.has("ls_newlywed")) add("?ш? ?쒓컙 ?덉쭏 以묒떆", "high value on leisure quality");
+    // ?먮꼫吏
+    if (personaIds.has("int_energy")) add("吏異?誘쇨컧???믪쓬", "high spending sensitivity");
 
-    // ── 거주지 유형 (A 그룹) 기반 추론 ──
-    if (personaIds.has("h_apt") || personaIds.has("h_villa")) add("공동주거 환경 최적화", "shared-building environment optimization");
-    if (personaIds.has("h_compact")) add("소형 공간 효율화", "compact space efficiency");
-    if (personaIds.has("h_house") || personaIds.has("h_townhouse")) add("독립 주거 자동화", "independent dwelling automation");
-    if (personaIds.has("h_shared")) add("공용 공간 관리 니즈", "shared space management needs");
-    if (personaIds.has("h_care")) add("케어/안심 니즈 큼", "strong care and reassurance needs");
+    // ?? 嫄곗＜吏 ?좏삎 (A 洹몃９) 湲곕컲 異붾줎 ??
+    if (personaIds.has("h_apt") || personaIds.has("h_villa")) add("怨듬룞二쇨굅 ?섍꼍 理쒖쟻??, "shared-building environment optimization");
+    if (personaIds.has("h_compact")) add("?뚰삎 怨듦컙 ?⑥쑉??, "compact space efficiency");
+    if (personaIds.has("h_house") || personaIds.has("h_townhouse")) add("?낅┰ 二쇨굅 ?먮룞??, "independent dwelling automation");
+    if (personaIds.has("h_shared")) add("怨듭슜 怨듦컙 愿由??덉쫰", "shared space management needs");
+    if (personaIds.has("h_care")) add("耳???덉떖 ?덉쫰 ??, "strong care and reassurance needs");
 
-    // ── 세대 구성 (B 그룹) 미매핑 항목 ──
-    if (personaIds.has("hh_solo")) add("소형 공간 효율화", "compact space efficiency");
-    if (personaIds.has("hh_couple")) add("생활 동선 공유", "shared daily routine");
-    if (personaIds.has("hh_adult_kids")) add("개인 공간·공용 공간 분리", "private and shared space separation");
-    if (personaIds.has("t_single_income")) add("지출 민감도 높음", "high spending sensitivity");
-    if (personaIds.has("t_acc_needs")) add("접근성 배려 자동화", "accessibility-aware automation");
+    // ?? ?몃? 援ъ꽦 (B 洹몃９) 誘몃ℓ????ぉ ??
+    if (personaIds.has("hh_solo")) add("?뚰삎 怨듦컙 ?⑥쑉??, "compact space efficiency");
+    if (personaIds.has("hh_couple")) add("?앺솢 ?숈꽑 怨듭쑀", "shared daily routine");
+    if (personaIds.has("hh_adult_kids")) add("媛쒖씤 怨듦컙쨌怨듭슜 怨듦컙 遺꾨━", "private and shared space separation");
+    if (personaIds.has("t_single_income")) add("吏異?誘쇨컧???믪쓬", "high spending sensitivity");
+    if (personaIds.has("t_acc_needs")) add("?묎렐??諛곕젮 ?먮룞??, "accessibility-aware automation");
 
-    // ── 라이프스테이지 (C 그룹) 미매핑 항목 ──
-    if (personaIds.has("ls_starter")) add("즉시 체감 가치 선호", "preference for immediate value");
-    if (personaIds.has("ls_settled") || personaIds.has("ls_established")) add("안정적 생활 루틴 중시", "stable routine focus");
-    if (personaIds.has("t_weekend_out")) add("외출 전·귀가 시 자동화 수요", "pre-departure and return automation demand");
-    if (personaIds.has("t_homebody")) add("여가 시간 품질 중시", "high value on leisure quality");
-    if (personaIds.has("int_air")) add("실내 환경 민감", "indoor environment sensitivity");
-    if (personaIds.has("int_lights")) add("분위기·조명 중시", "ambiance and lighting focus");
-    if (personaIds.has("int_find")) add("물건 위치 추적 수요", "object tracking demand");
+    // ?? ?쇱씠?꾩뒪?뚯씠吏 (C 洹몃９) 誘몃ℓ????ぉ ??
+    if (personaIds.has("ls_starter")) add("利됱떆 泥닿컧 媛移??좏샇", "preference for immediate value");
+    if (personaIds.has("ls_settled") || personaIds.has("ls_established")) add("?덉젙???앺솢 猷⑦떞 以묒떆", "stable routine focus");
+    if (personaIds.has("t_weekend_out")) add("?몄텧 ?꽷룰?媛 ???먮룞???섏슂", "pre-departure and return automation demand");
+    if (personaIds.has("t_homebody")) add("?ш? ?쒓컙 ?덉쭏 以묒떆", "high value on leisure quality");
+    if (personaIds.has("int_air")) add("?ㅻ궡 ?섍꼍 誘쇨컧", "indoor environment sensitivity");
+    if (personaIds.has("int_lights")) add("遺꾩쐞湲걔룹“紐?以묒떆", "ambiance and lighting focus");
+    if (personaIds.has("int_find")) add("臾쇨굔 ?꾩튂 異붿쟻 ?섏슂", "object tracking demand");
 
-    // Q2 미선택 시 빈 배열 반환 — 근거 없는 기본값을 채우지 않음
+    // Q2 誘몄꽑????鍮?諛곗뿴 諛섑솚 ??洹쇨굅 ?녿뒗 湲곕낯媛믪쓣 梨꾩슦吏 ?딆쓬
     return traits;
 }
 
@@ -7117,24 +7122,24 @@ function inferScenarioDirection(traits, purpose) {
     const personaIds = new Set(getSelectedPersonaOptionIds());
     const directions = [];
 
-    // 명시적 선택 기반 (우선순위 높음)
-    if (personaIds.has("t_pet") || personaIds.has("int_pet")) directions.push(isKo ? "반려동물 케어와 안심 모니터링" : "pet care and peace-of-mind monitoring");
+    // 紐낆떆???좏깮 湲곕컲 (?곗꽑?쒖쐞 ?믪쓬)
+    if (personaIds.has("t_pet") || personaIds.has("int_pet")) directions.push(isKo ? "諛섎젮?숇Ъ 耳?댁? ?덉떖 紐⑤땲?곕쭅" : "pet care and peace-of-mind monitoring");
     if (personaIds.has("hh_young_kids") || personaIds.has("hh_school_kids") || personaIds.has("t_multi_kids") || personaIds.has("ls_parenting") || personaIds.has("int_kids"))
-        directions.push(isKo ? "자녀 안전과 가족 돌봄 자동화" : "child safety and family care automation");
+        directions.push(isKo ? "?먮? ?덉쟾怨?媛議??뚮큵 ?먮룞?? : "child safety and family care automation");
     if (personaIds.has("hh_senior") || personaIds.has("hh_multi_gen") || personaIds.has("t_parent_care") || personaIds.has("int_senior"))
-        directions.push(isKo ? "시니어 돌봄과 원격 안심 확인" : "senior care and remote reassurance");
+        directions.push(isKo ? "?쒕땲???뚮큵怨??먭꺽 ?덉떖 ?뺤씤" : "senior care and remote reassurance");
     if (personaIds.has("t_wellness") || personaIds.has("int_health"))
-        directions.push(isKo ? "건강·웰니스 루틴 지원" : "health and wellness routine support");
+        directions.push(isKo ? "嫄닿컯쨌?곕땲??猷⑦떞 吏?? : "health and wellness routine support");
 
-    // 텍스트 기반 보완
+    // ?띿뒪??湲곕컲 蹂댁셿
     if (directions.length === 0) {
-        if (text.includes("펫") || text.includes("반려") || text.includes("pet")) directions.push(isKo ? "반려동물 케어와 안심 모니터링" : "pet care and peace-of-mind monitoring");
-        if (text.includes("케어") || text.includes("안심") || text.includes("돌봄")) directions.push(isKo ? "돌봄 부담 완화와 안심 강화" : "reduced care burden and stronger reassurance");
-        if (text.includes("에너지") || text.includes("지출") || text.includes("비용")) directions.push(isKo ? "절감 효과를 눈에 보이게 보여주는 방향" : "visible savings and cost-control value");
-        if (text.includes("여가") || text.includes("웰니스")) directions.push(isKo ? "주말과 저녁의 여유를 회복하는 방향" : "recovering weekend and evening ease");
+        if (text.includes("??) || text.includes("諛섎젮") || text.includes("pet")) directions.push(isKo ? "諛섎젮?숇Ъ 耳?댁? ?덉떖 紐⑤땲?곕쭅" : "pet care and peace-of-mind monitoring");
+        if (text.includes("耳??) || text.includes("?덉떖") || text.includes("?뚮큵")) directions.push(isKo ? "?뚮큵 遺???꾪솕? ?덉떖 媛뺥솕" : "reduced care burden and stronger reassurance");
+        if (text.includes("?먮꼫吏") || text.includes("吏異?) || text.includes("鍮꾩슜")) directions.push(isKo ? "?덇컧 ?④낵瑜??덉뿉 蹂댁씠寃?蹂댁뿬二쇰뒗 諛⑺뼢" : "visible savings and cost-control value");
+        if (text.includes("?ш?") || text.includes("?곕땲??)) directions.push(isKo ? "二쇰쭚怨???곸쓽 ?ъ쑀瑜??뚮났?섎뒗 諛⑺뼢" : "recovering weekend and evening ease");
     }
 
-    if (directions.length === 0) return isKo ? "복잡한 집안 루틴을 가볍게 만드는 방향" : "making complex home routines feel lighter";
+    if (directions.length === 0) return isKo ? "蹂듭옟??吏묒븞 猷⑦떞??媛蹂띻쾶 留뚮뱶??諛⑺뼢" : "making complex home routines feel lighter";
     return directions.slice(0, 2).join(isKo ? " + " : " + ");
 }
 
@@ -7147,17 +7152,17 @@ function syncWizardUi() {
     generateBtn.classList.toggle("hidden", currentStep !== 4);
     renderWizardProgress();
 
-    // step 전환 시 이전 step-insight 즉시 클리어 (비동기 덮어쓰기 방지)
+    // step ?꾪솚 ???댁쟾 step-insight 利됱떆 ?대━??(鍮꾨룞湲???뼱?곌린 諛⑹?)
     ++latestStep2InsightRequest;
     stepInsight.innerHTML = "";
 
     updateStepInsight();
 
-    // step 전환 시 이전 에러 메시지 클리어
+    // step ?꾪솚 ???댁쟾 ?먮윭 硫붿떆吏 ?대━??
     const errEl = resultDiv.querySelector(".error");
     if (errEl) errEl.remove();
 
-    // Step 4가 아니면 큐레이션 프레임 & Output Flow Tracker 숨김/초기화
+    // Step 4媛 ?꾨땲硫??먮젅?댁뀡 ?꾨젅??& Output Flow Tracker ?④?/珥덇린??
     const curationFrame = document.getElementById("curation-frame");
     if (curationFrame && currentStep !== 4) {
         curationFrame.classList.add("hidden");
@@ -7178,7 +7183,7 @@ function syncWizardUi() {
     if (campaignFrame && currentStep !== 4) {
         campaignFrame.classList.add("hidden");
     }
-    // 상태 배지 제거
+    // ?곹깭 諛곗? ?쒓굅
     if (currentStep !== 4) {
         setSectionStatusBadge("curation-title", null);
         setSectionStatusBadge("category-title", null);
@@ -7229,7 +7234,7 @@ function moveStep(delta) {
 }
 
 function validateCurrentStep() {
-    // Q1 직무 선택 스킵 — 자동 기본값 보장
+    // Q1 吏곷Т ?좏깮 ?ㅽ궢 ???먮룞 湲곕낯媛?蹂댁옣
     if (currentStep === 1) return true;
     if (currentStep === 2 && !countrySelect.value) {
         resultDiv.innerHTML = `<p class="error">${t("countryMissing")}</p>`;
@@ -7239,16 +7244,16 @@ function validateCurrentStep() {
         const missing = validateQ3Groups();
         if (missing.length > 0) {
             const labels = missing.join(", ");
-            // step-insight 영역에 안내 표시 (resultDiv 대신)
+            // step-insight ?곸뿭???덈궡 ?쒖떆 (resultDiv ???
             const insightEl = document.getElementById("step-insight");
             if (insightEl) {
                 const warnHtml = `<div class="q2-action-prompt q2-action-warn" style="margin-top:8px">
-                    <span class="q2-action-icon">⚠️</span>
+                    <span class="q2-action-icon">?좑툘</span>
                     <p>${currentLocale === "ko"
-                        ? `<strong>${labels}</strong> 영역에서 최소 1개를 선택하거나 직접 입력해 주세요.`
+                        ? `<strong>${labels}</strong> ?곸뿭?먯꽌 理쒖냼 1媛쒕? ?좏깮?섍굅??吏곸젒 ?낅젰??二쇱꽭??`
                         : `Please select at least one option in: <strong>${labels}</strong>`}</p>
                 </div>`;
-                // 기존 경고가 있으면 교체
+                // 湲곗〈 寃쎄퀬媛 ?덉쑝硫?援먯껜
                 const existing = insightEl.querySelector(".q2-action-warn");
                 if (existing) existing.outerHTML = warnHtml;
                 else insightEl.insertAdjacentHTML("beforeend", warnHtml);
@@ -7257,7 +7262,7 @@ function validateCurrentStep() {
         }
     }
     if (currentStep === 4 && getSelectedDevices().length === 0) {
-        resultDiv.innerHTML = `<p class="error">${currentLocale === "ko" ? "Q3에서 기기를 하나 이상 선택해 주세요." : "Please select at least one device in Q3."}</p>`;
+        resultDiv.innerHTML = `<p class="error">${currentLocale === "ko" ? "Q3?먯꽌 湲곌린瑜??섎굹 ?댁긽 ?좏깮??二쇱꽭??" : "Please select at least one device in Q3."}</p>`;
         return false;
     }
     return true;
@@ -7282,11 +7287,11 @@ function updateRoleBrief() {
                 <p>${escapeHtml(getRoleBrief(role.id))}</p>
             </header>
             <article class="role-brief-block role-brief-fit">
-                <h4>${currentLocale === "ko" ? "이 역할이 맞는 업무" : "Who this role fits"}</h4>
+                <h4>${currentLocale === "ko" ? "????븷??留욌뒗 ?낅Т" : "Who this role fits"}</h4>
                 <ul>${(guide.fitFor || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </article>
             <div class="role-brief-block">
-                <h4>${currentLocale === "ko" ? "선택하면 받는 마케팅 정보 (What You Get)" : "What You Get"}</h4>
+                <h4>${currentLocale === "ko" ? "?좏깮?섎㈃ 諛쏅뒗 留덉????뺣낫 (What You Get)" : "What You Get"}</h4>
                 <div class="role-brief-items">
                     ${cards.map((card, index) => `
                         <article class="role-brief-item">
@@ -7299,7 +7304,7 @@ function updateRoleBrief() {
                 </div>
             </div>
             <article class="role-brief-block role-brief-fallback">
-                <h4>${currentLocale === "ko" ? "직무가 정확히 안 맞을 때" : "If your role is not an exact match"}</h4>
+                <h4>${currentLocale === "ko" ? "吏곷Т媛 ?뺥솗????留욎쓣 ?? : "If your role is not an exact match"}</h4>
                 <p>${escapeHtml(guide.fallback || "")}</p>
             </article>
         </section>
@@ -7311,9 +7316,9 @@ function getRoleOptionGuide(id) {
         retail: {
             fitFor: currentLocale === "ko"
                 ? [
-                    "오프라인 매장 상담/시연 스크립트를 만드는 업무",
-                    "매장 직원 교육, 세일즈 토크, 데모 흐름이 필요한 업무",
-                    "상담 전환율을 높이는 현장 메시지가 필요한 업무"
+                    "?ㅽ봽?쇱씤 留ㅼ옣 ?곷떞/?쒖뿰 ?ㅽ겕由쏀듃瑜?留뚮뱶???낅Т",
+                    "留ㅼ옣 吏곸썝 援먯쑁, ?몄씪利??좏겕, ?곕え ?먮쫫???꾩슂???낅Т",
+                    "?곷떞 ?꾪솚?⑥쓣 ?믪씠???꾩옣 硫붿떆吏媛 ?꾩슂???낅Т"
                 ]
                 : [
                     "Teams creating in-store consultation and demo scripts",
@@ -7323,29 +7328,29 @@ function getRoleOptionGuide(id) {
             whatYouGet: currentLocale === "ko"
                 ? [
                     {
-                        title: "매장 첫 10초 한 문장",
-                        meaning: "고객이 바로 이해하도록 첫 문장을 고정합니다.",
-                        example: "예시: 집에 들어오자마자 자동으로 편안한 저녁 준비가 시작됩니다."
+                        title: "留ㅼ옣 泥?10珥???臾몄옣",
+                        meaning: "怨좉컼??諛붾줈 ?댄빐?섎룄濡?泥?臾몄옣??怨좎젙?⑸땲??",
+                        example: "?덉떆: 吏묒뿉 ?ㅼ뼱?ㅼ옄留덉옄 ?먮룞?쇰줈 ?몄븞?????以鍮꾧? ?쒖옉?⑸땲??"
                     },
                     {
-                        title: "30초 데모 흐름",
-                        meaning: "문제 -> 해결 장면 순서로 빠르게 보여주는 구조입니다.",
-                        example: "예시: 퇴근 후 집 도착 -> 추천 카드 -> 원탭 실행"
+                        title: "30珥??곕え ?먮쫫",
+                        meaning: "臾몄젣 -> ?닿껐 ?λ㈃ ?쒖꽌濡?鍮좊Ⅴ寃?蹂댁뿬二쇰뒗 援ъ“?낅땲??",
+                        example: "?덉떆: ?닿렐 ??吏??꾩갑 -> 異붿쿇 移대뱶 -> ?먰꺆 ?ㅽ뻾"
                     },
                     {
-                        title: "추천 기기 조합",
-                        meaning: "입문형과 확장형 제안을 나눠서 상담합니다.",
-                        example: "예시: Entry 1대 / Core 2대 조합"
+                        title: "異붿쿇 湲곌린 議고빀",
+                        meaning: "?낅Ц?뺢낵 ?뺤옣???쒖븞???섎닠???곷떞?⑸땲??",
+                        example: "?덉떆: Entry 1? / Core 2? 議고빀"
                     },
                     {
-                        title: "설정 체크 순서",
-                        meaning: "세팅 실패를 줄이는 최소 체크리스트입니다.",
-                        example: "예시: 계정 로그인 -> 홈 생성 -> 기기 연결 -> 자동화 저장"
+                        title: "?ㅼ젙 泥댄겕 ?쒖꽌",
+                        meaning: "?명똿 ?ㅽ뙣瑜?以꾩씠??理쒖냼 泥댄겕由ъ뒪?몄엯?덈떎.",
+                        example: "?덉떆: 怨꾩젙 濡쒓렇??-> ???앹꽦 -> 湲곌린 ?곌껐 -> ?먮룞?????
                     },
                     {
-                        title: "호환성 사전 점검",
-                        meaning: "현장에서 자주 터지는 이슈를 먼저 확인합니다.",
-                        example: "예시: Wi-Fi 대역, 앱 버전, 계정 지역"
+                        title: "?명솚???ъ쟾 ?먭?",
+                        meaning: "?꾩옣?먯꽌 ?먯＜ ?곗????댁뒋瑜?癒쇱? ?뺤씤?⑸땲??",
+                        example: "?덉떆: Wi-Fi ??? ??踰꾩쟾, 怨꾩젙 吏??
                     }
                 ]
                 : [
@@ -7376,21 +7381,21 @@ function getRoleOptionGuide(id) {
                     }
                 ],
             fallback: currentLocale === "ko"
-                ? "직무가 애매하면 retail을 고르면 됩니다. 고객과의 첫 대화 문장, 데모 흐름, 추천 조합처럼 현장에서 바로 쓸 출력이 생성됩니다."
+                ? "吏곷Т媛 ?좊ℓ?섎㈃ retail??怨좊Ⅴ硫??⑸땲?? 怨좉컼怨쇱쓽 泥????臾몄옣, ?곕え ?먮쫫, 異붿쿇 議고빀泥섎읆 ?꾩옣?먯꽌 諛붾줈 ??異쒕젰???앹꽦?⑸땲??"
                 : "If unclear, start with retail. You will get first-line talk tracks, demo flow, and ready-to-use recommendation mixes.",
             emphasized: currentLocale === "ko"
-                ? ["현장 설명 흐름", "SmartThings 세팅", "호환성/실패 사례"]
+                ? ["?꾩옣 ?ㅻ챸 ?먮쫫", "SmartThings ?명똿", "?명솚???ㅽ뙣 ?щ?"]
                 : ["Store explanation flow", "SmartThings setup", "Compatibility and failure cases"],
             deemphasized: currentLocale === "ko"
-                ? ["업셀 연결 타이밍", "매장 적용용 메시지 톤", "현장 FAQ 핵심 질문"]
+                ? ["?낆? ?곌껐 ??대컢", "留ㅼ옣 ?곸슜??硫붿떆吏 ??, "?꾩옣 FAQ ?듭떖 吏덈Ц"]
                 : ["Upsell timing cues", "Store-ready message tone", "Core in-store FAQ prompts"]
         },
         dotcom: {
             fitFor: currentLocale === "ko"
                 ? [
-                    "PDP/랜딩/배너/FAQ 등 웹 전환 구조를 다루는 업무",
-                    "장바구니 진입, 클릭률, 체류시간 등 전환 KPI를 다루는 업무",
-                    "국가별 eStore 제품 노출/번들 구성을 관리하는 업무"
+                    "PDP/?쒕뵫/諛곕꼫/FAQ ?????꾪솚 援ъ“瑜??ㅻ（???낅Т",
+                    "?λ컮援щ땲 吏꾩엯, ?대┃瑜? 泥대쪟?쒓컙 ???꾪솚 KPI瑜??ㅻ（???낅Т",
+                    "援??蹂?eStore ?쒗뭹 ?몄텧/踰덈뱾 援ъ꽦??愿由ы븯???낅Т"
                 ]
                 : [
                     "Teams owning PDP, landing, banner, and FAQ conversion flow",
@@ -7400,29 +7405,29 @@ function getRoleOptionGuide(id) {
             whatYouGet: currentLocale === "ko"
                 ? [
                     {
-                        title: "랜딩 첫 화면 메시지",
-                        meaning: "첫 화면에서 어떤 가치부터 보여줄지 정합니다.",
-                        example: "예시: '우리 집 저녁 루틴을 1탭으로 시작'"
+                        title: "?쒕뵫 泥??붾㈃ 硫붿떆吏",
+                        meaning: "泥??붾㈃?먯꽌 ?대뼡 媛移섎???蹂댁뿬以꾩? ?뺥빀?덈떎.",
+                        example: "?덉떆: '?곕━ 吏????猷⑦떞??1??쑝濡??쒖옉'"
                     },
                     {
-                        title: "지역 eStore 도메인/제품 맵",
-                        meaning: "국가별 연결 URL과 주력 제품 기준입니다.",
-                        example: "예시: 국가 도메인 + 가용 제품 라인업"
+                        title: "吏??eStore ?꾨찓???쒗뭹 留?,
+                        meaning: "援??蹂??곌껐 URL怨?二쇰젰 ?쒗뭹 湲곗??낅땲??",
+                        example: "?덉떆: 援?? ?꾨찓??+ 媛???쒗뭹 ?쇱씤??
                     },
                     {
-                        title: "번들 구조 (Entry/Core/Premium)",
-                        meaning: "가격-가치 단계별 추천을 구성합니다.",
-                        example: "예시: Entry(기본) -> Core(주력) -> Premium(확장)"
+                        title: "踰덈뱾 援ъ“ (Entry/Core/Premium)",
+                        meaning: "媛寃?媛移??④퀎蹂?異붿쿇??援ъ꽦?⑸땲??",
+                        example: "?덉떆: Entry(湲곕낯) -> Core(二쇰젰) -> Premium(?뺤옣)"
                     },
                     {
-                        title: "필수 vs 선택 기기",
-                        meaning: "최소 구매 구성과 추가 구성을 분리합니다.",
-                        example: "예시: 필수 1~2개 + 선택 확장 1개"
+                        title: "?꾩닔 vs ?좏깮 湲곌린",
+                        meaning: "理쒖냼 援щℓ 援ъ꽦怨?異붽? 援ъ꽦??遺꾨━?⑸땲??",
+                        example: "?덉떆: ?꾩닔 1~2媛?+ ?좏깮 ?뺤옣 1媛?
                     },
                     {
-                        title: "Benefit -> Product 매핑",
-                        meaning: "혜택 문장을 어떤 제품과 연결할지 정리합니다.",
-                        example: "예시: '시간 절약' -> A제품 / '안심' -> B제품"
+                        title: "Benefit -> Product 留ㅽ븨",
+                        meaning: "?쒗깮 臾몄옣???대뼡 ?쒗뭹怨??곌껐?좎? ?뺣━?⑸땲??",
+                        example: "?덉떆: '?쒓컙 ?덉빟' -> A?쒗뭹 / '?덉떖' -> B?쒗뭹"
                     }
                 ]
                 : [
@@ -7453,21 +7458,21 @@ function getRoleOptionGuide(id) {
                     }
                 ],
             fallback: currentLocale === "ko"
-                ? "직무가 애매하지만 온라인 전환이 목표라면 dotcom을 고르세요. 메시지-CTA-상품 매핑까지 웹 실행형 결과를 받을 수 있습니다."
+                ? "吏곷Т媛 ?좊ℓ?섏?留??⑤씪???꾪솚??紐⑺몴?쇰㈃ dotcom??怨좊Ⅴ?몄슂. 硫붿떆吏-CTA-?곹뭹 留ㅽ븨源뚯? ???ㅽ뻾??寃곌낵瑜?諛쏆쓣 ???덉뒿?덈떎."
                 : "If unclear but online conversion is your goal, choose dotcom. You will get message-CTA-product mapping ready for web execution.",
             emphasized: currentLocale === "ko"
-                ? ["전환률/객단가 관점", "지역 상품 매트릭스", "번들 구성"]
+                ? ["?꾪솚瑜?媛앸떒媛 愿??, "吏???곹뭹 留ㅽ듃由?뒪", "踰덈뱾 援ъ꽦"]
                 : ["Conversion/AOV perspective", "Regional product matrix", "Bundle composition"],
             deemphasized: currentLocale === "ko"
-                ? ["PDP 문장 길이 가이드", "FAQ 재배치 포인트", "CTA 우선순위 검증 항목"]
+                ? ["PDP 臾몄옣 湲몄씠 媛?대뱶", "FAQ ?щ같移??ъ씤??, "CTA ?곗꽑?쒖쐞 寃利???ぉ"]
                 : ["PDP copy-length guide", "FAQ reorder points", "CTA priority checks"]
         },
         brand: {
             fitFor: currentLocale === "ko"
                 ? [
-                    "캠페인 메인 메시지/카피 톤을 기획하는 업무",
-                    "글로벌 메시지와 로컬 메시지 체계를 운영하는 업무",
-                    "시즌/이벤트 중심 통합 캠페인을 기획하는 업무"
+                    "罹좏럹??硫붿씤 硫붿떆吏/移댄뵾 ?ㅼ쓣 湲고쉷?섎뒗 ?낅Т",
+                    "湲濡쒕쾶 硫붿떆吏? 濡쒖뺄 硫붿떆吏 泥닿퀎瑜??댁쁺?섎뒗 ?낅Т",
+                    "?쒖쫵/?대깽??以묒떖 ?듯빀 罹좏럹?몄쓣 湲고쉷?섎뒗 ?낅Т"
                 ]
                 : [
                     "Teams crafting campaign-level message and copy tone",
@@ -7477,29 +7482,29 @@ function getRoleOptionGuide(id) {
             whatYouGet: currentLocale === "ko"
                 ? [
                     {
-                        title: "브랜드 핵심 한 문장",
-                        meaning: "브랜드 톤을 유지한 대표 문장입니다.",
-                        example: "예시: 우리 집 루틴을 더 가볍게."
+                        title: "釉뚮옖???듭떖 ??臾몄옣",
+                        meaning: "釉뚮옖???ㅼ쓣 ?좎??????臾몄옣?낅땲??",
+                        example: "?덉떆: ?곕━ 吏?猷⑦떞????媛蹂띻쾶."
                     },
                     {
-                        title: "단문/장문 메시지 세트",
-                        meaning: "짧은 광고 문장과 긴 설명 문장을 함께 제공합니다.",
-                        example: "예시: 8~12자 단문 + 상세 설명 2~3문장"
+                        title: "?⑤Ц/?λЦ 硫붿떆吏 ?명듃",
+                        meaning: "吏㏃? 愿묎퀬 臾몄옣怨?湲??ㅻ챸 臾몄옣???④퍡 ?쒓났?⑸땲??",
+                        example: "?덉떆: 8~12???⑤Ц + ?곸꽭 ?ㅻ챸 2~3臾몄옣"
                     },
                     {
-                        title: "글로벌 vs 로컬 메시지 분리",
-                        meaning: "공통 메시지와 국가별 변주를 구분합니다.",
-                        example: "예시: Global '편안함' / Local '퇴근 직후 루틴'"
+                        title: "湲濡쒕쾶 vs 濡쒖뺄 硫붿떆吏 遺꾨━",
+                        meaning: "怨듯넻 硫붿떆吏? 援??蹂?蹂二쇰? 援щ텇?⑸땲??",
+                        example: "?덉떆: Global '?몄븞?? / Local '?닿렐 吏곹썑 猷⑦떞'"
                     },
                     {
-                        title: "시즌/이벤트 캠페인 흐름",
-                        meaning: "런칭-프로모션-리마인드 순서로 운영합니다.",
-                        example: "예시: 성수기 전 런칭 -> 시즌 프로모션 -> 리마인드"
+                        title: "?쒖쫵/?대깽??罹좏럹???먮쫫",
+                        meaning: "?곗묶-?꾨줈紐⑥뀡-由щ쭏?몃뱶 ?쒖꽌濡??댁쁺?⑸땲??",
+                        example: "?덉떆: ?깆닔湲????곗묶 -> ?쒖쫵 ?꾨줈紐⑥뀡 -> 由щ쭏?몃뱶"
                     },
                     {
-                        title: "콘텐츠 톤 가이드",
-                        meaning: "영상/소셜/배너에서 같은 말투를 유지합니다.",
-                        example: "예시: 따뜻하고 간결한 톤으로 전 채널 통일"
+                        title: "肄섑뀗痢???媛?대뱶",
+                        meaning: "?곸긽/?뚯뀥/諛곕꼫?먯꽌 媛숈? 留먰닾瑜??좎??⑸땲??",
+                        example: "?덉떆: ?곕쑜?섍퀬 媛꾧껐???ㅼ쑝濡???梨꾨꼸 ?듭씪"
                     }
                 ]
                 : [
@@ -7530,13 +7535,13 @@ function getRoleOptionGuide(id) {
                     }
                 ],
             fallback: currentLocale === "ko"
-                ? "직무가 애매하지만 캠페인 톤과 브랜드 메시지가 중요하면 brand를 선택하세요. 감정 중심 카피와 글로벌/로컬 분리 구조를 바로 확인할 수 있습니다."
+                ? "吏곷Т媛 ?좊ℓ?섏?留?罹좏럹???ㅺ낵 釉뚮옖??硫붿떆吏媛 以묒슂?섎㈃ brand瑜??좏깮?섏꽭?? 媛먯젙 以묒떖 移댄뵾? 湲濡쒕쾶/濡쒖뺄 遺꾨━ 援ъ“瑜?諛붾줈 ?뺤씤?????덉뒿?덈떎."
                 : "If unclear but brand tone matters most, choose brand. You will get emotion-led copy and a global/local message split.",
             emphasized: currentLocale === "ko"
-                ? ["문화 맥락 스토리텔링", "메시지 일관성", "브랜드 의미 강화"]
+                ? ["臾명솕 留λ씫 ?ㅽ넗由ы뀛留?, "硫붿떆吏 ?쇨???, "釉뚮옖???섎? 媛뺥솕"]
                 : ["Culture-context storytelling", "Message consistency", "Brand meaning reinforcement"],
             deemphasized: currentLocale === "ko"
-                ? ["캠페인 문장 톤 가이드", "로컬 카피 변주 기준", "시즌/이벤트 연결 키워드"]
+                ? ["罹좏럹??臾몄옣 ??媛?대뱶", "濡쒖뺄 移댄뵾 蹂二?湲곗?", "?쒖쫵/?대깽???곌껐 ?ㅼ썙??]
                 : ["Campaign tone guide", "Local copy variation rules", "Season/event linkage keywords"]
         }
     };
@@ -7546,7 +7551,7 @@ function getRoleOptionGuide(id) {
         whatYouGet: [getRoleBrief(id)],
         emphasized: [getRoleFocus(id)],
         deemphasized: [],
-        fallback: currentLocale === "ko" ? "가장 가까운 역할을 먼저 고른 뒤 결과를 비교해 조정하세요." : "Pick the closest role first, then compare outputs and adjust."
+        fallback: currentLocale === "ko" ? "媛??媛源뚯슫 ??븷??癒쇱? 怨좊Ⅸ ??寃곌낵瑜?鍮꾧탳??議곗젙?섏꽭??" : "Pick the closest role first, then compare outputs and adjust."
     };
 }
 
@@ -7556,10 +7561,10 @@ function updateStatePreview() {
 
 function inferMissionBucket(purpose, selectedDeviceGroups = []) {
     const text = purpose.toLowerCase();
-    if (text.includes("에너지") || text.includes("절약") || text.includes("비용")) return "Save";
-    if (text.includes("안전") || text.includes("보안") || text.includes("secure")) return "Secure";
-    if (text.includes("놀이") || text.includes("운동") || text.includes("엔터") || text.includes("게임") || text.includes("gaming")) return "Play";
-    if (text.includes("가족") || text.includes("돌봄") || text.includes("반려") || text.includes("펫") || text.includes("시니어")) return "Care";
+    if (text.includes("?먮꼫吏") || text.includes("?덉빟") || text.includes("鍮꾩슜")) return "Save";
+    if (text.includes("?덉쟾") || text.includes("蹂댁븞") || text.includes("secure")) return "Secure";
+    if (text.includes("???) || text.includes("?대룞") || text.includes("?뷀꽣") || text.includes("寃뚯엫") || text.includes("gaming")) return "Play";
+    if (text.includes("媛議?) || text.includes("?뚮큵") || text.includes("諛섎젮") || text.includes("??) || text.includes("?쒕땲??)) return "Care";
     // Device group-based fallback when purpose text is ambiguous
     if (selectedDeviceGroups.includes("enhanced-mood")) return "Play";
     if (selectedDeviceGroups.includes("care-scenarios")) return "Care";
@@ -7572,14 +7577,14 @@ function inferMissionBucket(purpose, selectedDeviceGroups = []) {
 function generateScenario() {
     if (!validateCurrentStep()) return;
 
-    // Output Flow Tracker 시작: STEP 1 활성
+    // Output Flow Tracker ?쒖옉: STEP 1 ?쒖꽦
     updateOutputFlowTracker(1, { 1: "active", 2: "waiting", 3: "waiting" });
     const isKoGen = currentLocale === "ko";
     updateSectionHelper("curation-helper",
-        isKoGen ? "🔍 입력 정보를 분석하여 최적의 시나리오를 찾고 있습니다…" : "🔍 Analyzing your inputs to find the best scenarios…");
+        isKoGen ? "?뵇 ?낅젰 ?뺣낫瑜?遺꾩꽍?섏뿬 理쒖쟻???쒕굹由ъ삤瑜?李얘퀬 ?덉뒿?덈떎?? : "?뵇 Analyzing your inputs to find the best scenarios??);
     setSectionStatusBadge("curation-title", "working");
 
-    // Build 시 큐레이션 먼저 실행
+    // Build ???먮젅?댁뀡 癒쇱? ?ㅽ뻾
     runCuration();
 
     const role = ROLE_LENSES.find((item) => item.id === roleSelect.value);
@@ -7693,10 +7698,10 @@ function generateScenario() {
         selectionSummary: latestSelectionSummary || null
     };
 
-    // 매칭 프로세스 카드 표시 중이면 AI 즉시 시작하지 않음 (사용자가 시나리오 선택 후 시작)
+    // 留ㅼ묶 ?꾨줈?몄뒪 移대뱶 ?쒖떆 以묒씠硫?AI 利됱떆 ?쒖옉?섏? ?딆쓬 (?ъ슜?먭? ?쒕굹由ъ삤 ?좏깮 ???쒖옉)
     const mpFrame = document.getElementById("matching-process-frame");
     if (mpFrame && !mpFrame.classList.contains("hidden") && !_mpBypassProcess) {
-        // 프로세스 카드 → 큐레이션 결과 → 시나리오 선택 → 카테고리 선택 → AI 생성 순서로 진행
+        // ?꾨줈?몄뒪 移대뱶 ???먮젅?댁뀡 寃곌낵 ???쒕굹由ъ삤 ?좏깮 ??移댄뀒怨좊━ ?좏깮 ??AI ?앹꽦 ?쒖꽌濡?吏꾪뻾
         return;
     }
 
@@ -7713,13 +7718,13 @@ async function streamGenerateScenario(context) {
     if (aiGenerating) return;
     aiGenerating = true;
     aiOutputText = "";
-    latestStructuredOutput = null;  // 새 생성 시작 시 이전 구조화 output 리셋
+    latestStructuredOutput = null;  // ???앹꽦 ?쒖옉 ???댁쟾 援ъ“??output 由ъ뀑
 
-    // STEP 3 활성 — AI 생성 시작
+    // STEP 3 ?쒖꽦 ??AI ?앹꽦 ?쒖옉
     updateOutputFlowTracker(3, { 1: "done", 2: "done", 3: "active" });
     const isKoStream = currentLocale === "ko";
     updateSectionHelper("result-helper",
-        isKoStream ? "🤖 AI가 맞춤형 시나리오를 생성하고 있습니다. 잠시만 기다려 주세요…" : "🤖 AI is building your custom scenario. Please wait…");
+        isKoStream ? "?쨼 AI媛 留욎땄???쒕굹由ъ삤瑜??앹꽦?섍퀬 ?덉뒿?덈떎. ?좎떆留?湲곕떎??二쇱꽭?붴? : "?쨼 AI is building your custom scenario. Please wait??);
 
     // Show streaming UI
     resultDiv.innerHTML = buildStreamingUI(context);
@@ -7745,7 +7750,7 @@ async function streamGenerateScenario(context) {
         regionInsight
     };
 
-    // 디버그: selectionSummary 전달 확인
+    // ?붾쾭洹? selectionSummary ?꾨떖 ?뺤씤
     if (context.selectionSummary) {
         console.info("[generate] JSON mode: selectionSummary with", context.selectionSummary.selectedScenarios?.length, "scenarios");
     } else {
@@ -7764,7 +7769,7 @@ async function streamGenerateScenario(context) {
         aiGenerating = false;
         console.warn("API unavailable:", err.message);
         renderGenerateError(context, currentLocale === "ko"
-            ? "생성 서버에 연결하지 못했습니다. 정적 예시 대신 실제 오류를 표시합니다."
+            ? "?앹꽦 ?쒕쾭???곌껐?섏? 紐삵뻽?듬땲?? ?뺤쟻 ?덉떆 ????ㅼ젣 ?ㅻ쪟瑜??쒖떆?⑸땲??"
             : "Could not reach the generation server. Showing the real error instead of a static example.");
         return;
     }
@@ -7774,10 +7779,10 @@ async function streamGenerateScenario(context) {
         const errData = await response.json().catch(() => ({}));
         if (response.status === 401) {
             renderGenerateError(context, currentLocale === "ko"
-                ? "세션이 만료됐습니다. 다시 로그인해 주세요."
+                ? "?몄뀡??留뚮즺?먯뒿?덈떎. ?ㅼ떆 濡쒓렇?명빐 二쇱꽭??"
                 : "Session expired. Please log in again.");
         } else if (response.status === 429 || errData?.error?.code === "BUDGET_EXCEEDED") {
-            const msg = errData?.error?.message || (currentLocale === "ko" ? "월간 AI 예산 한도에 도달했습니다." : "Monthly AI budget limit reached.");
+            const msg = errData?.error?.message || (currentLocale === "ko" ? "?붽컙 AI ?덉궛 ?쒕룄???꾨떖?덉뒿?덈떎." : "Monthly AI budget limit reached.");
             renderGenerateError(context, msg);
         } else {
             const msg = errData?.error?.message || `Server error ${response.status}`;
@@ -7830,7 +7835,7 @@ async function streamGenerateScenario(context) {
                 } else if (event.type === "error") {
                     aiGenerating = false;
                     console.warn("AI stream event error:", event.message || "Unknown error");
-                    renderGenerateError(context, event.message || (currentLocale === "ko" ? "스트리밍 생성 중 오류가 발생했습니다." : "Streaming generation failed."));
+                    renderGenerateError(context, event.message || (currentLocale === "ko" ? "?ㅽ듃由щ컢 ?앹꽦 以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎." : "Streaming generation failed."));
                     return;
                 }
             }
@@ -7838,13 +7843,13 @@ async function streamGenerateScenario(context) {
 
         aiGenerating = false;
 
-        // STEP 3 완료
+        // STEP 3 ?꾨즺
         updateOutputFlowTracker(3, { 1: "done", 2: "done", 3: "done" });
         const isKoDone = currentLocale === "ko";
         updateSectionHelper("result-helper",
-            isKoDone ? "✅ 시나리오 생성이 완료되었습니다. 아래에서 결과를 확인하세요." : "✅ Scenario generation complete. Review the results below.");
+            isKoDone ? "???쒕굹由ъ삤 ?앹꽦???꾨즺?섏뿀?듬땲?? ?꾨옒?먯꽌 寃곌낵瑜??뺤씤?섏꽭??" : "??Scenario generation complete. Review the results below.");
 
-        // JSON 모드 시도: selectionSummary가 있으면 JSON 파싱 우선
+        // JSON 紐⑤뱶 ?쒕룄: selectionSummary媛 ?덉쑝硫?JSON ?뚯떛 ?곗꽑
         if (context.selectionSummary && typeof extractJsonFromAIOutput === "function") {
             try {
                 const { json: parsed } = extractJsonFromAIOutput(aiOutputText);
@@ -7860,7 +7865,7 @@ async function streamGenerateScenario(context) {
             }
             console.info("[generate] Falling back to markdown render. AI output starts with:", aiOutputText.substring(0, 100));
         }
-        // JSON 파싱 실패 또는 selectionSummary 없음 → 기존 마크다운 렌더링
+        // JSON ?뚯떛 ?ㅽ뙣 ?먮뒗 selectionSummary ?놁쓬 ??湲곗〈 留덊겕?ㅼ슫 ?뚮뜑留?
         renderAIResult(aiOutputText, context);
     };
 
@@ -7868,17 +7873,17 @@ async function streamGenerateScenario(context) {
         aiGenerating = false;
         console.error("Stream processing error:", err);
         renderGenerateError(context, currentLocale === "ko"
-            ? "스트리밍 처리 중 오류가 발생했습니다."
+            ? "?ㅽ듃由щ컢 泥섎━ 以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎."
             : "A streaming error occurred.");
     });
 }
 
 function renderGenerateError(context, message, statusCode = "") {
-    const title = currentLocale === "ko" ? "AI 생성이 완료되지 않았습니다" : "AI generation did not complete";
+    const title = currentLocale === "ko" ? "AI ?앹꽦???꾨즺?섏? ?딆븯?듬땲?? : "AI generation did not complete";
     const retry = currentLocale === "ko"
-        ? "API 응답이 정상적으로 돌아오면 01~07 형식으로 출력됩니다."
-        : "Once the API responds normally, the result will render in the 01–07 format.";
-    const statusText = statusCode ? `${currentLocale === "ko" ? "상태 코드" : "Status"}: ${statusCode}` : "";
+        ? "API ?묐떟???뺤긽?곸쑝濡??뚯븘?ㅻ㈃ 01~07 ?뺤떇?쇰줈 異쒕젰?⑸땲??"
+        : "Once the API responds normally, the result will render in the 01??7 format.";
+    const statusText = statusCode ? `${currentLocale === "ko" ? "?곹깭 肄붾뱶" : "Status"}: ${statusCode}` : "";
 
     const errSelCard = context.selectionSummary
         ? renderExploreSelectionCard(context.selectionSummary)
@@ -7892,7 +7897,7 @@ function renderGenerateError(context, message, statusCode = "") {
             ${errSelCard}
             <div class="ai-result-body">
                 <h3>${escapeHtml(title)}</h3>
-                <p class="error">${escapeHtml(message || (currentLocale === "ko" ? "알 수 없는 오류" : "Unknown error"))}</p>
+                <p class="error">${escapeHtml(message || (currentLocale === "ko" ? "?????녿뒗 ?ㅻ쪟" : "Unknown error"))}</p>
                 ${statusText ? `<p>${escapeHtml(statusText)}</p>` : ""}
                 <p>${escapeHtml(retry)}</p>
             </div>
@@ -7916,11 +7921,11 @@ function getMissionBucketLabel(missionBucket) {
 function buildSelectionSummaryCard(context) {
     const copy = currentLocale === "ko"
         ? {
-            market: "시장",
-            target: "타겟",
-            value: "반영할 가치",
-            devices: "반영 기기",
-            purpose: "상황 메모"
+            market: "?쒖옣",
+            target: "?寃?,
+            value: "諛섏쁺??媛移?,
+            devices: "諛섏쁺 湲곌린",
+            purpose: "?곹솴 硫붾え"
         }
         : {
             market: "Market",
@@ -7951,7 +7956,7 @@ function buildSelectionSummaryCard(context) {
                 </div>
                 <div class="ai-selection-block ai-selection-block--wide">
                     <span class="ai-selection-label">${escapeHtml(copy.devices)}</span>
-                    <div class="ai-selection-chip-row">${deviceItems || `<span class="ai-selection-chip">${escapeHtml(currentLocale === "ko" ? "선택 기기 없음" : "No devices selected")}</span>`}</div>
+                    <div class="ai-selection-chip-row">${deviceItems || `<span class="ai-selection-chip">${escapeHtml(currentLocale === "ko" ? "?좏깮 湲곌린 ?놁쓬" : "No devices selected")}</span>`}</div>
                 </div>
                 ${context.purpose ? `
                     <div class="ai-selection-block ai-selection-block--wide">
@@ -7965,15 +7970,15 @@ function buildSelectionSummaryCard(context) {
 }
 
 /**
- * Explore 선택 근거 카드 — Selection Stage 산출물을 시각화
- * selectionSummary가 없으면 빈 문자열 반환 (기존 buildSelectionSummaryCard로 fallback)
+ * Explore ?좏깮 洹쇨굅 移대뱶 ??Selection Stage ?곗텧臾쇱쓣 ?쒓컖??
+ * selectionSummary媛 ?놁쑝硫?鍮?臾몄옄??諛섑솚 (湲곗〈 buildSelectionSummaryCard濡?fallback)
  */
 /**
- * Structured Output 렌더러 — JSON 스키마 기반 AI 출력용
- * 마케터용 / 일반 사용자용 탭 전환 포함
+ * Structured Output ?뚮뜑????JSON ?ㅽ궎留?湲곕컲 AI 異쒕젰??
+ * 留덉??곗슜 / ?쇰컲 ?ъ슜?먯슜 ???꾪솚 ?ы븿
  */
 function renderStructuredOutput(output, context) {
-    latestStructuredOutput = output;  // 전역 저장 — export, refinement에서 사용
+    latestStructuredOutput = output;  // ?꾩뿭 ?????export, refinement?먯꽌 ?ъ슜
     const isKo = (output.locale || currentLocale) === "ko";
     const selCard = output.selection
         ? renderExploreSelectionCard(output.selection)
@@ -7983,27 +7988,27 @@ function renderStructuredOutput(output, context) {
     const mo = tx.marketerOutput || {};
     const co = tx.consumerOutput || {};
 
-    // 마케터용 output HTML
+    // 留덉??곗슜 output HTML
     const marketerHtml = renderMarketerPanel(mo, isKo);
-    // 일반 사용자용 output HTML
+    // ?쇰컲 ?ъ슜?먯슜 output HTML
     const consumerHtml = renderConsumerPanel(co, isKo);
-    // 가치 하이라이트
+    // 媛移??섏씠?쇱씠??
     const valuesHtml = (output.valueHighlights || []).map(v =>
         `<div class="str-value-item"><span class="sel-value-badge sel-value-${(v.value || "").toLowerCase()}">${escapeHtml(v.value)}</span><span>${escapeHtml(v.description)}</span></div>`
     ).join("");
-    // O-I-I 인사이트
+    // O-I-I ?몄궗?댄듃
     const oii = output.localizedInsight;
     const insightHtml = oii ? `
         <div class="str-insight-block">
-            <h4>${isKo ? "지역 인사이트" : "Local Insight"}</h4>
-            <div class="str-oii"><strong>${isKo ? "관찰" : "Observation"}:</strong> ${escapeHtml(oii.observation || "")}</div>
-            <div class="str-oii"><strong>${isKo ? "인사이트" : "Insight"}:</strong> ${escapeHtml(oii.insight || "")}</div>
-            <div class="str-oii"><strong>${isKo ? "함의" : "Implication"}:</strong> ${escapeHtml(oii.implication || "")}</div>
+            <h4>${isKo ? "吏???몄궗?댄듃" : "Local Insight"}</h4>
+            <div class="str-oii"><strong>${isKo ? "愿李? : "Observation"}:</strong> ${escapeHtml(oii.observation || "")}</div>
+            <div class="str-oii"><strong>${isKo ? "?몄궗?댄듃" : "Insight"}:</strong> ${escapeHtml(oii.insight || "")}</div>
+            <div class="str-oii"><strong>${isKo ? "?⑥쓽" : "Implication"}:</strong> ${escapeHtml(oii.implication || "")}</div>
         </div>
     ` : "";
-    // 출처 추적
+    // 異쒖쿂 異붿쟻
     const st = output.sourceTrace || tx.sourceTrace;
-    const sourceHtml = st ? `<div class="str-source-trace">${isKo ? "출처" : "Source"}: ${escapeHtml(typeof st === "string" ? st : `Explore ${st.exploreVersion} > ${st.articleTitle} > ${st.storyTitle}`)}</div>` : "";
+    const sourceHtml = st ? `<div class="str-source-trace">${isKo ? "異쒖쿂" : "Source"}: ${escapeHtml(typeof st === "string" ? st : `Explore ${st.exploreVersion} > ${st.articleTitle} > ${st.storyTitle}`)}</div>` : "";
 
     const completionBanner = buildCompletionBanner(context, isKo);
     const curationSummary = buildCurationSummaryInline(isKo);
@@ -8012,26 +8017,26 @@ function renderStructuredOutput(output, context) {
         <article class="scenario-output ai-result str-output">
             ${completionBanner}
             <div class="ai-result-meta">
-                <span class="ai-result-badge">${context.provider === "claude" ? "Claude" : "GPT"} ${isKo ? "생성 결과" : "Generated"}</span>
+                <span class="ai-result-badge">${context.provider === "claude" ? "Claude" : "GPT"} ${isKo ? "?앹꽦 寃곌낵" : "Generated"}</span>
                 <span class="ai-result-context">${escapeHtml(context.role)}</span>
-                <button type="button" class="tab-btn ai-copy-btn" id="str-copy-btn">${isKo ? "복사" : "Copy"}</button>
+                <button type="button" class="tab-btn ai-copy-btn" id="str-copy-btn">${isKo ? "蹂듭궗" : "Copy"}</button>
             </div>
             ${curationSummary}
             ${selCard}
             <div class="str-tab-bar">
-                <button class="str-tab active" data-tab="marketer">${isKo ? "마케터용" : "Marketer"}</button>
-                <button class="str-tab" data-tab="consumer">${isKo ? "일반 사용자용" : "Consumer"}</button>
+                <button class="str-tab active" data-tab="marketer">${isKo ? "留덉??곗슜" : "Marketer"}</button>
+                <button class="str-tab" data-tab="consumer">${isKo ? "?쇰컲 ?ъ슜?먯슜" : "Consumer"}</button>
             </div>
             <div class="str-panel active" id="str-panel-marketer">${marketerHtml}</div>
             <div class="str-panel" id="str-panel-consumer">${consumerHtml}</div>
-            ${valuesHtml ? `<div class="str-values-section"><h4>${isKo ? "강조 가치" : "Value Highlights"}</h4>${valuesHtml}</div>` : ""}
+            ${valuesHtml ? `<div class="str-values-section"><h4>${isKo ? "媛뺤“ 媛移? : "Value Highlights"}</h4>${valuesHtml}</div>` : ""}
             ${insightHtml}
             ${sourceHtml}
             ${buildRefinementUI()}
         </article>
     `;
 
-    // 탭 전환
+    // ???꾪솚
     resultDiv.querySelectorAll(".str-tab").forEach(tab => {
         tab.addEventListener("click", () => {
             resultDiv.querySelectorAll(".str-tab").forEach(t => t.classList.remove("active"));
@@ -8041,14 +8046,14 @@ function renderStructuredOutput(output, context) {
         });
     });
 
-    // 복사
+    // 蹂듭궗
     const copyBtn = resultDiv.querySelector("#str-copy-btn");
     if (copyBtn) {
         copyBtn.addEventListener("click", () => {
             const text = JSON.stringify(output, null, 2);
             navigator.clipboard.writeText(text).then(() => {
-                copyBtn.textContent = isKo ? "복사됨!" : "Copied!";
-                setTimeout(() => { copyBtn.textContent = isKo ? "복사" : "Copy"; }, 2000);
+                copyBtn.textContent = isKo ? "蹂듭궗??" : "Copied!";
+                setTimeout(() => { copyBtn.textContent = isKo ? "蹂듭궗" : "Copy"; }, 2000);
             }).catch(() => {});
         });
     }
@@ -8077,7 +8082,7 @@ function renderMarketerPanel(mo, isKo) {
 
     const copiesHtml = copies.filter(c => c && (c.ko || c.en)).map((c, i) => `
         <div class="str-copy-option">
-            <div class="str-copy-num">${isKo ? `옵션 ${i + 1}` : `Option ${i + 1}`}</div>
+            <div class="str-copy-num">${isKo ? `?듭뀡 ${i + 1}` : `Option ${i + 1}`}</div>
             <div class="str-copy-ko">${escapeHtml(c.ko || "")}</div>
             ${c.en ? `<div class="str-copy-en">${escapeHtml(c.en)}</div>` : ""}
             ${c.tone ? `<div class="str-copy-tone">${escapeHtml(c.tone)}</div>` : ""}
@@ -8086,7 +8091,7 @@ function renderMarketerPanel(mo, isKo) {
 
     const roleHtml = (rd.retail || rd.dotcom || rd.brand) ? `
         <div class="str-role-diff">
-            <h4>${isKo ? "역할별 실행 방향" : "Role-specific Direction"}</h4>
+            <h4>${isKo ? "??븷蹂??ㅽ뻾 諛⑺뼢" : "Role-specific Direction"}</h4>
             ${rd.retail ? `<div><strong>Retail:</strong> ${escapeHtml(rd.retail)}</div>` : ""}
             ${rd.dotcom ? `<div><strong>Dotcom:</strong> ${escapeHtml(rd.dotcom)}</div>` : ""}
             ${rd.brand ? `<div><strong>Brand:</strong> ${escapeHtml(rd.brand)}</div>` : ""}
@@ -8094,12 +8099,12 @@ function renderMarketerPanel(mo, isKo) {
     ` : "";
 
     const sections = [];
-    if (why) sections.push({ title: isKo ? "왜 이 시나리오인가" : "Why This Scenario", html: `<p>${escapeHtml(why)}</p>` });
-    if (tf.primary) sections.push({ title: isKo ? "타깃 적합도" : "Target Fit", html: `<p><strong>${isKo ? "주 타깃" : "Primary"}:</strong> ${escapeHtml(tf.primary)}</p>${tf.secondary ? `<p><strong>${isKo ? "보조" : "Secondary"}:</strong> ${escapeHtml(tf.secondary)}</p>` : ""}${tf.estimatedReach ? `<p><strong>${isKo ? "추정 도달" : "Est. reach"}:</strong> ${escapeHtml(tf.estimatedReach)}</p>` : ""}` });
-    if (channelsHtml) sections.push({ title: isKo ? "채널 전략" : "Channel Strategy", html: `<div class="str-channels-grid">${channelsHtml}</div>` });
-    if (copiesHtml) sections.push({ title: isKo ? "카피 옵션" : "Copy Options", html: copiesHtml });
-    if (insight) sections.push({ title: isKo ? "지역 인사이트" : "Local Insight", html: `<p>${escapeHtml(insight)}</p>` });
-    if (rd.retail || rd.dotcom || rd.brand) sections.push({ title: isKo ? "역할별 실행 방향" : "Role-specific Direction", html: `${rd.retail ? `<div><strong>Retail:</strong> ${escapeHtml(rd.retail)}</div>` : ""}${rd.dotcom ? `<div><strong>Dotcom:</strong> ${escapeHtml(rd.dotcom)}</div>` : ""}${rd.brand ? `<div><strong>Brand:</strong> ${escapeHtml(rd.brand)}</div>` : ""}` });
+    if (why) sections.push({ title: isKo ? "?????쒕굹由ъ삤?멸?" : "Why This Scenario", html: `<p>${escapeHtml(why)}</p>` });
+    if (tf.primary) sections.push({ title: isKo ? "?源??곹빀?? : "Target Fit", html: `<p><strong>${isKo ? "二??源? : "Primary"}:</strong> ${escapeHtml(tf.primary)}</p>${tf.secondary ? `<p><strong>${isKo ? "蹂댁“" : "Secondary"}:</strong> ${escapeHtml(tf.secondary)}</p>` : ""}${tf.estimatedReach ? `<p><strong>${isKo ? "異붿젙 ?꾨떖" : "Est. reach"}:</strong> ${escapeHtml(tf.estimatedReach)}</p>` : ""}` });
+    if (channelsHtml) sections.push({ title: isKo ? "梨꾨꼸 ?꾨왂" : "Channel Strategy", html: `<div class="str-channels-grid">${channelsHtml}</div>` });
+    if (copiesHtml) sections.push({ title: isKo ? "移댄뵾 ?듭뀡" : "Copy Options", html: copiesHtml });
+    if (insight) sections.push({ title: isKo ? "吏???몄궗?댄듃" : "Local Insight", html: `<p>${escapeHtml(insight)}</p>` });
+    if (rd.retail || rd.dotcom || rd.brand) sections.push({ title: isKo ? "??븷蹂??ㅽ뻾 諛⑺뼢" : "Role-specific Direction", html: `${rd.retail ? `<div><strong>Retail:</strong> ${escapeHtml(rd.retail)}</div>` : ""}${rd.dotcom ? `<div><strong>Dotcom:</strong> ${escapeHtml(rd.dotcom)}</div>` : ""}${rd.brand ? `<div><strong>Brand:</strong> ${escapeHtml(rd.brand)}</div>` : ""}` });
 
     const accordionsHtml = sections.map((sec, i) =>
         `<details class="str-accordion"${i === 0 ? " open" : ""}><summary>${escapeHtml(sec.title)}</summary><div class="acc-body">${sec.html}</div></details>`
@@ -8126,7 +8131,7 @@ function renderConsumerPanel(co, isKo) {
         <div class="str-device-item">
             <span class="str-device-name">${escapeHtml(d.name || "")}</span>
             ${d.role ? `<span class="str-device-role">${escapeHtml(d.role)}</span>` : ""}
-            <span class="str-device-req">${d.required !== false ? (isKo ? "필수" : "Required") : (isKo ? "선택" : "Optional")}</span>
+            <span class="str-device-req">${d.required !== false ? (isKo ? "?꾩닔" : "Required") : (isKo ? "?좏깮" : "Optional")}</span>
         </div>
     `).join("");
 
@@ -8135,13 +8140,13 @@ function renderConsumerPanel(co, isKo) {
     const altsHtml = alts.filter(a => a && a.scenario).map(a => `<div class="str-alt-item"><strong>${escapeHtml(a.scenario || "")}</strong><span>${escapeHtml(a.reason || "")}</span></div>`).join("");
 
     const sections = [];
-    if (what) sections.push({ title: isKo ? "무엇을 하나요" : "What It Does", html: `<p>${escapeHtml(what)}</p>` });
-    if (devicesHtml) sections.push({ title: isKo ? "필요한 기기" : "Required Devices", html: devicesHtml });
-    if ((setup.apps || []).length) sections.push({ title: isKo ? "필요한 앱" : "Required Apps", html: `<p>${(setup.apps || []).map(a => escapeHtml(a)).join(", ")}</p>` });
-    if ((setup.conditions || []).length) sections.push({ title: isKo ? "필요 조건" : "Prerequisites", html: `<ul>${(setup.conditions || []).map(c => `<li>${escapeHtml(c)}</li>`).join("")}</ul>` });
-    if (stepsHtml) sections.push({ title: isKo ? "설정 방법" : "Setup Steps", html: `<ol>${stepsHtml}</ol>` });
-    if (cautionsHtml) sections.push({ title: isKo ? "주의사항" : "Cautions", html: `<ul>${cautionsHtml}</ul>` });
-    if (altsHtml) sections.push({ title: isKo ? "대체 구성" : "Alternatives", html: altsHtml });
+    if (what) sections.push({ title: isKo ? "臾댁뾿???섎굹?? : "What It Does", html: `<p>${escapeHtml(what)}</p>` });
+    if (devicesHtml) sections.push({ title: isKo ? "?꾩슂??湲곌린" : "Required Devices", html: devicesHtml });
+    if ((setup.apps || []).length) sections.push({ title: isKo ? "?꾩슂???? : "Required Apps", html: `<p>${(setup.apps || []).map(a => escapeHtml(a)).join(", ")}</p>` });
+    if ((setup.conditions || []).length) sections.push({ title: isKo ? "?꾩슂 議곌굔" : "Prerequisites", html: `<ul>${(setup.conditions || []).map(c => `<li>${escapeHtml(c)}</li>`).join("")}</ul>` });
+    if (stepsHtml) sections.push({ title: isKo ? "?ㅼ젙 諛⑸쾿" : "Setup Steps", html: `<ol>${stepsHtml}</ol>` });
+    if (cautionsHtml) sections.push({ title: isKo ? "二쇱쓽?ы빆" : "Cautions", html: `<ul>${cautionsHtml}</ul>` });
+    if (altsHtml) sections.push({ title: isKo ? "?泥?援ъ꽦" : "Alternatives", html: altsHtml });
 
     const accordionsHtml = sections.map((sec, i) =>
         `<details class="str-accordion"${i === 0 ? " open" : ""}><summary>${escapeHtml(sec.title)}</summary><div class="acc-body">${sec.html}</div></details>`
@@ -8161,12 +8166,12 @@ function renderExploreSelectionCard(summary) {
     const isKo = (summary.locale || currentLocale) === "ko";
     const primary = summary.selectedScenarios.find(s => s.isPrimary) || summary.selectedScenarios[0];
 
-    // 가치 배지
+    // 媛移?諛곗?
     const valuesHtml = (summary.primaryValues || [])
         .map(v => `<span class="sel-value-badge sel-value-${v.toLowerCase()}">${escapeHtml(v)}</span>`)
         .join("");
 
-    // 선택된 시나리오 하이라이트
+    // ?좏깮???쒕굹由ъ삤 ?섏씠?쇱씠??
     const scenarioHtml = `
         <div class="sel-scenario-highlight">
             <span class="sel-source-badge">${escapeHtml(`Explore ${primary.source}`)}</span>
@@ -8176,26 +8181,26 @@ function renderExploreSelectionCard(summary) {
         </div>
     `;
 
-    // 선택 이유
+    // ?좏깮 ?댁쑀
     const reasonHtml = summary.selectionReason
-        ? `<div class="sel-reason"><strong>${isKo ? "선택 이유" : "Why selected"}</strong> ${escapeHtml(summary.selectionReason)}</div>`
+        ? `<div class="sel-reason"><strong>${isKo ? "?좏깮 ?댁쑀" : "Why selected"}</strong> ${escapeHtml(summary.selectionReason)}</div>`
         : "";
 
-    // 반영된 입력값
+    // 諛섏쁺???낅젰媛?
     const inputItems = [];
     const snap = summary.inputSnapshot || {};
     if (snap.market?.country) {
         const marketText = `${snap.market.country}${snap.market.city ? ` / ${snap.market.city}` : ""}`;
-        inputItems.push({ label: isKo ? "대상 시장" : "Target Market", value: marketText });
+        inputItems.push({ label: isKo ? "????쒖옣" : "Target Market", value: marketText });
     }
     if (snap.persona && snap.persona.length > 0) {
-        inputItems.push({ label: isKo ? "핵심 타깃" : "Core Target", value: snap.persona.map(p => p.label || p.id || "").filter(Boolean).join(", ") });
+        inputItems.push({ label: isKo ? "?듭떖 ?源? : "Core Target", value: snap.persona.map(p => p.label || p.id || "").filter(Boolean).join(", ") });
     }
     if (snap.devices && snap.devices.length > 0) {
-        inputItems.push({ label: isKo ? "활용 기기" : "Devices Used", value: snap.devices.map(d => d.label || d.name || "").filter(Boolean).join(", ") });
+        inputItems.push({ label: isKo ? "?쒖슜 湲곌린" : "Devices Used", value: snap.devices.map(d => d.label || d.name || "").filter(Boolean).join(", ") });
     }
     if (snap.purpose?.text) {
-        inputItems.push({ label: isKo ? "상황 · 목적" : "Context & Purpose", value: snap.purpose.text });
+        inputItems.push({ label: isKo ? "?곹솴 쨌 紐⑹쟻" : "Context & Purpose", value: snap.purpose.text });
     }
 
     const inputHtml = inputItems.length > 0
@@ -8204,11 +8209,11 @@ function renderExploreSelectionCard(summary) {
         ).join("")}</div>`
         : "";
 
-    // Magic Keywords (사용자가 직접 선택한 관심사)
+    // Magic Keywords (?ъ슜?먭? 吏곸젒 ?좏깮??愿?ъ궗)
     const magicKeys = summary.magicKeywords || [];
     const magicHtml = magicKeys.length > 0 ? `
         <div class="sel-magic-row">
-            <strong class="sel-magic-label">${isKo ? "선택한 관심 키워드" : "Your focus keywords"}</strong>
+            <strong class="sel-magic-label">${isKo ? "?좏깮??愿???ㅼ썙?? : "Your focus keywords"}</strong>
             <div class="sel-magic-tags">${magicKeys.map(key => {
                 const cat = (typeof CITY_PROFILE_CATEGORIES !== "undefined" ? CITY_PROFILE_CATEGORIES : []).find(c => c.key === key);
                 return cat
@@ -8218,7 +8223,7 @@ function renderExploreSelectionCard(summary) {
         </div>
     ` : "";
 
-    // 도출 키워드
+    // ?꾩텧 ?ㅼ썙??
     const derivedTags = (summary.derivedTags || []).slice(0, 5);
     const tagsHtml = derivedTags.length > 0
         ? `<div class="sel-tags-row">${derivedTags.map(t =>
@@ -8226,7 +8231,7 @@ function renderExploreSelectionCard(summary) {
         ).join("")}</div>`
         : "";
 
-    // 확정 vs 추론
+    // ?뺤젙 vs 異붾줎
     const ivc = summary.inferredVsConfirmed || {};
     const confirmedHtml = (ivc.confirmed || []).map(c =>
         `<span class="sel-chip sel-chip-confirmed">${escapeHtml(c)}</span>`
@@ -8241,15 +8246,15 @@ function renderExploreSelectionCard(summary) {
           </div>`
         : "";
 
-    // 매칭된 시나리오 수
+    // 留ㅼ묶???쒕굹由ъ삤 ??
     const countText = summary.totalCandidates > 1
-        ? (isKo ? `외 ${summary.totalCandidates - 1}개 시나리오 매칭` : `+${summary.totalCandidates - 1} more matched`)
+        ? (isKo ? `??${summary.totalCandidates - 1}媛??쒕굹由ъ삤 留ㅼ묶` : `+${summary.totalCandidates - 1} more matched`)
         : "";
 
     return `
         <section class="sel-card">
             <div class="sel-card-header">
-                <h3 class="sel-card-title">${isKo ? "선택 근거" : "Selection Basis"}</h3>
+                <h3 class="sel-card-title">${isKo ? "?좏깮 洹쇨굅" : "Selection Basis"}</h3>
                 ${countText ? `<span class="sel-count">${escapeHtml(countText)}</span>` : ""}
             </div>
             ${scenarioHtml}
@@ -8268,17 +8273,17 @@ function buildStreamingUI(context) {
         ? renderExploreSelectionCard(context.selectionSummary)
         : buildSelectionSummaryCard(context);
 
-    // 스마트 로딩: 도시 맥락 기반 롤링 문구 (5개, 1.8초 간격 = ~9초 사이클)
+    // ?ㅻ쭏??濡쒕뵫: ?꾩떆 留λ씫 湲곕컲 濡ㅻ쭅 臾멸뎄 (5媛? 1.8珥?媛꾧꺽 = ~9珥??ъ씠??
     const cityDisplay = context.cityDisplay || context.city || "";
     const segment = context.segment || "";
-    const cityFallback = isKo ? "선택한 지역" : "your city";
-    const segFallback = isKo ? "타깃 고객" : "target customers";
+    const cityFallback = isKo ? "?좏깮??吏?? : "your city";
+    const segFallback = isKo ? "?源?怨좉컼" : "target customers";
     const loadingPhrases = isKo ? [
-        `${cityDisplay || cityFallback}의 생활 맥락을 분석 중...`,
-        `${segment || segFallback}의 평일·주말 패턴을 매칭 중...`,
-        `Explore 시나리오에서 최적 조합을 탐색 중...`,
-        `마케터용·사용자용 결과물을 구성 중...`,
-        `최적의 CX 시나리오를 찾았습니다!`
+        `${cityDisplay || cityFallback}???앺솢 留λ씫??遺꾩꽍 以?..`,
+        `${segment || segFallback}???됱씪쨌二쇰쭚 ?⑦꽩??留ㅼ묶 以?..`,
+        `Explore ?쒕굹由ъ삤?먯꽌 理쒖쟻 議고빀???먯깋 以?..`,
+        `留덉??곗슜쨌?ъ슜?먯슜 寃곌낵臾쇱쓣 援ъ꽦 以?..`,
+        `理쒖쟻??CX ?쒕굹由ъ삤瑜?李얠븯?듬땲??`
     ] : [
         `Analyzing local living context in ${cityDisplay || cityFallback}...`,
         `Matching weekday & weekend patterns for ${segment || segFallback}...`,
@@ -8302,7 +8307,7 @@ function buildStreamingUI(context) {
                         </svg>
                         <span class="pizza-pct" data-pizza-pct>0%</span>
                     </div>
-                    <span class="pizza-label">${isKo ? "AI 시나리오 생성 중..." : "Generating AI scenario..."}</span>
+                    <span class="pizza-label">${isKo ? "AI ?쒕굹由ъ삤 ?앹꽦 以?.." : "Generating AI scenario..."}</span>
                 </div>
                 <div class="smart-load-phrases">${phrasesHtml}</div>
             </div>
@@ -8312,7 +8317,7 @@ function buildStreamingUI(context) {
     `;
 }
 
-/** 스트리밍 중 피자 프로그레스 시뮬레이션 시작 */
+/** ?ㅽ듃由щ컢 以??쇱옄 ?꾨줈洹몃젅???쒕??덉씠???쒖옉 */
 function startStreamingPizzaProgress() {
     let progress = 0;
     const interval = setInterval(() => {
@@ -8328,11 +8333,11 @@ function startStreamingPizzaProgress() {
 }
 
 function stripMetaPrompts(text) {
-    // 내부 섹션 번호 참조(10-11, section 10 등) 제거 — 사용자에게 의미 없는 개발자 용어
+    // ?대? ?뱀뀡 踰덊샇 李몄“(10-11, section 10 ?? ?쒓굅 ???ъ슜?먯뿉寃??섎? ?녿뒗 媛쒕컻???⑹뼱
     return text
         .replace(/\(Which section.*?\)/gi, "")
         .replace(/\(.*?request.*?section.*?10.*?\)/gi, "")
-        .replace(/\(.*?request.*?10[-–]11.*?\)/gi, "")
+        .replace(/\(.*?request.*?10[-??11.*?\)/gi, "")
         .trim();
 }
 
@@ -8345,9 +8350,9 @@ function renderAIResult(markdown, context) {
     resultDiv.innerHTML = `
         <article class="scenario-output ai-result">
             <div class="ai-result-meta">
-                <span class="ai-result-badge">${context.provider === "claude" ? "Claude" : "GPT"} ${currentLocale === "ko" ? "생성 결과" : "Generated"}</span>
+                <span class="ai-result-badge">${context.provider === "claude" ? "Claude" : "GPT"} ${currentLocale === "ko" ? "?앹꽦 寃곌낵" : "Generated"}</span>
                 <span class="ai-result-context">${escapeHtml(context.role)}</span>
-                <button type="button" class="tab-btn ai-copy-btn" id="ai-copy-btn">${currentLocale === "ko" ? "복사" : "Copy"}</button>
+                <button type="button" class="tab-btn ai-copy-btn" id="ai-copy-btn">${currentLocale === "ko" ? "蹂듭궗" : "Copy"}</button>
             </div>
             ${selectionCardHtml}
             <div class="ai-result-body">${html}</div>
@@ -8359,8 +8364,8 @@ function renderAIResult(markdown, context) {
     if (copyBtn) {
         copyBtn.addEventListener("click", () => {
             navigator.clipboard.writeText(cleaned).then(() => {
-                copyBtn.textContent = currentLocale === "ko" ? "복사됨!" : "Copied!";
-                setTimeout(() => { copyBtn.textContent = currentLocale === "ko" ? "복사" : "Copy"; }, 2000);
+                copyBtn.textContent = currentLocale === "ko" ? "蹂듭궗??" : "Copied!";
+                setTimeout(() => { copyBtn.textContent = currentLocale === "ko" ? "蹂듭궗" : "Copy"; }, 2000);
             }).catch(() => {});
         });
     }
@@ -8371,13 +8376,13 @@ function renderAIResult(markdown, context) {
 }
 
 function buildRefinementUI() {
-    const title = currentLocale === "ko" ? "추가 요청 / 수정" : "Refine / Follow-up";
+    const title = currentLocale === "ko" ? "異붽? ?붿껌 / ?섏젙" : "Refine / Follow-up";
     const placeholder = currentLocale === "ko"
-        ? "예) 독일 시장으로 바꿔줘 / 기기 목록 업데이트 / 실행 가이드 추가 / 품질 점검 해줘"
+        ? "?? ?낆씪 ?쒖옣?쇰줈 諛붽퓭以?/ 湲곌린 紐⑸줉 ?낅뜲?댄듃 / ?ㅽ뻾 媛?대뱶 異붽? / ?덉쭏 ?먭? ?댁쨾"
         : "e.g. Switch to Germany / Update devices / Add execution guide / Run quality check";
-    const btn = currentLocale === "ko" ? "요청 전송" : "Send";
+    const btn = currentLocale === "ko" ? "?붿껌 ?꾩넚" : "Send";
     const initial = currentLocale === "ko"
-        ? "수정하거나 더 자세히 보고 싶은 부분이 있으면 자유롭게 요청하세요."
+        ? "?섏젙?섍굅?????먯꽭??蹂닿퀬 ?띠? 遺遺꾩씠 ?덉쑝硫??먯쑀濡?쾶 ?붿껌?섏꽭??"
         : "Ask for any refinement or additional detail you need.";
     return `
         <section class="output-block numbered-output post-output-prompt">
@@ -8404,7 +8409,7 @@ function bindRefinementPrompt(previousOutput, context) {
 
         aiGenerating = true;
         askBtn.disabled = true;
-        answer.textContent = currentLocale === "ko" ? "AI가 처리 중입니다..." : "AI is processing...";
+        answer.textContent = currentLocale === "ko" ? "AI媛 泥섎━ 以묒엯?덈떎..." : "AI is processing...";
 
         let response;
         try {
@@ -8421,7 +8426,7 @@ function bindRefinementPrompt(previousOutput, context) {
         } catch (err) {
             aiGenerating = false;
             askBtn.disabled = false;
-            answer.textContent = currentLocale === "ko" ? "서버에 연결할 수 없습니다." : "Cannot reach server.";
+            answer.textContent = currentLocale === "ko" ? "?쒕쾭???곌껐?????놁뒿?덈떎." : "Cannot reach server.";
             return;
         }
 
@@ -8429,7 +8434,7 @@ function bindRefinementPrompt(previousOutput, context) {
             aiGenerating = false;
             askBtn.disabled = false;
             const errData = await response.json().catch(() => ({}));
-            answer.textContent = errData?.error?.message || (currentLocale === "ko" ? `오류: ${response.status}` : `Error: ${response.status}`);
+            answer.textContent = errData?.error?.message || (currentLocale === "ko" ? `?ㅻ쪟: ${response.status}` : `Error: ${response.status}`);
             return;
         }
 
@@ -8469,13 +8474,13 @@ function bindRefinementPrompt(previousOutput, context) {
                 }
             }
         } catch (err) {
-            answer.textContent = currentLocale === "ko" ? "스트리밍 처리 중 오류." : "Streaming error.";
+            answer.textContent = currentLocale === "ko" ? "?ㅽ듃由щ컢 泥섎━ 以??ㅻ쪟." : "Streaming error.";
         }
 
         aiGenerating = false;
         askBtn.disabled = false;
         input.value = "";
-        // 메타 텍스트 제거
+        // 硫뷀? ?띿뒪???쒓굅
         if (answer.textContent) {
             answer.textContent = stripMetaPrompts(answer.textContent);
         }
@@ -8517,7 +8522,7 @@ function markdownToHtml(md) {
     html = html.replace(/\*([^*\n]+?)\*/g, "<em>$1</em>");
     // HR
     html = html.replace(/^---+$/gm, "<hr>");
-    // Tables — detect | rows
+    // Tables ??detect | rows
     html = html.replace(/((?:^\|.+\|\n?)+)/gm, (tableBlock) => {
         const rows = tableBlock.trim().split("\n");
         let out = "<table><tbody>";
@@ -8532,8 +8537,8 @@ function markdownToHtml(md) {
         return out + "</tbody></table>";
     });
     // Unordered lists
-    html = html.replace(/((?:^[•\-] .+\n?)+)/gm, (block) => {
-        const items = block.trim().split("\n").map((l) => `<li>${l.replace(/^[•\-] /, "")}</li>`).join("");
+    html = html.replace(/((?:^[??-] .+\n?)+)/gm, (block) => {
+        const items = block.trim().split("\n").map((l) => `<li>${l.replace(/^[??-] /, "")}</li>`).join("");
         return `<ul>${items}</ul>`;
     });
     // Ordered lists
@@ -8541,7 +8546,7 @@ function markdownToHtml(md) {
         const items = block.trim().split("\n").map((l) => `<li>${l.replace(/^\d+\. /, "")}</li>`).join("");
         return `<ol>${items}</ol>`;
     });
-    // Paragraphs — blank lines → paragraph breaks (don't affect block elements)
+    // Paragraphs ??blank lines ??paragraph breaks (don't affect block elements)
     html = html.replace(/\n{2,}/g, "\n\n");
     const parts = html.split(/\n{2,}/);
     html = parts.map((part) => {
@@ -8565,7 +8570,7 @@ function parseSourceCitations(html) {
             return `<span class="source-tag" data-source-detail="${detailId}">${label.trim()}</span>` +
                 `<span class="source-detail" id="${detailId}">` +
                 `<span class="source-detail-label">${label.trim()}</span> ` +
-                `<a class="source-detail-url" href="${url}" target="_blank" rel="noopener noreferrer">🔗 ${url.length > 60 ? url.slice(0, 60) + "…" : url}</a>` +
+                `<a class="source-detail-url" href="${url}" target="_blank" rel="noopener noreferrer">?뵕 ${url.length > 60 ? url.slice(0, 60) + "?? : url}</a>` +
                 `</span>`;
         })
         .replace(/\[Source:\s*([^\]]+?)\s*\]/g, (_, label) => {
@@ -8576,9 +8581,9 @@ function parseSourceCitations(html) {
         });
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   Output Flow Tracker — 3-step 상태 관리
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Output Flow Tracker ??3-step ?곹깭 愿由?
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 function updateOutputFlowTracker(activeStep, states) {
     // states: { 1: "waiting"|"active"|"done", 2: ..., 3: ... }
     const tracker = document.getElementById("output-flow-tracker");
@@ -8587,9 +8592,9 @@ function updateOutputFlowTracker(activeStep, states) {
 
     const isKo = currentLocale === "ko";
     const statusLabels = {
-        waiting: isKo ? "대기" : "Waiting",
-        active:  isKo ? "진행 중…" : "In progress…",
-        done:    isKo ? "완료 ✓" : "Done ✓"
+        waiting: isKo ? "?湲? : "Waiting",
+        active:  isKo ? "吏꾪뻾 以묅? : "In progress??,
+        done:    isKo ? "?꾨즺 ?? : "Done ??
     };
 
     [1, 2, 3].forEach(n => {
@@ -8622,15 +8627,15 @@ function setSectionStatusBadge(headingId, state) {
     const badge = document.createElement("span");
     badge.className = `section-status-badge ${state}`;
     if (state === "working") {
-        badge.innerHTML = isKo ? "⏳ 작업 중…" : "⏳ Working…";
+        badge.innerHTML = isKo ? "???묒뾽 以묅? : "??Working??;
     } else if (state === "done") {
-        badge.innerHTML = isKo ? "✅ 완료" : "✅ Done";
+        badge.innerHTML = isKo ? "???꾨즺" : "??Done";
     }
     heading.insertAdjacentElement("afterend", badge);
 }
 
 function scrollToResult() {
-    // 결과 영역 바로 위로만 스크롤 — 맨 위로 올라가지 않도록
+    // 寃곌낵 ?곸뿭 諛붾줈 ?꾨줈留??ㅽ겕濡???留??꾨줈 ?щ씪媛吏 ?딅룄濡?
     const resultFrame = resultDiv?.closest(".result-frame");
     if (resultFrame) {
         resultFrame.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -8644,10 +8649,10 @@ function buildCompletionBanner(context, isKo) {
     const role = context.role || "";
     return `
         <div class="str-completion-banner">
-            <span class="banner-icon">✓</span>
+            <span class="banner-icon">??/span>
             <div class="banner-text">
-                <span class="banner-title">${isKo ? "시나리오 생성 완료" : "Scenario Generation Complete"}</span>
-                <span class="banner-sub">${provider} · ${escapeHtml(role)}</span>
+                <span class="banner-title">${isKo ? "?쒕굹由ъ삤 ?앹꽦 ?꾨즺" : "Scenario Generation Complete"}</span>
+                <span class="banner-sub">${provider} 쨌 ${escapeHtml(role)}</span>
             </div>
         </div>
     `;
@@ -8679,8 +8684,8 @@ function buildCurationSummaryInline(isKo) {
     return `
         <div class="str-curation-summary">
             <div class="curation-summary-header">
-                <span class="curation-summary-title">${isKo ? "추천 시나리오 Top " + items.length : "Top " + items.length + " Recommended Scenarios"}</span>
-                <button type="button" class="curation-toggle-btn" onclick="this.closest('.str-curation-summary').querySelector('.str-curation-list').classList.toggle('hidden');this.textContent=this.textContent==='${isKo ? "접기" : "Collapse"}'?'${isKo ? "펼치기" : "Expand"}':'${isKo ? "접기" : "Collapse"}';">${isKo ? "접기" : "Collapse"}</button>
+                <span class="curation-summary-title">${isKo ? "異붿쿇 ?쒕굹由ъ삤 Top " + items.length : "Top " + items.length + " Recommended Scenarios"}</span>
+                <button type="button" class="curation-toggle-btn" onclick="this.closest('.str-curation-summary').querySelector('.str-curation-list').classList.toggle('hidden');this.textContent=this.textContent==='${isKo ? "?묎린" : "Collapse"}'?'${isKo ? "?쇱튂湲? : "Expand"}':'${isKo ? "?묎린" : "Collapse"}';">${isKo ? "?묎린" : "Collapse"}</button>
             </div>
             <ul class="str-curation-list">${listHtml}</ul>
         </div>
@@ -8694,34 +8699,34 @@ function buildStoryboardWebtoon(intent, services, deviceDecision) {
 
     const panelsKo = {
         Save: [
-            { scene: "야근 후 지친 몸으로 어두운 현관문에 도착한 사용자", text: "오늘도 늦었네... 집이 텅 빈 것처럼 썰렁하겠지?" },
-            { scene: "문이 열리자마자 거실 조명이 은은하게 켜지고 TV에 환영 메시지가 뜸", text: "어? 벌써 따뜻해졌네? SmartThings가 미리 준비했구나." },
-            { scene: "주방으로 가니 인덕션이 예열 중이고 세탁기 완료 알림이 폰으로 옴", text: "하나하나 신경 쓸 필요 없이, 내 리듬에 맞춰 집이 움직여요." },
-            { scene: "소파에 앉아 편하게 휴식하며 에너지 절감 리포트를 확인", text: "불필요한 낭비는 줄이고, 내 시간은 더 여유롭게. 이게 진짜 스마트홈이죠." }
+            { scene: "?쇨렐 ??吏移?紐몄쑝濡??대몢???꾧?臾몄뿉 ?꾩갑???ъ슜??, text: "?ㅻ뒛????뿀??.. 吏묒씠 ??鍮?寃껋쿂???곕쟻?섍쿋吏?" },
+            { scene: "臾몄씠 ?대━?먮쭏??嫄곗떎 議곕챸?????섍쾶 耳쒖?怨?TV???섏쁺 硫붿떆吏媛 ??, text: "?? 踰뚯뜥 ?곕쑜?댁죱?? SmartThings媛 誘몃━ 以鍮꾪뻽援щ굹." },
+            { scene: "二쇰갑?쇰줈 媛???몃뜒?섏씠 ?덉뿴 以묒씠怨??명긽湲??꾨즺 ?뚮┝???곗쑝濡???, text: "?섎굹?섎굹 ?좉꼍 ???꾩슂 ?놁씠, ??由щ벉??留욎떠 吏묒씠 ?吏곸뿬??" },
+            { scene: "?뚰뙆???됱븘 ?명븯寃??댁떇?섎ŉ ?먮꼫吏 ?덇컧 由ы룷?몃? ?뺤씤", text: "遺덊븘?뷀븳 ??퉬??以꾩씠怨? ???쒓컙? ???ъ쑀濡?쾶. ?닿쾶 吏꾩쭨 ?ㅻ쭏?명솃?댁짛." }
         ],
         Care: [
-            { scene: "사무실에서 회의 중, 집에 혼자 있을 반려동물이 걱정되는 사용자", text: "오늘 유독 늦어지네... 초코는 잘 있을까?" },
-            { scene: "SmartThings 앱을 켜니 펫 카메라로 평온하게 자는 모습이 보임", text: "다행이다! 조명도 적당하고, 클래식 음악도 잘 나오고 있네." },
-            { scene: "집에 도착해 반갑게 달려오는 반려동물과 마주하는 순간", text: "멀리 있어도 곁에 있는 것처럼. 돌봄의 공백이 사라졌어요." },
-            { scene: "가족 모두가 안심하고 일상을 공유하는 따뜻한 거실 풍경", text: "걱정은 덜고 사랑은 더 크게. SmartThings Pet Care." }
+            { scene: "?щТ?ㅼ뿉???뚯쓽 以? 吏묒뿉 ?쇱옄 ?덉쓣 諛섎젮?숇Ъ??嫄깆젙?섎뒗 ?ъ슜??, text: "?ㅻ뒛 ?좊룆 ??뼱吏??.. 珥덉퐫?????덉쓣源?" },
+            { scene: "SmartThings ?깆쓣 耳쒕땲 ??移대찓?쇰줈 ?됱삩?섍쾶 ?먮뒗 紐⑥뒿??蹂댁엫", text: "?ㅽ뻾?대떎! 議곕챸???곷떦?섍퀬, ?대옒???뚯븙?????섏삤怨??덈꽕." },
+            { scene: "吏묒뿉 ?꾩갑??諛섍컩寃??щ젮?ㅻ뒗 諛섎젮?숇Ъ怨?留덉＜?섎뒗 ?쒓컙", text: "硫由??덉뼱??怨곸뿉 ?덈뒗 寃껋쿂?? ?뚮큵??怨듬갚???щ씪議뚯뼱??" },
+            { scene: "媛議?紐⑤몢媛 ?덉떖?섍퀬 ?쇱긽??怨듭쑀?섎뒗 ?곕쑜??嫄곗떎 ?띻꼍", text: "嫄깆젙? ?쒓퀬 ?щ옉? ???ш쾶. SmartThings Pet Care." }
         ],
         Secure: [
-            { scene: "여행지에서 평화롭게 휴가를 즐기고 있는 가족", text: "집 비운 지 3일째인데, 별일 없겠지?" },
-            { scene: "수상한 움직임이 감지되었다는 알림과 함께 자동 녹화 영상이 폰에 뜸", text: "앗! 택배 기사님이구나. 실시간으로 확인하니 바로 안심되네." },
-            { scene: "원격으로 도어락 상태를 재점검하고 보안 모드를 강화함", text: "어디에 있든 우리 집은 내가 지킨다. 24시간 철통 보안." },
-            { scene: "안심하고 다시 휴가를 즐기는 가족들의 웃음소리", text: "불안한 확인 대신 확실한 안심. SmartThings Home Monitoring." }
+            { scene: "?ы뻾吏?먯꽌 ?됲솕濡?쾶 ?닿?瑜?利먭린怨??덈뒗 媛議?, text: "吏?鍮꾩슫 吏 3?쇱㎏?몃뜲, 蹂꾩씪 ?녾쿋吏?" },
+            { scene: "?섏긽???吏곸엫??媛먯??섏뿀?ㅻ뒗 ?뚮┝怨??④퍡 ?먮룞 ?뱁솕 ?곸긽???곗뿉 ??, text: "?? ?앸같 湲곗궗?섏씠援щ굹. ?ㅼ떆媛꾩쑝濡??뺤씤?섎땲 諛붾줈 ?덉떖?섎꽕." },
+            { scene: "?먭꺽?쇰줈 ?꾩뼱???곹깭瑜??ъ젏寃?섍퀬 蹂댁븞 紐⑤뱶瑜?媛뺥솕??, text: "?대뵒???덈뱺 ?곕━ 吏묒? ?닿? 吏?⑤떎. 24?쒓컙 泥좏넻 蹂댁븞." },
+            { scene: "?덉떖?섍퀬 ?ㅼ떆 ?닿?瑜?利먭린??媛議깅뱾???껋쓬?뚮━", text: "遺덉븞???뺤씤 ????뺤떎???덉떖. SmartThings Home Monitoring." }
         ],
         Play: [
-            { scene: "퇴근 후 게임 or 영상 감상을 시작하려는 사용자", text: "오늘은 좀 제대로 즐겨볼까? 버튼 하나면 되지." },
-            { scene: "게임 모드 실행과 동시에 조명이 어두워지고, TV 화면과 조명이 싱크", text: "와, 몰입감이 완전 다르네. 설정은 알아서 다 됐잖아?" },
-            { scene: "에어컨이 쾌적한 온도로 자동 유지되고, 블라인드가 내려옴", text: "끊기거나 세팅 때문에 흐름이 깨지는 일 없이, 그냥 즐기면 돼." },
-            { scene: "스피커와 TV가 연동된 서라운드 사운드로 리빙룸이 홈시어터로 변신", text: "집이 내 취향대로 반응해 줄 때, 이 공간이 더 좋아집니다. SmartThings." }
+            { scene: "?닿렐 ??寃뚯엫 or ?곸긽 媛먯긽???쒖옉?섎젮???ъ슜??, text: "?ㅻ뒛? 醫 ?쒕?濡?利먭꺼蹂쇨퉴? 踰꾪듉 ?섎굹硫??섏?." },
+            { scene: "寃뚯엫 紐⑤뱶 ?ㅽ뻾怨??숈떆??議곕챸???대몢?뚯?怨? TV ?붾㈃怨?議곕챸???깊겕", text: "?, 紐곗엯媛먯씠 ?꾩쟾 ?ㅻⅤ?? ?ㅼ젙? ?뚯븘?????먯옏??" },
+            { scene: "?먯뼱而⑥씠 苡뚯쟻???⑤룄濡??먮룞 ?좎??섍퀬, 釉붾씪?몃뱶媛 ?대젮??, text: "?딄린嫄곕굹 ?명똿 ?뚮Ц???먮쫫??源⑥??????놁씠, 洹몃깷 利먭린硫???" },
+            { scene: "?ㅽ뵾而ㅼ? TV媛 ?곕룞???쒕씪?대뱶 ?ъ슫?쒕줈 由щ튃猷몄씠 ?덉떆?댄꽣濡?蹂??, text: "吏묒씠 ??痍⑦뼢?濡?諛섏쓳??以??? ??怨듦컙????醫뗭븘吏묐땲?? SmartThings." }
         ],
         Discover: [
-            { scene: "스마트홈을 처음 시작해 보려는 사용자가 SmartThings 앱을 열어봄", text: "어디서부터 시작해야 하지? 너무 복잡한 거 아닐까?" },
-            { scene: "첫 기기를 연결하자 앱이 맞춤 루틴을 제안해 줌", text: "이렇게 쉽게 되는 거였어? 생각보다 훨씬 간단하네." },
-            { scene: "하나씩 연결된 기기들이 일상 패턴에 맞게 자동으로 동작 시작", text: "알아서 맞춰주니까, 내가 신경 쓸 게 점점 줄어들고 있어." },
-            { scene: "일상이 더 편해졌다는 걸 체감하며 다음 기기 연결을 고민하는 사용자", text: "한 번 쓰기 시작하면 멈출 수가 없어요. SmartThings로 시작하세요." }
+            { scene: "?ㅻ쭏?명솃??泥섏쓬 ?쒖옉??蹂대젮???ъ슜?먭? SmartThings ?깆쓣 ?댁뼱遊?, text: "?대뵒?쒕????쒖옉?댁빞 ?섏?? ?덈Т 蹂듭옟??嫄??꾨땺源?" },
+            { scene: "泥?湲곌린瑜??곌껐?섏옄 ?깆씠 留욎땄 猷⑦떞???쒖븞??以?, text: "?대젃寃??쎄쾶 ?섎뒗 嫄곗??? ?앷컖蹂대떎 ?⑥뵮 媛꾨떒?섎꽕." },
+            { scene: "?섎굹???곌껐??湲곌린?ㅼ씠 ?쇱긽 ?⑦꽩??留욊쾶 ?먮룞?쇰줈 ?숈옉 ?쒖옉", text: "?뚯븘??留욎떠二쇰땲源? ?닿? ?좉꼍 ??寃??먯젏 以꾩뼱?ㅺ퀬 ?덉뼱." },
+            { scene: "?쇱긽?????명빐議뚮떎??嫄?泥닿컧?섎ŉ ?ㅼ쓬 湲곌린 ?곌껐??怨좊??섎뒗 ?ъ슜??, text: "??踰??곌린 ?쒖옉?섎㈃ 硫덉텧 ?섍? ?놁뼱?? SmartThings濡??쒖옉?섏꽭??" }
         ]
     };
 
@@ -8746,7 +8751,7 @@ function buildStoryboardWebtoon(intent, services, deviceDecision) {
         ],
         Play: [
             { scene: "User back from work, ready to unwind with games or a movie", text: "Tonight I'm going all in. One tap should do it." },
-            { scene: "Game mode launches: lights dim and sync with the screen", text: "Whoa, total immersion — and it set itself up automatically." },
+            { scene: "Game mode launches: lights dim and sync with the screen", text: "Whoa, total immersion ??and it set itself up automatically." },
             { scene: "WindFree AC quietly maintains comfort, blinds slide down automatically", text: "Nothing breaks the flow. I just enjoy." },
             { scene: "Speaker and TV deliver surround sound, turning the living room into a home theater", text: "When your space responds to you, it becomes somewhere special. SmartThings." }
         ],
@@ -8767,18 +8772,18 @@ function buildSceneHook(intent, services) {
     const mission = intent.missionBucket;
     if (mission === "Save") {
         return {
-            kr: "퇴근길, 문을 열기도 전에 집이 나를 먼저 반겨줍니다.",
+            kr: "?닿렐湲? 臾몄쓣 ?닿린???꾩뿉 吏묒씠 ?섎? 癒쇱? 諛섍꺼以띾땲??",
             en: "Coming home to a house that welcomes you before you even turn the key."
         };
     }
     if (mission === "Care") {
         return {
-            kr: "멀리 있어도 느껴지는 따뜻한 돌봄, SmartThings가 연결합니다.",
+            kr: "硫由??덉뼱???먭뺨吏???곕쑜???뚮큵, SmartThings媛 ?곌껐?⑸땲??",
             en: "Feel the warmth of care from anywhere, connected by SmartThings."
         };
     }
     return {
-        kr: "반복되는 일상에 여유를 더하는 한 번의 터치.",
+        kr: "諛섎났?섎뒗 ?쇱긽???ъ쑀瑜??뷀븯????踰덉쓽 ?곗튂.",
         en: "One touch to reclaim your time in a busy routine."
     };
 }
@@ -8790,16 +8795,16 @@ function buildOtpPlace(country, city, intent) {
 
     if (mission === "Save") {
         return isKo
-            ? `평일 저녁 / ${loc} 도심형 주거지 / 퇴근 후 빠른 휴식 전환 시점`
+            ? `?됱씪 ???/ ${loc} ?꾩떖??二쇨굅吏 / ?닿렐 ??鍮좊Ⅸ ?댁떇 ?꾪솚 ?쒖젏`
             : `Weekday Evening / Urban home in ${loc} / Post-commute reset moment`;
     }
     if (mission === "Care") {
         return isKo
-            ? `일과 시간 / ${loc} 주거지 / 가족이나 펫의 안부가 궁금한 시점`
+            ? `?쇨낵 ?쒓컙 / ${loc} 二쇨굅吏 / 媛議깆씠???レ쓽 ?덈?媛 沅곴툑???쒖젏`
             : `Work Hours / Residential area in ${loc} / Remote care and wellbeing check`;
     }
     return isKo
-        ? `일상 구간 / ${loc} 생활권 / 편의가 필요한 모든 순간`
+        ? `?쇱긽 援ш컙 / ${loc} ?앺솢沅?/ ?몄쓽媛 ?꾩슂??紐⑤뱺 ?쒓컙`
         : `Daily Routine / Living area in ${loc} / Any moment where ease is needed`;
 }
 
@@ -8810,12 +8815,12 @@ function buildCustomerJourneyTable(intent, services, deviceDecision) {
     const device = deviceDecision.final.modelName;
 
     const stepsKo = [
-        { step: "Trigger", behavior: "퇴근 후 현관 도착", action: "지오펜싱/도어락 신호 감지", value: "Ease", note: "위치 권한 필요" },
-        { step: "Welcome", behavior: "거실 진입", action: "조명 및 에어컨 가동", value: "Comfort", note: "사전 설정 온도 기준" },
-        { step: "Context", behavior: "TV 앞 착석", action: "TV 추천 카드 노출", value: "Care", note: "개인화 메시지 적용" },
-        { step: "Execution", behavior: "추천 루틴 수락", action: "주방 가전 예열 시작", value: "Save", note: "기기 상태 확인" },
-        { step: "Feedback", behavior: "식사 준비 완료", action: "스마트폰 알림 발송", value: "Ease", note: "루틴 종료 안내" },
-        { step: "Retention", behavior: "취침 준비", action: "오늘의 절감/케어 요약", value: "Value", note: "익일 루틴 추천" }
+        { step: "Trigger", behavior: "?닿렐 ???꾧? ?꾩갑", action: "吏?ㅽ렂???꾩뼱???좏샇 媛먯?", value: "Ease", note: "?꾩튂 沅뚰븳 ?꾩슂" },
+        { step: "Welcome", behavior: "嫄곗떎 吏꾩엯", action: "議곕챸 諛??먯뼱而?媛??, value: "Comfort", note: "?ъ쟾 ?ㅼ젙 ?⑤룄 湲곗?" },
+        { step: "Context", behavior: "TV ??李⑹꽍", action: "TV 異붿쿇 移대뱶 ?몄텧", value: "Care", note: "媛쒖씤??硫붿떆吏 ?곸슜" },
+        { step: "Execution", behavior: "異붿쿇 猷⑦떞 ?섎씫", action: "二쇰갑 媛???덉뿴 ?쒖옉", value: "Save", note: "湲곌린 ?곹깭 ?뺤씤" },
+        { step: "Feedback", behavior: "?앹궗 以鍮??꾨즺", action: "?ㅻ쭏?명룿 ?뚮┝ 諛쒖넚", value: "Ease", note: "猷⑦떞 醫낅즺 ?덈궡" },
+        { step: "Retention", behavior: "痍⑥묠 以鍮?, action: "?ㅻ뒛???덇컧/耳???붿빟", value: "Value", note: "?듭씪 猷⑦떞 異붿쿇" }
     ];
 
     const stepsEn = [
@@ -8835,14 +8840,14 @@ function buildAddonPack(role, intent, services, deviceDecision) {
     const mission = intent.missionBucket;
     return {
         setupGuide: [
-            isKo ? "Step 1: 핵심 기기 연결 및 서비스 활성화" : "Step 1: Connect core device and activate service",
-            isKo ? "Step 2: 상황별 자동화 루틴 설정 (1탭 저장)" : "Step 2: Configure situational automation (one-tap save)",
-            isKo ? "Step 3: 가족 초대 및 위젯/알림 공유" : "Step 3: Invite family and share widgets/alerts"
+            isKo ? "Step 1: ?듭떖 湲곌린 ?곌껐 諛??쒕퉬???쒖꽦?? : "Step 1: Connect core device and activate service",
+            isKo ? "Step 2: ?곹솴蹂??먮룞??猷⑦떞 ?ㅼ젙 (1?????" : "Step 2: Configure situational automation (one-tap save)",
+            isKo ? "Step 3: 媛議?珥덈? 諛??꾩젽/?뚮┝ 怨듭쑀" : "Step 3: Invite family and share widgets/alerts"
         ],
         funnelMapping: [
-            { stage: "Awareness", claim: isKo ? "신경 쓰지 않아도 집이 나를 배려합니다" : "Your home cares for you without you asking", metric: "Reach / CTR" },
-            { stage: "Conversion", claim: isKo ? "우리 집 맞춤형 1분 세팅" : "Tailored 1-minute setup for my home", metric: "Add-to-cart / Sales" },
-            { stage: "Retention", claim: isKo ? "반복되는 일상의 즐거운 변화" : "Joyful change in your daily routine", metric: "WAU / Stickiness" }
+            { stage: "Awareness", claim: isKo ? "?좉꼍 ?곗? ?딆븘??吏묒씠 ?섎? 諛곕젮?⑸땲?? : "Your home cares for you without you asking", metric: "Reach / CTR" },
+            { stage: "Conversion", claim: isKo ? "?곕━ 吏?留욎땄??1遺??명똿" : "Tailored 1-minute setup for my home", metric: "Add-to-cart / Sales" },
+            { stage: "Retention", claim: isKo ? "諛섎났?섎뒗 ?쇱긽??利먭굅??蹂?? : "Joyful change in your daily routine", metric: "WAU / Stickiness" }
         ]
     };
 }
@@ -8850,24 +8855,24 @@ function buildAddonPack(role, intent, services, deviceDecision) {
 function buildReflectionCheck(intent, services, exploreGrounding) {
     const isKo = currentLocale === "ko";
     return [
-        { label: isKo ? "고객 문제 명확성" : "Customer Pain Clarity", status: "PASS", note: isKo ? "반복되는 일상 불편을 타겟팅함" : "Targets recurring daily friction" },
-        { label: isKo ? "가치 연결 (Care/Save 등)" : "Value Linkage", status: "PASS", note: `${intent.missionBucket} ${isKo ? "가치에 집중함" : "value focused"}` },
-        { label: isKo ? "브랜드 verbal identity" : "Brand Verbal Identity", status: "PASS", note: isKo ? "절제된 프리미엄 톤 유지" : "Restrained premium tone maintained" },
-        { label: isKo ? "에이전틱 지능 반영" : "Agentic Intelligence", status: "PASS", note: isKo ? "사용자 의도 발견 로직 포함" : "Intent discovery logic included" }
+        { label: isKo ? "怨좉컼 臾몄젣 紐낇솗?? : "Customer Pain Clarity", status: "PASS", note: isKo ? "諛섎났?섎뒗 ?쇱긽 遺덊렪???寃잜똿?? : "Targets recurring daily friction" },
+        { label: isKo ? "媛移??곌껐 (Care/Save ??" : "Value Linkage", status: "PASS", note: `${intent.missionBucket} ${isKo ? "媛移섏뿉 吏묒쨷?? : "value focused"}` },
+        { label: isKo ? "釉뚮옖??verbal identity" : "Brand Verbal Identity", status: "PASS", note: isKo ? "?덉젣???꾨━誘몄뾼 ???좎?" : "Restrained premium tone maintained" },
+        { label: isKo ? "?먯씠?꾪떛 吏??諛섏쁺" : "Agentic Intelligence", status: "PASS", note: isKo ? "?ъ슜???섎룄 諛쒓껄 濡쒖쭅 ?ы븿" : "Intent discovery logic included" }
     ];
 }
 
 function buildFallbackPurpose(selectedSegment) {
     if (!selectedSegment) return "";
     return currentLocale === "ko"
-        ? `${selectedSegment}의 생활 맥락에서 반복되는 불편을 줄이고 싶다`
+        ? `${selectedSegment}???앺솢 留λ씫?먯꽌 諛섎났?섎뒗 遺덊렪??以꾩씠怨??띕떎`
         : `Reduce recurring friction in everyday moments for ${selectedSegment}.`;
 }
 
 function buildFallbackSegment(purpose) {
     if (!purpose) return "";
     return currentLocale === "ko"
-        ? "상황 기반 타겟 사용자"
+        ? "?곹솴 湲곕컲 ?寃??ъ슜??
         : "Context-led target audience";
 }
 
@@ -8875,29 +8880,29 @@ function buildExploreGrounding(country, city, selectedSegment, intent, deviceDec
     const regional = getRegionalSignals(country.countryCode, city, intent);
     const serviceLabels = services.slice(0, 3).map((service) => getServiceLabel(service));
     const primaryValue = intent.missionBucket === "Save"
-        ? (currentLocale === "ko" ? "절감과 통제감" : "savings and control")
+        ? (currentLocale === "ko" ? "?덇컧怨??듭젣媛? : "savings and control")
         : intent.missionBucket === "Care"
-            ? (currentLocale === "ko" ? "안심과 돌봄 여유" : "reassurance and care ease")
+            ? (currentLocale === "ko" ? "?덉떖怨??뚮큵 ?ъ쑀" : "reassurance and care ease")
             : intent.missionBucket === "Secure"
-                ? (currentLocale === "ko" ? "즉각적인 안심과 빠른 대응" : "immediate reassurance and faster response")
+                ? (currentLocale === "ko" ? "利됯컖?곸씤 ?덉떖怨?鍮좊Ⅸ ??? : "immediate reassurance and faster response")
                 : intent.missionBucket === "Play"
-                    ? (currentLocale === "ko" ? "생활 리듬 회복과 즐거운 실행감" : "rhythm recovery and enjoyable action")
-                    : (currentLocale === "ko" ? "생활 부담 완화" : "lighter daily burden");
+                    ? (currentLocale === "ko" ? "?앺솢 由щ벉 ?뚮났怨?利먭굅???ㅽ뻾媛? : "rhythm recovery and enjoyable action")
+                    : (currentLocale === "ko" ? "?앺솢 遺???꾪솕" : "lighter daily burden");
     const emotionalJob = intent.missionBucket === "Save"
-        ? (currentLocale === "ko" ? "요금이 새고 있다는 불안 없이 집을 비우는 것" : "leaving home without worrying about wasted cost")
+        ? (currentLocale === "ko" ? "?붽툑???덇퀬 ?덈떎??遺덉븞 ?놁씠 吏묒쓣 鍮꾩슦??寃? : "leaving home without worrying about wasted cost")
         : intent.missionBucket === "Care"
-            ? (currentLocale === "ko" ? "부재 중에도 돌봄 공백이 없다고 느끼는 것" : "feeling there is no care gap while away")
+            ? (currentLocale === "ko" ? "遺??以묒뿉???뚮큵 怨듬갚???녿떎怨??먮겮??寃? : "feeling there is no care gap while away")
             : intent.missionBucket === "Secure"
-                ? (currentLocale === "ko" ? "계속 확인하지 않아도 집이 안전하다고 느끼는 것" : "feeling the home is safe without constant checking")
-                : (currentLocale === "ko" ? "번거로운 설정 없이 바로 체감 가치를 얻는 것" : "getting immediate value without friction");
+                ? (currentLocale === "ko" ? "怨꾩냽 ?뺤씤?섏? ?딆븘??吏묒씠 ?덉쟾?섎떎怨??먮겮??寃? : "feeling the home is safe without constant checking")
+                : (currentLocale === "ko" ? "踰덇굅濡쒖슫 ?ㅼ젙 ?놁씠 諛붾줈 泥닿컧 媛移섎? ?삳뒗 寃? : "getting immediate value without friction");
     const functionalJob = currentLocale === "ko"
-        ? `"${intent.purpose}" 상황에서 반복 확인과 수동 조작을 줄이는 것`
+        ? `"${intent.purpose}" ?곹솴?먯꽌 諛섎났 ?뺤씤怨??섎룞 議곗옉??以꾩씠??寃?
         : `reducing repeated checking and manual control in moments like "${intent.purpose}"`;
     const coreMessage = currentLocale === "ko"
-        ? `${selectedSegment}에게 필요한 것은 더 많은 기능이 아니라, ${intent.purpose} 같은 순간을 더 가볍게 넘기게 해주는 ${primaryValue}입니다.`
+        ? `${selectedSegment}?먭쾶 ?꾩슂??寃껋? ??留롮? 湲곕뒫???꾨땲?? ${intent.purpose} 媛숈? ?쒓컙????媛蹂띻쾶 ?섍린寃??댁＜??${primaryValue}?낅땲??`
         : `What the ${selectedSegment} segment needs is not more features, but ${primaryValue} that makes moments like "${intent.purpose}" feel lighter.`;
     const proofLine = currentLocale === "ko"
-        ? `${serviceLabels.join(", ")}가 ${regional.implication}을 실제 장면으로 연결합니다.`
+        ? `${serviceLabels.join(", ")}媛 ${regional.implication}???ㅼ젣 ?λ㈃?쇰줈 ?곌껐?⑸땲??`
         : `${serviceLabels.join(", ")} connect ${regional.implication} into an actual use moment.`;
 
     return {
@@ -8911,12 +8916,12 @@ function buildExploreGrounding(country, city, selectedSegment, intent, deviceDec
         implication: regional.implication,
         exploreTagSummary: (intent.lifestyleTags || []).join(", "),
         messageAngle: intent.missionBucket === "Save"
-            ? (currentLocale === "ko" ? "절감되는 금액보다 먼저 줄어드는 신경 씀" : "less mental overhead before lower bills")
+            ? (currentLocale === "ko" ? "?덇컧?섎뒗 湲덉븸蹂대떎 癒쇱? 以꾩뼱?쒕뒗 ?좉꼍 ?" : "less mental overhead before lower bills")
             : intent.missionBucket === "Care"
-                ? (currentLocale === "ko" ? "계속 확인하지 않아도 되는 안심" : "reassurance without constant checking")
+                ? (currentLocale === "ko" ? "怨꾩냽 ?뺤씤?섏? ?딆븘???섎뒗 ?덉떖" : "reassurance without constant checking")
                 : intent.missionBucket === "Secure"
-                    ? (currentLocale === "ko" ? "필요한 순간에만 즉시 개입하는 보안감" : "security that surfaces only when needed")
-                    : (currentLocale === "ko" ? "생활을 더 매끄럽게 이어주는 연결감" : "connected flows that make life smoother")
+                    ? (currentLocale === "ko" ? "?꾩슂???쒓컙?먮쭔 利됱떆 媛쒖엯?섎뒗 蹂댁븞媛? : "security that surfaces only when needed")
+                    : (currentLocale === "ko" ? "?앺솢????留ㅻ걚?쎄쾶 ?댁뼱二쇰뒗 ?곌껐媛? : "connected flows that make life smoother")
     };
 }
 
@@ -8928,8 +8933,8 @@ const DEVICE_GROUP_EXPLORE_TAGS = {
     "home-safe":      ["Keep your home safe"],
     "sleep-well":     ["Sleep well", "Stay fit & healthy"],
     "enhanced-mood":  ["Enhanced mood", "Stay fit & healthy"],
-    "care-scenarios": ["Care for pet", "반려동물 케어", "Care for seniors", "Care for kids", "시니어 케어"],
-    "save-energy":    ["Save energy", "에너지 절약"],
+    "care-scenarios": ["Care for pet", "諛섎젮?숇Ъ 耳??, "Care for seniors", "Care for kids", "?쒕땲??耳??],
+    "save-energy":    ["Save energy", "?먮꼫吏 ?덉빟"],
     "food-home":      ["Help with chores", "Smart cooking"]
 };
 
@@ -8944,17 +8949,17 @@ function analyzeIntent(purpose, selectedSegment, selectedDevices = [], selectedD
     });
 
     // Text-based tags
-    if (text.includes("반려") || text.includes("펫")) tags.add("반려동물 케어");
-    if (text.includes("부모") || text.includes("시니어") || text.includes("가족")) tags.add("시니어 케어");
-    if (text.includes("에너지") || text.includes("절약") || text.includes("비용")) tags.add("에너지 절약");
+    if (text.includes("諛섎젮") || text.includes("??)) tags.add("諛섎젮?숇Ъ 耳??);
+    if (text.includes("遺紐?) || text.includes("?쒕땲??) || text.includes("媛議?)) tags.add("?쒕땲??耳??);
+    if (text.includes("?먮꼫吏") || text.includes("?덉빟") || text.includes("鍮꾩슜")) tags.add("?먮꼫吏 ?덉빟");
     if (selectedDevices.includes("TV")) tags.add("AOD (Always on Display)");
 
-    // Device group-based tags: maps Q4 selection → Explore scenario tags
+    // Device group-based tags: maps Q4 selection ??Explore scenario tags
     selectedDeviceGroups.forEach((groupId) => {
         (DEVICE_GROUP_EXPLORE_TAGS[groupId] || []).forEach((tag) => tags.add(tag));
     });
 
-    if (tags.size === 0) tags.add("입문 (Entry)");
+    if (tags.size === 0) tags.add("?낅Ц (Entry)");
 
     return {
         missionBucket: inferMissionBucket(purpose, selectedDeviceGroups),
@@ -8997,11 +9002,11 @@ function findRelevantServices(intent) {
             if ((service.signalKeywords || []).some((keyword) => text.includes(keyword.toLowerCase()))) score += 3;
             if ((intent.lifestyleTags || []).some((tag) => haystack.includes(tag.toLowerCase()))) score += 3;
             if ((service.requiredCategories || []).some((category) => intent.selectedDevices.includes(category))) score += 5;
-            if ((service.requiredCategories || []).some((category) => category === "세탁기/건조기" && intent.selectedDevices.some((device) => ["세탁기", "건조기", "세탁기/건조기"].includes(device)))) score += 4;
-            if (intent.missionBucket === "Save" && /energy|절약|요금/.test(haystack)) score += 4;
-            if (intent.missionBucket === "Care" && /care|반려|가족|health|find/.test(haystack)) score += 4;
-            if (intent.missionBucket === "Secure" && /monitoring|secure|find|보안|카메라/.test(haystack)) score += 4;
-            if (intent.missionBucket === "Play" && /fitness|cooking|play|운동|요리/.test(haystack)) score += 4;
+            if ((service.requiredCategories || []).some((category) => category === "?명긽湲?嫄댁“湲? && intent.selectedDevices.some((device) => ["?명긽湲?, "嫄댁“湲?, "?명긽湲?嫄댁“湲?].includes(device)))) score += 4;
+            if (intent.missionBucket === "Save" && /energy|?덉빟|?붽툑/.test(haystack)) score += 4;
+            if (intent.missionBucket === "Care" && /care|諛섎젮|媛議?health|find/.test(haystack)) score += 4;
+            if (intent.missionBucket === "Secure" && /monitoring|secure|find|蹂댁븞|移대찓??.test(haystack)) score += 4;
+            if (intent.missionBucket === "Play" && /fitness|cooking|play|?대룞|?붾━/.test(haystack)) score += 4;
             score += Math.max(0, 4 - Number(service.tier || 3));
             return { service, score };
         })
@@ -9015,7 +9020,7 @@ function getServiceLabel(service) {
 }
 
 function resolveDevice(country, selectedDevice, services, selectedDevices = []) {
-    const normalizedSelected = selectedDevice === "세탁기/건조기" ? ["세탁기", "건조기"] : [selectedDevice];
+    const normalizedSelected = selectedDevice === "?명긽湲?嫄댁“湲? ? ["?명긽湲?, "嫄댁“湲?] : [selectedDevice];
     const available = country.availableProducts.find((product) => normalizedSelected.includes(product.category));
     if (available) {
         return {
@@ -9050,26 +9055,26 @@ function buildNarrative(country, city, selectedSegment, intent, deviceDecision, 
     const deviceList = (deviceDecision.selectedDevices || [deviceDecision.final.category]).map((device) => getCategoryName(device)).join(", ");
     if (currentLocale === "ko") {
         return [
-            `${locationLabel}의 하루가 바빠지는 시간대에 ${selectedSegment} 사용자는 "${intent.purpose}"를 더 수월하게 해결하고 싶어 합니다.`,
-            `${selectedSegment} 사용자에게는 복잡한 제어보다 바로 체감되는 변화가 더 중요합니다.`,
-            `${deviceList} 조합은 첫 진입 순간부터 생활 맥락과 맞닿은 가치 제안을 만들기 좋습니다.`,
-            `앱 첫 화면은 사용자의 현재 상황을 한 문장으로 요약하고, 가장 가까운 추천 루틴을 카드로 제시합니다.`,
-            `첫 카드에는 ${primaryLabel}가 배치되고, ${primary.keyFeatures[0]}가 왜 지금 유용한지 바로 설명됩니다.`,
-            `사용자는 긴 설정 없이 추천 카드를 열어 자신에게 맞는 시작 옵션만 고릅니다.`,
-            `${deviceDecision.final.modelName}는 이 순간의 중심 기기로 배치되어 사용자의 행동 부담을 줄입니다.`,
-            `앱은 ${intent.lifestyleTags.join(", ")}와 연결되는 맥락을 짧은 카피와 시각 신호로 전달합니다.`,
-            `추천 화면에서는 "지금 바로 실행"과 "내 루틴으로 저장" 두 가지 선택지만 남겨 의사결정을 단순화합니다.`,
-            `실행이 시작되면 ${primary.keyFeatures[1] || primary.keyFeatures[0]}가 이어지며 첫 성공 경험을 분명하게 만듭니다.`,
-            `사용자는 설정을 공부한 느낌이 아니라, 내 상황을 이해받았다는 인상을 받게 됩니다.`,
-            `상황이 한 번 맞아떨어지면 ${secondaryLabel}가 다음 단계 가치로 자연스럽게 연결됩니다.`,
-            `이 연결은 단발성 체험을 넘어 반복 사용의 이유를 만들고, 앱 체류 이유를 분명하게 합니다.`,
-            `"${intent.purpose}" 과정에서 생기는 반복 확인과 조작 부담은 작은 자동화의 축적으로 완화됩니다.`,
-            `중요한 점은 기술을 많이 보여주는 것이 아니라, 사용자가 덜 신경 써도 된다는 안심을 주는 것입니다.`,
-            `따라서 메시지는 기능명보다 생활 변화, 시간 절감, 감정적 안도감을 먼저 말해야 합니다.`,
-            `반복 사용이 쌓이면 앱은 사용자의 패턴을 더 짧은 단계로 재정리해 재제안할 수 있습니다.`,
-            `이때 사용자는 매번 새로 배우지 않아도 되는 경험을 통해 브랜드의 배려를 체감합니다.`,
-            `결과적으로 이 시나리오는 첫 실행의 마찰을 줄이고, 반복 사용의 이유를 만들며, 다른 기기로의 확장 여지도 남깁니다.`,
-            `최종적으로 ${selectedSegment} 사용자는 더 적은 조작으로 더 큰 편안함, 절약, 안심, 즐거움을 경험하게 됩니다.`
+            `${locationLabel}???섎（媛 諛붾튌吏???쒓컙???${selectedSegment} ?ъ슜?먮뒗 "${intent.purpose}"瑜????섏썡?섍쾶 ?닿껐?섍퀬 ?띠뼱 ?⑸땲??`,
+            `${selectedSegment} ?ъ슜?먯뿉寃뚮뒗 蹂듭옟???쒖뼱蹂대떎 諛붾줈 泥닿컧?섎뒗 蹂?붽? ??以묒슂?⑸땲??`,
+            `${deviceList} 議고빀? 泥?吏꾩엯 ?쒓컙遺???앺솢 留λ씫怨?留욌떯? 媛移??쒖븞??留뚮뱾湲?醫뗭뒿?덈떎.`,
+            `??泥??붾㈃? ?ъ슜?먯쓽 ?꾩옱 ?곹솴????臾몄옣?쇰줈 ?붿빟?섍퀬, 媛??媛源뚯슫 異붿쿇 猷⑦떞??移대뱶濡??쒖떆?⑸땲??`,
+            `泥?移대뱶?먮뒗 ${primaryLabel}媛 諛곗튂?섍퀬, ${primary.keyFeatures[0]}媛 ??吏湲??좎슜?쒖? 諛붾줈 ?ㅻ챸?⑸땲??`,
+            `?ъ슜?먮뒗 湲??ㅼ젙 ?놁씠 異붿쿇 移대뱶瑜??댁뼱 ?먯떊?먭쾶 留욌뒗 ?쒖옉 ?듭뀡留?怨좊쫭?덈떎.`,
+            `${deviceDecision.final.modelName}?????쒓컙??以묒떖 湲곌린濡?諛곗튂?섏뼱 ?ъ슜?먯쓽 ?됰룞 遺?댁쓣 以꾩엯?덈떎.`,
+            `?깆? ${intent.lifestyleTags.join(", ")}? ?곌껐?섎뒗 留λ씫??吏㏃? 移댄뵾? ?쒓컖 ?좏샇濡??꾨떖?⑸땲??`,
+            `異붿쿇 ?붾㈃?먯꽌??"吏湲?諛붾줈 ?ㅽ뻾"怨?"??猷⑦떞?쇰줈 ??? ??媛吏 ?좏깮吏留??④꺼 ?섏궗寃곗젙???⑥닚?뷀빀?덈떎.`,
+            `?ㅽ뻾???쒖옉?섎㈃ ${primary.keyFeatures[1] || primary.keyFeatures[0]}媛 ?댁뼱吏硫?泥??깃났 寃쏀뿕??遺꾨챸?섍쾶 留뚮벊?덈떎.`,
+            `?ъ슜?먮뒗 ?ㅼ젙??怨듬????먮굦???꾨땲?? ???곹솴???댄빐諛쏆븯?ㅻ뒗 ?몄긽??諛쏄쾶 ?⑸땲??`,
+            `?곹솴????踰?留욎븘?⑥뼱吏硫?${secondaryLabel}媛 ?ㅼ쓬 ?④퀎 媛移섎줈 ?먯뿰?ㅻ읇寃??곌껐?⑸땲??`,
+            `???곌껐? ?⑤컻??泥댄뿕???섏뼱 諛섎났 ?ъ슜???댁쑀瑜?留뚮뱾怨? ??泥대쪟 ?댁쑀瑜?遺꾨챸?섍쾶 ?⑸땲??`,
+            `"${intent.purpose}" 怨쇱젙?먯꽌 ?앷린??諛섎났 ?뺤씤怨?議곗옉 遺?댁? ?묒? ?먮룞?붿쓽 異뺤쟻?쇰줈 ?꾪솕?⑸땲??`,
+            `以묒슂???먯? 湲곗닠??留롮씠 蹂댁뿬二쇰뒗 寃껋씠 ?꾨땲?? ?ъ슜?먭? ???좉꼍 ?⑤룄 ?쒕떎???덉떖??二쇰뒗 寃껋엯?덈떎.`,
+            `?곕씪??硫붿떆吏??湲곕뒫紐낅낫???앺솢 蹂?? ?쒓컙 ?덇컧, 媛먯젙???덈룄媛먯쓣 癒쇱? 留먰빐???⑸땲??`,
+            `諛섎났 ?ъ슜???볦씠硫??깆? ?ъ슜?먯쓽 ?⑦꽩????吏㏃? ?④퀎濡??ъ젙由ы빐 ?ъ젣?덊븷 ???덉뒿?덈떎.`,
+            `?대븣 ?ъ슜?먮뒗 留ㅻ쾲 ?덈줈 諛곗슦吏 ?딆븘???섎뒗 寃쏀뿕???듯빐 釉뚮옖?쒖쓽 諛곕젮瑜?泥닿컧?⑸땲??`,
+            `寃곌낵?곸쑝濡????쒕굹由ъ삤??泥??ㅽ뻾??留덉같??以꾩씠怨? 諛섎났 ?ъ슜???댁쑀瑜?留뚮뱾硫? ?ㅻⅨ 湲곌린濡쒖쓽 ?뺤옣 ?ъ????④퉩?덈떎.`,
+            `理쒖쥌?곸쑝濡?${selectedSegment} ?ъ슜?먮뒗 ???곸? 議곗옉?쇰줈 ?????몄븞?? ?덉빟, ?덉떖, 利먭굅???寃쏀뿕?섍쾶 ?⑸땲??`
         ];
     }
 
@@ -9102,24 +9107,24 @@ function getRegionalSignals(countryCode, city, intent) {
     const localeSignals = {
         ko: {
             KR: {
-                observation: `도시형 주거와 빠른 일상 리듬이 공존하는 시장${cityNote}`,
-                insight: "짧은 시간 안에 집안 상태를 정리하고 다음 행동으로 넘어가려는 니즈가 큼",
-                implication: "첫 실행 허들을 낮춘 자동화 추천이 반복 사용으로 이어질 가능성이 높음"
+                observation: `?꾩떆??二쇨굅? 鍮좊Ⅸ ?쇱긽 由щ벉??怨듭〈?섎뒗 ?쒖옣${cityNote}`,
+                insight: "吏㏃? ?쒓컙 ?덉뿉 吏묒븞 ?곹깭瑜??뺣━?섍퀬 ?ㅼ쓬 ?됰룞?쇰줈 ?섏뼱媛?ㅻ뒗 ?덉쫰媛 ??,
+                implication: "泥??ㅽ뻾 ?덈뱾????텣 ?먮룞??異붿쿇??諛섎났 ?ъ슜?쇰줈 ?댁뼱吏?媛?μ꽦???믪쓬"
             },
             US: {
-                observation: `넓은 주거 공간과 개별화된 루틴이 강한 시장${cityNote}`,
-                insight: "기기 단품보다 생활 장면 중심의 연결 제안이 체감 가치를 더 빨리 전달함",
-                implication: "앱은 복수 기기 연결의 편익을 한 번의 사용 장면으로 압축해 보여줘야 함"
+                observation: `?볦? 二쇨굅 怨듦컙怨?媛쒕퀎?붾맂 猷⑦떞??媛뺥븳 ?쒖옣${cityNote}`,
+                insight: "湲곌린 ?⑦뭹蹂대떎 ?앺솢 ?λ㈃ 以묒떖???곌껐 ?쒖븞??泥닿컧 媛移섎? ??鍮⑤━ ?꾨떖??,
+                implication: "?깆? 蹂듭닔 湲곌린 ?곌껐???몄씡????踰덉쓽 ?ъ슜 ?λ㈃?쇰줈 ?뺤텞??蹂댁뿬以섏빞 ??
             },
             GB: {
-                observation: `공간 효율성과 실용적 구매 판단이 중요한 시장${cityNote}`,
-                insight: "설정 복잡도를 낮추고 에너지·시간 절감 메시지를 명확히 할수록 설득력이 높아짐",
-                implication: "루틴 저장과 재사용 가치가 분명한 흐름이 유리함"
+                observation: `怨듦컙 ?⑥쑉?깃낵 ?ㅼ슜??援щℓ ?먮떒??以묒슂???쒖옣${cityNote}`,
+                insight: "?ㅼ젙 蹂듭옟?꾨? ??텛怨??먮꼫吏쨌?쒓컙 ?덇컧 硫붿떆吏瑜?紐낇솗???좎닔濡??ㅻ뱷?μ씠 ?믪븘吏?,
+                implication: "猷⑦떞 ??κ낵 ?ъ궗??媛移섍? 遺꾨챸???먮쫫???좊━??
             },
             DE: {
-                observation: `효율, 안정성, 지속가능성에 대한 관심이 높은 시장${cityNote}`,
-                insight: "신뢰 가능한 자동화와 일상 효율 개선이 함께 제시될 때 수용성이 높아짐",
-                implication: "가치 제안은 편의뿐 아니라 통제감과 예측 가능성을 함께 말해야 함"
+                observation: `?⑥쑉, ?덉젙?? 吏?띻??μ꽦?????愿?ъ씠 ?믪? ?쒖옣${cityNote}`,
+                insight: "?좊ː 媛?ν븳 ?먮룞?붿? ?쇱긽 ?⑥쑉 媛쒖꽑???④퍡 ?쒖떆?????섏슜?깆씠 ?믪븘吏?,
+                implication: "媛移??쒖븞? ?몄쓽肉??꾨땲???듭젣媛먭낵 ?덉륫 媛?μ꽦???④퍡 留먰빐????
             }
         },
         en: {
@@ -9147,31 +9152,31 @@ function getRegionalSignals(countryCode, city, intent) {
         de: {
             KR: {
                 observation: `ein Markt, in dem kompakte urbane Wohnformen und schnelle Tagesrhythmen zusammenkommen${cityNote}`,
-                insight: "Nutzer reagieren stark auf Abläufe, die den Zuhause-Zustand schnell ordnen und direkt zur nächsten Handlung führen",
-                implication: "Automationsvorschläge mit niedriger Einstiegshürde werden eher zu wiederholter Nutzung"
+                insight: "Nutzer reagieren stark auf Abl채ufe, die den Zuhause-Zustand schnell ordnen und direkt zur n채chsten Handlung f체hren",
+                implication: "Automationsvorschl채ge mit niedriger Einstiegsh체rde werden eher zu wiederholter Nutzung"
             },
             US: {
-                observation: `ein Markt, der von größeren Wohnflächen und stark individualisierten Routinen geprägt ist${cityNote}`,
-                insight: "vernetzte Alltagsszenen vermitteln den Wert schneller als isolierte Gerätefunktionen",
-                implication: "die App sollte den Mehrwert mehrerer Geräte in eine klar verständliche Nutzungsszene verdichten"
+                observation: `ein Markt, der von gr철횩eren Wohnfl채chen und stark individualisierten Routinen gepr채gt ist${cityNote}`,
+                insight: "vernetzte Alltagsszenen vermitteln den Wert schneller als isolierte Ger채tefunktionen",
+                implication: "die App sollte den Mehrwert mehrerer Ger채te in eine klar verst채ndliche Nutzungsszene verdichten"
             },
             GB: {
                 observation: `ein Markt, in dem Raumeffizienz und pragmatische Kaufentscheidungen wichtig sind${cityNote}`,
-                insight: "die Überzeugungskraft steigt, wenn die Einrichtung einfacher wird und Energie- oder Zeitersparnis klar sichtbar ist",
-                implication: "Abläufe mit klar erkennbarem Wert für gespeicherte und wiederverwendbare Routinen sind wirksamer"
+                insight: "die 횥berzeugungskraft steigt, wenn die Einrichtung einfacher wird und Energie- oder Zeitersparnis klar sichtbar ist",
+                implication: "Abl채ufe mit klar erkennbarem Wert f체r gespeicherte und wiederverwendbare Routinen sind wirksamer"
             },
             DE: {
-                observation: `ein Markt mit hohem Interesse an Effizienz, Stabilität und Nachhaltigkeit${cityNote}`,
-                insight: "die Akzeptanz steigt, wenn vertrauenswürdige Automatisierung mit spürbarer Alltagseffizienz verbunden wird",
+                observation: `ein Markt mit hohem Interesse an Effizienz, Stabilit채t und Nachhaltigkeit${cityNote}`,
+                insight: "die Akzeptanz steigt, wenn vertrauensw체rdige Automatisierung mit sp체rbarer Alltagseffizienz verbunden wird",
                 implication: "das Nutzenversprechen sollte nicht nur Bequemlichkeit, sondern auch Kontrolle und Vorhersehbarkeit betonen"
             }
         }
     };
     const fallbackByLocale = {
         ko: {
-            observation: `${getCountryName(countryCode)} 시장의 일상 리듬과 생활 환경을 고려한 일반적 사용 맥락${cityNote}`,
-            insight: `${intent.missionBucket} 가치가 명확할수록 사용자는 기능보다 결과 중심으로 반응함`,
-            implication: "앱은 복잡한 설명보다 한 번에 이해되는 추천 장면을 먼저 제시해야 함"
+            observation: `${getCountryName(countryCode)} ?쒖옣???쇱긽 由щ벉怨??앺솢 ?섍꼍??怨좊젮???쇰컲???ъ슜 留λ씫${cityNote}`,
+            insight: `${intent.missionBucket} 媛移섍? 紐낇솗?좎닔濡??ъ슜?먮뒗 湲곕뒫蹂대떎 寃곌낵 以묒떖?쇰줈 諛섏쓳??,
+            implication: "?깆? 蹂듭옟???ㅻ챸蹂대떎 ??踰덉뿉 ?댄빐?섎뒗 異붿쿇 ?λ㈃??癒쇱? ?쒖떆?댁빞 ??
         },
         en: {
             observation: `a general usage context shaped by the daily rhythm and living environment of ${getCountryName(countryCode)}${cityNote}`,
@@ -9179,9 +9184,9 @@ function getRegionalSignals(countryCode, city, intent) {
             implication: "the app should surface an immediately understandable recommended scene before detailed explanation"
         },
         de: {
-            observation: `ein allgemeiner Nutzungskontext, der vom Alltagsrhythmus und Wohnumfeld in ${getCountryName(countryCode)} geprägt ist${cityNote}`,
-            insight: `Nutzer reagieren stärker auf ergebnisorientierte Botschaften, wenn der ${intent.missionBucket}-Wert klar ist`,
-            implication: "die App sollte zuerst eine sofort verständliche Empfehlungsszene zeigen und erst danach Details erklären"
+            observation: `ein allgemeiner Nutzungskontext, der vom Alltagsrhythmus und Wohnumfeld in ${getCountryName(countryCode)} gepr채gt ist${cityNote}`,
+            insight: `Nutzer reagieren st채rker auf ergebnisorientierte Botschaften, wenn der ${intent.missionBucket}-Wert klar ist`,
+            implication: "die App sollte zuerst eine sofort verst채ndliche Empfehlungsszene zeigen und erst danach Details erkl채ren"
         }
     };
     const localizedSignals = localeSignals[currentLocale] || localeSignals.en;
@@ -9196,49 +9201,49 @@ function buildAutomationSkeleton(country, intent, deviceDecision, services) {
     const marketName = getCountryName(country.countryCode);
     return {
         userMoment: currentLocale === "ko"
-            ? `${marketName} 사용자가 "${intent.purpose}" 상황에 들어오면 추천을 시작합니다.`
+            ? `${marketName} ?ъ슜?먭? "${intent.purpose}" ?곹솴???ㅼ뼱?ㅻ㈃ 異붿쿇???쒖옉?⑸땲??`
             : `Start the recommendation when a user in ${marketName} enters the "${intent.purpose}" moment.`,
         entryPoint: currentLocale === "ko"
-            ? `${deviceDecision.final.modelName}와 앱 홈 화면을 첫 진입 포인트로 사용합니다.`
+            ? `${deviceDecision.final.modelName}? ?????붾㈃??泥?吏꾩엯 ?ъ씤?몃줈 ?ъ슜?⑸땲??`
             : `Use ${deviceDecision.final.modelName} and the app home as the primary entry point.`,
         triggerSignals: [
             currentLocale === "ko"
-                ? `${signalDevices.join(", ")} 선택 여부`
+                ? `${signalDevices.join(", ")} ?좏깮 ?щ?`
                 : `Selected devices: ${signalDevices.join(", ")}`,
             currentLocale === "ko"
-                ? `${intent.missionBucket} 관련 목적어 감지`
+                ? `${intent.missionBucket} 愿??紐⑹쟻??媛먯?`
                 : `${intent.missionBucket} intent detected in the user request`,
             currentLocale === "ko"
-                ? `${primaryLabel} 활용 가능 여부`
+                ? `${primaryLabel} ?쒖슜 媛???щ?`
                 : `${primaryLabel} availability in the selected journey`
         ],
         recommendationLogic: [
             currentLocale === "ko"
-                ? `${intent.lifestyleTags.join(", ")}와 맞는 장면을 먼저 제안합니다.`
+                ? `${intent.lifestyleTags.join(", ")}? 留욌뒗 ?λ㈃??癒쇱? ?쒖븞?⑸땲??`
                 : `Prioritize scenes linked to ${intent.lifestyleTags.join(", ")}.`,
             currentLocale === "ko"
-                ? `첫 실행 허들을 낮추기 위해 설정 단계를 최소화합니다.`
+                ? `泥??ㅽ뻾 ?덈뱾????텛湲??꾪빐 ?ㅼ젙 ?④퀎瑜?理쒖냼?뷀빀?덈떎.`
                 : "Minimize setup friction for the first run.",
             currentLocale === "ko"
-                ? `한 번의 성공 경험 뒤에 저장 가능한 반복 루틴으로 연결합니다.`
+                ? `??踰덉쓽 ?깃났 寃쏀뿕 ?ㅼ뿉 ???媛?ν븳 諛섎났 猷⑦떞?쇰줈 ?곌껐?⑸땲??`
                 : "Turn the first successful moment into a reusable routine."
         ],
         actions: [
             currentLocale === "ko"
-                ? `${primaryLabel} 기반 추천 카드 노출`
+                ? `${primaryLabel} 湲곕컲 異붿쿇 移대뱶 ?몄텧`
                 : `Show a recommendation card powered by ${primaryLabel}`,
             currentLocale === "ko"
-                ? `${deviceDecision.final.modelName} 중심 실행 흐름 안내`
+                ? `${deviceDecision.final.modelName} 以묒떖 ?ㅽ뻾 ?먮쫫 ?덈궡`
                 : `Guide the execution flow around ${deviceDecision.final.modelName}`,
             currentLocale === "ko"
-                ? `사용자 확인 후 자동화 저장 제안`
+                ? `?ъ슜???뺤씤 ???먮룞??????쒖븞`
                 : "Prompt the user to save the flow after confirmation",
             currentLocale === "ko"
-                ? `반복 사용 시 개인화 추천 강화`
+                ? `諛섎났 ?ъ슜 ??媛쒖씤??異붿쿇 媛뺥솕`
                 : "Strengthen personalization after repeated use"
         ],
         expectedFeedback: currentLocale === "ko"
-            ? "처음부터 복잡하지 않고, 내 상황에 맞는 추천을 받는다는 느낌"
+            ? "泥섏쓬遺??蹂듭옟?섏? ?딄퀬, ???곹솴??留욌뒗 異붿쿇??諛쏅뒗?ㅻ뒗 ?먮굦"
             : "A feeling that the experience is simple from the start and tailored to the user's context"
     };
 }
@@ -9258,7 +9263,7 @@ function getServiceMatrixMarket(siteCode) {
 }
 
 function getCategoryAliases(category) {
-    if (category === "세탁기" || category === "건조기") return ["세탁기", "건조기", "세탁기/건조기"];
+    if (category === "?명긽湲? || category === "嫄댁“湲?) return ["?명긽湲?, "嫄댁“湲?, "?명긽湲?嫄댁“湲?];
     return [category];
 }
 
@@ -9275,7 +9280,7 @@ function getMarketCategoryEvidence(siteCode, category) {
 function normalizeComparisonText(value) {
     return String(value || "")
         .toLowerCase()
-        .replace(/[^a-z0-9가-힣]/g, "");
+        .replace(/[^a-z0-9媛-??/g, "");
 }
 
 function findAnchorSkuEvidence(siteCode, deviceDecision) {
@@ -9321,7 +9326,7 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
         ? [citySignal.region, citySignal.climate, citySignal.housing, citySignal.behavior].filter(Boolean).slice(0, 2).join(" / ")
         : "";
 
-    // 삼성닷컴 URL & Explore URL 결정
+    // ?쇱꽦?룹뺨 URL & Explore URL 寃곗젙
     const trendSources = countryTrends?.[country.countryCode]?.sources || [];
     const samsungDotcomUrl = marketInfo?.fullUrl
         ? `https://${marketInfo.fullUrl}`
@@ -9338,47 +9343,47 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
             source: "country_trends.json",
             source_url: samsungDotcomUrl,
             confidence: "High",
-            impact: currentLocale === "ko" ? "국가 단위 메시지 방향과 장면 우선순위를 고정합니다." : "Sets the country-level message direction and scene priority."
+            impact: currentLocale === "ko" ? "援?? ?⑥쐞 硫붿떆吏 諛⑺뼢怨??λ㈃ ?곗꽑?쒖쐞瑜?怨좎젙?⑸땲??" : "Sets the country-level message direction and scene priority."
         } : null,
         {
             no: 2,
             fact: currentLocale === "ko"
-                ? `${selectedMarket?.siteCode || country.countryCode} 마켓은 ${marketInfo?.fullUrl || country.samsungShopUrl || "삼성닷컴"} 기준으로 연결됩니다.`
+                ? `${selectedMarket?.siteCode || country.countryCode} 留덉폆? ${marketInfo?.fullUrl || country.samsungShopUrl || "?쇱꽦?룹뺨"} 湲곗??쇰줈 ?곌껐?⑸땲??`
                 : `The selected market routes to ${marketInfo?.fullUrl || country.samsungShopUrl || "the Samsung store"} via ${selectedMarket?.siteCode || country.countryCode}.`,
             source: "samsung.com",
             source_url: samsungDotcomUrl,
             confidence: "High",
-            impact: currentLocale === "ko" ? "닷컴 문구와 CTA의 언어/마켓 기준을 확정합니다." : "Locks the market and language basis for dotcom copy and CTA."
+            impact: currentLocale === "ko" ? "?룹뺨 臾멸뎄? CTA???몄뼱/留덉폆 湲곗????뺤젙?⑸땲??" : "Locks the market and language basis for dotcom copy and CTA."
         },
         {
             no: 3,
             fact: currentLocale === "ko"
-                ? `${selectedMarket?.siteCode || country.countryCode} 삼성닷컴 추적 카테고리 ${trackedCategoryCount}개에서 SKU ${trackedSkuCount}개를 확인했습니다.`
+                ? `${selectedMarket?.siteCode || country.countryCode} ?쇱꽦?룹뺨 異붿쟻 移댄뀒怨좊━ ${trackedCategoryCount}媛쒖뿉??SKU ${trackedSkuCount}媛쒕? ?뺤씤?덉뒿?덈떎.`
                 : `Confirmed ${trackedSkuCount} SKUs across ${trackedCategoryCount} tracked Samsung dotcom categories for ${selectedMarket?.siteCode || country.countryCode}.`,
             source: "sku_availability_matrix.json",
             source_url: categorySourceUrl || samsungDotcomUrl,
             confidence: marketSku ? "High" : "Medium",
-            impact: currentLocale === "ko" ? "03의 모델/구매 준비도 판단을 실제 삼성닷컴 SKU 기준으로 고정합니다." : "Anchors model and purchase-readiness judgement to official Samsung dotcom SKUs."
+            impact: currentLocale === "ko" ? "03??紐⑤뜽/援щℓ 以鍮꾨룄 ?먮떒???ㅼ젣 ?쇱꽦?룹뺨 SKU 湲곗??쇰줈 怨좎젙?⑸땲??" : "Anchors model and purchase-readiness judgement to official Samsung dotcom SKUs."
         },
         anchorSkuEvidence.categoryEvidence ? {
             no: 4,
             fact: currentLocale === "ko"
-                ? `${getCategoryName(deviceDecision.final.category)} 카테고리는 ${anchorSkuEvidence.categoryEvidence.productCount || 0}개 SKU가 추적되며, 구매 가능 표시는 ${anchorSkuEvidence.categoryEvidence.inStockCount || 0}개입니다.`
+                ? `${getCategoryName(deviceDecision.final.category)} 移댄뀒怨좊━??${anchorSkuEvidence.categoryEvidence.productCount || 0}媛?SKU媛 異붿쟻?섎ŉ, 援щℓ 媛???쒖떆??${anchorSkuEvidence.categoryEvidence.inStockCount || 0}媛쒖엯?덈떎.`
                 : `${getCategoryName(deviceDecision.final.category)} is backed by ${anchorSkuEvidence.categoryEvidence.productCount || 0} tracked SKUs, with ${anchorSkuEvidence.categoryEvidence.inStockCount || 0} showing purchasable availability.`,
             source: "samsung.com",
             source_url: categorySourceUrl || samsungDotcomUrl,
             confidence: "High",
-            impact: currentLocale === "ko" ? "앵커 기기와 구매 가능성 판단을 시장별 공식 카테고리 페이지에 맞춥니다." : "Aligns the anchor-device and purchase-readiness judgement to market-specific official category pages."
+            impact: currentLocale === "ko" ? "?듭빱 湲곌린? 援щℓ 媛?μ꽦 ?먮떒???쒖옣蹂?怨듭떇 移댄뀒怨좊━ ?섏씠吏??留욎땅?덈떎." : "Aligns the anchor-device and purchase-readiness judgement to market-specific official category pages."
         } : null,
         anchorService ? {
             no: 5,
             fact: currentLocale === "ko"
-                ? `${anchorService.appCardLabel || anchorService.serviceName} 서비스 후보는 ${anchorService.keyFeatures.slice(0, 2).join(", ")} 신호를 중심으로 연결됩니다.`
+                ? `${anchorService.appCardLabel || anchorService.serviceName} ?쒕퉬???꾨낫??${anchorService.keyFeatures.slice(0, 2).join(", ")} ?좏샇瑜?以묒떖?쇰줈 ?곌껐?⑸땲??`
                 : `${anchorService.appCardLabel || anchorService.serviceName} is grounded on signals such as ${anchorService.keyFeatures.slice(0, 2).join(", ")}.`,
             source: "Explore Contents",
             source_url: exploreV1Url,
             confidence: "High",
-            impact: currentLocale === "ko" ? "서비스 스택과 자동화 흐름의 기준점을 제공합니다." : "Provides the baseline for service-stack and automation logic."
+            impact: currentLocale === "ko" ? "?쒕퉬???ㅽ깮怨??먮룞???먮쫫??湲곗??먯쓣 ?쒓났?⑸땲??" : "Provides the baseline for service-stack and automation logic."
         } : null,
         cityFact ? {
             no: 6,
@@ -9386,53 +9391,53 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
             source: "city_signals.json",
             source_url: samsungDotcomUrl,
             confidence: "Medium",
-            impact: currentLocale === "ko" ? "도시 맥락에 맞는 첫 장면과 카피 톤을 조정합니다." : "Tunes the first scene and copy tone to the city context."
+            impact: currentLocale === "ko" ? "?꾩떆 留λ씫??留욌뒗 泥??λ㈃怨?移댄뵾 ?ㅼ쓣 議곗젙?⑸땲??" : "Tunes the first scene and copy tone to the city context."
         } : null
     ].filter(Boolean);
 
     const assumptions = [
         anchorSkuEvidence.matchType === "partial" || anchorSkuEvidence.matchType === "category_fallback" || deviceDecision.fallbackApplied
             ? (currentLocale === "ko"
-                ? `추론: ${deviceDecision.final.modelName}와 정확히 일치하는 삼성닷컴 SKU를 찾지 못해 ${anchorSkuEvidence.product?.modelName || "동일 카테고리 대표 SKU"} 기준으로 연결했습니다.`
+                ? `異붾줎: ${deviceDecision.final.modelName}? ?뺥솗???쇱튂?섎뒗 ?쇱꽦?룹뺨 SKU瑜?李얠? 紐삵빐 ${anchorSkuEvidence.product?.modelName || "?숈씪 移댄뀒怨좊━ ???SKU"} 湲곗??쇰줈 ?곌껐?덉뒿?덈떎.`
                 : `Inference: no exact Samsung dotcom SKU matched ${deviceDecision.final.modelName}, so the closest in-category SKU was used.`)
             : (currentLocale === "ko"
-                ? `추론: ${(deviceDecision.selectedDevices || [deviceDecision.final.category]).map((device) => getCategoryName(device)).join(", ")} 조합이 하나의 생활 루틴으로 함께 운영된다고 가정했습니다.`
+                ? `異붾줎: ${(deviceDecision.selectedDevices || [deviceDecision.final.category]).map((device) => getCategoryName(device)).join(", ")} 議고빀???섎굹???앺솢 猷⑦떞?쇰줈 ?④퍡 ?댁쁺?쒕떎怨?媛?뺥뻽?듬땲??`
                 : "Inference: the selected device mix is assumed to operate as one connected life routine."),
         serviceSupport
             ? (currentLocale === "ko"
-                ? `추론: ${anchorService.appCardLabel || anchorService.serviceName}의 시장 지원도는 필수 카테고리 충족률 기준 ${serviceSupport.inferredSupport.status}로 계산했습니다.`
+                ? `異붾줎: ${anchorService.appCardLabel || anchorService.serviceName}???쒖옣 吏?먮룄???꾩닔 移댄뀒怨좊━ 異⑹”瑜?湲곗? ${serviceSupport.inferredSupport.status}濡?怨꾩궛?덉뒿?덈떎.`
                 : `Inference: ${anchorService.appCardLabel || anchorService.serviceName} support was estimated from required-category coverage and rated ${serviceSupport.inferredSupport.status}.`)
             : (currentLocale === "ko"
-                ? "추론: 서비스 매트릭스에 직접 연결되지 않은 경우 서비스 지원도는 미검증으로 유지합니다."
+                ? "異붾줎: ?쒕퉬??留ㅽ듃由?뒪??吏곸젒 ?곌껐?섏? ?딆? 寃쎌슦 ?쒕퉬??吏?먮룄??誘멸?利앹쑝濡??좎??⑸땲??"
                 : "Inference: when the service matrix has no direct link, service support remains unverified."),
         currentLocale === "ko"
-            ? `추론: ${selectedSegment} 타겟은 "${exploreGrounding.functionalJob}" 문제를 반복적으로 느낀다고 가정했습니다.`
+            ? `異붾줎: ${selectedSegment} ?寃잛? "${exploreGrounding.functionalJob}" 臾몄젣瑜?諛섎났?곸쑝濡??먮??ㅺ퀬 媛?뺥뻽?듬땲??`
             : `Inference: the ${selectedSegment} segment is assumed to repeatedly feel the pain of "${exploreGrounding.functionalJob}".`,
         !citySignal
             ? (currentLocale === "ko"
-                ? `추론: ${city || getCountryName(country.countryCode)}에 대한 정밀 도시 데이터가 없어 국가 기본 패턴으로 보강했습니다.`
+                ? `異붾줎: ${city || getCountryName(country.countryCode)}??????뺣? ?꾩떆 ?곗씠?곌? ?놁뼱 援?? 湲곕낯 ?⑦꽩?쇰줈 蹂닿컯?덉뒿?덈떎.`
                 : `Inference: no precise city-level dataset was found for ${city || getCountryName(country.countryCode)}, so country fallback logic was applied.`)
             : (currentLocale === "ko"
-                ? "추론: 도시 데이터는 생활 환경 단서로 사용했고 실제 캠페인 집행 전 리테일/재고 확인이 필요합니다."
+                ? "異붾줎: ?꾩떆 ?곗씠?곕뒗 ?앺솢 ?섍꼍 ?⑥꽌濡??ъ슜?덇퀬 ?ㅼ젣 罹좏럹??吏묓뻾 ??由ы뀒???ш퀬 ?뺤씤???꾩슂?⑸땲??"
                 : "Inference: city data was used as an environmental cue and still needs retail and stock confirmation before launch.")
     ];
 
     const readiness = [
         {
-            label: currentLocale === "ko" ? "앵커 기기" : "Anchor device",
+            label: currentLocale === "ko" ? "?듭빱 湲곌린" : "Anchor device",
             status: anchorSkuEvidence.matchType === "exact" ? "Supported" : anchorSkuEvidence.product ? "Limited" : "Unverified",
             note: anchorSkuEvidence.matchType === "exact"
                 ? (currentLocale === "ko"
-                    ? `${anchorSkuEvidence.product.modelName} SKU가 삼성닷컴에 직접 확인됩니다.`
+                    ? `${anchorSkuEvidence.product.modelName} SKU媛 ?쇱꽦?룹뺨??吏곸젒 ?뺤씤?⑸땲??`
                     : `${anchorSkuEvidence.product.modelName} is directly confirmed on Samsung dotcom.`)
                 : anchorSkuEvidence.product
                     ? (currentLocale === "ko"
-                        ? `${anchorSkuEvidence.product.modelName}로 카테고리 대체 연결했습니다.`
+                        ? `${anchorSkuEvidence.product.modelName}濡?移댄뀒怨좊━ ?泥??곌껐?덉뒿?덈떎.`
                         : `Mapped to ${anchorSkuEvidence.product.modelName} as the closest category-level fallback.`)
-                    : (currentLocale === "ko" ? "공식 삼성닷컴 SKU 증거가 아직 없습니다." : "No official Samsung dotcom SKU evidence was found yet.")
+                    : (currentLocale === "ko" ? "怨듭떇 ?쇱꽦?룹뺨 SKU 利앷굅媛 ?꾩쭅 ?놁뒿?덈떎." : "No official Samsung dotcom SKU evidence was found yet.")
         },
         {
-            label: currentLocale === "ko" ? "서비스 스택" : "Service stack",
+            label: currentLocale === "ko" ? "?쒕퉬???ㅽ깮" : "Service stack",
             status: serviceSupport?.inferredSupport?.status === "supported"
                 ? "Supported"
                 : serviceSupport?.inferredSupport?.status === "limited"
@@ -9440,14 +9445,14 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
                     : "Unverified",
             note: serviceSupport
                 ? (currentLocale === "ko"
-                    ? `필수 카테고리 ${serviceSupport.confirmedEvidence.coveredCategories.length}/${serviceSupport.requiredCategories.length}개가 삼성닷컴 SKU로 확인됩니다.`
+                    ? `?꾩닔 移댄뀒怨좊━ ${serviceSupport.confirmedEvidence.coveredCategories.length}/${serviceSupport.requiredCategories.length}媛쒓? ?쇱꽦?룹뺨 SKU濡??뺤씤?⑸땲??`
                     : `${serviceSupport.confirmedEvidence.coveredCategories.length}/${serviceSupport.requiredCategories.length} required categories have Samsung dotcom SKU evidence.`)
                 : (currentLocale === "ko"
-                    ? "시장별 서비스 증거가 없어 미검증으로 유지합니다."
+                    ? "?쒖옣蹂??쒕퉬??利앷굅媛 ?놁뼱 誘멸?利앹쑝濡??좎??⑸땲??"
                     : "No market-level service evidence was found, so this remains unverified.")
         },
         {
-            label: currentLocale === "ko" ? "구매 가능 상태" : "Purchase status",
+            label: currentLocale === "ko" ? "援щℓ 媛???곹깭" : "Purchase status",
             status: anchorSkuEvidence.product?.availability?.status === "supported"
                 ? "Supported"
                 : anchorSkuEvidence.product
@@ -9455,35 +9460,35 @@ function buildFacts(country, city, selectedSegment, deviceDecision, services, ex
                     : "Unknown",
             note: anchorSkuEvidence.product
                 ? `${anchorSkuEvidence.product.availability.status} / ${anchorSkuEvidence.product.availability.confidence}`
-                : (currentLocale === "ko" ? "실시간 구매 상태를 연결할 SKU를 찾지 못했습니다." : "No SKU was mapped for live purchase-state sync.")
+                : (currentLocale === "ko" ? "?ㅼ떆媛?援щℓ ?곹깭瑜??곌껐??SKU瑜?李얠? 紐삵뻽?듬땲??" : "No SKU was mapped for live purchase-state sync.")
         },
         {
-            label: currentLocale === "ko" ? "특징 추출" : "Feature extraction",
+            label: currentLocale === "ko" ? "?뱀쭠 異붿텧" : "Feature extraction",
             status: anchorSkuEvidence.product?.features?.confirmed?.length ? "Supported" : "Limited",
             note: anchorSkuEvidence.product?.features?.confirmed?.length
                 ? (currentLocale === "ko"
-                    ? `삼성닷컴 문구에서 핵심 특징 ${anchorSkuEvidence.product.features.confirmed.length}개를 구조화했습니다.`
+                    ? `?쇱꽦?룹뺨 臾멸뎄?먯꽌 ?듭떖 ?뱀쭠 ${anchorSkuEvidence.product.features.confirmed.length}媛쒕? 援ъ“?뷀뻽?듬땲??`
                     : `Structured ${anchorSkuEvidence.product.features.confirmed.length} core features from Samsung dotcom copy.`)
                 : (currentLocale === "ko"
-                    ? "모델명 중심 태그만 추출되어 추가 확인이 필요합니다."
+                    ? "紐⑤뜽紐?以묒떖 ?쒓렇留?異붿텧?섏뼱 異붽? ?뺤씤???꾩슂?⑸땲??"
                     : "Only model-name tags were extracted, so more validation is still needed.")
         },
         {
-            label: currentLocale === "ko" ? "도시 정밀도" : "City precision",
+            label: currentLocale === "ko" ? "?꾩떆 ?뺣??? : "City precision",
             status: citySignal ? "Supported" : "Limited",
             note: citySignal
-                ? (currentLocale === "ko" ? "도시/생활 신호를 적용했습니다." : "Applied city and lifestyle signals.")
-                : (currentLocale === "ko" ? "국가 기본 시그널로 보강했습니다." : "Used the country fallback signal.")
+                ? (currentLocale === "ko" ? "?꾩떆/?앺솢 ?좏샇瑜??곸슜?덉뒿?덈떎." : "Applied city and lifestyle signals.")
+                : (currentLocale === "ko" ? "援?? 湲곕낯 ?쒓렇?먮줈 蹂닿컯?덉뒿?덈떎." : "Used the country fallback signal.")
         }
     ];
 
-    // sourceRefs: 내부 파일 + 외부 URL 모두 포함
+    // sourceRefs: ?대? ?뚯씪 + ?몃? URL 紐⑤몢 ?ы븿
     const sourceRefEntries = [...new Set([
         ...confirmed.map((item) => item.source),
         serviceSupport ? "service_support_matrix.json" : null,
         anchorSkuEvidence.product ? "product_feature_matrix.json" : null
     ].filter(Boolean))];
-    // 외부 URL 출처
+    // ?몃? URL 異쒖쿂
     const sourceUrlEntries = [...new Set([
         samsungDotcomUrl,
         categorySourceUrl,
@@ -9509,7 +9514,7 @@ function buildRoleDetailSections(roleId, country, selectedMarket, deviceDecision
     const selectedCategories = [...new Set((deviceDecision.selectedDevices || [deviceDecision.final.category]).map((item) => getCategoryName(item)))];
     const availableProducts = Array.isArray(country.availableProducts) ? country.availableProducts : [];
     const catalogReady = availableProducts.length > 0;
-    const stockNote = currentLocale === "ko" ? "재고확인필요" : "Stock check required";
+    const stockNote = currentLocale === "ko" ? "?ш퀬?뺤씤?꾩슂" : "Stock check required";
     const productLine = (product) => `${product.modelName} (${getCategoryName(product.category)}) - ${stockNote}`;
     const productByCategory = new Map(availableProducts.map((product) => [getCategoryName(product.category), product]));
     const anchored = selectedCategories.map((category) => productByCategory.get(category)).filter(Boolean);
@@ -9523,39 +9528,39 @@ function buildRoleDetailSections(roleId, country, selectedMarket, deviceDecision
     if (roleId === "retail") {
         return [
             {
-                title: currentLocale === "ko" ? "30초 / 1분 세일즈 토크" : "30s / 1m Sales Talk",
+                title: currentLocale === "ko" ? "30珥?/ 1遺??몄씪利??좏겕" : "30s / 1m Sales Talk",
                 items: [
                     currentLocale === "ko"
-                        ? `30초: "${deviceDecision.final.modelName} 하나로 ${intent.missionBucket} 가치가 바로 체감됩니다. 먼저 ${primary.keyFeatures[0]}부터 보여드릴게요."`
+                        ? `30珥? "${deviceDecision.final.modelName} ?섎굹濡?${intent.missionBucket} 媛移섍? 諛붾줈 泥닿컧?⑸땲?? 癒쇱? ${primary.keyFeatures[0]}遺??蹂댁뿬?쒕┫寃뚯슂."`
                         : `30s: "${deviceDecision.final.modelName} makes ${intent.missionBucket} value immediate. Let me show ${primary.keyFeatures[0]} first."`,
                     currentLocale === "ko"
-                        ? `1분: ${selectedSegment} 고객 기준으로 ${intent.purpose} 상황을 재현하고, 핵심 기능 1개 + 확장 기기 1개까지 연결합니다.`
+                        ? `1遺? ${selectedSegment} 怨좉컼 湲곗??쇰줈 ${intent.purpose} ?곹솴???ы쁽?섍퀬, ?듭떖 湲곕뒫 1媛?+ ?뺤옣 湲곌린 1媛쒓퉴吏 ?곌껐?⑸땲??`
                         : `1m: Recreate the ${intent.purpose} moment for ${selectedSegment}, then connect one core feature and one upsell device.`
                 ]
             },
             {
-                title: currentLocale === "ko" ? "추천 기기 조합 (입문형 / 업셀용)" : "Recommended Device Mix (Entry / Upsell)",
+                title: currentLocale === "ko" ? "異붿쿇 湲곌린 議고빀 (?낅Ц??/ ?낆???" : "Recommended Device Mix (Entry / Upsell)",
                 items: [
                     currentLocale === "ko"
-                        ? `입문형: ${entryBundle.length ? entryBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
+                        ? `?낅Ц?? ${entryBundle.length ? entryBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
                         : `Entry: ${entryBundle.length ? entryBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`,
                     currentLocale === "ko"
-                        ? `업셀용: ${coreBundle.length ? coreBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
+                        ? `?낆??? ${coreBundle.length ? coreBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
                         : `Upsell: ${coreBundle.length ? coreBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
                 ]
             },
             {
-                title: currentLocale === "ko" ? "SmartThings 단계별 세팅" : "SmartThings Setup Steps",
+                title: currentLocale === "ko" ? "SmartThings ?④퀎蹂??명똿" : "SmartThings Setup Steps",
                 items: [
-                    currentLocale === "ko" ? "1) Samsung Account 로그인 2) Home 생성 3) 기준 기기 1대 연결" : "1) Sign in with Samsung Account 2) Create Home 3) Connect one anchor device",
-                    currentLocale === "ko" ? "4) 자동화 1개 생성 5) 알림/위젯 설정 6) 추가 기기 확장" : "4) Build one automation 5) Set alerts/widgets 6) Expand with additional devices"
+                    currentLocale === "ko" ? "1) Samsung Account 濡쒓렇??2) Home ?앹꽦 3) 湲곗? 湲곌린 1? ?곌껐" : "1) Sign in with Samsung Account 2) Create Home 3) Connect one anchor device",
+                    currentLocale === "ko" ? "4) ?먮룞??1媛??앹꽦 5) ?뚮┝/?꾩젽 ?ㅼ젙 6) 異붽? 湲곌린 ?뺤옣" : "4) Build one automation 5) Set alerts/widgets 6) Expand with additional devices"
                 ]
             },
             {
-                title: currentLocale === "ko" ? "호환성 체크 & 실패 사례" : "Compatibility Checks & Common Failures",
+                title: currentLocale === "ko" ? "?명솚??泥댄겕 & ?ㅽ뙣 ?щ?" : "Compatibility Checks & Common Failures",
                 items: [
-                    currentLocale === "ko" ? "체크: 동일 Wi-Fi 대역, 최신 앱 버전, 지역 계정 일치 여부 확인" : "Check: same Wi-Fi band, latest app version, and matching regional account",
-                    currentLocale === "ko" ? "실패 사례: 기기 연결 전 계정 권한 미승인, 허브/센서 페어링 순서 오류" : "Failure cases: missing account permission before onboarding, incorrect hub/sensor pairing order"
+                    currentLocale === "ko" ? "泥댄겕: ?숈씪 Wi-Fi ??? 理쒖떊 ??踰꾩쟾, 吏??怨꾩젙 ?쇱튂 ?щ? ?뺤씤" : "Check: same Wi-Fi band, latest app version, and matching regional account",
+                    currentLocale === "ko" ? "?ㅽ뙣 ?щ?: 湲곌린 ?곌껐 ??怨꾩젙 沅뚰븳 誘몄듅?? ?덈툕/?쇱꽌 ?섏뼱留??쒖꽌 ?ㅻ쪟" : "Failure cases: missing account permission before onboarding, incorrect hub/sensor pairing order"
                 ]
             }
         ];
@@ -9563,7 +9568,7 @@ function buildRoleDetailSections(roleId, country, selectedMarket, deviceDecision
 
     if (roleId === "dotcom") {
         const requiredText = selectedCategories.length ? selectedCategories.join(", ") : getCategoryName(deviceDecision.final.category);
-        const optionalText = optionalCategories.length ? optionalCategories.join(", ") : (currentLocale === "ko" ? "추가 선택 기기 없음" : "No additional optional devices");
+        const optionalText = optionalCategories.length ? optionalCategories.join(", ") : (currentLocale === "ko" ? "異붽? ?좏깮 湲곌린 ?놁쓬" : "No additional optional devices");
         const benefitToProduct = (entryBundle.length ? entryBundle : [{ modelName: deviceDecision.final.modelName, category: deviceDecision.final.category }]).map((product) => (
             currentLocale === "ko"
                 ? `${exploreGrounding.primaryValue} -> ${product.modelName} (${getCategoryName(product.category)})`
@@ -9571,17 +9576,17 @@ function buildRoleDetailSections(roleId, country, selectedMarket, deviceDecision
         ));
         return [
             {
-                title: currentLocale === "ko" ? "지역 eStore / 지원 기기 매트릭스" : "Regional eStore / Supported Device Matrix",
+                title: currentLocale === "ko" ? "吏??eStore / 吏??湲곌린 留ㅽ듃由?뒪" : "Regional eStore / Supported Device Matrix",
                 items: [
                     currentLocale === "ko"
-                        ? `도메인: ${marketInfo?.fullUrl || country.samsungShopUrl || `https://www.samsung.com/${(selectedMarket?.siteCode || country.countryCode || "").toLowerCase()}`}`
+                        ? `?꾨찓?? ${marketInfo?.fullUrl || country.samsungShopUrl || `https://www.samsung.com/${(selectedMarket?.siteCode || country.countryCode || "").toLowerCase()}`}`
                         : `Domain: ${marketInfo?.fullUrl || country.samsungShopUrl || `https://www.samsung.com/${(selectedMarket?.siteCode || country.countryCode || "").toLowerCase()}`}`,
                     ...(orderedProducts.slice(0, 4).map((product) => `- ${productLine(product)}`)),
-                    ...(catalogReady ? [] : [currentLocale === "ko" ? "- 지역 판매 SKU 데이터 미확보: 재고확인필요" : "- Regional SKU list unavailable: stock check required"])
+                    ...(catalogReady ? [] : [currentLocale === "ko" ? "- 吏???먮ℓ SKU ?곗씠??誘명솗蹂? ?ш퀬?뺤씤?꾩슂" : "- Regional SKU list unavailable: stock check required"])
                 ]
             },
             {
-                title: currentLocale === "ko" ? "제품 번들 추천 (Entry / Core / Premium)" : "Bundle Recommendation (Entry / Core / Premium)",
+                title: currentLocale === "ko" ? "?쒗뭹 踰덈뱾 異붿쿇 (Entry / Core / Premium)" : "Bundle Recommendation (Entry / Core / Premium)",
                 items: [
                     currentLocale === "ko"
                         ? `Entry: ${entryBundle.length ? entryBundle.map(productLine).join(" / ") : `${deviceDecision.final.modelName} (${stockNote})`}`
@@ -9595,14 +9600,14 @@ function buildRoleDetailSections(roleId, country, selectedMarket, deviceDecision
                 ]
             },
             {
-                title: currentLocale === "ko" ? "필수 vs 선택 기기 구분" : "Required vs Optional Devices",
+                title: currentLocale === "ko" ? "?꾩닔 vs ?좏깮 湲곌린 援щ텇" : "Required vs Optional Devices",
                 items: [
-                    currentLocale === "ko" ? `필수: ${requiredText}` : `Required: ${requiredText}`,
-                    currentLocale === "ko" ? `선택: ${optionalText}` : `Optional: ${optionalText}`
+                    currentLocale === "ko" ? `?꾩닔: ${requiredText}` : `Required: ${requiredText}`,
+                    currentLocale === "ko" ? `?좏깮: ${optionalText}` : `Optional: ${optionalText}`
                 ]
             },
             {
-                title: currentLocale === "ko" ? "PDP / 랜딩 Benefit -> Product 매핑" : "PDP / Landing Benefit -> Product Mapping",
+                title: currentLocale === "ko" ? "PDP / ?쒕뵫 Benefit -> Product 留ㅽ븨" : "PDP / Landing Benefit -> Product Mapping",
                 items: benefitToProduct
             }
         ];
@@ -9610,43 +9615,43 @@ function buildRoleDetailSections(roleId, country, selectedMarket, deviceDecision
 
     return [
         {
-            title: currentLocale === "ko" ? "브랜드 메시지 (단문 / 장문)" : "Brand Message (Short / Long)",
+            title: currentLocale === "ko" ? "釉뚮옖??硫붿떆吏 (?⑤Ц / ?λЦ)" : "Brand Message (Short / Long)",
             items: [
                 currentLocale === "ko"
-                    ? `단문: ${exploreGrounding.primaryValue}을 생활의 기본 리듬으로 만듭니다.`
+                    ? `?⑤Ц: ${exploreGrounding.primaryValue}???앺솢??湲곕낯 由щ벉?쇰줈 留뚮벊?덈떎.`
                     : `Short: Turn ${exploreGrounding.primaryValue} into an everyday rhythm.`,
                 currentLocale === "ko"
-                    ? `장문: ${selectedSegment}의 "${intent.purpose}" 상황에서 시작해, 기술 설명보다 사용자가 느끼는 안도감과 여유를 브랜드 경험으로 연결합니다.`
+                    ? `?λЦ: ${selectedSegment}??"${intent.purpose}" ?곹솴?먯꽌 ?쒖옉?? 湲곗닠 ?ㅻ챸蹂대떎 ?ъ슜?먭? ?먮겮???덈룄媛먭낵 ?ъ쑀瑜?釉뚮옖??寃쏀뿕?쇰줈 ?곌껐?⑸땲??`
                     : `Long: Start from "${intent.purpose}" for ${selectedSegment}, and turn emotional relief into a branded experience beyond feature talk.`
             ]
         },
         {
-            title: currentLocale === "ko" ? "지역·문화 맥락 스토리텔링" : "Regional & Cultural Storytelling",
+            title: currentLocale === "ko" ? "吏??룸Ц??留λ씫 ?ㅽ넗由ы뀛留? : "Regional & Cultural Storytelling",
             items: [
                 currentLocale === "ko"
-                    ? `${getCountryName(country.countryCode)} 생활 리듬에서 반복되는 불편을 첫 장면으로 배치하고, 현지 언어 톤으로 카피를 조정합니다.`
+                    ? `${getCountryName(country.countryCode)} ?앺솢 由щ벉?먯꽌 諛섎났?섎뒗 遺덊렪??泥??λ㈃?쇰줈 諛곗튂?섍퀬, ?꾩? ?몄뼱 ?ㅼ쑝濡?移댄뵾瑜?議곗젙?⑸땲??`
                     : `Open with recurring friction in the daily rhythm of ${getCountryName(country.countryCode)} and tune copy to local language tone.`,
                 currentLocale === "ko"
-                    ? "현지 가족/주거 패턴에 맞는 장면을 1차 노출 소재로 고정합니다."
+                    ? "?꾩? 媛議?二쇨굅 ?⑦꽩??留욌뒗 ?λ㈃??1李??몄텧 ?뚯옱濡?怨좎젙?⑸땲??"
                     : "Lock one local household/living-context scene as the primary exposure asset."
             ]
         },
         {
-            title: currentLocale === "ko" ? "캠페인·시즌·이벤트 연계" : "Campaign / Season / Event Linkage",
+            title: currentLocale === "ko" ? "罹좏럹?맞룹떆利뙿룹씠踰ㅽ듃 ?곌퀎" : "Campaign / Season / Event Linkage",
             items: [
                 currentLocale === "ko"
-                    ? `시즌: ${intent.missionBucket} 니즈가 커지는 시점에 맞춰 메시지 강도를 조정합니다.`
+                    ? `?쒖쫵: ${intent.missionBucket} ?덉쫰媛 而ㅼ????쒖젏??留욎떠 硫붿떆吏 媛뺣룄瑜?議곗젙?⑸땲??`
                     : `Seasonality: adjust message intensity when ${intent.missionBucket} demand rises.`,
                 currentLocale === "ko"
-                    ? "이벤트: 런칭/프로모션/리마인드 3단계로 소재를 분리 운영합니다."
+                    ? "?대깽?? ?곗묶/?꾨줈紐⑥뀡/由щ쭏?몃뱶 3?④퀎濡??뚯옱瑜?遺꾨━ ?댁쁺?⑸땲??"
                     : "Events: split assets into launch, promotion, and reminder phases."
             ]
         },
         {
-            title: currentLocale === "ko" ? "글로벌 vs 로컬 메시지 구분" : "Global vs Local Message Logic",
+            title: currentLocale === "ko" ? "湲濡쒕쾶 vs 濡쒖뺄 硫붿떆吏 援щ텇" : "Global vs Local Message Logic",
             items: [
-                currentLocale === "ko" ? `글로벌: ${exploreGrounding.primaryValue} 중심의 일관된 가치 문장` : `Global: one consistent value line around ${exploreGrounding.primaryValue}`,
-                currentLocale === "ko" ? "로컬: 시장별 생활 맥락/언어/시즌에 맞춘 사례 문장" : "Local: market-specific lines tuned by context, language, and season"
+                currentLocale === "ko" ? `湲濡쒕쾶: ${exploreGrounding.primaryValue} 以묒떖???쇨???媛移?臾몄옣` : `Global: one consistent value line around ${exploreGrounding.primaryValue}`,
+                currentLocale === "ko" ? "濡쒖뺄: ?쒖옣蹂??앺솢 留λ씫/?몄뼱/?쒖쫵??留욎텣 ?щ? 臾몄옣" : "Local: market-specific lines tuned by context, language, and season"
             ]
         }
     ];
@@ -9668,31 +9673,31 @@ function buildWhatYouGet(roleId, context) {
     if (roleId === "retail") {
         return [
             {
-                title: isKo ? "고객에게 바로 읽히는 한 문장" : "One line customers understand immediately",
-                meaning: isKo ? "매장에서 첫 10초에 전달할 핵심 세일즈 문장입니다." : "The core sales sentence to use in the first 10 seconds in store.",
+                title: isKo ? "怨좉컼?먭쾶 諛붾줈 ?쏀엳????臾몄옣" : "One line customers understand immediately",
+                meaning: isKo ? "留ㅼ옣?먯꽌 泥?10珥덉뿉 ?꾨떖???듭떖 ?몄씪利?臾몄옣?낅땲??" : "The core sales sentence to use in the first 10 seconds in store.",
                 example: isKo
-                    ? `예시: "${deviceDecision.final.modelName} 하나로 ${intent.missionBucket}를 바로 체감할 수 있습니다."`
+                    ? `?덉떆: "${deviceDecision.final.modelName} ?섎굹濡?${intent.missionBucket}瑜?諛붾줈 泥닿컧?????덉뒿?덈떎."`
                     : `Example: "${deviceDecision.final.modelName} gives immediate ${intent.missionBucket} value."`
             },
             {
-                title: isKo ? "30초 데모 흐름" : "30-second demo flow",
-                meaning: isKo ? "기능 설명이 아니라 생활 문제 -> 해결 장면 순서로 보여주는 구조입니다." : "A show flow built as problem -> solved moment, not a feature dump.",
-                example: isKo ? `예시: ${detailPick(0, 1)}` : `Example: ${detailPick(0, 1)}`
+                title: isKo ? "30珥??곕え ?먮쫫" : "30-second demo flow",
+                meaning: isKo ? "湲곕뒫 ?ㅻ챸???꾨땲???앺솢 臾몄젣 -> ?닿껐 ?λ㈃ ?쒖꽌濡?蹂댁뿬二쇰뒗 援ъ“?낅땲??" : "A show flow built as problem -> solved moment, not a feature dump.",
+                example: isKo ? `?덉떆: ${detailPick(0, 1)}` : `Example: ${detailPick(0, 1)}`
             },
             {
-                title: isKo ? "추천 기기 조합" : "Recommended device mix",
-                meaning: isKo ? "입문형/확장형으로 나눠 바로 제안할 수 있는 판매 조합입니다." : "A ready-to-sell mix split into entry and expansion options.",
-                example: isKo ? `예시: ${detailPick(1, 0)}` : `Example: ${detailPick(1, 0)}`
+                title: isKo ? "異붿쿇 湲곌린 議고빀" : "Recommended device mix",
+                meaning: isKo ? "?낅Ц???뺤옣?뺤쑝濡??섎닠 諛붾줈 ?쒖븞?????덈뒗 ?먮ℓ 議고빀?낅땲??" : "A ready-to-sell mix split into entry and expansion options.",
+                example: isKo ? `?덉떆: ${detailPick(1, 0)}` : `Example: ${detailPick(1, 0)}`
             },
             {
-                title: isKo ? "현장 세팅 체크 순서" : "On-site setup checklist order",
-                meaning: isKo ? "설치/연결 단계에서 실패를 줄이기 위한 최소 체크 순서입니다." : "A minimal check order that lowers setup failure risk.",
-                example: isKo ? `예시: ${detailPick(2, 0)}` : `Example: ${detailPick(2, 0)}`
+                title: isKo ? "?꾩옣 ?명똿 泥댄겕 ?쒖꽌" : "On-site setup checklist order",
+                meaning: isKo ? "?ㅼ튂/?곌껐 ?④퀎?먯꽌 ?ㅽ뙣瑜?以꾩씠湲??꾪븳 理쒖냼 泥댄겕 ?쒖꽌?낅땲??" : "A minimal check order that lowers setup failure risk.",
+                example: isKo ? `?덉떆: ${detailPick(2, 0)}` : `Example: ${detailPick(2, 0)}`
             },
             {
-                title: isKo ? "실패 리스크 사전 확인" : "Pre-check for failure risks",
-                meaning: isKo ? "상담 중 자주 발생하는 호환/계정 이슈를 먼저 점검하는 항목입니다." : "Quick checks for frequent compatibility/account issues during consultation.",
-                example: isKo ? `예시: ${detailPick(3, 0)}` : `Example: ${detailPick(3, 0)}`
+                title: isKo ? "?ㅽ뙣 由ъ뒪???ъ쟾 ?뺤씤" : "Pre-check for failure risks",
+                meaning: isKo ? "?곷떞 以??먯＜ 諛쒖깮?섎뒗 ?명솚/怨꾩젙 ?댁뒋瑜?癒쇱? ?먭??섎뒗 ??ぉ?낅땲??" : "Quick checks for frequent compatibility/account issues during consultation.",
+                example: isKo ? `?덉떆: ${detailPick(3, 0)}` : `Example: ${detailPick(3, 0)}`
             }
         ];
     }
@@ -9700,64 +9705,64 @@ function buildWhatYouGet(roleId, context) {
     if (roleId === "dotcom") {
         return [
             {
-                title: isKo ? "랜딩 첫 화면 메시지" : "First-screen landing message",
-                meaning: isKo ? "PDP 상단에서 어떤 상황 가치부터 보여줄지 정한 문구입니다." : "The line that defines which situational value appears first on PDP.",
+                title: isKo ? "?쒕뵫 泥??붾㈃ 硫붿떆吏" : "First-screen landing message",
+                meaning: isKo ? "PDP ?곷떒?먯꽌 ?대뼡 ?곹솴 媛移섎???蹂댁뿬以꾩? ?뺥븳 臾멸뎄?낅땲??" : "The line that defines which situational value appears first on PDP.",
                 example: isKo
-                    ? `예시: ${selectedSegment}에게 "${intent.missionBucket}" 가치를 첫 화면에서 먼저 제시`
+                    ? `?덉떆: ${selectedSegment}?먭쾶 "${intent.missionBucket}" 媛移섎? 泥??붾㈃?먯꽌 癒쇱? ?쒖떆`
                     : `Example: Lead with "${intent.missionBucket}" value for ${selectedSegment} on first screen`
             },
             {
-                title: isKo ? "지역 eStore 기준 도메인/제품 맵" : "Region eStore domain and product map",
-                meaning: isKo ? "해당 국가에서 실제 연결할 URL과 주력 제품 기준입니다." : "The market URL and product anchor map for the selected country.",
-                example: isKo ? `예시: ${detailPick(0, 0)}` : `Example: ${detailPick(0, 0)}`
+                title: isKo ? "吏??eStore 湲곗? ?꾨찓???쒗뭹 留? : "Region eStore domain and product map",
+                meaning: isKo ? "?대떦 援???먯꽌 ?ㅼ젣 ?곌껐??URL怨?二쇰젰 ?쒗뭹 湲곗??낅땲??" : "The market URL and product anchor map for the selected country.",
+                example: isKo ? `?덉떆: ${detailPick(0, 0)}` : `Example: ${detailPick(0, 0)}`
             },
             {
-                title: isKo ? "번들 제안 구조 (Entry/Core/Premium)" : "Bundle ladder (Entry/Core/Premium)",
-                meaning: isKo ? "가격/가치 단계별로 추천을 나눠 장바구니 진입을 쉽게 만드는 구조입니다." : "A pricing-value ladder that makes add-to-cart easier.",
-                example: isKo ? `예시: ${detailPick(1, 1)}` : `Example: ${detailPick(1, 1)}`
+                title: isKo ? "踰덈뱾 ?쒖븞 援ъ“ (Entry/Core/Premium)" : "Bundle ladder (Entry/Core/Premium)",
+                meaning: isKo ? "媛寃?媛移??④퀎蹂꾨줈 異붿쿇???섎닠 ?λ컮援щ땲 吏꾩엯???쎄쾶 留뚮뱶??援ъ“?낅땲??" : "A pricing-value ladder that makes add-to-cart easier.",
+                example: isKo ? `?덉떆: ${detailPick(1, 1)}` : `Example: ${detailPick(1, 1)}`
             },
             {
-                title: isKo ? "필수 vs 선택 기기 기준" : "Required vs optional device logic",
-                meaning: isKo ? "최소 구매 구성과 확장 구성을 분리해 혼선을 줄이는 기준입니다." : "A clear split between minimum and expansion device sets.",
-                example: isKo ? `예시: ${detailPick(2, 0)}` : `Example: ${detailPick(2, 0)}`
+                title: isKo ? "?꾩닔 vs ?좏깮 湲곌린 湲곗?" : "Required vs optional device logic",
+                meaning: isKo ? "理쒖냼 援щℓ 援ъ꽦怨??뺤옣 援ъ꽦??遺꾨━???쇱꽑??以꾩씠??湲곗??낅땲??" : "A clear split between minimum and expansion device sets.",
+                example: isKo ? `?덉떆: ${detailPick(2, 0)}` : `Example: ${detailPick(2, 0)}`
             },
             {
-                title: isKo ? "Benefit -> Product 매핑" : "Benefit -> Product mapping",
-                meaning: isKo ? "사용자 혜택 문장을 어떤 제품과 연결할지 정리한 맵입니다." : "A map that ties user benefits to concrete products.",
-                example: isKo ? `예시: ${detailPick(3, 0)}` : `Example: ${detailPick(3, 0)}`
+                title: isKo ? "Benefit -> Product 留ㅽ븨" : "Benefit -> Product mapping",
+                meaning: isKo ? "?ъ슜???쒗깮 臾몄옣???대뼡 ?쒗뭹怨??곌껐?좎? ?뺣━??留듭엯?덈떎." : "A map that ties user benefits to concrete products.",
+                example: isKo ? `?덉떆: ${detailPick(3, 0)}` : `Example: ${detailPick(3, 0)}`
             }
         ];
     }
 
     return [
         {
-            title: isKo ? "캠페인 핵심 한 줄" : "Core campaign one-liner",
-            meaning: isKo ? "브랜드 톤을 유지하면서도 시장에서 바로 이해되는 핵심 문장입니다." : "A core line that keeps brand tone and stays easy to grasp.",
+            title: isKo ? "罹좏럹???듭떖 ??以? : "Core campaign one-liner",
+            meaning: isKo ? "釉뚮옖???ㅼ쓣 ?좎??섎㈃?쒕룄 ?쒖옣?먯꽌 諛붾줈 ?댄빐?섎뒗 ?듭떖 臾몄옣?낅땲??" : "A core line that keeps brand tone and stays easy to grasp.",
             example: isKo
-                ? `예시: ${exploreGrounding.primaryValue}을 생활의 기본 리듬으로 만듭니다.`
+                ? `?덉떆: ${exploreGrounding.primaryValue}???앺솢??湲곕낯 由щ벉?쇰줈 留뚮벊?덈떎.`
                 : `Example: Turn ${exploreGrounding.primaryValue} into an everyday rhythm.`
         },
         {
-            title: isKo ? "감정 중심 스토리 장면" : "Emotion-first story moment",
-            meaning: isKo ? "기능 대신 사용자가 느끼는 변화 장면을 메인으로 두는 구성입니다." : "A story structure that prioritizes felt change over features.",
-            example: isKo ? `예시: "${intent.purpose}" 장면에서 안도감이 생기는 순간을 메인 컷으로 사용` : `Example: Use the relief moment in "${intent.purpose}" as the key scene`
+            title: isKo ? "媛먯젙 以묒떖 ?ㅽ넗由??λ㈃" : "Emotion-first story moment",
+            meaning: isKo ? "湲곕뒫 ????ъ슜?먭? ?먮겮??蹂???λ㈃??硫붿씤?쇰줈 ?먮뒗 援ъ꽦?낅땲??" : "A story structure that prioritizes felt change over features.",
+            example: isKo ? `?덉떆: "${intent.purpose}" ?λ㈃?먯꽌 ?덈룄媛먯씠 ?앷린???쒓컙??硫붿씤 而룹쑝濡??ъ슜` : `Example: Use the relief moment in "${intent.purpose}" as the key scene`
         },
         {
-            title: isKo ? "로컬 문화/언어 적용 포인트" : "Local culture and language adaptation",
-            meaning: isKo ? "시장별 생활 리듬과 정서에 맞게 카피 톤을 조정하는 기준입니다." : "Guidance for tuning copy tone to local rhythm and emotion.",
-            example: isKo ? `예시: ${marketName} 생활 맥락에 맞는 감정 언어로 메시지 현지화` : `Example: Localize emotional tone to daily context in ${marketName}`
+            title: isKo ? "濡쒖뺄 臾명솕/?몄뼱 ?곸슜 ?ъ씤?? : "Local culture and language adaptation",
+            meaning: isKo ? "?쒖옣蹂??앺솢 由щ벉怨??뺤꽌??留욊쾶 移댄뵾 ?ㅼ쓣 議곗젙?섎뒗 湲곗??낅땲??" : "Guidance for tuning copy tone to local rhythm and emotion.",
+            example: isKo ? `?덉떆: ${marketName} ?앺솢 留λ씫??留욌뒗 媛먯젙 ?몄뼱濡?硫붿떆吏 ?꾩??? : `Example: Localize emotional tone to daily context in ${marketName}`
         },
         {
-            title: isKo ? "캠페인 에셋 패키지" : "Campaign asset package",
-            meaning: isKo ? "메인 영상, 소셜 카피, KV를 하나의 정서로 묶어 운영하는 구성입니다." : "A package that keeps film, social copy, and KV in one emotion.",
+            title: isKo ? "罹좏럹???먯뀑 ?⑦궎吏" : "Campaign asset package",
+            meaning: isKo ? "硫붿씤 ?곸긽, ?뚯뀥 移댄뵾, KV瑜??섎굹???뺤꽌濡?臾띠뼱 ?댁쁺?섎뒗 援ъ꽦?낅땲??" : "A package that keeps film, social copy, and KV in one emotion.",
             example: isKo
-                ? `예시: 30초 영상 + 소셜 카피 + KV를 "${selectedSegment}" 타겟 톤으로 통일`
+                ? `?덉떆: 30珥??곸긽 + ?뚯뀥 移댄뵾 + KV瑜?"${selectedSegment}" ?寃??ㅼ쑝濡??듭씪`
                 : `Example: Keep 30s film + social copy + KV aligned for ${selectedSegment}`
         },
         {
-            title: isKo ? "시즌/이벤트 운영 타이밍" : "Season/event operating timing",
-            meaning: isKo ? "언제 메시지 강도를 올리고 소재를 분리할지 정한 실행 기준입니다." : "Execution timing for when to intensify and split campaign assets.",
-            example: isKo ? `예시: ${intent.missionBucket} 니즈가 커지는 시즌에 런칭 -> 프로모션 -> 리마인드 운영` : `Example: Run launch -> promo -> reminder as ${intent.missionBucket} demand peaks`
+            title: isKo ? "?쒖쫵/?대깽???댁쁺 ??대컢" : "Season/event operating timing",
+            meaning: isKo ? "?몄젣 硫붿떆吏 媛뺣룄瑜??щ━怨??뚯옱瑜?遺꾨━?좎? ?뺥븳 ?ㅽ뻾 湲곗??낅땲??" : "Execution timing for when to intensify and split campaign assets.",
+            example: isKo ? `?덉떆: ${intent.missionBucket} ?덉쫰媛 而ㅼ????쒖쫵???곗묶 -> ?꾨줈紐⑥뀡 -> 由щ쭏?몃뱶 ?댁쁺` : `Example: Run launch -> promo -> reminder as ${intent.missionBucket} demand peaks`
         }
     ];
 }
@@ -9780,27 +9785,27 @@ function buildRoleLensOutputs(selectedRole, narrative, country, selectedMarket, 
                 localizeRoleText("retailBullet2", primary.keyFeatures[0]),
                 localizeRoleText("retailBullet3"),
                 currentLocale === "ko"
-                ? `${selectedSegment} 고객에게는 "${intent.purpose}"를 바로 데모 문장으로 사용합니다.`
+                ? `${selectedSegment} 怨좉컼?먭쾶??"${intent.purpose}"瑜?諛붾줈 ?곕え 臾몄옣?쇰줈 ?ъ슜?⑸땲??`
                 : `Use "${intent.purpose}" as the live demo line for the ${selectedSegment} segment.`
             ],
             copy: narrative[7],
-            asset: currentLocale === "ko" ? "매장 데모 스크립트 + 상담 카드" : "Store demo script + consultation card",
+            asset: currentLocale === "ko" ? "留ㅼ옣 ?곕え ?ㅽ겕由쏀듃 + ?곷떞 移대뱶" : "Store demo script + consultation card",
             message: currentLocale === "ko"
-                ? `${deviceDecision.final.modelName}가 ${marketName} 매장에서 어떤 생활 문제를 줄여주는지, 그리고 왜 지금 필요한지를 한 문장으로 설명합니다.`
+                ? `${deviceDecision.final.modelName}媛 ${marketName} 留ㅼ옣?먯꽌 ?대뼡 ?앺솢 臾몄젣瑜?以꾩뿬二쇰뒗吏, 洹몃━怨???吏湲??꾩슂?쒖?瑜???臾몄옣?쇰줈 ?ㅻ챸?⑸땲??`
                 : `Explain in one sentence which daily-life problem ${deviceDecision.final.modelName} solves in ${marketName} stores and why it matters now.`,
-            cta: currentLocale === "ko" ? "지금 바로 체험해 보세요" : "Try this experience now",
-            kpi: currentLocale === "ko" ? "상담 전환율 / 데모 후 관심도" : "Consultation conversion / post-demo interest",
-            objective: currentLocale === "ko" ? "매장에서 30초 안에 고객이 '왜 필요한지' 이해하게 만드는 것" : "Make shoppers understand 'why it matters' within 30 seconds in-store.",
-            headline: currentLocale === "ko" ? `${exploreGrounding.primaryValue}이 바로 읽히는 한 장면으로 설명합니다.` : `Lead with one moment that makes ${exploreGrounding.primaryValue} immediately legible.`,
+            cta: currentLocale === "ko" ? "吏湲?諛붾줈 泥댄뿕??蹂댁꽭?? : "Try this experience now",
+            kpi: currentLocale === "ko" ? "?곷떞 ?꾪솚??/ ?곕え ??愿?щ룄" : "Consultation conversion / post-demo interest",
+            objective: currentLocale === "ko" ? "留ㅼ옣?먯꽌 30珥??덉뿉 怨좉컼??'???꾩슂?쒖?' ?댄빐?섍쾶 留뚮뱶??寃? : "Make shoppers understand 'why it matters' within 30 seconds in-store.",
+            headline: currentLocale === "ko" ? `${exploreGrounding.primaryValue}??諛붾줈 ?쏀엳?????λ㈃?쇰줈 ?ㅻ챸?⑸땲??` : `Lead with one moment that makes ${exploreGrounding.primaryValue} immediately legible.`,
             proofPoints: [
-                currentLocale === "ko" ? `${deviceDecision.final.modelName} 중심 데모로 시작해 이해 허들을 낮춥니다.` : `Start with a demo anchored on ${deviceDecision.final.modelName} to lower comprehension friction.`,
-                currentLocale === "ko" ? `${primary.keyFeatures[0]}를 생활 문제 해결 언어로 번역합니다.` : `Translate ${primary.keyFeatures[0]} into problem-solving language.`,
-                currentLocale === "ko" ? `상담 중 추가 기기 확장 포인트를 자연스럽게 연결합니다.` : "Introduce expansion opportunities naturally during consultation."
+                currentLocale === "ko" ? `${deviceDecision.final.modelName} 以묒떖 ?곕え濡??쒖옉???댄빐 ?덈뱾????땅?덈떎.` : `Start with a demo anchored on ${deviceDecision.final.modelName} to lower comprehension friction.`,
+                currentLocale === "ko" ? `${primary.keyFeatures[0]}瑜??앺솢 臾몄젣 ?닿껐 ?몄뼱濡?踰덉뿭?⑸땲??` : `Translate ${primary.keyFeatures[0]} into problem-solving language.`,
+                currentLocale === "ko" ? `?곷떞 以?異붽? 湲곌린 ?뺤옣 ?ъ씤?몃? ?먯뿰?ㅻ읇寃??곌껐?⑸땲??` : "Introduce expansion opportunities naturally during consultation."
             ],
             executionChecklist: [
-                currentLocale === "ko" ? "데모 시작 문장을 한 줄로 통일" : "Standardize the opening demo line in one sentence",
-                currentLocale === "ko" ? "첫 질문은 기능이 아니라 생활 문제로 시작" : "Open with the daily problem, not the feature",
-                currentLocale === "ko" ? "체험 후 바로 다음 추천 기기 연결" : "Connect the next recommended device immediately after the demo"
+                currentLocale === "ko" ? "?곕え ?쒖옉 臾몄옣????以꾨줈 ?듭씪" : "Standardize the opening demo line in one sentence",
+                currentLocale === "ko" ? "泥?吏덈Ц? 湲곕뒫???꾨땲???앺솢 臾몄젣濡??쒖옉" : "Open with the daily problem, not the feature",
+                currentLocale === "ko" ? "泥댄뿕 ??諛붾줈 ?ㅼ쓬 異붿쿇 湲곌린 ?곌껐" : "Connect the next recommended device immediately after the demo"
             ],
             roleDetailSections: detailsByRole.retail,
             whatYouGet: buildWhatYouGet("retail", {
@@ -9820,27 +9825,27 @@ function buildRoleLensOutputs(selectedRole, narrative, country, selectedMarket, 
                 localizeRoleText("dotcomBullet2"),
                 localizeRoleText("dotcomBullet3"),
                 currentLocale === "ko"
-                    ? `PDP 상단에는 ${selectedSegment}와 ${intent.missionBucket} 가치를 먼저 보여줍니다.`
+                    ? `PDP ?곷떒?먮뒗 ${selectedSegment}? ${intent.missionBucket} 媛移섎? 癒쇱? 蹂댁뿬以띾땲??`
                     : `Lead the PDP with the ${selectedSegment} segment and the ${intent.missionBucket} value.`
             ],
             copy: localizeRoleText("dotcomCopy", deviceDecision.final.modelName),
-            asset: currentLocale === "ko" ? "PDP 히어로 배너 + FAQ + 추천 카드" : "PDP hero banner + FAQ + recommendation card",
+            asset: currentLocale === "ko" ? "PDP ?덉뼱濡?諛곕꼫 + FAQ + 異붿쿇 移대뱶" : "PDP hero banner + FAQ + recommendation card",
             message: currentLocale === "ko"
-                ? `사용 장면, 핵심 가치, CTA가 ${exploreGrounding.coreMessage}에 맞춰 한 화면 안에서 이어지게 구성합니다.`
+                ? `?ъ슜 ?λ㈃, ?듭떖 媛移? CTA媛 ${exploreGrounding.coreMessage}??留욎떠 ???붾㈃ ?덉뿉???댁뼱吏寃?援ъ꽦?⑸땲??`
                 : `Keep the use moment, core value, and CTA aligned to ${exploreGrounding.coreMessage} within one continuous page flow.`,
-            cta: currentLocale === "ko" ? "내 상황에 맞는 추천 보기" : "See recommendations for my situation",
-            kpi: currentLocale === "ko" ? "PDP 체류시간 / CTA 클릭률 / 장바구니 진입" : "PDP dwell time / CTA CTR / add-to-cart rate",
-            objective: currentLocale === "ko" ? "랜딩에서 장바구니 진입까지 메시지 이탈 없이 연결하는 것" : "Connect landing to add-to-cart without message drop-off.",
-            headline: currentLocale === "ko" ? `"내 상황에서 무엇이 가벼워지는가"를 먼저 보여줍니다.` : `Show "what gets lighter in my situation" before product specs.`,
+            cta: currentLocale === "ko" ? "???곹솴??留욌뒗 異붿쿇 蹂닿린" : "See recommendations for my situation",
+            kpi: currentLocale === "ko" ? "PDP 泥대쪟?쒓컙 / CTA ?대┃瑜?/ ?λ컮援щ땲 吏꾩엯" : "PDP dwell time / CTA CTR / add-to-cart rate",
+            objective: currentLocale === "ko" ? "?쒕뵫?먯꽌 ?λ컮援щ땲 吏꾩엯源뚯? 硫붿떆吏 ?댄깉 ?놁씠 ?곌껐?섎뒗 寃? : "Connect landing to add-to-cart without message drop-off.",
+            headline: currentLocale === "ko" ? `"???곹솴?먯꽌 臾댁뾿??媛踰쇱썙吏?붽?"瑜?癒쇱? 蹂댁뿬以띾땲??` : `Show "what gets lighter in my situation" before product specs.`,
             proofPoints: [
-                currentLocale === "ko" ? "히어로 영역에서 상황-가치-CTA를 한 번에 제시" : "Present situation, value, and CTA together in the hero area",
-                currentLocale === "ko" ? "FAQ와 카드 섹션에서 같은 메시지를 반복 강화" : "Reinforce the same message through FAQ and cards",
-                currentLocale === "ko" ? "장바구니 전환 직전에는 설정 난이도보다 즉시 체감 가치를 강조" : "Emphasize immediate value over setup complexity before conversion"
+                currentLocale === "ko" ? "?덉뼱濡??곸뿭?먯꽌 ?곹솴-媛移?CTA瑜???踰덉뿉 ?쒖떆" : "Present situation, value, and CTA together in the hero area",
+                currentLocale === "ko" ? "FAQ? 移대뱶 ?뱀뀡?먯꽌 媛숈? 硫붿떆吏瑜?諛섎났 媛뺥솕" : "Reinforce the same message through FAQ and cards",
+                currentLocale === "ko" ? "?λ컮援щ땲 ?꾪솚 吏곸쟾?먮뒗 ?ㅼ젙 ?쒖씠?꾨낫??利됱떆 泥닿컧 媛移섎? 媛뺤“" : "Emphasize immediate value over setup complexity before conversion"
             ],
             executionChecklist: [
-                currentLocale === "ko" ? "PDP 첫 화면 문구를 2문장 이내로 압축" : "Keep the first PDP message within two sentences",
-                currentLocale === "ko" ? "추천 CTA는 한 종류만 우선 검증" : "Validate one priority recommendation CTA first",
-                currentLocale === "ko" ? "FAQ는 사용 상황 중심 질문으로 재정렬" : "Reorder FAQ around real-use questions"
+                currentLocale === "ko" ? "PDP 泥??붾㈃ 臾멸뎄瑜?2臾몄옣 ?대궡濡??뺤텞" : "Keep the first PDP message within two sentences",
+                currentLocale === "ko" ? "異붿쿇 CTA????醫낅쪟留??곗꽑 寃利? : "Validate one priority recommendation CTA first",
+                currentLocale === "ko" ? "FAQ???ъ슜 ?곹솴 以묒떖 吏덈Ц?쇰줈 ?ъ젙?? : "Reorder FAQ around real-use questions"
             ],
             roleDetailSections: detailsByRole.dotcom,
             whatYouGet: buildWhatYouGet("dotcom", {
@@ -9860,27 +9865,27 @@ function buildRoleLensOutputs(selectedRole, narrative, country, selectedMarket, 
                 localizeRoleText("brandBullet2"),
                 localizeRoleText("brandBullet3"),
                 currentLocale === "ko"
-                    ? `${marketName} 생활 맥락에 맞는 감정 언어로 메시지를 현지화합니다.`
+                    ? `${marketName} ?앺솢 留λ씫??留욌뒗 媛먯젙 ?몄뼱濡?硫붿떆吏瑜??꾩??뷀빀?덈떎.`
                     : `Localize the emotional message to the daily context of ${marketName}.`
             ],
             copy: localizeRoleText("brandCopy"),
-            asset: currentLocale === "ko" ? "30초 영상 + 소셜 카피 + KV" : "30-second film + social copy + key visual",
+            asset: currentLocale === "ko" ? "30珥??곸긽 + ?뚯뀥 移댄뵾 + KV" : "30-second film + social copy + key visual",
             message: currentLocale === "ko"
-                ? `${exploreGrounding.messageAngle}을 중심으로 캠페인을 설계합니다.`
+                ? `${exploreGrounding.messageAngle}??以묒떖?쇰줈 罹좏럹?몄쓣 ?ㅺ퀎?⑸땲??`
                 : `Build the campaign around ${exploreGrounding.messageAngle}, not feature lists.`,
-            cta: currentLocale === "ko" ? "우리 집 루틴을 더 가볍게" : "Make your home routine feel lighter",
-            kpi: currentLocale === "ko" ? "영상 완주율 / 브랜드 선호도 / 공유 의향" : "Video completion / brand preference / sharing intent",
-            objective: currentLocale === "ko" ? "기술이 아니라 배려받는 감정을 브랜드 자산으로 만드는 것" : "Turn the feeling of being cared for into a brand asset.",
-            headline: currentLocale === "ko" ? "기능은 배경으로 두고, 사용자의 생활 리듬이 실제로 가벼워지는 장면을 전면에 둡니다." : "Keep features in the background and foreground the moment daily rhythm actually gets lighter.",
+            cta: currentLocale === "ko" ? "?곕━ 吏?猷⑦떞????媛蹂띻쾶" : "Make your home routine feel lighter",
+            kpi: currentLocale === "ko" ? "?곸긽 ?꾩＜??/ 釉뚮옖???좏샇??/ 怨듭쑀 ?섑뼢" : "Video completion / brand preference / sharing intent",
+            objective: currentLocale === "ko" ? "湲곗닠???꾨땲??諛곕젮諛쏅뒗 媛먯젙??釉뚮옖???먯궛?쇰줈 留뚮뱶??寃? : "Turn the feeling of being cared for into a brand asset.",
+            headline: currentLocale === "ko" ? "湲곕뒫? 諛곌꼍?쇰줈 ?먭퀬, ?ъ슜?먯쓽 ?앺솢 由щ벉???ㅼ젣濡?媛踰쇱썙吏???λ㈃???꾨㈃???〓땲??" : "Keep features in the background and foreground the moment daily rhythm actually gets lighter.",
             proofPoints: [
-                currentLocale === "ko" ? "30초 안에 문제-전환-안도감의 흐름이 보여야 함" : "Show the arc of problem, transition, and relief within 30 seconds",
-                currentLocale === "ko" ? "현지 시장 정서에 맞는 감정 언어로 조정" : "Adjust the emotional language to the local market context",
-                currentLocale === "ko" ? "소셜 짧은 카피에서도 같은 정서를 유지" : "Keep the same emotional tone across short social copy"
+                currentLocale === "ko" ? "30珥??덉뿉 臾몄젣-?꾪솚-?덈룄媛먯쓽 ?먮쫫??蹂댁뿬???? : "Show the arc of problem, transition, and relief within 30 seconds",
+                currentLocale === "ko" ? "?꾩? ?쒖옣 ?뺤꽌??留욌뒗 媛먯젙 ?몄뼱濡?議곗젙" : "Adjust the emotional language to the local market context",
+                currentLocale === "ko" ? "?뚯뀥 吏㏃? 移댄뵾?먯꽌??媛숈? ?뺤꽌瑜??좎?" : "Keep the same emotional tone across short social copy"
             ],
             executionChecklist: [
-                currentLocale === "ko" ? "캠페인 메인 카피를 기능명 없이 작성" : "Write the core campaign line without feature jargon",
-                currentLocale === "ko" ? "영상 KV와 소셜 카피의 정서를 일치" : "Align the emotional tone of film KV and social copy",
-                currentLocale === "ko" ? "공유를 부르는 한 문장 후킹 포인트 설계" : "Design a one-line hook that encourages sharing"
+                currentLocale === "ko" ? "罹좏럹??硫붿씤 移댄뵾瑜?湲곕뒫紐??놁씠 ?묒꽦" : "Write the core campaign line without feature jargon",
+                currentLocale === "ko" ? "?곸긽 KV? ?뚯뀥 移댄뵾???뺤꽌瑜??쇱튂" : "Align the emotional tone of film KV and social copy",
+                currentLocale === "ko" ? "怨듭쑀瑜?遺瑜대뒗 ??臾몄옣 ?꾪궧 ?ъ씤???ㅺ퀎" : "Design a one-line hook that encourages sharing"
             ],
             roleDetailSections: detailsByRole.brand,
             whatYouGet: buildWhatYouGet("brand", {
@@ -9902,21 +9907,21 @@ function buildSuccessMetrics(selectedRole, intent, deviceDecision) {
     const bank = {
         retail: [
             localizeSentence("metricRetail", getCategoryName(deviceDecision.final.category)),
-            currentLocale === "ko" ? "매장 시연 후 질문 수 증가와 상담 전환 개선" : "Increase post-demo questions and improve consultation conversion",
-            currentLocale === "ko" ? "기기 단품 설명보다 생활 장면 설명의 반응률 상승" : "Raise response to scenario-led selling over feature-only explanation"
+            currentLocale === "ko" ? "留ㅼ옣 ?쒖뿰 ??吏덈Ц ??利앷?? ?곷떞 ?꾪솚 媛쒖꽑" : "Increase post-demo questions and improve consultation conversion",
+            currentLocale === "ko" ? "湲곌린 ?⑦뭹 ?ㅻ챸蹂대떎 ?앺솢 ?λ㈃ ?ㅻ챸??諛섏쓳瑜??곸듅" : "Raise response to scenario-led selling over feature-only explanation"
         ],
         dotcom: [
             localizeSentence("metricDotcom"),
-            currentLocale === "ko" ? "히어로 배너에서 CTA 클릭률 상승" : "Lift CTA click-through from the hero banner",
-            currentLocale === "ko" ? "시나리오 기반 FAQ 소비 증가" : "Increase consumption of scenario-led FAQ content"
+            currentLocale === "ko" ? "?덉뼱濡?諛곕꼫?먯꽌 CTA ?대┃瑜??곸듅" : "Lift CTA click-through from the hero banner",
+            currentLocale === "ko" ? "?쒕굹由ъ삤 湲곕컲 FAQ ?뚮퉬 利앷?" : "Increase consumption of scenario-led FAQ content"
         ],
         brand: [
             localizeSentence("metricBrand"),
-            currentLocale === "ko" ? "브랜드 메시지의 공감도와 기억률 강화" : "Strengthen message resonance and recall",
-            currentLocale === "ko" ? "감정 가치 중심 자발적 공유 반응 증가" : "Increase voluntary sharing around emotional value"
+            currentLocale === "ko" ? "釉뚮옖??硫붿떆吏??怨듦컧?꾩? 湲곗뼲瑜?媛뺥솕" : "Strengthen message resonance and recall",
+            currentLocale === "ko" ? "媛먯젙 媛移?以묒떖 ?먮컻??怨듭쑀 諛섏쓳 利앷?" : "Increase voluntary sharing around emotional value"
         ]
     };
-    return bank[selectedRole.id] || [`${intent.missionBucket} 경험 강화 -> 반복 사용 증가`];
+    return bank[selectedRole.id] || [`${intent.missionBucket} 寃쏀뿕 媛뺥솕 -> 諛섎났 ?ъ슜 利앷?`];
 }
 
 function buildTargetSegment(country, city, selectedSegment, intent, exploreGrounding) {
@@ -9925,13 +9930,13 @@ function buildTargetSegment(country, city, selectedSegment, intent, exploreGroun
         localizeSentence("segment2", `${selectedSegment} / ${intent.missionBucket}`),
         localizeSentence("segment3"),
         currentLocale === "ko"
-            ? `"${intent.purpose}" 같은 상황에 자주 놓이는 사용자에게 우선 적용하기 좋습니다.`
+            ? `"${intent.purpose}" 媛숈? ?곹솴???먯＜ ?볦씠???ъ슜?먯뿉寃??곗꽑 ?곸슜?섍린 醫뗭뒿?덈떎.`
             : `Best applied first to users who often face situations like "${intent.purpose}".`,
         currentLocale === "ko"
-            ? "가처분 소득 프록시: 연결형 가전과 앱 사용에 추가 비용과 편익을 모두 검토할 가능성이 높은 중간 이상 구매력 가구"
+            ? "媛泥섎텇 ?뚮뱷 ?꾨줉?? ?곌껐??媛?꾧낵 ???ъ슜??異붽? 鍮꾩슜怨??몄씡??紐⑤몢 寃?좏븷 媛?μ꽦???믪? 以묎컙 ?댁긽 援щℓ??媛援?
             : "Disposable-income proxy: mid-to-upper purchasing-power households likely to weigh both the added cost and value of connected appliances",
         currentLocale === "ko"
-            ? `대표성 근거: ${exploreGrounding.primaryValue}처럼 결과가 분명한 제안을 선호하는 라이프스타일 세그먼트`
+            ? `??쒖꽦 洹쇨굅: ${exploreGrounding.primaryValue}泥섎읆 寃곌낵媛 遺꾨챸???쒖븞???좏샇?섎뒗 ?쇱씠?꾩뒪????멸렇癒쇳듃`
             : `Representative rationale: a lifestyle segment that prefers offers with clear outcomes such as ${exploreGrounding.primaryValue}`
     ];
 }
@@ -9942,16 +9947,16 @@ function buildSetupGuide(deviceDecision, services, selectedRole) {
     const serviceName = getServiceLabel(services[0]);
     return currentLocale === "ko"
         ? [
-            `시작 전 준비: ${deviceName} 전원 켜기, SmartThings 앱 설치, 삼성 계정 로그인 완료`,
-            `기기 연결: 앱에서 '+' → '기기 추가' → ${deviceName}을 선택하고 화면 안내를 따릅니다.`,
-            `서비스 활성화: '자동화' 탭에서 ${serviceName}을 활성화하고 원하는 조건을 설정합니다.`,
-            "첫 성공 확인: 설정한 자동화가 1회 이상 정상 동작하는지 확인합니다.",
-            "알림 및 공유: 알림 설정을 켜고, 필요하면 가족 구성원을 초대합니다.",
-            `${roleName} 담당자는 첫 배포 시 가장 반응이 좋은 문구와 CTA를 함께 기록합니다.`
+            `?쒖옉 ??以鍮? ${deviceName} ?꾩썝 耳쒓린, SmartThings ???ㅼ튂, ?쇱꽦 怨꾩젙 濡쒓렇???꾨즺`,
+            `湲곌린 ?곌껐: ?깆뿉??'+' ??'湲곌린 異붽?' ??${deviceName}???좏깮?섍퀬 ?붾㈃ ?덈궡瑜??곕쫭?덈떎.`,
+            `?쒕퉬???쒖꽦?? '?먮룞?? ??뿉??${serviceName}???쒖꽦?뷀븯怨??먰븯??議곌굔???ㅼ젙?⑸땲??`,
+            "泥??깃났 ?뺤씤: ?ㅼ젙???먮룞?붽? 1???댁긽 ?뺤긽 ?숈옉?섎뒗吏 ?뺤씤?⑸땲??",
+            "?뚮┝ 諛?怨듭쑀: ?뚮┝ ?ㅼ젙??耳쒓퀬, ?꾩슂?섎㈃ 媛議?援ъ꽦?먯쓣 珥덈??⑸땲??",
+            `${roleName} ?대떦?먮뒗 泥?諛고룷 ??媛??諛섏쓳??醫뗭? 臾멸뎄? CTA瑜??④퍡 湲곕줉?⑸땲??`
         ]
         : [
             `Preparation: Power on ${deviceName}, install SmartThings, sign in.`,
-            `Connect: In the app, tap '+' → 'Add device' → select ${deviceName} and follow instructions.`,
+            `Connect: In the app, tap '+' ??'Add device' ??select ${deviceName} and follow instructions.`,
             `Activate: In 'Automations', enable ${serviceName} and set conditions.`,
             "Verify: Confirm the automation runs at least once.",
             "Notify & share: Enable alerts and invite family members.",
@@ -9962,18 +9967,18 @@ function buildSetupGuide(deviceDecision, services, selectedRole) {
 function buildMarketability(country, intent, deviceDecision, services, selectedRole, selectedSegment, exploreGrounding) {
     const go = intent.lifestyleTags.length > 0 && Boolean(deviceDecision.final);
     const rawRisk = String(services?.[0]?.privacyPolicy || "").trim();
-    const hasHangul = /[가-힣]/.test(rawRisk);
-    const conciseSegment = compactDescriptor(selectedSegment, 4) || (currentLocale === "ko" ? "상황 기반 타겟" : "context-led target");
+    const hasHangul = /[媛-??/.test(rawRisk);
+    const conciseSegment = compactDescriptor(selectedSegment, 4) || (currentLocale === "ko" ? "?곹솴 湲곕컲 ?寃? : "context-led target");
     const concisePurpose = compactPurpose(intent.purpose);
     return {
         verdict: go ? "Go" : "No-Go",
         rationale: go
             ? (currentLocale === "ko"
-                ? `${getCountryName(country.countryCode)}에서 ${conciseSegment}의 "${concisePurpose}" 상황은 ${exploreGrounding.primaryValue} 가치가 명확하게 읽히는 장면이라 Go 판단이 가능합니다.`
+                ? `${getCountryName(country.countryCode)}?먯꽌 ${conciseSegment}??"${concisePurpose}" ?곹솴? ${exploreGrounding.primaryValue} 媛移섍? 紐낇솗?섍쾶 ?쏀엳???λ㈃?대씪 Go ?먮떒??媛?ν빀?덈떎.`
                 : `In ${getCountryName(country.countryCode)}, the "${concisePurpose}" moment for the ${conciseSegment} segment makes ${exploreGrounding.primaryValue} legible enough for a Go decision.`)
             : localizeSentence("marketNoGo"),
         competitorView: currentLocale === "ko"
-            ? `차별점은 기능 수가 아니라 ${exploreGrounding.functionalJob}을 한 번의 연결 경험으로 줄여준다는 점입니다.`
+            ? `李⑤퀎?먯? 湲곕뒫 ?섍? ?꾨땲??${exploreGrounding.functionalJob}????踰덉쓽 ?곌껐 寃쏀뿕?쇰줈 以꾩뿬以?ㅻ뒗 ?먯엯?덈떎.`
             : `The differentiation is not feature count but reducing ${exploreGrounding.functionalJob} into one connected experience.`,
         risk: currentLocale === "ko"
             ? rawRisk
@@ -9982,9 +9987,9 @@ function buildMarketability(country, intent, deviceDecision, services, selectedR
                 : (rawRisk || "Data usage must stay purpose-limited, transparent, and easy to control.")),
         alternatives: currentLocale === "ko"
             ? [
-                "대안 1: 수동 제어 중심의 일반 가전 사용 경험",
-                "대안 2: 기기별 개별 앱을 따로 운영하는 단절된 경험",
-                "대안 3: 기본 스마트 플러그 수준의 단순 자동화"
+                "???1: ?섎룞 ?쒖뼱 以묒떖???쇰컲 媛???ъ슜 寃쏀뿕",
+                "???2: 湲곌린蹂?媛쒕퀎 ?깆쓣 ?곕줈 ?댁쁺?섎뒗 ?⑥젅??寃쏀뿕",
+                "???3: 湲곕낯 ?ㅻ쭏???뚮윭洹??섏????⑥닚 ?먮룞??
             ]
             : [
                 "Alternative 1: a manual-control appliance experience",
@@ -9993,13 +9998,13 @@ function buildMarketability(country, intent, deviceDecision, services, selectedR
             ],
         nextActions: [
             currentLocale === "ko"
-                ? `${conciseSegment} 기준으로 "${concisePurpose}" 맥락의 첫 배포용 한 문장 메시지를 확정합니다.`
+                ? `${conciseSegment} 湲곗??쇰줈 "${concisePurpose}" 留λ씫??泥?諛고룷????臾몄옣 硫붿떆吏瑜??뺤젙?⑸땲??`
                 : `Lock a one-line launch message for the ${conciseSegment} segment.`,
             currentLocale === "ko"
-                ? `${getRoleTitle(selectedRole.id)} 채널에서 먼저 검증할 핵심 CTA를 1개 정합니다.`
+                ? `${getRoleTitle(selectedRole.id)} 梨꾨꼸?먯꽌 癒쇱? 寃利앺븷 ?듭떖 CTA瑜?1媛??뺥빀?덈떎.`
                 : `Choose one priority CTA to validate first in the ${getRoleTitle(selectedRole.id)} channel.`,
             currentLocale === "ko"
-                ? `${deviceDecision.final.modelName} 가용성과 현지 언어 카피를 함께 점검합니다.`
+                ? `${deviceDecision.final.modelName} 媛?⑹꽦怨??꾩? ?몄뼱 移댄뵾瑜??④퍡 ?먭??⑸땲??`
                 : `Check both ${deviceDecision.final.modelName} availability and local-language copy readiness.`
         ]
     };
@@ -10020,18 +10025,18 @@ function runChecks(country, intent, deviceDecision, automation) {
 }
 
 function buildTitle(role, intent, selectedSegment, deviceDecision) {
-    const conciseSegment = compactDescriptor(selectedSegment, 4) || (currentLocale === "ko" ? "상황 기반 타겟" : "context-led target");
+    const conciseSegment = compactDescriptor(selectedSegment, 4) || (currentLocale === "ko" ? "?곹솴 湲곕컲 ?寃? : "context-led target");
     if (currentLocale === "ko") {
-        return `${getRoleTitle(role.id)} 관점의 ${conciseSegment} 대상 ${getCategoryName(deviceDecision.final.category)} 기반 ${intent.missionBucket} 시나리오`;
+        return `${getRoleTitle(role.id)} 愿?먯쓽 ${conciseSegment} ???${getCategoryName(deviceDecision.final.category)} 湲곕컲 ${intent.missionBucket} ?쒕굹由ъ삤`;
     }
     return `${getRoleTitle(role.id)} | ${intent.missionBucket} scenario for ${conciseSegment} built around ${getCategoryName(deviceDecision.final.category)}`;
 }
 
 function buildSummary(country, selectedSegment, intent, deviceDecision, services) {
-    const conciseSegment = compactDescriptor(selectedSegment, 4) || (currentLocale === "ko" ? "상황 기반 타겟" : "context-led target");
-    const regionTag = currentLocale === "ko" ? "지역 특성 반영" : "region-reflective";
+    const conciseSegment = compactDescriptor(selectedSegment, 4) || (currentLocale === "ko" ? "?곹솴 湲곕컲 ?寃? : "context-led target");
+    const regionTag = currentLocale === "ko" ? "吏???뱀꽦 諛섏쁺" : "region-reflective";
     if (currentLocale === "ko") {
-        return `${getCountryName(country.countryCode)}에서 ${conciseSegment}에게 ${deviceDecision.final.modelName}와 ${getServiceLabel(services[0])}를 중심으로 ${intent.missionBucket} 가치를 전달하는 ${regionTag} 앱 시나리오입니다.`;
+        return `${getCountryName(country.countryCode)}?먯꽌 ${conciseSegment}?먭쾶 ${deviceDecision.final.modelName}? ${getServiceLabel(services[0])}瑜?以묒떖?쇰줈 ${intent.missionBucket} 媛移섎? ?꾨떖?섎뒗 ${regionTag} ???쒕굹由ъ삤?낅땲??`;
     }
     return `A ${regionTag} app scenario for the ${conciseSegment} segment in ${getCountryName(country.countryCode)}, centered on ${deviceDecision.final.modelName} and ${getServiceLabel(services[0])}, designed to deliver ${intent.missionBucket} value.`;
 }
@@ -10039,8 +10044,8 @@ function buildSummary(country, selectedSegment, intent, deviceDecision, services
 function buildReferenceLinks(intent, services) {
     const refs = [];
     if (intent.missionBucket === "Care") refs.push("care-for-your-familys-needs-even-when-away");
-    if (intent.missionBucket === "Save" || intent.lifestyleTags.some((tag) => tag.includes("에너지"))) refs.push("seamlessly-save-energy");
-    if (intent.lifestyleTags.some((tag) => tag.includes("반려"))) refs.push("purrfect-pet-care");
+    if (intent.missionBucket === "Save" || intent.lifestyleTags.some((tag) => tag.includes("?먮꼫吏"))) refs.push("seamlessly-save-energy");
+    if (intent.lifestyleTags.some((tag) => tag.includes("諛섎젮"))) refs.push("purrfect-pet-care");
     if (refs.length === 0) refs.push("seamlessly-save-energy");
     return refs.slice(0, 3).map((id, index) => ({
         id,
@@ -10056,18 +10061,18 @@ function buildSummaryBullets(country, city, selectedSegment, intent, deviceDecis
     const concisePurpose = compactPurpose(intent.purpose);
     const withServices = `${getServiceLabel(services[0])}${secondary.serviceName !== services[0].serviceName ? ` + ${getServiceLabel(secondary)}` : ""}`;
     return [
-        currentLocale === "ko" ? `누가: ${location}의 ${conciseSegment}` : `Who: ${conciseSegment} in ${location}`,
-        currentLocale === "ko" ? `언제: ${concisePurpose} 같은 상황이 반복되는 일상 구간` : `When: during recurring moments like "${concisePurpose}"`,
-        currentLocale === "ko" ? `무엇으로: ${withServices}` : `With: ${withServices}`,
-        currentLocale === "ko" ? `어떻게: ${deviceDecision.final.modelName} 중심의 추천 카드와 반복 루틴으로 반복 확인/수동 조작을 줄임` : `How: reduce repeated checking and manual control via recommendation cards and repeat routines anchored on ${deviceDecision.final.modelName}`,
-        currentLocale === "ko" ? `결과: ${exploreGrounding.primaryValue}을 더 빠르게 체감` : `Result: make ${exploreGrounding.primaryValue} felt faster`,
-        currentLocale === "ko" ? `캠페인 메시지: 기능 나열보다 ${concisePurpose} 순간의 생활 부담 완화를 강조` : `Campaign message: lead with lighter daily burden in ${concisePurpose} moments, not feature count`
+        currentLocale === "ko" ? `?꾧?: ${location}??${conciseSegment}` : `Who: ${conciseSegment} in ${location}`,
+        currentLocale === "ko" ? `?몄젣: ${concisePurpose} 媛숈? ?곹솴??諛섎났?섎뒗 ?쇱긽 援ш컙` : `When: during recurring moments like "${concisePurpose}"`,
+        currentLocale === "ko" ? `臾댁뾿?쇰줈: ${withServices}` : `With: ${withServices}`,
+        currentLocale === "ko" ? `?대뼸寃? ${deviceDecision.final.modelName} 以묒떖??異붿쿇 移대뱶? 諛섎났 猷⑦떞?쇰줈 諛섎났 ?뺤씤/?섎룞 議곗옉??以꾩엫` : `How: reduce repeated checking and manual control via recommendation cards and repeat routines anchored on ${deviceDecision.final.modelName}`,
+        currentLocale === "ko" ? `寃곌낵: ${exploreGrounding.primaryValue}????鍮좊Ⅴ寃?泥닿컧` : `Result: make ${exploreGrounding.primaryValue} felt faster`,
+        currentLocale === "ko" ? `罹좏럹??硫붿떆吏: 湲곕뒫 ?섏뿴蹂대떎 ${concisePurpose} ?쒓컙???앺솢 遺???꾪솕瑜?媛뺤“` : `Campaign message: lead with lighter daily burden in ${concisePurpose} moments, not feature count`
     ];
 }
 
 function buildTargetCustomerLine(countryName, selectedSegment, purpose) {
     const tokens = `${selectedSegment} / ${purpose}`
-        .split(/[\/,|]|·/)
+        .split(/[\/,|]|쨌/)
         .map((item) => item.trim())
         .filter(Boolean)
         .filter((item, index, array) => array.indexOf(item) === index)
@@ -10084,70 +10089,70 @@ function buildServiceStory(service, intent, selectedSegment, isPetContext) {
 
     const storiesKo = {
         "Pet Care": {
-            title: isPetContext ? "[Care] 야근이 길어져 강아지가 불안할까 걱정될 때" : "[Care] 외출 시간이 길어져 반려동물 케어가 걱정될 때",
-            pain: isPetContext ? "잦은 야근으로 혼자 집에 있는 강아지가 줄곧 신경 쓰였던 사용자." : "집을 비우는 시간 동안 반려동물이 불안해할까 계속 마음이 쓰였던 사용자.",
-            solution: `SmartThings에서 외출 루틴을 생성하면 ${cardLabel}를 통해 조명 밝기, 실내 분위기, 반려동물이 익숙해하는 소리나 기기 환경을 자동으로 맞출 수 있습니다.`,
-            benefit: "버튼 한 번으로, 또는 외출을 감지하면 자동으로 펫을 위한 환경으로 전환되어 손쉬운 케어가 가능하고 보호자의 불안도 줄어듭니다."
+            title: isPetContext ? "[Care] ?쇨렐??湲몄뼱??媛뺤븘吏媛 遺덉븞?좉퉴 嫄깆젙???? : "[Care] ?몄텧 ?쒓컙??湲몄뼱??諛섎젮?숇Ъ 耳?닿? 嫄깆젙????,
+            pain: isPetContext ? "??? ?쇨렐?쇰줈 ?쇱옄 吏묒뿉 ?덈뒗 媛뺤븘吏媛 以꾧낍 ?좉꼍 ?곗????ъ슜??" : "吏묒쓣 鍮꾩슦???쒓컙 ?숈븞 諛섎젮?숇Ъ??遺덉븞?댄븷源?怨꾩냽 留덉쓬???곗????ъ슜??",
+            solution: `SmartThings?먯꽌 ?몄텧 猷⑦떞???앹꽦?섎㈃ ${cardLabel}瑜??듯빐 議곕챸 諛앷린, ?ㅻ궡 遺꾩쐞湲? 諛섎젮?숇Ъ???듭닕?댄븯???뚮━??湲곌린 ?섍꼍???먮룞?쇰줈 留욎텧 ???덉뒿?덈떎.`,
+            benefit: "踰꾪듉 ??踰덉쑝濡? ?먮뒗 ?몄텧??媛먯??섎㈃ ?먮룞?쇰줈 ?レ쓣 ?꾪븳 ?섍꼍?쇰줈 ?꾪솚?섏뼱 ?먯돩??耳?닿? 媛?ν븯怨?蹂댄샇?먯쓽 遺덉븞??以꾩뼱??땲??"
         },
         "Family Care": {
-            title: "[Care] 가족이나 부모님의 일상이 무사한지 확인하고 싶을 때",
-            pain: "바쁜 하루 중에도 가족의 안부를 계속 떠올리게 되어 자주 연락하거나 반복 확인하게 되는 사용자.",
-            solution: `${cardLabel}는 ${firstFeature}와 ${secondFeature}를 바탕으로 생활 패턴을 확인하고, 필요할 때만 안심 체크인이나 알림을 전달할 수 있습니다.`,
-            benefit: "매번 먼저 연락하거나 확인하지 않아도 필요한 순간만 파악할 수 있어 돌봄의 부담은 줄고 안심은 더 선명해집니다."
+            title: "[Care] 媛議깆씠??遺紐⑤떂???쇱긽??臾댁궗?쒖? ?뺤씤?섍퀬 ?띠쓣 ??,
+            pain: "諛붿걶 ?섎（ 以묒뿉??媛議깆쓽 ?덈?瑜?怨꾩냽 ?좎삱由ш쾶 ?섏뼱 ?먯＜ ?곕씫?섍굅??諛섎났 ?뺤씤?섍쾶 ?섎뒗 ?ъ슜??",
+            solution: `${cardLabel}??${firstFeature}? ${secondFeature}瑜?諛뷀깢?쇰줈 ?앺솢 ?⑦꽩???뺤씤?섍퀬, ?꾩슂???뚮쭔 ?덉떖 泥댄겕?몄씠???뚮┝???꾨떖?????덉뒿?덈떎.`,
+            benefit: "留ㅻ쾲 癒쇱? ?곕씫?섍굅???뺤씤?섏? ?딆븘???꾩슂???쒓컙留??뚯븙?????덉뼱 ?뚮큵??遺?댁? 以꾧퀬 ?덉떖? ???좊챸?댁쭛?덈떎."
         },
         "SmartThings Energy": {
-            title: "[Energy] 전기요금과 대기전력이 신경 쓰일 때",
-            pain: "밖에 있는 동안 전기 요금이 걱정되어 외출 전 기기를 하나씩 꺼야 했던 사용자.",
-            solution: `${cardLabel}로 피크 시간대에는 사용이나 충전을 제한하고, 일간 및 월별 사용량을 모니터링해 불필요한 전력 소비를 줄일 수 있습니다.`,
-            benefit: "외출 중 대기전력과 불필요한 사용을 줄여 비용 부담을 덜고, 절감 효과를 앱에서 눈으로 확인할 수 있습니다."
+            title: "[Energy] ?꾧린?붽툑怨??湲곗쟾?μ씠 ?좉꼍 ?곗씪 ??,
+            pain: "諛뽰뿉 ?덈뒗 ?숈븞 ?꾧린 ?붽툑??嫄깆젙?섏뼱 ?몄텧 ??湲곌린瑜??섎굹??爰쇱빞 ?덈뜕 ?ъ슜??",
+            solution: `${cardLabel}濡??쇳겕 ?쒓컙??먮뒗 ?ъ슜?대굹 異⑹쟾???쒗븳?섍퀬, ?쇨컙 諛??붾퀎 ?ъ슜?됱쓣 紐⑤땲?곕쭅??遺덊븘?뷀븳 ?꾨젰 ?뚮퉬瑜?以꾩씪 ???덉뒿?덈떎.`,
+            benefit: "?몄텧 以??湲곗쟾?κ낵 遺덊븘?뷀븳 ?ъ슜??以꾩뿬 鍮꾩슜 遺?댁쓣 ?쒓퀬, ?덇컧 ?④낵瑜??깆뿉???덉쑝濡??뺤씤?????덉뒿?덈떎."
         },
         "Samsung Health": {
-            title: "[Health] 컨디션과 생활 리듬을 더 안정적으로 맞추고 싶을 때",
-            pain: `${selectedSegment} 사용자는 바쁜 일정이 이어질수록 수면과 활동 리듬이 쉽게 무너지고 회복 타이밍도 놓치기 쉽습니다.`,
-            solution: `${cardLabel}는 ${firstFeature}를 기반으로 조명, 스피커, ${primaryDevice || "TV"} 같은 연결 기기를 현재 컨디션에 맞는 루틴으로 이어줍니다.`,
-            benefit: "건강 데이터를 따로 해석하지 않아도 집 안 환경이 생활 리듬 회복을 돕기 때문에 하루를 더 안정적으로 운영할 수 있습니다."
+            title: "[Health] 而⑤뵒?섍낵 ?앺솢 由щ벉?????덉젙?곸쑝濡?留욎텛怨??띠쓣 ??,
+            pain: `${selectedSegment} ?ъ슜?먮뒗 諛붿걶 ?쇱젙???댁뼱吏덉닔濡??섎㈃怨??쒕룞 由щ벉???쎄쾶 臾대꼫吏怨??뚮났 ??대컢???볦튂湲??쎌뒿?덈떎.`,
+            solution: `${cardLabel}??${firstFeature}瑜?湲곕컲?쇰줈 議곕챸, ?ㅽ뵾而? ${primaryDevice || "TV"} 媛숈? ?곌껐 湲곌린瑜??꾩옱 而⑤뵒?섏뿉 留욌뒗 猷⑦떞?쇰줈 ?댁뼱以띾땲??`,
+            benefit: "嫄닿컯 ?곗씠?곕? ?곕줈 ?댁꽍?섏? ?딆븘??吏????섍꼍???앺솢 由щ벉 ?뚮났???뺢린 ?뚮Ц???섎（瑜????덉젙?곸쑝濡??댁쁺?????덉뒿?덈떎."
         },
         "Samsung Find": {
-            title: "[Secure] 외출과 귀가 흐름을 더 안심하고 연결하고 싶을 때",
-            pain: "집을 나서거나 돌아오는 순간마다 위치와 상태를 따로 확인해야 해 루틴이 자주 끊기는 사용자.",
-            solution: `${cardLabel}는 ${firstFeature}를 활용해 도착과 이탈을 감지하고, 그 신호를 SmartThings 자동화와 연결해 조명이나 홈 상태를 바로 전환할 수 있습니다.`,
-            benefit: "분실이나 위치 확인에만 머무르지 않고 생활 자동화까지 자연스럽게 연결되어 외출과 귀가 루틴이 훨씬 가벼워집니다."
+            title: "[Secure] ?몄텧怨?洹媛 ?먮쫫?????덉떖?섍퀬 ?곌껐?섍퀬 ?띠쓣 ??,
+            pain: "吏묒쓣 ?섏꽌嫄곕굹 ?뚯븘?ㅻ뒗 ?쒓컙留덈떎 ?꾩튂? ?곹깭瑜??곕줈 ?뺤씤?댁빞 ??猷⑦떞???먯＜ ?딄린???ъ슜??",
+            solution: `${cardLabel}??${firstFeature}瑜??쒖슜???꾩갑怨??댄깉??媛먯??섍퀬, 洹??좏샇瑜?SmartThings ?먮룞?붿? ?곌껐??議곕챸?대굹 ???곹깭瑜?諛붾줈 ?꾪솚?????덉뒿?덈떎.`,
+            benefit: "遺꾩떎?대굹 ?꾩튂 ?뺤씤?먮쭔 癒몃Т瑜댁? ?딄퀬 ?앺솢 ?먮룞?붽퉴吏 ?먯뿰?ㅻ읇寃??곌껐?섏뼱 ?몄텧怨?洹媛 猷⑦떞???⑥뵮 媛踰쇱썙吏묐땲??"
         },
         "Home Monitoring": {
-            title: "[Secure] 잦은 부재로 댁내 보안이 불안할 때",
-            pain: "바쁜 일상 속에서 매번 스마트폰으로 집안을 모니터링하는 것은 번거롭고 어렵습니다.",
-            solution: `${cardLabel}과 연동된 카메라 및 센서는 수상한 소리와 움직임을 상시 감지하고, 이상 활동이 있으면 자동 녹화와 실시간 알림을 보냅니다.`,
-            benefit: "계속 신경 쓰고 있지 않아도 되니 안심할 수 있고, 이상 상황은 실시간으로 알려주니 빠른 대처로 더 큰 위험을 막을 수 있습니다."
+            title: "[Secure] ??? 遺?щ줈 ?곷궡 蹂댁븞??遺덉븞????,
+            pain: "諛붿걶 ?쇱긽 ?띿뿉??留ㅻ쾲 ?ㅻ쭏?명룿?쇰줈 吏묒븞??紐⑤땲?곕쭅?섎뒗 寃껋? 踰덇굅濡?퀬 ?대졄?듬땲??",
+            solution: `${cardLabel}怨??곕룞??移대찓??諛??쇱꽌???섏긽???뚮━? ?吏곸엫???곸떆 媛먯??섍퀬, ?댁긽 ?쒕룞???덉쑝硫??먮룞 ?뱁솕? ?ㅼ떆媛??뚮┝??蹂대깄?덈떎.`,
+            benefit: "怨꾩냽 ?좉꼍 ?곌퀬 ?덉? ?딆븘???섎땲 ?덉떖?????덇퀬, ?댁긽 ?곹솴? ?ㅼ떆媛꾩쑝濡??뚮젮二쇰땲 鍮좊Ⅸ ?泥섎줈 ?????꾪뿕??留됱쓣 ???덉뒿?덈떎."
         },
         "Home Care": {
-            title: "[Ease] 집안일 관리와 기기 케어를 놓치고 싶지 않을 때",
-            pain: "청소와 소모품 교체, 기기 관리 시점을 자꾸 놓쳐 집안일이 한꺼번에 몰리는 사용자.",
-            solution: `${cardLabel}는 ${firstFeature}와 관리 리마인더를 기반으로 필요한 시점에만 청소나 유지관리 액션을 제안합니다.`,
-            benefit: "해야 할 일을 모두 기억하지 않아도 앱이 우선순위를 정리해 주기 때문에 집 관리 스트레스가 눈에 띄게 줄어듭니다."
+            title: "[Ease] 吏묒븞??愿由ъ? 湲곌린 耳?대? ?볦튂怨??띠? ?딆쓣 ??,
+            pain: "泥?냼? ?뚮え??援먯껜, 湲곌린 愿由??쒖젏???먭씀 ?볦퀜 吏묒븞?쇱씠 ?쒓볼踰덉뿉 紐곕━???ъ슜??",
+            solution: `${cardLabel}??${firstFeature}? 愿由?由щ쭏?몃뜑瑜?湲곕컲?쇰줈 ?꾩슂???쒖젏?먮쭔 泥?냼???좎?愿由??≪뀡???쒖븞?⑸땲??`,
+            benefit: "?댁빞 ???쇱쓣 紐⑤몢 湲곗뼲?섏? ?딆븘???깆씠 ?곗꽑?쒖쐞瑜??뺣━??二쇨린 ?뚮Ц??吏?愿由??ㅽ듃?덉뒪媛 ?덉뿉 ?꾧쾶 以꾩뼱??땲??"
         },
         "Air Care": {
-            title: "[Comfort] 집 안 공기와 쾌적함을 자동으로 맞추고 싶을 때",
-            pain: "환기나 냉난방을 그때그때 수동으로 조절해야 해서 실내 환경이 들쭉날쭉했던 사용자.",
-            solution: `${cardLabel}는 ${firstFeature}와 재실 상태를 바탕으로 에어컨이나 관련 기기를 조정해 집 안 컨디션을 자동으로 맞춥니다.`,
-            benefit: "쾌적함과 절감 사이를 일일이 조절하지 않아도 되어 집에 머무는 시간의 만족도가 높아집니다."
+            title: "[Comfort] 吏???怨듦린? 苡뚯쟻?⑥쓣 ?먮룞?쇰줈 留욎텛怨??띠쓣 ??,
+            pain: "?섍린???됰궃諛⑹쓣 洹몃븣洹몃븣 ?섎룞?쇰줈 議곗젅?댁빞 ?댁꽌 ?ㅻ궡 ?섍꼍???ㅼ춬?좎춬?덈뜕 ?ъ슜??",
+            solution: `${cardLabel}??${firstFeature}? ?ъ떎 ?곹깭瑜?諛뷀깢?쇰줈 ?먯뼱而⑥씠??愿??湲곌린瑜?議곗젙??吏???而⑤뵒?섏쓣 ?먮룞?쇰줈 留욎땅?덈떎.`,
+            benefit: "苡뚯쟻?④낵 ?덇컧 ?ъ씠瑜??쇱씪??議곗젅?섏? ?딆븘???섏뼱 吏묒뿉 癒몃Т???쒓컙??留뚯”?꾧? ?믪븘吏묐땲??"
         },
         "Clothing Care": {
-            title: "[Ease] 야근 후에도 세탁과 의류 관리를 놓치고 싶지 않을 때",
-            pain: "늦게 귀가하는 날이 많아 세탁과 건조 상태를 제때 확인하지 못하고 번거로움이 쌓였던 사용자.",
-            solution: `${cardLabel}는 ${firstFeature}와 완료 알림을 통해 세탁/건조 흐름을 앱에서 이어서 관리할 수 있게 돕습니다.`,
-            benefit: "집에 도착해서야 상태를 확인하는 번거로움이 줄고, 세탁 루틴을 더 매끄럽게 이어갈 수 있습니다."
+            title: "[Ease] ?쇨렐 ?꾩뿉???명긽怨??섎쪟 愿由щ? ?볦튂怨??띠? ?딆쓣 ??,
+            pain: "??쾶 洹媛?섎뒗 ?좎씠 留롮븘 ?명긽怨?嫄댁“ ?곹깭瑜??쒕븣 ?뺤씤?섏? 紐삵븯怨?踰덇굅濡쒖????볦????ъ슜??",
+            solution: `${cardLabel}??${firstFeature}? ?꾨즺 ?뚮┝???듯빐 ?명긽/嫄댁“ ?먮쫫???깆뿉???댁뼱??愿由ы븷 ???덇쾶 ?뺤뒿?덈떎.`,
+            benefit: "吏묒뿉 ?꾩갑?댁꽌???곹깭瑜??뺤씤?섎뒗 踰덇굅濡쒖???以꾧퀬, ?명긽 猷⑦떞????留ㅻ걚?쎄쾶 ?댁뼱媛????덉뒿?덈떎."
         },
         "Smart Cooking": {
-            title: "[Ease] 저녁 준비를 더 가볍게 시작하고 싶을 때",
-            pain: "퇴근 후 요리를 시작할 때마다 레시피 확인, 예열, 재료 정리까지 한꺼번에 신경 써야 했던 사용자.",
-            solution: `${cardLabel}는 ${firstFeature}와 ${secondFeature}를 연결해 조리 준비 단계를 줄이고 주방 기기 제어를 더 빠르게 시작하게 돕습니다.`,
-            benefit: "식사 준비의 진입 장벽이 낮아져 바쁜 평일 저녁에도 요리를 덜 부담스럽게 이어갈 수 있습니다."
+            title: "[Ease] ???以鍮꾨? ??媛蹂띻쾶 ?쒖옉?섍퀬 ?띠쓣 ??,
+            pain: "?닿렐 ???붾━瑜??쒖옉???뚮쭏???덉떆???뺤씤, ?덉뿴, ?щ즺 ?뺣━源뚯? ?쒓볼踰덉뿉 ?좉꼍 ?⑥빞 ?덈뜕 ?ъ슜??",
+            solution: `${cardLabel}??${firstFeature}? ${secondFeature}瑜??곌껐??議곕━ 以鍮??④퀎瑜?以꾩씠怨?二쇰갑 湲곌린 ?쒖뼱瑜???鍮좊Ⅴ寃??쒖옉?섍쾶 ?뺤뒿?덈떎.`,
+            benefit: "?앹궗 以鍮꾩쓽 吏꾩엯 ?λ꼍????븘??諛붿걶 ?됱씪 ??곸뿉???붾━瑜???遺?댁뒪?쎄쾶 ?댁뼱媛????덉뒿?덈떎."
         },
         "Home Fitness": {
-            title: "[Health] 집에서도 운동 루틴을 꾸준히 이어가고 싶을 때",
-            pain: "운동을 시작하려고 해도 준비 과정이 번거로워 쉽게 미루게 되는 사용자.",
-            solution: `${cardLabel}는 ${firstFeature}를 중심으로 TV나 스피커 같은 기기와 연결해 운동 시작 장면을 더 간단하게 만들어 줍니다.`,
-            benefit: "운동을 결심한 순간 바로 실행할 수 있어 루틴 유지가 쉬워지고, 집에서도 꾸준한 자기관리가 가능해집니다."
+            title: "[Health] 吏묒뿉?쒕룄 ?대룞 猷⑦떞??袁몄????댁뼱媛怨??띠쓣 ??,
+            pain: "?대룞???쒖옉?섎젮怨??대룄 以鍮?怨쇱젙??踰덇굅濡쒖썙 ?쎄쾶 誘몃（寃??섎뒗 ?ъ슜??",
+            solution: `${cardLabel}??${firstFeature}瑜?以묒떖?쇰줈 TV???ㅽ뵾而?媛숈? 湲곌린? ?곌껐???대룞 ?쒖옉 ?λ㈃????媛꾨떒?섍쾶 留뚮뱾??以띾땲??`,
+            benefit: "?대룞??寃곗떖???쒓컙 諛붾줈 ?ㅽ뻾?????덉뼱 猷⑦떞 ?좎?媛 ?ъ썙吏怨? 吏묒뿉?쒕룄 袁몄????먭린愿由ш? 媛?ν빐吏묐땲??"
         }
     };
 
@@ -10222,15 +10227,15 @@ function buildServiceStory(service, intent, selectedSegment, isPetContext) {
 
     const stories = currentLocale === "ko" ? storiesKo : storiesEn;
     return stories[name] || {
-        title: currentLocale === "ko" ? `[${service.valueTags?.[0] || "Life"}] ${name}가 필요한 순간` : `[${service.valueTags?.[0] || "Life"}] When ${name} is needed`,
+        title: currentLocale === "ko" ? `[${service.valueTags?.[0] || "Life"}] ${name}媛 ?꾩슂???쒓컙` : `[${service.valueTags?.[0] || "Life"}] When ${name} is needed`,
         pain: currentLocale === "ko"
-            ? `${selectedSegment} 사용자는 ${intent.purpose} 같은 상황에서 반복 확인과 수동 조작의 부담을 자주 느낍니다.`
+            ? `${selectedSegment} ?ъ슜?먮뒗 ${intent.purpose} 媛숈? ?곹솴?먯꽌 諛섎났 ?뺤씤怨??섎룞 議곗옉??遺?댁쓣 ?먯＜ ?먮굧?덈떎.`
             : `${selectedSegment} users often feel burdened by repeated checking and manual control in moments like "${intent.purpose}".`,
         solution: currentLocale === "ko"
-            ? `${cardLabel}는 ${firstFeature}와 ${secondFeature}를 바탕으로 연결 기기를 더 간단한 루틴으로 묶어 줍니다.`
+            ? `${cardLabel}??${firstFeature}? ${secondFeature}瑜?諛뷀깢?쇰줈 ?곌껐 湲곌린瑜???媛꾨떒??猷⑦떞?쇰줈 臾띠뼱 以띾땲??`
             : `${cardLabel} uses ${firstFeature} and ${secondFeature} to connect devices into a simpler routine flow.`,
         benefit: currentLocale === "ko"
-            ? "필요한 장면을 더 적은 조작으로 실행할 수 있어 일상이 훨씬 가벼워집니다."
+            ? "?꾩슂???λ㈃?????곸? 議곗옉?쇰줈 ?ㅽ뻾?????덉뼱 ?쇱긽???⑥뵮 媛踰쇱썙吏묐땲??"
             : "The same moment can be executed with fewer actions, making daily routines noticeably lighter."
     };
 }
@@ -10256,7 +10261,7 @@ function enforceOutcomeFirst(text) {
     if (!cleaned) return cleaned;
     if (/^(less |feel |make |turn |bring |give |keep |reduce |start |see )/i.test(cleaned)) return cleaned;
     if (currentLocale === "ko") {
-        return cleaned.includes("먼저") ? cleaned : `${cleaned} 이 장면에서 먼저 체감되는 결과부터 말합니다.`;
+        return cleaned.includes("癒쇱?") ? cleaned : `${cleaned} ???λ㈃?먯꽌 癒쇱? 泥닿컧?섎뒗 寃곌낵遺??留먰빀?덈떎.`;
     }
     return `Feel the result first. ${cleaned}`;
 }
@@ -10279,7 +10284,7 @@ function applyVerbalGuidelines(text, options = {}) {
 
     output = output.replace(/\s+/g, " ").trim();
     if (options.maxLength && output.length > options.maxLength) {
-        output = `${output.slice(0, options.maxLength - 1).trim()}…`;
+        output = `${output.slice(0, options.maxLength - 1).trim()}??;
     }
     return output;
 }
@@ -10309,12 +10314,12 @@ function buildMarketingMessages(role, selectedSegment, intent, services, explore
     const anchorSkuEvidence = findAnchorSkuEvidence(selectedMarket?.siteCode, deviceDecision);
     const serviceSupport = services[0] ? getServiceSupportEntry(selectedMarket?.siteCode, services[0].serviceName) : null;
     const emotionalNoun = intent.missionBucket === "Save"
-        ? "절감의 확신"
+        ? "?덇컧???뺤떊"
         : intent.missionBucket === "Secure"
-            ? "안전의 통제감"
-            : "돌봄의 안심";
+            ? "?덉쟾???듭젣媛?
+            : "?뚮큵???덉떖";
     const proofLine = currentLocale === "ko"
-        ? `근거: ${anchorService} / ${deviceDecisionText(deviceDecision)} / ${anchorSkuEvidence.product?.availability?.status || "unverified"} / service ${serviceSupport?.inferredSupport?.status || "unverified"}`
+        ? `洹쇨굅: ${anchorService} / ${deviceDecisionText(deviceDecision)} / ${anchorSkuEvidence.product?.availability?.status || "unverified"} / service ${serviceSupport?.inferredSupport?.status || "unverified"}`
         : `Evidence: ${anchorService} / ${deviceDecisionText(deviceDecision)} / ${anchorSkuEvidence.product?.availability?.status || "unverified"} / service ${serviceSupport?.inferredSupport?.status || "unverified"}`;
 
     return {
@@ -10325,19 +10330,19 @@ function buildMarketingMessages(role, selectedSegment, intent, services, explore
         confirmedRules: [
             `Voice: ${guideline.voice} / ${(guideline.identity || []).join(", ")}`,
             currentLocale === "ko"
-                ? "규칙: 결과를 먼저 말하고 기능은 뒤에서 짧게 보강"
+                ? "洹쒖튃: 寃곌낵瑜?癒쇱? 留먰븯怨?湲곕뒫? ?ㅼ뿉??吏㏐쾶 蹂닿컯"
                 : "Rule: lead with the outcome, then support it briefly with features.",
             currentLocale === "ko"
-                ? "규칙: 공식 서비스명 외에는 AI Home 표현을 우선"
+                ? "洹쒖튃: 怨듭떇 ?쒕퉬?ㅻ챸 ?몄뿉??AI Home ?쒗쁽???곗꽑"
                 : "Rule: prefer AI Home wording unless an official service name is required.",
             currentLocale === "ko"
-                ? "규칙: 03의 확정/추론/구매 상태와 충돌하지 않는 문구만 사용"
+                ? "洹쒖튃: 03???뺤젙/異붾줎/援щℓ ?곹깭? 異⑸룎?섏? ?딅뒗 臾멸뎄留??ъ슜"
                 : "Rule: keep copy aligned with the confirmed/inferred/purchase states in block 03."
         ],
         globalLocalSplit: {
             global: applyVerbalGuidelines(exploreGrounding.coreMessage, { maxLength: 110 }),
             local: currentLocale === "ko"
-                ? applyVerbalGuidelines(`${selectedSegment}의 생활 맥락에 맞게 사례 문장과 감정 어휘를 현지화`, { maxLength: 110 })
+                ? applyVerbalGuidelines(`${selectedSegment}???앺솢 留λ씫??留욊쾶 ?щ? 臾몄옣怨?媛먯젙 ?댄쐶瑜??꾩???, { maxLength: 110 })
                 : applyVerbalGuidelines(`Localize examples and emotional wording to the daily context of ${selectedSegment}.`, { maxLength: 110 })
         },
         lenses: {
@@ -10345,31 +10350,31 @@ function buildMarketingMessages(role, selectedSegment, intent, services, explore
                 label: "Retail Lens",
                 selected: selectedLensId === "retail",
                 hookEn: applyVerbalGuidelines(`Feel ${exploreGrounding.primaryValue} before you learn the setup.`, { maxLength: 90 }),
-                shortCopyKo: applyVerbalGuidelines(`${selectedSegment} 고객에게는 기능 설명보다 "${exploreGrounding.messageAngle}"이 먼저 체감되어야 합니다.`, { maxLength: 110 }),
+                shortCopyKo: applyVerbalGuidelines(`${selectedSegment} 怨좉컼?먭쾶??湲곕뒫 ?ㅻ챸蹂대떎 "${exploreGrounding.messageAngle}"??癒쇱? 泥닿컧?섏뼱???⑸땲??`, { maxLength: 110 }),
                 talkTrackKo: [
-                    applyVerbalGuidelines(`처음 10초에는 ${exploreGrounding.coreMessage} 한 문장으로 시작합니다.`, { maxLength: 90 }),
-                    applyVerbalGuidelines(`그다음 ${anchorService}가 ${intent.purpose} 순간을 어떻게 줄여주는지 한 번만 보여줍니다.`, { maxLength: 110 }),
-                    applyVerbalGuidelines("마지막에는 복잡한 설명 대신 바로 따라 할 수 있는 한 가지 루틴으로 끝냅니다.", { maxLength: 90 })
+                    applyVerbalGuidelines(`泥섏쓬 10珥덉뿉??${exploreGrounding.coreMessage} ??臾몄옣?쇰줈 ?쒖옉?⑸땲??`, { maxLength: 90 }),
+                    applyVerbalGuidelines(`洹몃떎??${anchorService}媛 ${intent.purpose} ?쒓컙???대뼸寃?以꾩뿬二쇰뒗吏 ??踰덈쭔 蹂댁뿬以띾땲??`, { maxLength: 110 }),
+                    applyVerbalGuidelines("留덉?留됱뿉??蹂듭옟???ㅻ챸 ???諛붾줈 ?곕씪 ?????덈뒗 ??媛吏 猷⑦떞?쇰줈 ?앸깄?덈떎.", { maxLength: 90 })
                 ],
-                cta: applyVerbalGuidelines(currentLocale === "ko" ? "지금 이 장면을 매장에서 바로 데모해 보세요." : "Demo this moment in-store now.", { maxLength: 70 })
+                cta: applyVerbalGuidelines(currentLocale === "ko" ? "吏湲????λ㈃??留ㅼ옣?먯꽌 諛붾줈 ?곕え??蹂댁꽭??" : "Demo this moment in-store now.", { maxLength: 70 })
             },
             dotcom: {
                 label: "Dotcom Lens",
                 selected: selectedLensId === "dotcom",
                 h1En: applyVerbalGuidelines(`Less setup. More ${exploreGrounding.primaryValue}.`, { maxLength: 80 }),
-                subCopyKo: applyVerbalGuidelines(`${selectedSegment}에게 필요한 것은 기능 나열이 아니라 ${intent.purpose} 순간의 부담을 덜어주는 AI Home 경험입니다.`, { maxLength: 110 }),
+                subCopyKo: applyVerbalGuidelines(`${selectedSegment}?먭쾶 ?꾩슂??寃껋? 湲곕뒫 ?섏뿴???꾨땲??${intent.purpose} ?쒓컙??遺?댁쓣 ?쒖뼱二쇰뒗 AI Home 寃쏀뿕?낅땲??`, { maxLength: 110 }),
                 proofPointKo: applyVerbalGuidelines(proofLine, { userFacing: false, outcomeFirst: false, maxLength: 130 }),
-                cta: applyVerbalGuidelines(currentLocale === "ko" ? "PDP 첫 화면에서 이 메시지로 진입시키세요." : "Use this as the PDP opening line.", { maxLength: 70 })
+                cta: applyVerbalGuidelines(currentLocale === "ko" ? "PDP 泥??붾㈃?먯꽌 ??硫붿떆吏濡?吏꾩엯?쒗궎?몄슂." : "Use this as the PDP opening line.", { maxLength: 70 })
             },
             brand: {
                 label: "Brand Lens",
                 selected: selectedLensId === "brand",
                 campaignConceptEn: applyVerbalGuidelines("AI Home, with a more human rhythm.", { maxLength: 70 }),
-                emotionalNarrativeKo: applyVerbalGuidelines(`${intent.purpose} 순간에 기술이 앞서는 대신 사람이 먼저 안심하게 만드는 것, 그것이 이번 메시지의 중심입니다. ${selectedSegment}의 하루를 더 가볍게 만들며 ${emotionalNoun}을 남기도록 설계합니다.`, { maxLength: 130 }),
+                emotionalNarrativeKo: applyVerbalGuidelines(`${intent.purpose} ?쒓컙??湲곗닠???욎꽌??????щ엺??癒쇱? ?덉떖?섍쾶 留뚮뱶??寃? 洹멸쾬???대쾲 硫붿떆吏??以묒떖?낅땲?? ${selectedSegment}???섎（瑜???媛蹂띻쾶 留뚮뱾硫?${emotionalNoun}???④린?꾨줉 ?ㅺ퀎?⑸땲??`, { maxLength: 130 }),
                 brandValue: currentLocale === "ko"
-                    ? "사람 중심의 배려, 절제된 프리미엄, 연결된 일상 효용"
+                    ? "?щ엺 以묒떖??諛곕젮, ?덉젣???꾨━誘몄뾼, ?곌껐???쇱긽 ?⑥슜"
                     : "Human-first care, restrained premium, connected daily utility",
-                cta: applyVerbalGuidelines(currentLocale === "ko" ? "글로벌 메시지는 유지하고 현지 장면만 더 구체화하세요." : "Keep the global message and localize only the scene.", { maxLength: 80 })
+                cta: applyVerbalGuidelines(currentLocale === "ko" ? "湲濡쒕쾶 硫붿떆吏???좎??섍퀬 ?꾩? ?λ㈃留???援ъ껜?뷀븯?몄슂." : "Keep the global message and localize only the scene.", { maxLength: 80 })
             }
         }
     };
@@ -10377,9 +10382,9 @@ function buildMarketingMessages(role, selectedSegment, intent, services, explore
 
 function buildBenefits(intent, services, exploreGrounding) {
     return [
-        currentLocale === "ko" ? `기능적 가치: ${exploreGrounding.functionalJob}을 줄여 반복 확인과 수동 조작을 덜어줍니다.` : `Functional value: reduce ${exploreGrounding.functionalJob} and lighten repeated checking.`,
-        currentLocale === "ko" ? `감정적 가치: ${exploreGrounding.emotionalJob}이 가능해져 심리적 부담이 낮아집니다.` : `Emotional value: enable ${exploreGrounding.emotionalJob} and lower emotional burden.`,
-        currentLocale === "ko" ? `감성적 체감: ${exploreGrounding.primaryValue}이 한 번의 사용 장면에서도 바로 읽히도록 설계됩니다.` : `Emotional experience: make ${exploreGrounding.primaryValue} legible from the first use moment.`
+        currentLocale === "ko" ? `湲곕뒫??媛移? ${exploreGrounding.functionalJob}??以꾩뿬 諛섎났 ?뺤씤怨??섎룞 議곗옉???쒖뼱以띾땲??` : `Functional value: reduce ${exploreGrounding.functionalJob} and lighten repeated checking.`,
+        currentLocale === "ko" ? `媛먯젙??媛移? ${exploreGrounding.emotionalJob}??媛?ν빐???щ━??遺?댁씠 ??븘吏묐땲??` : `Emotional value: enable ${exploreGrounding.emotionalJob} and lower emotional burden.`,
+        currentLocale === "ko" ? `媛먯꽦??泥닿컧: ${exploreGrounding.primaryValue}????踰덉쓽 ?ъ슜 ?λ㈃?먯꽌??諛붾줈 ?쏀엳?꾨줉 ?ㅺ퀎?⑸땲??` : `Emotional experience: make ${exploreGrounding.primaryValue} legible from the first use moment.`
     ];
 }
 
@@ -10387,40 +10392,40 @@ function buildSegmentAnalysis(country, city, selectedSegment, intent, exploreGro
     const countryName = getCountryName(country.countryCode);
     const locationLabel = city ? `${city}, ${countryName}` : countryName;
     return {
-        core: currentLocale === "ko" ? `${selectedSegment} / ${locationLabel} 생활권` : `${selectedSegment} / ${locationLabel}`,
+        core: currentLocale === "ko" ? `${selectedSegment} / ${locationLabel} ?앺솢沅? : `${selectedSegment} / ${locationLabel}`,
         populationEstimate: currentLocale === "ko"
-            ? `추정 규모: ${locationLabel} 기준 해당 세그먼트 약 [AI가 공공 통계 기반으로 추정]명, 전체 인구 대비 약 [비율]% (통계 출처가 없는 경우 추론 근거를 병기)`
+            ? `異붿젙 洹쒕え: ${locationLabel} 湲곗? ?대떦 ?멸렇癒쇳듃 ??[AI媛 怨듦났 ?듦퀎 湲곕컲?쇰줈 異붿젙]紐? ?꾩껜 ?멸뎄 ?鍮???[鍮꾩쑉]% (?듦퀎 異쒖쿂媛 ?녿뒗 寃쎌슦 異붾줎 洹쇨굅瑜?蹂묎린)`
             : `Estimated size: approximately [AI estimates from public statistics] in ${locationLabel}, roughly [ratio]% of total population`,
         behaviors: [
-            currentLocale === "ko" ? `${exploreGrounding.functionalJob}을 줄여주는 요약형 UX에 반응할 가능성이 큽니다.` : `Likely to respond well to UX that reduces ${exploreGrounding.functionalJob}.`,
-            currentLocale === "ko" ? `${exploreGrounding.primaryValue}처럼 결과가 선명한 메시지에 더 크게 반응합니다.` : `Responds more strongly to messages where outcomes like ${exploreGrounding.primaryValue} are clear.`
+            currentLocale === "ko" ? `${exploreGrounding.functionalJob}??以꾩뿬二쇰뒗 ?붿빟??UX??諛섏쓳??媛?μ꽦???쎈땲??` : `Likely to respond well to UX that reduces ${exploreGrounding.functionalJob}.`,
+            currentLocale === "ko" ? `${exploreGrounding.primaryValue}泥섎읆 寃곌낵媛 ?좊챸??硫붿떆吏?????ш쾶 諛섏쓳?⑸땲??` : `Responds more strongly to messages where outcomes like ${exploreGrounding.primaryValue} are clear.`
         ],
-        assumption: currentLocale === "ko" ? `가정: 모든 기기를 보유하지 않아도 Entry 수준의 앱 기반 자동화로 ${exploreGrounding.primaryValue} 경험을 먼저 시작할 수 있습니다.` : `Assumption: even without every device, an entry-level app automation can start the ${exploreGrounding.primaryValue} experience.`
+        assumption: currentLocale === "ko" ? `媛?? 紐⑤뱺 湲곌린瑜?蹂댁쑀?섏? ?딆븘??Entry ?섏?????湲곕컲 ?먮룞?붾줈 ${exploreGrounding.primaryValue} 寃쏀뿕??癒쇱? ?쒖옉?????덉뒿?덈떎.` : `Assumption: even without every device, an entry-level app automation can start the ${exploreGrounding.primaryValue} experience.`
     };
 }
 
 function buildCampaignTiming(intent, exploreGrounding) {
     const byMission = {
         Save: [
-            currentLocale === "ko" ? `냉난방 부담이 커지는 시즌: ${exploreGrounding.primaryValue} 메시지가 가장 선명해집니다.` : `High heating or cooling seasons: ${exploreGrounding.primaryValue} becomes most legible.`,
-            currentLocale === "ko" ? "월간 요금이 체감되는 시점: 에너지 리포트와 루틴 메시지의 설득력이 높아집니다." : "When bills become visible: energy reports and routine messaging gain traction.",
-            currentLocale === "ko" ? "이사 또는 새 기기 설치 직후: 절감 루틴을 시작하기 가장 좋은 타이밍입니다." : "Right after moving or adding devices: a strong moment to start savings routines."
+            currentLocale === "ko" ? `?됰궃諛?遺?댁씠 而ㅼ????쒖쫵: ${exploreGrounding.primaryValue} 硫붿떆吏媛 媛???좊챸?댁쭛?덈떎.` : `High heating or cooling seasons: ${exploreGrounding.primaryValue} becomes most legible.`,
+            currentLocale === "ko" ? "?붽컙 ?붽툑??泥닿컧?섎뒗 ?쒖젏: ?먮꼫吏 由ы룷?몄? 猷⑦떞 硫붿떆吏???ㅻ뱷?μ씠 ?믪븘吏묐땲??" : "When bills become visible: energy reports and routine messaging gain traction.",
+            currentLocale === "ko" ? "?댁궗 ?먮뒗 ??湲곌린 ?ㅼ튂 吏곹썑: ?덇컧 猷⑦떞???쒖옉?섍린 媛??醫뗭? ??대컢?낅땲??" : "Right after moving or adding devices: a strong moment to start savings routines."
         ],
         Care: [
-            currentLocale === "ko" ? `야근이나 외출이 잦아지는 시기: ${exploreGrounding.emotionalJob} 메시지가 더 크게 작동합니다.` : `When overtime and time away rise: ${exploreGrounding.emotionalJob} becomes more resonant.`,
-            currentLocale === "ko" ? "돌봄 부담이 커지는 생활 전환기: 케어와 안심 메시지의 필요성이 높아집니다." : "During care-heavy life transitions: care and reassurance messaging gains relevance.",
-            currentLocale === "ko" ? "앱 첫 진입 직후: 한 번의 안심 경험을 빠르게 보여주기 좋습니다." : "Right after first app entry: a good moment to demonstrate reassurance quickly."
+            currentLocale === "ko" ? `?쇨렐?대굹 ?몄텧????븘吏???쒓린: ${exploreGrounding.emotionalJob} 硫붿떆吏媛 ???ш쾶 ?묐룞?⑸땲??` : `When overtime and time away rise: ${exploreGrounding.emotionalJob} becomes more resonant.`,
+            currentLocale === "ko" ? "?뚮큵 遺?댁씠 而ㅼ????앺솢 ?꾪솚湲? 耳?댁? ?덉떖 硫붿떆吏???꾩슂?깆씠 ?믪븘吏묐땲??" : "During care-heavy life transitions: care and reassurance messaging gains relevance.",
+            currentLocale === "ko" ? "??泥?吏꾩엯 吏곹썑: ??踰덉쓽 ?덉떖 寃쏀뿕??鍮좊Ⅴ寃?蹂댁뿬二쇨린 醫뗭뒿?덈떎." : "Right after first app entry: a good moment to demonstrate reassurance quickly."
         ],
         Secure: [
-            currentLocale === "ko" ? "장기간 부재나 여행 준비 시점: 보안과 실시간 대응 메시지가 강하게 읽힙니다." : "Before travel or longer absence: security and real-time response messages land strongly.",
-            currentLocale === "ko" ? "혼자 사는 생활 패턴이 정착된 시점: 상시 모니터링 부담 완화 메시지가 설득력 있습니다." : "Once solo-living routines settle: reducing monitoring burden becomes persuasive.",
-            currentLocale === "ko" ? "센서/카메라 설치 직후: 보호 체감 가치를 가장 직접적으로 보여줄 수 있습니다." : "Right after adding sensors or cameras: the protective value is easiest to demonstrate."
+            currentLocale === "ko" ? "?κ린媛?遺?щ굹 ?ы뻾 以鍮??쒖젏: 蹂댁븞怨??ㅼ떆媛????硫붿떆吏媛 媛뺥븯寃??쏀옓?덈떎." : "Before travel or longer absence: security and real-time response messages land strongly.",
+            currentLocale === "ko" ? "?쇱옄 ?щ뒗 ?앺솢 ?⑦꽩???뺤갑???쒖젏: ?곸떆 紐⑤땲?곕쭅 遺???꾪솕 硫붿떆吏媛 ?ㅻ뱷???덉뒿?덈떎." : "Once solo-living routines settle: reducing monitoring burden becomes persuasive.",
+            currentLocale === "ko" ? "?쇱꽌/移대찓???ㅼ튂 吏곹썑: 蹂댄샇 泥닿컧 媛移섎? 媛??吏곸젒?곸쑝濡?蹂댁뿬以????덉뒿?덈떎." : "Right after adding sensors or cameras: the protective value is easiest to demonstrate."
         ]
     };
     return byMission[intent.missionBucket] || [
-        currentLocale === "ko" ? `루틴이 바뀌는 시기: ${exploreGrounding.primaryValue} 메시지가 새롭게 읽힙니다.` : `When routines change: ${exploreGrounding.primaryValue} can be freshly understood.`,
-        currentLocale === "ko" ? "신규 기기 추가 직후: 연결 가치가 가장 직관적으로 체감됩니다." : "Right after adding a device: connected value feels most intuitive.",
-        currentLocale === "ko" ? "반복 사용이 생기기 시작하는 시점: 메시지를 습관화 가치로 확장하기 좋습니다." : "Once repeat use begins: a good time to extend the message into habit value."
+        currentLocale === "ko" ? `猷⑦떞??諛붾뚮뒗 ?쒓린: ${exploreGrounding.primaryValue} 硫붿떆吏媛 ?덈∼寃??쏀옓?덈떎.` : `When routines change: ${exploreGrounding.primaryValue} can be freshly understood.`,
+        currentLocale === "ko" ? "?좉퇋 湲곌린 異붽? 吏곹썑: ?곌껐 媛移섍? 媛??吏곴??곸쑝濡?泥닿컧?⑸땲??" : "Right after adding a device: connected value feels most intuitive.",
+        currentLocale === "ko" ? "諛섎났 ?ъ슜???앷린湲??쒖옉?섎뒗 ?쒖젏: 硫붿떆吏瑜??듦???媛移섎줈 ?뺤옣?섍린 醫뗭뒿?덈떎." : "Once repeat use begins: a good time to extend the message into habit value."
     ];
 }
 
@@ -10429,16 +10434,16 @@ function buildDeviceGuide(country, deviceDecision, services) {
     const serviceName = getServiceLabel(services[0]);
     return {
         available: [
-            currentLocale === "ko" ? `[확정] ${countryName} 기준 활용 가능 카테고리와 연결 시나리오를 우선 반영합니다.` : `[Confirmed] Prioritize categories and connected scenarios available in ${countryName}.`,
-            currentLocale === "ko" ? `대표 기준 기기: ${deviceDecision.final.modelName}` : `Representative anchor device: ${deviceDecision.final.modelName}`,
-            currentLocale === "ko" ? "[체크 포인트] 실제 판매 모델/SKU는 시점에 따라 변동될 수 있어 최종 확인이 필요합니다." : "[Check point] Final retail model and SKU availability should be confirmed at launch."
+            currentLocale === "ko" ? `[?뺤젙] ${countryName} 湲곗? ?쒖슜 媛??移댄뀒怨좊━? ?곌껐 ?쒕굹由ъ삤瑜??곗꽑 諛섏쁺?⑸땲??` : `[Confirmed] Prioritize categories and connected scenarios available in ${countryName}.`,
+            currentLocale === "ko" ? `???湲곗? 湲곌린: ${deviceDecision.final.modelName}` : `Representative anchor device: ${deviceDecision.final.modelName}`,
+            currentLocale === "ko" ? "[泥댄겕 ?ъ씤?? ?ㅼ젣 ?먮ℓ 紐⑤뜽/SKU???쒖젏???곕씪 蹂?숇맆 ???덉뼱 理쒖쥌 ?뺤씤???꾩슂?⑸땲??" : "[Check point] Final retail model and SKU availability should be confirmed at launch."
         ],
         preparation: currentLocale === "ko"
             ? [
-                "Wi-Fi 환경 확인: 2.4GHz Wi-Fi가 안정적으로 연결되어 있는지 확인합니다 (5GHz만 지원하는 공유기는 설정 필요).",
-                "삼성 계정 준비: account.samsung.com에서 계정이 없으면 먼저 생성합니다.",
-                "SmartThings 앱 설치: Galaxy Store 또는 App Store에서 'SmartThings'를 검색해 설치합니다.",
-                "기기 전원: 연결할 기기의 전원을 켜고 초기 설정(공장 초기화)이 완료된 상태여야 합니다."
+                "Wi-Fi ?섍꼍 ?뺤씤: 2.4GHz Wi-Fi媛 ?덉젙?곸쑝濡??곌껐?섏뼱 ?덈뒗吏 ?뺤씤?⑸땲??(5GHz留?吏?먰븯??怨듭쑀湲곕뒗 ?ㅼ젙 ?꾩슂).",
+                "?쇱꽦 怨꾩젙 以鍮? account.samsung.com?먯꽌 怨꾩젙???놁쑝硫?癒쇱? ?앹꽦?⑸땲??",
+                "SmartThings ???ㅼ튂: Galaxy Store ?먮뒗 App Store?먯꽌 'SmartThings'瑜?寃?됲빐 ?ㅼ튂?⑸땲??",
+                "湲곌린 ?꾩썝: ?곌껐??湲곌린???꾩썝??耳쒓퀬 珥덇린 ?ㅼ젙(怨듭옣 珥덇린?????꾨즺???곹깭?ъ빞 ?⑸땲??"
             ]
             : [
                 "Wi-Fi check: Ensure a stable 2.4GHz Wi-Fi connection is available.",
@@ -10448,32 +10453,32 @@ function buildDeviceGuide(country, deviceDecision, services) {
             ],
         steps: currentLocale === "ko"
             ? [
-                "1단계: SmartThings 앱을 열고 삼성 계정으로 로그인합니다.",
-                "2단계: 하단의 '+' 버튼 → '기기 추가'를 눌러 새 기기를 검색합니다.",
-                `3단계: '집(Home)'이 없으면 자동으로 생성됩니다. 방 이름(거실, 침실 등)을 지정해 기기를 배치합니다.`,
-                `4단계: 화면 안내에 따라 ${deviceDecision.final.modelName}을 Wi-Fi에 연결합니다. 기기 화면에 인증 코드가 뜨면 앱에 입력합니다.`,
-                "5단계: 연결 완료 후 기기 카드가 대시보드에 나타나는지 확인합니다. 제어 버튼을 눌러 정상 동작을 테스트합니다.",
-                `6단계: '자동화' 탭 → '+' → '${serviceName}' 또는 추천 루틴 카드를 활성화합니다. 조건(시간, 센서 등)과 동작(기기 켜기/끄기)을 설정합니다.`,
-                "7단계: '알림' 설정에서 원하는 알림을 켜고, 가족 구성원을 '멤버 초대'로 추가합니다.",
-                "8단계: 2~3일간 자동화가 정상 실행되는지 확인합니다. 문제가 있으면 기기 상세 → '연결 상태'에서 재연결하거나 펌웨어 업데이트를 진행합니다.",
-                "9단계: 자주 쓰는 장면(루틴)을 저장해 반복 사용하고, 추가 기기를 연결해 확장합니다."
+                "1?④퀎: SmartThings ?깆쓣 ?닿퀬 ?쇱꽦 怨꾩젙?쇰줈 濡쒓렇?명빀?덈떎.",
+                "2?④퀎: ?섎떒??'+' 踰꾪듉 ??'湲곌린 異붽?'瑜??뚮윭 ??湲곌린瑜?寃?됲빀?덈떎.",
+                `3?④퀎: '吏?Home)'???놁쑝硫??먮룞?쇰줈 ?앹꽦?⑸땲?? 諛??대쫫(嫄곗떎, 移⑥떎 ????吏?뺥빐 湲곌린瑜?諛곗튂?⑸땲??`,
+                `4?④퀎: ?붾㈃ ?덈궡???곕씪 ${deviceDecision.final.modelName}??Wi-Fi???곌껐?⑸땲?? 湲곌린 ?붾㈃???몄쬆 肄붾뱶媛 ?⑤㈃ ?깆뿉 ?낅젰?⑸땲??`,
+                "5?④퀎: ?곌껐 ?꾨즺 ??湲곌린 移대뱶媛 ??쒕낫?쒖뿉 ?섑??섎뒗吏 ?뺤씤?⑸땲?? ?쒖뼱 踰꾪듉???뚮윭 ?뺤긽 ?숈옉???뚯뒪?명빀?덈떎.",
+                `6?④퀎: '?먮룞?? ????'+' ??'${serviceName}' ?먮뒗 異붿쿇 猷⑦떞 移대뱶瑜??쒖꽦?뷀빀?덈떎. 議곌굔(?쒓컙, ?쇱꽌 ??怨??숈옉(湲곌린 耳쒓린/?꾧린)???ㅼ젙?⑸땲??`,
+                "7?④퀎: '?뚮┝' ?ㅼ젙?먯꽌 ?먰븯???뚮┝??耳쒓퀬, 媛議?援ъ꽦?먯쓣 '硫ㅻ쾭 珥덈?'濡?異붽??⑸땲??",
+                "8?④퀎: 2~3?쇨컙 ?먮룞?붽? ?뺤긽 ?ㅽ뻾?섎뒗吏 ?뺤씤?⑸땲?? 臾몄젣媛 ?덉쑝硫?湲곌린 ?곸꽭 ??'?곌껐 ?곹깭'?먯꽌 ?ъ뿰寃고븯嫄곕굹 ?뚯썾???낅뜲?댄듃瑜?吏꾪뻾?⑸땲??",
+                "9?④퀎: ?먯＜ ?곕뒗 ?λ㈃(猷⑦떞)????ν빐 諛섎났 ?ъ슜?섍퀬, 異붽? 湲곌린瑜??곌껐???뺤옣?⑸땲??"
             ]
             : [
                 "Step 1: Open SmartThings and sign in with your Samsung account.",
-                "Step 2: Tap '+' → 'Add device' to search for a new device.",
+                "Step 2: Tap '+' ??'Add device' to search for a new device.",
                 "Step 3: Create a Home if one doesn't exist. Assign rooms (living room, bedroom, etc.).",
                 `Step 4: Follow on-screen instructions to connect ${deviceDecision.final.modelName} to Wi-Fi.`,
                 "Step 5: Verify the device card appears on the dashboard. Test basic controls.",
-                `Step 6: Go to 'Automations' → '+' → activate '${serviceName}' or a recommended routine.`,
+                `Step 6: Go to 'Automations' ??'+' ??activate '${serviceName}' or a recommended routine.`,
                 "Step 7: Enable notifications and invite family members.",
                 "Step 8: Monitor for 2-3 days. Reconnect or update firmware if issues arise.",
                 "Step 9: Save frequently used scenes and expand with additional devices."
             ],
         troubleshooting: currentLocale === "ko"
             ? [
-                "기기가 검색되지 않을 때: 기기를 공장 초기화하고, 앱과 같은 Wi-Fi에 연결되어 있는지 확인합니다.",
-                "연결이 자주 끊길 때: 공유기와 기기 사이 거리를 확인하고, 펌웨어를 최신으로 업데이트합니다.",
-                "자동화가 실행되지 않을 때: 조건(시간, 위치)이 올바른지, 기기가 온라인 상태인지 확인합니다."
+                "湲곌린媛 寃?됰릺吏 ?딆쓣 ?? 湲곌린瑜?怨듭옣 珥덇린?뷀븯怨? ?깃낵 媛숈? Wi-Fi???곌껐?섏뼱 ?덈뒗吏 ?뺤씤?⑸땲??",
+                "?곌껐???먯＜ ?딄만 ?? 怨듭쑀湲곗? 湲곌린 ?ъ씠 嫄곕━瑜??뺤씤?섍퀬, ?뚯썾?대? 理쒖떊?쇰줈 ?낅뜲?댄듃?⑸땲??",
+                "?먮룞?붽? ?ㅽ뻾?섏? ?딆쓣 ?? 議곌굔(?쒓컙, ?꾩튂)???щ컮瑜몄?, 湲곌린媛 ?⑤씪???곹깭?몄? ?뺤씤?⑸땲??"
             ]
             : [
                 "Device not found: Factory reset the device and check it's on the same Wi-Fi.",
@@ -10484,7 +10489,7 @@ function buildDeviceGuide(country, deviceDecision, services) {
 }
 
 function renderScenario(payload) {
-    // selectionSummary가 있으면 구조화된 fallback output 시도
+    // selectionSummary媛 ?덉쑝硫?援ъ“?붾맂 fallback output ?쒕룄
     if (latestSelectionSummary && typeof buildFallbackOutput === "function") {
         try {
             const fallbackOutput = buildFallbackOutput(latestSelectionSummary, payload);
@@ -10522,36 +10527,36 @@ function renderOutputPreview() {
     const title = t("previewTitle");
 
     const flowSteps = isKo ? [
-        { phase: "STEP 1", label: "Explore 시나리오 자동 선별", icon: "✦",
-          desc: "입력한 국가/도시 + 타겟 + 기기 조건으로 Explore Contents에서 <strong>검증된 시나리오</strong>를 자동 매칭합니다.",
-          helper: "Build 클릭 시 Explore v1.0(183개) + v2.0(87개) 시나리오를 점수화하여 상위 5개를 선별합니다. 왜 선택되었는지, 어떤 입력이 반영되었는지가 함께 표시됩니다.\n입력한 국가/도시의 도시 프로필 고려사항이 시나리오 추천에 반영됩니다.",
+        { phase: "STEP 1", label: "Explore ?쒕굹由ъ삤 ?먮룞 ?좊퀎", icon: "??,
+          desc: "?낅젰??援??/?꾩떆 + ?寃?+ 湲곌린 議곌굔?쇰줈 Explore Contents?먯꽌 <strong>寃利앸맂 ?쒕굹由ъ삤</strong>瑜??먮룞 留ㅼ묶?⑸땲??",
+          helper: "Build ?대┃ ??Explore v1.0(183媛? + v2.0(87媛? ?쒕굹由ъ삤瑜??먯닔?뷀븯???곸쐞 5媛쒕? ?좊퀎?⑸땲?? ???좏깮?섏뿀?붿?, ?대뼡 ?낅젰??諛섏쁺?섏뿀?붿?媛 ?④퍡 ?쒖떆?⑸땲??\n?낅젰??援??/?꾩떆???꾩떆 ?꾨줈??怨좊젮?ы빆???쒕굹由ъ삤 異붿쿇??諛섏쁺?⑸땲??",
           items: [
-              { num: "A", title: "선택 근거 카드", sub: "어떤 시나리오가, 왜 선택되었는지" },
-              { num: "B", title: "입력 반영 확인", sub: "내 입력이 어디에 반영되었는지 한눈에" },
-              { num: "C", title: "가치 축 표시", sub: "Care / Secure / Save / Play 중 어떤 가치인지" }
+              { num: "A", title: "?좏깮 洹쇨굅 移대뱶", sub: "?대뼡 ?쒕굹由ъ삤媛, ???좏깮?섏뿀?붿?" },
+              { num: "B", title: "?낅젰 諛섏쁺 ?뺤씤", sub: "???낅젰???대뵒??諛섏쁺?섏뿀?붿? ?쒕늿?? },
+              { num: "C", title: "媛移?異??쒖떆", sub: "Care / Secure / Save / Play 以??대뼡 媛移섏씤吏" }
           ] },
-        { phase: "STEP 2", label: "목적별 변형 결과물 생성", icon: "🤖",
-          desc: "선택된 Explore 시나리오를 바탕으로, AI가 <strong>마케터용</strong>과 <strong>일반 사용자용</strong> 두 가지 실행형 결과물을 생성합니다.",
+        { phase: "STEP 2", label: "紐⑹쟻蹂?蹂??寃곌낵臾??앹꽦", icon: "?쨼",
+          desc: "?좏깮??Explore ?쒕굹由ъ삤瑜?諛뷀깢?쇰줈, AI媛 <strong>留덉??곗슜</strong>怨?<strong>?쇰컲 ?ъ슜?먯슜</strong> ??媛吏 ?ㅽ뻾??寃곌낵臾쇱쓣 ?앹꽦?⑸땲??",
           items: [
-              { num: "📢", title: "마케터용", sub: "카피 옵션, 채널 전략, 타깃 적합도, 역할별 실행 방향" },
-              { num: "🏠", title: "일반 사용자용", sub: "이게 뭘 해주는지, 필요 기기, 설정 방법, 주의사항, 대안" },
-              { num: "📊", title: "가치 + 인사이트", sub: "강조 가치, 지역 인사이트(O-I-I), 확정/추론 구분" }
+              { num: "?뱼", title: "留덉??곗슜", sub: "移댄뵾 ?듭뀡, 梨꾨꼸 ?꾨왂, ?源??곹빀?? ??븷蹂??ㅽ뻾 諛⑺뼢" },
+              { num: "?룧", title: "?쇰컲 ?ъ슜?먯슜", sub: "?닿쾶 萸??댁＜?붿?, ?꾩슂 湲곌린, ?ㅼ젙 諛⑸쾿, 二쇱쓽?ы빆, ??? },
+              { num: "?뱤", title: "媛移?+ ?몄궗?댄듃", sub: "媛뺤“ 媛移? 吏???몄궗?댄듃(O-I-I), ?뺤젙/異붾줎 援щ텇" }
           ],
-          helper: "같은 Explore 시나리오를 바탕으로 하되, 활용 목적에 따라 표현과 정보 구조가 다르게 나옵니다. 탭으로 전환하여 확인할 수 있습니다." },
-        { phase: "STEP 3", label: "직무별 활용 결과물 선택", icon: "📋",
-          desc: "캠페인 메시지, 리테일 현장안, 닷컴 콘텐츠, CRM 활용안, 시즌 연계안, 보고용 요약 중 필요한 것만 골라 추가 생성합니다.",
+          helper: "媛숈? Explore ?쒕굹由ъ삤瑜?諛뷀깢?쇰줈 ?섎릺, ?쒖슜 紐⑹쟻???곕씪 ?쒗쁽怨??뺣낫 援ъ“媛 ?ㅻⅤ寃??섏샃?덈떎. ??쑝濡??꾪솚?섏뿬 ?뺤씤?????덉뒿?덈떎." },
+        { phase: "STEP 3", label: "吏곷Т蹂??쒖슜 寃곌낵臾??좏깮", icon: "?뱥",
+          desc: "罹좏럹??硫붿떆吏, 由ы뀒???꾩옣?? ?룹뺨 肄섑뀗痢? CRM ?쒖슜?? ?쒖쫵 ?곌퀎?? 蹂닿퀬???붿빟 以??꾩슂??寃껊쭔 怨⑤씪 異붽? ?앹꽦?⑸땲??",
           outputCards: [
-              { icon: "📣", label: "캠페인 메시지" },
-              { icon: "🏬", label: "리테일 현장안" },
-              { icon: "🌐", label: "닷컴 콘텐츠" },
-              { icon: "📧", label: "CRM 활용안" },
-              { icon: "📅", label: "시즌 연계안" },
-              { icon: "📊", label: "보고용 요약" }
+              { icon: "?뱽", label: "罹좏럹??硫붿떆吏" },
+              { icon: "?룷", label: "由ы뀒???꾩옣?? },
+              { icon: "?뙋", label: "?룹뺨 肄섑뀗痢? },
+              { icon: "?벁", label: "CRM ?쒖슜?? },
+              { icon: "?뱟", label: "?쒖쫵 ?곌퀎?? },
+              { icon: "?뱤", label: "蹂닿퀬???붿빟" }
           ],
-          helper: "필요한 결과물만 골라 추가 생성할 수 있습니다. 복수 선택 가능!",
-          note: "직무를 미리 고르지 않아도 됩니다" }
+          helper: "?꾩슂??寃곌낵臾쇰쭔 怨⑤씪 異붽? ?앹꽦?????덉뒿?덈떎. 蹂듭닔 ?좏깮 媛??",
+          note: "吏곷Т瑜?誘몃━ 怨좊Ⅴ吏 ?딆븘???⑸땲?? }
     ] : [
-        { phase: "STEP 1", label: "Auto-select from Explore scenarios", icon: "✦",
+        { phase: "STEP 1", label: "Auto-select from Explore scenarios", icon: "??,
           desc: "Automatically match <strong>verified scenarios</strong> from Explore Contents based on your country, target, and device selections.",
           helper: "On Build, scenarios from Explore v1.0 (183) + v2.0 (87) are scored and top 5 are selected. You'll see why each was chosen and which inputs were reflected.\nCity profile insights for your selected country/city are factored into scenario recommendations.",
           items: [
@@ -10559,33 +10564,33 @@ function renderOutputPreview() {
               { num: "B", title: "Input Reflection", sub: "See exactly where your inputs are reflected" },
               { num: "C", title: "Value Axis", sub: "Care / Secure / Save / Play identification" }
           ] },
-        { phase: "STEP 2", label: "Purpose-driven transformation", icon: "🤖",
+        { phase: "STEP 2", label: "Purpose-driven transformation", icon: "?쨼",
           desc: "Based on the selected Explore scenario, AI generates two actionable outputs: <strong>Marketer</strong> and <strong>Consumer</strong> versions.",
           items: [
-              { num: "📢", title: "For Marketers", sub: "Copy options, channel strategy, target fit, role-specific direction" },
-              { num: "🏠", title: "For Consumers", sub: "What it does, required devices, setup steps, cautions, alternatives" },
-              { num: "📊", title: "Values + Insight", sub: "Value highlights, regional O-I-I insight, confirmed vs inferred" }
+              { num: "?뱼", title: "For Marketers", sub: "Copy options, channel strategy, target fit, role-specific direction" },
+              { num: "?룧", title: "For Consumers", sub: "What it does, required devices, setup steps, cautions, alternatives" },
+              { num: "?뱤", title: "Values + Insight", sub: "Value highlights, regional O-I-I insight, confirmed vs inferred" }
           ],
           helper: "Same Explore scenario, different expression and structure depending on purpose. Switch between tabs to view." },
-        { phase: "STEP 3", label: "Role-specific output selection", icon: "📋",
-          desc: "Choose from campaign messaging, retail execution, dotcom content, CRM, seasonal tie-in, or executive summary — generate only what you need.",
+        { phase: "STEP 3", label: "Role-specific output selection", icon: "?뱥",
+          desc: "Choose from campaign messaging, retail execution, dotcom content, CRM, seasonal tie-in, or executive summary ??generate only what you need.",
           outputCards: [
-              { icon: "📣", label: "Campaign" },
-              { icon: "🏬", label: "Retail" },
-              { icon: "🌐", label: "Dotcom" },
-              { icon: "📧", label: "CRM" },
-              { icon: "📅", label: "Seasonal" },
-              { icon: "📊", label: "Summary" }
+              { icon: "?뱽", label: "Campaign" },
+              { icon: "?룷", label: "Retail" },
+              { icon: "?뙋", label: "Dotcom" },
+              { icon: "?벁", label: "CRM" },
+              { icon: "?뱟", label: "Seasonal" },
+              { icon: "?뱤", label: "Summary" }
           ],
           helper: "Pick only the outputs you need. Multi-select available!",
           note: "No need to choose a role upfront" }
     ];
 
     const guideText = isKo
-        ? "어떤 결과물이 나오는지 궁금하면 눌러보세요"
+        ? "?대뼡 寃곌낵臾쇱씠 ?섏삤?붿? 沅곴툑?섎㈃ ?뚮윭蹂댁꽭??
         : "Tap to see what outputs you'll get";
     const guideLabel = isKo
-        ? "결과물 생성 과정과 형식은 다음 내용을 참조하세요~!"
+        ? "寃곌낵臾??앹꽦 怨쇱젙怨??뺤떇? ?ㅼ쓬 ?댁슜??李몄“?섏꽭??!"
         : "See how outputs are generated and formatted";
 
     const flowHtml = flowSteps.map((step, idx) => `
@@ -10628,12 +10633,12 @@ function renderOutputPreview() {
     resultDiv.innerHTML = `
         <section class="placeholder-preview placeholder-preview--collapsed">
             <button type="button" class="preview-toggle" id="preview-toggle">
-                <span class="preview-toggle-icon">📋</span>
+                <span class="preview-toggle-icon">?뱥</span>
                 <span class="preview-toggle-text">
                     <strong>${escapeHtml(guideLabel)}</strong>
                     <span>${escapeHtml(guideText)}</span>
                 </span>
-                <span class="preview-toggle-chevron">▾</span>
+                <span class="preview-toggle-chevron">??/span>
             </button>
             <div class="preview-flow preview-flow--hidden" id="preview-flow-body">
                 ${flowHtml}
@@ -10649,7 +10654,7 @@ function renderOutputPreview() {
             flowBody.classList.toggle("preview-flow--hidden", isOpen);
             toggleBtn.classList.toggle("open", !isOpen);
             const chevron = toggleBtn.querySelector(".preview-toggle-chevron");
-            if (chevron) chevron.textContent = isOpen ? "▾" : "▴";
+            if (chevron) chevron.textContent = isOpen ? "?? : "??;
         });
     }
 }
@@ -10659,7 +10664,7 @@ function buildParentStory(payload) {
     const where = [payload.scenarioMeta?.countryName, payload.scenarioMeta?.city].filter(Boolean).join(" / ");
     const need = compactPurpose(payload.scenarioMeta?.purpose || payload.exploreGrounding?.functionalJob || "");
     return currentLocale === "ko"
-        ? `${where}의 ${who}는 "${need}" 같은 반복 순간에서 부담을 줄이고, 즉시 체감되는 효용을 원합니다.`
+        ? `${where}??${who}??"${need}" 媛숈? 諛섎났 ?쒓컙?먯꽌 遺?댁쓣 以꾩씠怨? 利됱떆 泥닿컧?섎뒗 ?⑥슜???먰빀?덈떎.`
         : `${who} in ${where} seeks immediate, felt utility in recurring moments like "${need}".`;
 }
 
@@ -10669,7 +10674,7 @@ function compactDescriptor(text, maxItems = 4) {
         .replace(/\s+/g, " ")
         .trim();
     const tokens = cleaned
-        .split(/[\/,|]|·/)
+        .split(/[\/,|]|쨌/)
         .map((item) => item.trim())
         .filter(Boolean)
         .filter((item, idx, arr) => arr.indexOf(item) === idx);
@@ -10679,9 +10684,9 @@ function compactDescriptor(text, maxItems = 4) {
 
 function compactPurpose(text) {
     const raw = String(text || "").trim();
-    if (!raw) return currentLocale === "ko" ? "반복되는 일상 불편을 줄이고 싶을 때" : "reducing recurring daily friction";
+    if (!raw) return currentLocale === "ko" ? "諛섎났?섎뒗 ?쇱긽 遺덊렪??以꾩씠怨??띠쓣 ?? : "reducing recurring daily friction";
     if (/^reduce recurring friction in everyday moments for/i.test(raw)) {
-        return currentLocale === "ko" ? "반복되는 일상 불편을 줄이는 순간" : "reducing recurring daily friction moments";
+        return currentLocale === "ko" ? "諛섎났?섎뒗 ?쇱긽 遺덊렪??以꾩씠???쒓컙" : "reducing recurring daily friction moments";
     }
     return raw.length > 140 ? `${raw.slice(0, 137)}...` : raw;
 }
@@ -10690,12 +10695,12 @@ function buildReflectedValues(payload) {
     const mission = String(payload.scenarioMeta?.missionBucket || "").toLowerCase();
     const primary = String(payload.exploreGrounding?.primaryValue || "").toLowerCase();
     const values = [
-        { key: "care", ko: "돌봄/안심", en: "Care/Reassurance", hit: mission === "care" || primary.includes("reassurance") || primary.includes("care") },
-        { key: "save", ko: "절감/통제", en: "Savings/Control", hit: mission === "save" || primary.includes("saving") || primary.includes("control") },
-        { key: "ease", ko: "편의/효율", en: "Convenience/Efficiency", hit: mission === "discover" || mission === "play" || primary.includes("lighter") || primary.includes("comfort") },
-        { key: "secure", ko: "신뢰/보안", en: "Trust/Security", hit: mission === "secure" || primary.includes("security") || primary.includes("response") }
+        { key: "care", ko: "?뚮큵/?덉떖", en: "Care/Reassurance", hit: mission === "care" || primary.includes("reassurance") || primary.includes("care") },
+        { key: "save", ko: "?덇컧/?듭젣", en: "Savings/Control", hit: mission === "save" || primary.includes("saving") || primary.includes("control") },
+        { key: "ease", ko: "?몄쓽/?⑥쑉", en: "Convenience/Efficiency", hit: mission === "discover" || mission === "play" || primary.includes("lighter") || primary.includes("comfort") },
+        { key: "secure", ko: "?좊ː/蹂댁븞", en: "Trust/Security", hit: mission === "secure" || primary.includes("security") || primary.includes("response") }
     ];
-    return values.map((item) => `${item.hit ? "✓" : "·"} ${currentLocale === "ko" ? item.ko : item.en}`);
+    return values.map((item) => `${item.hit ? "?? : "쨌"} ${currentLocale === "ko" ? item.ko : item.en}`);
 }
 
 function buildSixLineSummary(payload) {
@@ -10708,25 +10713,25 @@ function buildSixLineSummary(payload) {
         payload.marketability?.rationale || ""
     ].filter(Boolean).slice(0, 6);
     while (lines.length < 6) {
-        lines.push(currentLocale === "ko" ? "실행 전제와 채널별 메시지를 함께 점검합니다." : "Validate assumptions together with channel-specific messaging.");
+        lines.push(currentLocale === "ko" ? "?ㅽ뻾 ?꾩젣? 梨꾨꼸蹂?硫붿떆吏瑜??④퍡 ?먭??⑸땲??" : "Validate assumptions together with channel-specific messaging.");
     }
     return lines.slice(0, 6);
 }
 
-// Explore Contents v2.0 기반 20개 시나리오 (12대 키워드 전체 커버)
+// Explore Contents v2.0 湲곕컲 20媛??쒕굹由ъ삤 (12? ?ㅼ썙???꾩껜 而ㅻ쾭)
 const EXPLORE_SCENARIOS = [
-    // ── SAVE ENERGY ──────────────────────────────────────────────
+    // ?? SAVE ENERGY ??????????????????????????????????????????????
     {
         id: "save-energy-tips",
         title: "Tips for saving energy at home",
-        tags: ["Save energy", "에너지 절약", "Keep your home safe"],
-        devices: ["에어컨", "세탁기", "건조기", "스마트 플러그"],
+        tags: ["Save energy", "?먮꼫吏 ?덉빟", "Keep your home safe"],
+        devices: ["?먯뼱而?, "?명긽湲?, "嫄댁“湲?, "?ㅻ쭏???뚮윭洹?],
         missionBucket: "Save",
         content: {
             ko: {
-                pain: "전기요금 누진세와 대기전력 낭비가 걱정되지만, 외출할 때마다 기기를 하나씩 끄는 것이 번거롭고 자꾸 놓칩니다.",
-                solution: "SmartThings AI Energy Mode를 켜면 월간 목표 요금에 맞춰 가전의 에너지 소비를 자동 최적화합니다. 집을 비웠을 때 켜진 기기를 감지해 '모두 끄기' 한 번으로 전력을 차단할 수 있습니다.",
-                benefit: "불필요한 에너지 낭비를 줄여 전기요금을 절감하고, 스마트 플러그로 대기전력까지 차단해 친환경 생활이 가능해집니다."
+                pain: "?꾧린?붽툑 ?꾩쭊?몄? ?湲곗쟾????퉬媛 嫄깆젙?섏?留? ?몄텧???뚮쭏??湲곌린瑜??섎굹???꾨뒗 寃껋씠 踰덇굅濡?퀬 ?먭씀 ?볦묩?덈떎.",
+                solution: "SmartThings AI Energy Mode瑜?耳쒕㈃ ?붽컙 紐⑺몴 ?붽툑??留욎떠 媛?꾩쓽 ?먮꼫吏 ?뚮퉬瑜??먮룞 理쒖쟻?뷀빀?덈떎. 吏묒쓣 鍮꾩썱????耳쒖쭊 湲곌린瑜?媛먯???'紐⑤몢 ?꾧린' ??踰덉쑝濡??꾨젰??李⑤떒?????덉뒿?덈떎.",
+                benefit: "遺덊븘?뷀븳 ?먮꼫吏 ??퉬瑜?以꾩뿬 ?꾧린?붽툑???덇컧?섍퀬, ?ㅻ쭏???뚮윭洹몃줈 ?湲곗쟾?κ퉴吏 李⑤떒??移쒗솚寃??앺솢??媛?ν빐吏묐땲??"
             },
             en: {
                 pain: "Worrying about electricity bill surcharges and standby power waste, but finding it tedious to turn off every device before leaving home.",
@@ -10738,14 +10743,14 @@ const EXPLORE_SCENARIOS = [
     {
         id: "seamlessly-save-energy",
         title: "Seamlessly save energy",
-        tags: ["Save energy", "에너지 절약", "Control lights", "Easily control your lights"],
-        devices: ["냉장고", "에어컨", "세탁기", "건조기", "조명"],
+        tags: ["Save energy", "?먮꼫吏 ?덉빟", "Control lights", "Easily control your lights"],
+        devices: ["?됱옣怨?, "?먯뼱而?, "?명긽湲?, "嫄댁“湲?, "議곕챸"],
         missionBucket: "Save",
         content: {
             ko: {
-                pain: "사용자가 인지하지 못하는 사이 새어나가는 전력과 복잡한 절전 설정의 번거로움이 쌓입니다.",
-                solution: "가전제품이 스스로 에너지 사용량을 모니터링하고 피크 시간대를 피해 AI 절약 알고리즘으로 작동합니다. 세탁기는 물 온도를 낮추고, TV는 주변 조도에 맞춰 밝기를 자동 조절합니다.",
-                benefit: "별도의 신경을 쓰지 않아도 매달 고지서에서 실질적인 비용 절감 효과를 체감하게 됩니다."
+                pain: "?ъ슜?먭? ?몄??섏? 紐삵븯???ъ씠 ?덉뼱?섍????꾨젰怨?蹂듭옟???덉쟾 ?ㅼ젙??踰덇굅濡쒖????볦엯?덈떎.",
+                solution: "媛?꾩젣?덉씠 ?ㅼ뒪濡??먮꼫吏 ?ъ슜?됱쓣 紐⑤땲?곕쭅?섍퀬 ?쇳겕 ?쒓컙?瑜??쇳빐 AI ?덉빟 ?뚭퀬由ъ쬁?쇰줈 ?묐룞?⑸땲?? ?명긽湲곕뒗 臾??⑤룄瑜???텛怨? TV??二쇰? 議곕룄??留욎떠 諛앷린瑜??먮룞 議곗젅?⑸땲??",
+                benefit: "蹂꾨룄???좉꼍???곗? ?딆븘??留ㅻ떖 怨좎??쒖뿉???ㅼ쭏?곸씤 鍮꾩슜 ?덇컧 ?④낵瑜?泥닿컧?섍쾶 ?⑸땲??"
             },
             en: {
                 pain: "Wasted energy that goes unnoticed, and the complexity of manually managing power-saving settings across multiple devices.",
@@ -10757,14 +10762,14 @@ const EXPLORE_SCENARIOS = [
     {
         id: "eco-friendly-laundry",
         title: "Eco-friendly laundry",
-        tags: ["Save energy", "에너지 절약", "Help with chores"],
-        devices: ["세탁기", "건조기", "세탁기/건조기"],
+        tags: ["Save energy", "?먮꼫吏 ?덉빟", "Help with chores"],
+        devices: ["?명긽湲?, "嫄댁“湲?, "?명긽湲?嫄댁“湲?],
         missionBucket: "Save",
         content: {
             ko: {
-                pain: "매일 달라지는 세탁물 종류와 양에 맞춰 최적 코스를 고르는 것이 번거롭고, 옷감 손상이나 에너지 낭비가 걱정됩니다.",
-                solution: "AI가 세탁물의 종류, 무게, 오염도를 자동으로 확인해 세탁부터 건조까지 맞춤 코스를 설정합니다. 세제도 무게에 맞춰 자동 투입되며, 에너지가 저렴한 시간대에 맞춰 작동을 예약할 수 있습니다.",
-                benefit: "옷감 손상과 에너지 낭비를 동시에 줄이고, 미세 플라스틱 저감 코스로 환경 부담까지 낮출 수 있습니다."
+                pain: "留ㅼ씪 ?щ씪吏???명긽臾?醫낅쪟? ?묒뿉 留욎떠 理쒖쟻 肄붿뒪瑜?怨좊Ⅴ??寃껋씠 踰덇굅濡?퀬, ?룰컧 ?먯긽?대굹 ?먮꼫吏 ??퉬媛 嫄깆젙?⑸땲??",
+                solution: "AI媛 ?명긽臾쇱쓽 醫낅쪟, 臾닿쾶, ?ㅼ뿼?꾨? ?먮룞?쇰줈 ?뺤씤???명긽遺??嫄댁“源뚯? 留욎땄 肄붿뒪瑜??ㅼ젙?⑸땲?? ?몄젣??臾닿쾶??留욎떠 ?먮룞 ?ъ엯?섎ŉ, ?먮꼫吏媛 ??댄븳 ?쒓컙???留욎떠 ?묐룞???덉빟?????덉뒿?덈떎.",
+                benefit: "?룰컧 ?먯긽怨??먮꼫吏 ??퉬瑜??숈떆??以꾩씠怨? 誘몄꽭 ?뚮씪?ㅽ떛 ?媛?肄붿뒪濡??섍꼍 遺?닿퉴吏 ??텧 ???덉뒿?덈떎."
             },
             en: {
                 pain: "Choosing the right wash cycle for changing laundry every day is tedious, and concerns about fabric damage or energy waste add up.",
@@ -10773,57 +10778,57 @@ const EXPLORE_SCENARIOS = [
             }
         }
     },
-    // ── KEEP THE AIR FRESH ────────────────────────────────────────
+    // ?? KEEP THE AIR FRESH ????????????????????????????????????????
     {
         id: "keep-air-fresh",
         title: "Keep the air fresh",
         tags: ["Air fresh", "Keep the air fresh"],
-        devices: ["에어컨", "공기청정기"],
+        devices: ["?먯뼱而?, "怨듦린泥?젙湲?],
         missionBucket: "Save",
         content: {
             ko: {
-                pain: "외출 중 실내 공기질이 나빠져도 알 수가 없고, 귀가 후에야 탁한 공기를 마주하게 됩니다.",
-                solution: "SmartThings Air Care가 실외 공기질을 실시간으로 분석해 환기 최적 타이밍을 조명 색상으로 알려줍니다. 공기청정기와 에어컨이 자동으로 연동되어 실내 공기를 쾌적하게 유지합니다.",
-                benefit: "언제 환기할지 일일이 확인하지 않아도 집 안 공기가 항상 깨끗하게 유지되어 가족 모두의 건강을 지킬 수 있습니다."
+                pain: "?몄텧 以??ㅻ궡 怨듦린吏덉씠 ?섎튌?몃룄 ???섍? ?녾퀬, 洹媛 ?꾩뿉???곹븳 怨듦린瑜?留덉＜?섍쾶 ?⑸땲??",
+                solution: "SmartThings Air Care媛 ?ㅼ쇅 怨듦린吏덉쓣 ?ㅼ떆媛꾩쑝濡?遺꾩꽍???섍린 理쒖쟻 ??대컢??議곕챸 ?됱긽?쇰줈 ?뚮젮以띾땲?? 怨듦린泥?젙湲곗? ?먯뼱而⑥씠 ?먮룞?쇰줈 ?곕룞?섏뼱 ?ㅻ궡 怨듦린瑜?苡뚯쟻?섍쾶 ?좎??⑸땲??",
+                benefit: "?몄젣 ?섍린?좎? ?쇱씪???뺤씤?섏? ?딆븘??吏???怨듦린媛 ??긽 源⑤걮?섍쾶 ?좎??섏뼱 媛議?紐⑤몢??嫄닿컯??吏?????덉뒿?덈떎."
             },
             en: {
                 pain: "Air quality worsens while you're out, and you only notice when you return home to stale air.",
                 solution: "SmartThings Air Care analyzes outdoor air quality in real time and signals the best ventilation timing via lighting color. The air purifier and AC work together automatically to keep indoor air fresh.",
-                benefit: "No need to check when to ventilate—your home air stays clean at all times, protecting the health of your whole family."
+                benefit: "No need to check when to ventilate?봸our home air stays clean at all times, protecting the health of your whole family."
             }
         }
     },
     {
         id: "welcome-to-scandinavia",
         title: "Welcome to Scandinavia",
-        tags: ["Air fresh", "Keep the air fresh", "Save energy", "에너지 절약", "Help with chores"],
-        devices: ["에어컨", "세탁기", "건조기"],
+        tags: ["Air fresh", "Keep the air fresh", "Save energy", "?먮꼫吏 ?덉빟", "Help with chores"],
+        devices: ["?먯뼱而?, "?명긽湲?, "嫄댁“湲?],
         missionBucket: "Save",
         content: {
             ko: {
-                pain: "쾌적한 공기질과 에너지 효율, 집안일 자동화를 모두 챙기려면 여러 기기를 따로따로 설정해야 해서 복잡합니다.",
-                solution: "북유럽 라이프스타일에서 영감을 받은 SmartThings 루틴이 공기청정기, 에어컨, 세탁기를 에너지 효율이 높은 시간대에 통합 운영합니다.",
-                benefit: "깨끗한 공기와 낮은 전기요금, 자동화된 가사까지 한 번에 관리되어 여유 있는 일상을 즐길 수 있습니다."
+                pain: "苡뚯쟻??怨듦린吏덇낵 ?먮꼫吏 ?⑥쑉, 吏묒븞???먮룞?붾? 紐⑤몢 梨숆린?ㅻ㈃ ?щ윭 湲곌린瑜??곕줈?곕줈 ?ㅼ젙?댁빞 ?댁꽌 蹂듭옟?⑸땲??",
+                solution: "遺곸쑀???쇱씠?꾩뒪??쇱뿉???곴컧??諛쏆? SmartThings 猷⑦떞??怨듦린泥?젙湲? ?먯뼱而? ?명긽湲곕? ?먮꼫吏 ?⑥쑉???믪? ?쒓컙????듯빀 ?댁쁺?⑸땲??",
+                benefit: "源⑤걮??怨듦린? ??? ?꾧린?붽툑, ?먮룞?붾맂 媛?ш퉴吏 ??踰덉뿉 愿由щ릺???ъ쑀 ?덈뒗 ?쇱긽??利먭만 ???덉뒿?덈떎."
             },
             en: {
                 pain: "Managing air quality, energy efficiency, and home chore automation separately requires juggling multiple settings across devices.",
                 solution: "A SmartThings routine inspired by Nordic Hygge lifestyle integrates the air purifier, AC, and washer, running them automatically at energy-efficient times.",
-                benefit: "Clean air, lower electricity bills, and automated chores all managed together—freeing up your time for a more relaxed daily life."
+                benefit: "Clean air, lower electricity bills, and automated chores all managed together?봣reeing up your time for a more relaxed daily life."
             }
         }
     },
-    // ── CONTROL LIGHTS ────────────────────────────────────────────
+    // ?? CONTROL LIGHTS ????????????????????????????????????????????
     {
         id: "lights-as-alerts",
         title: "Your lights can alert you",
         tags: ["Control lights", "Easily control your lights", "Help with chores", "Air fresh", "Keep the air fresh", "Sleep well"],
-        devices: ["조명"],
+        devices: ["議곕챸"],
         missionBucket: "Discover",
         content: {
             ko: {
-                pain: "세탁 완료 알림 소리를 놓치거나, 공기질이 나쁠 때 따로 앱을 열어 확인해야 하는 번거로움이 있습니다.",
-                solution: "SmartThings가 세탁 완료 시 거실 조명을 녹색으로 깜빡이고, 공기질이 나쁠 때 붉은빛으로 알립니다. 도어벨이 울리면 조명이 반응해 소리를 놓쳐도 방문자를 확인할 수 있습니다.",
-                benefit: "소리에 의존하지 않고도 조명만으로 중요한 생활 알림을 놓치지 않게 되어 일상이 훨씬 편리해집니다."
+                pain: "?명긽 ?꾨즺 ?뚮┝ ?뚮━瑜??볦튂嫄곕굹, 怨듦린吏덉씠 ?섏걽 ???곕줈 ?깆쓣 ?댁뼱 ?뺤씤?댁빞 ?섎뒗 踰덇굅濡쒖????덉뒿?덈떎.",
+                solution: "SmartThings媛 ?명긽 ?꾨즺 ??嫄곗떎 議곕챸???뱀깋?쇰줈 源쒕묀?닿퀬, 怨듦린吏덉씠 ?섏걽 ??遺됱?鍮쏆쑝濡??뚮┰?덈떎. ?꾩뼱踰⑥씠 ?몃━硫?議곕챸??諛섏쓳???뚮━瑜??볦퀜??諛⑸Ц?먮? ?뺤씤?????덉뒿?덈떎.",
+                benefit: "?뚮━???섏〈?섏? ?딄퀬??議곕챸留뚯쑝濡?以묒슂???앺솢 ?뚮┝???볦튂吏 ?딄쾶 ?섏뼱 ?쇱긽???⑥뵮 ?몃━?댁쭛?덈떎."
             },
             en: {
                 pain: "Missing laundry completion alerts or having to open an app to check air quality every time is inconvenient and easy to forget.",
@@ -10836,37 +10841,37 @@ const EXPLORE_SCENARIOS = [
         id: "smart-lighting",
         title: "Add convenience to your life with lighting",
         tags: ["Control lights", "Easily control your lights"],
-        devices: ["조명"],
+        devices: ["議곕챸"],
         missionBucket: "Discover",
         content: {
             ko: {
-                pain: "외출 전 집안 곳곳의 불을 끄러 다니거나, 밤에 화장실 가면서 조명 스위치를 찾는 불편함이 반복됩니다.",
-                solution: "SmartThings와 스마트 조명을 연동하면 어디서든 조명을 제어하고 밝기·색온도를 조절해 원하는 분위기를 만들 수 있습니다. 재실 감지 센서와 연결하면 움직임 감지 시 조명이 자동으로 켜집니다.",
-                benefit: "수면 중 화장실도 안전하게, 퇴근 전 전등 걱정 없이—조명 하나로 생활 편의가 크게 달라집니다."
+                pain: "?몄텧 ??吏묒븞 怨녠납??遺덉쓣 ?꾨윭 ?ㅻ땲嫄곕굹, 諛ㅼ뿉 ?붿옣??媛硫댁꽌 議곕챸 ?ㅼ쐞移섎? 李얜뒗 遺덊렪?⑥씠 諛섎났?⑸땲??",
+                solution: "SmartThings? ?ㅻ쭏??議곕챸???곕룞?섎㈃ ?대뵒?쒕뱺 議곕챸???쒖뼱?섍퀬 諛앷린쨌?됱삩?꾨? 議곗젅???먰븯??遺꾩쐞湲곕? 留뚮뱾 ???덉뒿?덈떎. ?ъ떎 媛먯? ?쇱꽌? ?곌껐?섎㈃ ?吏곸엫 媛먯? ??議곕챸???먮룞?쇰줈 耳쒖쭛?덈떎.",
+                benefit: "?섎㈃ 以??붿옣?ㅻ룄 ?덉쟾?섍쾶, ?닿렐 ???꾨벑 嫄깆젙 ?놁씠?붿“紐??섎굹濡??앺솢 ?몄쓽媛 ?ш쾶 ?щ씪吏묐땲??"
             },
             en: {
                 pain: "Walking around to turn off lights before leaving, or fumbling for a switch on a dark midnight bathroom trip, is a daily frustration.",
                 solution: "SmartThings with smart lighting lets you control any light remotely and adjust brightness and color temperature for the perfect ambience. Motion sensors turn lights on automatically when movement is detected.",
-                benefit: "Safe midnight trips, no more worrying about lights left on—one smart lighting setup transforms daily convenience."
+                benefit: "Safe midnight trips, no more worrying about lights left on?봮ne smart lighting setup transforms daily convenience."
             }
         }
     },
-    // ── HELP WITH CHORES ──────────────────────────────────────────
+    // ?? HELP WITH CHORES ??????????????????????????????????????????
     {
         id: "ai-handles-housework",
         title: "Let AI handle the housework",
         tags: ["Help with chores"],
-        devices: ["세탁기", "건조기", "세탁기/건조기", "로봇청소기"],
+        devices: ["?명긽湲?, "嫄댁“湲?, "?명긽湲?嫄댁“湲?, "濡쒕큸泥?냼湲?],
         missionBucket: "Save",
         content: {
             ko: {
-                pain: "매일 달라지는 집안일을 직접 챙기다 보면 시간과 에너지가 계속 소모되고, 가전 사용법이 헷갈릴 때도 많습니다.",
-                solution: "AI가 세탁물 종류와 무게를 감지해 최적 코스를 자동 설정합니다. Bixby에게 '수건 코스 설정해줘'라고 말하거나, '세탁기 배수 필터 청소 방법'을 물어보면 바로 답을 받을 수 있습니다.",
-                benefit: "가전을 더 잘 활용하게 되면서 집안일의 시간과 노력이 눈에 띄게 줄고, 관리 스트레스도 함께 줄어듭니다."
+                pain: "留ㅼ씪 ?щ씪吏??吏묒븞?쇱쓣 吏곸젒 梨숆린??蹂대㈃ ?쒓컙怨??먮꼫吏媛 怨꾩냽 ?뚮え?섍퀬, 媛???ъ슜踰뺤씠 ?룰컝由??뚮룄 留롮뒿?덈떎.",
+                solution: "AI媛 ?명긽臾?醫낅쪟? 臾닿쾶瑜?媛먯???理쒖쟻 肄붿뒪瑜??먮룞 ?ㅼ젙?⑸땲?? Bixby?먭쾶 '?섍굔 肄붿뒪 ?ㅼ젙?댁쨾'?쇨퀬 留먰븯嫄곕굹, '?명긽湲?諛곗닔 ?꾪꽣 泥?냼 諛⑸쾿'??臾쇱뼱蹂대㈃ 諛붾줈 ?듭쓣 諛쏆쓣 ???덉뒿?덈떎.",
+                benefit: "媛?꾩쓣 ?????쒖슜?섍쾶 ?섎㈃??吏묒븞?쇱쓽 ?쒓컙怨??몃젰???덉뿉 ?꾧쾶 以꾧퀬, 愿由??ㅽ듃?덉뒪???④퍡 以꾩뼱??땲??"
             },
             en: {
                 pain: "Keeping up with daily housework drains time and energy, and it's easy to get confused about the right settings for each appliance.",
-                solution: "AI detects laundry type and weight to auto-set the optimal cycle. Tell Bixby 'set the towel cycle' or ask 'how do I clean the drain filter?'—and get an instant answer.",
+                solution: "AI detects laundry type and weight to auto-set the optimal cycle. Tell Bixby 'set the towel cycle' or ask 'how do I clean the drain filter?'?봞nd get an instant answer.",
                 benefit: "Better appliance use reduces the time and effort spent on chores significantly, along with the stress of managing them."
             }
         }
@@ -10875,13 +10880,13 @@ const EXPLORE_SCENARIOS = [
         id: "smart-home-party",
         title: "Hosting a smart home party",
         tags: ["Help with chores", "Enhanced mood"],
-        devices: ["조명", "스피커", "TV", "로봇청소기"],
+        devices: ["議곕챸", "?ㅽ뵾而?, "TV", "濡쒕큸泥?냼湲?],
         missionBucket: "Play",
         content: {
             ko: {
-                pain: "손님 맞이 준비부터 파티 분위기 연출, 파티 후 청소까지 모든 것을 혼자 챙기려면 지칩니다.",
-                solution: "파티 루틴을 실행하면 조명이 파티 모드로 바뀌고 스피커에서 음악이 흘러나옵니다. 파티가 끝나면 로봇청소기가 자동으로 청소를 시작해 뒷정리 걱정을 덜어줍니다.",
-                benefit: "파티 준비와 마무리 모두 자동화되어 손님 접대에만 집중할 수 있고, 피로한 뒷정리 걱정도 사라집니다."
+                pain: "?먮떂 留욎씠 以鍮꾨????뚰떚 遺꾩쐞湲??곗텧, ?뚰떚 ??泥?냼源뚯? 紐⑤뱺 寃껋쓣 ?쇱옄 梨숆린?ㅻ㈃ 吏移⑸땲??",
+                solution: "?뚰떚 猷⑦떞???ㅽ뻾?섎㈃ 議곕챸???뚰떚 紐⑤뱶濡?諛붾뚭퀬 ?ㅽ뵾而ㅼ뿉???뚯븙???섎윭?섏샃?덈떎. ?뚰떚媛 ?앸굹硫?濡쒕큸泥?냼湲곌? ?먮룞?쇰줈 泥?냼瑜??쒖옉???룹젙由?嫄깆젙???쒖뼱以띾땲??",
+                benefit: "?뚰떚 以鍮꾩? 留덈Т由?紐⑤몢 ?먮룞?붾릺???먮떂 ?묐??먮쭔 吏묒쨷?????덇퀬, ?쇰줈???룹젙由?嫄깆젙???щ씪吏묐땲??"
             },
             en: {
                 pain: "Handling party setup, ambiance, and cleanup single-handedly is exhausting and takes away from actually enjoying the event.",
@@ -10890,23 +10895,23 @@ const EXPLORE_SCENARIOS = [
             }
         }
     },
-    // ── KEEP YOUR HOME SAFE ───────────────────────────────────────
+    // ?? KEEP YOUR HOME SAFE ???????????????????????????????????????
     {
         id: "keep-home-safe",
         title: "Keep your home safe anytime, anywhere",
         tags: ["Keep your home safe"],
-        devices: ["센서"],
+        devices: ["?쇱꽌"],
         missionBucket: "Secure",
         content: {
             ko: {
-                pain: "출장이나 여행 중에 집 보안이 걱정되고, 택배 분실이나 낯선 방문자가 신경 쓰입니다.",
-                solution: "비디오 도어벨이 움직임을 감지하면 스마트폰과 TV에 실시간 알림과 영상이 팝업됩니다. Knox Matrix 보안 기술로 사용자가 귀가하면 실내 카메라가 자동으로 꺼져 프라이버시가 보호됩니다.",
-                benefit: "어디서든 집 상황을 실시간으로 확인하고, 귀가 시엔 카메라가 자동 오프되어 보안과 프라이버시를 동시에 지킬 수 있습니다."
+                pain: "異쒖옣?대굹 ?ы뻾 以묒뿉 吏?蹂댁븞??嫄깆젙?섍퀬, ?앸같 遺꾩떎?대굹 ??꽑 諛⑸Ц?먭? ?좉꼍 ?곗엯?덈떎.",
+                solution: "鍮꾨뵒???꾩뼱踰⑥씠 ?吏곸엫??媛먯??섎㈃ ?ㅻ쭏?명룿怨?TV???ㅼ떆媛??뚮┝怨??곸긽???앹뾽?⑸땲?? Knox Matrix 蹂댁븞 湲곗닠濡??ъ슜?먭? 洹媛?섎㈃ ?ㅻ궡 移대찓?쇨? ?먮룞?쇰줈 爰쇱졇 ?꾨씪?대쾭?쒓? 蹂댄샇?⑸땲??",
+                benefit: "?대뵒?쒕뱺 吏??곹솴???ㅼ떆媛꾩쑝濡??뺤씤?섍퀬, 洹媛 ?쒖뿏 移대찓?쇨? ?먮룞 ?ㅽ봽?섏뼱 蹂댁븞怨??꾨씪?대쾭?쒕? ?숈떆??吏?????덉뒿?덈떎."
             },
             en: {
                 pain: "Worrying about home security during business trips or vacations, and concerns about missed deliveries or unfamiliar visitors.",
                 solution: "The video doorbell detects movement and pops up live alerts on your phone and TV. Knox Matrix technology automatically turns off indoor cameras when you arrive home, protecting your privacy.",
-                benefit: "Monitor your home in real time from anywhere, with cameras auto-off on arrival—security and privacy protected simultaneously."
+                benefit: "Monitor your home in real time from anywhere, with cameras auto-off on arrival?봲ecurity and privacy protected simultaneously."
             }
         }
     },
@@ -10914,33 +10919,33 @@ const EXPLORE_SCENARIOS = [
         id: "knox-protection",
         title: "Help keep your home private and protected",
         tags: ["Keep your home safe"],
-        devices: ["센서", "TV"],
+        devices: ["?쇱꽌", "TV"],
         missionBucket: "Secure",
         content: {
             ko: {
-                pain: "스마트홈 기기가 많아질수록 해킹 우려와 개인정보 유출이 걱정됩니다.",
-                solution: "Samsung Knox Matrix가 연결된 모든 기기를 프라이빗 블록체인으로 묶어 상호 보안 감시를 수행합니다. 취약한 기기가 감지되면 즉시 네트워크에서 격리시킵니다. 삼성 AI 가전은 업계 최초 UL Solutions 다이아몬드 등급을 획득했습니다.",
-                benefit: "기기가 늘어날수록 보안이 강해지는 삼성 생태계 안에서, 해킹 걱정 없이 스마트홈을 마음껏 확장할 수 있습니다."
+                pain: "?ㅻ쭏?명솃 湲곌린媛 留롮븘吏덉닔濡??댄궧 ?곕젮? 媛쒖씤?뺣낫 ?좎텧??嫄깆젙?⑸땲??",
+                solution: "Samsung Knox Matrix媛 ?곌껐??紐⑤뱺 湲곌린瑜??꾨씪?대퉿 釉붾줉泥댁씤?쇰줈 臾띠뼱 ?곹샇 蹂댁븞 媛먯떆瑜??섑뻾?⑸땲?? 痍⑥빟??湲곌린媛 媛먯??섎㈃ 利됱떆 ?ㅽ듃?뚰겕?먯꽌 寃⑸━?쒗궢?덈떎. ?쇱꽦 AI 媛?꾩? ?낃퀎 理쒖큹 UL Solutions ?ㅼ씠?꾨が???깃툒???띾뱷?덉뒿?덈떎.",
+                benefit: "湲곌린媛 ?섏뼱?좎닔濡?蹂댁븞??媛뺥빐吏???쇱꽦 ?앺깭怨??덉뿉?? ?댄궧 嫄깆젙 ?놁씠 ?ㅻ쭏?명솃??留덉쓬猿??뺤옣?????덉뒿?덈떎."
             },
             en: {
                 pain: "As smart home devices multiply, concerns about hacking risks and personal data exposure grow alongside them.",
                 solution: "Samsung Knox Matrix links all connected devices in a private blockchain for mutual security monitoring. Vulnerable devices are immediately isolated when detected. Samsung AI appliances hold the industry-first Diamond security rating from UL Solutions.",
-                benefit: "The more devices you add, the stronger your security—expand your smart home freely without hacking concerns."
+                benefit: "The more devices you add, the stronger your security?봢xpand your smart home freely without hacking concerns."
             }
         }
     },
-    // ── SLEEP WELL ────────────────────────────────────────────────
+    // ?? SLEEP WELL ????????????????????????????????????????????????
     {
         id: "sleep-specialist",
         title: "Your own in-house sleep specialist",
         tags: ["Sleep well", "Air fresh", "Keep the air fresh", "Control lights", "Easily control your lights"],
-        devices: ["조명", "에어컨", "공기청정기"],
+        devices: ["議곕챸", "?먯뼱而?, "怨듦린泥?젙湲?],
         missionBucket: "Save",
         content: {
             ko: {
-                pain: "잠들기 전 조명, 온도, 공기질을 일일이 맞추는 것이 번거롭고, 아침에 일어날 때 개운하지 않은 날이 많습니다.",
-                solution: "갤럭시 워치나 갤럭시 링이 수면 감지를 시작하면, 침실 조명이 서서히 어두워지고 커튼이 닫히며 에어컨과 공기청정기가 조용히 작동합니다. 기상 시간에는 커튼이 열리고 TV가 자연스럽게 켜집니다.",
-                benefit: "수면 환경을 설정하는 수고 없이 신체 리듬에 맞춘 최적의 수면 환경이 자동으로 완성되어 더 깊고 개운한 숙면을 취할 수 있습니다."
+                pain: "?좊뱾湲???議곕챸, ?⑤룄, 怨듦린吏덉쓣 ?쇱씪??留욎텛??寃껋씠 踰덇굅濡?퀬, ?꾩묠???쇱뼱????媛쒖슫?섏? ?딆? ?좎씠 留롮뒿?덈떎.",
+                solution: "媛ㅻ윮???뚯튂??媛ㅻ윮??留곸씠 ?섎㈃ 媛먯?瑜??쒖옉?섎㈃, 移⑥떎 議곕챸???쒖꽌???대몢?뚯?怨?而ㅽ듉???ロ엳硫??먯뼱而④낵 怨듦린泥?젙湲곌? 議곗슜???묐룞?⑸땲?? 湲곗긽 ?쒓컙?먮뒗 而ㅽ듉???대━怨?TV媛 ?먯뿰?ㅻ읇寃?耳쒖쭛?덈떎.",
+                benefit: "?섎㈃ ?섍꼍???ㅼ젙?섎뒗 ?섍퀬 ?놁씠 ?좎껜 由щ벉??留욎텣 理쒖쟻???섎㈃ ?섍꼍???먮룞?쇰줈 ?꾩꽦?섏뼱 ??源딄퀬 媛쒖슫???숇㈃??痍⑦븷 ???덉뒿?덈떎."
             },
             en: {
                 pain: "Manually adjusting lights, temperature, and air quality before bed is tedious, and waking up unrefreshed happens too often.",
@@ -10949,23 +10954,23 @@ const EXPLORE_SCENARIOS = [
             }
         }
     },
-    // ── ENHANCED MOOD ─────────────────────────────────────────────
+    // ?? ENHANCED MOOD ?????????????????????????????????????????????
     {
         id: "ultimate-gaming",
         title: "The ultimate gaming environment",
         tags: ["Enhanced mood", "Air fresh", "Keep the air fresh", "Control lights", "Easily control your lights"],
-        devices: ["TV", "조명", "에어컨"],
+        devices: ["TV", "議곕챸", "?먯뼱而?],
         missionBucket: "Play",
         content: {
             ko: {
-                pain: "게임을 시작할 때마다 조명, 블라인드, 에어컨을 일일이 조절해야 하고, 장시간 게임으로 방이 더워져 집중력이 떨어집니다.",
-                solution: "게이밍 허브 실행과 동시에 조명이 게임 화면과 실시간으로 색상을 동기화하고, 블라인드가 자동으로 내려갑니다. 무풍 에어컨이 직풍 없이 쾌적한 온도를 유지하며, 게임 종료 시 모든 환경이 일상 모드로 자동 복귀합니다.",
-                benefit: "별도의 조작 없이 게임 시작과 동시에 완벽한 몰입 환경이 완성되고, 종료 후 정리도 자동으로 됩니다."
+                pain: "寃뚯엫???쒖옉???뚮쭏??議곕챸, 釉붾씪?몃뱶, ?먯뼱而⑥쓣 ?쇱씪??議곗젅?댁빞 ?섍퀬, ?μ떆媛?寃뚯엫?쇰줈 諛⑹씠 ?붿썙??吏묒쨷?μ씠 ?⑥뼱吏묐땲??",
+                solution: "寃뚯씠諛??덈툕 ?ㅽ뻾怨??숈떆??議곕챸??寃뚯엫 ?붾㈃怨??ㅼ떆媛꾩쑝濡??됱긽???숆린?뷀븯怨? 釉붾씪?몃뱶媛 ?먮룞?쇰줈 ?대젮媛묐땲?? 臾댄뭾 ?먯뼱而⑥씠 吏곹뭾 ?놁씠 苡뚯쟻???⑤룄瑜??좎??섎ŉ, 寃뚯엫 醫낅즺 ??紐⑤뱺 ?섍꼍???쇱긽 紐⑤뱶濡??먮룞 蹂듦??⑸땲??",
+                benefit: "蹂꾨룄??議곗옉 ?놁씠 寃뚯엫 ?쒖옉怨??숈떆???꾨꼍??紐곗엯 ?섍꼍???꾩꽦?섍퀬, 醫낅즺 ???뺣━???먮룞?쇰줈 ?⑸땲??"
             },
             en: {
                 pain: "Adjusting lights, blinds, and AC manually every gaming session, then overheating during long play sessions that breaks concentration.",
                 solution: "Launching Gaming Hub syncs room lights to the screen in real time and lowers blinds automatically. WindFree AC maintains comfort without direct airflow, and everything resets to normal mode when gaming ends.",
-                benefit: "A perfect immersive environment is ready the moment gaming starts—and tidies itself when you're done, with zero manual intervention."
+                benefit: "A perfect immersive environment is ready the moment gaming starts?봞nd tidies itself when you're done, with zero manual intervention."
             }
         }
     },
@@ -10973,13 +10978,13 @@ const EXPLORE_SCENARIOS = [
         id: "upgrade-listening",
         title: "Upgrade your listening experience",
         tags: ["Enhanced mood"],
-        devices: ["스피커", "TV", "조명"],
+        devices: ["?ㅽ뵾而?, "TV", "議곕챸"],
         missionBucket: "Play",
         content: {
             ko: {
-                pain: "좋은 음악이나 영상을 즐기고 싶은데 기기별 설정이 복잡하고, 음악과 조명이 따로따로 놀아 분위기가 반감됩니다.",
-                solution: "뮤직 프레임이나 사운드바의 음악 재생과 연동하여 조명이 음악의 분위기에 맞게 자동으로 색상과 밝기를 조절합니다. 멀티룸 오디오로 집 안 어디서든 같은 음악을 즐길 수 있습니다.",
-                benefit: "조명과 음악이 하나가 되어 집이 나만의 홈 콘서트홀로 변신하고, 방마다 끊김 없는 음악 경험을 즐길 수 있습니다."
+                pain: "醫뗭? ?뚯븙?대굹 ?곸긽??利먭린怨??띠???湲곌린蹂??ㅼ젙??蹂듭옟?섍퀬, ?뚯븙怨?議곕챸???곕줈?곕줈 ???遺꾩쐞湲곌? 諛섍컧?⑸땲??",
+                solution: "裕ㅼ쭅 ?꾨젅?꾩씠???ъ슫?쒕컮???뚯븙 ?ъ깮怨??곕룞?섏뿬 議곕챸???뚯븙??遺꾩쐞湲곗뿉 留욊쾶 ?먮룞?쇰줈 ?됱긽怨?諛앷린瑜?議곗젅?⑸땲?? 硫?곕８ ?ㅻ뵒?ㅻ줈 吏????대뵒?쒕뱺 媛숈? ?뚯븙??利먭만 ???덉뒿?덈떎.",
+                benefit: "議곕챸怨??뚯븙???섎굹媛 ?섏뼱 吏묒씠 ?섎쭔????肄섏꽌?명?濡?蹂?좏븯怨? 諛⑸쭏???딄? ?녿뒗 ?뚯븙 寃쏀뿕??利먭만 ???덉뒿?덈떎."
             },
             en: {
                 pain: "Enjoying great music or content is hampered by complex per-device settings, and lights and audio working independently undercut the atmosphere.",
@@ -10988,123 +10993,123 @@ const EXPLORE_SCENARIOS = [
             }
         }
     },
-    // ── CARE FOR SENIORS ──────────────────────────────────────────
+    // ?? CARE FOR SENIORS ??????????????????????????????????????????
     {
         id: "family-care-apart",
         title: "Be worry-free even when apart",
-        tags: ["Care for seniors", "시니어 케어"],
-        devices: ["센서", "냉장고", "TV"],
+        tags: ["Care for seniors", "?쒕땲??耳??],
+        devices: ["?쇱꽌", "?됱옣怨?, "TV"],
         missionBucket: "Care",
         content: {
             ko: {
-                pain: "멀리 사시는 부모님의 안부가 걱정되지만 매번 전화하기는 부담스럽고, 카메라 감시는 사생활 침해 같아 불편합니다.",
-                solution: "Family Care 서비스가 냉장고 문 열림, TV 시청, 정수기 사용 패턴을 분석합니다. 평소와 달리 일정 시간 활동이 없으면 보호자에게 알림을 보내고, 정해진 시간에 복약 알림도 TV 화면으로 제공합니다.",
-                benefit: "사생활을 침해하지 않으면서도 부모님의 안부를 확인하고, 이상 상황에는 빠르게 대처할 수 있어 마음이 훨씬 놓입니다."
+                pain: "硫由??ъ떆??遺紐⑤떂???덈?媛 嫄깆젙?섏?留?留ㅻ쾲 ?꾪솕?섍린??遺?댁뒪?쎄퀬, 移대찓??媛먯떆???ъ깮??移⑦빐 媛숈븘 遺덊렪?⑸땲??",
+                solution: "Family Care ?쒕퉬?ㅺ? ?됱옣怨?臾??대┝, TV ?쒖껌, ?뺤닔湲??ъ슜 ?⑦꽩??遺꾩꽍?⑸땲?? ?됱냼? ?щ━ ?쇱젙 ?쒓컙 ?쒕룞???놁쑝硫?蹂댄샇?먯뿉寃??뚮┝??蹂대궡怨? ?뺥빐吏??쒓컙??蹂듭빟 ?뚮┝??TV ?붾㈃?쇰줈 ?쒓났?⑸땲??",
+                benefit: "?ъ깮?쒖쓣 移⑦빐?섏? ?딆쑝硫댁꽌??遺紐⑤떂???덈?瑜??뺤씤?섍퀬, ?댁긽 ?곹솴?먮뒗 鍮좊Ⅴ寃??泥섑븷 ???덉뼱 留덉쓬???⑥뵮 ?볦엯?덈떎."
             },
             en: {
-                pain: "Worrying about elderly parents far away, yet feeling awkward calling constantly—and using cameras feels like an invasion of their privacy.",
+                pain: "Worrying about elderly parents far away, yet feeling awkward calling constantly?봞nd using cameras feels like an invasion of their privacy.",
                 solution: "Family Care analyzes fridge door use, TV viewing, and water dispenser patterns. Unusual inactivity for a set period triggers an alert, and medication reminders appear on their TV at scheduled times.",
-                benefit: "Stay informed about your parents' wellbeing without intruding on their privacy, with fast alerts when something seems off—real peace of mind from a distance."
+                benefit: "Stay informed about your parents' wellbeing without intruding on their privacy, with fast alerts when something seems off?봱eal peace of mind from a distance."
             }
         }
     },
-    // ── CARE FOR KIDS ─────────────────────────────────────────────
+    // ?? CARE FOR KIDS ?????????????????????????????????????????????
     {
         id: "care-for-kids",
         title: "Keep your children comfortable and safe",
         tags: ["Care for kids", "Air fresh", "Keep the air fresh", "Keep your home safe"],
-        devices: ["에어컨", "센서"],
+        devices: ["?먯뼱而?, "?쇱꽌"],
         missionBucket: "Care",
         content: {
             ko: {
-                pain: "맞벌이 가정에서 아이가 혼자 귀가했을 때 안전한지, 실내 환경이 괜찮은지 직접 확인할 수 없어 걱정입니다.",
-                solution: "자녀가 귀가하면 도어락 신호로 스피커를 통해 따뜻한 음성 인사가 나오고, 더운 날은 에어컨이 자동으로 켜집니다. 주방 가전이 작동 중이면 즉시 알림을 받고, 공기질이 나쁘면 공기청정기가 자동 가동합니다.",
-                benefit: "아이의 귀가 확인부터 안전한 실내 환경 조성까지 자동으로 관리되어, 부모가 집에 없어도 아이가 안전하게 지낼 수 있습니다."
+                pain: "留욌쾶??媛?뺤뿉???꾩씠媛 ?쇱옄 洹媛?덉쓣 ???덉쟾?쒖?, ?ㅻ궡 ?섍꼍??愿쒖갖?吏 吏곸젒 ?뺤씤?????놁뼱 嫄깆젙?낅땲??",
+                solution: "?먮?媛 洹媛?섎㈃ ?꾩뼱???좏샇濡??ㅽ뵾而ㅻ? ?듯빐 ?곕쑜???뚯꽦 ?몄궗媛 ?섏삤怨? ?붿슫 ?좎? ?먯뼱而⑥씠 ?먮룞?쇰줈 耳쒖쭛?덈떎. 二쇰갑 媛?꾩씠 ?묐룞 以묒씠硫?利됱떆 ?뚮┝??諛쏄퀬, 怨듦린吏덉씠 ?섏걯硫?怨듦린泥?젙湲곌? ?먮룞 媛?숉빀?덈떎.",
+                benefit: "?꾩씠??洹媛 ?뺤씤遺???덉쟾???ㅻ궡 ?섍꼍 議곗꽦源뚯? ?먮룞?쇰줈 愿由щ릺?? 遺紐④? 吏묒뿉 ?놁뼱???꾩씠媛 ?덉쟾?섍쾶 吏?????덉뒿?덈떎."
             },
             en: {
                 pain: "In a dual-income household, not being able to check whether your child arrived safely or if the home environment is comfortable is a constant worry.",
                 solution: "When your child arrives home, the door lock triggers a warm voice greeting from the speaker, and the AC turns on automatically on hot days. Kitchen appliance alerts come through instantly, and poor air quality starts the purifier.",
-                benefit: "From arrival confirmation to safe indoor environment setup, everything is managed automatically—your child is safe and comfortable even when you're not there."
+                benefit: "From arrival confirmation to safe indoor environment setup, everything is managed automatically?봸our child is safe and comfortable even when you're not there."
             }
         }
     },
-    // ── CARE FOR PET ──────────────────────────────────────────────
+    // ?? CARE FOR PET ??????????????????????????????????????????????
     {
         id: "purrfect-pet-care",
         title: "Purrfect pet care",
-        tags: ["Care for pet", "반려동물 케어", "Keep your home safe", "Help with chores"],
-        devices: ["로봇청소기", "TV", "에어컨", "센서"],
+        tags: ["Care for pet", "諛섎젮?숇Ъ 耳??, "Keep your home safe", "Help with chores"],
+        devices: ["濡쒕큸泥?냼湲?, "TV", "?먯뼱而?, "?쇱꽌"],
         missionBucket: "Care",
         content: {
             ko: {
-                pain: "야근이나 외출로 반려동물이 집에 혼자 있어 불안하고, 온도나 음식, 분리불안을 제때 돌봐주지 못할까 걱정됩니다.",
-                solution: "Jet Bot AI+ 로봇청소기로 원격 순찰을 하고 반려동물 사진을 실시간 전송합니다. 짖음이 감지되면 TV에서 안정을 돕는 음악이 자동 재생되고, 에어컨이 쾌적한 온도를 유지합니다. 스마트 급식기로 원격 급식도 가능합니다.",
-                benefit: "멀리 있어도 반려동물의 상태를 실시간으로 확인하고 돌봄 공백을 채울 수 있어, 보호자의 불안이 크게 줄어듭니다."
+                pain: "?쇨렐?대굹 ?몄텧濡?諛섎젮?숇Ъ??吏묒뿉 ?쇱옄 ?덉뼱 遺덉븞?섍퀬, ?⑤룄???뚯떇, 遺꾨━遺덉븞???쒕븣 ?뚮킄二쇱? 紐삵븷源?嫄깆젙?⑸땲??",
+                solution: "Jet Bot AI+ 濡쒕큸泥?냼湲곕줈 ?먭꺽 ?쒖같???섍퀬 諛섎젮?숇Ъ ?ъ쭊???ㅼ떆媛??꾩넚?⑸땲?? 吏뽰쓬??媛먯??섎㈃ TV?먯꽌 ?덉젙???뺣뒗 ?뚯븙???먮룞 ?ъ깮?섍퀬, ?먯뼱而⑥씠 苡뚯쟻???⑤룄瑜??좎??⑸땲?? ?ㅻ쭏??湲됱떇湲곕줈 ?먭꺽 湲됱떇??媛?ν빀?덈떎.",
+                benefit: "硫由??덉뼱??諛섎젮?숇Ъ???곹깭瑜??ㅼ떆媛꾩쑝濡??뺤씤?섍퀬 ?뚮큵 怨듬갚??梨꾩슱 ???덉뼱, 蹂댄샇?먯쓽 遺덉븞???ш쾶 以꾩뼱??땲??"
             },
             en: {
-                pain: "Anxiety about a pet left alone during overtime or outings—unable to check on temperature, food, or separation anxiety in time.",
+                pain: "Anxiety about a pet left alone during overtime or outings?봴nable to check on temperature, food, or separation anxiety in time.",
                 solution: "The Jet Bot AI+ robot vacuum remotely patrols and sends real-time pet photos. Detected barking triggers calming music on the TV automatically, the AC maintains comfort, and a smart feeder enables remote feeding.",
-                benefit: "Check on your pet in real time and fill care gaps from anywhere—dramatically reducing a pet owner's worry while away."
+                benefit: "Check on your pet in real time and fill care gaps from anywhere?봡ramatically reducing a pet owner's worry while away."
             }
         }
     },
-    // ── FIND YOUR BELONGINGS ──────────────────────────────────────
+    // ?? FIND YOUR BELONGINGS ??????????????????????????????????????
     {
         id: "find-belongings",
         title: "Locate lost items easily",
         tags: ["Find your belongings", "Keep your home safe"],
-        devices: ["TV", "센서"],
+        devices: ["TV", "?쇱꽌"],
         missionBucket: "Secure",
         content: {
             ko: {
-                pain: "열쇠, 지갑, 리모컨 등 자주 잃어버리는 물건을 찾느라 시간을 낭비하고, 외출 전에 특히 스트레스를 받습니다.",
-                solution: "SmartTag를 부착한 물건의 위치를 SmartThings 앱에서 바로 확인하고, UWB 기술로 정밀하게 위치를 추적합니다. TV 화면에서 'Find my phone' 기능으로 숨어있는 스마트폰도 찾을 수 있습니다.",
-                benefit: "외출 전 물건 찾는 스트레스에서 해방되고, 귀중품을 항상 파악할 수 있어 일상이 한결 가벼워집니다."
+                pain: "?댁뇿, 吏媛? 由щえ而????먯＜ ?껋뼱踰꾨━??臾쇨굔??李얜뒓???쒓컙????퉬?섍퀬, ?몄텧 ?꾩뿉 ?뱁엳 ?ㅽ듃?덉뒪瑜?諛쏆뒿?덈떎.",
+                solution: "SmartTag瑜?遺李⑺븳 臾쇨굔???꾩튂瑜?SmartThings ?깆뿉??諛붾줈 ?뺤씤?섍퀬, UWB 湲곗닠濡??뺣??섍쾶 ?꾩튂瑜?異붿쟻?⑸땲?? TV ?붾㈃?먯꽌 'Find my phone' 湲곕뒫?쇰줈 ?⑥뼱?덈뒗 ?ㅻ쭏?명룿??李얠쓣 ???덉뒿?덈떎.",
+                benefit: "?몄텧 ??臾쇨굔 李얜뒗 ?ㅽ듃?덉뒪?먯꽌 ?대갑?섍퀬, 洹以묓뭹????긽 ?뚯븙?????덉뼱 ?쇱긽???쒓껐 媛踰쇱썙吏묐땲??"
             },
             en: {
-                pain: "Wasting time hunting for keys, wallets, and remotes—especially stressful right before heading out.",
+                pain: "Wasting time hunting for keys, wallets, and remotes?봢specially stressful right before heading out.",
                 solution: "Check the location of SmartTag-attached items directly in the SmartThings app, with UWB technology for precision tracking. 'Find my phone' from the TV screen locates a hidden smartphone instantly.",
-                benefit: "No more pre-departure stress over lost items—knowing where your valuables are at all times lightens your daily routine considerably."
+                benefit: "No more pre-departure stress over lost items?봩nowing where your valuables are at all times lightens your daily routine considerably."
             }
         }
     },
-    // ── STAY FIT & HEALTHY ────────────────────────────────────────
+    // ?? STAY FIT & HEALTHY ????????????????????????????????????????
     {
         id: "stay-fit-healthy",
         title: "Let SmartThings take care of your workouts",
         tags: ["Stay fit & healthy", "Enhanced mood", "Air fresh", "Keep the air fresh"],
-        devices: ["TV", "에어컨"],
+        devices: ["TV", "?먯뼱而?],
         missionBucket: "Play",
         content: {
             ko: {
-                pain: "집에서 운동할 때 환경 세팅에 시간을 빼앗기고, 갤럭시 워치 데이터를 보면서 동시에 콘텐츠를 즐기기도 어렵습니다.",
-                solution: "SmartThings가 운동 시작과 동시에 에어컨과 공기청정기를 켜 쾌적한 환경을 조성합니다. 갤럭시 워치의 운동 정보(시간, 칼로리, 심박수)를 TV 화면에서 실시간으로 확인하면서 좋아하는 콘텐츠도 함께 즐길 수 있습니다.",
-                benefit: "운동 환경 세팅에 신경 쓰지 않고 바로 운동에 집중할 수 있으며, TV로 데이터를 확인하면서 더 즐겁고 효과적으로 운동할 수 있습니다."
+                pain: "吏묒뿉???대룞?????섍꼍 ?명똿???쒓컙??鍮쇱븮湲곌퀬, 媛ㅻ윮???뚯튂 ?곗씠?곕? 蹂대㈃???숈떆??肄섑뀗痢좊? 利먭린湲곕룄 ?대졄?듬땲??",
+                solution: "SmartThings媛 ?대룞 ?쒖옉怨??숈떆???먯뼱而④낵 怨듦린泥?젙湲곕? 耳?苡뚯쟻???섍꼍??議곗꽦?⑸땲?? 媛ㅻ윮???뚯튂???대룞 ?뺣낫(?쒓컙, 移쇰줈由? ?щ컯??瑜?TV ?붾㈃?먯꽌 ?ㅼ떆媛꾩쑝濡??뺤씤?섎㈃??醫뗭븘?섎뒗 肄섑뀗痢좊룄 ?④퍡 利먭만 ???덉뒿?덈떎.",
+                benefit: "?대룞 ?섍꼍 ?명똿???좉꼍 ?곗? ?딄퀬 諛붾줈 ?대룞??吏묒쨷?????덉쑝硫? TV濡??곗씠?곕? ?뺤씤?섎㈃????利먭쾪怨??④낵?곸쑝濡??대룞?????덉뒿?덈떎."
             },
             en: {
                 pain: "Home workouts are disrupted by time spent adjusting the environment, and it's hard to view Galaxy Watch workout data on TV while enjoying other content.",
-                solution: "SmartThings turns on the AC and air purifier as your workout starts for an ideal environment. Galaxy Watch data—time, calories, heart rate—displays in real time on your TV alongside any content you enjoy.",
-                benefit: "No time lost on environment setup before working out—dive straight in and enjoy more effective, entertaining workouts with live stats on your big screen."
+                solution: "SmartThings turns on the AC and air purifier as your workout starts for an ideal environment. Galaxy Watch data?봳ime, calories, heart rate?봡isplays in real time on your TV alongside any content you enjoy.",
+                benefit: "No time lost on environment setup before working out?봡ive straight in and enjoy more effective, entertaining workouts with live stats on your big screen."
             }
         }
     },
-    // ── FOOD / KITCHEN ────────────────────────────────────────────
+    // ?? FOOD / KITCHEN ????????????????????????????????????????????
     {
         id: "smart-cooking",
         title: "How to make today's meal more enjoyable",
         tags: ["Help with chores", "Smart cooking"],
-        devices: ["냉장고", "오븐"],
+        devices: ["?됱옣怨?, "?ㅻ툙"],
         missionBucket: "Save",
         content: {
             ko: {
-                pain: "냉장고에 뭐가 있는지 매번 열어봐야 하고, 오븐 온도와 시간을 레시피마다 직접 맞춰야 해서 요리 시작 전부터 지칩니다.",
-                solution: "AI Vision Inside가 냉장고 식재료를 자동으로 인식해 목록을 만들고 유통기한을 알려줍니다. 오븐에 재료를 넣으면 재료를 인식해 최적 레시피를 추천하고 온도와 시간을 자동 설정합니다.",
-                benefit: "냉장고 문 열지 않고도 식재료를 파악하고, 오븐이 알아서 맞춰주는 덕분에 요리 시작부터 마무리까지 훨씬 수월해집니다."
+                pain: "?됱옣怨좎뿉 萸먭? ?덈뒗吏 留ㅻ쾲 ?댁뼱遊먯빞 ?섍퀬, ?ㅻ툙 ?⑤룄? ?쒓컙???덉떆?쇰쭏??吏곸젒 留욎떠???댁꽌 ?붾━ ?쒖옉 ?꾨???吏移⑸땲??",
+                solution: "AI Vision Inside媛 ?됱옣怨??앹옱猷뚮? ?먮룞?쇰줈 ?몄떇??紐⑸줉??留뚮뱾怨??좏넻湲고븳???뚮젮以띾땲?? ?ㅻ툙???щ즺瑜??ｌ쑝硫??щ즺瑜??몄떇??理쒖쟻 ?덉떆?쇰? 異붿쿇?섍퀬 ?⑤룄? ?쒓컙???먮룞 ?ㅼ젙?⑸땲??",
+                benefit: "?됱옣怨?臾??댁? ?딄퀬???앹옱猷뚮? ?뚯븙?섍퀬, ?ㅻ툙???뚯븘??留욎떠二쇰뒗 ?뺣텇???붾━ ?쒖옉遺??留덈Т由ш퉴吏 ?⑥뵮 ?섏썡?댁쭛?덈떎."
             },
             en: {
                 pain: "Having to open the fridge every time to check ingredients, and manually setting oven temperature and time for every recipe, is draining before cooking even starts.",
                 solution: "AI Vision Inside automatically recognizes refrigerator contents, creates an ingredient list, and tracks expiry dates. Put ingredients in the oven and it recognizes them, recommends the best recipe, and auto-sets temperature and time.",
-                benefit: "Check your fridge without opening it, and let the oven handle the settings—cooking becomes smoother and more enjoyable from start to finish."
+                benefit: "Check your fridge without opening it, and let the oven handle the settings?봠ooking becomes smoother and more enjoyable from start to finish."
             }
         }
     }
@@ -11150,7 +11155,7 @@ function findExploreScenario(intent) {
 function buildDetailedScenario(country, city, selectedSegment, intent, deviceDecision, services) {
     const countryName = getCountryName(country.countryCode);
     const serviceNames = [...new Set(services.slice(0, 3).map((service) => service.serviceName))];
-    const isPetContext = /pet|dog|cat|puppy|kitten|반려|강아지|고양이/i.test(`${selectedSegment} ${intent.purpose} ${serviceNames.join(" ")}`);
+    const isPetContext = /pet|dog|cat|puppy|kitten|諛섎젮|媛뺤븘吏|怨좎뼇??i.test(`${selectedSegment} ${intent.purpose} ${serviceNames.join(" ")}`);
     const appliedServices = [...new Set(services.slice(0, 3).map((service) => service.appCardLabel || service.serviceName))];
     
     // Attempt to find a matching Explore scenario first
@@ -11162,7 +11167,7 @@ function buildDetailedScenario(country, city, selectedSegment, intent, deviceDec
         const content = exploreMatch.content[locale] || exploreMatch.content.en;
         serviceStories = [
             {
-                title: currentLocale === "ko" ? `[참조 시나리오] ${exploreMatch.title}` : `[Explore Mapped] ${exploreMatch.title}`,
+                title: currentLocale === "ko" ? `[李몄“ ?쒕굹由ъ삤] ${exploreMatch.title}` : `[Explore Mapped] ${exploreMatch.title}`,
                 paragraphs: [content.pain, content.solution, content.benefit]
             },
             ...services.slice(0, 2).map((service) => {
@@ -11200,7 +11205,7 @@ function renderOverview(payload) {
 
     return `
         <div class="output-stack">
-            <!-- Brief Card: 1분 브리핑 -->
+            <!-- Brief Card: 1遺?釉뚮━??-->
             <section class="output-block brief-card">
                 <div class="brief-card-header">
                     <h3>${escapeHtml(payload.title)}</h3>
@@ -11215,7 +11220,7 @@ function renderOverview(payload) {
                 </ul>
             </section>
 
-            <!-- 01. CX 시나리오 요약 -->
+            <!-- 01. CX ?쒕굹由ъ삤 ?붿빟 -->
             <section class="output-block hero-result numbered-output">
                 <p class="block-index">01</p>
                 <h4>${titles.summary}</h4>
@@ -11223,17 +11228,17 @@ function renderOverview(payload) {
 
                 <div class="summary-sub-grid">
                     <div class="summary-sub-item">
-                        <p class="subhead">${isKo ? "참조된 시나리오 기반 스토리" : "Parent Story"}</p>
+                        <p class="subhead">${isKo ? "李몄“???쒕굹由ъ삤 湲곕컲 ?ㅽ넗由? : "Parent Story"}</p>
                         <p>${escapeHtml(buildParentStory(payload))}</p>
                     </div>
                     <div class="summary-sub-item">
-                        <p class="subhead">${isKo ? "핵심 가치" : "Core Values"}</p>
+                        <p class="subhead">${isKo ? "?듭떖 媛移? : "Core Values"}</p>
                         <ul class="value-list">${buildReflectedValues(payload).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
                     </div>
                 </div>
 
                 <div class="storyboard-webtoon">
-                    <p class="subhead">${isKo ? "스토리보드 요약" : "Storyboard Summary"}</p>
+                    <p class="subhead">${isKo ? "?ㅽ넗由щ낫???붿빟" : "Storyboard Summary"}</p>
                     <div class="webtoon-grid">
                         ${payload.storyboard.map((panel, idx) => `
                             <div class="webtoon-panel">
@@ -11245,21 +11250,21 @@ function renderOverview(payload) {
                     </div>
                 </div>
 
-                <p class="subhead">${isKo ? "핵심 요약" : "Executive Summary"}</p>
+                <p class="subhead">${isKo ? "?듭떖 ?붿빟" : "Executive Summary"}</p>
                 <ul class="six-line-summary">${buildSixLineSummary(payload).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
             </section>
 
-            <!-- 02. 상세 시나리오(Detailed Scenario) -->
+            <!-- 02. ?곸꽭 ?쒕굹由ъ삤(Detailed Scenario) -->
             <section class="output-block numbered-output">
                 <p class="block-index">02</p>
                 <h4>${titles.scenario}</h4>
                 <div class="scenario-details-grid">
                     <div class="detail-col">
-                        <strong>${isKo ? "타겟 고객" : "Target Customer Context"}</strong>
+                        <strong>${isKo ? "?寃?怨좉컼" : "Target Customer Context"}</strong>
                         <p>${escapeHtml(payload.detailedScenario.targetCustomer)}</p>
                     </div>
                     <div class="detail-col">
-                        <strong>적용된 Life 서비스 및 테마</strong>
+                        <strong>?곸슜??Life ?쒕퉬??諛??뚮쭏</strong>
                         <p>${payload.detailedScenario.appliedServiceList.map((s) => `<span class="service-pill">${escapeHtml(s)}</span>`).join(" ")}</p>
                     </div>
                 </div>
@@ -11274,13 +11279,13 @@ function renderOverview(payload) {
                 </div>
             </section>
 
-            <!-- 03. 지역 특성 및 데이터 근거 -->
+            <!-- 03. 吏???뱀꽦 諛??곗씠??洹쇨굅 -->
             <section class="output-block numbered-output">
                 <p class="block-index">03</p>
                 <h4>${titles.facts}</h4>
                 <div class="fact-separation">
                     <div class="fact-box confirmed-box">
-                        <strong>${currentLocale === "ko" ? "확정 정보" : "Confirmed Facts"}</strong>
+                        <strong>${currentLocale === "ko" ? "?뺤젙 ?뺣낫" : "Confirmed Facts"}</strong>
                         <table class="fact-table">
                             <thead>
                                 <tr>
@@ -11296,7 +11301,7 @@ function renderOverview(payload) {
                                     const srcDetailId = `fact-src-${item.no}-${Date.now()}`;
                                     const srcUrl = item.source_url || "";
                                     const urlLink = srcUrl
-                                        ? `<a class="source-detail-url" href="${escapeHtml(srcUrl)}" target="_blank" rel="noopener noreferrer">🔗 ${escapeHtml(srcUrl.length > 70 ? srcUrl.slice(0, 70) + "…" : srcUrl)}</a>`
+                                        ? `<a class="source-detail-url" href="${escapeHtml(srcUrl)}" target="_blank" rel="noopener noreferrer">?뵕 ${escapeHtml(srcUrl.length > 70 ? srcUrl.slice(0, 70) + "?? : srcUrl)}</a>`
                                         : "";
                                     return `
                                     <tr>
@@ -11311,7 +11316,7 @@ function renderOverview(payload) {
                                             <div class="source-detail" id="${srcDetailId}">
                                                 <p class="source-detail-label">${escapeHtml(item.source)}</p>
                                                 <p class="source-detail-snippet">${escapeHtml(item.fact)}</p>
-                                                <p class="source-detail-meta">${currentLocale === "ko" ? "신뢰도" : "Confidence"}: ${escapeHtml(item.confidence)} · ${escapeHtml(item.impact)}</p>
+                                                <p class="source-detail-meta">${currentLocale === "ko" ? "?좊ː?? : "Confidence"}: ${escapeHtml(item.confidence)} 쨌 ${escapeHtml(item.impact)}</p>
                                                 ${urlLink}
                                             </div>
                                         </td>
@@ -11321,30 +11326,30 @@ function renderOverview(payload) {
                         </table>
                     </div>
                     <div class="fact-box assumption-box">
-                        <strong>${currentLocale === "ko" ? "추론 정보" : "Inferences"}</strong>
+                        <strong>${currentLocale === "ko" ? "異붾줎 ?뺣낫" : "Inferences"}</strong>
                         <ul>${(payload.facts.assumptions || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
                     </div>
                 </div>
                 <div class="insight-process">
                     <div class="process-item">
-                        <strong>${isKo ? "지역 현황 (Observation)" : "Observation"}</strong>
+                        <strong>${isKo ? "吏???꾪솴 (Observation)" : "Observation"}</strong>
                         <p>${escapeHtml(payload.facts.observation)}</p>
                     </div>
                     <div class="process-item">
-                        <strong>${isKo ? "핵심 도출 (Insight)" : "Insight"}</strong>
+                        <strong>${isKo ? "?듭떖 ?꾩텧 (Insight)" : "Insight"}</strong>
                         <p>${escapeHtml(payload.facts.insight)}</p>
                     </div>
                     <div class="process-item">
-                        <strong>${isKo ? "CX 적용 (Implication)" : "Implication"}</strong>
+                        <strong>${isKo ? "CX ?곸슜 (Implication)" : "Implication"}</strong>
                         <p>${escapeHtml(payload.facts.implication)}</p>
                     </div>
                 </div>
                 <div class="fact-readiness">
-                    <strong>${currentLocale === "ko" ? "기기/서비스 준비 상태" : "Readiness Sync"}</strong>
-                    <ul>${(payload.facts.readiness || []).map((item) => `<li><strong>${escapeHtml(item.label)}</strong> · ${escapeHtml(item.status)} · ${escapeHtml(item.note)}</li>`).join("")}</ul>
+                    <strong>${currentLocale === "ko" ? "湲곌린/?쒕퉬??以鍮??곹깭" : "Readiness Sync"}</strong>
+                    <ul>${(payload.facts.readiness || []).map((item) => `<li><strong>${escapeHtml(item.label)}</strong> 쨌 ${escapeHtml(item.status)} 쨌 ${escapeHtml(item.note)}</li>`).join("")}</ul>
                 </div>
                 <div class="fact-links source-refs-summary">
-                    <h5>${currentLocale === "ko" ? "참조 출처" : "Reference Sources"}</h5>
+                    <h5>${currentLocale === "ko" ? "李몄“ 異쒖쿂" : "Reference Sources"}</h5>
                     <div class="output-source-bar">
                         ${(payload.facts.sourceRefs || []).map((ref) => `<span class="source-tag" title="${escapeHtml(ref)}">${escapeHtml(ref.replace("references/", ""))}</span>`).join("")}
                     </div>
@@ -11359,37 +11364,37 @@ function renderOverview(payload) {
                 </div>
             </section>
 
-            <!-- 04. 마케팅 메시지 -->
+            <!-- 04. 留덉???硫붿떆吏 -->
             <section class="output-block numbered-output">
                 <p class="block-index">04</p>
                 <h4>${titles.marketing}</h4>
                 <div class="marketing-wrap">
-                    <p class="role-badge">${escapeHtml(marketing.roleTone || "")} ${currentLocale === "ko" ? "선택 상태, 아래는 3개 렌즈 전체 출력입니다." : "selected, but all three lenses are shown below."}</p>
+                    <p class="role-badge">${escapeHtml(marketing.roleTone || "")} ${currentLocale === "ko" ? "?좏깮 ?곹깭, ?꾨옒??3媛??뚯쫰 ?꾩껜 異쒕젰?낅땲??" : "selected, but all three lenses are shown below."}</p>
                     <div class="marketing-guideline-box">
-                        <strong>${currentLocale === "ko" ? "확정된 언어 가이드라인 반영 규칙" : "Confirmed Verbal Guideline Rules"}</strong>
+                        <strong>${currentLocale === "ko" ? "?뺤젙???몄뼱 媛?대뱶?쇱씤 諛섏쁺 洹쒖튃" : "Confirmed Verbal Guideline Rules"}</strong>
                         <ul class="marketing-list">${(marketing.confirmedRules || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
                     </div>
                     <div class="marketing-guideline-box">
-                        <strong>${currentLocale === "ko" ? "글로벌 / 로컬 메시지 구분" : "Global / Local Split"}</strong>
+                        <strong>${currentLocale === "ko" ? "湲濡쒕쾶 / 濡쒖뺄 硫붿떆吏 援щ텇" : "Global / Local Split"}</strong>
                         <ul class="marketing-list">
-                            <li><strong>${isKo ? "글로벌" : "Global"}</strong>: ${escapeHtml(marketing.globalLocalSplit?.global || "")}</li>
-                            <li><strong>${isKo ? "로컬" : "Local"}</strong>: ${escapeHtml(marketing.globalLocalSplit?.local || "")}</li>
+                            <li><strong>${isKo ? "湲濡쒕쾶" : "Global"}</strong>: ${escapeHtml(marketing.globalLocalSplit?.global || "")}</li>
+                            <li><strong>${isKo ? "濡쒖뺄" : "Local"}</strong>: ${escapeHtml(marketing.globalLocalSplit?.local || "")}</li>
                         </ul>
                     </div>
                     <div class="marketing-lens-grid">
                         ${marketingLenses.map((lens) => `
                             <article class="marketing-lens-card ${lens.selected ? "selected" : ""}">
                                 <p class="marketing-lens-label">${escapeHtml(lens.label)}</p>
-                                ${lens.hookEn ? `<p><strong>${isKo ? "훅 메시지 (영문)" : "Hook (EN)"}</strong><br>${escapeHtml(lens.hookEn)}</p>` : ""}
-                                ${lens.shortCopyKo ? `<p><strong>${isKo ? "짧은 카피 (국문)" : "Short copy (KO)"}</strong><br>${escapeHtml(lens.shortCopyKo)}</p>` : ""}
-                                ${lens.talkTrackKo ? `<div><strong>${isKo ? "설명 멘트 (국문)" : "Talk-track (KO)"}</strong><ul>${lens.talkTrackKo.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>` : ""}
-                                ${lens.h1En ? `<p><strong>${isKo ? "메인 헤드라인 (영문)" : "H1 (EN)"}</strong><br>${escapeHtml(lens.h1En)}</p>` : ""}
-                                ${lens.subCopyKo ? `<p><strong>${isKo ? "보조 카피 (국문)" : "Sub-copy (KO)"}</strong><br>${escapeHtml(lens.subCopyKo)}</p>` : ""}
-                                ${lens.proofPointKo ? `<p><strong>${isKo ? "증거 포인트" : "Proof point"}</strong><br>${escapeHtml(lens.proofPointKo)}</p>` : ""}
-                                ${lens.campaignConceptEn ? `<p><strong>${isKo ? "캠페인 컨셉 (영문)" : "Campaign concept (EN)"}</strong><br>${escapeHtml(lens.campaignConceptEn)}</p>` : ""}
-                                ${lens.emotionalNarrativeKo ? `<p><strong>${isKo ? "감성 내러티브 (국문)" : "Emotional narrative (KO)"}</strong><br>${escapeHtml(lens.emotionalNarrativeKo)}</p>` : ""}
-                                ${lens.brandValue ? `<p><strong>${isKo ? "강화되는 브랜드 가치" : "Brand value reinforced"}</strong><br>${escapeHtml(lens.brandValue)}</p>` : ""}
-                                <p><strong>${isKo ? "행동 유도 문구" : "CTA"}</strong><br>${escapeHtml(lens.cta || "")}</p>
+                                ${lens.hookEn ? `<p><strong>${isKo ? "??硫붿떆吏 (?곷Ц)" : "Hook (EN)"}</strong><br>${escapeHtml(lens.hookEn)}</p>` : ""}
+                                ${lens.shortCopyKo ? `<p><strong>${isKo ? "吏㏃? 移댄뵾 (援?Ц)" : "Short copy (KO)"}</strong><br>${escapeHtml(lens.shortCopyKo)}</p>` : ""}
+                                ${lens.talkTrackKo ? `<div><strong>${isKo ? "?ㅻ챸 硫섑듃 (援?Ц)" : "Talk-track (KO)"}</strong><ul>${lens.talkTrackKo.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>` : ""}
+                                ${lens.h1En ? `<p><strong>${isKo ? "硫붿씤 ?ㅻ뱶?쇱씤 (?곷Ц)" : "H1 (EN)"}</strong><br>${escapeHtml(lens.h1En)}</p>` : ""}
+                                ${lens.subCopyKo ? `<p><strong>${isKo ? "蹂댁“ 移댄뵾 (援?Ц)" : "Sub-copy (KO)"}</strong><br>${escapeHtml(lens.subCopyKo)}</p>` : ""}
+                                ${lens.proofPointKo ? `<p><strong>${isKo ? "利앷굅 ?ъ씤?? : "Proof point"}</strong><br>${escapeHtml(lens.proofPointKo)}</p>` : ""}
+                                ${lens.campaignConceptEn ? `<p><strong>${isKo ? "罹좏럹??而⑥뀎 (?곷Ц)" : "Campaign concept (EN)"}</strong><br>${escapeHtml(lens.campaignConceptEn)}</p>` : ""}
+                                ${lens.emotionalNarrativeKo ? `<p><strong>${isKo ? "媛먯꽦 ?대윭?곕툕 (援?Ц)" : "Emotional narrative (KO)"}</strong><br>${escapeHtml(lens.emotionalNarrativeKo)}</p>` : ""}
+                                ${lens.brandValue ? `<p><strong>${isKo ? "媛뺥솕?섎뒗 釉뚮옖??媛移? : "Brand value reinforced"}</strong><br>${escapeHtml(lens.brandValue)}</p>` : ""}
+                                <p><strong>${isKo ? "?됰룞 ?좊룄 臾멸뎄" : "CTA"}</strong><br>${escapeHtml(lens.cta || "")}</p>
                             </article>
                         `).join("")}
                     </div>
@@ -11403,19 +11408,19 @@ function renderOverview(payload) {
 
 function renderPostOutputPrompt(payload) {
     const title = currentLocale === "ko"
-        ? "추가 요청"
+        ? "異붽? ?붿껌"
         : currentLocale === "de"
             ? "Weitere Anfrage"
             : "Additional Request";
     const placeholder = currentLocale === "ko"
-        ? "예: 이 시나리오를 Dotcom용 3문장 CTA로 바꿔줘"
+        ? "?? ???쒕굹由ъ삤瑜?Dotcom??3臾몄옣 CTA濡?諛붽퓭以?
         : "Example: Rewrite this scenario into three Dotcom CTAs";
-    const button = currentLocale === "ko" ? "질문하기" : "Ask";
+    const button = currentLocale === "ko" ? "吏덈Ц?섍린" : "Ask";
     const helper = currentLocale === "ko"
-        ? "생성된 01~04 결과를 바탕으로 추가 요청을 입력하면, 내부 계산된 컨텍스트까지 반영해 바로 답변합니다."
+        ? "?앹꽦??01~04 寃곌낵瑜?諛뷀깢?쇰줈 異붽? ?붿껌???낅젰?섎㈃, ?대? 怨꾩궛??而⑦뀓?ㅽ듃源뚯? 諛섏쁺??諛붾줈 ?듬??⑸땲??"
         : "Ask an additional request based on outputs 01~04, and get an immediate answer grounded in the internal context.";
     const initial = currentLocale === "ko"
-        ? `현재 컨텍스트: ${payload.title}`
+        ? `?꾩옱 而⑦뀓?ㅽ듃: ${payload.title}`
         : `Current context: ${payload.title}`;
 
     return `
@@ -11456,24 +11461,24 @@ function buildPostOutputAnswer(question, payload) {
     const isKo = currentLocale === "ko";
     const messages = flattenMarketingMessages(payload.marketingMessages);
 
-    if (/요약|summary|tl;dr/.test(q)) {
+    if (/?붿빟|summary|tl;dr/.test(q)) {
         return isKo
-            ? `요약: ${payload.summary} 핵심은 ${payload.summaryBullets.slice(0, 2).join(" / ")} 입니다.`
+            ? `?붿빟: ${payload.summary} ?듭떖? ${payload.summaryBullets.slice(0, 2).join(" / ")} ?낅땲??`
             : `Summary: ${payload.summary} Core points: ${payload.summaryBullets.slice(0, 2).join(" / ")}.`;
     }
-    if (/카피|문구|message|copy|cta/.test(q)) {
+    if (/移댄뵾|臾멸뎄|message|copy|cta/.test(q)) {
         return isKo
-            ? `권장 메시지:\n1) ${messages[0] || ""}\n2) ${messages[1] || ""}\n3) ${messages[2] || ""}`
+            ? `沅뚯옣 硫붿떆吏:\n1) ${messages[0] || ""}\n2) ${messages[1] || ""}\n3) ${messages[2] || ""}`
             : `Recommended messages:\n1) ${messages[0] || ""}\n2) ${messages[1] || ""}\n3) ${messages[2] || ""}`;
     }
-    if (/리스크|risk|privacy|trust/.test(q)) {
+    if (/由ъ뒪??risk|privacy|trust/.test(q)) {
         return isKo
-            ? `리스크 요약: ${payload.marketability.risk}\n대응: ${(payload.marketability.nextActions || []).join(" / ")}`
+            ? `由ъ뒪???붿빟: ${payload.marketability.risk}\n??? ${(payload.marketability.nextActions || []).join(" / ")}`
             : `Risk summary: ${payload.marketability.risk}\nActions: ${(payload.marketability.nextActions || []).join(" / ")}`;
     }
 
     return isKo
-        ? `요청 반영 제안: "${question}"\n- 타겟: ${payload.detailedScenario.targetCustomer}\n- KPI: ${payload.marketability.verdict}\n- 다음 실행: ${(payload.marketability.nextActions || []).slice(0, 2).join(" / ")}`
+        ? `?붿껌 諛섏쁺 ?쒖븞: "${question}"\n- ?寃? ${payload.detailedScenario.targetCustomer}\n- KPI: ${payload.marketability.verdict}\n- ?ㅼ쓬 ?ㅽ뻾: ${(payload.marketability.nextActions || []).slice(0, 2).join(" / ")}`
         : `Suggestion for "${question}"\n- Target: ${payload.detailedScenario.targetCustomer}\n- KPI decision: ${payload.marketability.verdict}\n- Next actions: ${(payload.marketability.nextActions || []).slice(0, 2).join(" / ")}`;
 }
 
@@ -11551,11 +11556,11 @@ async function copySummary() {
         const btn = exportActions.querySelector('[data-export="copy"]');
         if (btn) {
             const orig = btn.querySelector("strong").textContent;
-            btn.querySelector("strong").textContent = currentLocale === "ko" ? "복사 완료!" : "Copied!";
+            btn.querySelector("strong").textContent = currentLocale === "ko" ? "蹂듭궗 ?꾨즺!" : "Copied!";
             setTimeout(() => { btn.querySelector("strong").textContent = orig; }, 1500);
         }
     } catch {
-        window.prompt(currentLocale === "ko" ? "아래 내용을 복사하세요." : "Copy the text below.", text);
+        window.prompt(currentLocale === "ko" ? "?꾨옒 ?댁슜??蹂듭궗?섏꽭??" : "Copy the text below.", text);
     }
 }
 
@@ -11567,70 +11572,70 @@ function buildStructuredPlainText(output) {
     const sel = output.selection || {};
     const isKo = (output.locale || "ko") === "ko";
 
-    // 선택 근거
+    // ?좏깮 洹쇨굅
     const primary = (sel.selectedScenarios || []).find(s => s.isPrimary) || (sel.selectedScenarios || [])[0];
     if (primary) {
-        lines.push(`═══ ${isKo ? "선택 근거" : "Selection Basis"} ═══`);
-        lines.push(`${isKo ? "시나리오" : "Scenario"}: ${primary.title} (Explore ${primary.source})`);
-        lines.push(`${isKo ? "아티클" : "Article"}: ${primary.articleTitle}`);
-        if (sel.selectionReason) lines.push(`${isKo ? "선택 이유" : "Reason"}: ${sel.selectionReason}`);
-        if ((sel.primaryValues || []).length) lines.push(`${isKo ? "가치" : "Values"}: ${sel.primaryValues.join(", ")}`);
+        lines.push(`?먥븧??${isKo ? "?좏깮 洹쇨굅" : "Selection Basis"} ?먥븧??);
+        lines.push(`${isKo ? "?쒕굹由ъ삤" : "Scenario"}: ${primary.title} (Explore ${primary.source})`);
+        lines.push(`${isKo ? "?꾪떚?? : "Article"}: ${primary.articleTitle}`);
+        if (sel.selectionReason) lines.push(`${isKo ? "?좏깮 ?댁쑀" : "Reason"}: ${sel.selectionReason}`);
+        if ((sel.primaryValues || []).length) lines.push(`${isKo ? "媛移? : "Values"}: ${sel.primaryValues.join(", ")}`);
         lines.push("");
     }
 
-    // 마케터용
-    lines.push(`═══ ${isKo ? "마케터용" : "For Marketers"} ═══`);
+    // 留덉??곗슜
+    lines.push(`?먥븧??${isKo ? "留덉??곗슜" : "For Marketers"} ?먥븧??);
     if (mo.headline) lines.push(mo.headline);
     if (mo.summary) lines.push(mo.summary);
     lines.push("");
-    if (mo.whyThisScenario) { lines.push(`${isKo ? "왜 이 시나리오:" : "Why:"} ${mo.whyThisScenario}`); lines.push(""); }
+    if (mo.whyThisScenario) { lines.push(`${isKo ? "?????쒕굹由ъ삤:" : "Why:"} ${mo.whyThisScenario}`); lines.push(""); }
     if ((mo.copyOptions || []).length) {
-        lines.push(isKo ? "카피 옵션:" : "Copy Options:");
+        lines.push(isKo ? "移댄뵾 ?듭뀡:" : "Copy Options:");
         mo.copyOptions.forEach((c, i) => {
             lines.push(`  ${i + 1}) KR: ${c.ko || ""}`);
             if (c.en) lines.push(`     EN: ${c.en}`);
-            if (c.tone) lines.push(`     ${isKo ? "톤" : "Tone"}: ${c.tone}`);
+            if (c.tone) lines.push(`     ${isKo ? "?? : "Tone"}: ${c.tone}`);
         });
         lines.push("");
     }
     if ((mo.channelStrategy || []).length) {
-        lines.push(isKo ? "채널 전략:" : "Channel Strategy:");
+        lines.push(isKo ? "梨꾨꼸 ?꾨왂:" : "Channel Strategy:");
         mo.channelStrategy.forEach(ch => {
             lines.push(`  [${ch.channel}] ${ch.message} (${ch.tone}, ${ch.format || ""})`);
         });
         lines.push("");
     }
 
-    // 일반 사용자용
-    lines.push(`═══ ${isKo ? "일반 사용자용" : "For Consumers"} ═══`);
+    // ?쇰컲 ?ъ슜?먯슜
+    lines.push(`?먥븧??${isKo ? "?쇰컲 ?ъ슜?먯슜" : "For Consumers"} ?먥븧??);
     if (co.headline) lines.push(co.headline);
     if (co.whatItDoes) { lines.push(""); lines.push(co.whatItDoes); }
     lines.push("");
     if ((co.requiredSetup?.devices || []).length) {
-        lines.push(isKo ? "필요 기기:" : "Required Devices:");
+        lines.push(isKo ? "?꾩슂 湲곌린:" : "Required Devices:");
         co.requiredSetup.devices.forEach(d => {
-            lines.push(`  - ${d.name}${d.role ? ` (${d.role})` : ""}${d.required !== false ? "" : ` [${isKo ? "선택" : "Optional"}]`}`);
+            lines.push(`  - ${d.name}${d.role ? ` (${d.role})` : ""}${d.required !== false ? "" : ` [${isKo ? "?좏깮" : "Optional"}]`}`);
         });
         lines.push("");
     }
     if ((co.setupSteps || []).length) {
-        lines.push(isKo ? "설정 방법:" : "Setup Steps:");
+        lines.push(isKo ? "?ㅼ젙 諛⑸쾿:" : "Setup Steps:");
         co.setupSteps.forEach((s, i) => lines.push(`  ${i + 1}. ${s}`));
         lines.push("");
     }
     if ((co.cautions || []).length) {
-        lines.push(isKo ? "주의사항:" : "Cautions:");
+        lines.push(isKo ? "二쇱쓽?ы빆:" : "Cautions:");
         co.cautions.forEach(c => lines.push(`  - ${c}`));
         lines.push("");
     }
 
-    // 인사이트
+    // ?몄궗?댄듃
     const oii = output.localizedInsight;
     if (oii) {
-        lines.push(`═══ ${isKo ? "인사이트" : "Insight"} ═══`);
-        if (oii.observation) lines.push(`${isKo ? "관찰" : "Observation"}: ${oii.observation}`);
-        if (oii.insight) lines.push(`${isKo ? "인사이트" : "Insight"}: ${oii.insight}`);
-        if (oii.implication) lines.push(`${isKo ? "함의" : "Implication"}: ${oii.implication}`);
+        lines.push(`?먥븧??${isKo ? "?몄궗?댄듃" : "Insight"} ?먥븧??);
+        if (oii.observation) lines.push(`${isKo ? "愿李? : "Observation"}: ${oii.observation}`);
+        if (oii.insight) lines.push(`${isKo ? "?몄궗?댄듃" : "Insight"}: ${oii.insight}`);
+        if (oii.implication) lines.push(`${isKo ? "?⑥쓽" : "Implication"}: ${oii.implication}`);
     }
 
     return lines.join("\n");
@@ -11643,7 +11648,7 @@ function buildPlainTextReport(payload) {
     lines.push(payload.summary || "");
     lines.push("");
     if (payload.detailedScenario) {
-        lines.push(currentLocale === "ko" ? "[ 상세 시나리오 ]" : "[ Detailed Scenario ]");
+        lines.push(currentLocale === "ko" ? "[ ?곸꽭 ?쒕굹由ъ삤 ]" : "[ Detailed Scenario ]");
         lines.push(`Target: ${payload.detailedScenario.targetCustomer || ""}`);
         lines.push(payload.detailedScenario.appliedServices || "");
         (payload.detailedScenario.cases || []).forEach((c) => {
@@ -11654,19 +11659,19 @@ function buildPlainTextReport(payload) {
     }
     lines.push("");
     if (payload.facts) {
-        lines.push(currentLocale === "ko" ? "[ 데이터 근거 ]" : "[ Data Grounds ]");
+        lines.push(currentLocale === "ko" ? "[ ?곗씠??洹쇨굅 ]" : "[ Data Grounds ]");
         (payload.facts.confirmed || []).forEach((f) => {
             lines.push(`[${f.no}] ${f.fact} | ${f.source} | ${f.confidence}`);
         });
         if (payload.facts.assumptions?.length) {
             lines.push("");
-            lines.push(currentLocale === "ko" ? "가정 사항:" : "Assumptions:");
+            lines.push(currentLocale === "ko" ? "媛???ы빆:" : "Assumptions:");
             payload.facts.assumptions.forEach((a) => lines.push(`- ${a}`));
         }
     }
     if (payload.marketingMessages) {
         lines.push("");
-        lines.push(currentLocale === "ko" ? "[ 마케팅 메시지 ]" : "[ Marketing Messages ]");
+        lines.push(currentLocale === "ko" ? "[ 留덉???硫붿떆吏 ]" : "[ Marketing Messages ]");
         flattenMarketingMessages(payload.marketingMessages).forEach((m) => lines.push(`- ${m}`));
     }
     return lines.join("\n");
@@ -11727,7 +11732,7 @@ function exportWord() {
 }
 
 function exportExcel() {
-    // 구조화 output이면 구조화 CSV 생성
+    // 援ъ“??output?대㈃ 援ъ“??CSV ?앹꽦
     if (latestStructuredOutput) {
         exportStructuredExcel(latestStructuredOutput);
         return;
@@ -11817,18 +11822,18 @@ table{width:100%;border-collapse:collapse;margin:12px 0}th,td{border:1px solid #
 .source{font-size:0.75rem;color:#889;margin-top:20px}
 @media print{body{margin:20px}}</style></head><body>
 ${primary ? `<div style="margin-bottom:20px"><span class="badge">Explore ${primary.source}</span> <strong>${escapeHtml(primary.title)}</strong><br><small>${escapeHtml(primary.articleTitle || "")}</small>${values ? `<br><span class="badge">${escapeHtml(values)}</span>` : ""}</div>` : ""}
-${sel.selectionReason ? `<div class="card"><strong>${isKo ? "선택 이유" : "Selection Reason"}</strong><p>${escapeHtml(sel.selectionReason)}</p></div>` : ""}
+${sel.selectionReason ? `<div class="card"><strong>${isKo ? "?좏깮 ?댁쑀" : "Selection Reason"}</strong><p>${escapeHtml(sel.selectionReason)}</p></div>` : ""}
 <h1>${escapeHtml(mo.headline || "")}</h1>
 <p>${escapeHtml(mo.summary || "")}</p>
-${mo.whyThisScenario ? `<h2>${isKo ? "왜 이 시나리오인가" : "Why This Scenario"}</h2><p>${escapeHtml(mo.whyThisScenario)}</p>` : ""}
-${(mo.copyOptions || []).length ? `<h2>${isKo ? "카피 옵션" : "Copy Options"}</h2>${(mo.copyOptions || []).map((c, i) => `<div class="card"><strong>${isKo ? "옵션" : "Option"} ${i + 1}</strong><br>KR: ${escapeHtml(c.ko || "")}<br>EN: ${escapeHtml(c.en || "")}${c.tone ? `<br><small>${escapeHtml(c.tone)}</small>` : ""}</div>`).join("")}` : ""}
-${(mo.channelStrategy || []).length ? `<h2>${isKo ? "채널 전략" : "Channel Strategy"}</h2><table><tr><th>${isKo ? "채널" : "Channel"}</th><th>${isKo ? "메시지" : "Message"}</th><th>${isKo ? "톤" : "Tone"}</th><th>${isKo ? "포맷" : "Format"}</th></tr>${(mo.channelStrategy || []).map(ch => `<tr><td>${escapeHtml(ch.channel || "")}</td><td>${escapeHtml(ch.message || "")}</td><td>${escapeHtml(ch.tone || "")}</td><td>${escapeHtml(ch.format || "")}</td></tr>`).join("")}</table>` : ""}
+${mo.whyThisScenario ? `<h2>${isKo ? "?????쒕굹由ъ삤?멸?" : "Why This Scenario"}</h2><p>${escapeHtml(mo.whyThisScenario)}</p>` : ""}
+${(mo.copyOptions || []).length ? `<h2>${isKo ? "移댄뵾 ?듭뀡" : "Copy Options"}</h2>${(mo.copyOptions || []).map((c, i) => `<div class="card"><strong>${isKo ? "?듭뀡" : "Option"} ${i + 1}</strong><br>KR: ${escapeHtml(c.ko || "")}<br>EN: ${escapeHtml(c.en || "")}${c.tone ? `<br><small>${escapeHtml(c.tone)}</small>` : ""}</div>`).join("")}` : ""}
+${(mo.channelStrategy || []).length ? `<h2>${isKo ? "梨꾨꼸 ?꾨왂" : "Channel Strategy"}</h2><table><tr><th>${isKo ? "梨꾨꼸" : "Channel"}</th><th>${isKo ? "硫붿떆吏" : "Message"}</th><th>${isKo ? "?? : "Tone"}</th><th>${isKo ? "?щ㎎" : "Format"}</th></tr>${(mo.channelStrategy || []).map(ch => `<tr><td>${escapeHtml(ch.channel || "")}</td><td>${escapeHtml(ch.message || "")}</td><td>${escapeHtml(ch.tone || "")}</td><td>${escapeHtml(ch.format || "")}</td></tr>`).join("")}</table>` : ""}
 <h1>${escapeHtml(co.headline || "")}</h1>
 ${co.whatItDoes ? `<p>${escapeHtml(co.whatItDoes)}</p>` : ""}
-${(co.requiredSetup?.devices || []).length ? `<h2>${isKo ? "필요 기기" : "Required Devices"}</h2><table><tr><th>${isKo ? "기기" : "Device"}</th><th>${isKo ? "역할" : "Role"}</th><th>${isKo ? "필수" : "Required"}</th></tr>${co.requiredSetup.devices.map(d => `<tr><td>${escapeHtml(d.name || "")}</td><td>${escapeHtml(d.role || "")}</td><td>${d.required !== false ? "O" : "-"}</td></tr>`).join("")}</table>` : ""}
-${(co.setupSteps || []).length ? `<h2>${isKo ? "설정 방법" : "Setup Steps"}</h2><ol>${co.setupSteps.map(s => `<li>${escapeHtml(String(s))}</li>`).join("")}</ol>` : ""}
-${(co.cautions || []).length ? `<h2>${isKo ? "주의사항" : "Cautions"}</h2><ul>${co.cautions.map(c => `<li>${escapeHtml(String(c))}</li>`).join("")}</ul>` : ""}
-${oii ? `<h2>${isKo ? "인사이트" : "Insight"}</h2><p><strong>${isKo ? "관찰" : "Obs"}:</strong> ${escapeHtml(oii.observation || "")}<br><strong>${isKo ? "인사이트" : "Insight"}:</strong> ${escapeHtml(oii.insight || "")}<br><strong>${isKo ? "함의" : "Impl"}:</strong> ${escapeHtml(oii.implication || "")}</p>` : ""}
+${(co.requiredSetup?.devices || []).length ? `<h2>${isKo ? "?꾩슂 湲곌린" : "Required Devices"}</h2><table><tr><th>${isKo ? "湲곌린" : "Device"}</th><th>${isKo ? "??븷" : "Role"}</th><th>${isKo ? "?꾩닔" : "Required"}</th></tr>${co.requiredSetup.devices.map(d => `<tr><td>${escapeHtml(d.name || "")}</td><td>${escapeHtml(d.role || "")}</td><td>${d.required !== false ? "O" : "-"}</td></tr>`).join("")}</table>` : ""}
+${(co.setupSteps || []).length ? `<h2>${isKo ? "?ㅼ젙 諛⑸쾿" : "Setup Steps"}</h2><ol>${co.setupSteps.map(s => `<li>${escapeHtml(String(s))}</li>`).join("")}</ol>` : ""}
+${(co.cautions || []).length ? `<h2>${isKo ? "二쇱쓽?ы빆" : "Cautions"}</h2><ul>${co.cautions.map(c => `<li>${escapeHtml(String(c))}</li>`).join("")}</ul>` : ""}
+${oii ? `<h2>${isKo ? "?몄궗?댄듃" : "Insight"}</h2><p><strong>${isKo ? "愿李? : "Obs"}:</strong> ${escapeHtml(oii.observation || "")}<br><strong>${isKo ? "?몄궗?댄듃" : "Insight"}:</strong> ${escapeHtml(oii.insight || "")}<br><strong>${isKo ? "?⑥쓽" : "Impl"}:</strong> ${escapeHtml(oii.implication || "")}</p>` : ""}
 <div class="source">${escapeHtml(typeof tx.sourceTrace === "string" ? tx.sourceTrace : "")} | ${output.generationMode || "ai"} | ${output.generatedAt || ""}</div>
 </body></html>`;
 }
@@ -11843,7 +11848,7 @@ function exportStructuredExcel(output) {
 
     rows.push(["Section", "Item", "KO", "EN", "Tone", "Note"]);
 
-    // 선택 근거
+    // ?좏깮 洹쇨굅
     const primary = (sel.selectedScenarios || []).find(s => s.isPrimary) || (sel.selectedScenarios || [])[0];
     if (primary) {
         rows.push(["Selection", "Scenario", primary.title, primary.source, "", primary.articleTitle || ""]);
@@ -11852,7 +11857,7 @@ function exportStructuredExcel(output) {
     }
     rows.push(["", "", "", "", "", ""]);
 
-    // 마케터
+    // 留덉???
     rows.push(["Marketer", "Headline", mo.headline || "", "", "", ""]);
     rows.push(["Marketer", "Summary", mo.summary || "", "", "", ""]);
     rows.push(["Marketer", "Why", mo.whyThisScenario || "", "", "", ""]);
@@ -11864,7 +11869,7 @@ function exportStructuredExcel(output) {
     });
     rows.push(["", "", "", "", "", ""]);
 
-    // 사용자
+    // ?ъ슜??
     rows.push(["Consumer", "Headline", co.headline || "", "", "", ""]);
     rows.push(["Consumer", "What it does", co.whatItDoes || "", "", "", ""]);
     (co.requiredSetup?.devices || []).forEach(d => {
@@ -11898,19 +11903,19 @@ function buildMarkdownReport(payload) {
     return [
         `# ${payload.title}`,
         "",
-        currentLocale === "ko" ? "## 01. CX 시나리오 제목 및 Summary" : "## 01. CX Scenario Title & Summary",
+        currentLocale === "ko" ? "## 01. CX ?쒕굹由ъ삤 ?쒕ぉ 諛?Summary" : "## 01. CX Scenario Title & Summary",
         payload.summary,
         "",
         "### 1) Parent Story",
         buildParentStory(payload),
         "",
-        currentLocale === "ko" ? "### 2) 4대 가치 반영" : "### 2) Reflected Four Values",
+        currentLocale === "ko" ? "### 2) 4? 媛移?諛섏쁺" : "### 2) Reflected Four Values",
         ...buildReflectedValues(payload).map((item) => `- ${item}`),
         "",
-        currentLocale === "ko" ? "### 3) 핵심 요약 (6줄)" : "### 3) Executive Summary (6 lines)",
+        currentLocale === "ko" ? "### 3) ?듭떖 ?붿빟 (6以?" : "### 3) Executive Summary (6 lines)",
         ...buildSixLineSummary(payload).map((item) => `- ${item}`),
         "",
-        currentLocale === "ko" ? "## 02. 상세 시나리오" : "## 02. Detailed Scenario",
+        currentLocale === "ko" ? "## 02. ?곸꽭 ?쒕굹由ъ삤" : "## 02. Detailed Scenario",
         "----",
         `- Target Customer : ${payload.detailedScenario.targetCustomer}`,
         "----",
@@ -11924,11 +11929,11 @@ function buildMarkdownReport(payload) {
             ""
         ]),
         "",
-        currentLocale === "ko" ? "## 03. 지역 특성 및 데이터 근거" : "## 03. Regional Traits & Data Grounds",
-        currentLocale === "ko" ? "### Fact (확인)" : "### Fact (Confirmed)",
+        currentLocale === "ko" ? "## 03. 吏???뱀꽦 諛??곗씠??洹쇨굅" : "## 03. Regional Traits & Data Grounds",
+        currentLocale === "ko" ? "### Fact (?뺤씤)" : "### Fact (Confirmed)",
         ...(payload.facts.confirmed || []).map((item) => `- [${item.no}] ${item.fact} | ${item.source} | ${item.confidence} | ${item.impact}`),
         "",
-        currentLocale === "ko" ? "### Assumption (가정)" : "### Assumption",
+        currentLocale === "ko" ? "### Assumption (媛??" : "### Assumption",
         ...(payload.facts.assumptions || []).map((item) => `- ${item}`),
         "",
         currentLocale === "ko" ? "### Readiness Sync" : "### Readiness Sync",
@@ -11939,11 +11944,11 @@ function buildMarkdownReport(payload) {
         `- Insight: ${payload.facts.insight || ""}`,
         `- Implication: ${payload.facts.implication || ""}`,
         "",
-        currentLocale === "ko" ? "### 내부 참조 파일" : "### Internal Source Files",
+        currentLocale === "ko" ? "### ?대? 李몄“ ?뚯씪" : "### Internal Source Files",
         ...(payload.facts.sourceRefs || []).map((item) => `- ${item}`),
         "",
         currentLocale === "ko"
-            ? "## 04. 마케팅 메시지 (브랜드 아이덴티티 반영)"
+            ? "## 04. 留덉???硫붿떆吏 (釉뚮옖???꾩씠?댄떚??諛섏쁺)"
             : currentLocale === "de"
                 ? "## 04. Marketing-Botschaften (Brand-Identity Applied)"
                 : "## 04. Marketing Message (Brand-Identity Applied)",
@@ -11976,7 +11981,7 @@ function updateLocaleFromCountry() {
     const preserved = {
         role: roleSelect.value,
         country: countrySelect.value,
-        city: "",                          // 국가 변경 시 도시 초기화
+        city: "",                          // 援?? 蹂寃????꾩떆 珥덇린??
         personaSelections: getSelectedPersonaOptionIds(),
         segmentCustom: segmentCustomInput.value,
         deviceSelections: getSelectedDeviceOptionIds(),
@@ -11996,7 +12001,7 @@ function updateLocaleFromCountry() {
     updateStepInsight();
     applyLocale();
     updateEnglishToggleVisibility();
-    // Q3 카탈로그를 새 locale 기준으로 재적용 + 재렌더
+    // Q3 移댄깉濡쒓렇瑜???locale 湲곗??쇰줈 ?ъ쟻??+ ?щ젋??
     q4ActivePresets.clear();
     renderQ4Composer();
 }
@@ -12012,15 +12017,15 @@ function getRoleCardLocaleCopy(roleId) {
                 de: "\"Make it Real, Make it Easy\""
             },
             desc: {
-                ko: "매장 직원이 고객의 \"그래서 이게 나한테 뭐가 좋은데?\"라는 질문에 답하고, 기술을 즉각적인 가치로 전환해 판매를 마무리하도록 돕습니다.",
+                ko: "留ㅼ옣 吏곸썝??怨좉컼??\"洹몃옒???닿쾶 ?섑븳??萸먭? 醫뗭???\"?쇰뒗 吏덈Ц???듯븯怨? 湲곗닠??利됯컖?곸씤 媛移섎줈 ?꾪솚???먮ℓ瑜?留덈Т由ы븯?꾨줉 ?뺤뒿?덈떎.",
                 en: "Help store staff answer \"What does this do for me?\" and turn technology into immediate customer value at closing.",
-                de: "Hilft dem Store-Team, die Frage \"Was bringt mir das konkret?\" zu beantworten und Technik in sofort erlebbaren Nutzen zu übersetzen."
+                de: "Hilft dem Store-Team, die Frage \"Was bringt mir das konkret?\" zu beantworten und Technik in sofort erlebbaren Nutzen zu 체bersetzen."
             },
             hoverDetails: {
                 ko: [
-                    "복잡한 스펙 대신, 고객의 실제 생활에 맞는 시연 흐름을 만들어 보세요.",
-                    "\"이런 상황에선 이렇게 쓰세요\" 같은 명확한 장면을 보여주면 가치가 바로 와닿습니다.",
-                    "매장 미팅 전날이라도, 몇 분 안에 설득력 있는 응대 시나리오를 완성할 수 있습니다."
+                    "蹂듭옟???ㅽ럺 ??? 怨좉컼???ㅼ젣 ?앺솢??留욌뒗 ?쒖뿰 ?먮쫫??留뚮뱾??蹂댁꽭??",
+                    "\"?대윴 ?곹솴?먯꽑 ?대젃寃??곗꽭??" 媛숈? 紐낇솗???λ㈃??蹂댁뿬二쇰㈃ 媛移섍? 諛붾줈 ??우뒿?덈떎.",
+                    "留ㅼ옣 誘명똿 ?꾨궇?대씪?? 紐?遺??덉뿉 ?ㅻ뱷???덈뒗 ?묐? ?쒕굹由ъ삤瑜??꾩꽦?????덉뒿?덈떎."
                 ],
                 en: [
                     "Instead of complex specs, build a demo flow that fits how the customer actually lives.",
@@ -12030,7 +12035,7 @@ function getRoleCardLocaleCopy(roleId) {
                 de: [
                     "Statt komplexer Spezifikationen einen Demo-Ablauf bauen, der zum Alltag des Kunden passt.",
                     "Klare Momente wie 'In dieser Situation so nutzen' zeigen, damit der Mehrwert sofort ankommt.",
-                    "Selbst am Vorabend eines Store-Meetings ein überzeugendes Szenario in Minuten erstellen."
+                    "Selbst am Vorabend eines Store-Meetings ein 체berzeugendes Szenario in Minuten erstellen."
                 ]
             }
         },
@@ -12042,15 +12047,15 @@ function getRoleCardLocaleCopy(roleId) {
                 de: "\"Guide the Journey, Prove the ROI\""
             },
             desc: {
-                ko: "웹사이트 방문자를 충성 고객으로 전환하는 데이터 기반 온라인 여정을 설계하고, 각 단계 성과를 측정하고 증명하는 데 집중합니다.",
+                ko: "?뱀궗?댄듃 諛⑸Ц?먮? 異⑹꽦 怨좉컼?쇰줈 ?꾪솚?섎뒗 ?곗씠??湲곕컲 ?⑤씪???ъ젙???ㅺ퀎?섍퀬, 媛??④퀎 ?깃낵瑜?痢≪젙?섍퀬 利앸챸?섎뒗 ??吏묒쨷?⑸땲??",
                 en: "Design a data-driven online journey that turns visitors into loyal customers and prove impact at each conversion stage.",
                 de: "Entwirft eine datenbasierte Online-Journey, die Besuchende zu loyalen Kunden macht, und belegt die Wirkung je Funnel-Stufe."
             },
             hoverDetails: {
                 ko: [
-                    "검색 의도부터 전환까지, 데이터 기반의 온라인 여정을 더 날카롭게 설계하세요.",
-                    "A/B 테스트 카피부터 랜딩 구성까지, 측정 가능한 성과에 집중한 콘텐츠를 만듭니다.",
-                    "빈 페이지 앞에서 고민하는 시간을 줄이고, 바로 쓸 수 있는 초안부터 시작하세요."
+                    "寃???섎룄遺???꾪솚源뚯?, ?곗씠??湲곕컲???⑤씪???ъ젙?????좎뭅濡?쾶 ?ㅺ퀎?섏꽭??",
+                    "A/B ?뚯뒪??移댄뵾遺???쒕뵫 援ъ꽦源뚯?, 痢≪젙 媛?ν븳 ?깃낵??吏묒쨷??肄섑뀗痢좊? 留뚮벊?덈떎.",
+                    "鍮??섏씠吏 ?욎뿉??怨좊??섎뒗 ?쒓컙??以꾩씠怨? 諛붾줈 ?????덈뒗 珥덉븞遺???쒖옉?섏꽭??"
                 ],
                 en: [
                     "Map the online journey from search intent to conversion with a sharper, data-backed structure.",
@@ -12058,9 +12063,9 @@ function getRoleCardLocaleCopy(roleId) {
                     "Spend less time staring at a blank page and start from a draft that is already usable."
                 ],
                 de: [
-                    "Die Online-Journey von Suchintention bis Conversion datengestützt und präziser gestalten.",
+                    "Die Online-Journey von Suchintention bis Conversion datengest체tzt und pr채ziser gestalten.",
                     "Vom A/B-Test-Text bis zur Landing-Page: Inhalte auf messbare Performance ausrichten.",
-                    "Weniger Zeit vor der leeren Seite verbringen — mit einem sofort nutzbaren Entwurf starten."
+                    "Weniger Zeit vor der leeren Seite verbringen ??mit einem sofort nutzbaren Entwurf starten."
                 ]
             }
         },
@@ -12072,15 +12077,15 @@ function getRoleCardLocaleCopy(roleId) {
                 de: "\"Build the Love, Tell the Story\""
             },
             desc: {
-                ko: "제품 기능보다 브랜드 철학과 스토리로 감성적 유대를 만들고, 사용자를 브랜드 팬으로 전환하는 큰 그림을 설계합니다.",
+                ko: "?쒗뭹 湲곕뒫蹂대떎 釉뚮옖??泥좏븰怨??ㅽ넗由щ줈 媛먯꽦???좊?瑜?留뚮뱾怨? ?ъ슜?먮? 釉뚮옖???ъ쑝濡??꾪솚?섎뒗 ??洹몃┝???ㅺ퀎?⑸땲??",
                 en: "Build emotional connection through brand philosophy and story, not feature lists, and grow long-term brand love.",
-                de: "Baut emotionale Bindung über Markenphilosophie und Story statt Feature-Listen auf und stärkt langfristige Markenpräferenz."
+                de: "Baut emotionale Bindung 체ber Markenphilosophie und Story statt Feature-Listen auf und st채rkt langfristige Markenpr채ferenz."
             },
             hoverDetails: {
                 ko: [
-                    "제품 스펙을 반복하는 대신, 고객의 일상에 자연스럽게 녹아드는 브랜드 스토리를 만드세요.",
-                    "광고 슬로건부터 캠페인 컨셉까지, 호감과 기억에 남는 메시지 방향을 잡아줍니다.",
-                    "기능 나열을 넘어, 감성적 출발점이 되는 한 줄을 찾아보세요."
+                    "?쒗뭹 ?ㅽ럺??諛섎났?섎뒗 ??? 怨좉컼???쇱긽???먯뿰?ㅻ읇寃??뱀븘?쒕뒗 釉뚮옖???ㅽ넗由щ? 留뚮뱶?몄슂.",
+                    "愿묎퀬 ?щ줈嫄대???罹좏럹??而⑥뀎源뚯?, ?멸컧怨?湲곗뼲???⑤뒗 硫붿떆吏 諛⑺뼢???≪븘以띾땲??",
+                    "湲곕뒫 ?섏뿴???섏뼱, 媛먯꽦??異쒕컻?먯씠 ?섎뒗 ??以꾩쓣 李얠븘蹂댁꽭??"
                 ],
                 en: [
                     "Build a brand story that blends into the customer's life instead of repeating product specs.",
@@ -12088,9 +12093,9 @@ function getRoleCardLocaleCopy(roleId) {
                     "Move beyond feature lists and find the one line that creates an emotional starting point."
                 ],
                 de: [
-                    "Eine Markengeschichte aufbauen, die sich in den Alltag der Kunden einfügt, statt Produktdaten zu wiederholen.",
-                    "Vom Werbeslogan bis zum Kampagnenkonzept: Botschaftsrichtungen formen, die Sympathie und Erinnerung stärken.",
-                    "Über Feature-Listen hinausgehen und den einen Satz finden, der einen emotionalen Einstieg schafft."
+                    "Eine Markengeschichte aufbauen, die sich in den Alltag der Kunden einf체gt, statt Produktdaten zu wiederholen.",
+                    "Vom Werbeslogan bis zum Kampagnenkonzept: Botschaftsrichtungen formen, die Sympathie und Erinnerung st채rken.",
+                    "횥ber Feature-Listen hinausgehen und den einen Satz finden, der einen emotionalen Einstieg schafft."
                 ]
             }
         }
@@ -12139,7 +12144,7 @@ function applyLocale() {
     if (heroFlowLabels[1]) heroFlowLabels[1].textContent = t("heroFlow2");
     if (heroFlowLabels[2]) heroFlowLabels[2].textContent = t("heroFlow3");
     if (heroFlowLabels[3]) heroFlowLabels[3].textContent = t("heroFlow4");
-    // Access card V2 — safe selectors
+    // Access card V2 ??safe selectors
     const accessTitle = document.querySelector(".access-v2-title");
     const accessSubtitle = document.querySelector(".access-v2-subtitle");
     const accessNote = document.querySelector(".access-v2-note");
@@ -12177,7 +12182,7 @@ function applyLocale() {
     purposeInput.placeholder = t("purposeExtraPlaceholder");
     segmentCustomInput.placeholder = "";
     deviceCustomInput.placeholder = t("deviceCustomPlaceholder");
-    citySearchInput.placeholder = currentLocale === "ko" ? "도시 검색 또는 입력"
+    citySearchInput.placeholder = currentLocale === "ko" ? "?꾩떆 寃???먮뒗 ?낅젰"
         : currentLocale === "de" ? "Stadt suchen oder eingeben"
         : "Search or type a city";
     updateQuestionHelpers();
@@ -12187,7 +12192,7 @@ function applyLocale() {
     if (!latestPayload) renderOutputPreview();
     document.querySelector(".report-head h2").textContent = t("output");
     renderExportActions();
-    // Q3/Q4 자동 버튼 및 섹션 제목 로케일 교체
+    // Q3/Q4 ?먮룞 踰꾪듉 諛??뱀뀡 ?쒕ぉ 濡쒖???援먯껜
     const q3AutoText = document.querySelector(".q3-auto-text");
     if (q3AutoText) q3AutoText.textContent = t("q3AutoBtn");
     const q4AutoText = document.querySelector(".q4-auto-text");
@@ -12204,8 +12209,8 @@ function applyLocale() {
 }
 
 const LOCALE_NATIVE_NAMES = {
-    ko: "한국어", en: "English", de: "Deutsch", fr: "Français", es: "Español",
-    pt: "Português", it: "Italiano", nl: "Nederlands", ar: "العربية"
+    ko: "?쒓뎅??, en: "English", de: "Deutsch", fr: "Fran챌ais", es: "Espa챰ol",
+    pt: "Portugu챗s", it: "Italiano", nl: "Nederlands", ar: "碼?晩邈磨?馬"
 };
 
 function updateEnglishToggleVisibility() {
@@ -12299,7 +12304,7 @@ function renderExportActions() {
             <span>${escapeHtml(labels[type].desc)}</span>
         </button>
     `).join("");
-    // 이벤트 위임 — 개별 리스너 대신 부모에 한 번만 등록
+    // ?대깽???꾩엫 ??媛쒕퀎 由ъ뒪?????遺紐⑥뿉 ??踰덈쭔 ?깅줉
     if (!exportActions._delegated) {
         exportActions.addEventListener("click", (e) => {
             const btn = e.target.closest("[data-export]");
@@ -12321,17 +12326,17 @@ function getCountryName(code) {
     const normalized = normalizeSiteCode(code);
     const sourceEntry = (sourceData?.countries || []).find((item) => item.countryCode === normalized);
     const staticMap = {
-        KR: { ko: "대한민국", en: "South Korea", de: "Südkorea" },
-        US: { ko: "미국", en: "United States", de: "Vereinigte Staaten" },
-        GB: { ko: "영국", en: "United Kingdom", de: "Vereinigtes Königreich" },
-        DE: { ko: "독일", en: "Germany", de: "Deutschland" },
-        TR: { ko: "튀르키예", en: "Turkiye", de: "Türkei" },
-        RU: { ko: "러시아", en: "Russian Federation", de: "Russische Föderation" },
-        IN: { ko: "인도", en: "India", de: "Indien" },
-        JP: { ko: "일본", en: "Japan", de: "Japan" },
-        CN: { ko: "중국", en: "China", de: "China" },
-        HK: { ko: "홍콩", en: "Hong Kong", de: "Hongkong" },
-        TW: { ko: "대만", en: "Taiwan", de: "Taiwan" }
+        KR: { ko: "??쒕?援?, en: "South Korea", de: "S체dkorea" },
+        US: { ko: "誘멸뎅", en: "United States", de: "Vereinigte Staaten" },
+        GB: { ko: "?곴뎅", en: "United Kingdom", de: "Vereinigtes K철nigreich" },
+        DE: { ko: "?낆씪", en: "Germany", de: "Deutschland" },
+        TR: { ko: "?瑜댄궎??, en: "Turkiye", de: "T체rkei" },
+        RU: { ko: "?ъ떆??, en: "Russian Federation", de: "Russische F철deration" },
+        IN: { ko: "?몃룄", en: "India", de: "Indien" },
+        JP: { ko: "?쇰낯", en: "Japan", de: "Japan" },
+        CN: { ko: "以묎뎅", en: "China", de: "China" },
+        HK: { ko: "?띿쉘", en: "Hong Kong", de: "Hongkong" },
+        TW: { ko: "?留?, en: "Taiwan", de: "Taiwan" }
     };
     const mapped = staticMap[normalized];
     if (mapped) return mapped[currentLocale] || mapped.en || mapped.ko;
@@ -12394,8 +12399,8 @@ function buildMarketOptions() {
             });
         }
     }
-    // SEC(samsung.com/sec)가 이미 KR로 해석되므로 중복 KR 추가 불필요
-    // SEC도 없는 경우에만 fallback
+    // SEC(samsung.com/sec)媛 ?대? KR濡??댁꽍?섎?濡?以묐났 KR 異붽? 遺덊븘??
+    // SEC???녿뒗 寃쎌슦?먮쭔 fallback
     const hasKrVariant = [...unique.values()].some(m => normalizeSiteCode(m.siteCode) === "KR");
     if (!hasKrVariant) {
         unique.set("KR", {
@@ -12449,26 +12454,26 @@ function normalizeSiteCode(siteCode) {
 
 function localizeCountryLabel(countryName, siteCode) {
     const bySite = {
-        KR: { ko: "대한민국 (KR)", en: "South Korea (KR)", de: "Südkorea (KR)" },
-        SEC: { ko: "대한민국 (KR)", en: "South Korea (KR)", de: "Südkorea (KR)" },
-        US: { ko: "미국 (US)", en: "United States (US)", de: "Vereinigte Staaten (US)" },
-        UK: { ko: "영국 (UK)", en: "United Kingdom (UK)", de: "Vereinigtes Königreich (UK)" },
-        DE: { ko: "독일 (DE)", en: "Germany (DE)", de: "Deutschland (DE)" },
-        FR: { ko: "프랑스 (FR)", en: "France (FR)", de: "Frankreich (FR)" },
-        ES: { ko: "스페인 (ES)", en: "Spain (ES)", de: "Spanien (ES)" },
-        PT: { ko: "포르투갈 (PT)", en: "Portugal (PT)", de: "Portugal (PT)" },
-        IT: { ko: "이탈리아 (IT)", en: "Italy (IT)", de: "Italien (IT)" },
-        NL: { ko: "네덜란드 (NL)", en: "Netherlands (NL)", de: "Niederlande (NL)" },
-        BE: { ko: "벨기에 (BE)", en: "Belgium (BE)", de: "Belgien (BE)" },
-        BE_FR: { ko: "벨기에 프랑스어 (BE_FR)", en: "Belgium French (BE_FR)", de: "Belgien Französisch (BE_FR)" },
-        CA: { ko: "캐나다 (CA)", en: "Canada (CA)", de: "Kanada (CA)" },
-        CA_FR: { ko: "캐나다 프랑스어 (CA_FR)", en: "Canada French (CA_FR)", de: "Kanada Französisch (CA_FR)" },
-        CH: { ko: "스위스 (CH)", en: "Switzerland (CH)", de: "Schweiz (CH)" },
-        CH_FR: { ko: "스위스 프랑스어 (CH_FR)", en: "Switzerland French (CH_FR)", de: "Schweiz Französisch (CH_FR)" },
-        TR: { ko: "튀르키예 (TR)", en: "Turkiye (TR)", de: "Türkei (TR)" },
-        IN: { ko: "인도 (IN)", en: "India (IN)", de: "Indien (IN)" },
-        RU: { ko: "러시아 (RU)", en: "Russian Federation (RU)", de: "Russische Föderation (RU)" },
-        JP: { ko: "일본 (JP)", en: "Japan (JP)", de: "Japan (JP)" }
+        KR: { ko: "??쒕?援?(KR)", en: "South Korea (KR)", de: "S체dkorea (KR)" },
+        SEC: { ko: "??쒕?援?(KR)", en: "South Korea (KR)", de: "S체dkorea (KR)" },
+        US: { ko: "誘멸뎅 (US)", en: "United States (US)", de: "Vereinigte Staaten (US)" },
+        UK: { ko: "?곴뎅 (UK)", en: "United Kingdom (UK)", de: "Vereinigtes K철nigreich (UK)" },
+        DE: { ko: "?낆씪 (DE)", en: "Germany (DE)", de: "Deutschland (DE)" },
+        FR: { ko: "?꾨옉??(FR)", en: "France (FR)", de: "Frankreich (FR)" },
+        ES: { ko: "?ㅽ럹??(ES)", en: "Spain (ES)", de: "Spanien (ES)" },
+        PT: { ko: "?щⅤ?ш컝 (PT)", en: "Portugal (PT)", de: "Portugal (PT)" },
+        IT: { ko: "?댄깉由ъ븘 (IT)", en: "Italy (IT)", de: "Italien (IT)" },
+        NL: { ko: "?ㅻ뜙???(NL)", en: "Netherlands (NL)", de: "Niederlande (NL)" },
+        BE: { ko: "踰④린??(BE)", en: "Belgium (BE)", de: "Belgien (BE)" },
+        BE_FR: { ko: "踰④린???꾨옉?ㅼ뼱 (BE_FR)", en: "Belgium French (BE_FR)", de: "Belgien Franz철sisch (BE_FR)" },
+        CA: { ko: "罹먮굹??(CA)", en: "Canada (CA)", de: "Kanada (CA)" },
+        CA_FR: { ko: "罹먮굹???꾨옉?ㅼ뼱 (CA_FR)", en: "Canada French (CA_FR)", de: "Kanada Franz철sisch (CA_FR)" },
+        CH: { ko: "?ㅼ쐞??(CH)", en: "Switzerland (CH)", de: "Schweiz (CH)" },
+        CH_FR: { ko: "?ㅼ쐞???꾨옉?ㅼ뼱 (CH_FR)", en: "Switzerland French (CH_FR)", de: "Schweiz Franz철sisch (CH_FR)" },
+        TR: { ko: "?瑜댄궎??(TR)", en: "Turkiye (TR)", de: "T체rkei (TR)" },
+        IN: { ko: "?몃룄 (IN)", en: "India (IN)", de: "Indien (IN)" },
+        RU: { ko: "?ъ떆??(RU)", en: "Russian Federation (RU)", de: "Russische F철deration (RU)" },
+        JP: { ko: "?쇰낯 (JP)", en: "Japan (JP)", de: "Japan (JP)" }
     };
     if (bySite[siteCode]) return bySite[siteCode][currentLocale] || bySite[siteCode].en;
     const normalized = normalizeSiteCode(siteCode);
@@ -12495,16 +12500,16 @@ function resolveCountry(selectedMarket) {
 function getCategoryName(name) {
     const map = {
         TV: { ko: "TV", en: "TV", de: "TV" },
-        냉장고: { ko: "냉장고", en: "Refrigerator", de: "Kühlschrank" },
-        세탁기: { ko: "세탁기", en: "Washer", de: "Waschmaschine" },
-        건조기: { ko: "건조기", en: "Dryer", de: "Trockner" },
-        에어컨: { ko: "에어컨", en: "Air Conditioner", de: "Klimaanlage" },
-        오븐: { ko: "오븐", en: "Oven", de: "Backofen" },
-        로봇청소기: { ko: "로봇청소기", en: "Robot Vacuum", de: "Saugroboter" },
-        "세탁기/건조기": { ko: "세탁기/건조기", en: "Washer/Dryer", de: "Waschmaschine/Trockner" },
-        스피커: { ko: "스피커", en: "Speaker", de: "Lautsprecher" },
-        조명: { ko: "조명", en: "Lighting", de: "Beleuchtung" },
-        센서: { ko: "센서", en: "Sensor", de: "Sensor" }
+        ?됱옣怨? { ko: "?됱옣怨?, en: "Refrigerator", de: "K체hlschrank" },
+        ?명긽湲? { ko: "?명긽湲?, en: "Washer", de: "Waschmaschine" },
+        嫄댁“湲? { ko: "嫄댁“湲?, en: "Dryer", de: "Trockner" },
+        ?먯뼱而? { ko: "?먯뼱而?, en: "Air Conditioner", de: "Klimaanlage" },
+        ?ㅻ툙: { ko: "?ㅻ툙", en: "Oven", de: "Backofen" },
+        濡쒕큸泥?냼湲? { ko: "濡쒕큸泥?냼湲?, en: "Robot Vacuum", de: "Saugroboter" },
+        "?명긽湲?嫄댁“湲?: { ko: "?명긽湲?嫄댁“湲?, en: "Washer/Dryer", de: "Waschmaschine/Trockner" },
+        ?ㅽ뵾而? { ko: "?ㅽ뵾而?, en: "Speaker", de: "Lautsprecher" },
+        議곕챸: { ko: "議곕챸", en: "Lighting", de: "Beleuchtung" },
+        ?쇱꽌: { ko: "?쇱꽌", en: "Sensor", de: "Sensor" }
     };
     return map[name]?.[currentLocale] || map[name]?.en || map[name]?.ko || name;
 }
@@ -12512,27 +12517,27 @@ function getCategoryName(name) {
 function getRoleTitle(id) {
     const role = ROLE_LENSES.find((item) => item.id === id);
     const map = {
-        retail: { ko: "리테일 담당자", en: "Retail Lead", de: "Retail-Verantwortliche" },
-        dotcom: { ko: "닷컴 캠페인 담당자", en: "Dotcom Campaign Lead", de: "Dotcom-Kampagnenleitung" },
-        brand: { ko: "브랜드 마케팅 담당자", en: "Brand Marketing Lead", de: "Brand-Marketing-Leitung" }
+        retail: { ko: "由ы뀒???대떦??, en: "Retail Lead", de: "Retail-Verantwortliche" },
+        dotcom: { ko: "?룹뺨 罹좏럹???대떦??, en: "Dotcom Campaign Lead", de: "Dotcom-Kampagnenleitung" },
+        brand: { ko: "釉뚮옖??留덉????대떦??, en: "Brand Marketing Lead", de: "Brand-Marketing-Leitung" }
     };
     return map[id]?.[currentLocale] || map[id]?.en || role?.title || id;
 }
 
 function getRoleFocus(id) {
     const map = {
-        retail: { ko: "매장/현장 소구 중심", en: "Store and field storytelling", de: "Store- und Vor-Ort-Storytelling" },
-        dotcom: { ko: "웹/랜딩/전환 중심", en: "Web, landing, and conversion", de: "Web, Landing und Conversion" },
-        brand: { ko: "브랜드 메시지/통합 캠페인 중심", en: "Brand messaging and integrated campaigns", de: "Markenbotschaft und integrierte Kampagnen" }
+        retail: { ko: "留ㅼ옣/?꾩옣 ?뚭뎄 以묒떖", en: "Store and field storytelling", de: "Store- und Vor-Ort-Storytelling" },
+        dotcom: { ko: "???쒕뵫/?꾪솚 以묒떖", en: "Web, landing, and conversion", de: "Web, Landing und Conversion" },
+        brand: { ko: "釉뚮옖??硫붿떆吏/?듯빀 罹좏럹??以묒떖", en: "Brand messaging and integrated campaigns", de: "Markenbotschaft und integrierte Kampagnen" }
     };
     return map[id]?.[currentLocale] || map[id]?.en || map[id]?.ko || id;
 }
 
 function getRoleBrief(id) {
     const map = {
-        retail: { ko: "고객이 매장에서 바로 이해하고 따라 하고 싶게 만드는 설명 흐름을 만듭니다.", en: "Build a story flow that customers immediately understand and want to follow in-store.", de: "Erstellen Sie einen Erklärfluss, den Kundinnen und Kunden im Store sofort verstehen und nachmachen möchten." },
-        dotcom: { ko: "상품 페이지와 캠페인 페이지에서 메시지와 전환 흐름을 자연스럽게 연결합니다.", en: "Connect product-page messaging and conversion flow more naturally across campaign and landing pages.", de: "Verbinden Sie Botschaft und Conversion-Fluss auf Produkt- und Kampagnenseiten natürlicher." },
-        brand: { ko: "기능보다 사용자가 느끼는 감정적 가치를 중심으로 장면을 설계합니다.", en: "Design scenes around emotional value rather than feature explanation.", de: "Gestalten Sie Szenen stärker um den emotionalen Nutzen als um Funktionsbeschreibungen." }
+        retail: { ko: "怨좉컼??留ㅼ옣?먯꽌 諛붾줈 ?댄빐?섍퀬 ?곕씪 ?섍퀬 ?띔쾶 留뚮뱶???ㅻ챸 ?먮쫫??留뚮벊?덈떎.", en: "Build a story flow that customers immediately understand and want to follow in-store.", de: "Erstellen Sie einen Erkl채rfluss, den Kundinnen und Kunden im Store sofort verstehen und nachmachen m철chten." },
+        dotcom: { ko: "?곹뭹 ?섏씠吏? 罹좏럹???섏씠吏?먯꽌 硫붿떆吏? ?꾪솚 ?먮쫫???먯뿰?ㅻ읇寃??곌껐?⑸땲??", en: "Connect product-page messaging and conversion flow more naturally across campaign and landing pages.", de: "Verbinden Sie Botschaft und Conversion-Fluss auf Produkt- und Kampagnenseiten nat체rlicher." },
+        brand: { ko: "湲곕뒫蹂대떎 ?ъ슜?먭? ?먮겮??媛먯젙??媛移섎? 以묒떖?쇰줈 ?λ㈃???ㅺ퀎?⑸땲??", en: "Design scenes around emotional value rather than feature explanation.", de: "Gestalten Sie Szenen st채rker um den emotionalen Nutzen als um Funktionsbeschreibungen." }
     };
     return map[id]?.[currentLocale] || map[id]?.en || map[id]?.ko || id;
 }
@@ -12540,7 +12545,7 @@ function getRoleBrief(id) {
 function validateQ3Groups() {
     const requiredGroups = ["housing", "household", "lifestage"];
     const groupLabels = currentLocale === "ko"
-        ? { housing: "A. 거주지 유형", household: "B. 세대 구성", lifestage: "C. 라이프스테이지" }
+        ? { housing: "A. 嫄곗＜吏 ?좏삎", household: "B. ?몃? 援ъ꽦", lifestage: "C. ?쇱씠?꾩뒪?뚯씠吏" }
         : { housing: "A. Housing type", household: "B. Household", lifestage: "C. Life stage" };
     const missing = [];
     requiredGroups.forEach((gid) => {
@@ -12642,7 +12647,7 @@ function getSelectedDeviceLabels() {
 
 function getCustomEntries(value) {
     return String(value || "")
-        .split(/[,\n/]|·/)
+        .split(/[,\n/]|쨌/)
         .map((item) => item.trim())
         .filter((item) => item && item !== "__auto__");
 }
@@ -12650,139 +12655,139 @@ function getCustomEntries(value) {
 function localizeSentence(key, value = "") {
     const sentences = {
         deviceExact: {
-            ko: "선택한 카테고리를 그대로 중심 기기로 반영했습니다.",
+            ko: "?좏깮??移댄뀒怨좊━瑜?洹몃?濡?以묒떖 湲곌린濡?諛섏쁺?덉뒿?덈떎.",
             en: "The selected category was used directly as the core device.",
-            de: "Die gewählte Kategorie wurde direkt als zentrales Gerät verwendet."
+            de: "Die gew채hlte Kategorie wurde direkt als zentrales Ger채t verwendet."
         },
         deviceFallback: {
-            ko: "가장 가까운 대안 기기를 함께 고려해 시나리오를 이어갑니다.",
+            ko: "媛??媛源뚯슫 ???湲곌린瑜??④퍡 怨좊젮???쒕굹由ъ삤瑜??댁뼱媛묐땲??",
             en: "The scenario continues with the closest available alternative device.",
-            de: "Das Szenario wird mit dem nächstliegenden verfügbaren Alternativgerät fortgeführt."
+            de: "Das Szenario wird mit dem n채chstliegenden verf체gbaren Alternativger채t fortgef체hrt."
         },
         factsCountry: {
-            ko: `${value} 대상 구성`,
+            ko: `${value} ???援ъ꽦`,
             en: `Scenario configured for ${value}`,
-            de: `Szenario für ${value} konfiguriert`
+            de: `Szenario f체r ${value} konfiguriert`
         },
         factsDevice: {
-            ko: `선정 기기: ${value}`,
+            ko: `?좎젙 湲곌린: ${value}`,
             en: `Selected device: ${value}`,
-            de: `Ausgewähltes Gerät: ${value}`
+            de: `Ausgew채hltes Ger채t: ${value}`
         },
         factsService: {
-            ko: `주요 서비스: ${value}`,
+            ko: `二쇱슂 ?쒕퉬?? ${value}`,
             en: `Primary service: ${value}`,
-            de: `Primärer Service: ${value}`
+            de: `Prim채rer Service: ${value}`
         },
         factsNote: {
-            ko: `추천 메모: ${value}`,
+            ko: `異붿쿇 硫붾え: ${value}`,
             en: `Recommendation note: ${value}`,
             de: `Empfehlungshinweis: ${value}`
         },
         assumptionFallback: {
-            ko: "선택한 기기와 가장 가까운 대안 기기를 함께 고려했습니다.",
+            ko: "?좏깮??湲곌린? 媛??媛源뚯슫 ???湲곌린瑜??④퍡 怨좊젮?덉뒿?덈떎.",
             en: "The nearest alternative device was considered alongside the selected one.",
-            de: "Das nächstliegende Alternativgerät wurde zusätzlich berücksichtigt."
+            de: "Das n채chstliegende Alternativger채t wurde zus채tzlich ber체cksichtigt."
         },
         assumptionExact: {
-            ko: "선택한 기기 카테고리를 그대로 반영했습니다.",
+            ko: "?좏깮??湲곌린 移댄뀒怨좊━瑜?洹몃?濡?諛섏쁺?덉뒿?덈떎.",
             en: "The selected device category was reflected as-is.",
-            de: "Die gewählte Gerätekategorie wurde direkt übernommen."
+            de: "Die gew채hlte Ger채tekategorie wurde direkt 체bernommen."
         },
         assumptionGeneral: {
-            ko: "세부 환경 정보가 없는 부분은 일반적인 사용 맥락을 기준으로 구성했습니다.",
+            ko: "?몃? ?섍꼍 ?뺣낫媛 ?녿뒗 遺遺꾩? ?쇰컲?곸씤 ?ъ슜 留λ씫??湲곗??쇰줈 援ъ꽦?덉뒿?덈떎.",
             en: "Where detailed environment data was missing, the scenario was shaped around a general usage context.",
             de: "Wo Detaildaten zur Umgebung fehlten, wurde das Szenario anhand eines allgemeinen Nutzungskontexts aufgebaut."
         },
         checkFit: {
-            ko: "사용 목표와 연결되는 시나리오 방향이 잡혀 있습니다.",
+            ko: "?ъ슜 紐⑺몴? ?곌껐?섎뒗 ?쒕굹由ъ삤 諛⑺뼢???≫? ?덉뒿?덈떎.",
             en: "The scenario direction is clearly tied to the user's goal.",
             de: "Die Szenariorichtung ist klar mit dem Nutzerziel verbunden."
         },
         checkAvailability: {
-            ko: "대상 국가에서 활용 가능한 기기를 기준으로 구성했습니다.",
+            ko: "???援???먯꽌 ?쒖슜 媛?ν븳 湲곌린瑜?湲곗??쇰줈 援ъ꽦?덉뒿?덈떎.",
             en: "The scenario is built around devices available in the selected market.",
-            de: "Das Szenario basiert auf Geräten, die im gewählten Markt verfügbar sind."
+            de: "Das Szenario basiert auf Ger채ten, die im gew채hlten Markt verf체gbar sind."
         },
         checkExecution: {
-            ko: "추천 흐름을 실제 사용 단계로 설명할 수 있습니다.",
+            ko: "異붿쿇 ?먮쫫???ㅼ젣 ?ъ슜 ?④퀎濡??ㅻ챸?????덉뒿?덈떎.",
             en: "The recommended flow can be explained as a real usage sequence.",
-            de: "Der empfohlene Ablauf lässt sich als reale Nutzungskette erklären."
+            de: "Der empfohlene Ablauf l채sst sich als reale Nutzungskette erkl채ren."
         },
         checkClarity: {
-            ko: "사용자가 체감하는 가치 중심으로 설명됩니다.",
+            ko: "?ъ슜?먭? 泥닿컧?섎뒗 媛移?以묒떖?쇰줈 ?ㅻ챸?⑸땲??",
             en: "The explanation stays centered on value users can actually feel.",
-            de: "Die Erklärung bleibt auf den tatsächlich spürbaren Nutzen für Nutzer fokussiert."
+            de: "Die Erkl채rung bleibt auf den tats채chlich sp체rbaren Nutzen f체r Nutzer fokussiert."
         },
         checkMetric: {
-            ko: "활용 포인트와 기대 효과가 연결되어 있습니다.",
+            ko: "?쒖슜 ?ъ씤?몄? 湲곕? ?④낵媛 ?곌껐?섏뼱 ?덉뒿?덈떎.",
             en: "Execution points and expected outcomes are logically connected.",
             de: "Umsetzungspunkte und erwartete Ergebnisse sind logisch miteinander verbunden."
         },
         metricRetail: {
-            ko: `설명 단순화 -> 고객 이해도 상승 -> ${value} 상담 전환 개선`,
+            ko: `?ㅻ챸 ?⑥닚??-> 怨좉컼 ?댄빐???곸듅 -> ${value} ?곷떞 ?꾪솚 媛쒖꽑`,
             en: `Simpler explanation -> stronger customer understanding -> improved consultation conversion for ${value}`,
-            de: `Einfachere Erklärung -> besseres Kundenverständnis -> bessere Beratungskonversion für ${value}`
+            de: `Einfachere Erkl채rung -> besseres Kundenverst채ndnis -> bessere Beratungskonversion f체r ${value}`
         },
         metricDotcom: {
-            ko: "시나리오 중심 페이지 구성 -> 기능 이해 부담 감소 -> 클릭과 장바구니 진입 상승",
+            ko: "?쒕굹由ъ삤 以묒떖 ?섏씠吏 援ъ꽦 -> 湲곕뒫 ?댄빐 遺??媛먯냼 -> ?대┃怨??λ컮援щ땲 吏꾩엯 ?곸듅",
             en: "Scenario-led page structure -> lower feature-comprehension burden -> higher clicks and basket entries",
-            de: "Szenario-basierter Seitenaufbau -> geringere Verständnislast -> mehr Klicks und Warenkorb-Einstiege"
+            de: "Szenario-basierter Seitenaufbau -> geringere Verst채ndnislast -> mehr Klicks und Warenkorb-Einstiege"
         },
         metricBrand: {
-            ko: "감정 가치 중심 메시지 -> 공감도 증가 -> 브랜드 선호와 공유 의도 상승",
+            ko: "媛먯젙 媛移?以묒떖 硫붿떆吏 -> 怨듦컧??利앷? -> 釉뚮옖???좏샇? 怨듭쑀 ?섎룄 ?곸듅",
             en: "Emotion-led messaging -> stronger resonance -> higher brand preference and sharing intent",
-            de: "Emotional geprägte Botschaft -> stärkere Resonanz -> höhere Markenpräferenz und Teilungsabsicht"
+            de: "Emotional gepr채gte Botschaft -> st채rkere Resonanz -> h철here Markenpr채ferenz und Teilungsabsicht"
         },
         segment1: {
-            ko: `${value}에서 연결형 가전 경험에 관심이 높은 사용자층`,
+            ko: `${value}?먯꽌 ?곌껐??媛??寃쏀뿕??愿?ъ씠 ?믪? ?ъ슜?먯링`,
             en: `Users in ${value} who are open to connected home-device experiences`,
-            de: `Nutzerinnen und Nutzer in ${value}, die offen für vernetzte Geräteerlebnisse sind`
+            de: `Nutzerinnen und Nutzer in ${value}, die offen f체r vernetzte Ger채teerlebnisse sind`
         },
         segment2: {
-            ko: `${value}처럼 핵심 가치를 분명하게 원하는 사용자`,
+            ko: `${value}泥섎읆 ?듭떖 媛移섎? 遺꾨챸?섍쾶 ?먰븯???ъ슜??,
             en: `Users like ${value} who have a clear expectation for the core value`,
             de: `Nutzer wie ${value}, die einen klaren Nutzen erwarten`
         },
         segment3: {
-            ko: "복잡한 설정보다 바로 체감 가능한 변화와 편의를 선호하는 사용자",
+            ko: "蹂듭옟???ㅼ젙蹂대떎 諛붾줈 泥닿컧 媛?ν븳 蹂?붿? ?몄쓽瑜??좏샇?섎뒗 ?ъ슜??,
             en: "Users who prefer immediate convenience and visible change over complex setup",
-            de: "Nutzer, die unmittelbaren Komfort und spürbare Veränderung komplexer Einrichtung vorziehen"
+            de: "Nutzer, die unmittelbaren Komfort und sp체rbare Ver채nderung komplexer Einrichtung vorziehen"
         },
         guide1: {
-            ko: `1단계: ${value}를 앱에 연결합니다.`,
+            ko: `1?④퀎: ${value}瑜??깆뿉 ?곌껐?⑸땲??`,
             en: `Step 1: Connect ${value} to the app.`,
             de: `Schritt 1: Verbinden Sie ${value} mit der App.`
         },
         guide2: {
-            ko: `2단계: ${value} 중심 추천 흐름을 선택합니다.`,
+            ko: `2?④퀎: ${value} 以묒떖 異붿쿇 ?먮쫫???좏깮?⑸땲??`,
             en: `Step 2: Choose the recommended flow centered on ${value}.`,
-            de: `Schritt 2: Wählen Sie den empfohlenen Ablauf rund um ${value}.`
+            de: `Schritt 2: W채hlen Sie den empfohlenen Ablauf rund um ${value}.`
         },
         guide3: {
-            ko: "3단계: 한 번 실행해 보고 필요한 부분만 간단히 조정합니다.",
+            ko: "3?④퀎: ??踰??ㅽ뻾??蹂닿퀬 ?꾩슂??遺遺꾨쭔 媛꾨떒??議곗젙?⑸땲??",
             en: "Step 3: Run it once and make only the small adjustments you need.",
-            de: "Schritt 3: Führen Sie den Ablauf einmal aus und passen Sie nur das Nötige an."
+            de: "Schritt 3: F체hren Sie den Ablauf einmal aus und passen Sie nur das N철tige an."
         },
         guide4: {
-            ko: "4단계: 자주 쓰는 흐름을 저장해 반복 사용합니다.",
+            ko: "4?④퀎: ?먯＜ ?곕뒗 ?먮쫫????ν빐 諛섎났 ?ъ슜?⑸땲??",
             en: "Step 4: Save the flow you use often and repeat it easily.",
-            de: "Schritt 4: Speichern Sie den häufig genutzten Ablauf und verwenden Sie ihn wiederholt."
+            de: "Schritt 4: Speichern Sie den h채ufig genutzten Ablauf und verwenden Sie ihn wiederholt."
         },
         marketGo: {
-            ko: `${value} 사용자에게 핵심 가치를 분명하게 전달할 수 있는 구성입니다.`,
+            ko: `${value} ?ъ슜?먯뿉寃??듭떖 媛移섎? 遺꾨챸?섍쾶 ?꾨떖?????덈뒗 援ъ꽦?낅땲??`,
             en: `This setup can clearly deliver the core value to users in ${value}.`,
-            de: `Dieses Setup kann den Kernnutzen für Nutzer in ${value} klar vermitteln.`
+            de: `Dieses Setup kann den Kernnutzen f체r Nutzer in ${value} klar vermitteln.`
         },
         marketNoGo: {
-            ko: "대상 사용자와 기기 구성이 아직 충분히 구체적이지 않습니다.",
+            ko: "????ъ슜?먯? 湲곌린 援ъ꽦???꾩쭅 異⑸텇??援ъ껜?곸씠吏 ?딆뒿?덈떎.",
             en: "The target user and device setup are not yet specific enough.",
-            de: "Zielnutzer und Gerätekonfiguration sind noch nicht konkret genug."
+            de: "Zielnutzer und Ger채tekonfiguration sind noch nicht konkret genug."
         },
         marketComparison: {
-            ko: "비슷한 자동화 경험과 비교해도 이해하기 쉬운 사용 장면으로 설명하기 좋습니다.",
+            ko: "鍮꾩듂???먮룞??寃쏀뿕怨?鍮꾧탳?대룄 ?댄빐?섍린 ?ъ슫 ?ъ슜 ?λ㈃?쇰줈 ?ㅻ챸?섍린 醫뗭뒿?덈떎.",
             en: "Compared with similar automation ideas, this scenario is easier to explain through a clear usage moment.",
-            de: "Im Vergleich zu ähnlichen Automationsideen lässt sich dieses Szenario leichter über einen klaren Nutzungsmoment erklären."
+            de: "Im Vergleich zu 채hnlichen Automationsideen l채sst sich dieses Szenario leichter 체ber einen klaren Nutzungsmoment erkl채ren."
         }
     };
     return sentences[key]?.[currentLocale] || sentences[key]?.en || sentences[key]?.ko || value;
@@ -12791,72 +12796,72 @@ function localizeSentence(key, value = "") {
 function localizeRoleText(key, value = "") {
     const map = {
         retailSubtitle: {
-            ko: "매장 설명과 제안에 바로 쓰기 좋은 포인트",
+            ko: "留ㅼ옣 ?ㅻ챸怨??쒖븞??諛붾줈 ?곌린 醫뗭? ?ъ씤??,
             en: "Points ready for store explanation and recommendation",
-            de: "Punkte, die sich direkt für Store-Erklärung und Empfehlung eignen"
+            de: "Punkte, die sich direkt f체r Store-Erkl채rung und Empfehlung eignen"
         },
         retailBullet1: {
-            ko: `${value} 중심으로 짧은 데모 스토리를 구성합니다.`,
+            ko: `${value} 以묒떖?쇰줈 吏㏃? ?곕え ?ㅽ넗由щ? 援ъ꽦?⑸땲??`,
             en: `Build a short demo story around ${value}.`,
             de: `Erstellen Sie eine kurze Demo-Story rund um ${value}.`
         },
         retailBullet2: {
-            ko: `${value}를 고객의 실제 문제 해결 언어로 바꿔 설명합니다.`,
+            ko: `${value}瑜?怨좉컼???ㅼ젣 臾몄젣 ?닿껐 ?몄뼱濡?諛붽퓭 ?ㅻ챸?⑸땲??`,
             en: `Translate ${value} into language that solves the customer's real problem.`,
-            de: `Übersetzen Sie ${value} in eine Sprache, die das tatsächliche Kundenproblem löst.`
+            de: `횥bersetzen Sie ${value} in eine Sprache, die das tats채chliche Kundenproblem l철st.`
         },
         retailBullet3: {
-            ko: "상담 중 바로 연결 가능한 추가 제안 포인트를 만듭니다.",
+            ko: "?곷떞 以?諛붾줈 ?곌껐 媛?ν븳 異붽? ?쒖븞 ?ъ씤?몃? 留뚮벊?덈떎.",
             en: "Create add-on recommendation points that can be used immediately during consultation.",
-            de: "Schaffen Sie Zusatzempfehlungen, die direkt im Beratungsgespräch genutzt werden können."
+            de: "Schaffen Sie Zusatzempfehlungen, die direkt im Beratungsgespr채ch genutzt werden k철nnen."
         },
         dotcomSubtitle: {
-            ko: "상품 페이지와 전환 흐름에 바로 연결할 포인트",
+            ko: "?곹뭹 ?섏씠吏? ?꾪솚 ?먮쫫??諛붾줈 ?곌껐???ъ씤??,
             en: "Points ready to connect product pages and conversion flow",
             de: "Punkte zur direkten Verbindung von Produktseite und Conversion-Fluss"
         },
         dotcomBullet1: {
-            ko: "상품 설명, 사용 장면, CTA를 한 흐름으로 배치합니다.",
+            ko: "?곹뭹 ?ㅻ챸, ?ъ슜 ?λ㈃, CTA瑜????먮쫫?쇰줈 諛곗튂?⑸땲??",
             en: "Arrange product explanation, use moment, and CTA in one continuous flow.",
-            de: "Ordnen Sie Produkterklärung, Nutzungsmoment und CTA in einem durchgehenden Ablauf an."
+            de: "Ordnen Sie Produkterkl채rung, Nutzungsmoment und CTA in einem durchgehenden Ablauf an."
         },
         dotcomBullet2: {
-            ko: "선택 기기 중심으로 상세 페이지 메시지를 간결하게 만듭니다.",
+            ko: "?좏깮 湲곌린 以묒떖?쇰줈 ?곸꽭 ?섏씠吏 硫붿떆吏瑜?媛꾧껐?섍쾶 留뚮벊?덈떎.",
             en: "Keep the detail-page message concise around the selected device.",
-            de: "Halten Sie die Botschaft der Detailseite rund um das gewählte Gerät prägnant."
+            de: "Halten Sie die Botschaft der Detailseite rund um das gew채hlte Ger채t pr채gnant."
         },
         dotcomBullet3: {
-            ko: "추천 흐름을 배너와 카드, FAQ로 나누어 활용합니다.",
+            ko: "異붿쿇 ?먮쫫??諛곕꼫? 移대뱶, FAQ濡??섎늻???쒖슜?⑸땲??",
             en: "Reuse the recommended flow across banners, cards, and FAQ sections.",
             de: "Nutzen Sie den empfohlenen Ablauf erneut in Bannern, Karten und FAQ-Bereichen."
         },
         dotcomCopy: {
-            ko: `${value} 하나로 시작해 생활 전반으로 확장되는 경험을 보여줍니다.`,
+            ko: `${value} ?섎굹濡??쒖옉???앺솢 ?꾨컲?쇰줈 ?뺤옣?섎뒗 寃쏀뿕??蹂댁뿬以띾땲??`,
             en: `Show how the experience can start with ${value} and expand across daily life.`,
-            de: `Zeigen Sie, wie das Erlebnis mit ${value} beginnt und sich über den Alltag erweitert.`
+            de: `Zeigen Sie, wie das Erlebnis mit ${value} beginnt und sich 체ber den Alltag erweitert.`
         },
         brandSubtitle: {
-            ko: "감정 가치와 캠페인 장면 중심 포인트",
+            ko: "媛먯젙 媛移섏? 罹좏럹???λ㈃ 以묒떖 ?ъ씤??,
             en: "Points centered on emotional value and campaign scenes",
             de: "Punkte mit Fokus auf emotionalen Wert und Kampagnenszenen"
         },
         brandBullet1: {
-            ko: "기능보다 사용자가 느끼는 안심과 편리함을 중심으로 메시지를 정리합니다.",
+            ko: "湲곕뒫蹂대떎 ?ъ슜?먭? ?먮겮???덉떖怨??몃━?⑥쓣 以묒떖?쇰줈 硫붿떆吏瑜??뺣━?⑸땲??",
             en: "Organize the message around reassurance and convenience rather than features.",
-            de: "Ordnen Sie die Botschaft stärker um Sicherheit und Komfort als um Funktionen."
+            de: "Ordnen Sie die Botschaft st채rker um Sicherheit und Komfort als um Funktionen."
         },
         brandBullet2: {
-            ko: "일상에서 배려받는 순간을 핵심 장면으로 사용합니다.",
+            ko: "?쇱긽?먯꽌 諛곕젮諛쏅뒗 ?쒓컙???듭떖 ?λ㈃?쇰줈 ?ъ슜?⑸땲??",
             en: "Use the moment of feeling cared for in daily life as the core scene.",
             de: "Nutzen Sie den Moment des Umsorgtseins im Alltag als zentrale Szene."
         },
         brandBullet3: {
-            ko: "짧은 영상과 소셜 카피, 비주얼 콘셉트로 확장하기 쉽게 구성합니다.",
+            ko: "吏㏃? ?곸긽怨??뚯뀥 移댄뵾, 鍮꾩＜??肄섏뀎?몃줈 ?뺤옣?섍린 ?쎄쾶 援ъ꽦?⑸땲??",
             en: "Shape it so it can expand easily into short video, social copy, and visual concepts.",
-            de: "Gestalten Sie es so, dass es sich leicht auf Kurzvideo, Social Copy und visuelle Konzepte ausweiten lässt."
+            de: "Gestalten Sie es so, dass es sich leicht auf Kurzvideo, Social Copy und visuelle Konzepte ausweiten l채sst."
         },
         brandCopy: {
-            ko: "기술이 앞서 보이기보다 사용자를 먼저 배려하는 경험으로 설명합니다.",
+            ko: "湲곗닠???욎꽌 蹂댁씠湲곕낫???ъ슜?먮? 癒쇱? 諛곕젮?섎뒗 寃쏀뿕?쇰줈 ?ㅻ챸?⑸땲??",
             en: "Explain it as an experience that puts people first rather than technology first.",
             de: "Beschreiben Sie es als Erlebnis, das Menschen vor Technologie stellt."
         }
@@ -12864,15 +12869,15 @@ function localizeRoleText(key, value = "") {
     return map[key]?.[currentLocale] || map[key]?.en || map[key]?.ko || value;
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   큐레이션 모드 — Explore Contents DB 매칭 + UI 렌더링
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   ?먮젅?댁뀡 紐⑤뱶 ??Explore Contents DB 留ㅼ묶 + UI ?뚮뜑留?
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 
 let curationDbV1 = null;
 let curationDbV2 = null;
 let curationLoaded = false;
-let latestSelectionSummary = null;  // Selection Stage 산출물 — AI 프롬프트 및 output 렌더링에 전달
-let _latestCurationResults = [];    // 최근 큐레이션 결과 (campaign output에서 참조)
+let latestSelectionSummary = null;  // Selection Stage ?곗텧臾???AI ?꾨＼?꾪듃 諛?output ?뚮뜑留곸뿉 ?꾨떖
+let _latestCurationResults = [];    // 理쒓렐 ?먮젅?댁뀡 寃곌낵 (campaign output?먯꽌 李몄“)
 
 async function loadCurationDb() {
     if (curationLoaded) return;
@@ -12889,17 +12894,17 @@ async function loadCurationDb() {
     }
 }
 
-// 앱 시작 시 DB를 미리 로드 (비동기, 논블로킹)
+// ???쒖옉 ??DB瑜?誘몃━ 濡쒕뱶 (鍮꾨룞湲? ?쇰툝濡쒗궧)
 loadCurationDb();
 
 /**
- * Q2 라이프스타일 가중치 로직과 Q3 기기 보너스를 결합한 통합 가중치 산출 함수 (Step 4 매칭 엔진용)
+ * Q2 ?쇱씠?꾩뒪???媛以묒튂 濡쒖쭅怨?Q3 湲곌린 蹂대꼫?ㅻ? 寃고빀???듯빀 媛以묒튂 ?곗텧 ?⑥닔 (Step 4 留ㅼ묶 ?붿쭊??
  */
 function getIntegratedTagScores(input) {
     const purpose = input.purpose || "";
     const q1Traits = typeof inferQ1Traits === "function" ? inferQ1Traits() : [];
     
-    // Q1_WEIGHT, Q2_WEIGHT (Q2 화면 로직과 동일)
+    // Q1_WEIGHT, Q2_WEIGHT (Q2 ?붾㈃ 濡쒖쭅怨??숈씪)
     const Q1_WEIGHT = 40;
     const perQ1 = Q1_WEIGHT / Math.max(q1Traits.length, 1);
 
@@ -12913,7 +12918,7 @@ function getIntegratedTagScores(input) {
         }
     }
 
-    // 명시적 의도(Primary)
+    // 紐낆떆???섎룄(Primary)
     const PRIMARY_WEIGHT = 15;
     const personaIds = [...(input.segments || []), ...(input.interests || [])];
     const PRIMARY_INTENT_MAP = {
@@ -12950,7 +12955,7 @@ function getIntegratedTagScores(input) {
         (PRIMARY_INTENT_MAP[id] || []).forEach(tag => addTagScore(tag, PRIMARY_WEIGHT, `primary_${id}`));
     });
 
-    // 세대 구성 (Household)
+    // ?몃? 援ъ꽦 (Household)
     const HOUSEHOLD_WEIGHT = 10;
     const HOUSEHOLD_MAP = {
         hh_young_kids:  ["Care for kids", "Keep your home safe", "Family care"],
@@ -12965,7 +12970,7 @@ function getIntegratedTagScores(input) {
         (HOUSEHOLD_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSEHOLD_WEIGHT, `hh_${id}`));
     });
 
-    // 라이프스테이지
+    // ?쇱씠?꾩뒪?뚯씠吏
     const LIFESTAGE_WEIGHT = 8;
     const LIFESTAGE_MAP = {
         ls_parenting:    ["Care for kids", "Keep your home safe", "Family care"],
@@ -12980,7 +12985,7 @@ function getIntegratedTagScores(input) {
         (LIFESTAGE_MAP[id] || []).forEach(tag => addTagScore(tag, LIFESTAGE_WEIGHT, `ls_${id}`));
     });
 
-    // 거주지 (Housing)
+    // 嫄곗＜吏 (Housing)
     const HOUSING_WEIGHT = 4;
     const HOUSING_MAP = {
         h_apt:       ["Save energy", "Keep the air fresh"],
@@ -12995,7 +13000,7 @@ function getIntegratedTagScores(input) {
         (HOUSING_MAP[id] || []).forEach(tag => addTagScore(tag, HOUSING_WEIGHT, `housing_${id}`));
     });
 
-    // Q1 매직 키워드
+    // Q1 留ㅼ쭅 ?ㅼ썙??
     if (typeof MAGIC_KEY_TO_EXPLORE_TAGS !== "undefined") {
         const magicKeys = input.magicKeywords || [];
         for (const key of magicKeys) {
@@ -13004,7 +13009,7 @@ function getIntegratedTagScores(input) {
         }
     }
 
-    // 커스텀 마켓 리서치 태그 반영
+    // 而ㅼ뒪? 留덉폆 由ъ꽌移??쒓렇 諛섏쁺
     if (_customResearchData?.applied && Array.isArray(_customResearchData.tags)) {
         const CUSTOM_RESEARCH_WEIGHT = 12;
         _customResearchData.tags.forEach(tag => {
@@ -13012,23 +13017,23 @@ function getIntegratedTagScores(input) {
         });
     }
 
-    // 추가 텍스트 보너스
+    // 異붽? ?띿뒪??蹂대꼫??
     const purposeBonus = {
-        "반려|펫|pet|dog|cat": "Care for your pet",
-        "부모|시니어|senior": "Care for seniors",
-        "아이|자녀|kid|child": "Care for kids",
-        "에너지|절약|energy|save": "Save energy",
-        "보안|안전|security|safe": "Keep your home safe",
-        "수면|잠|sleep": "Sleep well",
-        "게임|영화|music": "Enhanced mood",
-        "세탁|청소|가사|chore": "Help with chores",
-        "운동|건강|health": "Stay fit & healthy"
+        "諛섎젮|??pet|dog|cat": "Care for your pet",
+        "遺紐??쒕땲??senior": "Care for seniors",
+        "?꾩씠|?먮?|kid|child": "Care for kids",
+        "?먮꼫吏|?덉빟|energy|save": "Save energy",
+        "蹂댁븞|?덉쟾|security|safe": "Keep your home safe",
+        "?섎㈃|??sleep": "Sleep well",
+        "寃뚯엫|?곹솕|music": "Enhanced mood",
+        "?명긽|泥?냼|媛??chore": "Help with chores",
+        "?대룞|嫄닿컯|health": "Stay fit & healthy"
     };
     Object.entries(purposeBonus).forEach(([pattern, tag]) => {
         if (new RegExp(pattern, "i").test(purpose.toLowerCase())) addTagScore(tag, 8, `purpose_${tag}`);
     });
 
-    // 유사 태그 병합 (TAG_MERGE) - 중복 뻥튀기분 삭감(0.9배율 적용)
+    // ?좎궗 ?쒓렇 蹂묓빀 (TAG_MERGE) - 以묐났 六ν?湲곕텇 ??컧(0.9諛곗쑉 ?곸슜)
     const TAG_MERGE = {
         "Energy Saving": "Save energy",
         "Security": "Keep your home safe",
@@ -13046,18 +13051,18 @@ function getIntegratedTagScores(input) {
         }
     }
 
-    // 기기 보너스 결합
+    // 湲곌린 蹂대꼫??寃고빀
     const devices = input.devices || [];
     const integratedScores = Object.entries(tagScoreMap).map(([tag, score]) => {
         let devBonus = 0;
         if (typeof DEVICE_TO_EXPLORE_TAGS !== "undefined") {
             const hasSupport = devices.some(d => (DEVICE_TO_EXPLORE_TAGS[d] || []).includes(tag));
-            if (hasSupport) devBonus = 15; // Q3 기기 매칭에 대한 대형 가중치 직접 주입
+            if (hasSupport) devBonus = 15; // Q3 湲곌린 留ㅼ묶????????媛以묒튂 吏곸젒 二쇱엯
         }
         return { tag, score: score + devBonus };
     });
 
-    // 점수 정규화 (엔진 적합성을 위해 최고점을 12점으로 맞춤)
+    // ?먯닔 ?뺢퇋??(?붿쭊 ?곹빀?깆쓣 ?꾪빐 理쒓퀬?먯쓣 12?먯쑝濡?留욎땄)
     const maxScore = Math.max(1, ...integratedScores.map(t => t.score));
     return integratedScores
         .map(t => ({
@@ -13097,16 +13102,16 @@ function runCuration() {
 
     if (typeof curateScenarios !== "function") return;
 
-    // 중간 데이터 수집: 기존의 독립적 태그 도출 로직 폐기, Q2-Q3 결합 로직으로 변경
+    // 以묎컙 ?곗씠???섏쭛: 湲곗〈???낅┰???쒓렇 ?꾩텧 濡쒖쭅 ?먭린, Q2-Q3 寃고빀 濡쒖쭅?쇰줈 蹂寃?
     const tagScores = getIntegratedTagScores(input);
 
     const v2Scenarios = curationDbV2.scenarios || [];
     const totalPool = (curationDbV1.scenarios || []).length + v2Scenarios.length;
     
-    // 엔진에 통합 가중치 주입 (overrideTagScores)
+    // ?붿쭊???듯빀 媛以묒튂 二쇱엯 (overrideTagScores)
     const results = curateScenarios(input, curationDbV1.scenarios, v2Scenarios, { maxResults: 5, minScore: 5, overrideTagScores: tagScores });
 
-    // Selection Summary 구축
+    // Selection Summary 援ъ텞
     if (typeof buildSelectionSummary === "function") {
         const personaLabels = personaIds.map(id => {
             const el = document.querySelector(`input[value="${id}"]`);
@@ -13121,14 +13126,14 @@ function runCuration() {
         });
     }
 
-    // 입력 라벨 수집 (프로세스 카드용)
+    // ?낅젰 ?쇰꺼 ?섏쭛 (?꾨줈?몄뒪 移대뱶??
     const personaLabelsForCard = personaIds.map(id => {
         const el = document.querySelector(`input[value="${id}"]`);
         return el?.dataset?.label || id;
     }).filter(Boolean);
     const deviceLabelsForCard = getSelectedDeviceLabels();
 
-    // 매칭 프로세스 카드 렌더링 → 확인 후 결과 표시
+    // 留ㅼ묶 ?꾨줈?몄뒪 移대뱶 ?뚮뜑留????뺤씤 ??寃곌낵 ?쒖떆
     renderMatchingProcess({
         input, tagScores, results, totalPool,
         personaLabels: personaLabelsForCard,
@@ -13140,9 +13145,9 @@ function runCuration() {
     });
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   매칭 프로세스 카드 — 4단계 시각화 + 확인 버튼 플로우
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   留ㅼ묶 ?꾨줈?몄뒪 移대뱶 ??4?④퀎 ?쒓컖??+ ?뺤씤 踰꾪듉 ?뚮줈??
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 let _mpCurrentStep = 0;
 let _mpBypassProcess = false;
 
@@ -13154,22 +13159,22 @@ function renderMatchingProcess(ctx) {
     const isKo = currentLocale === "ko";
     _mpCurrentStep = 0;
 
-    // 4단계 카드 데이터 구성
+    // 4?④퀎 移대뱶 ?곗씠??援ъ꽦
     const cards = buildMpCards(ctx, isKo);
     container.innerHTML = cards.map((card, i) =>
         `<div class="mp-card${i === 0 ? "" : " locked"}" data-mp-step="${i}" style="animation-delay:${i * 0.1}s">
             <div class="mp-card-header">
                 <span class="mp-card-num">${i + 1}</span>
                 <span class="mp-card-title">${card.title}</span>
-                <span class="mp-card-check">✅</span>
+                <span class="mp-card-check">??/span>
             </div>
             <div class="mp-card-body">
                 <p class="mp-card-helper">${card.helper}</p>
                 ${card.content}
                 <button type="button" class="mp-confirm-btn" data-mp-step="${i}">
                     ${i < cards.length - 1
-                        ? (isKo ? "확인 — 다음 단계 보기" : "Confirm — See next step")
-                        : (isKo ? "확인 — 매칭된 시나리오 보기" : "Confirm — View matched scenarios")}
+                        ? (isKo ? "?뺤씤 ???ㅼ쓬 ?④퀎 蹂닿린" : "Confirm ??See next step")
+                        : (isKo ? "?뺤씤 ??留ㅼ묶???쒕굹由ъ삤 蹂닿린" : "Confirm ??View matched scenarios")}
                 </button>
             </div>
         </div>`
@@ -13177,7 +13182,7 @@ function renderMatchingProcess(ctx) {
 
     frame.classList.remove("hidden");
 
-    // 확인 버튼 이벤트
+    // ?뺤씤 踰꾪듉 ?대깽??
     container.querySelectorAll(".mp-confirm-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const step = parseInt(btn.dataset.mpStep, 10);
@@ -13185,22 +13190,22 @@ function renderMatchingProcess(ctx) {
             if (card) {
                 card.classList.add("done");
                 btn.disabled = true;
-                btn.textContent = isKo ? "✅ 확인 완료" : "✅ Confirmed";
+                btn.textContent = isKo ? "???뺤씤 ?꾨즺" : "??Confirmed";
             }
 
-            // 다음 카드 공개
+            // ?ㅼ쓬 移대뱶 怨듦컻
             const next = container.querySelector(`[data-mp-step="${step + 1}"]`);
             if (next) {
                 next.classList.remove("locked");
                 next.scrollIntoView({ behavior: "smooth", block: "nearest" });
             }
 
-            // 마지막 단계 확인 시 → 큐레이션 결과 표시
+            // 留덉?留??④퀎 ?뺤씤 ?????먮젅?댁뀡 寃곌낵 ?쒖떆
             if (step === cards.length - 1) {
                 renderCurationInputSummary(ctx.personaIds, ctx.devices, ctx.purpose, ctx.results);
                 renderCurationResults(ctx.results, ctx.devices);
 
-                // Flow Tracker 업데이트
+                // Flow Tracker ?낅뜲?댄듃
                 updateOutputFlowTracker(1, { 1: "done", 2: "waiting", 3: "waiting" });
                 setSectionStatusBadge("curation-title", "done");
 
@@ -13218,62 +13223,62 @@ function renderMatchingProcess(ctx) {
 function buildMpCards(ctx, isKo) {
     const { input, tagScores, results, totalPool, personaLabels, deviceLabels, country, city, purpose } = ctx;
 
-    // ── Q2 스코어보드 결과 가져오기 (연장선) ──
+    // ?? Q2 ?ㅼ퐫?대낫??寃곌낵 媛?몄삤湲?(?곗옣?? ??
     const q2Traits = inferSegmentTraits(getSelectedSegment(), purposeInput.value.trim());
     const q1Traits = inferQ1Traits();
     const coreValues = inferCoreValues([...q2Traits, ...q1Traits.map(t => t.trait)], purposeInput.value.trim());
     const direction = inferScenarioDirection(q2Traits, purposeInput.value.trim());
 
-    // Q2 시나리오 태그 한글 매핑
+    // Q2 ?쒕굹由ъ삤 ?쒓렇 ?쒓? 留ㅽ븨
     const tagKoMap = {
-        "Save energy": "에너지 절약", "Keep your home safe": "홈 안전·보안",
-        "Help with chores": "가사 자동화", "Care for kids": "자녀 케어",
-        "Care for seniors": "시니어 케어", "Care for your pet": "반려동물 케어",
-        "Sleep well": "수면 개선", "Enhanced mood": "분위기 연출",
-        "Stay fit & healthy": "건강·피트니스", "Easily control your lights": "조명 제어",
-        "Keep the air fresh": "공기질 관리", "Find your belongings": "분실물 찾기",
-        "Family care": "가족 돌봄", "Multicultural family support": "다문화 가족 지원"
+        "Save energy": "?먮꼫吏 ?덉빟", "Keep your home safe": "???덉쟾쨌蹂댁븞",
+        "Help with chores": "媛???먮룞??, "Care for kids": "?먮? 耳??,
+        "Care for seniors": "?쒕땲??耳??, "Care for your pet": "諛섎젮?숇Ъ 耳??,
+        "Sleep well": "?섎㈃ 媛쒖꽑", "Enhanced mood": "遺꾩쐞湲??곗텧",
+        "Stay fit & healthy": "嫄닿컯쨌?쇳듃?덉뒪", "Easily control your lights": "議곕챸 ?쒖뼱",
+        "Keep the air fresh": "怨듦린吏?愿由?, "Find your belongings": "遺꾩떎臾?李얘린",
+        "Family care": "媛議??뚮큵", "Multicultural family support": "?ㅻЦ??媛議?吏??
     };
     const localizeScenarioTag = (tag) => isKo ? (tagKoMap[tag] || tag) : tag;
 
-    // ── Card 1: 🧩 매칭 컨텍스트 요약 ──
+    // ?? Card 1: ?㎥ 留ㅼ묶 而⑦뀓?ㅽ듃 ?붿빟 ??
     const clusterNames = coreValues.slice(0, 2).join(" + ");
     const deviceChips = [...new Set(deviceLabels.length ? deviceLabels : getSelectedDeviceLabels())].map(l =>
-        `<span class="mp-tag"><span class="mp-tag-icon">📱</span>${escapeHtml(l)}</span>`
+        `<span class="mp-tag"><span class="mp-tag-icon">?벑</span>${escapeHtml(l)}</span>`
     ).join("");
 
     const card1 = {
-        title: isKo ? "🧩 매칭 컨텍스트 요약" : "🧩 Matching Context Summary",
+        title: isKo ? "?㎥ 留ㅼ묶 而⑦뀓?ㅽ듃 ?붿빟" : "?㎥ Matching Context Summary",
         helper: isKo
-            ? "Q1~Q3에서 확정된 타겟 프로필과 반영 기기를 기준으로 시나리오를 탐색합니다."
-            : "Searching scenarios based on your confirmed target profile and selected devices from Q1–Q3.",
+            ? "Q1~Q3?먯꽌 ?뺤젙???寃??꾨줈?꾧낵 諛섏쁺 湲곌린瑜?湲곗??쇰줈 ?쒕굹由ъ삤瑜??먯깋?⑸땲??"
+            : "Searching scenarios based on your confirmed target profile and selected devices from Q1?밦3.",
         content: `
             <div class="mp-context-grid">
                 <div class="mp-context-item">
-                    <span class="mp-context-label">${isKo ? "목표 페르소나" : "Target Persona"}</span>
+                    <span class="mp-context-label">${isKo ? "紐⑺몴 ?섎Ⅴ?뚮굹" : "Target Persona"}</span>
                     <span class="mp-context-value"><strong>${escapeHtml(clusterNames)}</strong></span>
                 </div>
                 <div class="mp-context-item">
-                    <span class="mp-context-label">${isKo ? "시나리오 방향" : "Scenario Direction"}</span>
+                    <span class="mp-context-label">${isKo ? "?쒕굹由ъ삤 諛⑺뼢" : "Scenario Direction"}</span>
                     <span class="mp-context-value">${escapeHtml(direction)}</span>
                 </div>
                 <div class="mp-context-item">
-                    <span class="mp-context-label">${isKo ? "반영 기기" : "Selected Devices"}</span>
+                    <span class="mp-context-label">${isKo ? "諛섏쁺 湲곌린" : "Selected Devices"}</span>
                     <div class="mp-tags">${deviceChips}</div>
                 </div>
                 ${purpose ? `<div class="mp-context-item">
-                    <span class="mp-context-label">${isKo ? "추가 요구사항" : "Additional Context"}</span>
+                    <span class="mp-context-label">${isKo ? "異붽? ?붽뎄?ы빆" : "Additional Context"}</span>
                     <span class="mp-context-value" style="font-style:italic">"${escapeHtml(purpose)}"</span>
                 </div>` : ""}
             </div>
         `
     };
 
-    // ── Card 2: 🧮 시나리오 가중치 결합 (Q2 연장선) ──
-    // Q2 스코어보드의 태그 점수를 기기 가능성과 결합
+    // ?? Card 2: ?㎜ ?쒕굹由ъ삤 媛以묒튂 寃고빀 (Q2 ?곗옣?? ??
+    // Q2 ?ㅼ퐫?대낫?쒖쓽 ?쒓렇 ?먯닔瑜?湲곌린 媛?μ꽦怨?寃고빀
     const combinedScores = tagScores.map(t => {
         const q2Display = localizeScenarioTag(t.tag);
-        // 기기 매칭 보너스 확인
+        // 湲곌린 留ㅼ묶 蹂대꼫???뺤씤
         const devBonus = (typeof DEVICE_TO_EXPLORE_TAGS !== "undefined")
             ? getSelectedDevices().some(d => {
                 const norm = getCategoryName(d);
@@ -13287,62 +13292,62 @@ function buildMpCards(ctx, isKo) {
     const combinedRows = topCombined.map(t => {
         const pct = Math.round((t.score / maxCombined) * 100);
         const devBadge = t.hasDeviceSupport
-            ? `<span class="mp-dev-badge">${isKo ? "기기 지원" : "device ✓"}</span>`
+            ? `<span class="mp-dev-badge">${isKo ? "湲곌린 吏?? : "device ??}</span>`
             : "";
         return `<div class="mp-weight-row">
             <span class="mp-weight-label">${escapeHtml(t.display)}${devBadge}</span>
             <div class="mp-weight-bar-bg"><div class="mp-weight-bar" style="transform:scaleX(${pct / 100})"></div></div>
-            <span class="mp-weight-score">${t.score}${isKo ? "점" : "pt"}</span>
+            <span class="mp-weight-score">${t.score}${isKo ? "?? : "pt"}</span>
         </div>`;
     }).join("");
 
     const card2 = {
-        title: isKo ? "🧮 시나리오 가중치 결합" : "🧮 Combined Scenario Weights",
+        title: isKo ? "?㎜ ?쒕굹由ъ삤 媛以묒튂 寃고빀" : "?㎜ Combined Scenario Weights",
         helper: isKo
-            ? "Q2에서 도출된 라이프스타일 요구도와 Q3 기기의 실행 가능성을 결합한 최종 가중치입니다. '기기 지원' 표시는 보유 기기로 해당 시나리오를 바로 구현할 수 있음을 의미합니다."
-            : "Final weights combining Q2 lifestyle demands with Q3 device capabilities. 'device ✓' means your devices can directly execute this scenario.",
+            ? "Q2?먯꽌 ?꾩텧???쇱씠?꾩뒪????붽뎄?꾩? Q3 湲곌린???ㅽ뻾 媛?μ꽦??寃고빀??理쒖쥌 媛以묒튂?낅땲?? '湲곌린 吏?? ?쒖떆??蹂댁쑀 湲곌린濡??대떦 ?쒕굹由ъ삤瑜?諛붾줈 援ы쁽?????덉쓬???섎??⑸땲??"
+            : "Final weights combining Q2 lifestyle demands with Q3 device capabilities. 'device ?? means your devices can directly execute this scenario.",
         content: `
             <div style="margin-bottom:6px;font-size:0.72rem;color:var(--muted)">
-                ${isKo ? "산출: Q2 클러스터 추론(시너지 ×1.2 · 교차검증 ×1.5) + Q3 기기 매칭 보너스" : "Calculation: Q2 cluster reasoning (synergy ×1.2 · cross-validation ×1.5) + Q3 device match bonus"}
+                ${isKo ? "?곗텧: Q2 ?대윭?ㅽ꽣 異붾줎(?쒕꼫吏 횞1.2 쨌 援먯감寃利?횞1.5) + Q3 湲곌린 留ㅼ묶 蹂대꼫?? : "Calculation: Q2 cluster reasoning (synergy 횞1.2 쨌 cross-validation 횞1.5) + Q3 device match bonus"}
             </div>
             ${combinedRows}
         `
     };
 
-    // ── Card 3: ⚡ 스코어링 과정 ──
+    // ?? Card 3: ???ㅼ퐫?대쭅 怨쇱젙 ??
     const matchedCount = results.length;
     const topScore = results.length > 0 ? results[0]._score : 0;
 
     const card3 = {
-        title: isKo ? "⚡ 시나리오 스코어링" : "⚡ Scenario Scoring",
+        title: isKo ? "???쒕굹由ъ삤 ?ㅼ퐫?대쭅" : "??Scenario Scoring",
         helper: isKo
-            ? `위 가중치를 기준으로 ${totalPool}개 시나리오 DB를 탐색해 적합도 점수를 계산했습니다. 아래 숫자는 매칭 개수, 최고 점수, 전체 탐색 풀을 뜻합니다.`
+            ? `??媛以묒튂瑜?湲곗??쇰줈 ${totalPool}媛??쒕굹由ъ삤 DB瑜??먯깋???곹빀???먯닔瑜?怨꾩궛?덉뒿?덈떎. ?꾨옒 ?レ옄??留ㅼ묶 媛쒖닔, 理쒓퀬 ?먯닔, ?꾩껜 ?먯깋 ????삵빀?덈떎.`
             : `Scored ${totalPool} scenarios in the DB using the weights above. The numbers below show matched count, top fit score, and total search pool.`,
         content: `
             <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px">
                 <div style="text-align:center;padding:8px 16px;border-radius:10px;background:#e8f5e9;flex:1;min-width:100px">
                     <div style="font-size:1.4rem;font-weight:800;color:#2e7d32">${matchedCount}</div>
-                    <div style="font-size:0.7rem;color:#558b2f">${isKo ? "매칭 시나리오" : "Matched"}</div>
-                    <div style="font-size:0.62rem;color:#6b8f5d;margin-top:2px">${isKo ? "조건을 통과한 추천 수" : "Scenarios that passed matching"}</div>
+                    <div style="font-size:0.7rem;color:#558b2f">${isKo ? "留ㅼ묶 ?쒕굹由ъ삤" : "Matched"}</div>
+                    <div style="font-size:0.62rem;color:#6b8f5d;margin-top:2px">${isKo ? "議곌굔???듦낵??異붿쿇 ?? : "Scenarios that passed matching"}</div>
                 </div>
                 <div style="text-align:center;padding:8px 16px;border-radius:10px;background:#e3f2fd;flex:1;min-width:100px">
                     <div style="font-size:1.4rem;font-weight:800;color:#1565c0">${topScore}</div>
-                    <div style="font-size:0.7rem;color:#1976d2">${isKo ? "최고 적합도" : "Top fit score"}</div>
-                    <div style="font-size:0.62rem;color:#5b8bb8;margin-top:2px">${isKo ? "상위 1개 시나리오의 총점" : "Total score of the top scenario"}</div>
+                    <div style="font-size:0.7rem;color:#1976d2">${isKo ? "理쒓퀬 ?곹빀?? : "Top fit score"}</div>
+                    <div style="font-size:0.62rem;color:#5b8bb8;margin-top:2px">${isKo ? "?곸쐞 1媛??쒕굹由ъ삤??珥앹젏" : "Total score of the top scenario"}</div>
                 </div>
                 <div style="text-align:center;padding:8px 16px;border-radius:10px;background:#f3e5f5;flex:1;min-width:100px">
                     <div style="font-size:1.4rem;font-weight:800;color:#7b1fa2">${totalPool}</div>
-                    <div style="font-size:0.7rem;color:#8e24aa">${isKo ? "전체 DB" : "Total DB"}</div>
-                    <div style="font-size:0.62rem;color:#9961b5;margin-top:2px">${isKo ? "이번에 비교한 전체 후보 수" : "All candidates compared this run"}</div>
+                    <div style="font-size:0.7rem;color:#8e24aa">${isKo ? "?꾩껜 DB" : "Total DB"}</div>
+                    <div style="font-size:0.62rem;color:#9961b5;margin-top:2px">${isKo ? "?대쾲??鍮꾧탳???꾩껜 ?꾨낫 ?? : "All candidates compared this run"}</div>
                 </div>
             </div>
             <div class="mp-score-note">${isKo
-                ? "최고 적합도는 100점 만점이 아니라, Q2 가중치와 Q3 기기 매칭 보너스를 합산한 상대 점수입니다. 숫자가 높을수록 현재 조건과 더 잘 맞습니다."
+                ? "理쒓퀬 ?곹빀?꾨뒗 100??留뚯젏???꾨땲?? Q2 媛以묒튂? Q3 湲곌린 留ㅼ묶 蹂대꼫?ㅻ? ?⑹궛???곷? ?먯닔?낅땲?? ?レ옄媛 ?믪쓣?섎줉 ?꾩옱 議곌굔怨?????留욎뒿?덈떎."
                 : "Top fit score is not a 100-point grade. It is a relative score combining Q2 weights and Q3 device-match bonuses. Higher means a better fit for your current inputs."}</div>
         `
     };
 
-    // ── Card 4: 🎯 최종 매칭 결과 ──
+    // ?? Card 4: ?렞 理쒖쥌 留ㅼ묶 寃곌낵 ??
     const previewRows = results.slice(0, 5).map((r, i) => {
         const f = (typeof formatCurationResult === "function") ? formatCurationResult(r) : { title: r.story_title || "", source: r._source || "" };
         const tags = (r._matchedTags || []).slice(0, 3).map(t => typeof t === "object" ? t.tag : t);
@@ -13351,18 +13356,18 @@ function buildMpCards(ctx, isKo) {
             <span class="mp-scenario-rank">${i + 1}</span>
             <div class="mp-scenario-info">
                 <div class="mp-scenario-title">${escapeHtml(f.title || r.story_title || "")}</div>
-                <div class="mp-scenario-meta">${escapeHtml(f.source || r._source || "")} · ${tagDisplay.map(t => escapeHtml(t)).join(", ")}</div>
+                <div class="mp-scenario-meta">${escapeHtml(f.source || r._source || "")} 쨌 ${tagDisplay.map(t => escapeHtml(t)).join(", ")}</div>
             </div>
-            <span class="mp-scenario-score">${r._score}${isKo ? "점" : "pt"}</span>
+            <span class="mp-scenario-score">${r._score}${isKo ? "?? : "pt"}</span>
         </div>`;
     }).join("");
 
     const card4 = {
-        title: isKo ? "🎯 최종 매칭 결과" : "🎯 Final Match Results",
+        title: isKo ? "?렞 理쒖쥌 留ㅼ묶 寃곌낵" : "?렞 Final Match Results",
         helper: isKo
-            ? "Q2 타겟 프로필 + Q3 기기 조합에 가장 적합한 시나리오 순위입니다. 확인하시면 상세 카드를 볼 수 있습니다."
+            ? "Q2 ?寃??꾨줈??+ Q3 湲곌린 議고빀??媛???곹빀???쒕굹由ъ삤 ?쒖쐞?낅땲?? ?뺤씤?섏떆硫??곸꽭 移대뱶瑜?蹂????덉뒿?덈떎."
             : "Scenarios ranked by fit with your Q2 profile + Q3 devices. Confirm to see detailed cards.",
-        content: previewRows || `<p style="color:var(--muted);font-size:0.82rem">${isKo ? "매칭된 시나리오가 없습니다." : "No matching scenarios found."}</p>`
+        content: previewRows || `<p style="color:var(--muted);font-size:0.82rem">${isKo ? "留ㅼ묶???쒕굹由ъ삤媛 ?놁뒿?덈떎." : "No matching scenarios found."}</p>`
     };
 
     return [card1, card2, card3, card4];
@@ -13376,7 +13381,7 @@ function renderCurationInputSummary(personaIds, devices, purpose, results) {
     const city = getCityValue();
     const isKo = currentLocale === "ko";
 
-    // 선택된 항목들의 라벨 수집
+    // ?좏깮????ぉ?ㅼ쓽 ?쇰꺼 ?섏쭛
     const labels = personaIds.map(id => {
         const el = document.querySelector(`input[value="${id}"]`);
         return el?.dataset?.label || id;
@@ -13391,22 +13396,22 @@ function renderCurationInputSummary(personaIds, devices, purpose, results) {
         ...deviceLabels
     ].filter(Boolean).map(t => `<span class="input-tag">${escapeHtml(t)}</span>`).join("");
 
-    // 매칭 이유 생성
+    // 留ㅼ묶 ?댁쑀 ?앹꽦
     const topTags = results.length > 0
         ? [...new Set(results.slice(0, 3).flatMap(r => r._matchedTags?.map(t => t.tag) || r.tags || []))].slice(0, 4)
         : [];
 
     const reasonText = isKo
         ? topTags.length
-            ? `위 입력 조합에서 <strong>${topTags.join(", ")}</strong> 키워드가 도출되어, 해당 키워드를 포함한 ${results.length}개 시나리오가 매칭되었습니다.`
-            : "입력된 조건으로 매칭 가능한 시나리오를 검색했습니다."
+            ? `???낅젰 議고빀?먯꽌 <strong>${topTags.join(", ")}</strong> ?ㅼ썙?쒓? ?꾩텧?섏뼱, ?대떦 ?ㅼ썙?쒕? ?ы븿??${results.length}媛??쒕굹由ъ삤媛 留ㅼ묶?섏뿀?듬땲??`
+            : "?낅젰??議곌굔?쇰줈 留ㅼ묶 媛?ν븳 ?쒕굹由ъ삤瑜?寃?됲뻽?듬땲??"
         : topTags.length
             ? `Keywords <strong>${topTags.join(", ")}</strong> derived from your input matched ${results.length} scenario(s).`
             : "Searched for scenarios matching your input conditions.";
 
     summaryEl.innerHTML = `
-        <div>${isKo ? "선택한 입력 정보" : "Your selections"}: ${tagHtml}</div>
-        ${purpose ? `<div style="margin-top:4px">${isKo ? "추가 설명" : "Context"}: ${escapeHtml(purpose)}</div>` : ""}
+        <div>${isKo ? "?좏깮???낅젰 ?뺣낫" : "Your selections"}: ${tagHtml}</div>
+        ${purpose ? `<div style="margin-top:4px">${isKo ? "異붽? ?ㅻ챸" : "Context"}: ${escapeHtml(purpose)}</div>` : ""}
         <div class="match-reason">${reasonText}</div>
     `;
 }
@@ -13416,7 +13421,7 @@ function renderCurationResults(results, selectedDevices) {
     const container = document.getElementById("curation-results");
     if (!frame || !container) return;
 
-    // 캠페인 output에서 참조할 수 있도록 저장
+    // 罹좏럹??output?먯꽌 李몄“?????덈룄濡????
     _latestCurationResults = results;
 
     if (results.length === 0) {
@@ -13433,18 +13438,18 @@ function renderCurationResults(results, selectedDevices) {
 
     const isKo = currentLocale === "ko";
 
-    // 로케일 번역 매핑 (영어 시나리오 제목/본문 → 현지어)
+    // 濡쒖???踰덉뿭 留ㅽ븨 (?곸뼱 ?쒕굹由ъ삤 ?쒕ぉ/蹂몃Ц ???꾩???
     const needsTranslation = currentLocale !== "en";
     const scenarioTitleTranslations = {
         ko: {
-            "Save energy": "에너지 절약", "Keep your home safe": "집을 안전하게",
-            "Help with chores": "가사 도움", "Care for kids": "아이 돌봄",
-            "Care for seniors": "시니어 케어", "Care for your pet": "반려동물 케어",
-            "Sleep well": "숙면 도움", "Enhanced mood": "분위기 연출",
-            "Stay fit & healthy": "건강 관리", "Easily control your lights": "조명 간편 제어",
-            "Keep the air fresh": "공기질 관리", "Find your belongings": "분실물 찾기",
-            "Time saving": "시간 절약", "Energy Saving": "에너지 절감",
-            "Security": "보안", "Family care": "가족 돌봄", "Easy to use": "간편 사용"
+            "Save energy": "?먮꼫吏 ?덉빟", "Keep your home safe": "吏묒쓣 ?덉쟾?섍쾶",
+            "Help with chores": "媛???꾩?", "Care for kids": "?꾩씠 ?뚮큵",
+            "Care for seniors": "?쒕땲??耳??, "Care for your pet": "諛섎젮?숇Ъ 耳??,
+            "Sleep well": "?숇㈃ ?꾩?", "Enhanced mood": "遺꾩쐞湲??곗텧",
+            "Stay fit & healthy": "嫄닿컯 愿由?, "Easily control your lights": "議곕챸 媛꾪렪 ?쒖뼱",
+            "Keep the air fresh": "怨듦린吏?愿由?, "Find your belongings": "遺꾩떎臾?李얘린",
+            "Time saving": "?쒓컙 ?덉빟", "Energy Saving": "?먮꼫吏 ?덇컧",
+            "Security": "蹂댁븞", "Family care": "媛議??뚮큵", "Easy to use": "媛꾪렪 ?ъ슜"
         },
         de: {
             "Save energy": "Energie sparen", "Keep your home safe": "Zuhause sichern",
@@ -13457,48 +13462,48 @@ function renderCurationResults(results, selectedDevices) {
     };
     const localTagMap = scenarioTitleTranslations[currentLocale] || {};
 
-    // 확장 구문 번역 맵 (한국어) — Explore 시나리오 본문에 자주 등장하는 문구
+    // ?뺤옣 援щЦ 踰덉뿭 留?(?쒓뎅?? ??Explore ?쒕굹由ъ삤 蹂몃Ц???먯＜ ?깆옣?섎뒗 臾멸뎄
     const bodyPhraseMapKo = {
-        "Give your pet customised care": "반려동물에게 맞춤형 케어를 제공하세요",
-        "Take care of your pet even while you're away": "외출 중에도 반려동물을 돌보세요",
-        "Check up on them": "반려동물 상태를 확인하세요",
-        "Start Pet Care with just a photo": "사진 한 장으로 펫 케어를 시작하세요",
-        "automatically identify the breed": "자동으로 품종을 식별합니다",
-        "reviewing the daily activity": "일일 활동을 확인합니다",
-        "Help your pet enjoy its time alone": "반려동물이 혼자 있는 시간을 즐길 수 있게 도와주세요",
-        "automatic feeder": "자동 급식기", "regular meals": "규칙적인 식사",
-        "perfect temperature": "최적 온도", "atmosphere": "분위기",
-        "barking is detected": "짖는 소리가 감지되면",
-        "Set the right temperature": "적정 온도를 설정하세요",
-        "save energy": "에너지를 절약하세요", "Save energy": "에너지를 절약하세요",
-        "while you're away": "외출 중에도", "when you come home": "집에 돌아오면",
-        "before you arrive": "도착하기 전에",
-        "Smart TV": "스마트 TV", "Vacuum Cleaner": "로봇청소기",
-        "Air Conditioner": "에어컨", "Air Purifier": "공기청정기",
-        "Galaxy Smartphone": "갤럭시 스마트폰", "Galaxy Watch": "갤럭시 워치",
-        "SmartThings": "스마트싱스",
-        "your home safe": "집을 안전하게",
-        "monitor your home": "집을 모니터링하세요",
-        "security camera": "보안 카메라",
-        "door lock": "도어락", "motion sensor": "동작 센서",
-        "automate your daily routine": "일상을 자동화하세요",
-        "control your lights": "조명을 제어하세요",
-        "fresh air": "신선한 공기", "air quality": "공기질",
-        "sleep better": "숙면을 취하세요", "good night's sleep": "좋은 수면",
-        "washing machine": "세탁기", "dryer": "건조기",
-        "robot vacuum": "로봇청소기", "dishwasher": "식기세척기",
-        "refrigerator": "냉장고", "oven": "오븐",
-        "family members": "가족 구성원", "children": "자녀", "kids": "아이",
-        "seniors": "시니어", "elderly": "어르신",
-        "Pet Accessory": "펫 액세서리", "Third-party": "서드파티",
-        "Jet Bot": "제트봇"
+        "Give your pet customised care": "諛섎젮?숇Ъ?먭쾶 留욎땄??耳?대? ?쒓났?섏꽭??,
+        "Take care of your pet even while you're away": "?몄텧 以묒뿉??諛섎젮?숇Ъ???뚮낫?몄슂",
+        "Check up on them": "諛섎젮?숇Ъ ?곹깭瑜??뺤씤?섏꽭??,
+        "Start Pet Care with just a photo": "?ъ쭊 ???μ쑝濡???耳?대? ?쒖옉?섏꽭??,
+        "automatically identify the breed": "?먮룞?쇰줈 ?덉쥌???앸퀎?⑸땲??,
+        "reviewing the daily activity": "?쇱씪 ?쒕룞???뺤씤?⑸땲??,
+        "Help your pet enjoy its time alone": "諛섎젮?숇Ъ???쇱옄 ?덈뒗 ?쒓컙??利먭만 ???덇쾶 ?꾩?二쇱꽭??,
+        "automatic feeder": "?먮룞 湲됱떇湲?, "regular meals": "洹쒖튃?곸씤 ?앹궗",
+        "perfect temperature": "理쒖쟻 ?⑤룄", "atmosphere": "遺꾩쐞湲?,
+        "barking is detected": "吏뽯뒗 ?뚮━媛 媛먯??섎㈃",
+        "Set the right temperature": "?곸젙 ?⑤룄瑜??ㅼ젙?섏꽭??,
+        "save energy": "?먮꼫吏瑜??덉빟?섏꽭??, "Save energy": "?먮꼫吏瑜??덉빟?섏꽭??,
+        "while you're away": "?몄텧 以묒뿉??, "when you come home": "吏묒뿉 ?뚯븘?ㅻ㈃",
+        "before you arrive": "?꾩갑?섍린 ?꾩뿉",
+        "Smart TV": "?ㅻ쭏??TV", "Vacuum Cleaner": "濡쒕큸泥?냼湲?,
+        "Air Conditioner": "?먯뼱而?, "Air Purifier": "怨듦린泥?젙湲?,
+        "Galaxy Smartphone": "媛ㅻ윮???ㅻ쭏?명룿", "Galaxy Watch": "媛ㅻ윮???뚯튂",
+        "SmartThings": "?ㅻ쭏?몄떛??,
+        "your home safe": "吏묒쓣 ?덉쟾?섍쾶",
+        "monitor your home": "吏묒쓣 紐⑤땲?곕쭅?섏꽭??,
+        "security camera": "蹂댁븞 移대찓??,
+        "door lock": "?꾩뼱??, "motion sensor": "?숈옉 ?쇱꽌",
+        "automate your daily routine": "?쇱긽???먮룞?뷀븯?몄슂",
+        "control your lights": "議곕챸???쒖뼱?섏꽭??,
+        "fresh air": "?좎꽑??怨듦린", "air quality": "怨듦린吏?,
+        "sleep better": "?숇㈃??痍⑦븯?몄슂", "good night's sleep": "醫뗭? ?섎㈃",
+        "washing machine": "?명긽湲?, "dryer": "嫄댁“湲?,
+        "robot vacuum": "濡쒕큸泥?냼湲?, "dishwasher": "?앷린?몄쿃湲?,
+        "refrigerator": "?됱옣怨?, "oven": "?ㅻ툙",
+        "family members": "媛議?援ъ꽦??, "children": "?먮?", "kids": "?꾩씠",
+        "seniors": "?쒕땲??, "elderly": "?대Ⅴ??,
+        "Pet Accessory": "???≪꽭?쒕━", "Third-party": "?쒕뱶?뚰떚",
+        "Jet Bot": "?쒗듃遊?
     };
 
-    // 간이 번역 함수: 영문 텍스트에서 알려진 키워드 및 구문을 로케일로 치환
+    // 媛꾩씠 踰덉뿭 ?⑥닔: ?곷Ц ?띿뒪?몄뿉???뚮젮吏??ㅼ썙??諛?援щЦ??濡쒖??쇰줈 移섑솚
     function translateSnippet(text) {
         if (!text || !needsTranslation) return "";
         let translated = text;
-        // 긴 구문부터 먼저 치환 (더 정확한 매칭)
+        // 湲?援щЦ遺??癒쇱? 移섑솚 (???뺥솗??留ㅼ묶)
         const phraseMap = currentLocale === "ko" ? bodyPhraseMapKo : {};
         const allEntries = [...Object.entries(phraseMap), ...Object.entries(localTagMap)]
             .sort((a, b) => b[0].length - a[0].length);
@@ -13510,12 +13515,12 @@ function renderCurationResults(results, selectedDevices) {
 
     container.innerHTML = results.map((scenario, idx) => {
         const f = formatCurationResult(scenario);
-        const bodyText = f.originalText || f.narrative || "";
-        const truncated = bodyText.length > 250 ? bodyText.substring(0, 250) + "…" : bodyText;
+        const bodyText = String(f.originalText || f.narrative || "").trim();
+        const truncated = bodyText.length > 250 ? bodyText.substring(0, 250) + "?? : bodyText;
 
-        // 로케일 번역
+        // 濡쒖???踰덉뿭
         const titleTranslation = needsTranslation ? translateSnippet(f.title) : "";
-        const bodyTranslation = needsTranslation ? translateSnippet(truncated) : "";
+        const bodyTranslation = needsTranslation ? translateSnippet(bodyText) : "";
 
         const tagsHtml = f.matchedTags.map(tag => {
             const localTag = localTagMap[tag] || "";
@@ -13540,34 +13545,34 @@ function renderCurationResults(results, selectedDevices) {
                     <span class="curation-card-title">${escapeHtml(f.title)}${titleTranslation ? ` <span class="curation-title-local">(${escapeHtml(titleTranslation)})</span>` : ""}</span>
                     <span class="curation-card-source">${escapeHtml(f.source)}</span>
                 </div>
-                ${f.article ? `<div style="font-size:0.76rem;color:var(--muted);margin-bottom:8px">📂 ${escapeHtml(f.article)}</div>` : ""}
+                ${f.article ? `<div style="font-size:0.76rem;color:var(--muted);margin-bottom:8px">?뱛 ${escapeHtml(f.article)}</div>` : ""}
                 <div class="curation-card-meta">${tagsHtml}</div>
-                <div class="curation-card-body">${escapeHtml(truncated)}${bodyTranslation ? `<br><span class="curation-body-local">${escapeHtml(bodyTranslation)}</span>` : ""}</div>
+                <details class="curation-card-details" ${idx === 0 ? "open" : ""}><summary class="curation-card-summary">${escapeHtml(isKo ? "시나리오 전체 내용 보기" : "View full scenario details")}</summary><div class="curation-card-body"><p>${escapeHtml(bodyText)}</p>${bodyTranslation ? `<p class="curation-body-local">${escapeHtml(bodyTranslation)}</p>` : ""}</div></details>
                 ${devicesHtml ? `<div class="curation-card-devices">${devicesHtml}</div>` : ""}
                 ${linksHtml ? `<div class="curation-card-links">${linksHtml}</div>` : ""}
                 <div class="curation-card-actions">
                     <button type="button" class="curation-ai-btn" data-curation-idx="${idx}">
-                        ${isKo ? "🤖 이 시나리오 기반으로 AI 확장 생성" : "🤖 Generate AI-expanded scenario from this"}
+                        ${isKo ? "?쨼 ???쒕굹由ъ삤 湲곕컲?쇰줈 AI ?뺤옣 ?앹꽦" : "?쨼 Generate AI-expanded scenario from this"}
                     </button>
                 </div>
             </article>
         `;
     }).join("");
 
-    // 매칭 완료 안내 HELPER 배너 (5개 시나리오 아래)
+    // 留ㅼ묶 ?꾨즺 ?덈궡 HELPER 諛곕꼫 (5媛??쒕굹由ъ삤 ?꾨옒)
     const helperBanner = document.createElement("div");
     helperBanner.className = "curation-completion-helper";
     helperBanner.innerHTML = isKo
-        ? `<div class="curation-helper-icon">✅</div>
+        ? `<div class="curation-helper-icon">??/div>
            <div class="curation-helper-content">
-               <p class="curation-helper-title">시나리오 매칭이 완료되었습니다</p>
-               <p class="curation-helper-desc">위 시나리오 중 하나를 선택하여 <strong>AI 확장 생성</strong> 버튼을 누르면, 해당 시나리오를 기반으로 원하는 형식과 내용으로 재구성해 드립니다.</p>
+               <p class="curation-helper-title">?쒕굹由ъ삤 留ㅼ묶???꾨즺?섏뿀?듬땲??/p>
+               <p class="curation-helper-desc">???쒕굹由ъ삤 以??섎굹瑜??좏깮?섏뿬 <strong>AI ?뺤옣 ?앹꽦</strong> 踰꾪듉???꾨Ⅴ硫? ?대떦 ?쒕굹由ъ삤瑜?湲곕컲?쇰줈 ?먰븯???뺤떇怨??댁슜?쇰줈 ?ш뎄?깊빐 ?쒕┰?덈떎.</p>
                <ul class="curation-helper-steps">
-                   <li>카테고리를 선택하셔도 되고, 필요한 내용을 직접 적으셔도 됩니다</li>
-                   <li>AI 기반으로 원하는 시나리오를 생성해 드립니다</li>
+                   <li>移댄뀒怨좊━瑜??좏깮?섏뀛???섍퀬, ?꾩슂???댁슜??吏곸젒 ?곸쑝?붾룄 ?⑸땲??/li>
+                   <li>AI 湲곕컲?쇰줈 ?먰븯???쒕굹由ъ삤瑜??앹꽦???쒕┰?덈떎</li>
                </ul>
            </div>`
-        : `<div class="curation-helper-icon">✅</div>
+        : `<div class="curation-helper-icon">??/div>
            <div class="curation-helper-content">
                <p class="curation-helper-title">Scenario matching complete</p>
                <p class="curation-helper-desc">Select a scenario above and click <strong>AI Expand</strong> to customize it into your desired format and content.</p>
@@ -13578,7 +13583,7 @@ function renderCurationResults(results, selectedDevices) {
            </div>`;
     container.appendChild(helperBanner);
 
-    // "AI 확장" 버튼 이벤트
+    // "AI ?뺤옣" 踰꾪듉 ?대깽??
     container.querySelectorAll(".curation-ai-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const idx = parseInt(btn.dataset.curationIdx, 10);
@@ -13589,19 +13594,19 @@ function renderCurationResults(results, selectedDevices) {
 
     frame.classList.remove("hidden");
 
-    // STEP 1 완료 → 헬퍼 업데이트
+    // STEP 1 ?꾨즺 ???ы띁 ?낅뜲?댄듃
     updateOutputFlowTracker(1, { 1: "done", 2: "waiting", 3: "waiting" });
     setSectionStatusBadge("curation-title", "done");
     updateSectionHelper("curation-helper",
         isKo
-            ? "입력하신 조건에 가장 잘 맞는 시나리오를 찾았습니다. 하나를 선택하면 다음 단계로 넘어갑니다."
+            ? "?낅젰?섏떊 議곌굔??媛????留욌뒗 ?쒕굹由ъ삤瑜?李얠븯?듬땲?? ?섎굹瑜??좏깮?섎㈃ ?ㅼ쓬 ?④퀎濡??섏뼱媛묐땲??"
             : "We found the best-matching scenarios. Select one to proceed to the next step.");
 }
 
 function triggerAiFromCuration(scenario) {
     const f = formatCurationResult(scenario);
 
-    // latestSelectionSummary가 있으면 선택된 시나리오를 primary로 업데이트
+    // latestSelectionSummary媛 ?덉쑝硫??좏깮???쒕굹由ъ삤瑜?primary濡??낅뜲?댄듃
     if (latestSelectionSummary) {
         latestSelectionSummary.selectedScenarios.forEach(s => { s.isPrimary = false; });
         const match = latestSelectionSummary.selectedScenarios.find(
@@ -13626,12 +13631,12 @@ function triggerAiFromCuration(scenario) {
         }
         const isKo = currentLocale === "ko";
         latestSelectionSummary.selectionReason = isKo
-            ? `"${f.title}" 시나리오를 직접 선택하셨습니다. (적합도 ${f.score}점, 소스: Explore ${scenario._source || "v2.0"})`
+            ? `"${f.title}" ?쒕굹由ъ삤瑜?吏곸젒 ?좏깮?섏뀲?듬땲?? (?곹빀??${f.score}?? ?뚯뒪: Explore ${scenario._source || "v2.0"})`
             : `You selected "${f.title}" (score: ${f.score}, source: Explore ${scenario._source || "v2.0"}).`;
     }
 
-    // ── 13-Section Campaign Output 실행 ──
-    // aiScenarioContext 빌드 (generateScenario에서 사용하던 것과 동일)
+    // ?? 13-Section Campaign Output ?ㅽ뻾 ??
+    // aiScenarioContext 鍮뚮뱶 (generateScenario?먯꽌 ?ъ슜?섎뜕 寃껉낵 ?숈씪)
     const selectedMarket = marketOptions.find(m => m.siteCode === countrySelect.value);
     const city = getCityValue();
     const selectedDeviceLabels = getSelectedDeviceLabels();
@@ -13657,26 +13662,31 @@ function triggerAiFromCuration(scenario) {
         selectionSummary: latestSelectionSummary || null
     };
 
-    // 큐레이션 결과 가져오기 (renderCurationResults에서 사용된 results)
+    // ?먮젅?댁뀡 寃곌낵 媛?몄삤湲?(renderCurationResults?먯꽌 ?ъ슜??results)
     const curationResults = _latestCurationResults || [];
 
-    // 13-section output 실행
+    if (typeof renderOutputCategories === "function") {
+        renderOutputCategories();
+        setSectionStatusBadge("category-title", "done");
+    }
+
+    // 13-section output ?ㅽ뻾
     if (typeof launchCampaignOutput === "function") {
         launchCampaignOutput(curationResults, scenario, context, latestSelectionSummary);
     }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   결과물 카테고리 선택 — 직무별 후속 선택형
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   寃곌낵臾?移댄뀒怨좊━ ?좏깮 ??吏곷Т蹂??꾩냽 ?좏깮??
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 
 const OUTPUT_CATEGORIES = [
-    { id: "campaign", icon: "📢", titleKo: "캠페인 메시지 방향", titleEn: "Campaign messaging", descKo: "시나리오 기반 태그라인, 소구 포인트, 1-liner 카피", descEn: "Taglines, appeal points, and one-liner copy from the scenario" },
-    { id: "retail", icon: "🏪", titleKo: "리테일 현장 적용안", titleEn: "Retail execution", descKo: "매장 설명 흐름, 체험 시나리오, POP 문구", descEn: "In-store explanation flow, experience scenario, POP copy" },
-    { id: "dotcom", icon: "🌐", titleKo: "닷컴 콘텐츠/프로모 활용안", titleEn: "Dotcom content & promo", descKo: "랜딩 페이지 구성, 배너 카피, 전환 흐름", descEn: "Landing page structure, banner copy, conversion flow" },
-    { id: "crm", icon: "🔄", titleKo: "CRM/리텐션 활용안", titleEn: "CRM & retention", descKo: "푸시 알림 시나리오, 재방문 유도, 사용률 향상", descEn: "Push notification scenarios, re-engagement, usage lift" },
-    { id: "season", icon: "🎄", titleKo: "시즌/행사 연계안", titleEn: "Seasonal tie-in", descKo: "명절·시즌 캠페인 스토리, 한정 프로모 방향", descEn: "Holiday and seasonal campaign story, limited promo direction" },
-    { id: "report", icon: "📊", titleKo: "매니저/임원 보고용 요약", titleEn: "Executive summary", descKo: "1페이지 요약, 핵심 수치, 전략 방향", descEn: "One-page summary, key metrics, strategic direction" }
+    { id: "campaign", icon: "?뱼", titleKo: "罹좏럹??硫붿떆吏 諛⑺뼢", titleEn: "Campaign messaging", descKo: "?쒕굹由ъ삤 湲곕컲 ?쒓렇?쇱씤, ?뚭뎄 ?ъ씤?? 1-liner 移댄뵾", descEn: "Taglines, appeal points, and one-liner copy from the scenario" },
+    { id: "retail", icon: "?룵", titleKo: "由ы뀒???꾩옣 ?곸슜??, titleEn: "Retail execution", descKo: "留ㅼ옣 ?ㅻ챸 ?먮쫫, 泥댄뿕 ?쒕굹由ъ삤, POP 臾멸뎄", descEn: "In-store explanation flow, experience scenario, POP copy" },
+    { id: "dotcom", icon: "?뙋", titleKo: "?룹뺨 肄섑뀗痢??꾨줈紐??쒖슜??, titleEn: "Dotcom content & promo", descKo: "?쒕뵫 ?섏씠吏 援ъ꽦, 諛곕꼫 移댄뵾, ?꾪솚 ?먮쫫", descEn: "Landing page structure, banner copy, conversion flow" },
+    { id: "crm", icon: "?봽", titleKo: "CRM/由ы뀗???쒖슜??, titleEn: "CRM & retention", descKo: "?몄떆 ?뚮┝ ?쒕굹由ъ삤, ?щ갑臾??좊룄, ?ъ슜瑜??μ긽", descEn: "Push notification scenarios, re-engagement, usage lift" },
+    { id: "season", icon: "?럡", titleKo: "?쒖쫵/?됱궗 ?곌퀎??, titleEn: "Seasonal tie-in", descKo: "紐낆젅쨌?쒖쫵 罹좏럹???ㅽ넗由? ?쒖젙 ?꾨줈紐?諛⑺뼢", descEn: "Holiday and seasonal campaign story, limited promo direction" },
+    { id: "report", icon: "?뱤", titleKo: "留ㅻ땲?/?꾩썝 蹂닿퀬???붿빟", titleEn: "Executive summary", descKo: "1?섏씠吏 ?붿빟, ?듭떖 ?섏튂, ?꾨왂 諛⑺뼢", descEn: "One-page summary, key metrics, strategic direction" }
 ];
 
 let selectedOutputCategories = new Set();
@@ -13687,6 +13697,7 @@ function renderOutputCategories() {
     if (!frame || !container) return;
 
     const isKo = currentLocale === "ko";
+    selectedOutputCategories = new Set();
 
     container.innerHTML = OUTPUT_CATEGORIES.map(cat => `
         <div class="category-card${selectedOutputCategories.has(cat.id) ? " selected" : ""}" data-cat-id="${cat.id}">
@@ -13710,4 +13721,6 @@ function renderOutputCategories() {
     });
 
     frame.classList.remove("hidden");
+    frame.scrollIntoView({ behavior: "smooth", block: "start" });
 }
+

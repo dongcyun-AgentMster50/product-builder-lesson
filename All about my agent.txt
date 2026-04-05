@@ -1,0 +1,72 @@
+# Scenario Self Generation Agent (시나리오 자동 생성 에이전트) 구현 아키텍처 및 상세 소개
+
+본 문서는 삼성 SmartThings CX 시나리오를 자동으로 매칭하고 마케팅 캠페인 자산을 생성하는 "Scenario Self Generation Agent" 앱의 구조, 작동 원리, 사용된 솔루션 및 핵심 함수들을 자세하게 설명합니다.
+
+---
+
+## 1. 전반적인 아키텍처 (Architecture Overview)
+
+*   **프론트엔드 (Frontend):** 바닐라 JavaScript(ES6+), HTML5, 순수 CSS로 구축된 SPA(Single Page Application) 형태입니다. React나 Vue 같은 무거운 프레임워크 없이 빠르고 가볍게 설계되었습니다. UI는 4단계의 마법사(Wizard) 흐름을 따릅니다.
+*   **백엔드 (Backend):** Node.js의 기본 `http` 모듈을 사용한 경량 서버(`server.js`)로 구성되어 있습니다. 정적 파일 호스팅과 AI 연동 API 게이트웨이 역할을 동시에 수행합니다.
+*   **핵심 솔루션 (Solutions/APIs):**
+    *   **LLM (대형 언어 모델):** OpenAI의 `gpt-4o`, `gpt-4o-mini` 및 Anthropic의 `claude-sonnet` 시리즈를 혼합하여 사용합니다. (Nudge에는 빠르고 가벼운 GPT-4o-mini, 복잡한 출력에는 Claude/GPT-4o 선택 가능)
+    *   **통신 방식:** 클라이언트와 서버 간의 AI 응답은 Server-Sent Events(SSE) 기술을 적용해 텍스트 생성 결과를 타이핑하듯 실시간 스트리밍합니다.
+
+---
+
+## 2. 프론트엔드 파이프라인 작동 원리 (main.js)
+
+에이전트의 워크플로우는 4단계의 직관적 마법사(Wizard) UI로 진행됩니다. 이 과정에서 글로벌 로케일과 디바이스 카탈로그를 동적으로 매핑하는 시스템이 존재합니다.
+
+*   **Q1. 역할(Role) & Q2. 지역(Country/City):** 선택된 국가(Country 코드)에 맞춰 내부 `LOCALE_CATALOGS` 사전이 자동으로 적용됩니다 (예: 유럽 EU, 북미 US). 이를 통해 지역별로 판매 중인 삼성, 파트너 기기 라인업이 자동 세팅됩니다.
+*   **Q3. 페르소나 및 입력:** 주거 형태(Housing), 라이프스타일(Lifestyle), 세대 구성 등의 태그를 조합하여 고객 세그먼트를 특정화합니다.
+*   **Q4. 기기 선택(Devices):** 사용자가 직접 스마트싱스, 로봇청소기 등의 기기를 선택하거나, "Energy", "Care" 같은 스타일 프리셋을 통해 일괄 선택합니다.
+
+---
+
+## 3. 핵심 모듈: 큐레이션 엔진 (`js/curation-engine.js`)
+
+AI가 임의로 스토리를 창작하여 환각(Hallucination)이 발생하는 것을 막기 위해, 사전에 정의된 로컬 DB(`explore_db_v1.json`, `explore_db_v2.json`)와 사용자의 입력을 JS 레벨에서 순수하게 알고리즘으로 매칭합니다.
+
+*   **`buildExploreTagsFromInput()` 함수:** 
+    사용자가 선택한 페르소나 환경이나 기기 정보(Q3, Q4)와 목적 텍스트를 파싱하여 `["Save energy", "Care for seniors", "Keep your home safe"]` 와 같은 '가중치 기반 Explore 태그 배열'로 변환합니다.
+*   **`scoreScenario()` 함수:**
+    입력 태그와 기존 DB 시나리오가 보유한 특성 태그, Value 태그 간의 교집합을 찾아 점수를 산정합니다. 매칭되는 기기가 있는 경우 추가 보너스 점수를 부여합니다.
+*   **`curateScenarios()` 함수:** 
+    최종적으로 모든 시나리오의 점수를 계산해 가장 높은 적합도를 가진 Top 시나리오들을 선별하여 중복을 제거한 후 배열로 반환합니다.
+
+---
+
+## 4. 캠페인 출력 아키텍처 (`js/campaign-output.js`)
+
+매칭된 시나리오를 바탕으로 글로벌 마케터들이 활용할 13-Section 형태의 결과물을 렌더링합니다. 크게 로컬 렌더링 영역(01~04 섹션)과 AI 생성 영역(05~12 섹션)으로 나뉩니다.
+
+*   **순수 알고리즘 영역 (Sections 01~04):**
+    *   AI 호출 없이 `curation-engine.js`의 결과인 `_coResults`와 `Selection Summary`를 통해 렌더링됩니다.
+    *   `_deriveReadinessLabel()` 및 `_buildWhyExplanation()` 함수를 통해 각 시나리오가 "왜 추천되었는지", "어떤 기기가 겹치는지" 텍스트 보충 설정을 자동 연산하여 보여줍니다.
+*   **AI 스트리밍 영역 (Sections 05~12):**
+    *   **병렬 API 호출:** `_launchApiSections()` 함수에서 05~12까지의 각 섹션 전용 시스템 프롬프트(FGD 가이드, 카피라이팅, 크리에이티브 시나리오, 스토리보드 등)를 동시에 백엔드 `/api/generate` 엔드포인트로 전송합니다 `(Promise.allSettled)`.
+    *   응답은 `_callApiSection()` 함수를 통해 스트리밍(`reader.read()`)으로 데이터를 수신받고, 부분 응답을 파싱하여 실시간으로 화면의 아코디언 카드 영역에 Json / Markdown 형식으로 덧그려줍니다.
+
+---
+
+## 5. 서버 측 API 동작 및 기능 (`server.js`)
+
+*   **인증 및 접근 제어 (`handleVerify`, `handleSession`)**
+    *   사전 발급된 Access Code 리스트(`access-codes.json`)를 검증합니다.
+    *   메모리 상에 `sessions` Map을 생성하여 일회성 토큰을 쿠키(Cookie)로 강제 부여하며 보안을 유지하고, 횟수 통제(`MAX_FAILED_ATTEMPTS`)로 무차별 대입을 차단합니다.
+*   **실시간 마켓 상황 조회 (`/api/region-insight` & `handleRegionInsight`)**
+    *   AI(주로 OpenAI)를 호출하여 검색된 국가와 도시의 실시간 트렌드 및 주거 관련 상황을 분석 후 JSON으로 반환하고 일정 기간 동안 Map 메모리에 캐싱(Cache)해 서버 비용과 속도를 최적화합니다.
+*   **AI 스트리밍 미들웨어 (`callOpenAIStream`, `callClaudeStream`)**
+    *   `https` 내장 모듈을 통해 API 호출을 수행하고, 이벤트 기반 Chunk 단위로 클라이언트에게 `res.write` 처리를 하여 자연스러운 타이핑 이펙트(SSE) 구현의 중추가 됩니다.
+    *   `jsonMode: true`인 경우 OpenAI 기능인 `response_format: { type: "json_object" }`를 활용하여 반드시 JSON 포맷으로 강제 출력하도록 합니다.
+*   **넛지 추천 (`handleNudge`)**
+    *   `gpt-4o-mini` 모델을 사용해 사용자(마케터)에게 현재 도시에서 일어나는 짧고 실용적인 마케팅 시츄에이션과 기회 카드(Nudge) 3가지를 초고속으로 생성해 팝업합니다.
+
+---
+
+## 요약 (TL;DR)
+1. **Frontend:** 바닐라 JS 조합(UI 로케일 매핑, 4-Step Input).
+2. **Curation:** JS 규칙 기반 스코어링 수식 기반 (`curation-engine.js`). 환각 최소화.
+3. **Generation:** SSE 기반 병렬 LLM API 처리. 13개의 목적별 마케팅 에셋을 실시간 동시 화면 생성 (`campaign-output.js`).
+4. **Backend/Security:** Node.js 기반 세션 처리 및 메모리 캐시 최적화 (`server.js`).

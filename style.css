@@ -1,5 +1,5 @@
-:root {
-    /* ── Core Palette ── */
+﻿:root {
+    /* ?? Core Palette ?? */
     --bg: #eef3f9;
     --paper: #fafbfd;
     --surface: #f4f6f9;
@@ -9,7 +9,7 @@
     --line: rgba(10, 34, 68, 0.10);
     --line-strong: rgba(10, 34, 68, 0.18);
 
-    /* ── Brand Accent ── */
+    /* ?? Brand Accent ?? */
     --accent: #1a3f6f;
     --accent-soft: rgba(0, 51, 102, 0.08);
     --accent-strong: #003366;
@@ -18,19 +18,19 @@
     --warn: #a33b16;
     --success: #1b7a3d;
 
-    /* ── Elevation ── */
+    /* ?? Elevation ?? */
     --shadow: 0 18px 40px rgba(8, 28, 60, 0.08);
     --shadow-sm: 0 2px 8px rgba(8, 28, 60, 0.06);
 
-    /* ── Typography ── */
-    --heading-font: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-    --body-font: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    /* ?? Typography ?? */
+    --heading-font: "Malgun Gothic", "留묒? 怨좊뵓", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    --body-font: "Malgun Gothic", "留묒? 怨좊뵓", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
     --heading-lg: 16pt;
     --heading-md: 14pt;
     --body-size: 11pt;
     --source-size: 9pt;
 
-    /* ── Spacing Scale ── */
+    /* ?? Spacing Scale ?? */
     --space-xs: 4px;
     --space-sm: 6px;
     --space-md: 10px;
@@ -38,7 +38,7 @@
     --space-xl: 20px;
     --space-2xl: 28px;
 
-    /* ── Radius Scale ── */
+    /* ?? Radius Scale ?? */
     --radius-xs: 4px;
     --radius-sm: 6px;
     --radius-md: 10px;
@@ -46,7 +46,7 @@
     --radius-xl: 20px;
     --radius-pill: 999px;
 
-    /* ── Layout ── */
+    /* ?? Layout ?? */
     --section-bg: var(--surface);
     --section-title-bg: var(--accent-strong);
     --section-title-color: var(--paper);
@@ -67,7 +67,7 @@ body {
         radial-gradient(circle at 15% 85%, rgba(0, 51, 102, 0.06), transparent 28%),
         linear-gradient(160deg, #0a1628 0%, #0d1f35 30%, #0f2640 60%, #102d4a 100%);
     color: var(--ink);
-    font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-family: "Malgun Gothic", "留묒? 怨좊뵓", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
     min-height: 100vh;
     word-break: keep-all;
     overflow-wrap: break-word;
@@ -173,7 +173,7 @@ body {
     font-weight: 700;
 }
 .locale-dropdown li.active::before {
-    content: "✓ ";
+    content: "??";
 }
 
 .hero-copy h1 {
@@ -189,7 +189,7 @@ body {
 .panel-label,
 .block-index {
     margin: 0;
-    font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
+    font-family: "Malgun Gothic", "留묒? 怨좊뵓", "Apple SD Gothic Neo", sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.14em;
     font-size: 0.7rem;
@@ -353,7 +353,7 @@ body {
     border: 1px solid var(--line);
     background: rgba(255, 255, 255, 0.96);
     text-align: center;
-    font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
+    font-family: "Malgun Gothic", "留묒? 怨좊뵓", "Apple SD Gothic Neo", sans-serif;
     font-size: 0.86rem;
     font-weight: 700;
 }
@@ -382,7 +382,7 @@ body {
     grid-column: 1 / -1;
 }
 
-/* ── Searchable City Dropdown ── */
+/* ?? Searchable City Dropdown ?? */
 .city-search-wrap {
     grid-column: 1 / -1;
     position: relative;
@@ -527,7 +527,7 @@ body {
 }
 
 label {
-    font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
+    font-family: "Malgun Gothic", "留묒? 怨좊뵓", "Apple SD Gothic Neo", sans-serif;
     font-size: 0.95rem;
     font-weight: 800;
 }
@@ -737,7 +737,7 @@ textarea {
 .persona-groups .tree-group[data-mode="chip"] {
     grid-column: span 1;
 }
-/* D takes 2 cols, E takes 1 col — same row, aligned height */
+/* D takes 2 cols, E takes 1 col ??same row, aligned height */
 .persona-groups .tree-group[data-group-id="tags"] {
     grid-column: 1 / 3;
 }
@@ -830,7 +830,7 @@ textarea {
     gap: 8px;
 }
 
-/* 프리셋 그리드 — 4열 고정 */
+/* ?꾨━??洹몃━????4??怨좎젙 */
 .q4-preset-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -893,7 +893,7 @@ textarea {
     color: var(--accent-strong);
 }
 
-/* ── Q3 로케일 헤더 ── */
+/* ?? Q3 濡쒖????ㅻ뜑 ?? */
 .q4-locale-header {
     background: linear-gradient(135deg, #e3f2fd, #e8eaf6);
     border: 1px solid #bbdefb;
@@ -927,7 +927,7 @@ textarea {
     line-height: 1.4;
 }
 
-/* ── 섹션 힌트 ── */
+/* ?? ?뱀뀡 ?뚰듃 ?? */
 .q4-section-hint {
     display: block;
     font-size: 0.72rem;
@@ -936,7 +936,7 @@ textarea {
     margin-top: 2px;
 }
 
-/* ── 카드 내부 배지 ── */
+/* ?? 移대뱶 ?대? 諛곗? ?? */
 .q4-card-badges {
     display: flex;
     flex-wrap: wrap;
@@ -972,7 +972,7 @@ textarea {
     align-self: center;
 }
 
-/* ── 카드 태그 (삼성 중심 / 타사 확장) ── */
+/* ?? 移대뱶 ?쒓렇 (?쇱꽦 以묒떖 / ????뺤옣) ?? */
 .q4-card-tag {
     display: inline-block;
     font-size: 0.58rem;
@@ -990,7 +990,7 @@ textarea {
     color: #f57f17;
 }
 
-/* ── 카드 커스터마이징 배지 ── */
+/* ?? 移대뱶 而ㅼ뒪?곕쭏?댁쭠 諛곗? ?? */
 .q4-cust-badge {
     display: inline-block;
     font-size: 0.58rem;
@@ -1005,14 +1005,14 @@ textarea {
     color: #1b5e20;
 }
 
-/* ── 카드 커스터마이징 상태 테두리 ── */
+/* ?? 移대뱶 而ㅼ뒪?곕쭏?댁쭠 ?곹깭 ?뚮몢由??? */
 .q4-preset-btn.active.customized {
     border-color: #7986cb;
     background: rgba(121, 134, 203, 0.06);
     box-shadow: 0 0 0 2px rgba(121, 134, 203, 0.15);
 }
 
-/* ── 직접 선택 삼성/타사 섹션 분리 ── */
+/* ?? 吏곸젒 ?좏깮 ?쇱꽦/????뱀뀡 遺꾨━ ?? */
 .q4-direct-section {
     border: 1px solid var(--line);
     border-radius: 10px;
@@ -1044,7 +1044,7 @@ textarea {
     color: var(--ink);
 }
 
-/* ── 요약 삼성/타사 칩 구분 ── */
+/* ?? ?붿빟 ?쇱꽦/???移?援щ텇 ?? */
 .q4-chip-samsung {
     background: #e3f2fd !important;
     color: #1565c0 !important;
@@ -1061,7 +1061,7 @@ textarea {
     font-style: italic;
 }
 
-/* ── 요약 커스터마이징 블록 ── */
+/* ?? ?붿빟 而ㅼ뒪?곕쭏?댁쭠 釉붾줉 ?? */
 .q4-summary-block--cust {
     border-left: 3px solid #ff9800;
     padding-left: 10px;
@@ -1086,13 +1086,13 @@ textarea {
     font-style: italic;
 }
 
-/* ── 요약 파트너 블록 ── */
+/* ?? ?붿빟 ?뚰듃??釉붾줉 ?? */
 .q4-summary-block--partner {
     border-left: 3px solid #bdbdbd;
     padding-left: 10px;
 }
 
-/* ── 검증 상태 표시 ── */
+/* ?? 寃利??곹깭 ?쒖떆 ?? */
 .q4-validation {
     margin-top: 12px;
     padding: 10px 14px;
@@ -1116,14 +1116,14 @@ textarea {
     border: 1px solid #ffab91;
 }
 
-/* 직접 선택 칩 그리드 */
+/* 吏곸젒 ?좏깮 移?洹몃━??*/
 .q4-chip-grid {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-/* 칩 행 — 2~3그룹씩 한 줄 */
+/* 移?????2~3洹몃９????以?*/
 .q4-chip-row {
     display: flex;
     flex-wrap: wrap;
@@ -1184,8 +1184,8 @@ textarea {
     background: rgba(0, 51, 102, 0.1);
 }
 
-/* ── AI 자동 구성 버튼 ── */
-/* ── Q3 자동 세그먼트 버튼 ── */
+/* ?? AI ?먮룞 援ъ꽦 踰꾪듉 ?? */
+/* ?? Q3 ?먮룞 ?멸렇癒쇳듃 踰꾪듉 ?? */
 .q3-auto-btn {
     display: flex;
     align-items: center;
@@ -1221,7 +1221,7 @@ textarea {
     line-height: 1.4;
 }
 
-/* ── Q4 자동 기기 버튼 ── */
+/* ?? Q4 ?먮룞 湲곌린 踰꾪듉 ?? */
 .q3-auto-summary {
     display: grid;
     gap: 10px;
@@ -1319,7 +1319,7 @@ textarea {
     line-height: 1.4;
 }
 
-/* ── 카테고리별 상세 기기 보기 — 각진 네모 + 진한 회색 그라데이션 ── */
+/* ?? 移댄뀒怨좊━蹂??곸꽭 湲곌린 蹂닿린 ??媛곸쭊 ?ㅻえ + 吏꾪븳 ?뚯깋 洹몃씪?곗씠???? */
 .q4-details {
     border-radius: 6px !important;
     background: linear-gradient(180deg, #4a4a4a, #2d2d2d) !important;
@@ -1339,7 +1339,7 @@ textarea {
 }
 
 .q4-details summary::before {
-    content: "▸";
+    content: "??;
     font-size: 0.82rem;
     transition: transform 200ms ease;
     color: #aaa;
@@ -1372,7 +1372,7 @@ textarea {
     color: rgba(255,255,255,0.4);
 }
 
-/* 추가 기기 입력 (경량 fallback) */
+/* 異붽? 湲곌린 ?낅젰 (寃쎈웾 fallback) */
 .q4-extra-input {
     margin-top: 4px;
 }
@@ -1403,7 +1403,7 @@ textarea {
     background: linear-gradient(135deg, rgba(0, 51, 102, 0.04) 0%, rgba(0, 80, 200, 0.07) 100%);
     border: 1.5px solid rgba(0, 51, 102, 0.15);
 }
-/* 기기 직접 선택 — 전폭 + 카테고리 그룹 */
+/* 湲곌린 吏곸젒 ?좏깮 ???꾪룺 + 移댄뀒怨좊━ 洹몃９ */
 .q4-direct-select { width: 100%; }
 .q4-chip-group { margin-bottom: 10px; }
 .q4-chip-group-label {
@@ -1415,7 +1415,7 @@ textarea {
     padding-left: 2px;
 }
 .q4-chip-group-items { display: flex; flex-wrap: wrap; gap: 8px; }
-/* 카테고리별 상세 — 전폭 가운데 */
+/* 移댄뀒怨좊━蹂??곸꽭 ???꾪룺 媛?대뜲 */
 .q4-details { text-align: center; }
 .q4-details .device-grid { text-align: left; max-width: 100%; margin: 0 auto; }
 
@@ -1623,7 +1623,7 @@ textarea {
     padding-right: 4px;
     scrollbar-width: thin;
 }
-/* ── Device section header (Lifestyle / Device Type) ── */
+/* ?? Device section header (Lifestyle / Device Type) ?? */
 .device-section-header {
     padding: 8px 14px;
     margin-top: 4px;
@@ -1647,7 +1647,7 @@ textarea {
     text-transform: uppercase;
 }
 
-/* ── Helper text beside group title ── */
+/* ?? Helper text beside group title ?? */
 .tree-parent-helper {
     font-size: 0.7rem;
     font-weight: 400;
@@ -1655,7 +1655,7 @@ textarea {
     line-height: 1.4;
 }
 
-/* ── Radio Card Mode ── */
+/* ?? Radio Card Mode ?? */
 .tree-children--cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -1776,7 +1776,7 @@ textarea {
     line-height: 1.35;
 }
 
-/* ── Chip Toggle Mode ── */
+/* ?? Chip Toggle Mode ?? */
 .tree-children--chips {
     display: flex;
     flex-wrap: wrap;
@@ -1818,7 +1818,7 @@ textarea {
     box-shadow: 0 0 0 1px rgba(0, 51, 102, 0.08);
 }
 
-/* Chips scroll area — dividers take full width */
+/* Chips scroll area ??dividers take full width */
 .tree-children--chips .tree-divider {
     flex-basis: 100%;
     margin: 6px 0 2px;
@@ -2026,9 +2026,9 @@ textarea {
     100% { background-position: 100% 0; }
 }
 
-/* ══════════════════════════════════════════
-   Hero Flow Bar — 가로 스텝 인디케이터
-   ══════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Hero Flow Bar ??媛濡??ㅽ뀦 ?몃뵒耳?댄꽣
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 .hero-flow-bar {
     display: flex;
     align-items: center;
@@ -2074,9 +2074,9 @@ textarea {
     flex-shrink: 0;
 }
 
-/* ══════════════════════════════════════════
-   Access Card V2 — 프리미엄 로그인
-   ══════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Access Card V2 ???꾨━誘몄뾼 濡쒓렇??
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 .access-card-v2 {
     display: flex;
     flex-direction: column;
@@ -2190,9 +2190,9 @@ textarea {
     color: #a0a8b8;
 }
 
-/* ══════════════════════════════════════════
-   Preview Cards 4x2 그리드 + 카드 스타일
-   ══════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Preview Cards 4x2 洹몃━??+ 移대뱶 ?ㅽ???
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 .preview-list {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -2380,7 +2380,7 @@ textarea {
     font-size: 0.84rem;
 }
 
-/* ── 피자 프로그레스 (면적 채우기) ── */
+/* ?? ?쇱옄 ?꾨줈洹몃젅??(硫댁쟻 梨꾩슦湲? ?? */
 .pizza-spinner {
     position: relative;
     width: 38px;
@@ -2438,7 +2438,7 @@ textarea {
     font-weight: 700;
 }
 
-/* ═══ Q2 Audience Redesign ═══ */
+/* ?먥븧??Q2 Audience Redesign ?먥븧??*/
 .q2-redesign {
     display: grid;
     gap: 12px;
@@ -2596,7 +2596,7 @@ textarea {
     flex-shrink: 0;
 }
 
-/* ═══ Q2 Hybrid Audience Card ═══ */
+/* ?먥븧??Q2 Hybrid Audience Card ?먥븧??*/
 
 /* --- Header with confidence ring --- */
 .q2-hybrid-header {
@@ -3035,7 +3035,7 @@ textarea {
     border: 1px solid rgba(27, 54, 141, 0.12);
 }
 
-/* ── Q2 Scoreboard ── */
+/* ?? Q2 Scoreboard ?? */
 .q2-scoreboard {
     margin-top: 10px;
     padding: 14px 16px;
@@ -3098,8 +3098,8 @@ textarea {
     padding: 6px 8px; border-radius: 6px; background: rgba(0,0,0,0.03);
 }
 
-/* 클러스터 & 교차검증 */
-/* 색상 범례 */
+/* ?대윭?ㅽ꽣 & 援먯감寃利?*/
+/* ?됱긽 踰붾? */
 .q2-legend {
     display: flex; flex-wrap: wrap; gap: 6px 12px;
     padding: 6px 10px; border-radius: 8px;
@@ -3116,7 +3116,7 @@ textarea {
     display: inline-block; width: 7px; height: 7px; border-radius: 50%;
 }
 
-/* 범례 도움말 버튼 */
+/* 踰붾? ?꾩?留?踰꾪듉 */
 .q2-legend-help-btn {
     display: inline-flex; align-items: center; justify-content: center;
     width: 18px; height: 18px; border-radius: 50%;
@@ -3129,7 +3129,7 @@ textarea {
     background: var(--accent-strong); color: var(--paper); border-color: var(--accent-strong);
 }
 
-/* 범례 도움말 팝업 오버레이 */
+/* 踰붾? ?꾩?留??앹뾽 ?ㅻ쾭?덉씠 */
 .legend-help-overlay {
     position: fixed; inset: 0; z-index: 10000;
     background: rgba(0,0,0,0.45);
@@ -3263,7 +3263,7 @@ textarea {
 .q2-score-row .q2-score-bar-track { width: 100px; flex-shrink: 0; }
 .q2-score-row .q2-score-num { width: 36px; flex-shrink: 0; }
 
-/* 시나리오 태그 바 — 간격 좁힘 */
+/* ?쒕굹由ъ삤 ?쒓렇 諛???媛꾧꺽 醫곹옒 */
 .q2-tag-row-wrap { display: grid; gap: 0; margin-bottom: 1px; }
 .q2-tag-row {
     display: grid; grid-template-columns: 1fr 100px 28px 22px; align-items: center; gap: 6px;
@@ -4102,7 +4102,7 @@ textarea {
     color: var(--accent);
 }
 
-/* ── Trend Evidence (근거 인용) ── */
+/* ?? Trend Evidence (洹쇨굅 ?몄슜) ?? */
 .trend-evidence {
     display: block;
     margin-top: 4px;
@@ -4125,7 +4125,7 @@ textarea {
 .trend-source-line::before {
     content: none;
 }
-/* ── 위첨자 각주 시스템 ── */
+/* ?? ?꾩꺼??媛곸＜ ?쒖뒪???? */
 .trend-footnote-ref {
     font-size: 0.65em;
     color: var(--accent, #001a6e);
@@ -4207,7 +4207,7 @@ textarea {
     box-sizing: border-box;
 }
 
-/* Q2/Q3 힌트 카드 — 진한 배경 + 흰 글씨 */
+/* Q2/Q3 ?뚰듃 移대뱶 ??吏꾪븳 諛곌꼍 + ??湲??*/
 .insight-row:last-child {
     background: var(--accent-strong);
     border-color: var(--accent-strong);
@@ -4247,7 +4247,7 @@ textarea {
     100% { content: ""; }
 }
 
-/* ── Guide screen: 좌측정렬 + 컴팩트 ── */
+/* ?? Guide screen: 醫뚯륫?뺣젹 + 而댄뙥???? */
 .guide-head {
     flex-direction: column;
     align-items: flex-start;
@@ -4446,7 +4446,7 @@ textarea {
     white-space: nowrap;
 }
 
-/* ── 시작 버튼 펄스 애니메이션 ── */
+/* ?? ?쒖옉 踰꾪듉 ?꾩뒪 ?좊땲硫붿씠???? */
 @keyframes guidePulse {
     0%   { transform: scale(1);     box-shadow: 0 0 0 0 rgba(255,255,255,0.5); }
     30%  { transform: scale(1.08);  box-shadow: 0 0 20px 8px rgba(0, 51, 102, 0.3); }
@@ -4468,7 +4468,7 @@ textarea {
 }
 
 .guide-start-pulse::after {
-    content: "👉";
+    content: "?몛";
     position: absolute;
     top: 50%;
     left: -38px;
@@ -4895,7 +4895,7 @@ pre {
     margin-bottom: 18px;
 }
 
-/* Brief Card — 1분 브리핑 */
+/* Brief Card ??1遺?釉뚮━??*/
 .brief-card {
     background: linear-gradient(135deg, #001f40 0%, #003366 50%, #06548c 100%);
     color: #f7fbff;
@@ -4996,7 +4996,7 @@ pre {
 
 .subhead {
     margin: 12px 0 6px;
-    font-family: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", sans-serif;
+    font-family: "Malgun Gothic", "留묒? 怨좊뵓", "Apple SD Gothic Neo", sans-serif;
     font-weight: 700;
     color: var(--accent-strong);
 }
@@ -5716,7 +5716,7 @@ pre {
     }
 }
 
-/* ─── AI Provider Selection ──────────────────────────────────────────────── */
+/* ??? AI Provider Selection ???????????????????????????????????????????????? */
 
 .ai-provider-card {
     display: grid;
@@ -5802,7 +5802,7 @@ pre {
     }
 }
 
-/* ─── AI Streaming & Result UI ───────────────────────────────────────────── */
+/* ??? AI Streaming & Result UI ????????????????????????????????????????????? */
 
 .scenario-output.ai-streaming {
     padding: 24px;
@@ -5908,7 +5908,7 @@ pre {
 .ai-stream-output {
     white-space: pre-wrap;
     word-break: break-word;
-    font-family: "Malgun Gothic", "맑은 고딕", Arial, sans-serif;
+    font-family: "Malgun Gothic", "留묒? 怨좊뵓", Arial, sans-serif;
     font-size: 0.88rem;
     line-height: 1.6;
     color: var(--text);
@@ -5920,10 +5920,10 @@ pre {
     overflow-y: auto;
 }
 
-/* ═══════════════════════════════════════════════════════
-   AI Result — Flowchart 팔레트 슬라이드 스타일
-   색상: #1a1a2e #2d2d3d #3a3a4a #f5f5f5 #fff #ddd #222
-   ═══════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??
+   AI Result ??Flowchart ?붾젅???щ씪?대뱶 ?ㅽ???
+   ?됱긽: #1a1a2e #2d2d3d #3a3a4a #f5f5f5 #fff #ddd #222
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??*/
 .scenario-output.ai-result {
     padding: 0;
     background: #f5f5f5;
@@ -5949,7 +5949,7 @@ pre {
     padding: 4px 12px;
     border-radius: 3px;
     letter-spacing: 0.04em;
-    font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
+    font-family: "Malgun Gothic", "留묒? 怨좊뵓", sans-serif;
 }
 
 .ai-result-context {
@@ -5977,11 +5977,11 @@ pre {
     color: var(--ink);
 }
 
-/* ── 섹션 대제목 (01), (02) → #003366 배경 박스 + 14pt 흰색 ── */
+/* ?? ?뱀뀡 ??쒕ぉ (01), (02) ??#003366 諛곌꼍 諛뺤뒪 + 14pt ?곗깋 ?? */
 .ai-result-body h1,
 .ai-result-body h2 {
     margin: 32px 0 16px;
-    font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
+    font-family: "Malgun Gothic", "留묒? 怨좊뵓", "Noto Sans KR", sans-serif;
     font-weight: 800;
     font-size: 14pt;
     color: var(--paper);
@@ -5995,13 +5995,13 @@ pre {
     margin-top: 0;
 }
 
-/* h2 다음 콘텐츠 — 일반 흐름 */
+/* h2 ?ㅼ쓬 肄섑뀗痢????쇰컲 ?먮쫫 */
 
-/* ── 소제목 h3 → 좌측 보더 + 연회색 밴드 ── */
+/* ?? ?뚯젣紐?h3 ??醫뚯륫 蹂대뜑 + ?고쉶??諛대뱶 ?? */
 .ai-result-body h3 {
     margin: 28px 0 0;
     padding: 12px 36px 12px 32px;
-    font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
+    font-family: "Malgun Gothic", "留묒? 怨좊뵓", "Noto Sans KR", sans-serif;
     font-weight: 700;
     font-size: 1.02em;
     color: #1a1a2e;
@@ -6010,23 +6010,23 @@ pre {
     border-bottom: 1px solid #ddd;
 }
 
-/* ── h4 → 중간 다크 텍스트 ── */
+/* ?? h4 ??以묎컙 ?ㅽ겕 ?띿뒪???? */
 .ai-result-body h4 {
     margin: 20px 0 8px;
-    font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
+    font-family: "Malgun Gothic", "留묒? 怨좊뵓", "Noto Sans KR", sans-serif;
     font-weight: 700;
     font-size: 0.95em;
     color: #2d2d3d;
 }
 
-/* ── 본문 단락 → 흰 카드 안에서 ── */
+/* ?? 蹂몃Ц ?⑤씫 ????移대뱶 ?덉뿉???? */
 .ai-result-body p {
     margin: 12px 0;
     line-height: 1.85;
     color: var(--ink-light);
 }
 
-/* ── 리스트 → 카드 내 패딩 ── */
+/* ?? 由ъ뒪????移대뱶 ???⑤뵫 ?? */
 .ai-result-body ul,
 .ai-result-body ol {
     padding-left: 22px;
@@ -6051,7 +6051,7 @@ pre {
     font-weight: 700;
 }
 
-/* h2/h3 바로 뒤 리스트는 카드 연결 */
+/* h2/h3 諛붾줈 ??由ъ뒪?몃뒗 移대뱶 ?곌껐 */
 .ai-result-body h2 + ul,
 .ai-result-body h2 + ol,
 .ai-result-body h3 + ul,
@@ -6063,7 +6063,7 @@ pre {
     border-right: none;
 }
 
-/* ── 표 — 다크 헤더 + 스트라이프 ── */
+/* ?? ?????ㅽ겕 ?ㅻ뜑 + ?ㅽ듃?쇱씠???? */
 .ai-result-body table {
     width: 100%;
     border-collapse: collapse;
@@ -6083,7 +6083,7 @@ pre {
 .ai-result-body th {
     background: #1a1a2e;
     color: var(--paper);
-    font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
+    font-family: "Malgun Gothic", "留묒? 怨좊뵓", sans-serif;
     font-weight: 700;
     font-size: 0.84em;
 }
@@ -6096,14 +6096,14 @@ pre {
     background: #eee;
 }
 
-/* h2 다음 테이블은 전폭 */
+/* h2 ?ㅼ쓬 ?뚯씠釉붿? ?꾪룺 */
 .ai-result-body h2 + table {
     margin: 0;
     width: calc(100% + 72px);
     border-top: none;
 }
 
-/* ── 코드 블록 ── */
+/* ?? 肄붾뱶 釉붾줉 ?? */
 .ai-result-body pre {
     background: #2d2d3d;
     color: #e0e0e0;
@@ -6130,27 +6130,27 @@ pre {
     color: inherit;
 }
 
-/* ── 구분선 → 슬라이드 구분 ── */
+/* ?? 援щ텇?????щ씪?대뱶 援щ텇 ?? */
 .ai-result-body hr {
     border: none;
     height: 0;
     margin: 24px 0 8px;
 }
 
-/* ── [Source] 출처 ── */
+/* ?? [Source] 異쒖쿂 ?? */
 .ai-result-body p:has(.source-tag),
 .ai-result-body li:has(.source-tag) {
     font-size: 0.82em;
     color: var(--muted);
 }
 
-/* ── strong 강조 ── */
+/* ?? strong 媛뺤“ ?? */
 .ai-result-body strong {
     color: #1a1a2e;
     font-weight: 700;
 }
 
-/* ── blockquote (있을 경우) ── */
+/* ?? blockquote (?덉쓣 寃쎌슦) ?? */
 .ai-result-body blockquote {
     margin: 14px 0;
     padding: 14px 20px;
@@ -6198,7 +6198,7 @@ pre {
     }
 }
 
-/* ── Source Citation Tags ── */
+/* ?? Source Citation Tags ?? */
 .source-tag {
     display: inline-flex;
     align-items: center;
@@ -6217,7 +6217,7 @@ pre {
     vertical-align: middle;
 }
 .source-tag::before {
-    content: "📎";
+    content: "?뱨";
     font-size: 0.68rem;
 }
 .source-tag:hover {
@@ -6357,7 +6357,7 @@ a.source-tag-link:hover {
     opacity: 0.85;
 }
 .source-tag-inline::before {
-    content: "📋";
+    content: "?뱥";
 }
 
 /* Assumption tag */
@@ -6368,7 +6368,7 @@ a.source-tag-link:hover {
     cursor: default;
 }
 .source-tag-assumption::before {
-    content: "⚠️";
+    content: "?좑툘";
 }
 
 /* Source detail inside fact table */
@@ -6381,11 +6381,11 @@ a.source-tag-link:hover {
     border-radius: 0 0 10px 10px;
 }
 
-/* ═════════════════════════════════════════════════════════════════════
-   UI/CSS 개선 — 가시성·밀도·위계·일관성 강화
-   ═════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??
+   UI/CSS 媛쒖꽑 ??媛?쒖꽦쨌諛?꽷룹쐞怨꽷룹씪愿??媛뺥솕
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??*/
 
-/* ── 1. Result Frame & Output 전체 개선 ── */
+/* ?? 1. Result Frame & Output ?꾩껜 媛쒖꽑 ?? */
 .result-frame {
     background: rgba(255, 255, 255, 0.92);
     border: 1px solid var(--line);
@@ -6408,7 +6408,7 @@ a.source-tag-link:hover {
     color: var(--ink);
 }
 
-/* ── Curation Frame ── */
+/* ?? Curation Frame ?? */
 .curation-frame {
     margin-top: 6px;
     padding: 16px;
@@ -6439,7 +6439,7 @@ a.source-tag-link:hover {
     color: var(--paper);
 }
 
-/* 입력 정보 요약 */
+/* ?낅젰 ?뺣낫 ?붿빟 */
 .curation-input-summary {
     padding: 12px 16px;
     margin-bottom: 14px;
@@ -6481,7 +6481,7 @@ a.source-tag-link:hover {
     gap: 14px;
 }
 
-/* 큐레이션 카드 */
+/* ?먮젅?댁뀡 移대뱶 */
 .curation-card {
     padding: 18px;
     border-radius: var(--card-radius);
@@ -6551,7 +6551,6 @@ a.source-tag-link:hover {
     font-size: 0.85rem;
     line-height: 1.65;
     color: var(--ink);
-    margin-bottom: 12px;
     padding: 12px;
     border-radius: 10px;
     background: rgba(0, 51, 102, 0.02);
@@ -6623,7 +6622,7 @@ a.source-tag-link:hover {
     box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3);
 }
 
-/* ── Curation locale translation ── */
+/* ?? Curation locale translation ?? */
 .curation-title-local,
 .curation-tag-local {
     font-weight: 600;
@@ -6642,7 +6641,7 @@ a.source-tag-link:hover {
     line-height: 1.55;
 }
 
-/* ── Curation completion helper ── */
+/* ?? Curation completion helper ?? */
 .curation-completion-helper {
     display: flex;
     gap: 14px;
@@ -6686,7 +6685,7 @@ a.source-tag-link:hover {
 }
 .curation-helper-steps li { margin-bottom: 2px; }
 
-/* ── Q3 Devices Insight Redesign ── */
+/* ?? Q3 Devices Insight Redesign ?? */
 .q3-insight-redesign {
     display: grid;
     gap: 8px;
@@ -6838,7 +6837,7 @@ a.source-tag-link:hover {
 }
 .q3-cta-text strong { font-weight: 800; }
 
-/* ── Output Category Selection ── */
+/* ?? Output Category Selection ?? */
 .output-category-frame {
     margin-top: 6px;
     padding: 16px;
@@ -6921,7 +6920,7 @@ a.source-tag-link:hover {
     }
 }
 
-/* ── Output Block 섹션 구분 강화 ── */
+/* ?? Output Block ?뱀뀡 援щ텇 媛뺥솕 ?? */
 .output-block {
     position: relative;
     padding: 24px;
@@ -6974,7 +6973,7 @@ a.source-tag-link:hover {
     gap: var(--section-gap);
 }
 
-/* ── 2. Brief Card 미세 개선 ── */
+/* ?? 2. Brief Card 誘몄꽭 媛쒖꽑 ?? */
 .brief-card {
     border: none;
     border-radius: 20px;
@@ -6986,7 +6985,7 @@ a.source-tag-link:hover {
     font-size: var(--heading-lg);
 }
 
-/* ── 3. 공통 Source/Citation 스타일 ── */
+/* ?? 3. 怨듯넻 Source/Citation ?ㅽ????? */
 .trend-footnotes,
 .source-refs-summary,
 .output-source-bar {
@@ -7016,7 +7015,7 @@ a.source-tag-link:hover {
     font-size: var(--source-size);
 }
 
-/* Source 있을 때/없을 때 레이아웃 안정 */
+/* Source ?덉쓣 ???놁쓣 ???덉씠?꾩썐 ?덉젙 */
 .trend-footnotes:empty,
 .output-source-bar:empty {
     display: none;
@@ -7029,7 +7028,7 @@ a.source-tag-link:hover {
     margin: 0;
 }
 
-/* ── 4. Q3 선택 UI — 가로 3열 레이아웃 ── */
+/* ?? 4. Q3 ?좏깮 UI ??媛濡?3???덉씠?꾩썐 ?? */
 .persona-groups {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
@@ -7180,7 +7179,7 @@ a.source-tag-link:hover {
     font-weight: 700;
 }
 
-/* Q3 가이드 텍스트 정돈 */
+/* Q3 媛?대뱶 ?띿뒪???뺣룉 */
 .q3-guide {
     margin: 0 0 12px;
     padding: 8px 12px;
@@ -7188,12 +7187,12 @@ a.source-tag-link:hover {
     border-radius: 8px;
 }
 
-/* Q3 커스텀 입력란 최소 높이 */
+/* Q3 而ㅼ뒪? ?낅젰? 理쒖냼 ?믪씠 */
 #purpose {
     min-height: 80px;
 }
 
-/* ── 5. Q4 선택 UI 밀도 강화 ── */
+/* ?? 5. Q4 ?좏깮 UI 諛??媛뺥솕 ?? */
 .q4-shell {
     gap: 10px;
 }
@@ -7251,7 +7250,7 @@ a.source-tag-link:hover {
     text-align: center;
 }
 
-/* Q4 직접 선택 섹션 */
+/* Q4 吏곸젒 ?좏깮 ?뱀뀡 */
 .q4-direct-select {
     min-height: var(--min-card-height);
 }
@@ -7269,7 +7268,7 @@ a.source-tag-link:hover {
     letter-spacing: 0.06em;
 }
 
-/* ── 6. Q1 Role Card 미세 조정 ── */
+/* ?? 6. Q1 Role Card 誘몄꽭 議곗젙 ?? */
 .role-card {
     padding: 20px;
     border-radius: 20px;
@@ -7286,7 +7285,7 @@ a.source-tag-link:hover {
     line-height: 1.6;
 }
 
-/* ── 7. Q2 개선 ── */
+/* ?? 7. Q2 媛쒖꽑 ?? */
 .city-profile-card {
     border-radius: var(--card-radius);
 }
@@ -7296,14 +7295,14 @@ a.source-tag-link:hover {
     padding: 12px 14px;
 }
 
-/* ── 8. Wizard Progress 정돈 ── */
+/* ?? 8. Wizard Progress ?뺣룉 ?? */
 .progress-pill {
     font-size: 0.82rem;
     padding: 11px 12px;
     font-family: var(--heading-font);
 }
 
-/* ── 9. Insight Card (Step-Insight) 개선 ── */
+/* ?? 9. Insight Card (Step-Insight) 媛쒖꽑 ?? */
 .insight-card {
     border-radius: 20px;
     padding: 10px 14px;
@@ -7322,7 +7321,7 @@ a.source-tag-link:hover {
     font-size: 0.9rem;
 }
 
-/* ── 10. Table 스타일 통일 ── */
+/* ?? 10. Table ?ㅽ????듭씪 ?? */
 .result-table thead th,
 .fact-table thead th {
     background: var(--section-title-bg);
@@ -7340,7 +7339,7 @@ a.source-tag-link:hover {
     overflow: hidden;
 }
 
-/* ── 11. AI Result Body 개선 ── */
+/* ?? 11. AI Result Body 媛쒖꽑 ?? */
 .ai-result-body {
     padding: 28px 32px;
     font-family: var(--body-font);
@@ -7376,7 +7375,7 @@ a.source-tag-link:hover {
     line-height: 1.7;
 }
 
-/* AI result source 정돈 */
+/* AI result source ?뺣룉 */
 .ai-result-body .source-tag {
     font-size: var(--source-size);
 }
@@ -7388,7 +7387,7 @@ a.source-tag-link:hover {
     font-style: italic;
 }
 
-/* ── 12. Subhead / Label 통일 ── */
+/* ?? 12. Subhead / Label ?듭씪 ?? */
 .subhead {
     font-family: var(--heading-font);
     font-size: 0.92rem;
@@ -7398,7 +7397,7 @@ a.source-tag-link:hover {
     letter-spacing: -0.01em;
 }
 
-/* ── 13. Scenario Case Grid 개선 ── */
+/* ?? 13. Scenario Case Grid 媛쒖꽑 ?? */
 .scenario-case-grid {
     gap: 12px;
 }
@@ -7409,7 +7408,7 @@ a.source-tag-link:hover {
     min-height: 140px;
 }
 
-/* ── 14. Marketing Lens 개선 ── */
+/* ?? 14. Marketing Lens 媛쒖꽑 ?? */
 .marketing-lens-grid {
     gap: 12px;
 }
@@ -7429,7 +7428,7 @@ a.source-tag-link:hover {
     font-family: var(--heading-font);
 }
 
-/* ── 15. Post Output Prompt 개선 ── */
+/* ?? 15. Post Output Prompt 媛쒖꽑 ?? */
 .post-output-prompt {
     border: 1px dashed rgba(0, 51, 102, 0.18);
     background: rgba(248, 251, 255, 0.6);
@@ -7440,7 +7439,7 @@ a.source-tag-link:hover {
     font-size: var(--body-size);
 }
 
-/* ── 16. Fact / Process 개선 ── */
+/* ?? 16. Fact / Process 媛쒖꽑 ?? */
 .fact-separation {
     gap: 14px;
 }
@@ -7459,7 +7458,7 @@ a.source-tag-link:hover {
     font-family: var(--heading-font);
 }
 
-/* ── 17. Storyboard 개선 ── */
+/* ?? 17. Storyboard 媛쒖꽑 ?? */
 .storyboard-webtoon {
     border-radius: 20px;
 }
@@ -7472,7 +7471,7 @@ a.source-tag-link:hover {
     border-radius: 12px;
 }
 
-/* ── 18. Export Actions 개선 ── */
+/* ?? 18. Export Actions 媛쒖꽑 ?? */
 .export-tile {
     border-radius: 12px;
     min-height: 76px;
@@ -7484,7 +7483,7 @@ a.source-tag-link:hover {
     font-size: 0.88rem;
 }
 
-/* ── 19. 반응형 보완 ── */
+/* ?? 19. 諛섏쓳??蹂댁셿 ?? */
 @media (max-width: 980px) {
     .q4-top-row {
         grid-template-columns: 1fr;
@@ -7541,7 +7540,7 @@ a.source-tag-link:hover {
     }
 }
 
-/* ── 20. 빈 상태 플레이스홀더 개선 ── */
+/* ?? 20. 鍮??곹깭 ?뚮젅?댁뒪???媛쒖꽑 ?? */
 .placeholder {
     min-height: 120px;
     display: flex;
@@ -7553,7 +7552,7 @@ a.source-tag-link:hover {
     min-height: 0;
 }
 
-/* 접힌 상태 토글 버튼 */
+/* ?묓엺 ?곹깭 ?좉? 踰꾪듉 */
 .preview-toggle {
     display: flex;
     align-items: center;
@@ -7611,7 +7610,7 @@ a.source-tag-link:hover {
     color: var(--paper);
 }
 
-/* 접힌 상태 */
+/* ?묓엺 ?곹깭 */
 .preview-flow--hidden {
     display: none;
 }
@@ -7621,13 +7620,13 @@ a.source-tag-link:hover {
     padding-top: 16px;
 }
 
-/* ── 21. Access / Guide 카드 통일 ── */
+/* ?? 21. Access / Guide 移대뱶 ?듭씪 ?? */
 .access-card,
 .guide-card {
     border-radius: var(--card-radius);
 }
 
-/* ── 22. 선택형 UI hover/focus 시각 피드백 강화 ── */
+/* ?? 22. ?좏깮??UI hover/focus ?쒓컖 ?쇰뱶諛?媛뺥솕 ?? */
 .tree-child:hover,
 .q4-preset-btn:hover,
 .q4-chip-btn:hover,
@@ -7643,14 +7642,14 @@ a.source-tag-link:hover {
     border-color: var(--accent);
 }
 
-/* ── 23. Wizard Step 내부 간격 ── */
+/* ?? 23. Wizard Step ?대? 媛꾧꺽 ?? */
 .wizard-step.active {
     padding: 20px;
     border-radius: 20px;
     gap: 12px;
 }
 
-/* ── 24. Section Head 통일 ── */
+/* ?? 24. Section Head ?듭씪 ?? */
 .section-head h2 {
     font-family: var(--heading-font);
 }
@@ -7659,7 +7658,7 @@ a.source-tag-link:hover {
     font-family: var(--heading-font);
 }
 
-/* ── 25. Summary Sub Grid 개선 ── */
+/* ?? 25. Summary Sub Grid 媛쒖꽑 ?? */
 .summary-sub-grid {
     gap: 14px;
 }
@@ -7670,18 +7669,18 @@ a.source-tag-link:hover {
     min-height: 80px;
 }
 
-/* ── 26. Selection Summary Card (AI Result 내) ── */
+/* ?? 26. Selection Summary Card (AI Result ?? ?? */
 .ai-selection-card {
     border-radius: var(--card-radius);
 }
 
-/* ── 27. Refine UI ── */
+/* ?? 27. Refine UI ?? */
 .ai-refine-answer {
     border-radius: 12px;
     font-size: var(--body-size);
 }
 
-/* ── 28. Preview List (compact output preview) ── */
+/* ?? 28. Preview List (compact output preview) ?? */
 .preview-list {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -7732,7 +7731,7 @@ a.source-tag-link:hover {
     }
 }
 
-/* ── Preview Flow (3-step explanation format) ── */
+/* ?? Preview Flow (3-step explanation format) ?? */
 .preview-flow {
     display: grid;
     gap: 0;
@@ -7887,9 +7886,9 @@ a.source-tag-link:hover {
     }
 }
 
-/* ══════════════════════════════════════════
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
    RTL (Arabic) overrides
-   ══════════════════════════════════════════ */
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 [dir="rtl"] {
     direction: rtl;
     text-align: right;
@@ -7930,7 +7929,7 @@ a.source-tag-link:hover {
 [dir="rtl"] select {
     text-align: right;
 }
-/* Nudge cards — flip border side */
+/* Nudge cards ??flip border side */
 [dir="rtl"] .city-nudge-card {
     border-left: none;
     border-right: 3px solid var(--line);
@@ -7940,7 +7939,7 @@ a.source-tag-link:hover {
 [dir="rtl"] .city-nudge--situation { border-right-color: #4a90d9; }
 [dir="rtl"] .city-nudge--need { border-right-color: #e8943a; }
 [dir="rtl"] .city-nudge--opportunity { border-right-color: #3bb573; }
-/* Check items — flip border side */
+/* Check items ??flip border side */
 [dir="rtl"] .check-item.fit {
     border-left: none;
     border-right: 3px solid rgba(34, 139, 34, 0.4);
@@ -7953,14 +7952,14 @@ a.source-tag-link:hover {
     border-left: none;
     border-right: 3px solid rgba(0, 80, 200, 0.35);
 }
-/* Insight summary — flip border */
+/* Insight summary ??flip border */
 [dir="rtl"] .insight-summary {
     border-left: none;
     border-right: 3px solid var(--accent);
     padding-left: 0;
     padding-right: 18px;
 }
-/* Step insight — flip border */
+/* Step insight ??flip border */
 [dir="rtl"] .step-insight-box {
     border-left: none;
     border-right: 2px solid rgba(33,137,255,0.3);
@@ -7979,7 +7978,7 @@ a.source-tag-link:hover {
 [dir="rtl"] td, [dir="rtl"] th {
     text-align: right;
 }
-/* Buttons — keep centered */
+/* Buttons ??keep centered */
 [dir="rtl"] .cta-btn,
 [dir="rtl"] .btn-primary,
 [dir="rtl"] .generate-btn {
@@ -8014,9 +8013,9 @@ a.source-tag-link:hover {
     text-align: right;
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   Selection Card — Explore 선택 근거 카드
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Selection Card ??Explore ?좏깮 洹쇨굅 移대뱶
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 
 .sel-card {
     background: linear-gradient(135deg, #f0f4fa 0%, #e8eef6 100%);
@@ -8049,7 +8048,7 @@ a.source-tag-link:hover {
     border-radius: 20px;
 }
 
-/* 시나리오 하이라이트 */
+/* ?쒕굹由ъ삤 ?섏씠?쇱씠??*/
 .sel-scenario-highlight {
     background: var(--accent-strong);
     color: var(--paper);
@@ -8109,7 +8108,7 @@ a.source-tag-link:hover {
 .sel-value-save    { background: #fff8e1; color: #f57f17; }
 .sel-value-play    { background: #fce4ec; color: #c62828; }
 
-/* 선택 이유 */
+/* ?좏깮 ?댁쑀 */
 .sel-reason {
     font-size: 0.82rem;
     color: var(--ink-light);
@@ -8130,7 +8129,7 @@ a.source-tag-link:hover {
     margin-bottom: 4px;
 }
 
-/* 반영된 입력값 그리드 */
+/* 諛섏쁺???낅젰媛?洹몃━??*/
 .sel-input-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -8162,7 +8161,7 @@ a.source-tag-link:hover {
     word-break: keep-all;
 }
 
-/* 도출 키워드 태그 */
+/* ?꾩텧 ?ㅼ썙???쒓렇 */
 .sel-tags-row {
     display: flex;
     flex-wrap: wrap;
@@ -8180,7 +8179,7 @@ a.source-tag-link:hover {
     cursor: default;
 }
 
-/* 확정 vs 추론 */
+/* ?뺤젙 vs 異붾줎 */
 /* Magic Keywords in selection card */
 .sel-magic-row {
     margin-bottom: 10px;
@@ -8240,7 +8239,7 @@ a.source-tag-link:hover {
     color: #e65100;
 }
 
-/* 반응형 */
+/* 諛섏쓳??*/
 @media (max-width: 600px) {
     .sel-card {
         padding: 14px 16px;
@@ -8253,11 +8252,11 @@ a.source-tag-link:hover {
     }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   Structured Output — JSON 기반 마케터/사용자 탭 출력
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Structured Output ??JSON 湲곕컲 留덉????ъ슜????異쒕젰
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 
-/* 탭 바 */
+/* ??諛?*/
 .str-tab-bar {
     display: flex;
     gap: 0;
@@ -8288,7 +8287,7 @@ a.source-tag-link:hover {
     background: rgba(0, 0, 0, 0.03);
 }
 
-/* 패널 */
+/* ?⑤꼸 */
 .str-panel {
     display: none;
     padding: 24px 28px;
@@ -8298,7 +8297,7 @@ a.source-tag-link:hover {
     display: block;
 }
 
-/* 공통 요소 */
+/* 怨듯넻 ?붿냼 */
 .str-headline {
     font-size: 1.15rem;
     font-weight: 700;
@@ -8328,7 +8327,7 @@ a.source-tag-link:hover {
     letter-spacing: 0.03em;
 }
 
-/* 마케터: 채널 전략 */
+/* 留덉??? 梨꾨꼸 ?꾨왂 */
 .str-channels-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -8373,7 +8372,7 @@ a.source-tag-link:hover {
     font-weight: 600;
 }
 
-/* 마케터: 카피 옵션 */
+/* 留덉??? 移댄뵾 ?듭뀡 */
 .str-copy-option {
     background: var(--paper);
     border: 1px solid #e4e8ee;
@@ -8410,7 +8409,7 @@ a.source-tag-link:hover {
     color: var(--muted);
 }
 
-/* 마케터: 기타 */
+/* 留덉??? 湲고? */
 .str-why, .str-target, .str-local-insight {
     background: #f8f9fb;
     border-radius: 10px;
@@ -8439,7 +8438,7 @@ a.source-tag-link:hover {
     margin-bottom: 4px;
 }
 
-/* 일반 사용자: 기기 */
+/* ?쇰컲 ?ъ슜?? 湲곌린 */
 .str-device-item {
     display: flex;
     align-items: center;
@@ -8470,7 +8469,7 @@ a.source-tag-link:hover {
     color: #2e7d32;
 }
 
-/* 일반 사용자: 설정/주의사항 */
+/* ?쇰컲 ?ъ슜?? ?ㅼ젙/二쇱쓽?ы빆 */
 .str-steps ol, .str-cautions ul, .str-conditions ul {
     margin: 0;
     padding-left: 20px;
@@ -8487,7 +8486,7 @@ a.source-tag-link:hover {
     color: #e65100;
 }
 
-/* 일반 사용자: 대안 */
+/* ?쇰컲 ?ъ슜?? ???*/
 .str-alt-item {
     display: flex;
     flex-direction: column;
@@ -8508,7 +8507,7 @@ a.source-tag-link:hover {
     color: #667;
 }
 
-/* 가치 하이라이트 */
+/* 媛移??섏씠?쇱씠??*/
 .str-values-section {
     padding: 14px 28px;
     border-top: 1px solid #f0f0f0;
@@ -8523,7 +8522,7 @@ a.source-tag-link:hover {
     color: var(--ink-light);
 }
 
-/* O-I-I 인사이트 */
+/* O-I-I ?몄궗?댄듃 */
 .str-insight-block {
     padding: 14px 28px;
     background: #f8f9fb;
@@ -8544,7 +8543,7 @@ a.source-tag-link:hover {
     letter-spacing: 0.03em;
 }
 
-/* 출처 추적 */
+/* 異쒖쿂 異붿쟻 */
 .str-source-trace {
     padding: 10px 28px;
     font-size: 0.72rem;
@@ -8552,7 +8551,7 @@ a.source-tag-link:hover {
     border-top: 1px solid #f0f0f0;
 }
 
-/* 반응형 */
+/* 諛섏쓳??*/
 @media (max-width: 600px) {
     .str-panel {
         padding: 16px 14px;
@@ -8568,9 +8567,9 @@ a.source-tag-link:hover {
     }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   Magic Setup — 초개인화 태그 선택
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Magic Setup ??珥덇컻?명솕 ?쒓렇 ?좏깮
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 
 .magic-setup {
     border-radius: 14px;
@@ -8604,7 +8603,7 @@ a.source-tag-link:hover {
     font-weight: 600;
 }
 
-/* 태그 그리드 */
+/* ?쒓렇 洹몃━??*/
 .magic-tags {
     display: flex;
     flex-wrap: wrap;
@@ -8652,7 +8651,7 @@ a.source-tag-link:hover {
     font-weight: 600;
 }
 
-/* 선택된 카드 영역 */
+/* ?좏깮??移대뱶 ?곸뿭 */
 .magic-cards {
     display: flex;
     flex-direction: column;
@@ -8712,7 +8711,7 @@ a.source-tag-link:hover {
     border-left: 3px solid var(--magic-accent, #003366);
 }
 
-/* 액션 버튼 영역 */
+/* ?≪뀡 踰꾪듉 ?곸뿭 */
 .magic-actions {
     padding: 12px 20px 16px;
     display: flex;
@@ -8775,7 +8774,7 @@ a.source-tag-link:hover {
     background: rgba(0, 51, 102, 0.06);
 }
 
-/* ── 커스텀 리서치 입력 영역 ── */
+/* ?? 而ㅼ뒪? 由ъ꽌移??낅젰 ?곸뿭 ?? */
 .magic-custom-research {
     padding: 14px 20px;
     border-top: 1px solid #f0f0f0;
@@ -9047,7 +9046,7 @@ a.source-tag-link:hover {
     background: #2e7d32 !important;
 }
 
-/* 확장 검색 관점 — intent 태그 */
+/* ?뺤옣 寃??愿????intent ?쒓렇 */
 .magic-research-intents {
     display: flex;
     flex-wrap: wrap;
@@ -9064,7 +9063,7 @@ a.source-tag-link:hover {
     border: 1px solid var(--border-light, #e2e8f0);
 }
 
-/* 추가 도시 맥락 findings 카드 */
+/* 異붽? ?꾩떆 留λ씫 findings 移대뱶 */
 .magic-research-findings {
     display: flex;
     flex-direction: column;
@@ -9098,7 +9097,7 @@ a.source-tag-link:hover {
     border-top: 1px dashed var(--border-light, #e2e8f0);
 }
 
-/* 중복 노트 */
+/* 以묐났 ?명듃 */
 .magic-research-dedup {
     border-bottom: none;
     padding-bottom: 0;
@@ -9111,7 +9110,7 @@ a.source-tag-link:hover {
     margin: 0;
 }
 
-/* 시나리오 반영 포인트 리스트 */
+/* ?쒕굹由ъ삤 諛섏쁺 ?ъ씤??由ъ뒪??*/
 .magic-research-points {
     list-style: disc;
     padding-left: 18px;
@@ -9131,11 +9130,23 @@ a.source-tag-link:hover {
     .magic-custom-input-row { flex-direction: column; }
     .magic-custom-result-actions { flex-direction: column; }
     .magic-research-finding { padding: 8px 10px; }
+
+    /* City search mobile touch targets */
+    .city-search-wrap input[type="text"] { padding: 16px 44px 16px 16px; font-size: 1rem; min-height: 48px; }
+    .city-search-icon { width: 32px; height: 32px; right: 10px; }
+    .city-option { padding: 14px 16px; min-height: 44px; }
+    .city-dropdown { max-height: 55vh; }
+
+    /* Evidence detail mobile spacing */
+    .q2-evidence-detail { padding: 10px 12px; }
+    .q2-evidence-toggle--compact { min-height: 36px; padding: 0 12px; font-size: 0.72rem; }
+    .cpv2-item { padding: 12px 14px; }
+    .cpv2-text { font-size: 0.8rem; line-height: 1.6; }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   City Profile — 바텀시트 (전체 보기)
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   City Profile ??諛뷀??쒗듃 (?꾩껜 蹂닿린)
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 .cpv2-compact {
     padding: 10px 16px;
     border-radius: 10px;
@@ -9175,7 +9186,7 @@ a.source-tag-link:hover {
     color: var(--paper);
 }
 
-/* 오버레이 */
+/* ?ㅻ쾭?덉씠 */
 .cpv2-overlay {
     position: fixed;
     inset: 0;
@@ -9187,7 +9198,7 @@ a.source-tag-link:hover {
     background: rgba(0, 0, 0, 0.45);
 }
 
-/* 바텀시트 */
+/* 諛뷀??쒗듃 */
 .cpv2-sheet {
     position: fixed;
     bottom: 0;
@@ -9206,7 +9217,7 @@ a.source-tag-link:hover {
     transform: translateY(0);
 }
 
-/* 시트 헤더 */
+/* ?쒗듃 ?ㅻ뜑 */
 .cpv2-sheet-header {
     position: sticky;
     top: 0;
@@ -9253,7 +9264,7 @@ a.source-tag-link:hover {
 }
 .cpv2-sheet-close:hover { background: rgba(255,255,255,0.3); }
 
-/* 카테고리 그리드 (시트 안) */
+/* 移댄뀒怨좊━ 洹몃━??(?쒗듃 ?? */
 .cpv2-sheet .city-profile-grid,
 .city-profile-grid {
     display: grid;
@@ -9297,7 +9308,7 @@ a.source-tag-link:hover {
     .cpv2-item:last-child { border-bottom: none; }
 }
 
-/* 데스크탑: 시트를 중앙 정렬 + 최대 너비 제한 */
+/* ?곗뒪?ы깙: ?쒗듃瑜?以묒븰 ?뺣젹 + 理쒕? ?덈퉬 ?쒗븳 */
 @media (min-width: 768px) {
     .cpv2-sheet {
         left: 50%;
@@ -9312,9 +9323,9 @@ a.source-tag-link:hover {
     }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   Smart Loading — 도시 맥락 기반 롤링 문구 (5개, ~9초 사이클)
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Smart Loading ???꾩떆 留λ씫 湲곕컲 濡ㅻ쭅 臾멸뎄 (5媛? ~9珥??ъ씠??
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 
 .smart-load-header {
     display: flex;
@@ -9371,7 +9382,7 @@ a.source-tag-link:hover {
     100% { opacity: 0; transform: translateY(-100%); }
 }
 
-/* ── Completion Banner ── */
+/* ?? Completion Banner ?? */
 .str-completion-banner {
     display: flex;
     align-items: center;
@@ -9406,7 +9417,7 @@ a.source-tag-link:hover {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Accordion (details/summary) ── */
+/* ?? Accordion (details/summary) ?? */
 .str-accordion {
     border: 1px solid var(--line);
     border-radius: 10px;
@@ -9431,7 +9442,7 @@ a.source-tag-link:hover {
     background: var(--accent-soft);
 }
 .str-accordion > summary::before {
-    content: "▸";
+    content: "??;
     font-size: 0.75rem;
     transition: transform 0.2s;
     flex-shrink: 0;
@@ -9446,7 +9457,7 @@ a.source-tag-link:hover {
     padding: 12px 14px;
 }
 
-/* ── Curation Summary Inline ── */
+/* ?? Curation Summary Inline ?? */
 .str-curation-summary {
     background: var(--surface);
     border: 1px solid var(--line);
@@ -9507,7 +9518,7 @@ a.source-tag-link:hover {
     white-space: nowrap;
 }
 
-/* ── sel-input-grid 2-column override ── */
+/* ?? sel-input-grid 2-column override ?? */
 .sel-input-grid {
     grid-template-columns: repeat(2, 1fr) !important;
 }
@@ -9517,9 +9528,9 @@ a.source-tag-link:hover {
     }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   Output Flow Tracker — 3-step horizontal stepper
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Output Flow Tracker ??3-step horizontal stepper
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 .output-flow-tracker {
     display: flex;
     align-items: center;
@@ -9690,9 +9701,9 @@ a.source-tag-link:hover {
     .oft-step .oft-label { font-size: 0.72rem; }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   Matching Process Cards — Build 후 단계별 매칭 과정 시각화
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Matching Process Cards ??Build ???④퀎蹂?留ㅼ묶 怨쇱젙 ?쒓컖??
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 .matching-process-frame {
     margin-top: 6px;
     padding: 20px;
@@ -9818,7 +9829,7 @@ a.source-tag-link:hover {
 .mp-tag .mp-tag-icon { font-size: 0.82rem; }
 
 /* Weight bar visualization */
-/* ── Process Card 1: Context Grid ── */
+/* ?? Process Card 1: Context Grid ?? */
 .mp-context-grid { display: grid; gap: 8px; }
 .mp-context-item {
     display: grid; grid-template-columns: 100px 1fr; gap: 8px; align-items: start;
@@ -9958,9 +9969,9 @@ a.source-tag-link:hover {
     .mp-weight-label { min-width: 70px; font-size: 0.68rem; }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   Campaign Activation Output — 13-Section Layout
-   ═══════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??
+   Campaign Activation Output ??13-Section Layout
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??*/
 
 .campaign-output-frame {
     max-width: 1100px;
@@ -9968,7 +9979,7 @@ a.source-tag-link:hover {
     padding: 0 16px;
 }
 
-/* ── Section Nav (Sticky) ── */
+/* ?? Section Nav (Sticky) ?? */
 .co-section-nav {
     position: sticky;
     top: 0;
@@ -10002,7 +10013,7 @@ a.source-tag-link:hover {
     font-weight: 600;
 }
 
-/* ── Section Block ── */
+/* ?? Section Block ?? */
 .co-section {
     background: var(--paper);
     border-radius: var(--card-radius);
@@ -10058,7 +10069,7 @@ a.source-tag-link:hover {
     padding: 20px 24px 24px;
 }
 
-/* ── Badges ── */
+/* ?? Badges ?? */
 .co-badge {
     display: inline-block;
     padding: 3px 10px;
@@ -10106,7 +10117,7 @@ a.source-tag-link:hover {
     gap: 6px;
 }
 
-/* ── Score Pill ── */
+/* ?? Score Pill ?? */
 .co-score-pill {
     display: inline-flex;
     align-items: center;
@@ -10135,7 +10146,7 @@ a.source-tag-link:hover {
     padding: 0 8px;
 }
 
-/* ── Section 01: Input Summary ── */
+/* ?? Section 01: Input Summary ?? */
 .co-input-summary-card {
     background: var(--surface);
     border-radius: 12px;
@@ -10170,7 +10181,7 @@ a.source-tag-link:hover {
     line-height: 1.6;
 }
 
-/* ── Section 02: Scenario Cards ── */
+/* ?? Section 02: Scenario Cards ?? */
 .co-scenario-card {
     background: var(--surface);
     border-radius: 12px;
@@ -10272,7 +10283,7 @@ a.source-tag-link:hover {
     border-style: solid;
 }
 
-/* ── Section 03: Why Selected ── */
+/* ?? Section 03: Why Selected ?? */
 .co-why-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -10305,7 +10316,7 @@ a.source-tag-link:hover {
 .co-why-row p { margin: 0; font-size: 0.8rem; line-height: 1.5; }
 .co-why-row .co-chip-row { margin-top: 6px; }
 
-/* ── Section 04: Comparison Matrix ── */
+/* ?? Section 04: Comparison Matrix ?? */
 .co-matrix-wrap {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -10347,7 +10358,7 @@ a.source-tag-link:hover {
 .co-level--low  { background: rgba(231,76,60,0.1); color: #c0392b; }
 .co-matrix-hover { background: rgba(0,0,255,0.03); }
 
-/* ── Loading / Error States ── */
+/* ?? Loading / Error States ?? */
 .co-loading {
     display: flex;
     align-items: center;
@@ -10385,7 +10396,7 @@ a.source-tag-link:hover {
     cursor: pointer;
 }
 
-/* ── Section 05: Readiness Cards ── */
+/* ?? Section 05: Readiness Cards ?? */
 .co-readiness-card {
     background: var(--surface);
     border-radius: 12px;
@@ -10440,7 +10451,7 @@ a.source-tag-link:hover {
     line-height: 1.5;
 }
 
-/* ── Section 06: FGD Tabs ── */
+/* ?? Section 06: FGD Tabs ?? */
 .co-tabs { margin-top: 4px; }
 .co-tab-bar {
     display: flex;
@@ -10502,7 +10513,7 @@ a.source-tag-link:hover {
 .co-persona-chip strong { font-size: 0.78rem; }
 .co-persona-chip span { font-size: 0.7rem; color: var(--muted); }
 
-/* ── Section 07: Insight Cards ── */
+/* ?? Section 07: Insight Cards ?? */
 .co-insight-card {
     background: var(--surface);
     border-radius: 12px;
@@ -10534,7 +10545,7 @@ a.source-tag-link:hover {
 .co-insight-item ul { padding-left: 18px; margin: 0; }
 .co-insight-item li { font-size: 0.82rem; line-height: 1.6; }
 
-/* ── Section 08: Message/Copy ── */
+/* ?? Section 08: Message/Copy ?? */
 .co-msg-card {
     background: var(--surface);
     border-radius: 12px;
@@ -10581,7 +10592,7 @@ a.source-tag-link:hover {
     font-style: italic;
 }
 
-/* ── Section 09: Creative Direction ── */
+/* ?? Section 09: Creative Direction ?? */
 .co-creative-card {
     background: var(--surface);
     border-radius: 12px;
@@ -10636,7 +10647,7 @@ a.source-tag-link:hover {
     color: var(--ink);
 }
 
-/* ── Section 10: Reference ── */
+/* ?? Section 10: Reference ?? */
 .co-ref-card {
     background: var(--surface);
     border-radius: 12px;
@@ -10672,7 +10683,7 @@ a.source-tag-link:hover {
 }
 .co-ref-item--avoid p { color: var(--warn); }
 
-/* ── Section 11: Concept Expansion ── */
+/* ?? Section 11: Concept Expansion ?? */
 .co-concept-card {
     background: var(--surface);
     border-radius: 12px;
@@ -10709,7 +10720,7 @@ a.source-tag-link:hover {
 }
 .co-concept-grid p { margin: 0; font-size: 0.78rem; line-height: 1.5; }
 
-/* ── Section 12: Storyboard ── */
+/* ?? Section 12: Storyboard ?? */
 .co-story-card {
     background: var(--surface);
     border-radius: 12px;
@@ -10790,7 +10801,7 @@ a.source-tag-link:hover {
 .co-story-footer strong { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; }
 .co-story-footer p { margin: 4px 0 0; font-size: 0.82rem; }
 
-/* ── Section 13: Action Buttons ── */
+/* ?? Section 13: Action Buttons ?? */
 .co-actions-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -10819,7 +10830,7 @@ a.source-tag-link:hover {
     color: var(--ink);
 }
 
-/* ── Markdown fallback ── */
+/* ?? Markdown fallback ?? */
 .co-markdown-body {
     font-size: 0.84rem;
     line-height: 1.7;
@@ -10830,7 +10841,7 @@ a.source-tag-link:hover {
 .co-markdown-body h4 { font-size: 0.88rem; margin: 12px 0 4px; }
 .co-markdown-body li { margin-bottom: 4px; }
 
-/* ── Export Actions ── */
+/* ?? Export Actions ?? */
 .co-export-actions {
     display: flex;
     justify-content: center;
@@ -10838,7 +10849,7 @@ a.source-tag-link:hover {
     padding: 20px;
 }
 
-/* ── Responsive ── */
+/* ?? Responsive ?? */
 @media (max-width: 768px) {
     .co-input-grid { grid-template-columns: 1fr; }
     .co-why-grid { grid-template-columns: 1fr; }
@@ -10859,11 +10870,11 @@ a.source-tag-link:hover {
     .co-actions-grid { grid-template-columns: 1fr; }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   Mobile Adaptation — 미커버 컴포넌트 반응형
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Mobile Adaptation ??誘몄빱踰?而댄룷?뚰듃 諛섏쓳??
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 @media (max-width: 640px) {
-    /* Q2 스코어보드 */
+    /* Q2 ?ㅼ퐫?대낫??*/
     .q2-scoreboard { font-size: 0.72rem; }
     .q2-score-row { gap: 4px; }
     .q2-score-label { font-size: 0.66rem; min-width: 0; flex-shrink: 1; }
@@ -10874,7 +10885,7 @@ a.source-tag-link:hover {
     .q2-hybrid-header { flex-direction: column; align-items: flex-start; gap: 8px; }
     .q2-layer { padding: 10px; }
 
-    /* Q4 레이아웃 */
+    /* Q4 ?덉씠?꾩썐 */
     .q4-top-row { grid-template-columns: 1fr !important; }
     .q4-summary-card { order: -1; }
     .q4-preset-grid { grid-template-columns: repeat(2, 1fr); }
@@ -10887,16 +10898,16 @@ a.source-tag-link:hover {
     .magic-custom-search-btn { width: 100%; }
     .magic-research-solution { flex-direction: column; gap: 6px; }
 
-    /* 위저드 액션 버튼 */
+    /* ?꾩????≪뀡 踰꾪듉 */
     .wizard-actions { flex-wrap: wrap; gap: 6px; }
     .wizard-actions .secondary-btn,
     .wizard-actions .generate-btn { flex: 1; min-width: 0; text-align: center; }
 
-    /* 인사이트 카드 */
+    /* ?몄궗?댄듃 移대뱶 */
     .insight-card { padding: 10px; }
     .insight-badge { font-size: 0.68rem; min-height: 24px; padding: 0 8px; }
 
-    /* 히어로 */
+    /* ?덉뼱濡?*/
     .hero { padding: 20px 16px 16px; }
     .hero h1 { font-size: 1.3rem; }
 }
@@ -10907,9 +10918,9 @@ a.source-tag-link:hover {
     .q2-legend { flex-direction: column; gap: 3px; }
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   Accessibility — Reduced Motion
-   ══════════════════════════════════════════════════════════════════════ */
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧
+   Accessibility ??Reduced Motion
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -10999,4 +11010,46 @@ a.source-tag-link:hover {
 .wizard-progress--step-3,
 .wizard-progress--step-4 {
     background: rgba(255, 255, 255, 0.96);
+}
+
+.curation-card-details {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.curation-card-summary {
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(0, 51, 102, 0.04);
+    color: var(--ink-light);
+    font-size: 0.78rem;
+    line-height: 1.55;
+    border: 1px solid rgba(0, 51, 102, 0.08);
+}
+
+.curation-card-summary::-webkit-details-marker {
+    display: none;
+}
+
+.curation-card-summary::after {
+    content: "+";
+    float: right;
+    color: var(--accent-strong);
+    font-weight: 800;
+}
+
+.curation-card-details[open] .curation-card-summary::after {
+    content: "-";
+}
+
+.curation-card-body p {
+    margin: 0;
+}
+
+.curation-card-body p + p {
+    margin-top: 10px;
 }
