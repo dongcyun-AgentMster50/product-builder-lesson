@@ -14,6 +14,8 @@ const COOKIE_NAME = "scenario_agent_session";
 const SESSION_TTL_MS = Number(process.env.SESSION_TTL_MS || 1000 * 60 * 60 * 8);
 const REGION_INSIGHT_TIMEOUT_MS = Number(process.env.REGION_INSIGHT_TIMEOUT_MS || 20000);
 const REGION_INSIGHT_CACHE_TTL_MS = Number(process.env.REGION_INSIGHT_CACHE_TTL_MS || 1000 * 60 * 15);
+const CITY_PROFILE_UPSTREAM_TIMEOUT_MS = Number(process.env.CITY_PROFILE_UPSTREAM_TIMEOUT_MS || 65000);
+const CITY_PROFILE_UPSTREAM_MAX_ATTEMPTS = Number(process.env.CITY_PROFILE_UPSTREAM_MAX_ATTEMPTS || 2);
 const MAX_FAILED_ATTEMPTS = Number(process.env.MAX_FAILED_ATTEMPTS || 3);
 const LOCK_WINDOW_MS = Number(process.env.LOCK_WINDOW_MS || 1000 * 60);
 const ACCESS_CODES_FILE = path.join(ROOT_DIR, "access-codes.json");
@@ -2337,11 +2339,75 @@ Return valid JSON only with this exact top-level structure:
     "weak_categories_marked_insufficient": true
   }
 }
-
 Important:
 - The short category summaries at the top must also be source-bound and localized.
 - Do not claim a category is localized unless the evidence pack for that category includes a real local anchor and source IDs.
 - If unsure, mark the category insufficient instead of guessing.`;
+
+function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function shouldRetryOpenAiStatus(status) {
+    return status === 408 || status === 409 || status === 429 || status >= 500;
+}
+
+async function fetchOpenAiChatCompletionWithRetry({ apiKey, requestBody, timeoutMs = CITY_PROFILE_UPSTREAM_TIMEOUT_MS, maxAttempts = CITY_PROFILE_UPSTREAM_MAX_ATTEMPTS }) {
+    let lastError = new Error("OpenAI request failed");
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+        try {
+            const apiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`
+                },
+                body: JSON.stringify(requestBody),
+                signal: controller.signal
+            });
+
+            clearTimeout(timer);
+
+            if (apiRes.ok) {
+                return apiRes.json();
+            }
+
+            const errText = await apiRes.text().catch(() => "");
+            let errMsg = errText.substring(0, 400) || `OpenAI API error ${apiRes.status}`;
+            try {
+                errMsg = JSON.parse(errText)?.error?.message || errMsg;
+            } catch {}
+
+            lastError = new Error(errMsg);
+            lastError.status = apiRes.status;
+
+            if (attempt < maxAttempts && shouldRetryOpenAiStatus(apiRes.status)) {
+                await delay(800 * attempt);
+                continue;
+            }
+
+            throw lastError;
+        } catch (error) {
+            clearTimeout(timer);
+            lastError = error instanceof Error ? error : new Error(String(error));
+            const isAbort = lastError.name === "AbortError";
+            const isTransient = isAbort || /timeout|timed out|network|fetch failed|socket|econnreset|etimedout/i.test(lastError.message || "");
+
+            if (attempt < maxAttempts && isTransient) {
+                await delay(800 * attempt);
+                continue;
+            }
+
+            throw lastError;
+        }
+    }
+
+    throw lastError;
+}
 
 const CUSTOM_RESEARCH_SYSTEM_PROMPT = `당신은 특정 도시의 스마트홈 시나리오 기획을 위한 도시 맥락 분석 전문가입니다.
 사용자가 이미 보유한 도시 기본 프로필(10개 카테고리)은 "base_profiles"로 제공됩니다.
@@ -2860,19 +2926,7 @@ Build a source-bound localization evidence pack for this city. Use only evidence
             requestBody.max_tokens = maxTokens;
         }
 
-        const apiRes = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!apiRes.ok) {
-            const errText = await apiRes.text().catch(() => "");
-            sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: errText.substring(0, 200) } });
-            return;
-        }
-
-        const result = await apiRes.json();
+        const result = await fetchOpenAiChatCompletionWithRetry({ apiKey, requestBody });
         const content = result.choices?.[0]?.message?.content || "{}";
         const profile = normalizeCityProfilePayload(parseJsonObjectFromModelText(content) || { raw: content }, {
             city,

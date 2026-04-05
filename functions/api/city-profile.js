@@ -2,6 +2,8 @@ import { clearSessionCookie, getConfig, json, readSession } from "./access/_shar
 import { enforceMonthlyBudget, estimateUsageCost, recordUsageCost } from "./_shared_ai.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+const CITY_PROFILE_UPSTREAM_TIMEOUT_MS = 65000;
+const CITY_PROFILE_UPSTREAM_MAX_ATTEMPTS = 2;
 
 const CITY_PROFILE_SYSTEM_PROMPT = `You are a Geo-Localization Evidence Extractor for a scenario-generation system.
 
@@ -139,6 +141,71 @@ function normalizeStringList(value, maxItems = 8) {
         .map((item) => typeof item === "string" ? item.trim() : "")
         .filter(Boolean)
         .slice(0, maxItems);
+}
+
+function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function shouldRetryOpenAiStatus(status) {
+    return status === 408 || status === 409 || status === 429 || status >= 500;
+}
+
+async function fetchOpenAiChatCompletionWithRetry({ apiKey, requestBody, timeoutMs = CITY_PROFILE_UPSTREAM_TIMEOUT_MS, maxAttempts = CITY_PROFILE_UPSTREAM_MAX_ATTEMPTS }) {
+    let lastError = new Error("OpenAI request failed");
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+        try {
+            const response = await fetch(OPENAI_API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`
+                },
+                body: JSON.stringify(requestBody),
+                signal: controller.signal
+            });
+
+            clearTimeout(timer);
+
+            if (response.ok) {
+                return response.json();
+            }
+
+            const errText = await response.text().catch(() => "");
+            let errMsg = errText.substring(0, 400) || `OpenAI API error ${response.status}`;
+            try {
+                errMsg = JSON.parse(errText)?.error?.message || errMsg;
+            } catch {}
+
+            lastError = new Error(errMsg);
+            lastError.status = response.status;
+
+            if (attempt < maxAttempts && shouldRetryOpenAiStatus(response.status)) {
+                await delay(800 * attempt);
+                continue;
+            }
+
+            throw lastError;
+        } catch (error) {
+            clearTimeout(timer);
+            lastError = error instanceof Error ? error : new Error(String(error));
+            const isAbort = lastError.name === "AbortError";
+            const isTransient = isAbort || /timeout|timed out|network|fetch failed|socket|econnreset|etimedout/i.test(lastError.message || "");
+
+            if (attempt < maxAttempts && isTransient) {
+                await delay(800 * attempt);
+                continue;
+            }
+
+            throw lastError;
+        }
+    }
+
+    throw lastError;
 }
 
 const CITY_PROFILE_FIELDS = ["climate", "housing", "family", "daily_rhythm", "safety", "energy", "health", "pets", "mobility", "events"];
@@ -492,15 +559,11 @@ Output locale: ${locale}
 Build a source-bound localization evidence pack for this city. Use only evidence-backed localized statements. If evidence is weak, mark that category as "Evidence insufficient for localized claim." Return valid JSON only.`;
     const maxTokens = 2000;
 
-    let apiResponse;
+    let result;
     try {
-        apiResponse = await fetch(OPENAI_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
+        result = await fetchOpenAiChatCompletionWithRetry({
+            apiKey,
+            requestBody: {
                 model,
                 ...(/^gpt-5/i.test(model)
                     ? { max_completion_tokens: maxTokens }
@@ -510,20 +573,12 @@ Build a source-bound localization evidence pack for this city. Use only evidence
                     { role: "system", content: CITY_PROFILE_SYSTEM_PROMPT },
                     { role: "user", content: userMessage }
                 ]
-            })
+            }
         });
     } catch (error) {
         return json({ ok: false, error: { code: "UPSTREAM_ERROR", message: error.message } }, 502);
     }
 
-    if (!apiResponse.ok) {
-        const errText = await apiResponse.text().catch(() => "");
-        let errMsg = `OpenAI API error ${apiResponse.status}`;
-        try { errMsg = JSON.parse(errText)?.error?.message || errMsg; } catch {}
-        return json({ ok: false, error: { code: "UPSTREAM_ERROR", message: errMsg } }, 502);
-    }
-
-    const result = await apiResponse.json();
     const usage = result.usage || null;
     const content = result.choices?.[0]?.message?.content || "{}";
 
