@@ -3328,10 +3328,10 @@ textarea {
 .q1-next-helper-card,
 .q2-reference-shell,
 .q2-stage-card {
-    border: 1px solid rgba(0, 51, 102, 0.12);
-    border-radius: 16px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 250, 255, 0.98));
-    box-shadow: 0 10px 24px rgba(0, 27, 71, 0.08);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    background: var(--paper);
+    box-shadow: var(--shadow-sm);
 }
 
 .q1-next-helper-card {
@@ -3427,9 +3427,9 @@ textarea {
 }
 
 .q2-reference-shell {
-    padding: 16px 18px;
+    padding: 18px 22px;
     display: grid;
-    gap: 14px;
+    gap: 16px;
 }
 
 .q2-reference-topline {
@@ -3468,14 +3468,19 @@ textarea {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+/* 3번째 섹션(사용자 추가 반영)은 전체 폭 사용 — 2열 그리드 공백 방지 */
+.q2-ref-section--custom {
+    grid-column: 1 / -1;
+}
+
 .q2-ref-section,
 .q2-ref-current {
     display: grid;
     gap: 10px;
     padding: 14px;
-    border-radius: 14px;
-    background: rgba(0, 51, 102, 0.04);
-    border: 1px solid rgba(0, 51, 102, 0.08);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    border: 1px solid var(--line);
 }
 
 .q2-ref-section-head {
