@@ -2327,7 +2327,7 @@ textarea {
 .insight-card:has(.magic-setup) {
     padding: 0;
     gap: 0;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .insight-card.insight-refresh {
@@ -8581,7 +8581,7 @@ a.source-tag-link:hover {
 
 .magic-setup {
     border-radius: var(--radius-xl);
-    overflow: hidden;
+    overflow: visible;
     border: 1px solid var(--line);
     background: var(--paper);
     box-shadow: var(--shadow-sm);
@@ -8594,6 +8594,7 @@ a.source-tag-link:hover {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 .magic-city {
