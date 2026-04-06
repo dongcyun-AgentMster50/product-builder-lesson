@@ -5620,7 +5620,7 @@ function buildQ1ScenarioReferencePanelHtml() {
                 <div class="q2-ref-keyword-row">
                     ${buildReferenceKeywordChips(item.text, item.label).map((chip) => `<span class="q2-ref-tag q2-ref-tag--soft">${escapeHtml(chip)}</span>`).join("")}
                 </div>
-                ${buildExpandableSummaryHtml(item.text, 200)}
+                ${buildInlineSummaryHtml(item.text)}
             </article>
         `).join("")
         : `<p class="q2-ref-empty">${isKo ? "아직 선택된 도시 프로필 요약이 없습니다." : "No city-profile references applied yet."}</p>`;
@@ -5634,7 +5634,7 @@ function buildQ1ScenarioReferencePanelHtml() {
                 <div class="q2-ref-tag-row">
                     ${(customSummary.tags.length ? customSummary.tags : buildReferenceKeywordChips(customSummary.interpretation, customSummary.query)).slice(0, 5).map((tag) => `<span class="q2-ref-tag">${escapeHtml(tag)}</span>`).join("")}
                 </div>
-                ${customSummary.interpretation ? `<div class="q2-ref-custom-copy">${buildExpandableSummaryHtml(customSummary.interpretation, 200)}</div>` : ""}
+                ${customSummary.interpretation ? `<div class="q2-ref-custom-copy">${buildInlineSummaryHtml(customSummary.interpretation)}</div>` : ""}
             </article>
         `
         : `<p class="q2-ref-empty">${isKo ? "커스텀 검색 반영이 없으면 여기에는 Q1 사용자 정의 맥락이 표시됩니다." : "Applied custom research from Q1 will appear here."}</p>`;
@@ -5679,7 +5679,14 @@ function buildQ1ScenarioReferencePanelHtml() {
                     </div>
                     <div class="q2-ref-chip-grid">${profileHtml}</div>
                 </section>
-                <section class="q2-ref-section">
+                <section class="q2-ref-section q2-ref-section--custom">
+                    <div class="q2-ref-section-head">
+                        <span class="q2-ref-section-kicker">${isKo ? "사용자 추가 반영" : "Additional user reflection"}</span>
+                        <strong>${isKo ? "Q1 커스텀 검색에서 함께 참고할 맥락" : "Additional context from Q1 custom research"}</strong>
+                    </div>
+                    ${customHtml}
+                </section>
+                <section class="q2-ref-section q2-ref-section--implications">
                     <div class="q2-ref-section-head">
                         <span class="q2-ref-section-kicker">${isKo ? "생활상 시사점" : "Lifestyle implications"}</span>
                         <strong>${isKo ? "도시 프로필과 커스텀 검색을 종합한 생활 맥락 결론" : "Combined lifestyle conclusion from city profile and custom research"}</strong>
@@ -5691,13 +5698,6 @@ function buildQ1ScenarioReferencePanelHtml() {
                         ${buildInlineSummaryHtml(implicationConclusion)}
                     </div>
                     <div class="q2-audience-implication-grid">${implicationHtml}</div>
-                </section>
-                <section class="q2-ref-section q2-ref-section--custom">
-                    <div class="q2-ref-section-head">
-                        <span class="q2-ref-section-kicker">${isKo ? "사용자 추가 반영" : "Additional user reflection"}</span>
-                        <strong>${isKo ? "Q1 커스텀 검색에서 함께 참고할 맥락" : "Additional context from Q1 custom research"}</strong>
-                    </div>
-                    ${customHtml}
                 </section>
             </div>
         </section>

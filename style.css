@@ -3468,19 +3468,24 @@ textarea {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-/* 3번째 섹션(사용자 추가 반영)은 전체 폭 사용 — 2열 그리드 공백 방지 */
-.q2-ref-section--custom {
+/* 생활상 시사점 → 아래 전폭 */
+.q2-ref-section--implications {
     grid-column: 1 / -1;
 }
 
 .q2-ref-section,
 .q2-ref-current {
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     gap: 10px;
-    padding: 14px;
+    padding: 16px;
     border-radius: var(--radius-lg);
     background: var(--surface);
     border: 1px solid var(--line);
+    /* 좌상단 정렬 — 세로 중앙 정렬 방지 */
+    justify-content: flex-start;
+    align-self: flex-start;
 }
 
 .q2-ref-section-head {
@@ -3500,7 +3505,8 @@ textarea {
     gap: 10px;
 }
 
-.q2-reference-grid--audience {
+.q2-reference-grid--audience,
+.q2-reference-grid {
     align-items: start;
 }
 
