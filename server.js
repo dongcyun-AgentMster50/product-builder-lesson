@@ -3017,7 +3017,8 @@ async function handleCityProfile(req, res) {
     }
 
     const apiKey = process.env.OPENAI_API_KEY || "";
-    const model = process.env.OPENAI_MODEL || "gpt-5.4";
+    // 도시 프로필은 RAG 기반 구조화 작업 — gpt-4.1이 지시 준수력·비용 최적
+    const model = process.env.CITY_PROFILE_MODEL || "gpt-4.1";
 
     if (customQuery && !apiKey) {
         const fallbackResearch = normalizeCustomResearchPayload({ raw: "API_NOT_CONFIGURED" }, {

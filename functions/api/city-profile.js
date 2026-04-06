@@ -620,7 +620,8 @@ async function handleCityProfile(context) {
     }
 
     const apiKey = String(context.env.OPENAI_API_KEY || "").trim();
-    const model = String(context.env.OPENAI_MODEL || "gpt-5.4").trim();
+    // 도시 프로필은 RAG 기반 구조화 작업 — gpt-4.1이 지시 준수력·비용 최적
+    const model = String(context.env.CITY_PROFILE_MODEL || "gpt-4.1").trim();
 
     if (customQuery && !apiKey) {
         return json({
