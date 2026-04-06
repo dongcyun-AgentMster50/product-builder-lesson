@@ -2026,6 +2026,7 @@ async function fetchLiveNudge({ countryCode, cityName, role, locale, isKo }) {
     if (_nudgeCache.has(cacheKey)) return _nudgeCache.get(cacheKey);
 
     _nudgeAbort = new AbortController();
+    const nudgeTimeout = setTimeout(() => _nudgeAbort.abort(), 20000);
     const countryLabel = marketOptions.find((m) => m.siteCode === countryCode)?.label || countryCode;
 
     const res = await fetch("/api/nudge", {
@@ -2060,6 +2061,8 @@ async function fetchLiveNudge({ countryCode, cityName, role, locale, isKo }) {
             } catch { /* skip */ }
         }
     }
+
+    clearTimeout(nudgeTimeout);
 
     // Parse JSON from response
     const jsonMatch = fullText.match(/\{[\s\S]*\}/);
@@ -2237,8 +2240,13 @@ function populateCityOptions(countryCode, preservedCity = "") {
 /* ── Dropdown rendering ── */
 function formatPopulation(pop) {
     if (!pop) return "";
-    if (pop >= 1000000) return `${(pop / 10000).toFixed(0)}만`;
-    if (pop >= 10000) return `${(pop / 10000).toFixed(1)}만`;
+    if (currentLocale === "ko") {
+        if (pop >= 1000000) return `${(pop / 10000).toFixed(0)}만`;
+        if (pop >= 10000) return `${(pop / 10000).toFixed(1)}만`;
+    } else {
+        if (pop >= 1000000) return `${(pop / 1000000).toFixed(1)}M`;
+        if (pop >= 1000) return `${(pop / 1000).toFixed(0)}K`;
+    }
     return pop.toLocaleString();
 }
 
@@ -2255,11 +2263,15 @@ function highlightMatch(text, query) {
 
 function renderCityDropdownItems(query = "") {
     const q = query.trim().toLowerCase();
+    const MAX_RENDER = 80;
     let filtered = q
         ? _cityItems.filter((item) => item.searchText.includes(q))
         : _cityItems;
+    const totalCount = filtered.length;
+    const truncated = filtered.length > MAX_RENDER;
+    if (truncated) filtered = filtered.slice(0, MAX_RENDER);
 
-    if (filtered.length === 0 && !q) {
+    if (totalCount === 0 && !q) {
         cityDropdown.innerHTML = `<div class="city-empty-msg">${currentLocale === "ko" ? "등록된 도시가 없습니다" : "No cities available"}</div>`;
         return;
     }
@@ -2276,8 +2288,10 @@ function renderCityDropdownItems(query = "") {
             groups.get(key).push(item);
         });
         let idx = 0;
+        let groupIdx = 0;
         for (const [region, items] of groups) {
-            if (region) html += `<div class="city-group-label">${escapeHtml(region)}</div>`;
+            const groupId = `city-group-${groupIdx++}`;
+            if (region) html += `<div class="city-group-label" id="${groupId}" role="presentation">${escapeHtml(region)}</div>`;
             items.forEach((item) => {
                 const selected = cityHiddenInput.value === item.value ? " selected" : "";
                 const popStr = item.pop ? formatPopulation(item.pop) : "";
@@ -2308,8 +2322,34 @@ function renderCityDropdownItems(query = "") {
         </div>`;
     }
 
+    if (truncated) {
+        const moreLabel = currentLocale === "ko"
+            ? `검색어를 입력하면 더 많은 도시를 볼 수 있습니다 (총 ${totalCount}개)`
+            : `Type to search more cities (${totalCount} total)`;
+        html += `<div class="city-empty-msg">${escapeHtml(moreLabel)}</div>`;
+    }
+
     cityDropdown.innerHTML = html;
     _cityFocusIdx = -1;
+    announceCityResults(totalCount);
+}
+
+function updateCityIconAria() {
+    const hasValue = citySearchWrap.classList.contains("has-value");
+    const label = hasValue
+        ? (currentLocale === "ko" ? "선택 지우기" : "Clear selection")
+        : (_cityDropdownOpen
+            ? (currentLocale === "ko" ? "목록 닫기" : "Close list")
+            : (currentLocale === "ko" ? "목록 열기" : "Open list"));
+    citySearchIcon.setAttribute("aria-label", label);
+}
+
+function announceCityResults(count) {
+    const el = document.getElementById("city-sr-status");
+    if (!el) return;
+    el.textContent = currentLocale === "ko"
+        ? (count === 0 ? "검색 결과 없음" : `${count}개 도시`)
+        : (count === 0 ? "No results" : `${count} cities`);
 }
 
 function openCityDropdown() {
@@ -2318,6 +2358,7 @@ function openCityDropdown() {
     cityDropdown.classList.remove("hidden");
     citySearchWrap.classList.add("open");
     citySearchInput?.setAttribute("aria-expanded", "true");
+    updateCityIconAria();
     renderCityDropdownItems(citySearchInput.value);
 }
 
@@ -2328,12 +2369,14 @@ function closeCityDropdown() {
     citySearchWrap.classList.remove("open");
     citySearchInput?.setAttribute("aria-expanded", "false");
     citySearchInput?.removeAttribute("aria-activedescendant");
+    updateCityIconAria();
 }
 
 function selectCity(value, label) {
     cityHiddenInput.value = value;
     citySearchInput.value = label || value;
     citySearchWrap.classList.toggle("has-value", !!value);
+    updateCityIconAria();
     closeCityDropdown();
     _magicSelected.clear();
     _magicAppliedSelected.clear();
@@ -2448,6 +2491,24 @@ function initCitySearchDropdown() {
             }
             closeCityDropdown();
         }
+    });
+
+    // Focusout (Tab away) → close dropdown
+    citySearchWrap.addEventListener("focusout", (e) => {
+        // Delay to allow click within dropdown to register
+        requestAnimationFrame(() => {
+            if (!citySearchWrap.contains(document.activeElement)) {
+                if (_cityDropdownOpen) {
+                    if (!cityHiddenInput.value && citySearchInput.value.trim()) {
+                        citySearchInput.value = "";
+                    } else if (cityHiddenInput.value) {
+                        const item = _cityItems.find((i) => i.value === cityHiddenInput.value);
+                        citySearchInput.value = item ? item.label : cityHiddenInput.value;
+                    }
+                    closeCityDropdown();
+                }
+            }
+        });
     });
 
     // Search icon button → clear or toggle dropdown

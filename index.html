@@ -142,9 +142,10 @@
                                 <select id="country" name="country"></select>
                                 <div class="city-search-wrap" id="city-search-wrap">
                                     <label for="city-search-input" class="sr-only">도시 검색</label>
-                                    <input type="text" id="city-search-input" autocomplete="off" placeholder="도시 검색 또는 입력" aria-expanded="false" aria-controls="city-dropdown" aria-autocomplete="list" aria-haspopup="listbox" />
+                                    <input type="text" id="city-search-input" role="combobox" autocomplete="off" placeholder="도시 검색 또는 입력" aria-expanded="false" aria-controls="city-dropdown" aria-autocomplete="list" aria-haspopup="listbox" />
                                     <button type="button" class="city-search-icon" id="city-search-icon" aria-label="입력 지우기 또는 목록 열기"></button>
                                     <input type="hidden" id="city-value" name="city" />
+                                    <div id="city-sr-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
                                     <div class="city-dropdown hidden" id="city-dropdown" role="listbox" aria-label="도시 선택 목록"></div>
                                 </div>
                                 <div id="city-profile-card" class="city-profile-card hidden"></div>
