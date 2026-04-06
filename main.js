@@ -4341,6 +4341,27 @@ function bindCustomResearchActions(query, needsText, data, tags, resultContainer
     });
 }
 
+function buildSourceTagsHtml(profile, catKey) {
+    const entry = getCityProfileEvidenceEntry(profile, catKey);
+    if (!entry) return "";
+    const evidenceIds = Array.isArray(entry.evidence_ids) ? entry.evidence_ids.filter(Boolean) : [];
+    if (!evidenceIds.length) return "";
+    const sources = getCityProfileSourceMap(profile)
+        .filter((s) => evidenceIds.includes(s.id))
+        .slice(0, 4);
+    if (!sources.length) return "";
+    return `<div class="magic-source-tags">${sources.map((s) => {
+        const label = s.organization || s.title || s.id;
+        const url = s.url && /^https?:\/\//i.test(s.url) ? s.url : "";
+        let domain = "";
+        if (url) { try { domain = new URL(url).hostname.replace(/^www\./, ""); } catch {} }
+        if (url) {
+            return `<a class="magic-source-tag" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(domain || url)}">${escapeHtml(label)}</a>`;
+        }
+        return `<span class="magic-source-tag magic-source-tag--no-link" title="${escapeHtml(label)}">${escapeHtml(label)}</span>`;
+    }).join("")}</div>`;
+}
+
 function renderMagicCards(container) {
     const cardsEl = container.querySelector("#magic-cards");
     const actionsEl = container.querySelector("#magic-actions");
@@ -4366,6 +4387,7 @@ function renderMagicCards(container) {
                     <span class="magic-card-label">${escapeHtml(isKo ? cat.labelKo : cat.labelEn)}</span>
                 </div>
                 <p class="magic-card-text">${escapeHtml(text)}</p>
+                ${buildSourceTagsHtml(profile, key)}
                 <p class="magic-card-hint">${buildMagicHint(key, localCity, isKo)}</p>
             </div>
         `;
@@ -5079,7 +5101,8 @@ function getRelevantQ1ProfileReferences(limit = 3) {
             color: cat?.color || "#2563eb",
             icon: cat?.icon || "•",
             label: currentLocale === "ko" ? (cat?.labelKo || key) : (cat?.labelEn || key),
-            text
+            text,
+            sourceHtml: buildSourceTagsHtml(profile, key)
         };
     }).filter((item) => item.text);
 }
@@ -5621,6 +5644,7 @@ function buildQ1ScenarioReferencePanelHtml() {
                     ${buildReferenceKeywordChips(item.text, item.label).map((chip) => `<span class="q2-ref-tag q2-ref-tag--soft">${escapeHtml(chip)}</span>`).join("")}
                 </div>
                 ${buildInlineSummaryHtml(item.text)}
+                ${item.sourceHtml || ""}
             </article>
         `).join("")
         : `<p class="q2-ref-empty">${isKo ? "아직 선택된 도시 프로필 요약이 없습니다." : "No city-profile references applied yet."}</p>`;

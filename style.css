@@ -8741,6 +8741,70 @@ a.source-tag-link:hover {
     line-height: 1.5;
 }
 
+/* 출처 태그 — 도시 프로필 카테고리별 source_map 표시 */
+.magic-source-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 0 8px;
+}
+.magic-source-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--accent);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.14s, border-color 0.14s;
+    position: relative;
+}
+.magic-source-tag:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+}
+.magic-source-tag--no-link {
+    cursor: default;
+    color: var(--muted);
+}
+.magic-source-tag--no-link:hover {
+    background: var(--surface);
+    border-color: var(--line);
+}
+/* 툴팁 — 호버 시 도메인 URL 표시 */
+.magic-source-tag[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 0.66rem;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 200;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.magic-source-tag[title]:hover::before {
+    content: "";
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--ink);
+    pointer-events: none;
+    z-index: 200;
+}
+
 /* 액션 버튼 영역 */
 .magic-actions {
     padding: 16px 22px;
