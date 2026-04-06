@@ -2397,6 +2397,117 @@ function delay(ms) {
    When modifying retry logic, normalize functions, or tag rules,
    keep BOTH files in sync.  (CommonJS here vs ESM in functions/api)
    ──────────────────────────────────────────────────────────────────────── */
+/* ── Wiki Context Fetcher (RAG for city profiles) ──────────────────────
+   Fetches encyclopedia-style reference text from Wikipedia to ground
+   city profile generation with real facts instead of model hallucination.
+   ──────────────────────────────────────────────────────────────────────── */
+const _wikiCache = new Map();
+const WIKI_CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
+
+function getWikiLang(countryCode) {
+    const map = {
+        KR: "ko", JP: "ja", CN: "zh", DE: "de", FR: "fr", ES: "es",
+        IT: "it", PT: "pt", NL: "nl", PL: "pl", TR: "tr", RU: "ru",
+        ID: "id", BR: "pt", MX: "es", CO: "es", AR: "es"
+    };
+    return map[countryCode] || "en";
+}
+
+async function fetchWikiContext(countryCode, cityName) {
+    const cacheKey = `${countryCode}|${cityName}`;
+    const cached = _wikiCache.get(cacheKey);
+    if (cached && Date.now() - cached.ts < WIKI_CACHE_TTL) return cached.text;
+
+    const lang = getWikiLang(countryCode);
+    const searchTitle = cityName.trim();
+
+    try {
+        // Step 1: Search for the best matching article title
+        const searchUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchTitle)}&srlimit=1&format=json`;
+        const searchController = new AbortController();
+        const searchTimer = setTimeout(() => searchController.abort(), 8000);
+        const searchRes = await fetch(searchUrl, {
+            headers: { "User-Agent": "SmartThingsScenarioAgent/1.0" },
+            signal: searchController.signal
+        });
+        clearTimeout(searchTimer);
+        if (!searchRes.ok) throw new Error(`Wiki search ${searchRes.status}`);
+        const searchData = await searchRes.json();
+        const pageTitle = searchData?.query?.search?.[0]?.title;
+        if (!pageTitle) throw new Error("No wiki article found");
+
+        // Step 2: Fetch plain text extract (up to 8000 chars)
+        const extractUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=extracts&explaintext=1&exsectionformat=plain&exchars=8000&format=json`;
+        const extractController = new AbortController();
+        const extractTimer = setTimeout(() => extractController.abort(), 8000);
+        const extractRes = await fetch(extractUrl, {
+            headers: { "User-Agent": "SmartThingsScenarioAgent/1.0" },
+            signal: extractController.signal
+        });
+        clearTimeout(extractTimer);
+        if (!extractRes.ok) throw new Error(`Wiki extract ${extractRes.status}`);
+        const extractData = await extractRes.json();
+        const pages = extractData?.query?.pages;
+        const page = pages ? Object.values(pages)[0] : null;
+        const extract = page?.extract || "";
+
+        if (!extract || extract.length < 100) throw new Error("Wiki extract too short");
+
+        const sourceUrl = `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`;
+        const text = `[SOURCE: Wikipedia ${lang.toUpperCase()} — ${sourceUrl}]\n\n${extract}`;
+
+        _wikiCache.set(cacheKey, { text, ts: Date.now() });
+        console.info(`[wiki-context] fetched ${lang}.wikipedia: "${pageTitle}" (${extract.length} chars)`);
+        return text;
+    } catch (err) {
+        console.warn(`[wiki-context] failed for ${countryCode}/${cityName}: ${err.message}`);
+
+        // Fallback: try English Wikipedia if non-English failed
+        if (lang !== "en") {
+            try {
+                const enUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchTitle)}&srlimit=1&format=json`;
+                const enController = new AbortController();
+                const enTimer = setTimeout(() => enController.abort(), 8000);
+                const enRes = await fetch(enUrl, {
+                    headers: { "User-Agent": "SmartThingsScenarioAgent/1.0" },
+                    signal: enController.signal
+                });
+                clearTimeout(enTimer);
+                if (enRes.ok) {
+                    const enData = await enRes.json();
+                    const enTitle = enData?.query?.search?.[0]?.title;
+                    if (enTitle) {
+                        const enExtractUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(enTitle)}&prop=extracts&explaintext=1&exsectionformat=plain&exchars=8000&format=json`;
+                        const enExtractController = new AbortController();
+                        const enExtractTimer = setTimeout(() => enExtractController.abort(), 8000);
+                        const enExtractRes = await fetch(enExtractUrl, {
+                            headers: { "User-Agent": "SmartThingsScenarioAgent/1.0" },
+                            signal: enExtractController.signal
+                        });
+                        clearTimeout(enExtractTimer);
+                        if (enExtractRes.ok) {
+                            const enExtractData = await enExtractRes.json();
+                            const enPages = enExtractData?.query?.pages;
+                            const enPage = enPages ? Object.values(enPages)[0] : null;
+                            const enExtract = enPage?.extract || "";
+                            if (enExtract.length >= 100) {
+                                const sourceUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(enTitle)}`;
+                                const text = `[SOURCE: Wikipedia EN — ${sourceUrl}]\n\n${enExtract}`;
+                                _wikiCache.set(cacheKey, { text, ts: Date.now() });
+                                console.info(`[wiki-context] fallback en.wikipedia: "${enTitle}" (${enExtract.length} chars)`);
+                                return text;
+                            }
+                        }
+                    }
+                }
+            } catch { /* fallback also failed, return empty */ }
+        }
+
+        _wikiCache.set(cacheKey, { text: "", ts: Date.now() });
+        return "";
+    }
+}
+
 function shouldRetryOpenAiStatus(status) {
     return status === 408 || status === 409 || status === 429 || status >= 500;
 }
@@ -2898,7 +3009,8 @@ async function handleCityProfile(req, res) {
     // custom_query가 있으면 커스텀 마켓 리서치 모드
     if (customQuery) {
         const maxTokens = 2000;
-        const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}위 도시에서 "${customQuery}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
+        const wikiCtx = await fetchWikiContext(country, city);
+        const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}${wikiCtx ? `═══ 참고 자료 (백과사전 출처 — 팩트 근거로 활용) ═══\n${wikiCtx}\n═══ 참고 자료 끝 ═══\n\n` : ""}위 도시에서 "${customQuery}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
 
         const requestBody = {
                 model,
@@ -2943,13 +3055,21 @@ async function handleCityProfile(req, res) {
         return;
     }
 
-    // 기본 도시 프로필 모드
-    const maxTokens = 2000;
+    // 기본 도시 프로필 모드 — Wiki RAG context 주입
+    const maxTokens = 3000;
+    const wikiContext = await fetchWikiContext(country, city);
+
     const userMessage = `Target country: ${country}
 Target city: ${city}
 Optional subregion: none
 Output locale: ${locale}
+${wikiContext ? `
+═══ REFERENCE CONTEXT (from encyclopedia source — use as primary evidence) ═══
+${wikiContext}
+═══ END REFERENCE CONTEXT ═══
 
+IMPORTANT: Use the reference context above as your PRIMARY source of facts. Extract specific district names, statistics, facility names, event names, and policy names from it. Cite "Wikipedia ${getWikiLang(country).toUpperCase()}" in your source_map. Only mark a category as "Evidence insufficient" if the reference context truly contains NO relevant information for that category.
+` : ""}
 Build a source-bound localization evidence pack for this city. Use only evidence-backed localized statements. If evidence is weak, mark that category as "Evidence insufficient for localized claim." Return valid JSON only.`;
 
     try {

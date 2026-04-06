@@ -210,6 +210,58 @@ function normalizeStringList(value, maxItems = 8) {
         .slice(0, maxItems);
 }
 
+/* ── Wiki Context Fetcher (RAG for city profiles) ── */
+const WIKI_LANG_MAP = {
+    KR: "ko", JP: "ja", CN: "zh", DE: "de", FR: "fr", ES: "es",
+    IT: "it", PT: "pt", NL: "nl", PL: "pl", TR: "tr", RU: "ru",
+    ID: "id", BR: "pt", MX: "es", CO: "es", AR: "es"
+};
+
+function getWikiLang(countryCode) {
+    return WIKI_LANG_MAP[countryCode] || "en";
+}
+
+async function fetchWikiContext(countryCode, cityName) {
+    const lang = getWikiLang(countryCode);
+    const searchTitle = cityName.trim();
+
+    async function tryWiki(wikiLang) {
+        const searchUrl = `https://${wikiLang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchTitle)}&srlimit=1&format=json`;
+        const searchRes = await fetch(searchUrl, {
+            headers: { "User-Agent": "SmartThingsScenarioAgent/1.0" },
+            signal: AbortSignal.timeout(8000)
+        });
+        if (!searchRes.ok) return "";
+        const searchData = await searchRes.json();
+        const pageTitle = searchData?.query?.search?.[0]?.title;
+        if (!pageTitle) return "";
+
+        const extractUrl = `https://${wikiLang}.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=extracts&explaintext=1&exsectionformat=plain&exchars=8000&format=json`;
+        const extractRes = await fetch(extractUrl, {
+            headers: { "User-Agent": "SmartThingsScenarioAgent/1.0" },
+            signal: AbortSignal.timeout(8000)
+        });
+        if (!extractRes.ok) return "";
+        const extractData = await extractRes.json();
+        const pages = extractData?.query?.pages;
+        const page = pages ? Object.values(pages)[0] : null;
+        const extract = page?.extract || "";
+        if (extract.length < 100) return "";
+
+        const sourceUrl = `https://${wikiLang}.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`;
+        return `[SOURCE: Wikipedia ${wikiLang.toUpperCase()} — ${sourceUrl}]\n\n${extract}`;
+    }
+
+    try {
+        let text = await tryWiki(lang);
+        if (!text && lang !== "en") text = await tryWiki("en");
+        return text;
+    } catch (err) {
+        console.warn(`[wiki-context] failed for ${countryCode}/${cityName}: ${err.message}`);
+        return "";
+    }
+}
+
 function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -563,9 +615,12 @@ async function handleCityProfile(context) {
         model, country, city, locale, query: customQuery || null
     }));
 
+    // Wiki RAG context — 두 모드 모두에서 사용
+    const wikiContext = await fetchWikiContext(country, city);
+
     if (customQuery) {
         const maxTokens = 2000;
-        const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}위 도시에서 "${customQuery}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
+        const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}${wikiContext ? `═══ 참고 자료 (백과사전 출처 — 팩트 근거로 활용) ═══\n${wikiContext}\n═══ 참고 자료 끝 ═══\n\n` : ""}위 도시에서 "${customQuery}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
         const requestBody = {
             model,
             ...(/^gpt-5/i.test(model)
@@ -610,9 +665,15 @@ async function handleCityProfile(context) {
 Target city: ${city}
 Optional subregion: none
 Output locale: ${locale}
+${wikiContext ? `
+═══ REFERENCE CONTEXT (from encyclopedia source — use as primary evidence) ═══
+${wikiContext}
+═══ END REFERENCE CONTEXT ═══
 
+IMPORTANT: Use the reference context above as your PRIMARY source of facts. Extract specific district names, statistics, facility names, event names, and policy names from it. Cite "Wikipedia ${getWikiLang(country).toUpperCase()}" in your source_map. Only mark a category as "Evidence insufficient" if the reference context truly contains NO relevant information for that category.
+` : ""}
 Build a source-bound localization evidence pack for this city. Use only evidence-backed localized statements. If evidence is weak, mark that category as "Evidence insufficient for localized claim." Return valid JSON only.`;
-    const maxTokens = 2000;
+    const maxTokens = 3000;
 
     let result;
     try {
