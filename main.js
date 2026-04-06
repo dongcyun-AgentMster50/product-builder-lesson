@@ -3654,7 +3654,7 @@ async function renderStep2Insight(forceRefresh = false) {
         try {
             const profile = JSON.parse(cached);
             if (currentStep !== 2) return;
-            stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, profile);
+            stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, profile, country.countryCode);
             bindCityProfileDrawer(stepInsight);
             bindQ2EvidenceToggles(stepInsight);
             updateQuestionHelpers();
@@ -3719,7 +3719,7 @@ async function renderStep2Insight(forceRefresh = false) {
                 updatePizzaProgress(stepInsight, 100);
                 await new Promise(r => setTimeout(r, 400));
                 if (currentStep !== 2) return;
-                stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, result.data);
+                stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, result.data, country.countryCode);
                 bindCityProfileDrawer(stepInsight);
                 bindQ2EvidenceToggles(stepInsight);
                 updateQuestionHelpers();
@@ -3828,7 +3828,7 @@ function buildCityProfileEvidenceDetail(profile, key) {
     `;
 }
 
-function renderCityProfileInsight(countryName, localCity, profile) {
+function renderCityProfileInsight(countryName, localCity, profile, countryCode) {
     const isKo = currentLocale === "ko";
     const available = CITY_PROFILE_CATEGORIES.filter(cat => profile[cat.key]);
 
@@ -3847,7 +3847,7 @@ function renderCityProfileInsight(countryName, localCity, profile) {
         </div>
     `).join("");
 
-    const flag = typeof getCountryFlagEmoji === "function" ? getCountryFlagEmoji("KR") : "";
+    const flag = typeof getCountryFlagEmoji === "function" ? getCountryFlagEmoji(countryCode || "KR") : "";
     _pendingCitySheetHtml = `
         <div class="cpv2-sheet-header">
             <div class="cpv2-sheet-handle"></div>

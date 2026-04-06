@@ -3090,7 +3090,8 @@ async function handleCityProfile(req, res) {
     }
 
     // 기본 도시 프로필 모드 — Wiki RAG context 주입
-    const maxTokens = 3000;
+    // Wiki context(~4K tokens) + system prompt(~2.5K) + user msg → 응답에 최소 4.5K 필요
+    const maxTokens = 5000;
     const wikiContext = await fetchWikiContext(country, city);
 
     const userMessage = `Target country: ${country}

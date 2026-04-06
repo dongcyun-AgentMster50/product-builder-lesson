@@ -699,7 +699,7 @@ ${wikiContext}
 IMPORTANT: Use the reference context above as your PRIMARY source of facts. Extract specific district names, statistics, facility names, event names, and policy names from it. Cite "Wikipedia ${getWikiLang(country).toUpperCase()}" in your source_map. Only mark a category as "Evidence insufficient" if the reference context truly contains NO relevant information for that category.
 ` : ""}
 Build a source-bound localization evidence pack for this city. Use only evidence-backed localized statements. If evidence is weak, mark that category as "Evidence insufficient for localized claim." Return valid JSON only.`;
-    const maxTokens = 3000;
+    const maxTokens = 5000;
 
     let result;
     try {
