@@ -2437,7 +2437,7 @@ async function fetchWikiContext(countryCode, cityName) {
         if (!pageTitle) throw new Error("No wiki article found");
 
         // Step 2: Fetch plain text extract (up to 8000 chars)
-        const extractUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=extracts&explaintext=1&exsectionformat=plain&exchars=8000&format=json`;
+        const extractUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=extracts&explaintext=1&exsectionformat=plain&format=json`;
         const extractController = new AbortController();
         const extractTimer = setTimeout(() => extractController.abort(), 8000);
         const extractRes = await fetch(extractUrl, {
@@ -2449,9 +2449,16 @@ async function fetchWikiContext(countryCode, cityName) {
         const extractData = await extractRes.json();
         const pages = extractData?.query?.pages;
         const page = pages ? Object.values(pages)[0] : null;
-        const extract = page?.extract || "";
+        const WIKI_MAX_CHARS = 12000;
+        let extract = page?.extract || "";
 
         if (!extract || extract.length < 100) throw new Error("Wiki extract too short");
+
+        // Truncate at sentence boundary to avoid cutting mid-sentence
+        if (extract.length > WIKI_MAX_CHARS) {
+            const cut = extract.lastIndexOf(".", WIKI_MAX_CHARS);
+            extract = extract.slice(0, cut > WIKI_MAX_CHARS * 0.5 ? cut + 1 : WIKI_MAX_CHARS);
+        }
 
         const sourceUrl = `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`;
         const text = `[SOURCE: Wikipedia ${lang.toUpperCase()} — ${sourceUrl}]\n\n${extract}`;
@@ -2477,7 +2484,7 @@ async function fetchWikiContext(countryCode, cityName) {
                     const enData = await enRes.json();
                     const enTitle = enData?.query?.search?.[0]?.title;
                     if (enTitle) {
-                        const enExtractUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(enTitle)}&prop=extracts&explaintext=1&exsectionformat=plain&exchars=8000&format=json`;
+                        const enExtractUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(enTitle)}&prop=extracts&explaintext=1&exsectionformat=plain&format=json`;
                         const enExtractController = new AbortController();
                         const enExtractTimer = setTimeout(() => enExtractController.abort(), 8000);
                         const enExtractRes = await fetch(enExtractUrl, {
@@ -2489,8 +2496,12 @@ async function fetchWikiContext(countryCode, cityName) {
                             const enExtractData = await enExtractRes.json();
                             const enPages = enExtractData?.query?.pages;
                             const enPage = enPages ? Object.values(enPages)[0] : null;
-                            const enExtract = enPage?.extract || "";
+                            let enExtract = enPage?.extract || "";
                             if (enExtract.length >= 100) {
+                                if (enExtract.length > 12000) {
+                                    const cut = enExtract.lastIndexOf(".", 12000);
+                                    enExtract = enExtract.slice(0, cut > 6000 ? cut + 1 : 12000);
+                                }
                                 const sourceUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(enTitle)}`;
                                 const text = `[SOURCE: Wikipedia EN — ${sourceUrl}]\n\n${enExtract}`;
                                 _wikiCache.set(cacheKey, { text, ts: Date.now() });

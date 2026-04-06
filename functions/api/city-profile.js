@@ -236,7 +236,7 @@ async function fetchWikiContext(countryCode, cityName) {
         const pageTitle = searchData?.query?.search?.[0]?.title;
         if (!pageTitle) return "";
 
-        const extractUrl = `https://${wikiLang}.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=extracts&explaintext=1&exsectionformat=plain&exchars=8000&format=json`;
+        const extractUrl = `https://${wikiLang}.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=extracts&explaintext=1&exsectionformat=plain&format=json`;
         const extractRes = await fetch(extractUrl, {
             headers: { "User-Agent": "SmartThingsScenarioAgent/1.0" },
             signal: AbortSignal.timeout(8000)
@@ -245,8 +245,12 @@ async function fetchWikiContext(countryCode, cityName) {
         const extractData = await extractRes.json();
         const pages = extractData?.query?.pages;
         const page = pages ? Object.values(pages)[0] : null;
-        const extract = page?.extract || "";
+        let extract = page?.extract || "";
         if (extract.length < 100) return "";
+        if (extract.length > 12000) {
+            const cut = extract.lastIndexOf(".", 12000);
+            extract = extract.slice(0, cut > 6000 ? cut + 1 : 12000);
+        }
 
         const sourceUrl = `https://${wikiLang}.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`;
         return `[SOURCE: Wikipedia ${wikiLang.toUpperCase()} — ${sourceUrl}]\n\n${extract}`;
