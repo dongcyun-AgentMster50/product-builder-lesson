@@ -2097,6 +2097,7 @@ function getLocalizedCityName(entry) {
 let _cityItems = [];          // current items for dropdown
 let _cityFocusIdx = -1;       // keyboard navigation index
 let _cityDropdownOpen = false;
+let _citySearchDebounceTimer = 0;
 
 function getCityMasterFlat(master, useLocal) {
     const result = [];
@@ -2379,14 +2380,17 @@ function initCitySearchDropdown() {
         if (cityHiddenInput.value) citySearchInput.select();
     });
 
-    // Input → filter
+    // Input → filter (debounced dropdown render for performance)
     citySearchInput.addEventListener("input", () => {
-        // Clear selection while typing (will be re-set on pick)
+        // Clear selection immediately while typing (will be re-set on pick)
         cityHiddenInput.value = "";
         citySearchWrap.classList.remove("has-value");
         openCityDropdown();
-        renderCityDropdownItems(citySearchInput.value);
-        updateStatePreview();
+        clearTimeout(_citySearchDebounceTimer);
+        _citySearchDebounceTimer = setTimeout(() => {
+            renderCityDropdownItems(citySearchInput.value);
+            updateStatePreview();
+        }, 80);
     });
 
     // Keyboard navigation
@@ -3735,13 +3739,14 @@ function buildCityProfileEvidenceDetail(profile, key) {
     const sourceHtml = sources.length
         ? `<ul class="q2-evidence-source-list">${sources.map((item) => {
             const label = [item.id, item.organization || item.title].filter(Boolean).join(" · ");
-            const href = item.url ? ` href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer"` : "";
+            const safeUrl = item.url && /^https?:\/\//i.test(item.url) ? item.url : "";
+            const href = safeUrl ? ` href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer"` : "";
             return `<li>${href ? `<a${href}>${escapeHtml(label)}</a>` : escapeHtml(label)}</li>`;
         }).join("")}</ul>`
         : "";
 
     return `
-        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${detailId}">
+        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${detailId}" aria-expanded="false" aria-controls="${detailId}">
             <span class="q2-ev-arrow">▾</span> ${currentLocale === "ko" ? "근거 보기" : "View evidence"}
         </button>
         <div class="q2-evidence-detail" id="${detailId}">

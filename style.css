@@ -9131,6 +9131,18 @@ a.source-tag-link:hover {
     .magic-custom-input-row { flex-direction: column; }
     .magic-custom-result-actions { flex-direction: column; }
     .magic-research-finding { padding: 8px 10px; }
+
+    /* City search mobile touch targets */
+    .city-search-wrap input[type="text"] { padding: 16px 44px 16px 16px; font-size: 1rem; min-height: 48px; }
+    .city-search-icon { width: 32px; height: 32px; right: 10px; }
+    .city-option { padding: 14px 16px; min-height: 44px; }
+    .city-dropdown { max-height: 55vh; }
+
+    /* Evidence detail mobile spacing */
+    .q2-evidence-detail { padding: 10px 12px; }
+    .q2-evidence-toggle--compact { min-height: 36px; padding: 0 12px; font-size: 0.72rem; }
+    .cpv2-item { padding: 12px 14px; }
+    .cpv2-text { font-size: 0.8rem; line-height: 1.6; }
 }
 
 /* ══════════════════════════════════════════════════════════════════════

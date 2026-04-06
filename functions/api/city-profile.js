@@ -311,6 +311,7 @@ function normalizeCityProfilePayload(payload, { city, country, locale }) {
 
 function inferCustomResearchTags(query, extraText = "") {
     const haystack = `${query || ""} ${extraText || ""}`.toLowerCase();
+    // Keep in sync with server.js inferCustomResearchTags
     const tagRules = [
         { tag: "Care for seniors", terms: ["시니어", "노인", "고령", "어르신", "senior", "elder", "aging"] },
         { tag: "Care for kids", terms: ["아이", "키즈", "어린이", "육아", "child", "kid", "baby"] },
@@ -319,8 +320,12 @@ function inferCustomResearchTags(query, extraText = "") {
         { tag: "Save energy", terms: ["에너지", "전기", "난방", "냉방", "절약", "energy", "utility", "bill"] },
         { tag: "Sleep well", terms: ["수면", "숙면", "sleep", "bedtime"] },
         { tag: "Stay fit & healthy", terms: ["건강", "웰니스", "fitness", "health", "공기", "air quality", "미세먼지"] },
-        { tag: "Find your belongings", terms: ["분실", "위치", "찾기", "tag", "tracker"] },
-        { tag: "Time saving", terms: ["시간", "루틴", "자동", "automation", "commute", "출퇴근"] }
+        { tag: "Find your belongings", terms: ["분실", "위치", "찾기", "tag", "tracker", "belonging"] },
+        { tag: "Time saving", terms: ["시간", "루틴", "자동", "automation", "commute", "출퇴근"] },
+        { tag: "Enhanced mood", terms: ["무드", "분위기", "mood", "ambience", "힐링"] },
+        { tag: "Help with chores", terms: ["집안일", "청소", "세탁", "요리", "chore", "cleaning", "laundry"] },
+        { tag: "Keep the air fresh", terms: ["환기", "공기", "air", "odor", "smell", "습도"] },
+        { tag: "Easily control your lights", terms: ["조명", "lights", "lighting", "lamp"] }
     ];
 
     return [...new Set(
@@ -494,27 +499,21 @@ async function handleCityProfile(context) {
     if (customQuery) {
         const maxTokens = 2000;
         const userMessage = `?꾩떆: ${city}, 援??: ${country}, ?몄뼱: ${locale}\n?ㅼ썙?? "${customQuery}"\n\n${baseProfiles ? `湲곗〈 base_profiles:\n${baseProfiles}\n\n` : ""}`;
+        const requestBody = {
+            model,
+            ...(/^gpt-5/i.test(model)
+                ? { max_completion_tokens: maxTokens }
+                : { max_tokens: maxTokens }),
+            response_format: { type: "json_object" },
+            messages: [
+                { role: "system", content: CUSTOM_RESEARCH_SYSTEM_PROMPT },
+                { role: "user", content: userMessage }
+            ]
+        };
 
-        let apiResponse;
+        let result;
         try {
-            apiResponse = await fetch(OPENAI_API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model,
-                    ...(/^gpt-5/i.test(model)
-                        ? { max_completion_tokens: maxTokens }
-                        : { max_tokens: maxTokens }),
-                    response_format: { type: "json_object" },
-                    messages: [
-                        { role: "system", content: CUSTOM_RESEARCH_SYSTEM_PROMPT },
-                        { role: "user", content: userMessage }
-                    ]
-                })
-            });
+            result = await fetchOpenAiChatCompletionWithRetry({ apiKey, requestBody });
         } catch (error) {
             return json({
                 ok: true,
@@ -524,17 +523,6 @@ async function handleCityProfile(context) {
             });
         }
 
-        if (!apiResponse.ok) {
-            const errText = await apiResponse.text().catch(() => "");
-            return json({
-                ok: true,
-                data: normalizeCustomResearchPayload({ raw: errText || "UPSTREAM_ERROR" }, { query: customQuery, city, locale, baseProfiles }),
-                mode: "custom_research",
-                meta: { city, country, locale, model, query: customQuery, fallback: true, fallback_reason: errText || "UPSTREAM_ERROR" }
-            });
-        }
-
-        const result = await apiResponse.json();
         const usage = result.usage || null;
         const content = result.choices?.[0]?.message?.content || "{}";
 
