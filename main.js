@@ -3681,21 +3681,22 @@ async function renderStep2Insight(forceRefresh = false) {
     updateQuestionHelpers();
 
     // 피자 프로그레스 시뮬레이션 (0→90% 구간을 서서히 채움)
+    // Wiki RAG(~2초) + OpenAI(~30~45초) = 총 ~35~50초 예상, 60초 기준 여유 설계
     let pizzaProgress = 0;
     let pizzaDone = false;
     const pizzaInterval = setInterval(() => {
         if (pizzaDone || currentStep !== 2) { clearInterval(pizzaInterval); return; }
-        // 점점 느려지며 90%까지 접근 (30초 타임아웃에 맞춤)
-        pizzaProgress += (90 - pizzaProgress) * 0.035;
+        // 점점 느려지며 90%까지 접근 (60초 기준 — 계수 0.018, 250ms 인터벌)
+        pizzaProgress += (90 - pizzaProgress) * 0.018;
         updatePizzaProgress(stepInsight, Math.min(pizzaProgress, 90));
-    }, 200);
+    }, 250);
 
     // 3. 라이브 API 호출
     try {
         await ensureBypassSession();
         const params = new URLSearchParams({ country: country.countryCode, city, locale: currentLocale });
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 45000);
+        const timer = setTimeout(() => controller.abort(), 75000);
 
         const response = await fetch(`/api/city-profile?${params}`, {
             credentials: "include",
@@ -4121,7 +4122,7 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
         });
 
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 45000);
+        const timer = setTimeout(() => controller.abort(), 75000);
 
         const response = await fetch(`/api/city-profile?${urlParams}`, {
             method: "POST",

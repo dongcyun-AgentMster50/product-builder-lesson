@@ -2413,13 +2413,36 @@ function getWikiLang(countryCode) {
     return map[countryCode] || "en";
 }
 
+// 한국 도시 영문→한국어 매핑 (Wikipedia 검색 정확도 향상)
+const KR_CITY_WIKI_MAP = {
+    "Seoul": "서울특별시", "Busan": "부산광역시", "Incheon": "인천광역시",
+    "Daegu": "대구광역시", "Daejeon": "대전광역시", "Gwangju Metro": "광주광역시",
+    "Ulsan": "울산광역시", "Sejong": "세종특별자치시",
+    "Suwon": "수원시", "Yongin": "용인시", "Goyang": "고양시", "Hwaseong": "화성시",
+    "Seongnam": "성남시", "Bucheon": "부천시", "Namyangju": "남양주시", "Ansan": "안산시",
+    "Pyeongtaek": "평택시", "Anyang": "안양시", "Siheung": "시흥시", "Paju": "파주시",
+    "Gimpo": "김포시", "Uijeongbu": "의정부시", "Gwangju-si": "광주시",
+    "Hanam": "하남시", "Gwangmyeong": "광명시", "Yangju": "양주시",
+    "Gunpo": "군포시", "Osan": "오산시", "Icheon": "이천시",
+    "Dongducheon": "동두천시", "Guri": "구리시", "Pocheon": "포천시",
+    "Cheongju": "청주시", "Cheonan": "천안시", "Jeonju": "전주시",
+    "Changwon": "창원시", "Gimhae": "김해시", "Jeju": "제주시",
+    "Wonju": "원주시", "Chuncheon": "춘천시", "Gangneung": "강릉시",
+    "Yeosu": "여수시", "Suncheon": "순천시", "Mokpo": "목포시",
+    "Gyeongju": "경주시", "Andong": "안동시", "Gumi": "구미시",
+    "Pohang": "포항시", "Jinju": "진주시"
+};
+
 async function fetchWikiContext(countryCode, cityName) {
     const cacheKey = `${countryCode}|${cityName}`;
     const cached = _wikiCache.get(cacheKey);
     if (cached && Date.now() - cached.ts < WIKI_CACHE_TTL) return cached.text;
 
     const lang = getWikiLang(countryCode);
-    const searchTitle = cityName.trim();
+    // 한국 도시는 한국어 이름으로 검색해야 정확한 결과
+    const searchTitle = (countryCode === "KR" && KR_CITY_WIKI_MAP[cityName.trim()])
+        ? KR_CITY_WIKI_MAP[cityName.trim()]
+        : cityName.trim();
 
     try {
         // Step 1: Search for the best matching article title
