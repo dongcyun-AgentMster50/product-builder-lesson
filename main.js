@@ -5073,7 +5073,7 @@ function getRelevantQ1ProfileReferences(limit = 3) {
 
     return targetKeys.map((key) => {
         const cat = CITY_PROFILE_CATEGORIES.find((entry) => entry.key === key);
-        const text = profile[key] ? summarizeInsightText(profile[key], 160) : "";
+        const text = profile[key] ? String(profile[key]).replace(/\s+/g, " ").trim() : "";
         return {
             key,
             color: cat?.color || "#2563eb",
@@ -5097,7 +5097,7 @@ function getCustomResearchSummary() {
 
     return {
         query: _customResearchData.query || "",
-        interpretation: summarizeInsightText(data.keyword_interpretation || "", 170),
+        interpretation: String(data.keyword_interpretation || "").replace(/\s+/g, " ").trim(),
         points,
         findings,
         tags: Array.isArray(data.tags) ? data.tags.slice(0, 4) : []
@@ -5620,7 +5620,7 @@ function buildQ1ScenarioReferencePanelHtml() {
                 <div class="q2-ref-keyword-row">
                     ${buildReferenceKeywordChips(item.text, item.label).map((chip) => `<span class="q2-ref-tag q2-ref-tag--soft">${escapeHtml(chip)}</span>`).join("")}
                 </div>
-                ${buildInlineSummaryHtml(item.text)}
+                ${buildExpandableSummaryHtml(item.text, 200)}
             </article>
         `).join("")
         : `<p class="q2-ref-empty">${isKo ? "아직 선택된 도시 프로필 요약이 없습니다." : "No city-profile references applied yet."}</p>`;
@@ -5634,7 +5634,7 @@ function buildQ1ScenarioReferencePanelHtml() {
                 <div class="q2-ref-tag-row">
                     ${(customSummary.tags.length ? customSummary.tags : buildReferenceKeywordChips(customSummary.interpretation, customSummary.query)).slice(0, 5).map((tag) => `<span class="q2-ref-tag">${escapeHtml(tag)}</span>`).join("")}
                 </div>
-                ${customSummary.interpretation ? `<div class="q2-ref-custom-copy">${buildInlineSummaryHtml(customSummary.interpretation)}</div>` : ""}
+                ${customSummary.interpretation ? `<div class="q2-ref-custom-copy">${buildExpandableSummaryHtml(customSummary.interpretation, 200)}</div>` : ""}
             </article>
         `
         : `<p class="q2-ref-empty">${isKo ? "커스텀 검색 반영이 없으면 여기에는 Q1 사용자 정의 맥락이 표시됩니다." : "Applied custom research from Q1 will appear here."}</p>`;
