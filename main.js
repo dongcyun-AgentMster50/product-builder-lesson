@@ -2469,6 +2469,11 @@ function initCitySearchDropdown() {
         }
     });
 
+    // Prevent focus loss when clicking dropdown (so focusout doesn't fire before click)
+    cityDropdown.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+    });
+
     // Click on dropdown item
     cityDropdown.addEventListener("click", (e) => {
         const opt = e.target.closest(".city-option");
