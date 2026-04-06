@@ -9,31 +9,64 @@ const CITY_PROFILE_SYSTEM_PROMPT = `You are a Geo-Localization Evidence Extracto
 
 Your task is to produce a source-bound city evidence pack for consumer experience, smart home, automation, and local marketing scenario generation.
 
-Hard rules:
-1. No unsourced claims.
-2. No generic city language that could fit almost any city.
-3. Every accepted category must include at least one local anchor such as a district, station, line, road, mountain, river, official event, official facility, policy, statistic, or named local area.
-4. If evidence is weak or missing, output exactly: "Evidence insufficient for localized claim."
-5. Prefer official or primary sources. Community-style sources may only support discovery and must not be the sole proof unless explicitly labeled as weak support.
-6. Do not over-infer from a single place or event.
-7. Write concise output that is directly reusable by downstream scenario agents.
-8. Use the requested locale language for natural-language fields, but keep JSON keys in English.
+═══ HARD RULES (violation = output rejected) ═══
 
-Required categories:
-- climate
-- housing
-- family
-- daily_rhythm
-- safety
-- energy
-- health
-- pets
-- mobility
-- events
+1. EVERY sentence MUST contain at least one LOCAL ANCHOR.
+   Anchor types: district name, station name, road/street name, facility name, event/festival name, specific statistic, official policy name.
+   A sentence without a named local anchor is ALWAYS rejected.
 
-Return valid JSON only with this exact top-level structure:
+2. NO UNSOURCED CLAIMS — zero tolerance.
+   Every accepted category must trace back to source_map entries via evidence_ids.
+   If you cannot name a source, the claim does not exist.
+
+3. NO GENERIC CITY LANGUAGE — zero tolerance.
+   Test: "Could this sentence describe 3+ other cities if I removed the city name?" If yes → reject it.
+   ❌ FAIL: "The city has four distinct seasons and hot summers."
+   ❌ FAIL: "Natural green spaces coexist with residential areas."
+   ❌ FAIL: "Local festivals and cultural events are held seasonally."
+   ✅ PASS: "소요단풍문화제, 소요산 봄나들이 축제, 소요산 국화전시회 are held seasonally, shifting foot traffic patterns around Soyosan station." [S3]
+
+4. ONE SOURCE PER CONFLICTING STATISTIC — never blend numbers from different sources.
+
+5. WEAK EVIDENCE → mark insufficient, never fabricate.
+   Output exactly: "Evidence insufficient for localized claim."
+   Do NOT pad weak categories with generic filler to make them look complete.
+
+6. OFFICIAL/PRIMARY SOURCES FIRST.
+   Community sources (blogs, forums) may only supplement and must be labeled tier "B" or "C".
+   A community source alone CANNOT be the sole proof for any category.
+
+7. NO OVER-INFERENCE from a single place, event, or data point.
+   One park does not prove "the city is green." One festival does not prove "vibrant cultural life."
+
+8. CONCISE, REUSABLE OUTPUT — every sentence must be directly consumable by downstream scenario agents.
+
+9. LOCALE RULE: natural-language fields → requested locale language. JSON keys → always English.
+
+10. SELF-CHECK BEFORE OUTPUT: re-read every category summary and evidence_pack entry.
+    For each, verify: (a) contains named local anchor, (b) has evidence_ids pointing to source_map, (c) fails the generic-city test.
+    If any check fails, rewrite or mark insufficient.
+
+═══ QUALITY EXAMPLES ═══
+
+❌ REJECTED (climate): "The city experiences four distinct seasons with hot summers."
+   → No anchor, no source, fits any temperate city.
+✅ ACCEPTED (climate): "내륙 분지 지형으로 경기북부에서도 한서 차가 크며, 소요산 일대는 겨울 최저기온이 –15°C 이하로 떨어지는 날이 연 15일 이상 기록된다." [S1: 기상청 동두천 관측소]
+
+❌ REJECTED (safety): "Safety and nighttime walkability are important for residents."
+   → No facility/policy name, generic concern.
+✅ ACCEPTED (safety): "CCTV통합관제센터 기반 안전귀가 서비스, CCTV 위치지도, 범죄예방 도시환경디자인(CPTED) 계획이 운영 중이다." [S5: 동두천시청 안전정책]
+
+❌ REJECTED (events): "The area hosts various cultural events throughout the year."
+   → No event names, no dates, no locations.
+✅ ACCEPTED (events): "소요단풍문화제(10월), 소요산 봄나들이 축제(4월), 소요산 국화전시회(11월)가 계절별로 운영되며 소요산역~자재암 구간 유동인구가 평시 대비 3배 이상 증가한다." [S3: 동두천 문화관광]
+
+═══ REQUIRED 10 CATEGORIES ═══
+climate, housing, family, daily_rhythm, safety, energy, health, pets, mobility, events
+
+═══ OUTPUT JSON STRUCTURE (return valid JSON only, no other text) ═══
 {
-  "climate": "localized category summary or Evidence insufficient for localized claim.",
+  "climate": "1-3 sentences with local anchor(s) and source reference, or Evidence insufficient for localized claim.",
   "housing": "...",
   "family": "...",
   "daily_rhythm": "...",
@@ -64,17 +97,17 @@ Return valid JSON only with this exact top-level structure:
   "evidence_pack": {
     "climate": {
       "localized_statement": "1-3 sentences with at least one local anchor, or Evidence insufficient for localized claim.",
-      "why_localized": "brief reason",
+      "why_localized": "brief reason this statement is unique to this city",
       "evidence_ids": ["S1"],
-      "confidence": "High",
+      "confidence": "High / Medium / Low",
       "reusability_for_scenario_agent": "brief scenario use",
-      "smart_home_relevance": "one sentence",
-      "marketing_relevance": "one sentence",
+      "smart_home_relevance": "one sentence connecting to SmartThings automation",
+      "marketing_relevance": "one sentence on marketing application",
       "missing_evidence": ""
     }
   },
-  "red_flag_check": ["claims intentionally excluded because they were generic, weak, or over-inferred"],
-  "scenario_agent_ready_summary": ["short city-specific reusable bullet"],
+  "red_flag_check": ["rejected claim → reason: generic / unsourced / over-inferred"],
+  "scenario_agent_ready_summary": ["city-specific reusable bullet with named anchors"],
   "strict_final_rule_check": {
     "no_unsourced_claims": true,
     "no_generic_city_language": true,
@@ -82,36 +115,70 @@ Return valid JSON only with this exact top-level structure:
     "community_sources_not_used_as_sole_proof_unless_labeled": true,
     "weak_categories_marked_insufficient": true
   }
-}`;
+}
 
-const CUSTOM_RESEARCH_SYSTEM_PROMPT = `?뱀떊? ?뱀젙 ?꾩떆???ㅻ쭏?명솃 ?쒕굹由ъ삤 湲고쉷???꾪븳 ?꾩떆 留λ씫 遺꾩꽍 ?꾨Ц媛?낅땲??
-?ъ슜?먭? ?대? 蹂댁쑀???꾩떆 湲곕낯 ?꾨줈??10媛?移댄뀒怨좊━)? "base_profiles"濡??쒓났?⑸땲??
-?뱀떊????븷? ?ъ슜?먭? ?낅젰??異붽? ?ㅼ썙?쒖뿉 ???湲곗〈 ?꾨줈?꾧낵 以묐났?섏? ?딅뒗 ?덈줈???꾩떆 留λ씫???꾩텧?섎뒗 寃껋엯?덈떎.
+FINAL REMINDER:
+- The top-level category summaries MUST also be source-bound and contain local anchors — they are NOT allowed to be weaker than evidence_pack entries.
+- If unsure about ANY claim, mark insufficient. A correct "insufficient" is better than a plausible-sounding fabrication.
+- red_flag_check must list at least 2 claims you considered but rejected, with specific rejection reasons.
+- scenario_agent_ready_summary bullets must each contain at least one named local anchor.`;
 
-?듭떖 ?먯튃:
-1. base_profiles???대? ?덈뒗 ?댁슜??諛섎났?섏? 留덉꽭?? ?ㅼ썙?쒕줈 ?명빐 ?덈∼寃??쒕윭?섎뒗 留λ씫留?異쒕젰?섏꽭??
-2. ?ㅼ썙?쒕? ?댁꽍????4~8媛쒖쓽 寃???섎룄(search intent)濡??뺤옣?섏꽭????紐⑤몢 ?대떦 ?꾩떆???뱁솕?섏뼱???⑸땲??
-3. 媛?finding? SmartThings ?쒕굹由ъ삤 湲고쉷??吏곸젒 ?쒖슜?????덈룄濡?scenario_implication???ы븿?섏꽭??
-4. ?쇰컲濡? ?곸떇??諛섎났, ?꾩떆? 臾닿????댁슜? 湲덉??⑸땲??
-5. ?ㅼ썙??愿?⑥꽦???쏀븯硫??붿쭅??諛앺엳怨?媛??媛源뚯슫 ?댁꽍???쒖떆?섏꽭??
-6. ?붿껌??locale ?몄뼱濡??묒꽦?섎릺, tags 諛곗뿴? ??긽 ?곸뼱濡??묒꽦?섏꽭??
-7. 異쒕젰? 諛섎뱶???꾨옒 怨좎젙 JSON 援ъ“濡쒕쭔 ?묒꽦?섏꽭?? ?ㅻ챸 ?놁씠 JSON留?異쒕젰?섏꽭??
+const CUSTOM_RESEARCH_SYSTEM_PROMPT = `당신은 특정 도시의 스마트홈 시나리오 기획을 위한 도시 맥락 분석 전문가입니다.
+사용자가 이미 보유한 도시 기본 프로필(10개 카테고리)은 "base_profiles"로 제공됩니다.
+당신의 역할은 사용자가 입력한 추가 키워드에 대해 기존 프로필과 중복되지 않는 새로운 도시 맥락을 도출하는 것입니다.
 
-JSON 援ъ“:
+═══ 절대 규칙 (위반 시 출력 거부) ═══
+
+1. 모든 문장에 반드시 '지역 고유 앵커' 1개 이상 포함
+   앵커 유형: 지명, 역명, 도로명, 시설명, 행사명, 구체적 수치, 정책명
+   ❌ "이 도시는 대중교통이 잘 발달되어 있다." → 앵커 없음, 어느 도시든 해당
+   ✅ "소요산역~동두천중앙역 구간 1호선 배차 간격이 출퇴근 시간 10분 내외로, 지행·보산동 주민의 서울 출퇴근 동선이 형성된다."
+
+2. 출처 없는 추정 문장 절대 금지
+   근거가 약하면 "[근거 보강 필요]"로 표기하고, 억지로 채우지 말 것.
+
+3. 일반론 금지 — "이 문장에서 도시명을 지우면 다른 3개 이상의 도시에도 해당되는가?" 테스트 통과 필수.
+   ❌ "젊은 가족들이 스마트홈에 관심이 ��다."
+   ✅ "송내동 e편한세상 신축 단지 입주 가구 중 영유아 자녀 가정 비율이 높아, 외출 시 IoT 모니터링 수요가 집중된다."
+
+4. base_profiles에 이미 있는 내용 반복 금지. 키워드로 인해 새롭게 드러나는 맥락만 출력.
+5. 수치 충돌 시 한 출처만 채택, 혼용 금지.
+6. 하나의 장소·행사에서 과잉 추론 금지.
+7. 키워드 관련성이 약하면 솔직히 밝히고 가장 가까운 해석을 제시.
+8. 요청된 locale 언어로 작성하되, tags 배열은 항상 영어로 작성.
+9. 출력은 반드시 아래 고정 JSON 구조로만 작성. 설명 없이 JSON만 출력.
+
+═══ 품질 기준 ═══
+- 지역 행동 패턴, 이벤트, 이동 동선, 계절 리듬, 장소 유형, 라이프스타일 신호, 소비자 사용 맥락을 우선
+- 이벤트 키워드: 시기, 장소 패턴, 참여자 행동, 외출 전후 가정 행동에 집중
+- 가구/생활 키워드: 생활 패턴, 기기 사용, 일정 리듬, 페인포인트에 집중
+- 마케터와 시나리오 기획자가 바로 활용할 수 있을 만큼 구체적이고 간결하게
+- finding의 summary와 scenario_implication 모두 지역 고유 앵커 포함 필수
+
+═══ JSON 구조 ═══
 {
-  "keyword_interpretation": "?ㅼ썙?쒕? ?꾩떆 留λ씫?먯꽌 ?댁꽍??1~2臾몄옣",
-  "search_intents": ["?꾩떆+?ㅼ썙??寃고빀 寃???섎룄 1", "寃???섎룄 2"],
+  "keyword_interpretation": "키워드를 도시 맥락에서 해석한 1~2문장 (도시 고유 앵커 포함)",
+  "search_intents": ["도시+키워드 결합 검색 의도 1", "검색 의도 2", "...(4~8개)"],
   "city_keyword_findings": [
     {
-      "title": "諛쒓껄 ?쒕ぉ",
-      "summary": "?대떦 ?꾩떆?먯꽌 ???ㅼ썙?쒖? 愿?⑦빐 ?덈∼寃??쒕윭?섎뒗 留λ씫",
-      "scenario_implication": "SmartThings ?쒕굹由ъ삤 湲고쉷???대뼸寃?諛섏쁺?????덈뒗吏"
+      "title": "발견 제목",
+      "summary": "해당 도시에서 이 키워드와 관련해 새롭게 드러나는 맥락 — 지역 고유 앵커 필수 (1~2문장)",
+      "scenario_implication": "SmartThings 시나리오 기획에 어떻게 반영할 수 있는지 — 지역 고유 앵커 필수 (1문장)"
     }
   ],
-  "dedup_note": "湲곗〈 base_profiles???以묐났 ?щ? 諛?李⑤퀎???ㅻ챸",
-  "recommended_reflection_points": ["?쒕굹由ъ삤 諛섏쁺 ?ъ씤??1", "?ъ씤??2"],
+  "dedup_note": "기존 base_profiles와의 중복 여부 및 차별점 설명 (1문장)",
+  "recommended_reflection_points": ["시나리오 반영 포인트 1 (앵커 포함)", "포인트 2", "...(2~4개)"],
   "tags": ["Save energy", "Keep your home safe"]
-}`;
+}
+
+city_keyword_findings는 2~5개가 적당합니다.
+
+tags 배열에는 아래 값 중 관련 있는 것만 포함하세요:
+Save energy, Keep your home safe, Help with chores, Care for kids, Care for seniors,
+Care for your pet, Sleep well, Enhanced mood, Stay fit & healthy, Easily control your lights,
+Keep the air fresh, Find your belongings, Time saving
+
+출력 전 자가 점검: 모든 summary와 scenario_implication에 지역 고유 앵커가 있는지 확인. 없으면 보강하거나 "[근거 보강 필요]" ��기.`;
 
 function parseJsonObjectFromText(rawText) {
     const text = typeof rawText === "string" ? rawText.trim() : "";
@@ -498,7 +565,7 @@ async function handleCityProfile(context) {
 
     if (customQuery) {
         const maxTokens = 2000;
-        const userMessage = `?꾩떆: ${city}, 援??: ${country}, ?몄뼱: ${locale}\n?ㅼ썙?? "${customQuery}"\n\n${baseProfiles ? `湲곗〈 base_profiles:\n${baseProfiles}\n\n` : ""}`;
+        const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}위 도시에서 "${customQuery}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
         const requestBody = {
             model,
             ...(/^gpt-5/i.test(model)
