@@ -4346,6 +4346,23 @@ function bindCustomResearchActions(query, needsText, data, tags, resultContainer
     });
 }
 
+function buildProfileSourceTagsAll(profile) {
+    const sources = getCityProfileSourceMap(profile);
+    if (!sources.length) return "";
+    const seen = new Set();
+    const tags = sources.map((s) => {
+        const url = s.url && /^https?:\/\//i.test(s.url) ? s.url : "";
+        if (!url) return "";
+        let domain = "";
+        try { domain = new URL(url).hostname.replace(/^www\./, ""); } catch {}
+        if (!domain || seen.has(domain)) return "";
+        seen.add(domain);
+        const truncUrl = url.length > 60 ? url.substring(0, 60) + "…" : url;
+        return `<a class="magic-source-tag" href="${escapeHtml(url)}" data-source-url="${escapeHtml(url)}" data-tooltip="${escapeHtml(truncUrl)}" onclick="event.preventDefault();window.open(this.dataset.sourceUrl,'_blank','width=960,height=700,scrollbars=yes,resizable=yes')" rel="noopener noreferrer">${escapeHtml(domain)}</a>`;
+    }).filter(Boolean).slice(0, 3);
+    return tags.length ? `<div class="magic-source-tags">${tags.join("")}</div>` : "";
+}
+
 function buildSourceTagsHtml(profile, catKey) {
     const entry = getCityProfileEvidenceEntry(profile, catKey);
     if (!entry) return "";
@@ -5115,11 +5132,12 @@ function getCustomResearchSummary() {
     if (!_customResearchData?.applied || !_customResearchData?.data) return null;
 
     const data = _customResearchData.data;
+    const toStr = (v) => typeof v === "string" ? v.trim() : (v && typeof v === "object" ? (v.text || v.point || v.summary || v.title || JSON.stringify(v)) : String(v || ""));
     const points = Array.isArray(data.recommended_reflection_points)
-        ? data.recommended_reflection_points.filter(Boolean).slice(0, 3)
+        ? data.recommended_reflection_points.filter(Boolean).map(toStr).filter(Boolean).slice(0, 3)
         : [];
     const findings = Array.isArray(data.city_keyword_findings)
-        ? data.city_keyword_findings.filter(Boolean).slice(0, 2)
+        ? data.city_keyword_findings.filter(Boolean).map(toStr).filter(Boolean).slice(0, 2)
         : [];
 
     return {
@@ -5167,10 +5185,11 @@ function getQ1CombinedImplications(q1Traits, customSummary) {
     const items = [...q1Traits];
 
     if (customSummary) {
+        const stringify = (v) => typeof v === "string" ? v : (v && typeof v === "object" ? (v.text || v.point || v.finding || v.summary || JSON.stringify(v)) : String(v || ""));
         const detailParts = [
             customSummary.interpretation,
-            ...(Array.isArray(customSummary.points) ? customSummary.points.slice(0, 2) : []),
-            ...(Array.isArray(customSummary.findings) ? customSummary.findings.slice(0, 1) : [])
+            ...(Array.isArray(customSummary.points) ? customSummary.points.slice(0, 2).map(stringify) : []),
+            ...(Array.isArray(customSummary.findings) ? customSummary.findings.slice(0, 1).map(stringify) : [])
         ].filter(Boolean);
 
         items.push({
@@ -5677,7 +5696,8 @@ function buildQ1ScenarioReferencePanelHtml() {
                     </div>
                     <span class="q2-audience-implication-badge">${item.sourceType === "custom" ? (isKo ? "커스텀 반영" : "Custom input") : (isKo ? "Q1 반영됨" : "Reflected from Q1")}</span>
                 </div>
-                ${buildExpandableSummaryHtml(item.logic, 180)}
+                ${buildInlineSummaryHtml(item.logic)}
+                ${item.sourceType === "custom" && _latestCityProfile ? buildProfileSourceTagsAll(_latestCityProfile) : ""}
             </article>
         `).join("")
         : `<p class="q2-ref-empty">${isKo ? "선택한 도시 프로필과 커스텀 검색에서 읽히는 생활상 시사점이 아직 없습니다." : "No lifestyle implications are available from the selected city profile or custom research yet."}</p>`;
@@ -6115,7 +6135,7 @@ function buildStep3Insight() {
                             ${linked ? (isKo ? "Q2와 연결" : "Linked in Q2") : (isKo ? "Q1 기준" : "Q1 basis")}
                         </span>
                     </div>
-                    ${buildExpandableSummaryHtml(item.logic, 100)}
+                    ${buildInlineSummaryHtml(item.logic)}
                 </article>
             `;
         }).join("")
@@ -6129,7 +6149,8 @@ function buildStep3Insight() {
                     ${customResearchSummary.tags.length ? `<div class="q2-ref-tag-row">${customResearchSummary.tags.map((tag) => `<span class="q2-ref-tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
                 </div>
                 ${customResearchSummary.interpretation ? `<p class="q2-ref-custom-copy">${escapeHtml(customResearchSummary.interpretation)}</p>` : ""}
-                ${customResearchSummary.points.length ? `<ul class="q2-ref-point-list">${customResearchSummary.points.map((point) => `<li>${escapeHtml(summarizeInsightText(point, 120))}</li>`).join("")}</ul>` : ""}
+                ${customResearchSummary.points.length ? `<ul class="q2-ref-point-list">${customResearchSummary.points.map((point) => { const t = typeof point === "string" ? point : (point?.text || point?.point || JSON.stringify(point)); return `<li>${escapeHtml(String(t || "").replace(/\s+/g, " ").trim())}</li>`; }).join("")}</ul>` : ""}
+                ${_latestCityProfile ? buildProfileSourceTagsAll(_latestCityProfile) : ""}
             </article>
         `
         : `<p class="q2-ref-empty">${isKo ? "Q1에서 커스텀 검색을 반영하면 요약이 여기에 표시됩니다." : "Applied custom research from Q1 will appear here."}</p>`;
