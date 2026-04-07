@@ -646,7 +646,7 @@ async function handleCityProfile(context) {
     const wikiContext = await fetchWikiContext(country, city);
 
     if (customQuery) {
-        const maxTokens = 2000;
+        const maxTokens = 4000;
         const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}${wikiContext ? `═══ 참고 자료 (백과사전 출처 — 팩트 근거로 활용) ═══\n${wikiContext}\n═══ 참고 자료 끝 ═══\n\n` : ""}위 도시에서 "${customQuery}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
         const requestBody = {
             model,
@@ -673,7 +673,12 @@ async function handleCityProfile(context) {
         }
 
         const usage = result.usage || null;
+        const finishReason = result.choices?.[0]?.finish_reason || "";
         const content = result.choices?.[0]?.message?.content || "{}";
+
+        if (finishReason === "length") {
+            console.warn(`[custom-research] Response truncated (finish_reason=length) for ${city}/${customQuery}. Tokens used: ${JSON.stringify(usage)}`);
+        }
 
         if (usage) {
             const cost = estimateUsageCost(context.env, model, usage);
@@ -684,7 +689,7 @@ async function handleCityProfile(context) {
             ok: true,
             data: normalizeCustomResearchPayload(parseJsonObjectFromText(content) || { raw: content }, { query: customQuery, city, locale, baseProfiles }),
             mode: "custom_research",
-            meta: { city, country, locale, model, query: customQuery }
+            meta: { city, country, locale, model, query: customQuery, finish_reason: finishReason }
         });
     }
 
@@ -700,7 +705,7 @@ ${wikiContext}
 IMPORTANT: Use the reference context above as your PRIMARY source of facts. Extract specific district names, statistics, facility names, event names, and policy names from it. Cite "Wikipedia ${getWikiLang(country).toUpperCase()}" in your source_map. Only mark a category as "Evidence insufficient" if the reference context truly contains NO relevant information for that category.
 ` : ""}
 Build a source-bound localization evidence pack for this city. Use only evidence-backed localized statements. If evidence is weak, mark that category as "Evidence insufficient for localized claim." Return valid JSON only.`;
-    const maxTokens = 5000;
+    const maxTokens = 10000;
 
     let result;
     try {
@@ -723,7 +728,12 @@ Build a source-bound localization evidence pack for this city. Use only evidence
     }
 
     const usage = result.usage || null;
+    const finishReason = result.choices?.[0]?.finish_reason || "";
     const content = result.choices?.[0]?.message?.content || "{}";
+
+    if (finishReason === "length") {
+        console.warn(`[city-profile] Response truncated (finish_reason=length) for ${city}/${country}. Tokens used: ${JSON.stringify(usage)}`);
+    }
 
     if (usage) {
         const cost = estimateUsageCost(context.env, model, usage);
@@ -733,7 +743,7 @@ Build a source-bound localization evidence pack for this city. Use only evidence
     return json({
         ok: true,
         data: normalizeCityProfilePayload(parseJsonObjectFromText(content) || { raw: content }, { city, country, locale }),
-        meta: { city, country, locale, model }
+        meta: { city, country, locale, model, finish_reason: finishReason }
     }, 200, {
         "Cache-Control": "public, max-age=86400"
     });
