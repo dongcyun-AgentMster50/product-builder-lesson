@@ -3804,12 +3804,16 @@ function buildCityProfileEvidenceDetail(profile, key) {
 
     const detailId = `city-ev-${key}-${Math.random().toString(36).slice(2, 10)}`;
     const sourceHtml = sources.length
-        ? `<ul class="q2-evidence-source-list">${sources.map((item) => {
-            const label = [item.id, item.organization || item.title].filter(Boolean).join(" · ");
+        ? `<div class="magic-source-tags magic-source-tags--evidence">${sources.map((item) => {
             const safeUrl = item.url && /^https?:\/\//i.test(item.url) ? item.url : "";
-            const href = safeUrl ? ` href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer"` : "";
-            return `<li>${href ? `<a${href}>${escapeHtml(label)}</a>` : escapeHtml(label)}</li>`;
-        }).join("")}</ul>`
+            if (!safeUrl) return "";
+            let domain = "";
+            try { domain = new URL(safeUrl).hostname.replace(/^www\./, ""); } catch {}
+            if (!domain) return "";
+            const label = [item.id, domain].filter(Boolean).join(" · ");
+            const truncUrl = safeUrl.length > 60 ? safeUrl.substring(0, 60) + "…" : safeUrl;
+            return `<a class="magic-source-tag" href="${escapeHtml(safeUrl)}" data-source-url="${escapeHtml(safeUrl)}" data-tooltip="${escapeHtml(truncUrl)}" onclick="event.preventDefault();window.open(this.dataset.sourceUrl,'_blank','width=960,height=700,scrollbars=yes,resizable=yes')" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
+        }).filter(Boolean).join("")}</div>`
         : "";
 
     return `
@@ -3842,6 +3846,7 @@ function renderCityProfileInsight(countryName, localCity, profile, countryCode) 
             <div class="cpv2-content">
                 <span class="cpv2-label">${escapeHtml(isKo ? cat.labelKo : cat.labelEn)}</span>
                 <span class="cpv2-text">${escapeHtml(profile[cat.key])}</span>
+                ${buildSourceTagsHtml(profile, cat.key)}
                 ${buildCityProfileEvidenceDetail(profile, cat.key)}
             </div>
         </div>
@@ -4351,15 +4356,14 @@ function buildSourceTagsHtml(profile, catKey) {
         .slice(0, 4);
     if (!sources.length) return "";
     return `<div class="magic-source-tags">${sources.map((s) => {
-        const label = s.organization || s.title || s.id;
         const url = s.url && /^https?:\/\//i.test(s.url) ? s.url : "";
+        if (!url) return "";
         let domain = "";
-        if (url) { try { domain = new URL(url).hostname.replace(/^www\./, ""); } catch {} }
-        if (url) {
-            return `<a class="magic-source-tag" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(domain || url)}">${escapeHtml(label)}</a>`;
-        }
-        return `<span class="magic-source-tag magic-source-tag--no-link" title="${escapeHtml(label)}">${escapeHtml(label)}</span>`;
-    }).join("")}</div>`;
+        try { domain = new URL(url).hostname.replace(/^www\./, ""); } catch {}
+        if (!domain) return "";
+        const truncUrl = url.length > 60 ? url.substring(0, 60) + "…" : url;
+        return `<a class="magic-source-tag" href="${escapeHtml(url)}" data-source-url="${escapeHtml(url)}" data-tooltip="${escapeHtml(truncUrl)}" onclick="event.preventDefault();window.open(this.dataset.sourceUrl,'_blank','width=960,height=700,scrollbars=yes,resizable=yes')" rel="noopener noreferrer">${escapeHtml(domain)}</a>`;
+    }).filter(Boolean).join("")}</div>`;
 }
 
 function renderMagicCards(container) {
@@ -5171,7 +5175,7 @@ function getQ1CombinedImplications(q1Traits, customSummary) {
 
         items.push({
             trait: customSummary.query || (isKo ? "커스텀 검색 반영 맥락" : "Custom research context"),
-            logic: summarizeInsightText(detailParts.join(" "), 180),
+            logic: detailParts.join(" "),
             catLabel: isKo ? "커스텀 검색" : "Custom research",
             color: "#7c3aed",
             sourceType: "custom"
@@ -5673,7 +5677,7 @@ function buildQ1ScenarioReferencePanelHtml() {
                     </div>
                     <span class="q2-audience-implication-badge">${item.sourceType === "custom" ? (isKo ? "커스텀 반영" : "Custom input") : (isKo ? "Q1 반영됨" : "Reflected from Q1")}</span>
                 </div>
-                ${buildInlineSummaryHtml(item.logic)}
+                ${buildExpandableSummaryHtml(item.logic, 180)}
             </article>
         `).join("")
         : `<p class="q2-ref-empty">${isKo ? "선택한 도시 프로필과 커스텀 검색에서 읽히는 생활상 시사점이 아직 없습니다." : "No lifestyle implications are available from the selected city profile or custom research yet."}</p>`;
@@ -6111,7 +6115,7 @@ function buildStep3Insight() {
                             ${linked ? (isKo ? "Q2와 연결" : "Linked in Q2") : (isKo ? "Q1 기준" : "Q1 basis")}
                         </span>
                     </div>
-                    <p>${escapeHtml(summarizeInsightText(item.logic, 100))}</p>
+                    ${buildExpandableSummaryHtml(item.logic, 100)}
                 </article>
             `;
         }).join("")
