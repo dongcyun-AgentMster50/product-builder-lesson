@@ -5148,9 +5148,12 @@ function getCustomResearchSummary() {
         ? data.city_keyword_findings.filter((f) => f && typeof f === "object").slice(0, 5)
         : [];
     const findings = rawFindings.map(toStr).filter(Boolean).slice(0, 2);
-    // 시나리오 반영 포인트만 별도 추출
+    // 시나리오 반영 포인트만 별도 추출 (scenario_implication 우선, 없으면 summary 폴백)
     const scenarioImplications = rawFindings
-        .map((f) => ({ title: String(f.title || "").trim(), implication: String(f.scenario_implication || "").trim() }))
+        .map((f) => ({
+            title: String(f.title || "").trim(),
+            implication: String(f.scenario_implication || f.summary || "").trim()
+        }))
         .filter((f) => f.implication);
 
     return {
