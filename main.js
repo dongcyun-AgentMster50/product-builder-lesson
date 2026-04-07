@@ -4891,7 +4891,14 @@ function toList(value) {
 }
 
 /** 선택된 세그먼트 키워드별 "왜 이 특징이 도출되었는지" 설명 */
-function inferTraitReason(trait) {
+function inferTraitReason(trait, q1Traits = []) {
+    const q1Match = q1Traits.find((t) => t.trait === trait);
+    if (q1Match) {
+        const q1Part = q1Match.logic || "";
+        const q1Quote = q1Match.profileQuote || "";
+        const base = q1Part ? q1Part : "";
+        return q1Quote ? `${base} — "${q1Quote}"` : base;
+    }
     const reasons = {
         "시간 가치 민감": "맞벌이·퇴근 키워드에서 → 시간이 곧 비용인 생활 패턴",
         "가구 운영 복잡도 높음": "육아·가족 키워드에서 → 동시에 챙겨야 할 대상이 많음",
@@ -5132,19 +5139,26 @@ function getCustomResearchSummary() {
     if (!_customResearchData?.applied || !_customResearchData?.data) return null;
 
     const data = _customResearchData.data;
-    const toStr = (v) => typeof v === "string" ? v.trim() : (v && typeof v === "object" ? (v.text || v.point || v.summary || v.title || JSON.stringify(v)) : String(v || ""));
+    const toStr = (v) => typeof v === "string" ? v.trim() : (v && typeof v === "object" ? (v.text || v.point || v.summary || v.title || "") : String(v || ""));
     const points = Array.isArray(data.recommended_reflection_points)
         ? data.recommended_reflection_points.filter(Boolean).map(toStr).filter(Boolean).slice(0, 3)
         : [];
-    const findings = Array.isArray(data.city_keyword_findings)
-        ? data.city_keyword_findings.filter(Boolean).map(toStr).filter(Boolean).slice(0, 2)
+    // findings: 원본 객체 유지 (title, summary, scenario_implication)
+    const rawFindings = Array.isArray(data.city_keyword_findings)
+        ? data.city_keyword_findings.filter((f) => f && typeof f === "object").slice(0, 5)
         : [];
+    const findings = rawFindings.map(toStr).filter(Boolean).slice(0, 2);
+    // 시나리오 반영 포인트만 별도 추출
+    const scenarioImplications = rawFindings
+        .map((f) => ({ title: String(f.title || "").trim(), implication: String(f.scenario_implication || "").trim() }))
+        .filter((f) => f.implication);
 
     return {
         query: _customResearchData.query || "",
         interpretation: String(data.keyword_interpretation || "").replace(/\s+/g, " ").trim(),
         points,
         findings,
+        scenarioImplications,
         tags: Array.isArray(data.tags) ? data.tags.slice(0, 4) : []
     };
 }
@@ -5185,16 +5199,24 @@ function getQ1CombinedImplications(q1Traits, customSummary) {
     const items = [...q1Traits];
 
     if (customSummary) {
-        const stringify = (v) => typeof v === "string" ? v : (v && typeof v === "object" ? (v.text || v.point || v.finding || v.summary || JSON.stringify(v)) : String(v || ""));
-        const detailParts = [
-            customSummary.interpretation,
-            ...(Array.isArray(customSummary.points) ? customSummary.points.slice(0, 2).map(stringify) : []),
-            ...(Array.isArray(customSummary.findings) ? customSummary.findings.slice(0, 1).map(stringify) : [])
-        ].filter(Boolean);
+        // 시나리오 반영 포인트가 있으면 그것을 중심으로, 없으면 기존 방식
+        const scenarioImps = Array.isArray(customSummary.scenarioImplications) ? customSummary.scenarioImplications : [];
+        let logic;
+        if (scenarioImps.length > 0) {
+            logic = scenarioImps.map((s) => s.title ? `[${s.title}] ${s.implication}` : s.implication).join(" ");
+        } else {
+            const stringify = (v) => typeof v === "string" ? v : (v && typeof v === "object" ? (v.text || v.point || v.finding || v.summary || "") : String(v || ""));
+            const detailParts = [
+                customSummary.interpretation,
+                ...(Array.isArray(customSummary.points) ? customSummary.points.slice(0, 2).map(stringify) : []),
+                ...(Array.isArray(customSummary.findings) ? customSummary.findings.slice(0, 1).map(stringify) : [])
+            ].filter(Boolean);
+            logic = detailParts.join(" ");
+        }
 
         items.push({
             trait: customSummary.query || (isKo ? "커스텀 검색 반영 맥락" : "Custom research context"),
-            logic: detailParts.join(" "),
+            logic,
             catLabel: isKo ? "커스텀 검색" : "Custom research",
             color: "#7c3aed",
             sourceType: "custom"
@@ -5682,6 +5704,14 @@ function buildQ1ScenarioReferencePanelHtml() {
                     ${(customSummary.tags.length ? customSummary.tags : buildReferenceKeywordChips(customSummary.interpretation, customSummary.query)).slice(0, 5).map((tag) => `<span class="q2-ref-tag">${escapeHtml(tag)}</span>`).join("")}
                 </div>
                 ${customSummary.interpretation ? `<div class="q2-ref-custom-copy">${buildInlineSummaryHtml(customSummary.interpretation)}</div>` : ""}
+                ${Array.isArray(customSummary.scenarioImplications) && customSummary.scenarioImplications.length
+                    ? `<div class="q2-ref-scenario-implications">
+                        <span class="q2-ref-section-kicker">${isKo ? "시나리오 반영 포인트" : "Scenario implications"}</span>
+                        <ul class="q2-ref-point-list">${customSummary.scenarioImplications.map((s) =>
+                            `<li>${s.title ? `<strong>${escapeHtml(s.title)}</strong> — ` : ""}${escapeHtml(s.implication)}</li>`
+                        ).join("")}</ul>
+                    </div>`
+                    : ""}
             </article>
         `
         : `<p class="q2-ref-empty">${isKo ? "커스텀 검색 반영이 없으면 여기에는 Q1 사용자 정의 맥락이 표시됩니다." : "Applied custom research from Q1 will appear here."}</p>`;
@@ -6018,7 +6048,7 @@ function buildStep3Insight() {
             const statusTag = isCorro
                 ? `<span class="q2-trait-confirmed">${isKo ? "Q2 검증됨" : "Q2 confirmed"}</span>`
                 : `<span class="q2-trait-tentative">${isKo ? "잠정" : "tentative"}</span>`;
-            const uid = `q1-ev-${i}-${Date.now()}`;
+            const uid = `q1-ev-${i}-${Math.random().toString(36).slice(2, 10)}`;
             const quoteHtml = t.profileQuote
                 ? `<p class="q2-ev-quote">"${escapeHtml(t.profileQuote)}${t.profileQuote.length >= 120 ? "…" : ""}"</p>`
                 : "";
@@ -6034,7 +6064,7 @@ function buildStep3Insight() {
                             <span class="q2-source-tag" style="background:${t.color}20;color:${t.color}">${escapeHtml(t.catLabel)}</span>
                             ${isKo ? `${escapeHtml(cityDisplay)} 도시 프로필에서 도출` : `From ${escapeHtml(cityDisplay)} city profile`}
                         </p>
-                        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${uid}">
+                        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${uid}" aria-expanded="false" aria-controls="${uid}">
                             <span class="q2-ev-arrow">▸</span> ${isKo ? "추론 근거 보기" : "View reasoning"}
                         </button>
                         <div class="q2-evidence-detail" id="${uid}">
@@ -6064,14 +6094,18 @@ function buildStep3Insight() {
     if (hasAnyQ2Selection && q2Traits.length > 0) {
         const warmColors = ["#ea580c", "#f97316", "#fb923c", "#c2410c", "#d97706", "#b91c1c", "#dc2626"];
         const traitCards = q2Traits.map((trait, i) => {
-            const reason = inferTraitReason(trait);
-            const uid = `q2-ev-${i}-${Date.now()}`;
+            const reason = inferTraitReason(trait, q1Traits);
+            const uid = `q2-ev-${i}-${Math.random().toString(36).slice(2, 10)}`;
             const legend = getStep3SignalLegend(trait, isKo);
             const warmColor = legend.color || warmColors[i % warmColors.length];
             const isCorro = corroboratedLabels.has(trait);
+            const q1Match = q1Traits.find((t) => t.trait === trait);
             const statusTag = isCorro
                 ? `<span class="q2-trait-confirmed">${isKo ? "Q1 연계" : "Q1 linked"}</span>`
                 : "";
+            const sourceText = isCorro && q1Match
+                ? (isKo ? `Q1 ${q1Match.catLabel} + Q2 선택 교차 검증` : `Q1 ${q1Match.catLabel} + Q2 cross-validated`)
+                : (isKo ? "Q2 선택에서 도출" : "Derived from Q2 selections");
             const legendTag = `<span class="q2-trait-legend" style="--q2-trait-legend:${warmColor}">${escapeHtml(legend.label)}</span>`;
             return `
                 <div class="q2-hybrid-trait q2-hybrid-trait--compact">
@@ -6084,9 +6118,9 @@ function buildStep3Insight() {
                                 ${statusTag}
                             </div>
                         </div>
-                        <p class="q2-trait-source">${isKo ? "Q2 선택에서 도출" : "Derived from Q2 selections"}</p>
+                        <p class="q2-trait-source">${escapeHtml(sourceText)}</p>
                         ${reason ? `
-                        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${uid}">
+                        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${uid}" aria-expanded="false" aria-controls="${uid}">
                             <span class="q2-ev-arrow">▸</span> ${isKo ? "추론 근거 보기" : "View reasoning"}
                         </button>
                         <div class="q2-evidence-detail" id="${uid}">
@@ -6149,7 +6183,14 @@ function buildStep3Insight() {
                     ${customResearchSummary.tags.length ? `<div class="q2-ref-tag-row">${customResearchSummary.tags.map((tag) => `<span class="q2-ref-tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
                 </div>
                 ${customResearchSummary.interpretation ? `<p class="q2-ref-custom-copy">${escapeHtml(customResearchSummary.interpretation)}</p>` : ""}
-                ${customResearchSummary.points.length ? `<ul class="q2-ref-point-list">${customResearchSummary.points.map((point) => { const t = typeof point === "string" ? point : (point?.text || point?.point || JSON.stringify(point)); return `<li>${escapeHtml(String(t || "").replace(/\s+/g, " ").trim())}</li>`; }).join("")}</ul>` : ""}
+                ${Array.isArray(customResearchSummary.scenarioImplications) && customResearchSummary.scenarioImplications.length
+                    ? `<div class="q2-ref-scenario-implications">
+                        <span class="q2-ref-section-kicker">${isKo ? "시나리오 반영 포인트" : "Scenario implications"}</span>
+                        <ul class="q2-ref-point-list">${customResearchSummary.scenarioImplications.map((s) =>
+                            `<li>${s.title ? `<strong>${escapeHtml(s.title)}</strong> — ` : ""}${escapeHtml(s.implication)}</li>`
+                        ).join("")}</ul>
+                    </div>`
+                    : customResearchSummary.points.length ? `<ul class="q2-ref-point-list">${customResearchSummary.points.map((point) => { const t = typeof point === "string" ? point : (point?.text || point?.point || ""); return `<li>${escapeHtml(String(t || "").replace(/\s+/g, " ").trim())}</li>`; }).join("")}</ul>` : ""}
                 ${_latestCityProfile ? buildProfileSourceTagsAll(_latestCityProfile) : ""}
             </article>
         `
@@ -7316,10 +7357,10 @@ function alignWizardStepViewport() {
         : activeStep.querySelector(".role-card.selected, .role-card, select, input[type='text'], textarea, input[type='checkbox']");
     focusTarget?.focus({ preventScroll: true });
 
-    const scrollTarget = currentStep === 3
+    const scrollTarget = (currentStep === 2 || currentStep === 3)
         ? (document.getElementById("wizard-screen") || activeStep)
         : activeStep;
-    const topPadding = currentStep === 3 ? 0 : 12;
+    const topPadding = (currentStep === 2 || currentStep === 3) ? 0 : 12;
     const yOffset = Math.max(0, scrollTarget.getBoundingClientRect().top + window.pageYOffset - topPadding);
     window.scrollTo({ top: yOffset, behavior: "smooth" });
 }

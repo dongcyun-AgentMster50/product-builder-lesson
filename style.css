@@ -2804,8 +2804,8 @@ textarea {
 
 .q2-evidence-toggle--compact {
     width: fit-content;
-    min-height: 28px;
-    padding: 0 10px;
+    min-height: 44px;
+    padding: 0 14px;
     border-radius: 999px;
     border: 1px solid rgba(0, 51, 102, 0.12);
     background: rgba(0, 51, 102, 0.04);
@@ -2816,6 +2816,11 @@ textarea {
 
 .q2-evidence-toggle--compact:hover {
     background: rgba(0, 51, 102, 0.08);
+}
+
+.q2-evidence-toggle--compact:focus-visible {
+    outline: 2px solid var(--accent-strong, #0f2460);
+    outline-offset: 2px;
 }
 
 .q2-trait-label {
@@ -2935,6 +2940,12 @@ textarea {
 
 .q2-evidence-toggle:hover {
     color: var(--accent-strong, #0f2460);
+}
+
+.q2-evidence-toggle:focus-visible {
+    outline: 2px solid var(--accent-strong, #0f2460);
+    outline-offset: 2px;
+    border-radius: 4px;
 }
 
 .q2-evidence-toggle .q2-ev-arrow {
@@ -3678,6 +3689,34 @@ textarea {
     font-size: 0.76rem;
     line-height: 1.55;
     color: var(--muted);
+}
+
+.q2-ref-scenario-implications {
+    margin-top: 6px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: rgba(124, 58, 237, 0.05);
+    border-left: 3px solid #7c3aed;
+}
+
+.q2-ref-scenario-implications .q2-ref-section-kicker {
+    color: #7c3aed;
+    margin-bottom: 4px;
+}
+
+.q2-ref-scenario-implications .q2-ref-point-list {
+    gap: 8px;
+}
+
+.q2-ref-scenario-implications .q2-ref-point-list li {
+    color: var(--fg);
+    font-size: 0.78rem;
+    line-height: 1.6;
+}
+
+.q2-ref-scenario-implications .q2-ref-point-list li strong {
+    color: #7c3aed;
+    font-weight: 800;
 }
 
 .q2-stage-card {
@@ -8745,62 +8784,73 @@ a.source-tag-link:hover {
 .magic-source-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin: 4px 0 8px;
+    gap: 5px;
+    margin: 6px 0 8px;
+}
+.magic-source-tags--evidence {
+    margin: 8px 0 4px;
 }
 .magic-source-tag {
     display: inline-flex;
     align-items: center;
-    padding: 3px 10px;
-    border-radius: var(--radius-pill);
-    font-size: 0.7rem;
-    font-weight: 600;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    color: var(--accent);
+    gap: 4px;
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    background: #f0f4f8;
+    border: 1px solid #d8dee6;
+    color: #4a6a8a;
     text-decoration: none;
     cursor: pointer;
-    transition: background 0.14s, border-color 0.14s;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
     position: relative;
+    line-height: 1.5;
+}
+.magic-source-tag::before {
+    content: "↗";
+    font-size: 0.58rem;
+    opacity: 0.5;
 }
 .magic-source-tag:hover {
-    background: var(--accent-soft);
-    border-color: var(--accent);
+    background: #e3ecf5;
+    border-color: #a8bdd4;
+    color: #1a4a7a;
 }
-.magic-source-tag--no-link {
-    cursor: default;
-    color: var(--muted);
+.magic-source-tag:active {
+    background: #d4e0ee;
 }
-.magic-source-tag--no-link:hover {
-    background: var(--surface);
-    border-color: var(--line);
-}
-/* 툴팁 — 호버 시 도메인 URL 표시 */
-.magic-source-tag[title]:hover::after {
-    content: attr(title);
+/* 툴팁 — 호버 시 URL 표시 (data-tooltip) */
+.magic-source-tag[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
     position: absolute;
-    bottom: calc(100% + 6px);
+    bottom: calc(100% + 7px);
     left: 50%;
     transform: translateX(-50%);
-    padding: 4px 10px;
-    border-radius: var(--radius-sm);
-    background: var(--ink);
-    color: var(--paper);
-    font-size: 0.66rem;
-    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 6px;
+    background: #1a2332;
+    color: #e8ecf0;
+    font-size: 0.62rem;
+    font-weight: 400;
     white-space: nowrap;
+    max-width: 340px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     pointer-events: none;
     z-index: 200;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.22);
+    letter-spacing: 0;
 }
-.magic-source-tag[title]:hover::before {
+.magic-source-tag[data-tooltip]:hover::before {
     content: "";
     position: absolute;
-    bottom: calc(100% + 2px);
+    bottom: calc(100% + 3px);
     left: 50%;
     transform: translateX(-50%);
     border: 4px solid transparent;
-    border-top-color: var(--ink);
+    border-top-color: #1a2332;
     pointer-events: none;
     z-index: 200;
 }
@@ -9249,7 +9299,7 @@ a.source-tag-link:hover {
 
     /* Evidence detail mobile spacing */
     .q2-evidence-detail { padding: 10px 12px; }
-    .q2-evidence-toggle--compact { min-height: 36px; padding: 0 12px; font-size: 0.72rem; }
+    .q2-evidence-toggle--compact { min-height: 44px; padding: 0 14px; font-size: 0.72rem; }
     .cpv2-item { padding: 12px 14px; }
     .cpv2-text { font-size: 0.8rem; line-height: 1.6; }
 }
