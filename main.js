@@ -6605,7 +6605,7 @@ function buildStep3Insight() {
             // 산출 근거 (어떤 소스에서 몇 점)
             const sources = (tagSources[tag] || []).sort((a, b) => b.pts - a.pts);
             const sourceSum = sources.reduce((s, x) => s + x.pts, 0);
-            const detailId = `tag-detail-${idx}-${Date.now()}`;
+            const detailId = `tag-detail-${idx}-${Math.random().toString(36).slice(2, 10)}`;
             const sourceLines = sources.map(s =>
                 `<span class="q2-tag-source-item">+${s.pts} ← ${escapeHtml(s.label)}</span>`
             ).join("");
