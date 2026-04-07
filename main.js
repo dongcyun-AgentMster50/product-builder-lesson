@@ -7357,10 +7357,17 @@ function alignWizardStepViewport() {
         : activeStep.querySelector(".role-card.selected, .role-card, select, input[type='text'], textarea, input[type='checkbox']");
     focusTarget?.focus({ preventScroll: true });
 
-    const scrollTarget = (currentStep === 2 || currentStep === 3)
-        ? (document.getElementById("wizard-screen") || activeStep)
-        : activeStep;
-    const topPadding = (currentStep === 2 || currentStep === 3) ? 0 : 12;
+    if (currentStep === 2 || currentStep === 3) {
+        const wizardScreen = document.getElementById("wizard-screen");
+        if (wizardScreen) {
+            window.scrollTo({ top: wizardScreen.offsetTop, behavior: "smooth" });
+        } else {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        return;
+    }
+    const scrollTarget = activeStep;
+    const topPadding = 12;
     const yOffset = Math.max(0, scrollTarget.getBoundingClientRect().top + window.pageYOffset - topPadding);
     window.scrollTo({ top: yOffset, behavior: "smooth" });
 }
@@ -7368,13 +7375,13 @@ function alignWizardStepViewport() {
 function enforceStepViewportAlignment() {
     window.requestAnimationFrame(() => {
         alignWizardStepViewport();
-        if (currentStep === 3) {
+        if (currentStep === 2 || currentStep === 3) {
             window.setTimeout(() => {
-                if (currentStep !== 3) return;
-                const anchor = document.getElementById("wizard-screen") || document.querySelector('.wizard-step[data-step="3"]');
-                if (!anchor) return;
-                const yOffset = Math.max(0, anchor.getBoundingClientRect().top + window.pageYOffset);
-                window.scrollTo({ top: yOffset, behavior: "auto" });
+                if (currentStep !== 2 && currentStep !== 3) return;
+                const wizardScreen = document.getElementById("wizard-screen");
+                if (wizardScreen) {
+                    window.scrollTo({ top: wizardScreen.offsetTop, behavior: "auto" });
+                }
             }, 140);
         }
     });
