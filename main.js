@@ -7360,33 +7360,19 @@ function alignWizardStepViewport() {
         : activeStep.querySelector(".role-card.selected, .role-card, select, input[type='text'], textarea, input[type='checkbox']");
     focusTarget?.focus({ preventScroll: true });
 
-    if (currentStep === 2 || currentStep === 3) {
-        const wizardScreen = document.getElementById("wizard-screen");
-        if (wizardScreen) {
-            window.scrollTo({ top: wizardScreen.offsetTop, behavior: "smooth" });
-        } else {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        return;
-    }
-    const scrollTarget = activeStep;
-    const topPadding = 12;
-    const yOffset = Math.max(0, scrollTarget.getBoundingClientRect().top + window.pageYOffset - topPadding);
+    const yOffset = Math.max(0, activeStep.getBoundingClientRect().top + window.pageYOffset - 12);
     window.scrollTo({ top: yOffset, behavior: "smooth" });
 }
 
 function enforceStepViewportAlignment() {
     window.requestAnimationFrame(() => {
         alignWizardStepViewport();
-        if (currentStep === 2 || currentStep === 3) {
-            window.setTimeout(() => {
-                if (currentStep !== 2 && currentStep !== 3) return;
-                const wizardScreen = document.getElementById("wizard-screen");
-                if (wizardScreen) {
-                    window.scrollTo({ top: wizardScreen.offsetTop, behavior: "auto" });
-                }
-            }, 140);
-        }
+        window.setTimeout(() => {
+            const step = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
+            if (!step) return;
+            const y = Math.max(0, step.getBoundingClientRect().top + window.pageYOffset - 12);
+            window.scrollTo({ top: y, behavior: "auto" });
+        }, 140);
     });
 }
 
