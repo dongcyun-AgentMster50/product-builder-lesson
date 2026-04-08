@@ -67,15 +67,15 @@ const PERSONA_TO_EXPLORE_TAGS = {
 
 // ─── 매핑: Q3 기기 normalized → Explore 키워드 (v1+v2 통합) ───
 const DEVICE_TO_EXPLORE_TAGS = {
-    "TV":           ["Enhanced mood", "Security", "Keep your home safe"],
+    "TV":           ["Enhanced mood", "Security", "Keep your home safe", "Care for kids"],  // 자녀 시청관리·교육 콘텐츠
     "냉장고":       ["Save energy", "Help with chores", "Energy Saving"],
     "세탁기":       ["Help with chores", "Save energy", "Time saving"],
     "건조기":       ["Help with chores", "Save energy", "Time saving"],
     "세탁기/건조기": ["Help with chores", "Save energy", "Time saving"],
-    "에어컨":       ["Save energy", "Sleep well", "Keep the air fresh", "Energy Saving"],
+    "에어컨":       ["Save energy", "Sleep well", "Keep the air fresh", "Energy Saving", "Care for kids"],  // 아이 방 온도 자동 조절
     "로봇청소기":   ["Help with chores", "Care for your pet", "Time saving"],
-    "공기청정기":   ["Keep the air fresh", "Sleep well"],
-    "센서":         ["Keep your home safe", "Care for seniors", "Security"],
+    "공기청정기":   ["Keep the air fresh", "Sleep well", "Care for kids"],  // 어린이 공기질 관리
+    "센서":         ["Keep your home safe", "Care for seniors", "Security", "Care for kids"],  // 자녀 활동 감지·안전 모니터링
     "조명":         ["Easily control your lights", "Sleep well", "Enhanced mood", "Easy to use"],
     "스피커":       ["Enhanced mood", "Easy to use"],
     "오븐":         ["Help with chores"],
@@ -211,7 +211,7 @@ function buildExploreTagsFromInput({ segments = [], interests = [], housing = []
 /**
  * 시나리오 스코어링
  */
-function scoreScenario(scenario, tagScores, selectedDevices = []) {
+function scoreScenario(scenario, tagScores, selectedDevices = [], opts = {}) {
     let score = 0;
     const tagMap = {};
     tagScores.forEach(({ tag, score: s }) => { tagMap[tag] = s; });
@@ -235,14 +235,16 @@ function scoreScenario(scenario, tagScores, selectedDevices = []) {
         if (tagMap[tag]) score += tagMap[tag] * 10;
     });
 
-    // 2. 기기 매칭 (보너스)
-    const scenarioDevices = (scenario.devices || []).map(d => d.toLowerCase());
-    selectedDevices.forEach(device => {
-        const dLower = device.toLowerCase();
-        if (scenarioDevices.some(sd => sd.includes(dLower) || dLower.includes(sd))) {
-            score += 8;
-        }
-    });
+    // 2. 기기 매칭 (보너스) — overrideTagScores 사용 시 이미 태그 점수에 기기 보너스 포함됨
+    if (!opts.deviceBonusIncluded) {
+        const scenarioDevices = (scenario.devices || []).map(d => d.toLowerCase());
+        selectedDevices.forEach(device => {
+            const dLower = device.toLowerCase();
+            if (scenarioDevices.some(sd => sd.includes(dLower) || dLower.includes(sd))) {
+                score += 8;
+            }
+        });
+    }
 
     // 3. 원문 존재 보너스 (큐레이션은 원문이 있어야 가치)
     if (scenario.original_text && scenario.original_text.length > 20) {
@@ -445,7 +447,7 @@ function curateScenarios(input, v1Scenarios, v2Scenarios, options = {}) {
     const scored = allScenarios
         .map(scenario => ({
             ...scenario,
-            _score: scoreScenario(scenario, tagScores, input.devices || []),
+            _score: scoreScenario(scenario, tagScores, input.devices || [], { deviceBonusIncluded: !!options.overrideTagScores }),
             _matchedTags: tagScores
                 .filter(({ tag }) => {
                     const sTags = [

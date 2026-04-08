@@ -16,7 +16,8 @@ let _coActiveNavSec = "01";
 
 // ──────── Constants ────────
 const CO_VALUE_COLORS = {
-    Care: "#4a90d9", Save: "#2ecc71", Secure: "#e67e22", Play: "#9b59b6",
+    Care: "#4a90d9", "Care:Kids": "#2196f3", "Care:Seniors": "#5c6bc0", "Care:Pets": "#26a69a",
+    Save: "#2ecc71", Secure: "#e67e22", Play: "#9b59b6",
     Discover: "#3498db", Health: "#16a085", Connect: "#2980b9",
     Simplify: "#8e44ad", Comfort: "#d35400", Protect: "#c0392b"
 };
@@ -89,6 +90,9 @@ function _localizeWhyTag(tag, isKo) {
         "Family care": "가족 돌봄",
         "Multicultural family support": "다문화 가족 지원",
         "Care": "돌봄",
+        "Care:Kids": "자녀 돌봄",
+        "Care:Seniors": "시니어 돌봄",
+        "Care:Pets": "반려동물 돌봄",
         "Save": "절약",
         "Secure": "보안",
         "Play": "여가",

@@ -859,9 +859,9 @@ function updateQ3OptionBadges() {
 }
 
 function handleQ4AutoSelect() {
-    // 모든 기기 해제
-    q4ActivePresets.clear();
-    Q4_ALL_QUICK_IDS.forEach((optionId) => setDeviceOptionChecked(optionId, false));
+    // 기존 수동 선택을 보존하고 auto 기기를 추가 (덮어쓰지 않음)
+    // 사용자가 이미 선택한 기기는 유지하고, AI 추천 기기만 추가함
+    const existingManual = new Set(getSelectedDevices());
 
     // Q1/Q2 기반 기기 자동 선택
     const personaIds = getSelectedPersonaOptionIds();
@@ -924,8 +924,13 @@ function handleQ4AutoSelect() {
         ["galaxy-phone", "tv-premium", "air-conditioner", "robot-vacuum", "lighting"].forEach(d => autoDevices.add(d));
     }
 
-    // 실제 기기 선택
+    // 실제 기기 선택 — 기존 수동 선택은 유지, auto 기기만 추가
+    const autoAdded = new Set();
     autoDevices.forEach(deviceId => {
+        const normalized = typeof getCategoryName === "function" ? getCategoryName(deviceId) : deviceId;
+        if (!existingManual.has(normalized) && !existingManual.has(deviceId)) {
+            autoAdded.add(deviceId);
+        }
         setDeviceOptionChecked(deviceId, true);
     });
 
@@ -975,10 +980,13 @@ function handleQ4AutoSelect() {
         });
         const reasonHtml = `
             <div class="q4-auto-reason" style="margin-top:10px;padding:10px 14px;background:#f0f4ff;border-radius:8px;border-left:3px solid #1976d2;font-size:.75rem;color:#333;line-height:1.6">
-                <strong style="color:#1976d2">${isKo ? "자동 선택 근거" : "Auto-selection rationale"}</strong>
+                <strong style="color:#1976d2">${isKo ? "AI 기기 추천 (기존 선택 유지)" : "AI Device Recommendations (existing kept)"}</strong>
+                ${existingManual.size > 0 ? `<p style="margin:6px 0 0;color:#16a085;font-size:.72rem">${isKo
+                    ? `✓ 기존 수동 선택 ${existingManual.size}개 유지 + AI 추천 ${autoAdded.size}개 추가`
+                    : `✓ Kept ${existingManual.size} manual selections + added ${autoAdded.size} AI recommendations`}</p>` : ""}
                 <p style="margin:6px 0 0;color:#234">${isKo
-                    ? `Q2에서 고른 생활맥락과 우선순위를 기준으로 <strong>${autoDevices.size}개 기기</strong>를 먼저 추렸습니다. 핵심 장면을 바로 만들 수 있는 ${escapeHtml(primaryLabels)} 조합을 먼저 세우고, 부족한 부분은 감지·보안·생활 편의 기기로 보강했습니다.`
-                    : `Based on the Q2 lifestyle context, the system first selected <strong>${autoDevices.size} devices</strong>. It starts with ${escapeHtml(primaryLabels)} for the core scene, then adds sensing, security, and convenience coverage where needed.`}</p>
+                    ? `Q2에서 고른 생활맥락과 우선순위를 기준으로 <strong>${autoAdded.size > 0 ? autoAdded.size + "개 기기를 추가" : autoDevices.size + "개 기기를"}</strong> 추천했습니다. 핵심 장면을 바로 만들 수 있는 ${escapeHtml(primaryLabels)} 조합을 먼저 세우고, 부족한 부분은 감지·보안·생활 편의 기기로 보강했습니다.`
+                    : `Based on the Q2 lifestyle context, the system ${autoAdded.size > 0 ? "added " + autoAdded.size + " devices" : "selected " + autoDevices.size + " devices"}. It starts with ${escapeHtml(primaryLabels)} for the core scene, then adds sensing, security, and convenience coverage where needed.`}</p>
                 ${supportingLabels ? `<p style="margin:6px 0 0;color:#425466">${isKo
                     ? `보조 기기는 ${escapeHtml(supportingLabels)} 중심으로 붙여서, 단순 나열이 아니라 실제 트리거와 후속 동작이 이어지는 조합이 되도록 구성했습니다.`
                     : `Supporting devices such as ${escapeHtml(supportingLabels)} were added so the setup forms a real trigger-to-action chain instead of a random bundle.`}</p>` : ""}
@@ -7712,12 +7720,30 @@ function updateStatePreview() {
     return;
 }
 
-function inferMissionBucket(purpose, selectedDeviceGroups = []) {
+function inferMissionBucket(purpose, selectedDeviceGroups = [], segments = []) {
     const text = purpose.toLowerCase();
     if (text.includes("에너지") || text.includes("절약") || text.includes("비용")) return "Save";
     if (text.includes("안전") || text.includes("보안") || text.includes("secure")) return "Secure";
     if (text.includes("놀이") || text.includes("운동") || text.includes("엔터") || text.includes("게임") || text.includes("gaming")) return "Play";
-    if (text.includes("가족") || text.includes("돌봄") || text.includes("반려") || text.includes("펫") || text.includes("시니어")) return "Care";
+
+    // Care 서브카테고리 — 자녀/시니어/펫을 구분
+    if (text.includes("자녀") || text.includes("아이") || text.includes("kid") || text.includes("child")) return "Care:Kids";
+    if (text.includes("시니어") || text.includes("부모님") || text.includes("senior") || text.includes("elderly")) return "Care:Seniors";
+    if (text.includes("반려") || text.includes("펫") || text.includes("pet") || text.includes("dog") || text.includes("cat")) return "Care:Pets";
+    if (text.includes("가족") || text.includes("돌봄")) return "Care";
+
+    // Segment-based Care 서브카테고리 추론
+    const KID_SEGMENTS = ["hh_young_kids","hh_school_kids","t_multi_kids","t_solo_parent","int_kids","ls_parenting"];
+    const SENIOR_SEGMENTS = ["hh_senior","t_parent_care","t_parent_away","int_senior","ls_senior"];
+    const PET_SEGMENTS = ["t_pet","int_pet"];
+    const hasKid = segments.some(s => KID_SEGMENTS.includes(s));
+    const hasSenior = segments.some(s => SENIOR_SEGMENTS.includes(s));
+    const hasPet = segments.some(s => PET_SEGMENTS.includes(s));
+    if (hasKid && !hasSenior && !hasPet) return "Care:Kids";
+    if (hasSenior && !hasKid && !hasPet) return "Care:Seniors";
+    if (hasPet && !hasKid && !hasSenior) return "Care:Pets";
+    if (hasKid || hasSenior || hasPet) return "Care"; // 복합 → 일반 Care
+
     // Device group-based fallback when purpose text is ambiguous
     if (selectedDeviceGroups.includes("enhanced-mood")) return "Play";
     if (selectedDeviceGroups.includes("care-scenarios")) return "Care";
@@ -8061,11 +8087,14 @@ function renderGenerateError(context, message, statusCode = "") {
 
 function getMissionBucketLabel(missionBucket) {
     const labels = {
-        Discover: { ko: "Discover", en: "Discover" },
-        Save: { ko: "Save", en: "Save" },
-        Care: { ko: "Care", en: "Care" },
-        Secure: { ko: "Secure", en: "Secure" },
-        Play: { ko: "Play", en: "Play" }
+        Discover:        { ko: "Discover", en: "Discover" },
+        Save:            { ko: "Save", en: "Save" },
+        Care:            { ko: "Care", en: "Care" },
+        "Care:Kids":     { ko: "자녀 돌봄", en: "Care for Kids" },
+        "Care:Seniors":  { ko: "시니어 돌봄", en: "Care for Seniors" },
+        "Care:Pets":     { ko: "반려동물 돌봄", en: "Care for Pets" },
+        Secure:          { ko: "Secure", en: "Secure" },
+        Play:            { ko: "Play", en: "Play" }
     };
     const key = String(missionBucket || "Discover");
     return labels[key]?.[currentLocale] || labels[key]?.en || key;
@@ -8929,7 +8958,7 @@ function buildSceneHook(intent, services) {
             en: "Coming home to a house that welcomes you before you even turn the key."
         };
     }
-    if (mission === "Care") {
+    if (mission.startsWith("Care")) {
         return {
             kr: "멀리 있어도 느껴지는 따뜻한 돌봄, SmartThings가 연결합니다.",
             en: "Feel the warmth of care from anywhere, connected by SmartThings."
@@ -8951,7 +8980,7 @@ function buildOtpPlace(country, city, intent) {
             ? `평일 저녁 / ${loc} 도심형 주거지 / 퇴근 후 빠른 휴식 전환 시점`
             : `Weekday Evening / Urban home in ${loc} / Post-commute reset moment`;
     }
-    if (mission === "Care") {
+    if (mission.startsWith("Care")) {
         return isKo
             ? `일과 시간 / ${loc} 주거지 / 가족이나 펫의 안부가 궁금한 시점`
             : `Work Hours / Residential area in ${loc} / Remote care and wellbeing check`;
@@ -9034,7 +9063,7 @@ function buildExploreGrounding(country, city, selectedSegment, intent, deviceDec
     const serviceLabels = services.slice(0, 3).map((service) => getServiceLabel(service));
     const primaryValue = intent.missionBucket === "Save"
         ? (currentLocale === "ko" ? "절감과 통제감" : "savings and control")
-        : intent.missionBucket === "Care"
+        : intent.missionBucket.startsWith("Care")
             ? (currentLocale === "ko" ? "안심과 돌봄 여유" : "reassurance and care ease")
             : intent.missionBucket === "Secure"
                 ? (currentLocale === "ko" ? "즉각적인 안심과 빠른 대응" : "immediate reassurance and faster response")
@@ -9043,7 +9072,7 @@ function buildExploreGrounding(country, city, selectedSegment, intent, deviceDec
                     : (currentLocale === "ko" ? "생활 부담 완화" : "lighter daily burden");
     const emotionalJob = intent.missionBucket === "Save"
         ? (currentLocale === "ko" ? "요금이 새고 있다는 불안 없이 집을 비우는 것" : "leaving home without worrying about wasted cost")
-        : intent.missionBucket === "Care"
+        : intent.missionBucket.startsWith("Care")
             ? (currentLocale === "ko" ? "부재 중에도 돌봄 공백이 없다고 느끼는 것" : "feeling there is no care gap while away")
             : intent.missionBucket === "Secure"
                 ? (currentLocale === "ko" ? "계속 확인하지 않아도 집이 안전하다고 느끼는 것" : "feeling the home is safe without constant checking")
@@ -9070,7 +9099,7 @@ function buildExploreGrounding(country, city, selectedSegment, intent, deviceDec
         exploreTagSummary: (intent.lifestyleTags || []).join(", "),
         messageAngle: intent.missionBucket === "Save"
             ? (currentLocale === "ko" ? "절감되는 금액보다 먼저 줄어드는 신경 씀" : "less mental overhead before lower bills")
-            : intent.missionBucket === "Care"
+            : intent.missionBucket.startsWith("Care")
                 ? (currentLocale === "ko" ? "계속 확인하지 않아도 되는 안심" : "reassurance without constant checking")
                 : intent.missionBucket === "Secure"
                     ? (currentLocale === "ko" ? "필요한 순간에만 즉시 개입하는 보안감" : "security that surfaces only when needed")
@@ -9115,7 +9144,7 @@ function analyzeIntent(purpose, selectedSegment, selectedDevices = [], selectedD
     if (tags.size === 0) tags.add("입문 (Entry)");
 
     return {
-        missionBucket: inferMissionBucket(purpose, selectedDeviceGroups),
+        missionBucket: inferMissionBucket(purpose, selectedDeviceGroups, getSelectedPersonaOptionIds()),
         purpose,
         selectedSegment,
         selectedDevices,
@@ -9157,7 +9186,7 @@ function findRelevantServices(intent) {
             if ((service.requiredCategories || []).some((category) => intent.selectedDevices.includes(category))) score += 5;
             if ((service.requiredCategories || []).some((category) => category === "세탁기/건조기" && intent.selectedDevices.some((device) => ["세탁기", "건조기", "세탁기/건조기"].includes(device)))) score += 4;
             if (intent.missionBucket === "Save" && /energy|절약|요금/.test(haystack)) score += 4;
-            if (intent.missionBucket === "Care" && /care|반려|가족|health|find/.test(haystack)) score += 4;
+            if (intent.missionBucket.startsWith("Care") && /care|반려|가족|health|find/.test(haystack)) score += 4;
             if (intent.missionBucket === "Secure" && /monitoring|secure|find|보안|카메라/.test(haystack)) score += 4;
             if (intent.missionBucket === "Play" && /fitness|cooking|play|운동|요리/.test(haystack)) score += 4;
             score += Math.max(0, 4 - Number(service.tier || 3));
@@ -10196,7 +10225,7 @@ function buildSummary(country, selectedSegment, intent, deviceDecision, services
 
 function buildReferenceLinks(intent, services) {
     const refs = [];
-    if (intent.missionBucket === "Care") refs.push("care-for-your-familys-needs-even-when-away");
+    if (intent.missionBucket.startsWith("Care")) refs.push("care-for-your-familys-needs-even-when-away");
     if (intent.missionBucket === "Save" || intent.lifestyleTags.some((tag) => tag.includes("에너지"))) refs.push("seamlessly-save-energy");
     if (intent.lifestyleTags.some((tag) => tag.includes("반려"))) refs.push("purrfect-pet-care");
     if (refs.length === 0) refs.push("seamlessly-save-energy");
@@ -13191,7 +13220,7 @@ function getIntegratedTagScores(input) {
         "Energy Saving": "Save energy",
         "Security": "Keep your home safe",
         "Pet care": "Care for your pet",
-        "Family care": "Care for kids",
+        // "Family care"는 별도 비례 분배 처리 (아래)
         "Health": "Stay fit & healthy",
         "Sleep": "Sleep well",
         "Time saving": "Help with chores",
@@ -13204,13 +13233,36 @@ function getIntegratedTagScores(input) {
         }
     }
 
+    // "Family care" 비례 분배: 자녀/시니어 선택 비율에 따라 분배
+    // 일방적으로 "Care for kids"에 병합하면 시니어 돌봄 의도가 소실됨
+    if (tagScoreMap["Family care"]) {
+        const KID_IDS = ["hh_young_kids","hh_school_kids","t_multi_kids","t_solo_parent","int_kids","ls_parenting"];
+        const SENIOR_IDS = ["hh_senior","t_parent_care","t_parent_away","int_senior","ls_senior"];
+        const kidCount = personaIds.filter(id => KID_IDS.includes(id)).length;
+        const seniorCount = personaIds.filter(id => SENIOR_IDS.includes(id)).length;
+        const total = kidCount + seniorCount;
+        const familyScore = tagScoreMap["Family care"] * 0.9;
+
+        if (total === 0) {
+            // 관련 페르소나 없으면 50/50
+            tagScoreMap["Care for kids"] = (tagScoreMap["Care for kids"] || 0) + familyScore * 0.5;
+            tagScoreMap["Care for seniors"] = (tagScoreMap["Care for seniors"] || 0) + familyScore * 0.5;
+        } else {
+            const kidRatio = kidCount / total;
+            const seniorRatio = seniorCount / total;
+            if (kidCount > 0) tagScoreMap["Care for kids"] = (tagScoreMap["Care for kids"] || 0) + familyScore * kidRatio;
+            if (seniorCount > 0) tagScoreMap["Care for seniors"] = (tagScoreMap["Care for seniors"] || 0) + familyScore * seniorRatio;
+        }
+        delete tagScoreMap["Family care"];
+    }
+
     // 기기 보너스 결합
     const devices = input.devices || [];
     const integratedScores = Object.entries(tagScoreMap).map(([tag, score]) => {
         let devBonus = 0;
         if (typeof DEVICE_TO_EXPLORE_TAGS !== "undefined") {
             const hasSupport = devices.some(d => (DEVICE_TO_EXPLORE_TAGS[d] || []).includes(tag));
-            if (hasSupport) devBonus = 15; // Q3 기기 매칭에 대한 대형 가중치 직접 주입
+            if (hasSupport) devBonus = 8; // Q3 기기 매칭 보너스 — Q2 명시 의도(15)보다 낮게 설정. 기기는 실행 수단이지 의도가 아님
         }
         return { tag, score: score + devBonus };
     });
