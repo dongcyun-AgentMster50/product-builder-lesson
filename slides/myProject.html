@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로젝트 기술 스택 — Scenario Self Generation Agent</title>
+    <style>
+        :root {
+            --bg: #eef3f9;
+            --ink: #121826;
+            --muted: #5d6677;
+            --line: rgba(10, 34, 68, 0.12);
+            --accent: #003366;
+            --accent-soft: rgba(0, 51, 102, 0.06);
+            --card-bg: #fff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: "SamsungOne", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 80% 15%, rgba(41, 149, 213, 0.15), transparent 20%),
+                radial-gradient(circle at 12% 85%, rgba(0, 74, 153, 0.12), transparent 25%),
+                linear-gradient(160deg, #f4f8fc, #e8eef6 50%, #dce6f0);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ── Header ── */
+        .hero {
+            background: linear-gradient(135deg, rgba(0, 31, 64, 0.97), rgba(0, 51, 102, 0.93) 50%, rgba(6, 84, 140, 0.78));
+            color: #fff;
+            padding: 48px 32px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.06), transparent 50%);
+            pointer-events: none;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .hero h1 {
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.3;
+            margin-bottom: 10px;
+        }
+        .hero p {
+            font-size: clamp(0.82rem, 2vw, 0.95rem);
+            color: rgba(255,255,255,0.75);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ── Container ── */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 20px 48px;
+        }
+
+        /* ── Section ── */
+        .section {
+            margin-bottom: 28px;
+        }
+        .section-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 14px;
+            padding-left: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-icon {
+            font-size: 1.1rem;
+        }
+
+        /* ── Table Card ── */
+        .table-card {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead th {
+            background: var(--accent-soft);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 12px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--line);
+        }
+        tbody td {
+            padding: 14px 20px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--line);
+            vertical-align: top;
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        tbody tr:hover {
+            background: rgba(0, 51, 102, 0.02);
+        }
+        .tech-name {
+            font-weight: 700;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+        .tech-desc {
+            color: var(--ink);
+            line-height: 1.5;
+        }
+
+        /* ── Summary Card ── */
+        .summary-card {
+            background: var(--card-bg);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 24px;
+            margin-top: 28px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .summary-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .summary-text {
+            font-size: 0.88rem;
+            color: var(--ink);
+            line-height: 1.6;
+        }
+        .summary-text strong {
+            color: var(--accent);
+        }
+
+        /* ── Note ── */
+        .note {
+            background: #fff8e1;
+            border-left: 3px solid #f9a825;
+            border-radius: 0 10px 10px 0;
+            padding: 12px 18px;
+            margin-top: 8px;
+            font-size: 0.78rem;
+            color: #5d4037;
+            line-height: 1.5;
+        }
+
+        /* ── Back Link ── */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: -8px;
+            margin-bottom: 24px;
+            font-size: 0.78rem;
+            color: var(--accent);
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.15s;
+        }
+        .back-link:hover { opacity: 1; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 600px) {
+            .hero { padding: 36px 20px 32px; }
+            .container { padding: 16px 14px 36px; }
+            thead th, tbody td { padding: 10px 14px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="hero-badge">Tech Stack Overview</div>
+    <h1>프로젝트 기술 스택</h1>
+    <p>Scenario Self Generation Agent를 구성하는 기술, 패키지, API, 유틸리티 전체 정리</p>
+</header>
+
+<main class="container">
+
+    <a class="back-link" href="index.html">&larr; 슬라이드 목록으로 돌아가기</a>
+
+    <!-- ── 런타임 & 언어 ── -->
+    <div class="section">
+        <div class="section-title"><span class="section-icon">&#x1F4BB;</span> 런타임 & 언어</div>
+        <div class="table-card">
+            <table>
+                <thead><tr><th>기술</th><th>용도</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td class="tech-name">Node.js</td>
+                        <td class="tech-desc">서버(server.js) 실행 런타임. API 프록시, 정적 파일 서빙, 세션 관리</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">Vanilla JavaScript</td>
+                        <td class="tech-desc">프론트엔드(main.js) + 서버 전체. 프레임워크 없이 순수 JS로 작성</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">HTML / CSS</td>
+                        <td class="tech-desc">index.html + style.css — 메인 UI 렌더링</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── npm 패키지 ── -->
+    <div class="section">
+        <div class="section-title"><span class="section-icon">&#x1F4E6;</span> npm 패키지 (dependencies)</div>
+        <div class="table-card">
+            <table>
+                <thead><tr><th>패키지</th><th>용도</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td class="tech-name">puppeteer-core</td>
+                        <td class="tech-desc">헤드리스 브라우저 제어. 시나리오 결과를 PDF/이미지로 캡처하거나 웹 스크래핑에 사용</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">xlsx</td>
+                        <td class="tech-desc">엑셀 파일(.xlsx) 읽기/쓰기. 기기 목록이나 데이터를 엑셀로 처리할 때 사용</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── Node.js 내장 모듈 ── -->
+    <div class="section">
+        <div class="section-title"><span class="section-icon">&#x2699;&#xFE0F;</span> Node.js 내장 모듈</div>
+        <div class="table-card">
+            <table>
+                <thead><tr><th>모듈</th><th>용도</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td class="tech-name">http</td>
+                        <td class="tech-desc">자체 HTTP 서버 구동 (Express 없이 직접 구현)</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">https</td>
+                        <td class="tech-desc">OpenAI API 등 외부 API 호출</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">fs</td>
+                        <td class="tech-desc">파일 읽기/쓰기 (access-codes.json, 정적 파일 서빙 등)</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">path</td>
+                        <td class="tech-desc">파일 경로 처리</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">crypto</td>
+                        <td class="tech-desc">세션 토큰 생성, 액세스 코드 해싱 (HMAC)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 외부 API ── -->
+    <div class="section">
+        <div class="section-title"><span class="section-icon">&#x1F310;</span> 외부 API</div>
+        <div class="table-card">
+            <table>
+                <thead><tr><th>서비스</th><th>용도</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td class="tech-name">OpenAI API</td>
+                        <td class="tech-desc">시나리오 생성, 지역 인사이트, 도시 프로필, 넛지 등 AI 기반 콘텐츠 생성의 핵심 엔진</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── 서버리스 / 엣지 ── -->
+    <div class="section">
+        <div class="section-title"><span class="section-icon">&#x26A1;</span> 서버리스 엔드포인트 (functions/api/)</div>
+        <div class="table-card">
+            <table>
+                <thead><tr><th>파일</th><th>용도</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td class="tech-name">generate.js</td>
+                        <td class="tech-desc">시나리오 생성 API 엔드포인트</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">region-insight.js</td>
+                        <td class="tech-desc">지역별 인사이트 생성</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">city-profile.js</td>
+                        <td class="tech-desc">도시 프로필 데이터</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">nudge.js</td>
+                        <td class="tech-desc">AI 넛지 메시지</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">refine.js</td>
+                        <td class="tech-desc">시나리오 리파인</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">_shared_ai.js</td>
+                        <td class="tech-desc">AI 호출 공통 로직</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="note">functions/api/ 구조는 <strong>Cloudflare Pages Functions</strong> 배포 컨벤션을 따릅니다.</div>
+    </div>
+
+    <!-- ── 유틸리티 스크립트 ── -->
+    <div class="section">
+        <div class="section-title"><span class="section-icon">&#x1F6E0;&#xFE0F;</span> 유틸리티 스크립트</div>
+        <div class="table-card">
+            <table>
+                <thead><tr><th>스크립트</th><th>용도</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td class="tech-name">generate-access-hash.mjs</td>
+                        <td class="tech-desc">액세스 코드 HMAC 해시 생성</td>
+                    </tr>
+                    <tr>
+                        <td class="tech-name">generate-dotcom-matrices.mjs</td>
+                        <td class="tech-desc">Samsung.com 매트릭스 데이터 생성</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── Summary ── -->
+    <div class="summary-card">
+        <span class="summary-icon">&#x1F4A1;</span>
+        <div class="summary-text">
+            프레임워크 없이 <strong>순수 JS + Node.js 서버 + OpenAI API</strong>로 돌아가는 비교적 가벼운 구조입니다.
+            npm 패키지는 <strong>puppeteer-core</strong>(브라우저 자동화)와 <strong>xlsx</strong>(엑셀 처리) 딱 2개만 사용합니다.
+            배포는 <strong>Cloudflare Pages</strong>를 통해 이루어집니다.
+        </div>
+    </div>
+
+</main>
+
+<footer class="footer">
+    Scenario Self Generation Agent &middot; Samsung Global Marketing &middot; 2026
+</footer>
+
+</body>
+</html>
