@@ -7,7 +7,7 @@
    ══════════════════════════════════════════════════════════════════════ */
 
 // ──────── State ────────
-let _coResults = [];          // top-5 curation results
+let _coResults = [];          // dynamic curation results (1~3)
 let _coContext = null;        // aiScenarioContext snapshot
 let _coSelectedScenario = null;
 let _coSummary = null;        // latestSelectionSummary snapshot
@@ -139,7 +139,7 @@ function _buildDynamicSummaryNote(context, results) {
     const mission = context?.missionBucket || "Discover";
     // 상위 결과에서 가장 빈번한 가치 태그 추출
     const valueFreq = {};
-    results.slice(0, 5).forEach(sc => {
+    results.forEach(sc => {
         const f = _formatResult(sc);
         (f.valueTags || []).forEach(v => { valueFreq[v] = (valueFreq[v] || 0) + 1; });
         (f.matchedTags || []).slice(0, 2).forEach(t => { valueFreq[t] = (valueFreq[t] || 0) + 1; });
@@ -160,7 +160,7 @@ function _buildDynamicSummaryNote(context, results) {
 
 const CO_SECTIONS = [
     { id: "01", key: "inputSummary" },
-    { id: "02", key: "top5" },
+    { id: "02", key: "scenarios" },
     { id: "03", key: "whySelected" },
     { id: "04", key: "comparisonMatrix" },
     { id: "05", key: "campaignReadiness", api: true },
@@ -194,7 +194,7 @@ function launchCampaignOutput(results, selectedScenario, context, selectionSumma
 
     // Render local sections (01-04)
     _renderSec01_InputSummary();
-    _renderSec02_Top5();
+    _renderSec02_Scenarios();
     _renderSec03_WhySelected();
     _renderSec04_ComparisonMatrix();
 
@@ -213,7 +213,7 @@ function _buildSectionNav() {
     const inner = document.getElementById("co-nav-inner");
     if (!inner) return;
     const labels = [
-        "01 Input", "02 TOP 5", "03 Why", "04 Compare",
+        "01 Input", "02 Scenarios", "03 Why", "04 Compare",
         "05 Readiness", "06 FGD", "07 Insight", "08 Copy",
         "09 Creative", "10 Ref", "11 Concept", "12 Story", "13 Actions"
     ];
@@ -314,20 +314,38 @@ function _renderSec01_InputSummary() {
     `;
 }
 
-// ──────── Section 02: Top 5 Scenarios ────────
-function _renderSec02_Top5() {
+// ──────── Section 02: Recommended Scenarios ────────
+function _renderSec02_Scenarios() {
     const body = document.getElementById("co-body-02");
     if (!body) return;
 
     const isKo = (_coContext?.locale || "ko") === "ko";
+    const count = _coResults.length;
 
-    body.innerHTML = _coResults.map((scenario, idx) => {
+    // 동적 개수 표시 배너
+    const countBanner = `<div class="co-count-banner">
+        <strong>${isKo ? `${count}개 시나리오 선정` : `${count} Scenario${count > 1 ? "s" : ""} Selected`}</strong>
+        <span class="co-count-note">${isKo ? "입력 조건의 구체성과 일관성에 따라 동적으로 결정됩니다" : "Dynamically determined by input specificity and consistency"}</span>
+    </div>`;
+
+    body.innerHTML = countBanner + _coResults.map((scenario, idx) => {
         const f = _formatResult(scenario);
         const bodyText = f.originalText || f.narrative || "";
         const truncated = bodyText.length > 300 ? bodyText.substring(0, 300) + "..." : bodyText;
         const valueTags = (f.valueTags || f.matchedTags || []).slice(0, 4);
         const readinessLabel = _deriveReadinessLabel(scenario, _coResults);
         const isTop = idx === 0;
+
+        // selection_reason / regional_fit (Task 1 연동)
+        const selReason = f.selection_reason || {};
+        const regFit = f.regional_fit || {};
+        const decisiveKw = (selReason.decisive_keywords || []);
+
+        // 시퀀스 구축: 기기 목록에서 자동 생성
+        const devices = f.devices || [];
+        const sequence = devices.length > 1
+            ? devices.join(" → ")
+            : "";
 
         return `
         <article class="co-scenario-card${isTop ? " co-scenario-card--top" : ""}" data-co-idx="${idx}">
@@ -337,22 +355,52 @@ function _renderSec02_Top5() {
                     <h4 class="co-scenario-title">${_esc(f.title)}</h4>
                     <span class="co-scenario-source">${_esc(f.source || "")}</span>
                 </div>
-                ${_scorePill(f.score || 0)}
+                ${_scorePill(f.compositeScore || f.score || 0)}
                 <span class="co-badge co-badge--readiness">${readinessLabel}</span>
             </div>
+
+            ${f.headline ? `<p class="co-scenario-headline">${_esc(f.headline)}</p>` : ""}
+
             <div class="co-scenario-tags">
                 ${valueTags.map(t => _valueBadge(t)).join("")}
             </div>
+
             <div class="co-scenario-body${isTop ? "" : " co-collapsed"}" id="co-scenario-body-${idx}">
-                <p class="co-scenario-desc">${_esc(truncated)}</p>
+                <div class="co-scenario-split">
+                    <div class="co-scenario-left">
+                        <p class="co-scenario-desc">${_esc(truncated)}</p>
+                        ${f.image_prompt ? `<div class="co-scenario-image-prompt"><span class="co-input-label">${isKo ? "이미지 프롬프트" : "Image Prompt"}</span><p>${_esc(f.image_prompt)}</p></div>` : ""}
+                    </div>
+                    <div class="co-scenario-right">
+                        ${sequence ? `
+                        <div class="co-scenario-sequence">
+                            <span class="co-input-label">${isKo ? "실행 시퀀스" : "Action Sequence"}</span>
+                            <p class="co-sequence-flow">${_esc(sequence)}</p>
+                        </div>` : ""}
+                        <div class="co-scenario-device-symbols">
+                            <span class="co-input-label">${isKo ? "활용 기기" : "Device Symbols"}</span>
+                            <div class="co-chip-row">${devices.map(d => _chip(d)).join("")}</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="co-scenario-signals">
                     <span class="co-input-label">${isKo ? "반영된 핵심 신호" : "Matched Signals"}</span>
                     <div class="co-chip-row">${(f.matchedTags || []).map(t => _chip(t)).join("")}</div>
                 </div>
-                <div class="co-scenario-devices">
-                    <span class="co-input-label">${isKo ? "사용 기기" : "Devices"}</span>
-                    <div class="co-chip-row">${(f.devices || []).map(d => _chip(d)).join("")}</div>
-                </div>
+
+                ${decisiveKw.length ? `
+                <div class="co-scenario-decisive">
+                    <span class="co-input-label">${isKo ? "결정적 키워드" : "Decisive Keywords"}</span>
+                    <div class="co-chip-row">${decisiveKw.map(k => `<span class="co-chip co-chip--decisive">${_esc(k)}</span>`).join("")}</div>
+                </div>` : ""}
+
+                ${regFit.fit_explanation ? `
+                <div class="co-scenario-regional">
+                    <span class="co-input-label">${isKo ? "지역색 반영" : "Regional Fit"}</span>
+                    <p>${_esc(regFit.fit_explanation)}</p>
+                </div>` : ""}
+
                 <p class="co-scenario-fit"><strong>${isKo ? "추천 이유" : "Why It Fits"}:</strong> ${_esc(_buildWhyExplanation(scenario, _coContext, _coResults))}</p>
             </div>
             ${!isTop ? `<button type="button" class="co-expand-btn" data-target="co-scenario-body-${idx}" aria-expanded="false">${isKo ? "상세 보기" : "Expand"}</button>` : ""}
@@ -404,41 +452,40 @@ function _renderSec03_WhySelected() {
         const devices = (f.devices || []).slice(0, 4);
         const valueTags = why.valueSignals.length ? why.valueSignals : [_localizeWhyTag(_coContext?.missionBucket || "Discover", isKo)];
 
+        // selection_reason / regional_fit from curation engine
+        const selReason = f.selection_reason || {};
+        const regFit = f.regional_fit || {};
+
         return `
         <div class="co-why-card">
             <div class="co-why-header">
                 <span class="co-scenario-rank co-scenario-rank--sm">${idx + 1}</span>
                 <h4>${_esc(f.title)}</h4>
             </div>
+            ${selReason.decisive_keywords ? `
+            <div class="co-why-row co-why-row--highlight">
+                <span class="co-why-label">${isKo ? "결정적 키워드" : "Decisive Keywords"}</span>
+                <div class="co-chip-row">${(selReason.decisive_keywords || []).map(k => _chip(k)).join("")}</div>
+            </div>` : ""}
             <div class="co-why-row">
-                <span class="co-why-label">${isKo ? "매칭 로직 요약" : "Matching Logic Summary"}</span>
-                <p>${_esc(_buildWhyExplanation(scenario, _coContext, _coResults))}</p>
+                <span class="co-why-label">${isKo ? "Q1 지역 기여" : "Q1 Region Contribution"}</span>
+                <p>${_esc(selReason.q1_contribution || why.q1)}</p>
+                ${regFit.fit_explanation ? `<p class="co-why-regional"><strong>${isKo ? "지역색 반영" : "Regional Fit"}:</strong> ${_esc(regFit.fit_explanation)}</p>` : ""}
+                ${regFit.matchedRegionTags?.length ? `<div class="co-chip-row">${regFit.matchedRegionTags.map(t => _chip(t)).join("")}</div>` : ""}
             </div>
             <div class="co-why-row">
-                <span class="co-why-label">${isKo ? "Q1 지역 맥락 반영" : "Q1 Context Applied"}</span>
-                <p>${_esc(why.q1)}</p>
-            </div>
-            <div class="co-why-row">
-                <span class="co-why-label">${isKo ? "Q2 생활맥락 근거" : "Q2 Lifestyle Evidence"}</span>
-                <p>${_esc(why.q2)}</p>
+                <span class="co-why-label">${isKo ? "Q2 세그먼트 기여" : "Q2 Segment Contribution"}</span>
+                <p>${_esc(selReason.q2_contribution || why.q2)}</p>
                 <div class="co-chip-row">${signals.map(s => _chip(s)).join("")}</div>
             </div>
             <div class="co-why-row">
-                <span class="co-why-label">${isKo ? "Q3 기기 실행 가능성" : "Q3 Device Feasibility"}</span>
-                <p>${_esc(why.q3)}</p>
+                <span class="co-why-label">${isKo ? "Q3 기기 기여" : "Q3 Device Contribution"}</span>
+                <p>${_esc(selReason.q3_contribution || why.q3)}</p>
                 <div class="co-chip-row">${devices.map(d => _chip(d)).join("")}</div>
             </div>
             <div class="co-why-row">
                 <span class="co-why-label">${isKo ? "최종 매칭 판단" : "Final Match Decision"}</span>
                 <p>${_esc(why.fit)}</p>
-            </div>
-            <div class="co-why-row">
-                <span class="co-why-label">${isKo ? "가장 크게 반영된 입력 신호" : "Strongest Input Signals"}</span>
-                <div class="co-chip-row">${signals.map(s => _chip(s)).join("")}</div>
-            </div>
-            <div class="co-why-row">
-                <span class="co-why-label">${isKo ? "기기 적합성" : "Device Fit"}</span>
-                <div class="co-chip-row">${devices.map(d => _chip(d)).join("")}</div>
             </div>
             <div class="co-why-row">
                 <span class="co-why-label">${isKo ? "가치 정합성" : "Value Alignment"}</span>
@@ -581,39 +628,42 @@ async function _launchApiSections() {
         ? "Answer entirely in Korean. Use professional marketing/campaign planning tone."
         : `Answer in ${locale}. Use professional marketing/campaign planning tone.`;
 
-    // Define API section prompts
+    const scenarioCount = _coResults.length;
+    const countLabel = `${scenarioCount} recommended`;
+
+    // Define API section prompts (dynamic scenario count)
     const apiSections = [
         {
             id: "05",
-            prompt: `${langInstruction}\n\nYou are a campaign strategy analyst. Given these 5 recommended smart home scenarios and the user's input context, create a "Campaign Readiness Overview" for each scenario.\n\nInput Context:\n${inputSummary}\n\nTop 5 Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide:\n1. FGD Priority (FGD 검증 우선도) - High/Medium/Low with reason\n2. Message Development Fit (메시지 개발 적합도) - High/Medium/Low\n3. Creative Expansion Fit (크리에이티브 확장 적합도) - High/Medium/Low\n4. Global Resonance Potential (글로벌 공감 가능성) - High/Medium/Low\n5. Local Specificity (지역 특화성) - High/Medium/Low\n6. Differentiation Potential (차별화 가능성) - High/Medium/Low\n7. Execution Complexity (실행 복잡도) - High/Medium/Low\n8. One recommendation sentence per scenario\n\nReturn as valid JSON array with 5 objects, each having keys: rank, title, fgdPriority, fgdReason, messageFit, creativeFit, globalResonance, localSpecificity, differentiation, executionComplexity, recommendation.`
+            prompt: `${langInstruction}\n\nYou are a campaign strategy analyst. Given these ${scenarioCount} recommended smart home scenarios and the user's input context, create a "Campaign Readiness Overview" for each scenario.\n\nInput Context:\n${inputSummary}\n\nRecommended Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide:\n1. FGD Priority (FGD 검증 우선도) - High/Medium/Low with reason\n2. Message Development Fit (메시지 개발 적합도) - High/Medium/Low\n3. Creative Expansion Fit (크리에이티브 확장 적합도) - High/Medium/Low\n4. Global Resonance Potential (글로벌 공감 가능성) - High/Medium/Low\n5. Local Specificity (지역 특화성) - High/Medium/Low\n6. Differentiation Potential (차별화 가능성) - High/Medium/Low\n7. Execution Complexity (실행 복잡도) - High/Medium/Low\n8. One recommendation sentence per scenario\n9. Rationale (근거) - 2-3 sentences explaining WHY each dimension received its level\n\nReturn as valid JSON array with ${scenarioCount} objects, each having keys: rank, title, fgdPriority, fgdReason, messageFit, creativeFit, globalResonance, localSpecificity, differentiation, executionComplexity, recommendation, rationale.`
         },
         {
             id: "06",
-            prompt: `${langInstruction}\n\nYou are a consumer research specialist. Create an "AI FGD / Acceptance Testing Guide" for each of the 5 recommended scenarios.\n\nInput Context:\n${inputSummary}\n\nTop 5 Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide:\n1. Validation Objective (검증 목적)\n2. Likely Appeal Points (예상 매력 포인트) - list 3\n3. Likely Resistance Points (예상 저항 포인트) - list 2-3\n4. Best-fit Personas to Test (우선 검증 페르소나) - describe 2\n5. Suggested FGD Questions (권장 질문) - provide 5 realistic questions\n6. Decision Signals to Watch (의사결정 판단 포인트) - list 3\n\nReturn as valid JSON array with 5 objects, each having keys: rank, title, validationObjective, appealPoints(array), resistancePoints(array), personas(array of {name,description}), fgdQuestions(array), decisionSignals(array).`
+            prompt: `${langInstruction}\n\nYou are a consumer research specialist. Create an "AI FGD / Acceptance Testing Guide" for each of the ${scenarioCount} recommended scenarios.\n\nInput Context:\n${inputSummary}\n\nRecommended Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide:\n1. Validation Objective (검증 목적)\n2. Likely Appeal Points (예상 매력 포인트) - list 3\n3. Likely Resistance Points (예상 저항 포인트) - list 2-3\n4. Best-fit Personas to Test (우선 검증 페르소나) - describe 2 with demographics and painPoints\n5. Suggested FGD Questions (권장 질문) - provide 5 realistic questions structured as: intro(1) → deep-dive(3) → confirmation(1)\n6. Decision Signals to Watch (의사결정 판단 포인트) - list 3\n\nReturn as valid JSON array with ${scenarioCount} objects, each having keys: rank, title, validationObjective, appealPoints(array), resistancePoints(array), personas(array of {name, description, demographics, painPoints(array)}), fgdQuestions(array), decisionSignals(array).`
         },
         {
             id: "07",
-            prompt: `${langInstruction}\n\nYou are a campaign planning insight translator. Create "Insight Translation for Campaign Planning" for each of the 5 scenarios.\n\nInput Context:\n${inputSummary}\n\nTop 5 Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide:\n1. Key Consumer Tension (핵심 고객 긴장/불편)\n2. Emotional Trigger (감정 자극 포인트)\n3. Functional Trigger (기능적 효익 포인트)\n4. Campaign-worthy Theme (캠페인 주제화 가능 포인트)\n5. Big Idea Starters (빅 아이디어 초안) - provide 2-3\n6. Strategic Implication (실무 적용 시사점)\n\nReturn as valid JSON array with 5 objects, each having keys: rank, title, consumerTension, emotionalTrigger, functionalTrigger, campaignTheme, bigIdeas(array), strategicImplication.`
+            prompt: `${langInstruction}\n\nYou are a campaign planning insight translator. Create "Insight Translation for Campaign Planning" for each of the ${scenarioCount} scenarios.\n\nInput Context:\n${inputSummary}\n\nRecommended Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide:\n1. Key Consumer Tension (핵심 고객 긴장/불편)\n2. Emotional Trigger (감정 자극 포인트)\n3. Functional Trigger (기능적 효익 포인트)\n4. Campaign-worthy Theme (캠페인 주제화 가능 포인트)\n5. Big Idea Starters (빅 아이디어 초안) - provide 2-3\n6. Strategic Implication (실무 적용 시사점)\n7. Actionable Insight (실행 가능한 인사이트) - one concrete next-step tied to the specific market context\n\nReturn as valid JSON array with ${scenarioCount} objects, each having keys: rank, title, consumerTension, emotionalTrigger, functionalTrigger, campaignTheme, bigIdeas(array), strategicImplication, actionableInsight.`
         },
         {
             id: "08",
-            prompt: `${langInstruction}\n\nYou are a creative copywriter for a global electronics brand. Create "Message & Copy Development" for each of the 5 recommended scenarios.\n\nInput Context:\n${inputSummary}\n\nTop 5 Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide IN 4 TONE DIRECTIONS (Emotional, Practical, Tech-forward, Family-centered):\n1. Core Promise (핵심 약속)\n2. Consumer Benefit (고객 효익)\n3. Message Angle (메시지 방향)\n4. Tone Recommendation (톤 추천)\n5. Headline Options (헤드라인 옵션) - 3 options per tone\n6. Sub-copy Options (서브카피 옵션) - 2 per tone\n7. CTA Ideas (CTA 아이디어) - 2 per tone\n8. Avoid / Watch-outs (주의 표현)\n\nReturn as valid JSON array with 5 objects, each having keys: rank, title, tones(array of {tone, corePromise, consumerBenefit, messageAngle, toneRec, headlines(array), subcopy(array), ctas(array), watchouts}).`
+            prompt: `${langInstruction}\n\nYou are a creative copywriter for Samsung SmartThings. Follow Samsung brand guidelines: use "AI Home" and "AI Living" terminology, never mention competitors, maintain a "Confident Explorer" voice — bold, authentic, result-led.\n\nCreate "Message & Copy Development" for each of the ${scenarioCount} recommended scenarios.\n\nInput Context:\n${inputSummary}\n\nRecommended Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide IN 4 TONE DIRECTIONS (Emotional, Practical, Tech-forward, Family-centered):\n1. Core Promise (핵심 약속)\n2. Consumer Benefit (고객 효익)\n3. Message Angle (메시지 방향)\n4. Tone Recommendation (톤 추천)\n5. Headline Options (헤드라인 옵션) - 3 options per tone\n6. Sub-copy Options (서브카피 옵션) - 2 per tone\n7. CTA Ideas (CTA 아이디어) - 2 per tone\n8. Avoid / Watch-outs (주의 표현)\n\nReturn as valid JSON array with ${scenarioCount} objects, each having keys: rank, title, tones(array of {tone, corePromise, consumerBenefit, messageAngle, toneRec, headlines(array), subcopy(array), ctas(array), watchouts}).`
         },
         {
             id: "09",
-            prompt: `${langInstruction}\n\nYou are a creative director. Create "Creative Direction Starter" for each of the 5 recommended scenarios.\n\nInput Context:\n${inputSummary}\n\nTop 5 Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide:\n1. Human Situation Setup (상황 설정) - vivid one-liner\n2. Universal Tension Point (보편 공감 포인트)\n3. Local Nuance Opportunity (로컬 반영 포인트)\n4. Visual Mood Keywords (비주얼 무드 키워드) - 5-6 words\n5. Scene Possibilities (가능 장면) - 3 scenes\n6. Format Suggestions (추천 포맷) - e.g. short-form, banner, hero film\n7. Creative Hook (크리에이티브 훅) - one compelling hook line\n\nReturn as valid JSON array with 5 objects, each having keys: rank, title, situationSetup, universalTension, localNuance, visualMood(array), scenes(array), formats(array), creativeHook.`
+            prompt: `${langInstruction}\n\nYou are a creative director. Create "Creative Direction Starter" for each of the ${scenarioCount} recommended scenarios.\n\nInput Context:\n${inputSummary}\n\nRecommended Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide:\n1. Human Situation Setup (상황 설정) - vivid one-liner\n2. Universal Tension Point (보편 공감 포인트)\n3. Local Nuance Opportunity (로컬 반영 포인트)\n4. Visual Mood Keywords (비주얼 무드 키워드) - 5-6 words\n5. Scene Possibilities (가능 장면) - 3 scenes\n6. Format Suggestions (추천 포맷) - e.g. short-form, banner, hero film\n7. Creative Hook (크리에이티브 훅) - one compelling hook line\n8. Action Sequence (실행 시퀀스) - step-by-step device interaction flow using → separators\n9. Device Symbols (기기 심벌) - simplified symbolic list of devices used\n\nReturn as valid JSON array with ${scenarioCount} objects, each having keys: rank, title, situationSetup, universalTension, localNuance, visualMood(array), scenes(array), formats(array), creativeHook, sequence, device_symbols(array).`
         },
         {
             id: "10",
-            prompt: `${langInstruction}\n\nYou are a creative research advisor. Create "Reference Directions" for each of the 5 recommended scenarios.\n\nInput Context:\n${inputSummary}\n\nTop 5 Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide:\n1. What to Search For (어떤 레퍼런스를 찾을지)\n2. Reference Mood (참고 무드)\n3. Story Pattern to Review (참고할 스토리 패턴)\n4. Visual Motifs to Explore (찾아볼 비주얼 모티프)\n5. Copy Style to Benchmark (비교할 카피 스타일)\n6. What to Avoid (피해야 할 cliche)\n\nReturn as valid JSON array with 5 objects, each having keys: rank, title, searchFor, referenceMood, storyPattern, visualMotifs, copyStyle, avoid.`
+            prompt: `${langInstruction}\n\nYou are a creative research advisor. Create "Reference Directions" for each of the ${scenarioCount} recommended scenarios.\n\nInput Context:\n${inputSummary}\n\nRecommended Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide:\n1. What to Search For (어떤 레퍼런스를 찾을지)\n2. Reference Mood (참고 무드)\n3. Story Pattern to Review (참고할 스토리 패턴)\n4. Visual Motifs to Explore (찾아볼 비주얼 모티프)\n5. Copy Style to Benchmark (비교할 카피 스타일)\n6. What to Avoid (피해야 할 cliche)\n7. Concrete Examples (구체적 레퍼런스) - list 2-3 specific brand campaigns or creative works as reference\n\nReturn as valid JSON array with ${scenarioCount} objects, each having keys: rank, title, searchFor, referenceMood, storyPattern, visualMotifs, copyStyle, avoid, concreteExamples(array).`
         },
         {
             id: "11",
-            prompt: `${langInstruction}\n\nYou are a campaign concept developer. Create "Creative Concept Expansion" for each of the 5 recommended scenarios.\n\nInput Context:\n${inputSummary}\n\nTop 5 Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide 2-3 concept directions, each with:\n1. New Creative Territory (확장 가능한 새 컨셉 영역)\n2. Concept Variations (컨셉 변주안)\n3. Short-form Adaptation (숏폼형 확장)\n4. Hero Film Adaptation (영상형 확장)\n5. Social / Digital Adaptation (디지털형 확장)\n6. Retail / Demo Adaptation (리테일/데모형 확장)\n\nReturn as valid JSON array with 5 objects, each having keys: rank, title, concepts(array of {territory, variation, shortForm, heroFilm, socialDigital, retailDemo}).`
+            prompt: `${langInstruction}\n\nYou are a campaign concept developer. Create "Creative Concept Expansion" for each of the ${scenarioCount} recommended scenarios.\n\nInput Context:\n${inputSummary}\n\nRecommended Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide 2-3 concept directions, each with:\n1. New Creative Territory (확장 가능한 새 컨셉 영역)\n2. Differentiator (차별화 축) - specify if concept is emotional vs rational, premium vs accessible\n3. Concept Variations (컨셉 변주안)\n4. Short-form Adaptation (숏폼형 확장)\n5. Hero Film Adaptation (영상형 확장)\n6. Social / Digital Adaptation (디지털형 확장)\n7. Retail / Demo Adaptation (리테일/데모형 확장)\n\nReturn as valid JSON array with ${scenarioCount} objects, each having keys: rank, title, concepts(array of {territory, differentiator, variation, shortForm, heroFilm, socialDigital, retailDemo}).`
         },
         {
             id: "12",
-            prompt: `${langInstruction}\n\nYou are a storyboard artist and narrative designer. Create "Storyline & Storyboard Seed" for each of the 5 recommended scenarios.\n\nInput Context:\n${inputSummary}\n\nTop 5 Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide:\n1. Story Hook (스토리 훅) - compelling opening\n2. Narrative Arc (서사 구조) - brief\n3. 4-cut storyboard with: cut number, scene description, key visual, dialogue/copy, emotion\n4. Brand Role in Story (브랜드 역할)\n5. Ending Message Direction (엔딩 메시지 방향)\n\nReturn as valid JSON array with 5 objects, each having keys: rank, title, storyHook, narrativeArc, cuts(array of {cut, scene, visual, copy, emotion}), brandRole, endingMessage.`
+            prompt: `${langInstruction}\n\nYou are a storyboard artist and narrative designer. Create "Storyline & Storyboard Seed" for each of the ${scenarioCount} recommended scenarios.\n\nInput Context:\n${inputSummary}\n\nRecommended Scenarios:\n${scenarioSummaries}\n\nFor each scenario, provide:\n1. Story Hook (스토리 훅) - compelling opening\n2. Narrative Arc (서사 구조) - brief\n3. 4-cut storyboard with: cut number, scene description, key visual, dialogue/copy, emotion, image_prompt (a detailed description for a designer or image generation AI to create the visual)\n4. Brand Role in Story (브랜드 역할)\n5. Ending Message Direction (엔딩 메시지 방향)\n\nReturn as valid JSON array with ${scenarioCount} objects, each having keys: rank, title, storyHook, narrativeArc, cuts(array of {cut, scene, visual, copy, emotion, image_prompt}), brandRole, endingMessage.`
         }
     ];
 
@@ -815,6 +865,7 @@ function _renderSec05_CampaignReadiness(data) {
                 }).join("")}
             </div>
             ${item.recommendation ? `<p class="co-readiness-rec">${_esc(item.recommendation)}</p>` : ""}
+            ${item.rationale ? `<p class="co-readiness-rationale"><strong>${isKo ? "근거" : "Rationale"}:</strong> ${_esc(item.rationale)}</p>` : ""}
         </div>`;
     }).join("");
 }
@@ -844,7 +895,7 @@ function _renderSec06_FGD(data) {
                 </div>
                 <div class="co-fgd-item">
                     <h5>${isKo ? "우선 검증 페르소나" : "Best-fit Personas"}</h5>
-                    ${(item.personas || []).map(p => `<div class="co-persona-chip"><strong>${_esc(p.name || "")}</strong><span>${_esc(p.description || "")}</span></div>`).join("")}
+                    ${(item.personas || []).map(p => `<div class="co-persona-chip"><strong>${_esc(p.name || "")}</strong><span>${_esc(p.description || "")}</span>${p.demographics ? `<span class="co-persona-demo">${_esc(p.demographics)}</span>` : ""}${(p.painPoints || []).length ? `<div class="co-persona-pains">${p.painPoints.map(pp => _chip(pp)).join("")}</div>` : ""}</div>`).join("")}
                 </div>
                 <div class="co-fgd-item co-fgd-item--wide">
                     <h5>${isKo ? "권장 FGD 질문" : "Suggested FGD Questions"}</h5>
@@ -899,6 +950,11 @@ function _renderSec07_InsightTranslation(data) {
                     <span class="co-insight-label">${isKo ? "실무 적용 시사점" : "Strategic Implication"}</span>
                     <p>${_esc(item.strategicImplication || "")}</p>
                 </div>
+                ${item.actionableInsight ? `
+                <div class="co-insight-item co-insight-item--wide co-insight-item--action">
+                    <span class="co-insight-label">${isKo ? "실행 가능한 인사이트" : "Actionable Insight"}</span>
+                    <p><strong>${_esc(item.actionableInsight)}</strong></p>
+                </div>` : ""}
             </div>
         </div>
     `).join("");
@@ -987,6 +1043,16 @@ function _renderSec09_CreativeDirection(data) {
                     <span class="co-creative-label">${isKo ? "추천 포맷" : "Format Suggestions"}</span>
                     <div class="co-chip-row">${(item.formats || []).map(f => _chip(f)).join("")}</div>
                 </div>
+                ${item.sequence ? `
+                <div class="co-creative-item">
+                    <span class="co-creative-label">${isKo ? "실행 시퀀스" : "Action Sequence"}</span>
+                    <p class="co-sequence-flow">${_esc(item.sequence)}</p>
+                </div>` : ""}
+                ${(item.device_symbols || []).length ? `
+                <div class="co-creative-item">
+                    <span class="co-creative-label">${isKo ? "기기 심벌" : "Device Symbols"}</span>
+                    <div class="co-chip-row">${item.device_symbols.map(d => _chip(d)).join("")}</div>
+                </div>` : ""}
                 <div class="co-creative-hook">
                     <span>${isKo ? "크리에이티브 훅" : "Creative Hook"}</span>
                     <p>"${_esc(item.creativeHook || "")}"</p>
@@ -1015,6 +1081,10 @@ function _renderSec10_ReferenceDirections(data) {
                 <div class="co-ref-item"><span class="co-ref-label">${isKo ? "비주얼 모티프" : "Visual Motifs"}</span><p>${_esc(item.visualMotifs || "")}</p></div>
                 <div class="co-ref-item"><span class="co-ref-label">${isKo ? "카피 스타일" : "Copy Style"}</span><p>${_esc(item.copyStyle || "")}</p></div>
                 <div class="co-ref-item co-ref-item--avoid"><span class="co-ref-label">${isKo ? "피해야 할 것" : "Avoid"}</span><p>${_esc(item.avoid || "")}</p></div>
+                ${(item.concreteExamples || []).length ? `
+                <div class="co-ref-item co-ref-item--wide"><span class="co-ref-label">${isKo ? "구체적 레퍼런스" : "Concrete Examples"}</span>
+                    <ul>${item.concreteExamples.map(e => `<li>${_esc(e)}</li>`).join("")}</ul>
+                </div>` : ""}
             </div>
         </div>
     `).join("");
@@ -1037,7 +1107,7 @@ function _renderSec11_ConceptExpansion(data) {
             <div class="co-concept-list">
                 ${concepts.map((c, ci) => `
                 <div class="co-concept-item">
-                    <h5>${isKo ? "컨셉 방향" : "Concept"} ${ci + 1}: ${_esc(c.territory || "")}</h5>
+                    <h5>${isKo ? "컨셉 방향" : "Concept"} ${ci + 1}: ${_esc(c.territory || "")}${c.differentiator ? ` <span class="co-concept-diff">${_esc(c.differentiator)}</span>` : ""}</h5>
                     <div class="co-concept-grid">
                         <div><span class="co-concept-label">${isKo ? "변주안" : "Variation"}</span><p>${_esc(c.variation || "")}</p></div>
                         <div><span class="co-concept-label">${isKo ? "숏폼" : "Short-form"}</span><p>${_esc(c.shortForm || "")}</p></div>
@@ -1077,6 +1147,7 @@ function _renderSec12_StoryboardSeed(data) {
                     <div class="co-cut-scene">${_esc(cut.scene || "")}</div>
                     <div class="co-cut-copy">"${_esc(cut.copy || "")}"</div>
                     <div class="co-cut-emotion">${_esc(cut.emotion || "")}</div>
+                    ${cut.image_prompt ? `<div class="co-cut-imgprompt"><span>${isKo ? "이미지 프롬프트" : "Image Prompt"}:</span> ${_esc(cut.image_prompt)}</div>` : ""}
                 </div>`).join("")}
             </div>
             <div class="co-story-footer">
@@ -1129,7 +1200,7 @@ function _exportCampaignBrief() {
     sections.push(`${isKo ? '기기' : 'Devices'}: ${(_coContext?.devices || []).join(', ') || '-'}`);
     sections.push(`${isKo ? '가치 방향' : 'Value'}: ${_coContext?.missionBucket || '-'}\n`);
 
-    sections.push(`[02] ${isKo ? '추천 시나리오 TOP 5' : 'Top 5 Recommended Scenarios'}`);
+    sections.push(`[02] ${isKo ? '추천 시나리오' : 'Recommended Scenarios'} (${_coResults.length}${isKo ? '개' : ''})`);
     _coResults.forEach((sc, i) => {
         const f = _formatResult(sc);
         sections.push(`  ${i + 1}. ${f.title} (${f.score}${isKo ? '점' : 'pt'}) — ${(f.matchedTags || []).join(', ')}`);

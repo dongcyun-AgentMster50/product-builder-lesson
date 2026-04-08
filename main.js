@@ -13262,7 +13262,7 @@ function runCuration() {
     const totalPool = (curationDbV1.scenarios || []).length + v2Scenarios.length;
     
     // 엔진에 통합 가중치 주입 (overrideTagScores)
-    const results = curateScenarios(input, curationDbV1.scenarios, v2Scenarios, { maxResults: 5, minScore: 5, overrideTagScores: tagScores });
+    const results = curateScenarios(input, curationDbV1.scenarios, v2Scenarios, { maxResults: 3, minScore: 5, overrideTagScores: tagScores });
 
     // Selection Summary 구축
     if (typeof buildSelectionSummary === "function") {

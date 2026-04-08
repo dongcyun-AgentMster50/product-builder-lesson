@@ -10390,6 +10390,89 @@ a.source-tag-link:hover {
     border-style: solid;
 }
 
+/* ── Section 02: Enhanced Card Layout ── */
+.co-count-banner {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 16px;
+    margin-bottom: 14px;
+    background: rgba(0, 51, 102, 0.04);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+}
+.co-count-banner strong { font-size: 0.88rem; color: var(--ink); }
+.co-count-note { font-size: 0.72rem; color: var(--muted); }
+.co-scenario-headline {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-align: center;
+    margin: 8px 0 4px;
+    line-height: 1.5;
+}
+.co-scenario-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+@media (max-width: 640px) {
+    .co-scenario-split { grid-template-columns: 1fr; }
+}
+.co-scenario-left,
+.co-scenario-right {
+    min-width: 0;
+}
+.co-scenario-sequence { margin-bottom: 10px; }
+.co-sequence-flow {
+    font-size: 0.8rem;
+    color: var(--accent-strong);
+    font-weight: 600;
+    line-height: 1.7;
+    margin: 4px 0 0;
+}
+.co-scenario-decisive { margin-top: 8px; }
+.co-chip--decisive {
+    background: rgba(0, 51, 102, 0.12);
+    color: var(--accent-strong);
+    font-weight: 700;
+}
+.co-scenario-regional {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(46, 204, 113, 0.06);
+    border-radius: 6px;
+    border-left: 3px solid #2ecc71;
+}
+.co-scenario-regional p { font-size: 0.8rem; color: var(--ink); margin: 4px 0 0; }
+.co-scenario-image-prompt {
+    margin-top: 10px;
+    padding: 8px;
+    background: rgba(0,0,0,0.02);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+.co-scenario-device-symbols { margin-top: 6px; }
+
+/* ── Section 03: Why Selected — enhanced ── */
+.co-why-row--highlight {
+    background: rgba(0, 51, 102, 0.04);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 4px;
+}
+.co-why-regional {
+    font-size: 0.78rem;
+    color: var(--ink);
+    margin-top: 4px;
+    padding: 6px 10px;
+    background: rgba(46, 204, 113, 0.06);
+    border-radius: 4px;
+    border-left: 2px solid #2ecc71;
+}
+
 /* ── Section 03: Why Selected ── */
 .co-why-grid {
     display: grid;
@@ -10557,6 +10640,44 @@ a.source-tag-link:hover {
     color: var(--ink);
     line-height: 1.5;
 }
+.co-readiness-rationale {
+    margin-top: 8px;
+    font-size: 0.76rem;
+    color: var(--muted);
+    line-height: 1.5;
+}
+.co-persona-demo {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 2px;
+}
+.co-persona-pains {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+.co-insight-item--action {
+    background: rgba(0, 51, 102, 0.04);
+    border-radius: 6px;
+    padding: 8px 12px;
+    border-left: 3px solid var(--accent);
+}
+.co-concept-diff {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--accent);
+    margin-left: 6px;
+}
+.co-cut-imgprompt {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px dashed var(--line);
+}
+.co-ref-item--wide { grid-column: 1 / -1; }
 
 /* ── Section 06: FGD Tabs ── */
 .co-tabs { margin-top: 4px; }
