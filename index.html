@@ -149,11 +149,43 @@
                                     <div class="city-dropdown hidden" id="city-dropdown" role="listbox" aria-label="도시 선택 목록"></div>
                                 </div>
                                 <div id="city-profile-card" class="city-profile-card hidden"></div>
-                                <button type="button" id="custom-profile-direct-btn" class="custom-profile-direct-btn">
-                                    <span class="custom-profile-direct-icon">✏️</span>
-                                    <span class="custom-profile-direct-text" id="custom-profile-direct-text">도시 선택 없이 커스텀 프로필 직접 입력</span>
-                                </button>
-                                <p class="helper">지역에 따라 추천 기기와 활용 방식이 달라집니다.</p>
+
+                                <!-- ── Q1 검색 액션 패널 ── -->
+                                <div class="q1-actions" id="q1-actions">
+                                    <!-- 도시 프로필 검색 -->
+                                    <div class="q1-action-row" id="q1-city-search-row">
+                                        <button type="button" id="q1-city-search-btn" class="q1-action-btn q1-action-btn--primary" disabled>
+                                            <span class="q1-action-btn-label" id="q1-city-search-label">도시 프로필 검색</span>
+                                        </button>
+                                        <div class="q1-energy-wrap hidden" id="q1-energy-wrap">
+                                            <div class="q1-energy-track">
+                                                <div class="q1-energy-fill" id="q1-energy-fill"></div>
+                                            </div>
+                                            <span class="q1-energy-pct" id="q1-energy-pct">0%</span>
+                                            <span class="q1-energy-status" id="q1-energy-status">AI 마켓 리서치 중</span>
+                                        </div>
+                                    </div>
+                                    <!-- 구분선 + OR -->
+                                    <div class="q1-action-divider"><span>또는</span></div>
+                                    <!-- 커스텀 프로필 직접 입력 -->
+                                    <div class="q1-action-row" id="q1-custom-row">
+                                        <div class="q1-custom-input-wrap">
+                                            <input type="text" id="q1-custom-input" class="q1-custom-input" placeholder="예: 겨울 한파, 미세먼지 심한 지역, 반지하 습기..." />
+                                            <button type="button" id="q1-custom-search-btn" class="q1-action-btn q1-action-btn--secondary" disabled>
+                                                <span class="q1-action-btn-label" id="q1-custom-search-label">커스텀 검색</span>
+                                            </button>
+                                        </div>
+                                        <div class="q1-energy-wrap hidden" id="q1-custom-energy-wrap">
+                                            <div class="q1-energy-track">
+                                                <div class="q1-energy-fill" id="q1-custom-energy-fill"></div>
+                                            </div>
+                                            <span class="q1-energy-pct" id="q1-custom-energy-pct">0%</span>
+                                            <span class="q1-energy-status" id="q1-custom-energy-status">커스텀 리서치 중</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="helper">도시 프로필과 커스텀 검색을 병렬로 진행할 수 있습니다.</p>
                             </div>
                         </section>
 

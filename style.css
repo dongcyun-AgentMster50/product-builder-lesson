@@ -2091,6 +2091,188 @@ textarea {
 .custom-profile-direct-btn.hidden { display: none; }
 .custom-profile-direct-icon { font-size: 1.1rem; flex-shrink: 0; }
 .custom-profile-direct-text { text-align: left; line-height: 1.4; }
+
+/* ══════════════════════════════════════════════════════
+   Q1 검색 액션 패널 + 에너지 바
+   ══════════════════════════════════════════════════════ */
+.q1-actions {
+    display: grid;
+    gap: 0;
+    margin-top: 10px;
+}
+.q1-action-row {
+    display: grid;
+    gap: 8px;
+}
+.q1-action-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+.q1-action-divider::before,
+.q1-action-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+}
+
+/* 버튼 */
+.q1-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 180ms ease, opacity 180ms ease, box-shadow 180ms ease;
+}
+.q1-action-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+    transform: none !important;
+}
+.q1-action-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+}
+.q1-action-btn:not(:disabled):active {
+    transform: translateY(0);
+}
+.q1-action-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+.q1-action-btn--primary {
+    background: var(--accent-strong);
+    color: var(--paper);
+    box-shadow: 0 3px 12px rgba(13, 71, 161, 0.25);
+}
+.q1-action-btn--primary:not(:disabled):hover {
+    box-shadow: 0 6px 20px rgba(13, 71, 161, 0.35);
+}
+.q1-action-btn--secondary {
+    background: rgba(13, 71, 161, 0.08);
+    color: var(--accent-strong);
+    flex-shrink: 0;
+}
+.q1-action-btn--secondary:not(:disabled):hover {
+    background: rgba(13, 71, 161, 0.14);
+}
+
+/* 커스텀 입력 래퍼 */
+.q1-custom-input-wrap {
+    display: flex;
+    gap: 6px;
+    align-items: stretch;
+}
+.q1-custom-input {
+    flex: 1;
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    font-size: 0.82rem;
+    background: var(--paper);
+    color: var(--ink);
+    transition: border-color 180ms ease;
+}
+.q1-custom-input:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+.q1-custom-input::placeholder {
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+/* ── 에너지 바 ── */
+.q1-energy-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0 2px;
+}
+.q1-energy-wrap.hidden { display: none; }
+
+.q1-energy-track {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(0, 51, 102, 0.08);
+    overflow: hidden;
+    position: relative;
+}
+.q1-energy-fill {
+    position: absolute;
+    inset: 0;
+    border-radius: 3px;
+    background: var(--accent-strong);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* 스캔라인 shimmer — 진행 중에만 */
+.q1-energy-fill.active::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.35) 50%,
+        transparent 100%
+    );
+    animation: q1EnergyShimmer 1.8s ease-in-out infinite;
+}
+@keyframes q1EnergyShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+}
+
+.q1-energy-pct {
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: var(--accent-strong);
+    min-width: 32px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.q1-energy-status {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+/* 완료 상태 */
+.q1-energy-fill.done {
+    background: #16a34a;
+    transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.q1-energy-fill.done::after { display: none; }
+.q1-energy-pct.done { color: #16a34a; }
+
+/* 에러 상태 */
+.q1-energy-fill.error { background: #dc2626; }
+.q1-energy-pct.error { color: #dc2626; }
+
+/* 반응형 */
+@media (max-width: 480px) {
+    .q1-custom-input-wrap { flex-direction: column; }
+    .q1-energy-status { display: none; }
+}
+
 .city-profile-header {
     display: flex;
     align-items: center;

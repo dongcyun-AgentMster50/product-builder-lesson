@@ -646,21 +646,8 @@ function bindEvents() {
     countrySelect.addEventListener("change", updateLocaleFromCountry);
     // ── Searchable City Dropdown 이벤트 ──
     initCitySearchDropdown();
-    // ── 도시 선택 없이 커스텀 프로필 직접 입력 ──
-    const customProfileDirectBtn = document.getElementById("custom-profile-direct-btn");
-    if (customProfileDirectBtn) {
-        customProfileDirectBtn.addEventListener("click", () => {
-            _customProfileDirectMode = !_customProfileDirectMode;
-            customProfileDirectBtn.classList.toggle("active", _customProfileDirectMode);
-            if (_customProfileDirectMode) {
-                // 도시 선택 초기화 (충돌 방지)
-                renderCustomProfileDirect();
-            } else {
-                // 원래 step2 insight로 복귀
-                renderStep2Insight();
-            }
-        });
-    }
+    // ── Q1 검색 액션 패널 바인딩 ──
+    initQ1SearchActions();
     // ── 연령·성별 무관 토글 ──
     const demographicsAgnosticCb = document.getElementById("demographics-agnostic");
     if (demographicsAgnosticCb) {
@@ -2431,14 +2418,28 @@ function selectCity(value, label) {
     // 도시 선택 시 커스텀 직접 입력 모드 해제
     if (value && _customProfileDirectMode) {
         _customProfileDirectMode = false;
-        const directBtn = document.getElementById("custom-profile-direct-btn");
-        if (directBtn) directBtn.classList.remove("active");
     }
     // Trigger downstream updates
     updateStatePreview();
+    // 도시 선택 시 — 검색 시작 버튼 활성화 (자동 검색 대신 수동 트리거)
+    syncQ1SearchButtons();
     if (value) {
-        updateStepInsight();
-        // renderCityProfileCard(); — 넛지 3카드 스킵, 리전 인사이트로 바로 이동
+        // 도시 가이드 → 검색 대기 상태 표시
+        if (currentStep === 2) {
+            const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
+            const country = selectedMarket ? resolveCountry(selectedMarket) : null;
+            const localCity = getCityDisplayValue(country?.countryCode, value) || value;
+            const isKo = currentLocale === "ko";
+            stepInsight.classList.remove("hidden");
+            stepInsight.innerHTML = buildInsightMarkup({
+                badge: "Q1 Region",
+                title: `${selectedMarket?.label || ""} ${localCity}`,
+                summary: isKo
+                    ? `"${localCity}" 도시 프로필 검색 준비 완료. 위 검색 버튼을 눌러 AI 마켓 리서치를 시작하세요.`
+                    : `Ready to search "${localCity}" city profile. Press the search button above to begin AI market research.`
+            });
+            updateQuestionHelpers();
+        }
     } else {
         // No city — show guide
         ++latestStep2InsightRequest;
@@ -2942,8 +2943,13 @@ function resetToAccessScreen() {
     }
     // 커스텀 프로필 직접 입력 모드 리셋
     _customProfileDirectMode = false;
-    const directBtnReset = document.getElementById("custom-profile-direct-btn");
-    if (directBtnReset) directBtnReset.classList.remove("active");
+    _q1CitySearchRunning = false;
+    _q1CustomSearchRunning = false;
+    resetQ1EnergyBar("q1");
+    resetQ1EnergyBar("q1-custom");
+    const q1CustomInput = document.getElementById("q1-custom-input");
+    if (q1CustomInput) q1CustomInput.value = "";
+    syncQ1SearchButtons();
     clearQ3AutoMode();
     segmentCustomInput.value = "";
     purposeInput.value = "";
@@ -3718,6 +3724,230 @@ function buildStep2CitySelectGuide(countryCode) {
 }
 
 let _customProfileDirectMode = false;
+let _q1CitySearchRunning = false;
+let _q1CustomSearchRunning = false;
+
+/** Q1 검색 액션 패널 초기화 */
+function initQ1SearchActions() {
+    const citySearchBtn = document.getElementById("q1-city-search-btn");
+    const customInput = document.getElementById("q1-custom-input");
+    const customSearchBtn = document.getElementById("q1-custom-search-btn");
+
+    // 도시 프로필 검색 버튼
+    if (citySearchBtn) {
+        citySearchBtn.addEventListener("click", () => {
+            if (_q1CitySearchRunning) return;
+            const city = getCityValue();
+            if (!city) return;
+            triggerCityProfileSearch();
+        });
+    }
+
+    // 커스텀 입력 활성화
+    if (customInput) {
+        customInput.addEventListener("input", () => {
+            syncQ1SearchButtons();
+        });
+        customInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                if (!_q1CustomSearchRunning && customInput.value.trim()) {
+                    triggerCustomProfileSearch();
+                }
+            }
+        });
+    }
+
+    // 커스텀 검색 버튼
+    if (customSearchBtn) {
+        customSearchBtn.addEventListener("click", () => {
+            if (_q1CustomSearchRunning) return;
+            const query = document.getElementById("q1-custom-input")?.value.trim();
+            if (!query) return;
+            triggerCustomProfileSearch();
+        });
+    }
+}
+
+/** 버튼 활성/비활성 상태 동기화 */
+function syncQ1SearchButtons() {
+    const citySearchBtn = document.getElementById("q1-city-search-btn");
+    const customSearchBtn = document.getElementById("q1-custom-search-btn");
+    const customInput = document.getElementById("q1-custom-input");
+    const isKo = currentLocale === "ko";
+
+    // 도시 검색 버튼
+    if (citySearchBtn) {
+        const city = getCityValue();
+        citySearchBtn.disabled = !city || _q1CitySearchRunning;
+        const label = document.getElementById("q1-city-search-label");
+        if (label) {
+            if (_q1CitySearchRunning) {
+                label.textContent = isKo ? "검색 중..." : "Searching...";
+            } else if (city) {
+                const localCity = getCityDisplayValue(
+                    resolveCountry(marketOptions.find(m => m.siteCode === countrySelect.value))?.countryCode,
+                    city
+                ) || city;
+                label.textContent = isKo ? `${localCity} 프로필 검색` : `Search ${localCity} profile`;
+            } else {
+                label.textContent = isKo ? "도시를 먼저 선택하세요" : "Select a city first";
+            }
+        }
+    }
+
+    // 커스텀 검색 버튼
+    if (customSearchBtn && customInput) {
+        customSearchBtn.disabled = !customInput.value.trim() || _q1CustomSearchRunning;
+    }
+}
+
+/** 에너지 바 업데이트 */
+function updateQ1EnergyBar(prefix, pct, status) {
+    const wrap = document.getElementById(`${prefix}-energy-wrap`);
+    const fill = document.getElementById(`${prefix}-energy-fill`);
+    const pctEl = document.getElementById(`${prefix}-energy-pct`);
+    const statusEl = document.getElementById(`${prefix}-energy-status`);
+    if (!wrap || !fill) return;
+
+    wrap.classList.remove("hidden");
+    const clamped = Math.min(100, Math.max(0, pct));
+    fill.style.transform = `scaleX(${clamped / 100})`;
+    if (pctEl) pctEl.textContent = `${Math.round(clamped)}%`;
+    if (statusEl && status) statusEl.textContent = status;
+
+    // shimmer 활성/비활성
+    if (clamped < 100) {
+        fill.classList.add("active");
+        fill.classList.remove("done", "error");
+        if (pctEl) pctEl.classList.remove("done", "error");
+    }
+}
+
+function completeQ1EnergyBar(prefix, success) {
+    const fill = document.getElementById(`${prefix}-energy-fill`);
+    const pctEl = document.getElementById(`${prefix}-energy-pct`);
+    const statusEl = document.getElementById(`${prefix}-energy-status`);
+    const isKo = currentLocale === "ko";
+    if (!fill) return;
+
+    fill.classList.remove("active");
+    if (success) {
+        fill.style.transform = "scaleX(1)";
+        fill.classList.add("done");
+        if (pctEl) { pctEl.textContent = "100%"; pctEl.classList.add("done"); }
+        if (statusEl) statusEl.textContent = isKo ? "완료" : "Done";
+    } else {
+        fill.classList.add("error");
+        if (pctEl) pctEl.classList.add("error");
+        if (statusEl) statusEl.textContent = isKo ? "실패 — 다시 시도해 주세요" : "Failed — please retry";
+    }
+}
+
+function resetQ1EnergyBar(prefix) {
+    const wrap = document.getElementById(`${prefix}-energy-wrap`);
+    const fill = document.getElementById(`${prefix}-energy-fill`);
+    const pctEl = document.getElementById(`${prefix}-energy-pct`);
+    if (wrap) wrap.classList.add("hidden");
+    if (fill) { fill.style.transform = "scaleX(0)"; fill.classList.remove("active", "done", "error"); }
+    if (pctEl) { pctEl.textContent = "0%"; pctEl.classList.remove("done", "error"); }
+}
+
+/** 도시 프로필 검색 트리거 — 에너지 바 연동 */
+function triggerCityProfileSearch() {
+    const city = getCityValue();
+    if (!city) return;
+    _q1CitySearchRunning = true;
+    syncQ1SearchButtons();
+    resetQ1EnergyBar("q1");
+
+    const isKo = currentLocale === "ko";
+    updateQ1EnergyBar("q1", 2, isKo ? "AI 마켓 리서치 시작..." : "Starting AI market research...");
+
+    // 에너지 바 시뮬레이션 — renderStep2Insight 내부의 피자 프로그레스와 병렬 작동
+    let progress = 2;
+    let done = false;
+    const interval = setInterval(() => {
+        if (done || currentStep !== 2) { clearInterval(interval); return; }
+        progress += (92 - progress) * 0.02;
+        const statusText = progress < 20 ? (isKo ? "위키피디아 데이터 수집 중..." : "Gathering Wikipedia data...")
+            : progress < 60 ? (isKo ? "AI 분석 진행 중..." : "AI analysis in progress...")
+            : (isKo ? "프로필 구성 마무리 중..." : "Finalizing profile...");
+        updateQ1EnergyBar("q1", progress, statusText);
+    }, 250);
+
+    // 기존 renderStep2Insight를 호출하되, 완료/실패 시 에너지 바 반영
+    const origRequestId = ++latestStep2InsightRequest;
+    renderStep2Insight(true).then(() => {
+        done = true;
+        clearInterval(interval);
+        _q1CitySearchRunning = false;
+        completeQ1EnergyBar("q1", true);
+        syncQ1SearchButtons();
+    }).catch(() => {
+        done = true;
+        clearInterval(interval);
+        _q1CitySearchRunning = false;
+        completeQ1EnergyBar("q1", false);
+        syncQ1SearchButtons();
+    });
+}
+
+/** 커스텀 프로필 검색 트리거 — 에너지 바 연동 */
+function triggerCustomProfileSearch() {
+    const query = document.getElementById("q1-custom-input")?.value.trim();
+    if (!query) return;
+    _q1CustomSearchRunning = true;
+    syncQ1SearchButtons();
+    resetQ1EnergyBar("q1-custom");
+
+    const isKo = currentLocale === "ko";
+    updateQ1EnergyBar("q1-custom", 2, isKo ? "커스텀 리서치 시작..." : "Starting custom research...");
+
+    // 에너지 바 시뮬레이션
+    let progress = 2;
+    let done = false;
+    const interval = setInterval(() => {
+        if (done || currentStep !== 2) { clearInterval(interval); return; }
+        progress += (92 - progress) * 0.025;
+        const statusText = progress < 30 ? (isKo ? "검색어 분석 중..." : "Analyzing query...")
+            : progress < 70 ? (isKo ? "AI 리서치 진행 중..." : "AI research in progress...")
+            : (isKo ? "결과 정리 중..." : "Compiling results...");
+        updateQ1EnergyBar("q1-custom", progress, statusText);
+    }, 250);
+
+    // step-insight에 커스텀 검색 결과 영역이 필요 — renderCustomProfileDirect 호출
+    _customProfileDirectMode = true;
+    renderCustomProfileDirect();
+
+    // 약간의 지연 후 검색 실행 (DOM이 준비된 후)
+    requestAnimationFrame(() => {
+        const resultArea = stepInsight.querySelector("#magic-custom-result");
+        const parentContainer = stepInsight;
+        if (resultArea) {
+            const origFn = runCustomCityResearch;
+            runCustomCityResearch(query, resultArea, parentContainer).then(() => {
+                done = true;
+                clearInterval(interval);
+                _q1CustomSearchRunning = false;
+                completeQ1EnergyBar("q1-custom", true);
+                syncQ1SearchButtons();
+            }).catch(() => {
+                done = true;
+                clearInterval(interval);
+                _q1CustomSearchRunning = false;
+                completeQ1EnergyBar("q1-custom", false);
+                syncQ1SearchButtons();
+            });
+        } else {
+            done = true;
+            clearInterval(interval);
+            _q1CustomSearchRunning = false;
+            completeQ1EnergyBar("q1-custom", false);
+            syncQ1SearchButtons();
+        }
+    });
+}
 
 function renderCustomProfileDirect() {
     const isKo = currentLocale === "ko";
@@ -12554,8 +12784,16 @@ function applyLocale() {
     const demoHint = document.getElementById("demographics-agnostic-hint");
     if (demoLabel) demoLabel.textContent = currentLocale === "ko" ? "연령·성별 무관 (All Demographics)" : "All Demographics (Age & Gender Agnostic)";
     if (demoHint) demoHint.textContent = currentLocale === "ko" ? "B 세대 구성을 건너뛰고, 전 연령층 대상으로 시나리오를 생성합니다" : "Skip household composition and generate scenarios for all demographics";
-    const customDirectText = document.getElementById("custom-profile-direct-text");
-    if (customDirectText) customDirectText.textContent = currentLocale === "ko" ? "도시 선택 없이 커스텀 프로필 직접 입력" : "Enter custom profile without city selection";
+    // Q1 검색 액션 패널 로케일
+    const q1CustomSearchLabel = document.getElementById("q1-custom-search-label");
+    if (q1CustomSearchLabel) q1CustomSearchLabel.textContent = currentLocale === "ko" ? "커스텀 검색" : "Custom Search";
+    const q1CustomInput = document.getElementById("q1-custom-input");
+    if (q1CustomInput) q1CustomInput.placeholder = currentLocale === "ko"
+        ? "예: 겨울 한파, 미세먼지 심한 지역, 반지하 습기..."
+        : "e.g. extreme winter cold, high pollution area, humid basement...";
+    const q1Divider = document.querySelector(".q1-action-divider span");
+    if (q1Divider) q1Divider.textContent = currentLocale === "ko" ? "또는" : "OR";
+    syncQ1SearchButtons();
     updateEnglishToggleVisibility();
 }
 

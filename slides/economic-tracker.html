@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0B1120">
+<title>경제 정보 트래커</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0B1120;--surface:#111827;--card:#1A2332;--card-hover:#1E293B;
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.12);
+  --text:#F1F5F9;--sub:#CBD5E1;--muted:#64748B;--dim:#475569;
+  --accent:#3B82F6;--accent-soft:rgba(59,130,246,.12);
+  --green:#22C55E;--green-soft:rgba(34,197,94,.12);
+  --amber:#F59E0B;--amber-soft:rgba(245,158,11,.12);
+  --red:#EF4444;--red-soft:rgba(239,68,68,.12);
+  --kdi:#60A5FA;--kiep:#34D399;--kif:#FBBF24;--posri:#F87171;
+  --mk:#FF6B35;--hk:#3B82F6;--edaily:#A78BFA;--mt:#10B981;--seoul:#F59E0B;
+  --radius:10px;--radius-lg:14px;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);
+  font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;
+  font-size:15px;overflow:hidden;line-height:1.5}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--dim);border-radius:3px}
+
+/* ── 레이아웃 ── */
+#app{display:flex;flex-direction:column;height:100dvh}
+#header{background:var(--surface);border-bottom:1px solid var(--border);
+  padding:12px 20px;display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;gap:12px;flex-wrap:wrap}
+#main{display:flex;flex:1;overflow:hidden}
+#left{flex:1;overflow-y:auto;padding:20px;min-width:0}
+#right{width:340px;border-left:1px solid var(--border);background:var(--surface);
+  display:flex;flex-direction:column;overflow:hidden}
+
+/* ── 헤더 ── */
+.logo{font-size:16px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
+.logo-icon{font-size:20px}
+.logo-accent{color:var(--accent)}
+.logo-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cat-tabs{display:flex;gap:4px}
+.cat-tab{padding:6px 14px;border-radius:20px;border:1px solid var(--border2);
+  background:transparent;color:var(--muted);font-size:12px;font-weight:600;
+  transition:all .18s}
+.cat-tab:hover{color:var(--sub);border-color:var(--dim)}
+.cat-tab.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+
+/* 동기화 버튼 */
+.sync-btns{display:flex;gap:4px}
+.sync-btn{padding:5px 10px;border-radius:8px;font-size:11px;font-weight:600;
+  color:var(--muted);border:1px solid var(--border2);transition:all .15s}
+.sync-btn:hover{color:var(--sub);border-color:var(--dim)}
+
+/* ── 월 네비 ── */
+.nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.nav-btn{width:36px;height:36px;border-radius:var(--radius);border:1px solid var(--border2);
+  background:var(--card);color:var(--muted);font-size:20px;display:flex;
+  align-items:center;justify-content:center;transition:all .15s}
+.nav-btn:hover{background:var(--card-hover);color:var(--text)}
+.month-title{font-size:22px;font-weight:800;text-align:center;letter-spacing:-.3px}
+.month-sub{font-size:12px;color:var(--muted);text-align:center;margin-top:3px}
+
+/* ── 통계 ── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 8px;text-align:center;transition:border-color .15s}
+.stat:hover{border-color:var(--border2)}
+.stat-val{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:3px;font-weight:500}
+
+/* ── 달력 ── */
+.weekday-row{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:5px}
+.weekday{text-align:center;font-size:11px;font-weight:700;padding:4px 0;color:var(--dim)}
+.weekday.sun{color:var(--red)}.weekday.sat{color:var(--accent)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-cell{min-height:62px;padding:6px 5px;border-radius:var(--radius);cursor:pointer;
+  background:var(--card);border:1.5px solid transparent;transition:all .15s;
+  position:relative;user-select:none}
+.cal-cell:hover{background:var(--card-hover);border-color:var(--border2)}
+.cal-cell.empty{background:transparent;pointer-events:none;border:none}
+.cal-cell.today{border-color:var(--accent)}
+.cal-cell.today .day-num{color:var(--accent);font-weight:800}
+.cal-cell.selected{background:rgba(59,130,246,.1);border-color:var(--accent)}
+.cal-cell.all-read{opacity:.45}
+.day-num{font-size:12px;font-weight:600;margin-bottom:4px;color:var(--sub)}
+.day-num.sun{color:var(--red)}.day-num.sat{color:var(--accent)}
+.dots{display:flex;flex-wrap:wrap;gap:3px}
+.dot{width:7px;height:7px;border-radius:50%}
+.cell-count{font-size:9px;color:var(--muted);margin-top:3px;font-weight:600}
+
+/* ── 범례 ── */
+.legend-bar{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);font-weight:500}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── 우측 패널 탭 ── */
+.panel-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.panel-tab{flex:1;padding:12px 0;background:transparent;
+  color:var(--dim);font-size:12px;font-weight:600;cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .15s;font-family:inherit}
+.panel-tab:hover{color:var(--sub)}
+.panel-tab.active{color:var(--text);font-weight:700;border-bottom-color:var(--accent);
+  background:rgba(59,130,246,.04)}
+.panel-body{flex:1;overflow-y:auto;padding:16px}
+
+/* ── 발간일정 패널 ── */
+.panel-title{font-size:14px;font-weight:800;margin-bottom:14px;letter-spacing:-.2px}
+.pub-card{background:var(--card);border-radius:var(--radius-lg);padding:14px;
+  border:1px solid var(--border);margin-bottom:10px;cursor:pointer;transition:all .18s}
+.pub-card:hover{border-color:var(--border2);background:var(--card-hover)}
+.pub-card.read{opacity:.5}
+.pub-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.pub-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px}
+.pub-name{font-size:13px;font-weight:700}
+.pub-date{font-size:11px;color:var(--muted);font-weight:500}
+.pub-btns{display:flex;gap:6px;margin-bottom:8px}
+.pub-btn{flex:1;padding:7px 0;border-radius:8px;font-size:11px;font-weight:700;
+  transition:all .15s;font-family:inherit}
+.pub-link{display:block;text-align:center;padding:8px 0;border-radius:8px;
+  font-size:12px;font-weight:700;transition:all .15s}
+.pub-link:hover{filter:brightness(1.15)}
+.status-tags{display:flex;gap:5px;margin-top:6px}
+.stag{font-size:10px;padding:2px 8px;border-radius:5px;font-weight:600}
+
+/* 날 상세 헤더 */
+.day-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.day-header-title{font-size:16px;font-weight:800}
+.close-btn{background:none;border:none;color:var(--muted);font-size:22px;
+  line-height:1;padding:4px 8px;border-radius:6px;transition:color .15s}
+.close-btn:hover{color:var(--text)}
+
+/* ── 기관 카드 ── */
+.inst-card{border-radius:var(--radius-lg);overflow:hidden;margin-bottom:14px}
+.inst-head{padding:14px 16px 10px}
+.inst-head-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.inst-emoji-name{display:flex;align-items:center;gap:8px}
+.inst-emoji{font-size:22px}
+.inst-short{font-size:15px;font-weight:800}
+.inst-fullname{font-size:11px;color:var(--muted);margin-top:1px}
+.inst-meta{font-size:11px;color:var(--dim);margin-top:4px;font-weight:500}
+.inst-site-btn{font-size:11px;padding:5px 12px;border-radius:8px;
+  font-weight:700;font-family:inherit;white-space:nowrap;transition:filter .15s}
+.inst-site-btn:hover{filter:brightness(1.2)}
+.inst-body{padding:12px 16px 16px}
+.inst-summary{font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:10px}
+.tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.focus-tag{font-size:11px;padding:3px 10px;border-radius:8px;font-weight:600}
+.inst-pubs-title{font-size:11px;color:var(--dim);font-weight:700;margin-bottom:6px;
+  padding-top:10px;border-top:1px solid var(--border)}
+.inst-pub-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.inst-pub-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.inst-pub-name{font-size:12px;color:var(--sub)}
+.inst-pub-cycle{font-size:11px;color:var(--dim);margin-left:auto;font-weight:500}
+
+/* 섹션 구분 */
+.section-divider{font-size:11px;font-weight:800;color:var(--muted);
+  letter-spacing:.8px;margin:18px 0 10px;padding-bottom:6px;
+  border-bottom:1px solid var(--border);text-transform:uppercase}
+.empty-msg{color:var(--muted);font-size:13px;text-align:center;padding:48px 0}
+
+/* ── 저장함 ── */
+.saved-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.saved-title{font-size:14px;font-weight:800}
+.add-cat-btn{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;
+  color:var(--accent);background:var(--accent-soft);border:1px solid rgba(59,130,246,.2);
+  transition:all .15s}
+.add-cat-btn:hover{background:rgba(59,130,246,.2)}
+.cat-group{margin-bottom:16px}
+.cat-group-head{display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;background:var(--card);border-radius:var(--radius);
+  margin-bottom:6px;cursor:pointer;transition:background .15s}
+.cat-group-head:hover{background:var(--card-hover)}
+.cat-group-label{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
+.cat-group-count{font-size:10px;color:var(--muted);font-weight:600;
+  background:var(--border2);padding:1px 7px;border-radius:10px}
+.cat-group-actions{display:flex;gap:4px}
+.cat-group-actions button{font-size:11px;color:var(--muted);padding:2px 6px;border-radius:4px}
+.cat-group-actions button:hover{color:var(--text);background:var(--border2)}
+.saved-item{display:flex;align-items:center;gap:10px;padding:8px 12px;
+  border-radius:8px;margin-bottom:4px;background:rgba(255,255,255,.02);
+  border:1px solid var(--border);transition:all .15s;font-size:12px}
+.saved-item:hover{background:var(--card);border-color:var(--border2)}
+.saved-item-info{flex:1;min-width:0}
+.saved-item-name{font-weight:700;color:var(--sub)}
+.saved-item-meta{font-size:10px;color:var(--muted);margin-top:1px}
+.saved-item-del{font-size:14px;color:var(--dim);padding:2px 6px;border-radius:4px;
+  flex-shrink:0;transition:color .15s}
+.saved-item-del:hover{color:var(--red)}
+
+/* 카테고리 입력 모달 (인라인) */
+.cat-input-row{display:flex;gap:6px;margin-bottom:14px}
+.cat-input-row input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border2);
+  background:var(--card);color:var(--text);font-size:13px;font-family:inherit}
+.cat-input-row input:focus{outline:none;border-color:var(--accent)}
+.cat-input-row button{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700}
+.cat-input-confirm{background:var(--accent);color:#fff}
+.cat-input-cancel{color:var(--muted);border:1px solid var(--border2)}
+
+/* 저장 버튼 (pub-card 내) */
+.save-btn{padding:5px 10px;border-radius:6px;font-size:10px;font-weight:700;
+  transition:all .15s;white-space:nowrap}
+
+/* ── 모바일 ── */
+@media(max-width:700px){
+  #right{display:none}
+  #left{padding:14px 12px}
+  .month-title{font-size:19px}
+  .cal-cell{min-height:50px;padding:5px 3px}
+  .dot{width:6px;height:6px}
+  .stats{gap:6px}.stat{padding:10px 4px}
+  .stat-val{font-size:18px}
+  .header-right{width:100%}
+  .cat-tabs{flex:1;overflow-x:auto}
+  .sync-btns{margin-left:auto}
+  #drawer{display:flex;flex-direction:column;
+    position:fixed;bottom:0;left:0;right:0;
+    background:var(--surface);border-top:1px solid var(--border);
+    border-radius:18px 18px 0 0;max-height:80vh;
+    transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);z-index:100}
+  #drawer.open{transform:translateY(0)}
+  #drawer-handle{width:40px;height:4px;border-radius:2px;background:var(--dim);
+    margin:10px auto 6px}
+  #drawer-content{flex:1;overflow-y:auto;padding:0 16px 28px}
+  #bottom-tabs{display:flex;position:fixed;bottom:0;left:0;right:0;
+    background:var(--surface);border-top:1px solid var(--border);z-index:50;
+    padding-bottom:env(safe-area-inset-bottom)}
+  #bottom-tabs button{flex:1;padding:12px 0 8px;border:none;background:transparent;
+    color:var(--dim);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:2px;transition:color .15s}
+  #bottom-tabs button .btab-icon{font-size:18px}
+  #bottom-tabs button.active{color:var(--accent)}
+  #left{padding-bottom:70px}
+}
+@media(min-width:701px){
+  #drawer{display:none!important}
+  #bottom-tabs{display:none!important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="header">
+    <div>
+      <div class="logo"><span class="logo-icon">📊</span> <span class="logo-accent">경제</span> 정보 트래커</div>
+      <div class="logo-sub">씽크탱크 · 경제신문 발간물 관리</div>
+    </div>
+    <div class="header-right">
+      <div class="cat-tabs" id="catTabs"></div>
+      <div class="sync-btns">
+        <button class="sync-btn" onclick="exportData()" title="데이터 내보내기">📤 내보내기</button>
+        <button class="sync-btn" onclick="document.getElementById('importFile').click()" title="데이터 가져오기">📥 가져오기</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+      </div>
+    </div>
+  </header>
+
+  <div id="main">
+    <div id="left">
+      <div class="nav-row">
+        <button class="nav-btn" id="prevBtn">‹</button>
+        <div>
+          <div class="month-title" id="monthTitle"></div>
+          <div class="month-sub" id="monthSub"></div>
+        </div>
+        <button class="nav-btn" id="nextBtn">›</button>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="weekday-row">
+        <div class="weekday sun">일</div><div class="weekday">월</div><div class="weekday">화</div>
+        <div class="weekday">수</div><div class="weekday">목</div><div class="weekday">금</div>
+        <div class="weekday sat">토</div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="legend-bar" id="legendBar"></div>
+    </div>
+    <div id="right">
+      <div class="panel-tabs">
+        <button class="panel-tab active" id="tabSchedule" onclick="switchTab('schedule')">📅 발간 일정</button>
+        <button class="panel-tab" id="tabLegend" onclick="switchTab('legend')">🏢 기관 안내</button>
+        <button class="panel-tab" id="tabSaved" onclick="switchTab('saved')">📂 저장함</button>
+      </div>
+      <div class="panel-body" id="panelBody"></div>
+    </div>
+  </div>
+
+  <div id="drawer">
+    <div id="drawer-handle"></div>
+    <div class="panel-tabs" style="flex-shrink:0">
+      <button class="panel-tab active" id="tabScheduleM" onclick="switchTabM('schedule')">📅 일정</button>
+      <button class="panel-tab" id="tabLegendM" onclick="switchTabM('legend')">🏢 기관</button>
+      <button class="panel-tab" id="tabSavedM" onclick="switchTabM('saved')">📂 저장</button>
+    </div>
+    <div id="drawer-content"></div>
+  </div>
+
+  <div id="bottom-tabs">
+    <button class="active" onclick="mobileTab('cal')"><span class="btab-icon">📅</span>달력</button>
+    <button onclick="mobileTab('legend')"><span class="btab-icon">🏢</span>기관</button>
+    <button onclick="mobileTab('saved')"><span class="btab-icon">📂</span>저장함</button>
+    <button onclick="mobileTab('sync')"><span class="btab-icon">🔄</span>동기화</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// 데이터 정의
+// ═══════════════════════════════════════════
+const THINK_TANKS = {
+  KDI: {
+    name:"한국개발연구원", short:"KDI", color:"#60A5FA", emoji:"🏛️",
+    cat:"tank", founded:"1971년", type:"정부출연연구기관",
+    site:"https://www.kdi.re.kr",
+    summary:"기획재정부 산하 국책 싱크탱크. 한국 최대·최고 권위의 경제정책 연구기관으로, 중장기 경제정책 방향 수립과 예비타당성조사를 총괄한다.",
+    focus:["거시경제","재정·예산","사회정책","북한경제","공공투자"],
+    pubs:[
+      {id:"trend", name:"KDI 경제동향", cycle:"monthly", day:20, url:"https://www.kdi.re.kr/research/monTrends"},
+      {id:"focus", name:"KDI Focus", cycle:"monthly", day:10, url:"https://www.kdi.re.kr/research/focusList"},
+      {id:"fore",  name:"KDI 경제전망", cycle:"semiannual", day:25, months:[5,11], url:"https://www.kdi.re.kr/research/forcast"},
+    ]
+  },
+  KIEP: {
+    name:"대외경제정책연구원", short:"KIEP", color:"#34D399", emoji:"🌏",
+    cat:"tank", founded:"1990년", type:"정부출연연구기관",
+    site:"https://www.kiep.go.kr",
+    summary:"기획재정부 산하 대외경제 전문 국책 연구기관. 무역·통상·해외직접투자·지역경제 등 국제경제 전반을 분석하며 정부 통상정책 수립을 지원한다.",
+    focus:["국제통상","무역정책","지역경제","환율·외환","글로벌 공급망"],
+    pubs:[
+      {id:"wfocus", name:"세계경제 포커스", cycle:"weekly", weekday:1, url:"https://www.kiep.go.kr/menu.es?mid=a10102010000"},
+      {id:"today",  name:"오늘의 세계경제", cycle:"monthly", day:15, url:"https://www.kiep.go.kr/menu.es?mid=a10102020000"},
+    ]
+  },
+  KIF: {
+    name:"한국금융연구원", short:"KIF", color:"#FBBF24", emoji:"🏦",
+    cat:"tank", founded:"1991년", type:"민간연구기관(금융기관 출연)",
+    site:"https://www.kif.re.kr",
+    summary:"은행·보험·증권 등 금융기관들이 출연해 설립한 금융 전문 연구기관. 금융제도·정책·규제 및 금융회사 경영 전반을 연구하며 금융위원회·금감원 정책에 기여한다.",
+    focus:["금융정책·규제","은행·보험","자본시장","핀테크","금융안정"],
+    pubs:[
+      {id:"weekly", name:"주간금융브리프", cycle:"weekly", weekday:5, url:"https://www.kif.re.kr/kif2020/publication/pub02.aspx"},
+      {id:"brief",  name:"금융브리프", cycle:"biweekly", weekday:5, url:"https://www.kif.re.kr/kif2020/publication/pub01.aspx"},
+    ]
+  },
+  POSRI: {
+    name:"포스코경영연구원", short:"POSRI", color:"#F87171", emoji:"🏗️",
+    cat:"tank", founded:"1994년", type:"민간연구기관(POSCO 산하)",
+    site:"https://www.posri.re.kr",
+    summary:"POSCO그룹 산하 민간 경영·산업 연구기관. 철강·소재 산업을 중심으로 글로벌 산업 동향, 경영전략, 기술·에너지·ESG 이슈를 분석한다.",
+    focus:["철강·소재산업","글로벌 산업동향","에너지·탄소","ESG·경영전략","신산업"],
+    pubs:[
+      {id:"issue",  name:"이슈리포트", cycle:"monthly", day:5, url:"https://www.posri.re.kr/ko/board/content/list/15"},
+      {id:"report", name:"POSRI 보고서", cycle:"monthly", day:20, url:"https://www.posri.re.kr/ko/board/content/list/14"},
+    ]
+  },
+};
+
+const NEWSPAPERS = {
+  MK: { name:"매일경제", short:"매일경제", color:"#FF6B35", emoji:"📰", cat:"news", founded:"1966년", type:"경제일간지", site:"https://www.mk.co.kr",
+    summary:"국내 최대 경제·금융 전문 일간지. 증시·부동산·기업 경영 이슈를 중심으로 국내외 경제 뉴스를 종합 제공한다.",
+    focus:["증시·투자","기업경영","부동산","산업동향","글로벌경제"],
+    pubs:[{id:"daily", name:"매일경제 일간지", cycle:"daily", url:"https://www.mk.co.kr/newspaper/"}] },
+  HK: { name:"한국경제", short:"한국경제", color:"#3B82F6", emoji:"📰", cat:"news", founded:"1964년", type:"경제일간지", site:"https://www.hankyung.com",
+    summary:"한국 최고(最古) 경제 전문 일간지. 기업·증시·부동산 보도에 강점을 가지며, 한경닷컴·한경TV 등 미디어 그룹을 운영한다.",
+    focus:["기업·증시","부동산","창업·스타트업","글로벌","IT·테크"],
+    pubs:[{id:"daily", name:"한국경제 일간지", cycle:"daily", url:"https://www.hankyung.com/newspaper"}] },
+  EDAILY: { name:"이데일리", short:"이데일리", color:"#A78BFA", emoji:"📱", cat:"news", founded:"2000년", type:"경제전문 온라인·일간지", site:"https://www.edaily.co.kr",
+    summary:"인터넷 경제신문으로 출발, 현재 일간지로 등록. 증권·금융 분야의 빠른 속보성과 심층 분석을 강점으로 한다.",
+    focus:["증권·금융","IT·바이오","부동산","정책","국제경제"],
+    pubs:[{id:"daily", name:"이데일리 일간지", cycle:"daily", url:"https://www.edaily.co.kr/newspaper"}] },
+  MT: { name:"머니투데이", short:"머니투데이", color:"#10B981", emoji:"📱", cat:"news", founded:"1999년", type:"경제전문 온라인·일간지", site:"https://www.mt.co.kr",
+    summary:"인터넷 경제신문. 증권·부동산·IT 분야에 강하며 머니투데이방송(MTN)을 운영. 스타트업·벤처 커버리지가 풍부하다.",
+    focus:["증권·투자","벤처·스타트업","IT·바이오","부동산","정책"],
+    pubs:[{id:"daily", name:"머니투데이 일간지", cycle:"daily", url:"https://www.mt.co.kr/newspaper"}] },
+  SEOUL: { name:"서울경제", short:"서울경제", color:"#F59E0B", emoji:"📰", cat:"news", founded:"1960년", type:"경제일간지", site:"https://www.sedaily.com",
+    summary:"1960년 창간한 경제 일간지. 산업·기업 뉴스를 중심으로 부동산·금융·정책까지 폭넓게 다루며, 서울경제TV를 운영한다.",
+    focus:["산업·기업","금융","부동산","정책·규제","글로벌"],
+    pubs:[{id:"daily", name:"서울경제 일간지", cycle:"daily", url:"https://www.sedaily.com/newsPaper"}] },
+};
+
+const ALL_INST = {...THINK_TANKS, ...NEWSPAPERS};
+
+// ═══════════════════════════════════════════
+// 상태
+// ═══════════════════════════════════════════
+const today = new Date();
+let year = today.getFullYear(), month = today.getMonth(), selDay = today.getDate();
+let activeCat = "all";
+let panelTab = "schedule", panelTabM = "schedule";
+let drawerOpen = false;
+let showCatInput = false;
+
+// ═══════════════════════════════════════════
+// localStorage 헬퍼
+// ═══════════════════════════════════════════
+function skey(y,m,d,iKey,pId){ return `etk_${y}_${m+1}_${d}_${iKey}_${pId}`; }
+function getS(d,iKey,pId){
+  try{ return JSON.parse(localStorage.getItem(skey(year,month,d,iKey,pId)))||{read:false,dl:false}; }
+  catch{ return {read:false,dl:false}; }
+}
+function setS(d,iKey,pId,field){
+  const k = skey(year,month,d,iKey,pId);
+  const cur = getS(d,iKey,pId);
+  cur[field] = !cur[field];
+  localStorage.setItem(k, JSON.stringify(cur));
+  render();
+}
+
+// ═══════════════════════════════════════════
+// 저장함 (카테고리 + 아이템)
+// ═══════════════════════════════════════════
+function getSavedData(){
+  try { return JSON.parse(localStorage.getItem("etk_saved")) || { categories: defaultCategories(), items: [] }; }
+  catch { return { categories: defaultCategories(), items: [] }; }
+}
+function setSavedData(data){ localStorage.setItem("etk_saved", JSON.stringify(data)); }
+function defaultCategories(){
+  // 기관별 기본 카테고리
+  const cats = Object.entries(ALL_INST).map(([k,v]) => ({ id: `inst_${k}`, name: `${v.emoji} ${v.short}`, system: true }));
+  cats.unshift({ id: "starred", name: "⭐ 즐겨찾기", system: true });
+  cats.push({ id: "later", name: "📌 나중에 읽기", system: true });
+  return cats;
+}
+function addCategory(name){
+  if(!name.trim()) return;
+  const data = getSavedData();
+  const id = "custom_" + Date.now();
+  data.categories.push({ id, name: name.trim(), system: false });
+  setSavedData(data);
+  showCatInput = false;
+  render();
+}
+function removeCategory(catId){
+  const data = getSavedData();
+  data.categories = data.categories.filter(c => c.id !== catId);
+  data.items = data.items.filter(i => i.catId !== catId);
+  setSavedData(data);
+  render();
+}
+function saveItem(catId, instKey, pubId, pubName, url){
+  const data = getSavedData();
+  const exists = data.items.find(i => i.catId === catId && i.instKey === instKey && i.pubId === pubId);
+  if(exists) return;
+  data.items.push({ catId, instKey, pubId, pubName, url, savedAt: new Date().toISOString() });
+  setSavedData(data);
+  render();
+}
+function removeItem(idx){
+  const data = getSavedData();
+  data.items.splice(idx, 1);
+  setSavedData(data);
+  render();
+}
+
+// ═══════════════════════════════════════════
+// 내보내기 / 가져오기 (동기화)
+// ═══════════════════════════════════════════
+function exportData(){
+  const allData = {};
+  for(let i=0; i<localStorage.length; i++){
+    const k = localStorage.key(i);
+    if(k.startsWith("etk_")) allData[k] = localStorage.getItem(k);
+  }
+  const blob = new Blob([JSON.stringify(allData, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `경제트래커_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importData(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      const data = JSON.parse(e.target.result);
+      let count = 0;
+      Object.entries(data).forEach(([k,v]) => {
+        if(k.startsWith("etk_")){ localStorage.setItem(k, v); count++; }
+      });
+      alert(`${count}개 항목을 가져왔습니다. 동기화 완료!`);
+      render();
+    } catch { alert("파일 형식이 올바르지 않습니다."); }
+  };
+  reader.readAsText(file);
+  event.target.value = "";
+}
+
+// ═══════════════════════════════════════════
+// 발간물 맵
+// ═══════════════════════════════════════════
+function buildPubMap(){
+  const map = {};
+  const dim = new Date(year,month+1,0).getDate();
+  const filtered = Object.entries(ALL_INST).filter(([k,v]) => {
+    if(activeCat==="all") return true;
+    if(activeCat==="tank") return v.cat==="tank";
+    if(activeCat==="news") return v.cat==="news";
+    return k===activeCat;
+  });
+  filtered.forEach(([key,inst]) => {
+    inst.pubs.forEach(pub => {
+      const days = [];
+      if(pub.cycle==="monthly"){ if(pub.day<=dim) days.push(pub.day); }
+      else if(pub.cycle==="semiannual"){ if(pub.months.includes(month+1)&&pub.day<=dim) days.push(pub.day); }
+      else if(pub.cycle==="weekly"){ for(let d=1;d<=dim;d++) if(new Date(year,month,d).getDay()===pub.weekday) days.push(d); }
+      else if(pub.cycle==="biweekly"){ let cnt=0; for(let d=1;d<=dim;d++) if(new Date(year,month,d).getDay()===pub.weekday){cnt++;if(cnt===1||cnt===3) days.push(d);} }
+      else if(pub.cycle==="daily"){ for(let d=1;d<=dim;d++){const dow=new Date(year,month,d).getDay();if(dow!==0&&dow!==6)days.push(d);} }
+      days.forEach(d => { if(!map[d])map[d]=[]; map[d].push({key,pub}); });
+    });
+  });
+  return map;
+}
+
+// ═══════════════════════════════════════════
+// 렌더
+// ═══════════════════════════════════════════
+function cycleName(c){ return {monthly:"월간",weekly:"매주",biweekly:"격주",semiannual:"반기",daily:"매일(평일)"}[c]||c; }
+
+function renderCatTabs(){
+  const tabs = [{id:"all",label:"전체"},{id:"tank",label:"🏛️ 씽크탱크"},{id:"news",label:"📰 경제신문"}];
+  document.getElementById("catTabs").innerHTML = tabs.map(t=>
+    `<button class="cat-tab${activeCat===t.id?" active":""}" onclick="setCat('${t.id}')">${t.label}</button>`
+  ).join("");
+}
+
+function renderCalendar(){
+  const pubMap = buildPubMap();
+  const dim = new Date(year,month+1,0).getDate();
+  const firstDow = new Date(year,month,1).getDay();
+  const isCurMonth = today.getFullYear()===year && today.getMonth()===month;
+
+  let total=0, readN=0, dlN=0;
+  Object.entries(pubMap).forEach(([ds,items])=>{
+    items.filter(p=>ALL_INST[p.key].cat==="tank").forEach(({key,pub})=>{
+      total++; const s=getS(+ds,key,pub.id);
+      if(s.read)readN++; if(s.dl)dlN++;
+    });
+  });
+
+  document.getElementById("monthTitle").textContent = `${year}년 ${month+1}월`;
+  document.getElementById("monthSub").textContent = `씽크탱크 발간 ${total}건`;
+  document.getElementById("stats").innerHTML = [
+    {label:"발간 예정",val:total,col:"var(--sub)"},
+    {label:"읽음",val:readN,col:"var(--green)"},
+    {label:"다운 완료",val:dlN,col:"var(--accent)"},
+  ].map(s=>`<div class="stat"><div class="stat-val" style="color:${s.col}">${s.val}</div><div class="stat-lbl">${s.label}</div></div>`).join("");
+
+  const cells = [...Array(firstDow).fill(null), ...Array.from({length:dim},(_,i)=>i+1)];
+  document.getElementById("calGrid").innerHTML = cells.map(day=>{
+    if(!day) return `<div class="cal-cell empty"></div>`;
+    const items = pubMap[day]||[];
+    const tankItems = items.filter(p=>ALL_INST[p.key].cat==="tank");
+    const newsItems = items.filter(p=>ALL_INST[p.key].cat==="news");
+    const isToday = isCurMonth&&day===today.getDate();
+    const isSel = day===selDay;
+    const dow = new Date(year,month,day).getDay();
+    const allRead = tankItems.length>0&&tankItems.every(({key,pub})=>getS(day,key,pub.id).read);
+    const tankKeys = [...new Set(tankItems.map(p=>p.key))];
+
+    let cls = "cal-cell";
+    if(isToday) cls+=" today";
+    if(isSel) cls+=" selected";
+    if(allRead&&tankItems.length>0) cls+=" all-read";
+
+    return `<div class="${cls}" onclick="selectDay(${day})">
+      <div class="day-num${dow===0?" sun":dow===6?" sat":""}">${day}</div>
+      <div class="dots">
+        ${tankKeys.map(k=>`<div class="dot" style="background:${ALL_INST[k].color}"></div>`).join("")}
+        ${newsItems.length>0?`<div class="dot" style="background:var(--dim)"></div>`:""}
+      </div>
+      ${tankItems.length>0?`<div class="cell-count">${tankItems.length}건</div>`:""}
+    </div>`;
+  }).join("");
+
+  document.getElementById("legendBar").innerHTML =
+    Object.keys(THINK_TANKS).map(k=>`<div class="legend-item"><div class="legend-dot" style="background:${ALL_INST[k].color}"></div>${k}</div>`).join("") +
+    `<div class="legend-item"><div class="legend-dot" style="background:var(--dim)"></div>경제신문</div>`;
+}
+
+function renderPanel(){
+  const el = document.getElementById("panelBody");
+  if(panelTab==="schedule") el.innerHTML = scheduleHTML();
+  else if(panelTab==="legend") el.innerHTML = legendHTML();
+  else el.innerHTML = savedHTML();
+  ["tabSchedule","tabLegend","tabSaved"].forEach(id=>{
+    const e=document.getElementById(id); if(e) e.className="panel-tab"+(id.replace("tab","").toLowerCase()===panelTab?" active":"");
+  });
+}
+function renderDrawer(){
+  document.getElementById("drawer-content").innerHTML =
+    panelTabM==="schedule" ? scheduleHTML() : panelTabM==="legend" ? legendHTML() : savedHTML();
+  ["tabScheduleM","tabLegendM","tabSavedM"].forEach(id=>{
+    const e=document.getElementById(id); if(e){
+      const t=id.replace("tabScheduleM","schedule").replace("tabLegendM","legend").replace("tabSavedM","saved");
+      e.className="panel-tab"+(t===panelTabM?" active":"");
+    }
+  });
+}
+
+function scheduleHTML(){
+  const pubMap = buildPubMap();
+  const wds=["일","월","화","수","목","금","토"];
+  if(selDay){
+    const items = pubMap[selDay]||[];
+    const tankItems = items.filter(p=>ALL_INST[p.key].cat==="tank");
+    const newsItems = items.filter(p=>ALL_INST[p.key].cat==="news");
+    const dow = new Date(year,month,selDay).getDay();
+    let html = `<div class="day-header"><div class="day-header-title">${month+1}월 ${selDay}일 (${wds[dow]})</div><button class="close-btn" onclick="clearSel()">×</button></div>`;
+    if(!tankItems.length&&!newsItems.length) html+=`<div class="empty-msg">이 날은 발간 예정이 없습니다</div>`;
+    else {
+      if(tankItems.length){ html+=`<div class="section-divider">씽크탱크</div>`; html+=tankItems.map(({key,pub})=>pubCardHTML(selDay,key,pub,true)).join(""); }
+      if(newsItems.length){
+        const newsKeys=[...new Set(newsItems.map(p=>p.key))];
+        html+=`<div class="section-divider">경제신문</div>`;
+        html+=newsKeys.map(k=>pubCardHTML(selDay,k,ALL_INST[k].pubs[0],false)).join("");
+      }
+    }
+    return html;
+  }
+  // 월 전체
+  const monthList = Object.entries(pubMap).sort(([a],[b])=>+a-+b).flatMap(([ds,items])=>items.map(item=>({day:+ds,...item})));
+  const tanks = monthList.filter(p=>ALL_INST[p.key].cat==="tank");
+  let html = `<div class="panel-title">${month+1}월 발간 일정</div>`;
+  if(tanks.length){
+    html+=`<div class="section-divider">씽크탱크</div>`;
+    html+=tanks.map(({day,key,pub})=>{
+      const s=getS(day,key,pub.id); const inst=ALL_INST[key]; const dow=new Date(year,month,day).getDay();
+      return `<div class="pub-card${s.read?" read":""}" onclick="selectDay(${day})">
+        <div class="pub-top"><div style="display:flex;align-items:center;gap:7px"><div style="width:7px;height:7px;border-radius:50%;background:${inst.color};flex-shrink:0"></div><span class="pub-name">${pub.name}</span></div><span class="pub-date">${day}일(${wds[dow]})</span></div>
+        <div class="status-tags">${s.dl?`<span class="stag" style="color:var(--accent);background:var(--accent-soft)">다운완료</span>`:""} ${s.read?`<span class="stag" style="color:var(--green);background:var(--green-soft)">읽음</span>`:""} ${!s.dl&&!s.read?`<span class="stag" style="color:var(--dim)">미확인</span>`:""}</div>
+      </div>`;
+    }).join("");
+  }
+  html+=`<div class="section-divider">경제신문 바로가기</div>`;
+  html+=Object.keys(NEWSPAPERS).map(k=>{
+    const inst=ALL_INST[k]; const pub=inst.pubs[0];
+    return `<div class="pub-card" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">${inst.emoji}</span><div><div style="font-size:13px;font-weight:800;color:${inst.color}">${inst.short}</div><div style="font-size:11px;color:var(--muted)">평일 발행</div></div></div>
+      <a href="${pub.url}" target="_blank" style="font-size:11px;padding:6px 14px;border-radius:8px;background:${inst.color}18;color:${inst.color};border:1px solid ${inst.color}30;font-weight:700;white-space:nowrap">신문 보기 →</a>
+    </div>`;
+  }).join("");
+  return html;
+}
+
+function pubCardHTML(day, key, pub, showBtns){
+  const s = getS(day,key,pub.id); const inst = ALL_INST[key];
+  const savedData = getSavedData();
+  const cats = savedData.categories;
+  const saveDropdownId = `save-dd-${day}-${key}-${pub.id}`;
+  return `<div class="pub-card${s.read?" read":""}">
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:${showBtns?"10":"6"}px">
+      <span class="pub-badge" style="background:${inst.color}20;color:${inst.color}">${inst.short}</span>
+      <span class="pub-name">${pub.name}</span>
+    </div>
+    ${showBtns?`<div class="pub-btns">
+      <button class="pub-btn" onclick="event.stopPropagation();toggleS(${day},'${key}','${pub.id}','dl')"
+        style="border:1px solid ${s.dl?"var(--accent)":"var(--border2)"};background:${s.dl?"var(--accent-soft)":"transparent"};color:${s.dl?"var(--accent)":"var(--muted)"}">
+        ${s.dl?"✓ 다운":"다운로드"}</button>
+      <button class="pub-btn" onclick="event.stopPropagation();toggleS(${day},'${key}','${pub.id}','read')"
+        style="border:1px solid ${s.read?"var(--green)":"var(--border2)"};background:${s.read?"var(--green-soft)":"transparent"};color:${s.read?"var(--green)":"var(--muted)"}">
+        ${s.read?"✓ 읽음":"읽음표시"}</button>
+      <button class="save-btn" onclick="event.stopPropagation();toggleSaveMenu('${saveDropdownId}')"
+        style="border:1px solid var(--border2);color:var(--muted)">📂 저장</button>
+    </div>
+    <div id="${saveDropdownId}" style="display:none;margin-bottom:8px;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--border2)">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:6px;font-weight:600">카테고리에 저장:</div>
+      ${cats.map(c=>`<button onclick="event.stopPropagation();saveItem('${c.id}','${key}','${pub.id}','${pub.name.replace(/'/g,"\\'")}','${pub.url}');toggleSaveMenu('${saveDropdownId}')"
+        style="display:block;width:100%;text-align:left;padding:5px 8px;font-size:11px;color:var(--sub);border-radius:5px;margin-bottom:2px;font-family:inherit"
+        onmouseover="this.style.background='var(--card-hover)'" onmouseout="this.style.background='transparent'">${c.name}</button>`).join("")}
+    </div>`:""}
+    <a href="${pub.url}" target="_blank" class="pub-link"
+      style="background:${inst.color}12;color:${inst.color};border:1px solid ${inst.color}25">사이트에서 열기 →</a>
+  </div>`;
+}
+
+function legendHTML(){
+  const instCard = ([key,inst]) => `
+    <div class="inst-card" style="border:1px solid ${inst.color}25">
+      <div class="inst-head" style="background:${inst.color}08;border-bottom:1px solid ${inst.color}15">
+        <div class="inst-head-row">
+          <div class="inst-emoji-name"><span class="inst-emoji">${inst.emoji}</span><div><div class="inst-short" style="color:${inst.color}">${inst.short}</div><div class="inst-fullname">${inst.name}</div></div></div>
+          <a href="${inst.site}" target="_blank" class="inst-site-btn" style="background:${inst.color}15;color:${inst.color};border:1px solid ${inst.color}25">홈페이지 →</a>
+        </div>
+        <div class="inst-meta">설립 ${inst.founded} · ${inst.type}</div>
+      </div>
+      <div class="inst-body">
+        <p class="inst-summary">${inst.summary}</p>
+        <div class="tag-row">${inst.focus.map(f=>`<span class="focus-tag" style="background:${inst.color}12;color:${inst.color};border:1px solid ${inst.color}20">${f}</span>`).join("")}</div>
+        <div class="inst-pubs-title">주요 발간물</div>
+        ${inst.pubs.map(p=>`<div class="inst-pub-row"><div class="inst-pub-dot" style="background:${inst.color}"></div><span class="inst-pub-name">${p.name}</span><span class="inst-pub-cycle">${cycleName(p.cycle)}</span></div>`).join("")}
+      </div>
+    </div>`;
+  return `<div class="section-divider">씽크탱크 (${Object.keys(THINK_TANKS).length}곳)</div>${Object.entries(THINK_TANKS).map(instCard).join("")}
+    <div class="section-divider" style="margin-top:8px">경제신문 (${Object.keys(NEWSPAPERS).length}곳)</div>${Object.entries(NEWSPAPERS).map(instCard).join("")}`;
+}
+
+function savedHTML(){
+  const data = getSavedData();
+  let html = `<div class="saved-header"><div class="saved-title">📂 저장함</div><button class="add-cat-btn" onclick="showCatInput=!showCatInput;render()">+ 카테고리 추가</button></div>`;
+  if(showCatInput){
+    html += `<div class="cat-input-row">
+      <input type="text" id="newCatName" placeholder="새 카테고리 이름" onkeydown="if(event.key==='Enter'){addCategory(this.value)}">
+      <button class="cat-input-confirm" onclick="addCategory(document.getElementById('newCatName').value)">추가</button>
+      <button class="cat-input-cancel" onclick="showCatInput=false;render()">취소</button>
+    </div>`;
+  }
+  if(!data.categories.length){ html+=`<div class="empty-msg">저장된 카테고리가 없습니다</div>`; return html; }
+  data.categories.forEach(cat => {
+    const items = data.items.filter(i => i.catId === cat.id).map((item, idx) => ({ ...item, globalIdx: data.items.indexOf(item) }));
+    html += `<div class="cat-group">
+      <div class="cat-group-head">
+        <div class="cat-group-label">${cat.name} <span class="cat-group-count">${items.length}</span></div>
+        ${!cat.system ? `<div class="cat-group-actions"><button onclick="event.stopPropagation();removeCategory('${cat.id}')" title="삭제">🗑</button></div>` : ""}
+      </div>
+      ${items.length ? items.map(item => {
+        const inst = ALL_INST[item.instKey];
+        return `<div class="saved-item">
+          <div style="width:8px;height:8px;border-radius:50%;background:${inst?inst.color:"var(--dim)"};flex-shrink:0"></div>
+          <div class="saved-item-info">
+            <div class="saved-item-name">${item.pubName}</div>
+            <div class="saved-item-meta">${inst?inst.short:item.instKey} · ${new Date(item.savedAt).toLocaleDateString("ko")}</div>
+          </div>
+          <a href="${item.url}" target="_blank" style="font-size:11px;color:var(--accent);font-weight:600;flex-shrink:0">열기</a>
+          <button class="saved-item-del" onclick="event.stopPropagation();removeItem(${item.globalIdx})">×</button>
+        </div>`;
+      }).join("") : `<div style="font-size:11px;color:var(--dim);padding:6px 12px">비어 있음</div>`}
+    </div>`;
+  });
+  // 동기화 안내
+  html += `<div style="margin-top:20px;padding:12px;border-radius:var(--radius);background:var(--card);border:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.6">
+    <strong style="color:var(--sub)">💡 휴대폰 ↔ PC 동기화</strong><br>
+    상단의 <strong>📤 내보내기</strong>로 JSON 파일을 저장한 후,<br>
+    다른 기기에서 <strong>📥 가져오기</strong>로 불러오면 모든 데이터가 복원됩니다.
+  </div>`;
+  return html;
+}
+
+// ═══════════════════════════════════════════
+// 이벤트 핸들러
+// ═══════════════════════════════════════════
+function setCat(cat){ activeCat=cat; render(); }
+function selectDay(day){
+  selDay = selDay===day ? null : day;
+  panelTab="schedule"; panelTabM="schedule";
+  render();
+  if(window.innerWidth<=700) openDrawer();
+}
+function clearSel(){ selDay=null; render(); }
+function toggleS(d,iKey,pId,field){ setS(d,iKey,pId,field); }
+function toggleSaveMenu(id){ const el=document.getElementById(id); if(el) el.style.display=el.style.display==="none"?"block":"none"; }
+function switchTab(t){ panelTab=t; renderPanel(); }
+function switchTabM(t){ panelTabM=t; renderDrawer();
+  ["tabScheduleM","tabLegendM","tabSavedM"].forEach(id=>{
+    const e=document.getElementById(id); if(e){ const m=id.replace("tabScheduleM","schedule").replace("tabLegendM","legend").replace("tabSavedM","saved"); e.className="panel-tab"+(m===t?" active":""); }
+  });
+}
+
+function prevMonth(){ if(month===0){year--;month=11;}else month--; selDay=null; render(); }
+function nextMonth(){ if(month===11){year++;month=0;}else month++; selDay=null; render(); }
+
+function openDrawer(){ drawerOpen=true; document.getElementById("drawer").classList.add("open"); renderDrawer(); }
+function closeDrawer(){ drawerOpen=false; document.getElementById("drawer").classList.remove("open"); }
+
+function mobileTab(t){
+  if(t==="cal"){ closeDrawer(); }
+  else if(t==="legend"){ panelTabM="legend"; openDrawer(); }
+  else if(t==="saved"){ panelTabM="saved"; openDrawer(); }
+  else if(t==="sync"){ exportData(); }
+  document.querySelectorAll("#bottom-tabs button").forEach((b,i)=>{
+    const map=["cal","legend","saved","sync"];
+    b.className = map[i]===t?"active":"";
+  });
+}
+
+let touchStartY=0;
+document.getElementById("drawer-handle").addEventListener("touchstart",e=>{touchStartY=e.touches[0].clientY;});
+document.getElementById("drawer-handle").addEventListener("touchend",e=>{if(e.changedTouches[0].clientY-touchStartY>40)closeDrawer();});
+document.getElementById("prevBtn").addEventListener("click",prevMonth);
+document.getElementById("nextBtn").addEventListener("click",nextMonth);
+
+// ═══════════════════════════════════════════
+// 초기 렌더
+// ═══════════════════════════════════════════
+function render(){ renderCatTabs(); renderCalendar(); renderPanel(); if(drawerOpen) renderDrawer(); }
+render();
+</script>
+</body>
+</html>
