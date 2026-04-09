@@ -130,6 +130,42 @@ a{color:inherit;text-decoration:none}
 .status-tags{display:flex;gap:5px;margin-top:6px}
 .stag{font-size:10px;padding:2px 8px;border-radius:5px;font-weight:600}
 
+/* ── 워크플로우 액션 패널 ── */
+.wf-actions{display:grid;gap:0;margin:10px 0 6px;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.wf-step{display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer;position:relative}
+.wf-step:last-child{border-bottom:none}
+.wf-step:hover{background:rgba(255,255,255,.03)}
+.wf-step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;transition:all .2s}
+.wf-step-num--pending{background:var(--border2);color:var(--muted)}
+.wf-step-num--done{background:var(--green);color:#fff}
+.wf-step-num--active{background:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+.wf-step-body{flex:1;min-width:0}
+.wf-step-title{font-size:12px;font-weight:700;color:var(--sub)}
+.wf-step-hint{font-size:10px;color:var(--muted);margin-top:1px;line-height:1.4}
+.wf-step-action{flex-shrink:0}
+.wf-step-btn{padding:5px 12px;border-radius:7px;font-size:10px;font-weight:700;
+  border:1px solid var(--border2);color:var(--sub);background:transparent;
+  font-family:inherit;cursor:pointer;transition:all .15s;white-space:nowrap}
+.wf-step-btn:hover{background:var(--card-hover);border-color:var(--dim)}
+.wf-step-btn--primary{background:var(--accent-soft);color:var(--accent);border-color:rgba(59,130,246,.25)}
+.wf-step-btn--primary:hover{background:rgba(59,130,246,.2)}
+.wf-step-btn--green{background:var(--green-soft);color:var(--green);border-color:rgba(34,197,94,.25)}
+.wf-step-btn--green:hover{background:rgba(34,197,94,.2)}
+.wf-step.done .wf-step-title{color:var(--muted);text-decoration:line-through}
+.wf-step.done .wf-step-hint{opacity:.6}
+
+/* 파일명 복사 토스트 */
+.copy-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--green);color:#fff;padding:8px 20px;border-radius:10px;
+  font-size:12px;font-weight:700;opacity:0;transition:all .3s ease;z-index:200;pointer-events:none}
+.copy-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* 상태 행 */
+.wf-status-row{display:flex;gap:5px;padding:8px 12px;background:rgba(255,255,255,.015)}
+.wf-status-chip{font-size:9px;padding:2px 7px;border-radius:5px;font-weight:700}
+
 /* 날 상세 헤더 */
 .day-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .day-header-title{font-size:16px;font-weight:800}
@@ -651,34 +687,151 @@ function scheduleHTML(){
   return html;
 }
 
+function genFileName(key, pub){
+  const inst = ALL_INST[key];
+  const mm = String(month+1).padStart(2,"0");
+  return `${inst.short}_${pub.name.replace(/\s+/g,"_")}_${year}-${mm}.pdf`;
+}
+
+function copyFileName(key, pub){
+  const name = genFileName(key, pub);
+  copyToClipboard(name);
+}
+
+function copyFileNameDirect(key, pubId, fileName){
+  copyToClipboard(fileName);
+}
+
+function copyToClipboard(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>{
+      showCopyToast(`📋 "${text}" 복사됨`);
+    }).catch(()=> fallbackCopy(text));
+  } else { fallbackCopy(text); }
+}
+function fallbackCopy(text){
+  const ta = document.createElement("textarea"); ta.value = text;
+  ta.style.cssText="position:fixed;opacity:0";
+  document.body.appendChild(ta); ta.select(); document.execCommand("copy");
+  document.body.removeChild(ta);
+  showCopyToast(`📋 "${text}" 복사됨`);
+}
+
+function showCopyToast(msg){
+  let toast = document.getElementById("copy-toast");
+  if(!toast){ toast=document.createElement("div"); toast.id="copy-toast"; toast.className="copy-toast"; document.body.appendChild(toast); }
+  toast.textContent = msg;
+  toast.classList.add("show");
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(()=> toast.classList.remove("show"), 2200);
+}
+
+function openFileManager(){
+  // iOS: shareddocuments:// , Android: content://com.android.externalstorage
+  // 범용 fallback: 안내 메시지
+  const ua = navigator.userAgent;
+  if(/iPhone|iPad/i.test(ua)){
+    window.location.href = "shareddocuments://";
+  } else if(/Android/i.test(ua)){
+    // Android는 파일 관리자 딥링크 표준이 없음 — 안내
+    showCopyToast("📂 파일 앱에서 '다운로드' 폴더를 확인하세요");
+  } else {
+    showCopyToast("📂 파일 탐색기에서 다운로드 폴더를 확인하세요");
+  }
+}
+
 function pubCardHTML(day, key, pub, showBtns){
   const s = getS(day,key,pub.id); const inst = ALL_INST[key];
   const savedData = getSavedData();
   const cats = savedData.categories;
   const saveDropdownId = `save-dd-${day}-${key}-${pub.id}`;
-  return `<div class="pub-card${s.read?" read":""}">
-    <div style="display:flex;align-items:center;gap:7px;margin-bottom:${showBtns?"10":"6"}px">
-      <span class="pub-badge" style="background:${inst.color}20;color:${inst.color}">${inst.short}</span>
-      <span class="pub-name">${pub.name}</span>
-    </div>
-    ${showBtns?`<div class="pub-btns">
-      <button class="pub-btn" onclick="event.stopPropagation();toggleS(${day},'${key}','${pub.id}','dl')"
-        style="border:1px solid ${s.dl?"var(--accent)":"var(--border2)"};background:${s.dl?"var(--accent-soft)":"transparent"};color:${s.dl?"var(--accent)":"var(--muted)"}">
-        ${s.dl?"✓ 다운":"다운로드"}</button>
-      <button class="pub-btn" onclick="event.stopPropagation();toggleS(${day},'${key}','${pub.id}','read')"
-        style="border:1px solid ${s.read?"var(--green)":"var(--border2)"};background:${s.read?"var(--green-soft)":"transparent"};color:${s.read?"var(--green)":"var(--muted)"}">
-        ${s.read?"✓ 읽음":"읽음표시"}</button>
+  const fileName = genFileName(key, pub);
+
+  // 워크플로우 진행 상태 계산
+  const step1Done = s.dl;  // 사이트에서 다운로드 했는지
+  const step2Done = s.read; // 읽었는지
+  const currentStep = !step1Done ? 1 : !step2Done ? 2 : 3;
+
+  if(!showBtns){
+    // 간략 카드 (신문 등)
+    return `<div class="pub-card">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+        <span class="pub-badge" style="background:${inst.color}20;color:${inst.color}">${inst.short}</span>
+        <span class="pub-name">${pub.name}</span>
+      </div>
+      <a href="${pub.url}" target="_blank" class="pub-link"
+        style="background:${inst.color}12;color:${inst.color};border:1px solid ${inst.color}25">사이트에서 열기 →</a>
+    </div>`;
+  }
+
+  return `<div class="pub-card${s.read&&s.dl?" read":""}">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div style="display:flex;align-items:center;gap:7px">
+        <span class="pub-badge" style="background:${inst.color}20;color:${inst.color}">${inst.short}</span>
+        <span class="pub-name">${pub.name}</span>
+      </div>
       <button class="save-btn" onclick="event.stopPropagation();toggleSaveMenu('${saveDropdownId}')"
         style="border:1px solid var(--border2);color:var(--muted)">📂 저장</button>
     </div>
-    <div id="${saveDropdownId}" style="display:none;margin-bottom:8px;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--border2)">
+
+    <!-- 저장 카테고리 드롭다운 -->
+    <div id="${saveDropdownId}" style="display:none;margin:6px 0 8px;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--border2)">
       <div style="font-size:10px;color:var(--muted);margin-bottom:6px;font-weight:600">카테고리에 저장:</div>
       ${cats.map(c=>`<button onclick="event.stopPropagation();saveItem('${c.id}','${key}','${pub.id}','${pub.name.replace(/'/g,"\\'")}','${pub.url}');toggleSaveMenu('${saveDropdownId}')"
         style="display:block;width:100%;text-align:left;padding:5px 8px;font-size:11px;color:var(--sub);border-radius:5px;margin-bottom:2px;font-family:inherit"
         onmouseover="this.style.background='var(--card-hover)'" onmouseout="this.style.background='transparent'">${c.name}</button>`).join("")}
-    </div>`:""}
-    <a href="${pub.url}" target="_blank" class="pub-link"
-      style="background:${inst.color}12;color:${inst.color};border:1px solid ${inst.color}25">사이트에서 열기 →</a>
+    </div>
+
+    <!-- 워크플로우 스텝 -->
+    <div class="wf-actions">
+      <!-- Step 1: 사이트 열기 & PDF 다운로드 -->
+      <div class="wf-step${step1Done?" done":""}">
+        <div class="wf-step-num ${step1Done?"wf-step-num--done":currentStep===1?"wf-step-num--active":"wf-step-num--pending"}">${step1Done?"✓":"1"}</div>
+        <div class="wf-step-body">
+          <div class="wf-step-title">${step1Done?"PDF 다운 완료":"사이트 열기 → PDF 다운"}</div>
+          <div class="wf-step-hint">${step1Done?"파일이 다운로드 폴더에 있습니다":"사이트에서 PDF를 찾아 다운로드하세요"}</div>
+        </div>
+        <div class="wf-step-action" style="display:flex;gap:4px">
+          <a href="${pub.url}" target="_blank" onclick="event.stopPropagation()" class="wf-step-btn wf-step-btn--primary">열기 ↗</a>
+          <button class="wf-step-btn${step1Done?" wf-step-btn--green":""}" onclick="event.stopPropagation();toggleS(${day},'${key}','${pub.id}','dl')">
+            ${step1Done?"✓ 완료":"다운 체크"}</button>
+        </div>
+      </div>
+
+      <!-- Step 2: 파일명 복사 & 정리 -->
+      <div class="wf-step">
+        <div class="wf-step-num ${step1Done&&!step2Done?"wf-step-num--active":"wf-step-num--pending"}">${step1Done&&step2Done?"✓":"2"}</div>
+        <div class="wf-step-body">
+          <div class="wf-step-title">파일 정리</div>
+          <div class="wf-step-hint">파일명: <strong style="color:var(--sub);font-size:10px">${fileName}</strong></div>
+        </div>
+        <div class="wf-step-action" style="display:flex;gap:4px">
+          <button class="wf-step-btn" onclick="event.stopPropagation();copyFileNameDirect('${key}','${pub.id}','${fileName.replace(/'/g,"\\'")}')">📋 이름 복사</button>
+          <button class="wf-step-btn" onclick="event.stopPropagation();openFileManager()">📂 파일앱</button>
+        </div>
+      </div>
+
+      <!-- Step 3: 읽기 완료 -->
+      <div class="wf-step${step2Done?" done":""}">
+        <div class="wf-step-num ${step2Done?"wf-step-num--done":step1Done?"wf-step-num--active":"wf-step-num--pending"}">${step2Done?"✓":"3"}</div>
+        <div class="wf-step-body">
+          <div class="wf-step-title">${step2Done?"읽기 완료":"읽기"}</div>
+          <div class="wf-step-hint">${step2Done?"리뷰 완료됨":"다운받은 PDF를 읽고 체크하세요"}</div>
+        </div>
+        <div class="wf-step-action">
+          <button class="wf-step-btn${step2Done?" wf-step-btn--green":""}" onclick="event.stopPropagation();toggleS(${day},'${key}','${pub.id}','read')">
+            ${step2Done?"✓ 읽음":"읽음 체크"}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 상태 요약 -->
+    <div class="wf-status-row">
+      ${s.dl?`<span class="wf-status-chip" style="color:var(--accent);background:var(--accent-soft)">다운 ✓</span>`:""}
+      ${s.read?`<span class="wf-status-chip" style="color:var(--green);background:var(--green-soft)">읽음 ✓</span>`:""}
+      ${!s.dl&&!s.read?`<span class="wf-status-chip" style="color:var(--dim);background:rgba(255,255,255,.04)">미시작</span>`:""}
+      ${s.dl&&!s.read?`<span class="wf-status-chip" style="color:var(--amber);background:var(--amber-soft)">읽기 대기</span>`:""}
+    </div>
   </div>`;
 }
 
