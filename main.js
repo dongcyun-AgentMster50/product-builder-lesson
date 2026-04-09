@@ -193,6 +193,7 @@ let latestPayload = null;
 let latestStructuredOutput = null;  // 공통 JSON 스키마 기반 구조화 output
 let activeLensTab = "overview";
 let currentStep = 1;
+let highestReachedStep = 1;
 let currentLocale = "en";
 let aiOutputText = "";
 let aiGenerating = false;
@@ -645,6 +646,44 @@ function bindEvents() {
     countrySelect.addEventListener("change", updateLocaleFromCountry);
     // ── Searchable City Dropdown 이벤트 ──
     initCitySearchDropdown();
+    // ── 도시 선택 없이 커스텀 프로필 직접 입력 ──
+    const customProfileDirectBtn = document.getElementById("custom-profile-direct-btn");
+    if (customProfileDirectBtn) {
+        customProfileDirectBtn.addEventListener("click", () => {
+            _customProfileDirectMode = !_customProfileDirectMode;
+            customProfileDirectBtn.classList.toggle("active", _customProfileDirectMode);
+            if (_customProfileDirectMode) {
+                // 도시 선택 초기화 (충돌 방지)
+                renderCustomProfileDirect();
+            } else {
+                // 원래 step2 insight로 복귀
+                renderStep2Insight();
+            }
+        });
+    }
+    // ── 연령·성별 무관 토글 ──
+    const demographicsAgnosticCb = document.getElementById("demographics-agnostic");
+    if (demographicsAgnosticCb) {
+        demographicsAgnosticCb.addEventListener("change", () => {
+            const isOn = demographicsAgnosticCb.checked;
+            const householdGroup = personaGroups.querySelector('.tree-group[data-group-id="household"]');
+            if (householdGroup) {
+                householdGroup.classList.toggle("tree-group--dimmed", isOn);
+                if (isOn) {
+                    // B 세대 구성 선택 해제
+                    householdGroup.querySelectorAll('input[data-node-type="child"]:checked').forEach(cb => { cb.checked = false; });
+                    householdGroup.querySelectorAll('.tree-custom-input').forEach(inp => { inp.value = ""; });
+                    syncAllChecklistParents(personaGroups);
+                }
+            }
+            updateStatePreview();
+            requestAnimationFrame(() => {
+                releaseDeferredStep3Insight();
+                updateStepInsight();
+            });
+        });
+    }
+
     personaGroups.addEventListener("change", (event) => {
         try {
             handleChecklistChange(event, personaGroups);
@@ -2389,6 +2428,12 @@ function selectCity(value, label) {
     _magicSelected.clear();
     _magicAppliedSelected.clear();
     _customResearchData = null;
+    // 도시 선택 시 커스텀 직접 입력 모드 해제
+    if (value && _customProfileDirectMode) {
+        _customProfileDirectMode = false;
+        const directBtn = document.getElementById("custom-profile-direct-btn");
+        if (directBtn) directBtn.classList.remove("active");
+    }
     // Trigger downstream updates
     updateStatePreview();
     if (value) {
@@ -2741,6 +2786,7 @@ function openWizard() {
         }
     }
     currentStep = 2;
+    highestReachedStep = 2;
     syncWizardUi();
     renderOutputPreview();
     wizardScreen.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2878,6 +2924,7 @@ function resetToAccessScreen() {
     logoutBtn.classList.add("hidden");
     guideCopy.innerHTML = "";
     currentStep = 2;
+    highestReachedStep = 2;
     latestPayload = null;
     if (marketOptions[0]) countrySelect.value = marketOptions[0].siteCode;
     const defaultCountryCode = resolveCountry(marketOptions[0])?.countryCode || "";
@@ -2886,6 +2933,17 @@ function resetToAccessScreen() {
         input.checked = false;
     });
     personaGroups.querySelectorAll('.tree-custom-input').forEach((input) => { input.value = ""; });
+    // 연령·성별 무관 토글 리셋
+    const demoAgnosticReset = document.getElementById("demographics-agnostic");
+    if (demoAgnosticReset) {
+        demoAgnosticReset.checked = false;
+        const hhGroup = personaGroups.querySelector('.tree-group[data-group-id="household"]');
+        if (hhGroup) hhGroup.classList.remove("tree-group--dimmed");
+    }
+    // 커스텀 프로필 직접 입력 모드 리셋
+    _customProfileDirectMode = false;
+    const directBtnReset = document.getElementById("custom-profile-direct-btn");
+    if (directBtnReset) directBtnReset.classList.remove("active");
     clearQ3AutoMode();
     segmentCustomInput.value = "";
     purposeInput.value = "";
@@ -3009,8 +3067,34 @@ function renderWizardProgress() {
     progressEl.className = `wizard-progress wizard-progress--step-${currentStep}`;
     progressEl.innerHTML = steps.map(({ label, step }) => {
         const state = step === currentStep ? "current" : step < currentStep ? "done" : "";
-        return `<div class="progress-pill ${state}">${label}</div>`;
+        const isReachable = step <= highestReachedStep;
+        const isClickable = isReachable && step !== currentStep;
+        const ariaCurrent = step === currentStep ? ' aria-current="step"' : "";
+        return `<div class="progress-pill ${state}${isClickable ? " clickable" : ""}"
+            role="button" tabindex="${isClickable ? 0 : -1}"
+            data-step="${step}"${ariaCurrent}
+            aria-disabled="${!isClickable}">${label}</div>`;
     }).join("");
+
+    // 클릭/키보드 이벤트 바인딩
+    progressEl.querySelectorAll(".progress-pill.clickable").forEach((pill) => {
+        pill.addEventListener("click", handleProgressPillJump);
+        pill.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleProgressPillJump(e);
+            }
+        });
+    });
+}
+
+function handleProgressPillJump(e) {
+    const targetStep = Number(e.currentTarget.dataset.step);
+    if (!targetStep || targetStep === currentStep || targetStep > highestReachedStep) return;
+    deferStep3InsightUntilInteraction = targetStep === 3;
+    currentStep = targetStep;
+    syncWizardUi();
+    enforceStepViewportAlignment();
 }
 
 function updateStepInsight() {
@@ -3633,9 +3717,73 @@ function buildStep2CitySelectGuide(countryCode) {
     };
 }
 
+let _customProfileDirectMode = false;
+
+function renderCustomProfileDirect() {
+    const isKo = currentLocale === "ko";
+    const customPlaceholder = isKo
+        ? "예: 겨울철 한파 대비, 미세먼지 심한 지역, 다문화 가정, 반지하 습기 문제, 태풍 잦은 해안 도시..."
+        : "e.g. extreme winter cold, high pollution area, multicultural household, coastal typhoon zone...";
+
+    const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
+    const country = selectedMarket ? resolveCountry(selectedMarket) : null;
+    const countryName = selectedMarket?.label || (country ? getCountryName(country.countryCode) : "");
+
+    stepInsight.classList.remove("hidden");
+    stepInsight.innerHTML = `
+        <div class="insight-card">
+            <div class="insight-badge">Q1 Custom</div>
+            <h3 class="insight-title">${isKo ? "커스텀 프로필 직접 입력" : "Custom Profile — Direct Entry"}</h3>
+            <p class="insight-summary">${isKo
+                ? `${countryName ? countryName + " 기준으로 " : ""}도시 프로필 없이 시나리오 맥락을 직접 설정합니다. 아래 검색창에 반영할 지역 특성이나 생활 맥락을 입력하세요.`
+                : `${countryName ? "Based on " + countryName + ", s" : "S"}et scenario context directly without a city profile. Enter local characteristics or lifestyle context below.`}</p>
+            <div class="magic-custom-research" id="magic-custom-research">
+                <div class="magic-custom-header">
+                    <span class="magic-custom-icon">🔎</span>
+                    <span class="magic-custom-label">${isKo ? "반영하고 싶은 지역 특색이나 생활 맥락을 검색하세요" : "Search for local characteristics or lifestyle context to reflect"}</span>
+                </div>
+                <div class="magic-custom-input-row">
+                    <input type="text" id="magic-custom-input" class="magic-custom-input"
+                        placeholder="${escapeHtml(customPlaceholder)}" />
+                    <button type="button" id="magic-custom-search-btn" class="magic-custom-search-btn">
+                        ${isKo ? "검색하기" : "Search"}
+                    </button>
+                </div>
+                <div id="magic-custom-result" class="magic-custom-result" style="display:none"></div>
+            </div>
+            <div id="q1-scenario-reference-card">${typeof buildQ1ScenarioReferencePanelHtml === "function" ? buildQ1ScenarioReferencePanelHtml() : ""}</div>
+        </div>
+    `;
+
+    // 커스텀 검색 이벤트 바인딩
+    bindCustomResearchEvents(stepInsight);
+}
+
+function bindCustomResearchEvents(container) {
+    const searchBtn = container.querySelector("#magic-custom-search-btn");
+    const searchInput = container.querySelector("#magic-custom-input");
+    const resultArea = container.querySelector("#magic-custom-result");
+    if (!searchBtn || !searchInput || !resultArea) return;
+
+    const doSearch = () => {
+        const query = searchInput.value.trim();
+        if (!query) return;
+        runCustomCityResearch(query, resultArea, container);
+    };
+    searchBtn.addEventListener("click", doSearch);
+    searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); doSearch(); }
+    });
+}
+
 async function renderStep2Insight(forceRefresh = false) {
     // Q1(step 2)이 아니면 렌더링하지 않음
     if (currentStep !== 2) return;
+    // 커스텀 프로필 직접 입력 모드일 때는 도시 프로필 렌더링 스킵
+    if (_customProfileDirectMode && !forceRefresh) {
+        renderCustomProfileDirect();
+        return;
+    }
     stepInsight.classList.remove("hidden");
     const selectedMarket = marketOptions.find((market) => market.siteCode === countrySelect.value);
     if (!selectedMarket) {
@@ -6099,45 +6247,57 @@ function buildStep3Insight() {
             </div>`;
     }
 
-    // ── Layer 2: Q2 타겟 생활 (모든 Q2 trait 표시, Q1 연계 시 배지) ──
+    // ── Layer 2: Q2 타겟 생활 (카테고리 그룹핑 + 추론 근거 즉시 노출) ──
     let layer2Html = "";
     const { hasAnyQ2Selection } = getQ2SelectionState();
     if (hasAnyQ2Selection && q2Traits.length > 0) {
         const warmColors = ["#ea580c", "#f97316", "#fb923c", "#c2410c", "#d97706", "#b91c1c", "#dc2626"];
-        const traitCards = q2Traits.map((trait, i) => {
-            const reason = inferTraitReason(trait, q1Traits);
-            const uid = `q2-ev-${i}-${Math.random().toString(36).slice(2, 10)}`;
+        // 카테고리별 그룹핑
+        const groupedTraits = new Map();
+        q2Traits.forEach((trait, i) => {
             const legend = getStep3SignalLegend(trait, isKo);
-            const warmColor = legend.color || warmColors[i % warmColors.length];
-            const isCorro = corroboratedLabels.has(trait);
-            const q1Match = q1Traits.find((t) => t.trait === trait);
-            const statusTag = isCorro
-                ? `<span class="q2-trait-confirmed">${isKo ? "Q1 연계" : "Q1 linked"}</span>`
-                : "";
-            const sourceText = isCorro && q1Match
-                ? (isKo ? `Q1 ${q1Match.catLabel} + Q2 선택 교차 검증` : `Q1 ${q1Match.catLabel} + Q2 cross-validated`)
-                : (isKo ? "Q2 선택에서 도출" : "Derived from Q2 selections");
-            const legendTag = `<span class="q2-trait-legend" style="--q2-trait-legend:${warmColor}">${escapeHtml(legend.label)}</span>`;
-            return `
-                <div class="q2-hybrid-trait q2-hybrid-trait--compact">
-                    <div class="q2-trait-accent" style="background:${warmColor}"></div>
-                    <div class="q2-trait-body">
-                        <div class="q2-trait-top">
-                            <span class="q2-trait-label">${escapeHtml(trait)}</span>
-                            <div class="q2-trait-meta">
-                                ${legendTag}
-                                ${statusTag}
+            const groupKey = legend.label || (isKo ? "기타" : "Other");
+            const groupColor = legend.color || warmColors[i % warmColors.length];
+            if (!groupedTraits.has(groupKey)) {
+                groupedTraits.set(groupKey, { color: groupColor, items: [] });
+            }
+            groupedTraits.get(groupKey).items.push({ trait, index: i });
+        });
+
+        const groupSections = Array.from(groupedTraits.entries()).map(([groupLabel, { color: groupColor, items }]) => {
+            const cards = items.map(({ trait, index }) => {
+                const reason = inferTraitReason(trait, q1Traits);
+                const warmColor = (getStep3SignalLegend(trait, isKo).color) || warmColors[index % warmColors.length];
+                const isCorro = corroboratedLabels.has(trait);
+                const q1Match = q1Traits.find((t) => t.trait === trait);
+                const badgeLabel = isCorro
+                    ? (isKo ? "주요 신호" : "Key signal")
+                    : (isKo ? "보조 신호" : "Supporting");
+                const badgeClass = isCorro ? "q2-trait-badge--primary" : "q2-trait-badge--secondary";
+                const sourceText = isCorro && q1Match
+                    ? (isKo ? `Q1 ${q1Match.catLabel} + Q2 교차 검증` : `Q1 ${q1Match.catLabel} + Q2 cross-validated`)
+                    : (isKo ? "Q2 선택에서 도출" : "Derived from Q2 selections");
+                return `
+                    <div class="q2-hybrid-trait q2-hybrid-trait--grouped ${isCorro ? "q2-hybrid-trait--key" : ""}" style="--trait-accent:${warmColor}">
+                        <div class="q2-trait-accent" style="background:${warmColor}"></div>
+                        <div class="q2-trait-body">
+                            <div class="q2-trait-top">
+                                <span class="q2-trait-label">${escapeHtml(trait)}</span>
+                                <span class="q2-trait-badge ${badgeClass}">${badgeLabel}</span>
                             </div>
+                            <p class="q2-trait-source">${escapeHtml(sourceText)}</p>
+                            ${reason ? `<p class="q2-trait-reason">${escapeHtml(reason)}</p>` : ""}
                         </div>
-                        <p class="q2-trait-source">${escapeHtml(sourceText)}</p>
-                        ${reason ? `
-                        <button type="button" class="q2-evidence-toggle q2-evidence-toggle--compact" data-ev-target="${uid}" aria-expanded="false" aria-controls="${uid}">
-                            <span class="q2-ev-arrow">▸</span> ${isKo ? "추론 근거 보기" : "View reasoning"}
-                        </button>
-                        <div class="q2-evidence-detail" id="${uid}">
-                            <p class="q2-ev-logic">${escapeHtml(reason)}</p>
-                        </div>` : ""}
+                    </div>`;
+            }).join("");
+
+            return `
+                <div class="q2-trait-group" style="--group-accent:${groupColor}">
+                    <div class="q2-trait-group-head">
+                        <span class="q2-trait-group-label" style="color:${groupColor}">${escapeHtml(groupLabel)}</span>
+                        <span class="q2-trait-group-count">${items.length}</span>
                     </div>
+                    <div class="q2-trait-group-grid">${cards}</div>
                 </div>`;
         }).join("");
 
@@ -6150,7 +6310,7 @@ function buildStep3Insight() {
                 <p class="q2-layer-helper">${isKo
                     ? "직접 선택한 타겟의 핵심 특성입니다. Q1의 잠정 신호와 일치(교차 검증)할수록 매칭 신뢰도가 시너지로 작용합니다."
                     : "Core lifestyle traits from your selections. Cross-validated traits with Q1 boost match confidence."}</p>
-                <div class="q2-trait-compact-grid">${traitCards}</div>
+                <div class="q2-trait-grouped-list">${groupSections}</div>
             </div>`;
     }
 
@@ -7390,6 +7550,7 @@ function moveStep(delta) {
     if (nextStep === currentStep) return;
     deferStep3InsightUntilInteraction = nextStep === 3;
     currentStep = nextStep;
+    if (currentStep > highestReachedStep) highestReachedStep = currentStep;
     syncWizardUi();
     enforceStepViewportAlignment();
 }
@@ -7846,7 +8007,8 @@ function generateScenario() {
             selectedSegment,
             roleId: role.id,
             countryName: getCountryName(country.countryCode),
-            city: city || ""
+            city: city || "",
+            demographics_agnostic: document.getElementById("demographics-agnostic")?.checked || false
         },
         state: {
             role: getRoleTitle(role.id),
@@ -12387,6 +12549,13 @@ function applyLocale() {
     if (q4DetailSum) q4DetailSum.textContent = t("q4DetailSummary");
     const q4SummaryHead = document.querySelector(".q4-summary-card .q4-section-head h3");
     if (q4SummaryHead) q4SummaryHead.textContent = t("q4SummaryTitle");
+    // 연령·성별 무관 토글 + 커스텀 프로필 직접 입력 버튼 로케일
+    const demoLabel = document.getElementById("demographics-agnostic-label");
+    const demoHint = document.getElementById("demographics-agnostic-hint");
+    if (demoLabel) demoLabel.textContent = currentLocale === "ko" ? "연령·성별 무관 (All Demographics)" : "All Demographics (Age & Gender Agnostic)";
+    if (demoHint) demoHint.textContent = currentLocale === "ko" ? "B 세대 구성을 건너뛰고, 전 연령층 대상으로 시나리오를 생성합니다" : "Skip household composition and generate scenarios for all demographics";
+    const customDirectText = document.getElementById("custom-profile-direct-text");
+    if (customDirectText) customDirectText.textContent = currentLocale === "ko" ? "도시 선택 없이 커스텀 프로필 직접 입력" : "Enter custom profile without city selection";
     updateEnglishToggleVisibility();
 }
 
@@ -12725,7 +12894,10 @@ function getRoleBrief(id) {
 }
 
 function validateQ3Groups() {
-    const requiredGroups = ["housing", "household", "lifestage"];
+    const isDemoAgnostic = document.getElementById("demographics-agnostic")?.checked;
+    const requiredGroups = isDemoAgnostic
+        ? ["housing", "lifestage"]  // household 스킵
+        : ["housing", "household", "lifestage"];
     const groupLabels = currentLocale === "ko"
         ? { housing: "A. 거주지 유형", household: "B. 세대 구성", lifestage: "C. 라이프스테이지" }
         : { housing: "A. Housing type", household: "B. Household", lifestage: "C. Life stage" };
@@ -13295,9 +13467,12 @@ function runCuration() {
     const city = getCityValue();
     const magicKeywords = [..._magicAppliedSelected];
 
+    const isDemoAgnostic = document.getElementById("demographics-agnostic")?.checked || false;
     const input = {
-        segments, interests, housing, devices, purpose,
+        segments: isDemoAgnostic ? segments.filter(id => !id.startsWith("hh_")) : segments,
+        interests, housing, devices, purpose,
         magicKeywords,
+        demographics_agnostic: isDemoAgnostic,
         market: {
             country: selectedMarket?.label || "",
             city: city || "",
@@ -13425,6 +13600,76 @@ function renderMatchingProcess(ctx) {
     });
 }
 
+/**
+ * Card 2 헬퍼: 각 시나리오 태그에 대해 "왜 이 점수가 나왔는지" 한 줄 근거를 생성
+ * Q2 선택 ID → 태그 매핑을 역참조하여 사용자가 선택한 항목명을 인용
+ */
+function buildTagRationale(tag, input, isKo) {
+    const TAG_SOURCE_MAP = {
+        "Care for kids":          { ids: ["hh_young_kids","hh_school_kids","t_multi_kids","t_solo_parent","int_kids","ls_parenting"], q1: false },
+        "Care for seniors":       { ids: ["hh_senior","hh_multi_gen","t_parent_care","t_parent_away","int_senior","ls_senior"], q1: false },
+        "Keep your home safe":    { ids: ["h_villa","h_house","h_townhouse","t_security","t_long_away","t_weekend_out","int_safe","ls_starter"], q1: true },
+        "Save energy":            { ids: ["h_apt","h_compact","h_house","h_townhouse","t_single_income","int_energy","ls_starter","ls_settled"], q1: true },
+        "Help with chores":       { ids: ["t_efficiency","t_remote","t_dual_income","int_chores","ls_newlywed","ls_established"], q1: false },
+        "Enhanced mood":          { ids: ["hh_couple","t_homebody","int_mood","int_lights","ls_newlywed","ls_settled"], q1: false },
+        "Sleep well":             { ids: ["t_night_shift","t_homebody","int_sleep","ls_empty_nest"], q1: false },
+        "Stay fit & healthy":     { ids: ["t_wellness","int_health","ls_empty_nest"], q1: false },
+        "Keep the air fresh":     { ids: ["h_apt","h_shared","int_air"], q1: true },
+        "Easily control your lights": { ids: ["h_compact","int_lights"], q1: false },
+        "Care for your pet":      { ids: ["t_pet","int_pet"], q1: false },
+        "Find your belongings":   { ids: ["int_find"], q1: false }
+    };
+
+    const allPersonaIds = [...(input.segments || []), ...(input.interests || []), ...(input.housing || [])];
+    const mapping = TAG_SOURCE_MAP[tag];
+    if (!mapping) return isKo ? "입력 조합에서 도출" : "Derived from your inputs";
+
+    // Q2/Q3에서 선택된 ID 중 이 태그에 기여한 것 찾기
+    const matchedIds = mapping.ids.filter(id => allPersonaIds.includes(id));
+    const matchedLabels = matchedIds.map(id => {
+        const el = personaGroups?.querySelector(`input[value="${id}"]`);
+        return el?.dataset?.label || id;
+    }).slice(0, 3);
+
+    // 기기 기여 확인
+    const devices = input.devices || [];
+    let deviceContrib = "";
+    if (typeof DEVICE_TO_EXPLORE_TAGS !== "undefined") {
+        const supportingDevices = devices.filter(d => (DEVICE_TO_EXPLORE_TAGS[d] || []).includes(tag));
+        if (supportingDevices.length > 0) {
+            const devNames = supportingDevices.slice(0, 2).map(d => typeof getCategoryName === "function" ? getCategoryName(d) : d);
+            deviceContrib = isKo ? ` + 기기(${devNames.join(", ")})` : ` + devices (${devNames.join(", ")})`;
+        }
+    }
+
+    // Q1 도시 프로필 기여
+    const q1Contrib = mapping.q1 && (_latestCityProfile || (input.magicKeywords || []).length > 0)
+        ? (isKo ? "Q1 도시 프로필" : "Q1 city profile")
+        : "";
+
+    const parts = [];
+    if (matchedLabels.length > 0) {
+        parts.push(isKo
+            ? `Q2에서 "${matchedLabels.join('", "')}" 선택`
+            : `Q2: "${matchedLabels.join('", "')}"`);
+    }
+    if (q1Contrib) parts.push(q1Contrib);
+    if (parts.length === 0) parts.push(isKo ? "입력 조합에서 도출" : "Derived from inputs");
+
+    return parts.join(" + ") + deviceContrib;
+}
+
+/**
+ * Card 2 헬퍼: 해당 태그를 지원하는 기기명 목록 반환
+ */
+function getDeviceNamesForTag(tag, devices) {
+    if (typeof DEVICE_TO_EXPLORE_TAGS === "undefined") return [];
+    return devices
+        .filter(d => (DEVICE_TO_EXPLORE_TAGS[d] || []).includes(tag))
+        .map(d => typeof getCategoryName === "function" ? getCategoryName(d) : d)
+        .slice(0, 3);
+}
+
 function buildMpCards(ctx, isKo) {
     const { input, tagScores, results, totalPool, personaLabels, deviceLabels, country, city, purpose } = ctx;
 
@@ -13479,11 +13724,9 @@ function buildMpCards(ctx, isKo) {
         `
     };
 
-    // ── Card 2: 🧮 시나리오 가중치 결합 (Q2 연장선) ──
-    // Q2 스코어보드의 태그 점수를 기기 가능성과 결합
+    // ── Card 2: 당신의 입력이 만든 시나리오 지도 (전면 재설계) ──
     const combinedScores = tagScores.map(t => {
         const q2Display = localizeScenarioTag(t.tag);
-        // 기기 매칭 보너스 확인
         const devBonus = (typeof DEVICE_TO_EXPLORE_TAGS !== "undefined")
             ? getSelectedDevices().some(d => {
                 const norm = getCategoryName(d);
@@ -13491,31 +13734,100 @@ function buildMpCards(ctx, isKo) {
               }) : false;
         return { ...t, display: q2Display, hasDeviceSupport: devBonus };
     });
-    const maxCombined = combinedScores.length > 0 ? combinedScores[0].score : 1;
-    const topCombined = combinedScores.slice(0, 6);
 
-    const combinedRows = topCombined.map(t => {
-        const pct = Math.round((t.score / maxCombined) * 100);
-        const devBadge = t.hasDeviceSupport
-            ? `<span class="mp-dev-badge">${isKo ? "기기 지원" : "device ✓"}</span>`
+    // 백분율 계산
+    const totalScore = combinedScores.reduce((sum, t) => sum + t.score, 0) || 1;
+    const withPct = combinedScores.map(t => ({
+        ...t,
+        pct: Math.round((t.score / totalScore) * 100),
+        rationale: buildTagRationale(t.tag, input, isKo),
+        deviceNames: getDeviceNamesForTag(t.tag, input.devices || [])
+    }));
+
+    // 상위 항목 (최대 3개 크게) + 나머지 접기
+    const topItems = withPct.slice(0, 3);
+    const restItems = withPct.slice(3);
+    const topTag = topItems[0];
+
+    // ① 입력 칩
+    const flag = typeof getCountryFlagEmoji === "function" ? getCountryFlagEmoji(country?.countryCode || "KR") : "🌐";
+    const cityLabel = city ? (typeof getCityDisplayValue === "function" ? getCityDisplayValue(country?.countryCode, city) : city) : "";
+    const countryLabel = country ? (typeof getCountryName === "function" ? getCountryName(country.countryCode) : "") : "";
+    const locationChip = cityLabel
+        ? `<span class="mpw2-chip"><span class="mpw2-chip-icon">${flag}</span>${escapeHtml(cityLabel)}</span>`
+        : (countryLabel ? `<span class="mpw2-chip"><span class="mpw2-chip-icon">${flag}</span>${escapeHtml(countryLabel)}</span>` : "");
+    const personaChip = clusterNames
+        ? `<span class="mpw2-chip"><span class="mpw2-chip-icon">👤</span>${escapeHtml(clusterNames)}</span>`
+        : "";
+    const devChipLabels = [...new Set(deviceLabels.length ? deviceLabels : getSelectedDeviceLabels())].slice(0, 3);
+    const devChip = devChipLabels.length > 0
+        ? `<span class="mpw2-chip"><span class="mpw2-chip-icon">📱</span>${escapeHtml(devChipLabels.join(", "))}</span>`
+        : "";
+
+    // ② 한 줄 요약
+    const summaryLine = topTag
+        ? (isKo
+            ? `입력을 바탕으로 <strong>${escapeHtml(topTag.display)}</strong>가 가장 중요한 축(${topTag.pct}%)이 되었고, 그에 맞는 시나리오를 찾고 있어요.`
+            : `Based on your inputs, <strong>${escapeHtml(topTag.display)}</strong> became the leading axis (${topTag.pct}%), and we're finding scenarios that match.`)
+        : (isKo ? "입력을 분석하여 시나리오를 찾고 있어요." : "Analyzing your inputs to find scenarios.");
+
+    // ③ 누적 가로 바
+    const barColors = ["var(--accent-strong)", "#ea580c", "#16a34a", "#7c3aed", "#d97706", "#dc2626"];
+    const stackedSegments = withPct.slice(0, 6).map((t, i) =>
+        `<div class="mpw2-stacked-seg" style="flex:${t.pct};background:${barColors[i % barColors.length]}" title="${escapeHtml(t.display)} ${t.pct}%"></div>`
+    ).join("");
+    const stackedLabels = withPct.slice(0, 4).map((t, i) =>
+        `<span class="mpw2-stacked-label" style="color:${barColors[i % barColors.length]}">${escapeHtml(t.display)} ${t.pct}%</span>`
+    ).join("");
+    const moreCount = restItems.length;
+
+    // ④ 상위 항목 카드
+    const rankIcons = ["🏆", "🥈", "🥉"];
+    const topCards = topItems.map((t, i) => {
+        const devLine = t.deviceNames.length > 0
+            ? `<span class="mpw2-item-devices">📱 ${escapeHtml(t.deviceNames.join(", "))}</span>`
             : "";
-        return `<div class="mp-weight-row">
-            <span class="mp-weight-label">${escapeHtml(t.display)}${devBadge}</span>
-            <div class="mp-weight-bar-bg"><div class="mp-weight-bar" style="transform:scaleX(${pct / 100})"></div></div>
-            <span class="mp-weight-score">${t.score}${isKo ? "점" : "pt"}</span>
-        </div>`;
+        return `<article class="mpw2-item${i === 0 ? " mpw2-item--lead" : ""}" style="--item-accent:${barColors[i]}">
+            <div class="mpw2-item-head">
+                <span class="mpw2-item-rank">${rankIcons[i] || (i + 1)}</span>
+                <span class="mpw2-item-name">${escapeHtml(t.display)}</span>
+                <span class="mpw2-item-pct">${t.pct}%</span>
+            </div>
+            <p class="mpw2-item-rationale">${escapeHtml(t.rationale)}</p>
+            ${devLine}
+        </article>`;
     }).join("");
 
-    const card2 = {
-        title: isKo ? "🧮 시나리오 가중치 결합" : "🧮 Combined Scenario Weights",
-        helper: isKo
-            ? "Q2에서 도출된 라이프스타일 요구도와 Q3 기기의 실행 가능성을 결합한 최종 가중치입니다. '기기 지원' 표시는 보유 기기로 해당 시나리오를 바로 구현할 수 있음을 의미합니다."
-            : "Final weights combining Q2 lifestyle demands with Q3 device capabilities. 'device ✓' means your devices can directly execute this scenario.",
-        content: `
-            <div style="margin-bottom:6px;font-size:0.72rem;color:var(--muted)">
-                ${isKo ? "산출: Q2 클러스터 추론(시너지 ×1.2 · 교차검증 ×1.5) + Q3 기기 매칭 보너스" : "Calculation: Q2 cluster reasoning (synergy ×1.2 · cross-validation ×1.5) + Q3 device match bonus"}
+    // ⑤ 나머지 접기
+    const restHtml = moreCount > 0 ? `
+        <details class="mpw2-more">
+            <summary class="mpw2-more-toggle">+${moreCount}${isKo ? "개 더보기" : " more"}</summary>
+            <div class="mpw2-more-list">
+                ${restItems.map((t, i) => `
+                    <div class="mpw2-rest-row">
+                        <span class="mpw2-rest-name">${escapeHtml(t.display)}</span>
+                        <span class="mpw2-rest-pct">${t.pct}%</span>
+                        <span class="mpw2-rest-rationale">${escapeHtml(t.rationale)}</span>
+                    </div>
+                `).join("")}
             </div>
-            ${combinedRows}
+        </details>` : "";
+
+    const card2 = {
+        title: isKo ? "📊 당신의 입력이 만든 시나리오 지도" : "📊 Your Input → Scenario Map",
+        helper: isKo
+            ? "Q1~Q3에서 선택한 내용이 어떤 시나리오 방향으로 변환되었는지 한눈에 보여줍니다."
+            : "See how your Q1–Q3 selections translated into scenario priorities at a glance.",
+        content: `
+            <div class="mpw2-wrap">
+                <div class="mpw2-chips">${locationChip}${personaChip}${devChip}</div>
+                <p class="mpw2-summary">${summaryLine}</p>
+                <div class="mpw2-stacked-bar">${stackedSegments}</div>
+                <div class="mpw2-stacked-labels">${stackedLabels}${moreCount > 0 ? `<span class="mpw2-stacked-label mpw2-stacked-label--muted">+${moreCount}</span>` : ""}</div>
+                <div class="mpw2-top-items">${topCards}</div>
+                ${restHtml}
+                <p class="mpw2-cta">${isKo ? "이 비중으로 찾은 시나리오가 다음 단계에 있습니다 ↓" : "Scenarios found with these priorities are in the next step ↓"}</p>
+            </div>
         `
     };
 

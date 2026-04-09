@@ -127,7 +127,7 @@ const MAGIC_KEY_TO_EXPLORE_TAGS = {
     events:       ["Enhanced mood"]
 };
 
-function buildExploreTagsFromInput({ segments = [], interests = [], housing = [], devices = [], purpose = "", magicKeywords = [] }) {
+function buildExploreTagsFromInput({ segments = [], interests = [], housing = [], devices = [], purpose = "", magicKeywords = [], demographics_agnostic = false }) {
     const tagScores = {};
     const sourceTracker = {}; // 소스별 중복 기여 방지
 
@@ -155,10 +155,12 @@ function buildExploreTagsFromInput({ segments = [], interests = [], housing = []
         }
     });
 
-    // ── 세대 구성 (hh_) — 가중치 5 ──
-    [...segments].filter(id => id.startsWith("hh_")).forEach(id => {
-        (PERSONA_TO_EXPLORE_TAGS[id] || []).forEach(tag => addTag(tag, 5, `hh_${id}`));
-    });
+    // ── 세대 구성 (hh_) — 가중치 5 (demographics_agnostic이면 스킵) ──
+    if (!demographics_agnostic) {
+        [...segments].filter(id => id.startsWith("hh_")).forEach(id => {
+            (PERSONA_TO_EXPLORE_TAGS[id] || []).forEach(tag => addTag(tag, 5, `hh_${id}`));
+        });
+    }
 
     // ── 라이프스테이지 (ls_) — 가중치 4 ──
     [...segments].filter(id => id.startsWith("ls_")).forEach(id => {
