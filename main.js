@@ -3916,11 +3916,20 @@ function triggerCustomProfileSearch() {
         updateQ1EnergyBar("q1-custom", progress, statusText);
     }, 250);
 
-    // step-insight에 커스텀 검색 결과 영역이 필요 — renderCustomProfileDirect 호출
+    // step-insight에 결과 전용 영역 구성 (입력 UI 없이 결과만)
     _customProfileDirectMode = true;
-    renderCustomProfileDirect();
+    const isKoSetup = currentLocale === "ko";
+    stepInsight.classList.remove("hidden");
+    stepInsight.innerHTML = `
+        <div class="insight-card">
+            <div class="insight-badge">Q1 Custom</div>
+            <h3 class="insight-title">${isKoSetup ? `"${escapeHtml(query)}" 커스텀 리서치` : `Custom research: "${escapeHtml(query)}"`}</h3>
+            <p class="insight-summary">${isKoSetup ? "AI가 입력한 맥락을 분석하고 있습니다. 완료되면 결과가 여기에 표시됩니다." : "AI is analyzing your context. Results will appear here when ready."}</p>
+            <div id="magic-custom-result" class="magic-custom-result" style="display:none"></div>
+        </div>
+    `;
 
-    // 약간의 지연 후 검색 실행 (DOM이 준비된 후)
+    // 검색 실행
     requestAnimationFrame(() => {
         const resultArea = stepInsight.querySelector("#magic-custom-result");
         const parentContainer = stepInsight;
@@ -3932,6 +3941,10 @@ function triggerCustomProfileSearch() {
                 _q1CustomSearchRunning = false;
                 completeQ1EnergyBar("q1-custom", true);
                 syncQ1SearchButtons();
+                // 결과가 보이도록 스크롤
+                requestAnimationFrame(() => {
+                    resultArea.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                });
             }).catch(() => {
                 done = true;
                 clearInterval(interval);
@@ -4009,8 +4022,12 @@ function bindCustomResearchEvents(container) {
 async function renderStep2Insight(forceRefresh = false) {
     // Q1(step 2)이 아니면 렌더링하지 않음
     if (currentStep !== 2) return;
-    // 커스텀 프로필 직접 입력 모드일 때는 도시 프로필 렌더링 스킵
+    // 커스텀 검색 진행 중이거나 결과가 표시된 상태면 덮어쓰지 않음
     if (_customProfileDirectMode && !forceRefresh) {
+        // 검색 진행 중이거나 결과가 이미 있으면 보존
+        if (_q1CustomSearchRunning) return;
+        const existingResult = stepInsight.querySelector("#magic-custom-result");
+        if (existingResult && existingResult.style.display !== "none" && existingResult.innerHTML.trim()) return;
         renderCustomProfileDirect();
         return;
     }
