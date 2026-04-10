@@ -129,6 +129,203 @@ a{color:inherit;text-decoration:none}
   padding:60px 20px;font-size:14px;
 }
 
+/* ══════════════════════════════════════════════════════
+   탭 (자료실 / 발간 일정)
+   ══════════════════════════════════════════════════════ */
+.tab-bar{
+  max-width:1120px;margin:0 auto;padding:0 32px 8px;
+  display:flex;gap:4px;border-bottom:1px solid var(--border);
+}
+.tab-btn{
+  padding:14px 24px;background:transparent;
+  border:none;border-bottom:3px solid transparent;
+  color:var(--muted);font-size:15px;font-weight:700;
+  transition:all .2s ease;margin-bottom:-1px;
+}
+.tab-btn:hover{color:var(--sub)}
+.tab-btn.active{
+  color:var(--accent);border-bottom-color:var(--accent);
+}
+.tab-icon{margin-right:6px}
+
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* ══════════════════════════════════════════════════════
+   핵심 자료 (꼭 챙겨야 할)
+   ══════════════════════════════════════════════════════ */
+.core-section{
+  max-width:1120px;margin:0 auto;padding:24px 32px 8px;
+}
+.core-title{
+  display:flex;align-items:center;gap:8px;margin-bottom:14px;
+  font-size:14px;font-weight:800;letter-spacing:.04em;
+  color:#B91C1C;
+}
+.core-title-icon{font-size:18px}
+.core-title-line{
+  flex:1;height:1px;background:linear-gradient(90deg,#FCA5A5,transparent);
+  margin-left:8px;
+}
+.core-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:12px;
+}
+.core-card{
+  background:#FFFFFF;
+  border:1px solid #FECACA;
+  border-left:4px solid #DC2626;
+  border-radius:12px;padding:14px 16px;
+  box-shadow:0 2px 8px rgba(220,38,38,.06), 0 1px 3px rgba(15,30,70,.04);
+  transition:all .2s ease;
+  display:block;
+}
+.core-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(220,38,38,.1), 0 2px 6px rgba(15,30,70,.06);
+  border-left-color:#B91C1C;
+}
+.core-card-top{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin-bottom:6px;
+}
+.core-card-short{
+  font-size:11px;font-weight:800;color:var(--card-color, var(--accent));
+  padding:2px 8px;border-radius:5px;
+  background:rgba(0,0,0,.03);
+}
+.core-card-cycle{
+  font-size:10px;color:var(--muted);font-weight:700;
+}
+.core-card-name{
+  font-size:14px;font-weight:800;color:var(--text);line-height:1.4;
+  margin-bottom:4px;
+}
+.core-card-next{
+  font-size:11px;color:var(--sub);font-weight:600;
+}
+.core-card-next strong{color:#DC2626}
+
+/* ══════════════════════════════════════════════════════
+   캘린더 (수직 아젠다 리스트)
+   ══════════════════════════════════════════════════════ */
+.cal-section{
+  max-width:780px;margin:0 auto;padding:24px 32px 80px;
+}
+.cal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+}
+.cal-nav-btn{
+  width:38px;height:38px;border-radius:10px;
+  border:1px solid var(--border2);background:var(--card);
+  color:var(--sub);font-size:20px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s ease;box-shadow:var(--shadow-sm);
+}
+.cal-nav-btn:hover{
+  border-color:var(--accent);color:var(--accent);
+  box-shadow:var(--shadow-md);
+}
+.cal-month{
+  text-align:center;
+}
+.cal-month-title{
+  font-size:24px;font-weight:800;letter-spacing:-.02em;
+}
+.cal-month-count{
+  font-size:12px;color:var(--muted);margin-top:4px;font-weight:600;
+}
+
+/* 일자 행 */
+.cal-day{
+  display:grid;
+  grid-template-columns:64px 1fr;
+  gap:16px;align-items:start;
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+  transition:background .15s ease;
+}
+.cal-day:hover{background:rgba(37,99,235,.015)}
+.cal-day.empty{
+  padding:8px 0;
+}
+.cal-day.today{
+  background:rgba(37,99,235,.04);
+  border-left:3px solid var(--accent);
+  margin-left:-12px;padding-left:9px;
+  border-radius:0 8px 8px 0;
+}
+
+.cal-day-date{
+  display:flex;flex-direction:column;align-items:center;
+  padding-top:2px;
+}
+.cal-day-num{
+  font-size:22px;font-weight:800;color:var(--text);line-height:1;
+}
+.cal-day.empty .cal-day-num{
+  font-size:16px;color:var(--dim);font-weight:600;
+}
+.cal-day.today .cal-day-num{color:var(--accent)}
+.cal-day-wd{
+  font-size:11px;font-weight:700;color:var(--muted);margin-top:4px;
+}
+.cal-day-wd.sun{color:#DC2626}
+.cal-day-wd.sat{color:#2563EB}
+.cal-day-today-badge{
+  font-size:9px;font-weight:800;color:var(--accent);
+  margin-top:3px;padding:1px 6px;border-radius:4px;
+  background:rgba(37,99,235,.1);
+}
+
+.cal-day-items{
+  display:flex;flex-direction:column;gap:6px;
+  padding-top:4px;
+}
+.cal-pub{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:10px;
+  background:var(--card);border:1px solid var(--border);
+  box-shadow:var(--shadow-sm);
+  transition:all .18s ease;
+  text-decoration:none;
+}
+.cal-pub:hover{
+  transform:translateX(3px);
+  border-color:var(--card-color,var(--accent));
+  box-shadow:var(--shadow-md);
+}
+.cal-pub-dot{
+  width:10px;height:10px;border-radius:50%;flex-shrink:0;
+  background:var(--card-color,var(--accent));
+  box-shadow:0 0 0 3px color-mix(in oklab, var(--card-color,var(--accent)) 15%, transparent);
+}
+.cal-pub-info{flex:1;min-width:0}
+.cal-pub-name{
+  font-size:13px;font-weight:700;color:var(--text);line-height:1.4;
+}
+.cal-pub-meta{
+  font-size:10px;color:var(--muted);margin-top:2px;font-weight:600;
+}
+.cal-pub-cycle{
+  display:inline-block;padding:2px 8px;border-radius:5px;
+  background:rgba(0,0,0,.04);color:var(--sub);
+  font-size:10px;font-weight:700;flex-shrink:0;
+}
+.cal-pub-arrow{
+  color:var(--dim);font-size:14px;flex-shrink:0;
+  transition:transform .18s ease;
+}
+.cal-pub:hover .cal-pub-arrow{
+  transform:translateX(3px);color:var(--card-color,var(--accent));
+}
+.cal-empty-text{
+  font-size:11px;color:var(--dim);font-style:italic;
+  padding-top:6px;
+}
+
 /* ── 푸터 ── */
 .page-foot{
   max-width:1120px;margin:0 auto;padding:24px 32px 48px;
@@ -139,11 +336,19 @@ a{color:inherit;text-decoration:none}
 /* ── 모바일 ── */
 @media(max-width:600px){
   .page-head{padding:32px 20px 20px}
+  .tab-bar{padding:0 20px 8px}
+  .tab-btn{padding:12px 16px;font-size:14px}
   .filter-bar{padding:0 20px 18px}
   .card-grid{padding:8px 20px 60px;grid-template-columns:1fr;gap:16px}
   .ref-card{padding:22px 20px 18px}
   .ref-card-short{font-size:20px}
   .filter-btn{padding:8px 16px;font-size:13px}
+  .core-section{padding:20px 20px 8px}
+  .core-grid{grid-template-columns:1fr;gap:10px}
+  .cal-section{padding:20px 20px 60px}
+  .cal-day{grid-template-columns:52px 1fr;gap:12px}
+  .cal-day-num{font-size:20px}
+  .cal-month-title{font-size:20px}
 }
 </style>
 </head>
@@ -155,20 +360,66 @@ a{color:inherit;text-decoration:none}
   <p class="page-sub">국내 주요 씽크탱크·경제신문, 그리고 어린이·청소년이 함께 볼 수 있는 경제 학습 사이트를 한 곳에 모았습니다.</p>
 </header>
 
-<nav class="filter-bar" id="filterBar">
-  <button class="filter-btn active" data-filter="all">전체</button>
-  <button class="filter-btn" data-filter="tank">씽크탱크</button>
-  <button class="filter-btn" data-filter="news">경제신문</button>
-  <button class="filter-btn" data-filter="kids">어린이 경제 Think Tank</button>
+<nav class="tab-bar">
+  <button class="tab-btn active" data-tab="ref"><span class="tab-icon">📚</span>자료실</button>
+  <button class="tab-btn" data-tab="cal"><span class="tab-icon">📅</span>발간 일정</button>
 </nav>
 
-<section class="card-grid" id="cardGrid"></section>
+<!-- ── 자료실 탭 ── -->
+<div class="tab-pane active" id="pane-ref">
+  <section class="core-section" id="coreSection"></section>
+  <nav class="filter-bar" id="filterBar">
+    <button class="filter-btn active" data-filter="all">전체</button>
+    <button class="filter-btn" data-filter="tank">씽크탱크</button>
+    <button class="filter-btn" data-filter="news">경제신문</button>
+    <button class="filter-btn" data-filter="kids">어린이 경제 Think Tank</button>
+  </nav>
+  <section class="card-grid" id="cardGrid"></section>
+</div>
+
+<!-- ── 발간 일정 탭 ── -->
+<div class="tab-pane" id="pane-cal">
+  <section class="cal-section">
+    <div class="cal-head">
+      <button class="cal-nav-btn" id="calPrev">‹</button>
+      <div class="cal-month">
+        <div class="cal-month-title" id="calMonthTitle"></div>
+        <div class="cal-month-count" id="calMonthCount"></div>
+      </div>
+      <button class="cal-nav-btn" id="calNext">›</button>
+    </div>
+    <div id="calBody"></div>
+  </section>
+</div>
 
 <footer class="page-foot">
   Economic Information Reference · 2026
 </footer>
 
 <script>
+// ═══════════════════════════════════════════
+// 데이터 — 발간물 스케줄 (캘린더 + 핵심 자료)
+// ═══════════════════════════════════════════
+// cycle: monthly|weekly|biweekly|semiannual|daily
+// important: true → 핵심 자료 섹션에 표시
+const PUBLICATIONS = [
+  // KDI
+  { instShort:"KDI", instColor:"#2563EB", name:"KDI 경제동향", cycle:"monthly", day:20, url:"https://www.kdi.re.kr/research/monTrends", important:true },
+  { instShort:"KDI", instColor:"#2563EB", name:"KDI Focus", cycle:"monthly", day:10, url:"https://www.kdi.re.kr/research/focusList", important:true },
+  { instShort:"KDI", instColor:"#2563EB", name:"KDI 경제전망", cycle:"semiannual", day:25, months:[5,11], url:"https://www.kdi.re.kr/research/forcast", important:true },
+  // KIEP
+  { instShort:"KIEP", instColor:"#059669", name:"세계경제 포커스", cycle:"weekly", weekday:1, url:"https://www.kiep.go.kr/menu.es?mid=a10102010000" },
+  { instShort:"KIEP", instColor:"#059669", name:"오늘의 세계경제", cycle:"monthly", day:15, url:"https://www.kiep.go.kr/menu.es?mid=a10102020000", important:true },
+  // KIF
+  { instShort:"KIF", instColor:"#CA8A04", name:"주간금융브리프", cycle:"weekly", weekday:5, url:"https://www.kif.re.kr/kif2020/publication/pub02.aspx" },
+  { instShort:"KIF", instColor:"#CA8A04", name:"금융브리프", cycle:"biweekly", weekday:5, url:"https://www.kif.re.kr/kif2020/publication/pub01.aspx" },
+  // POSRI
+  { instShort:"POSRI", instColor:"#DC2626", name:"이슈리포트", cycle:"monthly", day:5, url:"https://www.posri.re.kr/ko/board/content/list/15" },
+  { instShort:"POSRI", instColor:"#DC2626", name:"POSRI 보고서", cycle:"monthly", day:20, url:"https://www.posri.re.kr/ko/board/content/list/14", important:true },
+];
+
+const CYCLE_LABEL = { monthly:"월간", weekly:"주간", biweekly:"격주", semiannual:"반기", daily:"일간" };
+
 // ═══════════════════════════════════════════
 // 데이터 — 기관별 카드
 // ═══════════════════════════════════════════
@@ -313,14 +564,21 @@ const REFERENCES = [
 ];
 
 // ═══════════════════════════════════════════
-// 렌더
+// 상태
 // ═══════════════════════════════════════════
+const today = new Date();
 let activeFilter = "all";
+let activeTab = "ref";
+let calYear = today.getFullYear();
+let calMonth = today.getMonth();
 
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 }
 
+// ═══════════════════════════════════════════
+// 자료실 — 기관 카드
+// ═══════════════════════════════════════════
 function renderCards(){
   const grid = document.getElementById("cardGrid");
   const visible = REFERENCES.filter(r => activeFilter === "all" || r.cat === activeFilter);
@@ -342,20 +600,184 @@ function renderCards(){
   `).join("");
 }
 
+// ═══════════════════════════════════════════
+// 핵심 자료 (꼭 챙겨야 할)
+// ═══════════════════════════════════════════
+function renderCore(){
+  const core = PUBLICATIONS.filter(p => p.important);
+  const nextDateText = (p) => {
+    const next = computeNextDate(p);
+    if(!next) return "";
+    const m = next.getMonth()+1, d = next.getDate();
+    const wds = ["일","월","화","수","목","금","토"];
+    return `다음: <strong>${m}/${d}(${wds[next.getDay()]})</strong>`;
+  };
+  const html = `
+    <div class="core-title">
+      <span class="core-title-icon">⭐</span>
+      <span>꼭 챙겨야 할 핵심 자료</span>
+      <div class="core-title-line"></div>
+    </div>
+    <div class="core-grid">
+      ${core.map(p => `
+        <a class="core-card" href="${p.url}" target="_blank" rel="noopener noreferrer" style="--card-color:${p.instColor}">
+          <div class="core-card-top">
+            <span class="core-card-short">${escapeHtml(p.instShort)}</span>
+            <span class="core-card-cycle">${CYCLE_LABEL[p.cycle]||p.cycle}</span>
+          </div>
+          <div class="core-card-name">${escapeHtml(p.name)}</div>
+          <div class="core-card-next">${nextDateText(p)}</div>
+        </a>
+      `).join("")}
+    </div>
+  `;
+  document.getElementById("coreSection").innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+// 캘린더 — 수직 아젠다 리스트
+// ═══════════════════════════════════════════
+function buildPubMap(year, month){
+  // {1: [pub, pub], 5: [pub], ...}
+  const map = {};
+  const dim = new Date(year, month+1, 0).getDate();
+  PUBLICATIONS.forEach(pub => {
+    const days = [];
+    if(pub.cycle === "monthly"){
+      if(pub.day <= dim) days.push(pub.day);
+    } else if(pub.cycle === "semiannual"){
+      if(pub.months && pub.months.includes(month+1) && pub.day <= dim) days.push(pub.day);
+    } else if(pub.cycle === "weekly"){
+      for(let d=1; d<=dim; d++){
+        if(new Date(year, month, d).getDay() === pub.weekday) days.push(d);
+      }
+    } else if(pub.cycle === "biweekly"){
+      let cnt = 0;
+      for(let d=1; d<=dim; d++){
+        if(new Date(year, month, d).getDay() === pub.weekday){
+          cnt++;
+          if(cnt === 1 || cnt === 3) days.push(d);
+        }
+      }
+    } else if(pub.cycle === "daily"){
+      for(let d=1; d<=dim; d++){
+        const dow = new Date(year, month, d).getDay();
+        if(dow !== 0 && dow !== 6) days.push(d);
+      }
+    }
+    days.forEach(d => {
+      if(!map[d]) map[d] = [];
+      map[d].push(pub);
+    });
+  });
+  return map;
+}
+
+function computeNextDate(pub){
+  // 오늘 이후 가장 가까운 발간일 (단순 계산)
+  const now = new Date();
+  for(let mOffset=0; mOffset<6; mOffset++){
+    const y = now.getFullYear() + Math.floor((now.getMonth()+mOffset)/12);
+    const m = (now.getMonth()+mOffset) % 12;
+    const map = buildPubMap(y, m);
+    const days = Object.keys(map)
+      .filter(d => map[d].some(p => p.name === pub.name && p.instShort === pub.instShort))
+      .map(Number)
+      .sort((a,b)=>a-b);
+    for(const d of days){
+      const candidate = new Date(y, m, d);
+      if(candidate >= new Date(now.getFullYear(), now.getMonth(), now.getDate())){
+        return candidate;
+      }
+    }
+  }
+  return null;
+}
+
+function renderCalendar(){
+  const map = buildPubMap(calYear, calMonth);
+  const dim = new Date(calYear, calMonth+1, 0).getDate();
+  const wds = ["일","월","화","수","목","금","토"];
+  const isToday = (d) => calYear === today.getFullYear() && calMonth === today.getMonth() && d === today.getDate();
+  const totalCount = Object.values(map).reduce((sum,arr) => sum + arr.length, 0);
+
+  document.getElementById("calMonthTitle").textContent = `${calYear}년 ${calMonth+1}월`;
+  document.getElementById("calMonthCount").textContent = `이번 달 발간 ${totalCount}건`;
+
+  let html = "";
+  for(let d=1; d<=dim; d++){
+    const items = map[d] || [];
+    const dow = new Date(calYear, calMonth, d).getDay();
+    const wdClass = dow === 0 ? "sun" : dow === 6 ? "sat" : "";
+    const todayClass = isToday(d) ? " today" : "";
+    const emptyClass = items.length === 0 ? " empty" : "";
+
+    html += `
+      <div class="cal-day${emptyClass}${todayClass}">
+        <div class="cal-day-date">
+          <div class="cal-day-num">${d}</div>
+          <div class="cal-day-wd ${wdClass}">${wds[dow]}</div>
+          ${isToday(d) ? `<div class="cal-day-today-badge">오늘</div>` : ""}
+        </div>
+        <div class="cal-day-items">
+          ${items.length === 0
+            ? `<div class="cal-empty-text">발간 없음</div>`
+            : items.map(p => `
+              <a class="cal-pub" href="${p.url}" target="_blank" rel="noopener noreferrer" style="--card-color:${p.instColor}">
+                <div class="cal-pub-dot"></div>
+                <div class="cal-pub-info">
+                  <div class="cal-pub-name">${escapeHtml(p.instShort)} · ${escapeHtml(p.name)}</div>
+                </div>
+                <span class="cal-pub-cycle">${CYCLE_LABEL[p.cycle]||p.cycle}</span>
+                <span class="cal-pub-arrow">→</span>
+              </a>
+            `).join("")
+          }
+        </div>
+      </div>
+    `;
+  }
+  document.getElementById("calBody").innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+// 탭 / 필터 / 네비
+// ═══════════════════════════════════════════
+function setTab(t){
+  activeTab = t;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === t));
+  document.getElementById("pane-ref").classList.toggle("active", t === "ref");
+  document.getElementById("pane-cal").classList.toggle("active", t === "cal");
+  if(t === "cal") renderCalendar();
+}
+
 function setFilter(f){
   activeFilter = f;
-  document.querySelectorAll(".filter-btn").forEach(b => {
-    b.classList.toggle("active", b.dataset.filter === f);
-  });
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.toggle("active", b.dataset.filter === f));
   renderCards();
 }
 
-document.getElementById("filterBar").addEventListener("click", e => {
-  const btn = e.target.closest(".filter-btn");
-  if(!btn) return;
-  setFilter(btn.dataset.filter);
+document.querySelector(".tab-bar").addEventListener("click", e => {
+  const btn = e.target.closest(".tab-btn");
+  if(btn) setTab(btn.dataset.tab);
 });
 
+document.getElementById("filterBar").addEventListener("click", e => {
+  const btn = e.target.closest(".filter-btn");
+  if(btn) setFilter(btn.dataset.filter);
+});
+
+document.getElementById("calPrev").addEventListener("click", () => {
+  if(calMonth === 0){ calYear--; calMonth = 11; } else calMonth--;
+  renderCalendar();
+});
+document.getElementById("calNext").addEventListener("click", () => {
+  if(calMonth === 11){ calYear++; calMonth = 0; } else calMonth++;
+  renderCalendar();
+});
+
+// 초기 렌더
+renderCore();
 renderCards();
 </script>
 </body>
