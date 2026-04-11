@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>제이앤클로이 펜션 — 운영 효율화 & 마케팅 가이드</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", -apple-system, sans-serif;
+    background: #f1f5f9;
+    min-height: 100vh;
+    padding-bottom: 80px;
+    color: #0f172a;
+  }
+
+  /* Personal message banner */
+  .banner {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+    padding: 20px;
+    text-align: center;
+    border-bottom: 2px solid #f59e0b;
+  }
+  .banner .label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #92400e;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .banner p {
+    font-size: 15px;
+    color: #78350f;
+    line-height: 1.75;
+    font-weight: 600;
+    font-style: italic;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #2563eb 100%);
+    color: #fff;
+    padding: 36px 20px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(96,165,250,0.3), transparent);
+    border-radius: 50%;
+  }
+  .hero-inner { position: relative; }
+  .hero-badge {
+    font-size: 11px;
+    letter-spacing: 4px;
+    opacity: 0.7;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .hero h1 {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+  }
+  .hero .subtitle {
+    font-size: 13.5px;
+    opacity: 0.85;
+    margin-top: 8px;
+  }
+  .hero .tag {
+    margin-top: 14px;
+    font-size: 11px;
+    opacity: 0.6;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    overflow-x: auto;
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .tab {
+    flex: 0 0 auto;
+    padding: 14px 14px 12px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #64748b;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    min-width: 85px;
+    text-align: center;
+    font-family: inherit;
+  }
+  .tab .icon {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  .tab.active {
+    color: #2563eb;
+    font-weight: 700;
+    border-bottom-color: #2563eb;
+  }
+
+  /* Content */
+  .container {
+    padding: 20px 16px;
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  .section-sub {
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: #64748b;
+    letter-spacing: 1px;
+  }
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 16px;
+    letter-spacing: -0.5px;
+  }
+
+  .content h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 24px 0 10px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e2e8f0;
+    letter-spacing: -0.3px;
+  }
+  .content p {
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: #475569;
+    margin: 10px 0;
+  }
+
+  .info-box {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-left: 4px solid #3b82f6;
+    padding: 14px 18px;
+    border-radius: 0 12px 12px 0;
+    margin: 14px 0;
+    font-size: 14px;
+    line-height: 1.75;
+    color: #1e3a8a;
+  }
+  .warn-box {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border-left: 4px solid #f59e0b;
+    padding: 14px 18px;
+    border-radius: 0 12px 12px 0;
+    margin: 14px 0;
+    font-size: 14px;
+    line-height: 1.75;
+    color: #92400e;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    margin: 14px 0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: #fff;
+  }
+  th {
+    background: linear-gradient(135deg, #0f172a, #1e3a5f);
+    color: #fff;
+    padding: 12px 14px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+  }
+  tbody tr:nth-child(odd) { background: #f8fafc; }
+  tbody tr:nth-child(even) { background: #fff; }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    line-height: 1.55;
+    color: #334155;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 14px 0;
+  }
+  .tag-item {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    color: #065f46;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    border: 1px solid #a7f3d0;
+    font-weight: 500;
+  }
+
+  .checklist { margin: 14px 0; }
+  .check-item {
+    padding: 11px 14px;
+    border-left: 3px solid #3b82f6;
+    margin-bottom: 4px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    border-radius: 0 8px 8px 0;
+    color: #334155;
+  }
+  .check-item:nth-child(odd) { background: #f8fafc; }
+  .check-item:nth-child(even) { background: #fff; }
+  .check-item::before {
+    content: "☐";
+    color: #3b82f6;
+    margin-right: 8px;
+    font-weight: 600;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .grid-item {
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.65;
+    border-left: 4px solid;
+  }
+  .grid-item .g-label {
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #0f172a;
+  }
+  .grid-item .g-body { color: #334155; }
+
+  .footer {
+    text-align: center;
+    padding: 30px 20px 20px;
+    color: #94a3b8;
+    font-size: 11px;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 22px; }
+    .section-title { font-size: 20px; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <div class="label">💌 감사의 인사</div>
+  <p>"덕분에 편안하고 행복한 추억을 만든 여행이 되었습니다. 또 뵐께요 고맙습니다 ^^~* David Yoon 올림"</p>
+</div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🐬 JEJU PENSION CONSULTING</div>
+    <h1>제이앤클로이 펜션</h1>
+    <p class="subtitle">운영 효율화 & 마케팅 실행 가이드</p>
+    <div class="tag">사장님의 시간을 되찾고, 수익을 높이는 구체적 실행 계획</div>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs"></nav>
+
+<main class="container">
+  <div class="section-sub" id="sectionSub"></div>
+  <h2 class="section-title" id="sectionTitle"></h2>
+  <div class="content" id="sectionContent"></div>
+</main>
+
+<footer class="footer">
+  <div>Made with 💙 for 제이앤클로이 펜션</div>
+  <div style="margin-top:4px">© 2026 · David Yoon</div>
+</footer>
+
+<script>
+const SECTIONS = [
+  {
+    id: "overview",
+    icon: "🏠",
+    title: "숙소 분석",
+    subtitle: "제이앤클로이 프로필과 SWOT",
+    content: [
+      { type: "h3", text: "제이앤클로이 펜션 프로필" },
+      { type: "info", text: "📍 서귀포시 대정읍 무릉중앙로 203 | 총 19개 객실 (호텔형 + 펜션형)" },
+      { type: "p", text: "핵심 브랜드 이미지는 돌고래가 보이는 독보적 오션뷰, 야외 자쿠지, 그리고 서귀포 흑돼지 바비큐입니다. 여기어때 9.6점(197명 평가), 야놀자 4.7/5점(66개 후기)으로 매우 높은 만족도를 기록하고 있습니다." },
+      { type: "p", text: "고객 후기에서 반복되는 키워드는 사장님 친절, 오션뷰 최고, 바비큐 맛집, 돌고래 뷰입니다. 사장님이 직접 짐을 옮겨주시고 돌고래 볼 수 있는 타이밍까지 알려주시는 등 인간적 서비스가 큰 강점입니다." },
+      { type: "h3", text: "제주 숙박업 현재 상황 (2026년 1월 기준)" },
+      { type: "warn", text: "엔데믹 이후 내국인 관광객 270만 명 감소, 체류기간 4.6일→3.7일 단축, 가성비 숙소 선호 강화, 외곽지역 숙소 타격이 큽니다" },
+      { type: "p", text: "제주 숙박 객실 초과공급 약 4.7만실. OTA 거래 비중 79.9%(전국 최고), 수수료 평균 17%. 2024년 숙박업 폐업률 7.4%로 급등했고, 특히 대정읍 같은 외곽지역이 더 큰 영향을 받고 있습니다." },
+      { type: "h3", text: "SWOT 분석" },
+      { type: "grid", items: [
+        { label: "💪 강점 (Strength)", color: "#dcfce7", border: "#22c55e", items: "돌고래 오션뷰(대체불가 자연자원), 9.6점 고객 평점, 사장님의 진심 어린 서비스, 바비큐 부가수익 모델, 호텔형+펜션형 이중 구조" },
+        { label: "⚡ 약점 (Weakness)", color: "#fef3c7", border: "#f59e0b", items: "대정읍 외곽 입지(공항에서 멀다), 19실 소규모 운영, OTA 수수료 의존 구조, 비성수기 공실 리스크" },
+        { label: "🌱 기회 (Opportunity)", color: "#dbeafe", border: "#3b82f6", items: "프라이빗 힐링 트렌드, 체류형 관광 정책 확대, SNS/숏폼 바이럴 가능성, 외국인 관광객 증가" },
+        { label: "⚠️ 위협 (Threat)", color: "#fee2e2", border: "#ef4444", items: "제주 숙박 공급과잉, 가성비 경쟁 심화, 내국인 관광객 지속 감소, 항공료 상승" },
+      ]},
+    ]
+  },
+  {
+    id: "ads",
+    icon: "📊",
+    title: "광고비 최적화",
+    subtitle: "월 300만원 → 150만원",
+    content: [
+      { type: "h3", text: "목표: 월 300만원 → 150만원 이하 (예약 수 유지)" },
+      { type: "p", text: "네이버 검색광고 월 300만원은 연간 약 3,600만원입니다. 여기에 OTA 수수료(약 17%)까지 합하면 매출의 30% 이상이 중개 비용으로 빠지는 구조입니다. 객실이 꽉 차도 실질 수익이 낮기 때문에 구조 변경이 시급합니다." },
+      { type: "h3", text: "키워드 유형별 판단 기준" },
+      { type: "table", headers: ["유형", "예시", "클릭당 비용", "조치"],
+        rows: [
+          ["🔴 대형 (비추)", "제주 펜션, 제주 숙소", "2,000~5,000원", "경쟁 과열. 줄이거나 삭제"],
+          ["🟡 중형 (선별)", "서귀포 오션뷰 펜션", "800~2,000원", "전환율 확인 후 판단"],
+          ["🟢 롱테일 (집중)", "제주 돌고래 숙소", "200~800원", "전환율 높음. 예산 집중"],
+        ]},
+      { type: "info", text: "핵심: 1건 예약에 드는 광고비(CPA)를 계산하세요. 5만원 이하면 OK, 10만원 이상이면 키워드 교체가 필요합니다." },
+      { type: "h3", text: "추천 롱테일 키워드 30선" },
+      { type: "p", text: "아래 키워드들은 제이앤클로이의 강점과 직접 연결되어 전환율이 높을 것으로 예상됩니다:" },
+      { type: "tags", items: ["제주 돌고래 펜션","돌고래 보이는 숙소","서귀포 돌고래뷰 숙소","제주 바다 보이는 펜션","노을 해안로 펜션","제주 오션뷰 자쿠지","서귀포 노을 숙소","제주 바다 앞 펜션","제주 정면 오션뷰","서귀포 해안 펜션","서귀포 자쿠지 펜션","제주 야외 자쿠지 숙소","대정읍 오션뷰 펜션","서귀포 바비큐 숙소","제주 호텔형 펜션","제주 취사 가능 오션뷰","대정읍 숙소 추천","서귀포 펜션 바비큐","제주 감성 펜션","제주 스파 펜션","제주 커플 오션뷰","제주 바비큐 펜션 추천","제주 신혼여행 펜션","제주 기념일 숙소","서귀포 프라이빗 숙소","제주 가족 바다 펜션","제주 조용한 펜션","제주 힐링 여행 숙소","제주 2인 오션뷰 펜션","제주 연인 펜션 추천"] },
+      { type: "h3", text: "광고비 절감 타임라인" },
+      { type: "table", headers: ["시기", "실행 내용", "예상 광고비", "효과"],
+        rows: [
+          ["1주차", "비효율 키워드 삭제, 롱테일 추가", "250만원", "예약 수 유지"],
+          ["2~4주차", "전환율 데이터 분석, 추가 최적화", "200만원", "예약당 비용 감소"],
+          ["2개월차", "블로그/인스타 콘텐츠 효과 반영", "150만원", "자연유입 증가"],
+          ["3개월~", "직접 예약 비중 30% 달성", "100~150만원", "OTA 수수료도 절감"],
+        ]},
+    ]
+  },
+  {
+    id: "sns",
+    icon: "📱",
+    title: "SNS 콘텐츠",
+    subtitle: "사장님은 촬영만, 나머지는 외주",
+    content: [
+      { type: "h3", text: "핵심: 사장님은 촬영 소스만 제공, 제작과 업로드는 외주" },
+      { type: "p", text: "SNS 관리에 사장님이 직접 시간을 쓰실 필요가 없습니다. 스마트폰으로 촬영만 해두시면, 편집과 업로드는 외주 업체가 처리합니다." },
+      { type: "h3", text: "콘텐츠 외주 방법 및 비용" },
+      { type: "table", headers: ["방법", "내용", "월 비용", "구하는 곳"],
+        rows: [
+          ["SNS 대행업체", "인스타+블로그 월 8~12건, 사진촬영 포함", "50~100만원", "크몽, 숨고, 제주지역업체"],
+          ["프리랜서 사진작가", "월 1~2회 방문 촬영", "20~40만원", "크몽, 당근마켓"],
+          ["체험단/인플루언서", "무료 숙박 대신 콘텐츠 제작", "객실원가만", "리뷰노트 등 체험단 플랫폼"],
+        ]},
+      { type: "info", text: "추천 조합: 프리랜서 사진작가(월 30만원) + SNS 대행(월 60만원) = 약 90만원으로 블로그와 인스타그램을 동시에 운영할 수 있습니다." },
+      { type: "h3", text: "12개월 콘텐츠 캘린더" },
+      { type: "p", text: "외주 업체에 이 표를 그대로 전달하시면 됩니다:" },
+      { type: "table", headers: ["월", "테마", "인스타 릴스", "블로그"],
+        rows: [
+          ["1월", "겨울바다 감성", "겨울 오션뷰+자쿠지", "겨울 제주 조용한 펜션 추천"],
+          ["2월", "발렌타인/설연휴", "커플 바비큐 영상", "제주 기념일 숙소 가이드"],
+          ["3월", "봄여행 시즌", "유채꽃+노을 타임랩스", "봄 제주 3박4일 코스"],
+          ["4월", "벚꽃/가정의달", "돌고래 출현 영상 ⭐", "가족여행 펜션 선택 가이드"],
+          ["5월", "가정의달 성수기", "가족 바비큐 영상", "어린이날 제주 가족숙소"],
+          ["6월", "여름 시즌 예고", "야외 자쿠지+석양 릴스", "여름 서귀포 숨은명소"],
+          ["7월", "성수기 최대가동", "객실 전체 투어 영상", "제주 여름펜션 가성비 비교"],
+          ["8월", "성수기 유지", "바비큐 먹방+야경 릴스", "제주 흑돼지 바비큐 후기"],
+          ["9월", "가을 감성 전환", "가을 노을해안로 산책", "가을 제주 한적한 여행"],
+          ["10월", "단풍/할로윈", "오션뷰+커피타임 영상", "10월 제주 추천 일정"],
+          ["11월", "비수기 특가", "겨울준비 자쿠지 릴스", "비수기 특가 안내"],
+          ["12월", "연말/크리스마스", "크리스마스 데코 영상", "연말 커플숙소 추천"],
+        ]},
+      { type: "h3", text: "돌고래 콘텐츠 = 최고의 무기" },
+      { type: "p", text: "객실에서 돌고래가 보이는 숙소는 제주 전체에서도 극히 드뭅니다. 이것은 돈으로 살 수 없는 자연 자원이자, 경쟁 숙소가 절대 따라할 수 없는 차별점입니다. 돌고래가 나타날 때 스마트폰으로 30초~1분 영상만 찍어두세요. 편집과 업로드는 외주가 합니다. 돌고래 영상 1개가 일반 숙소 사진 100장보다 효과적입니다." },
+      { type: "info", text: "해시태그: #제주돌고래 #돌고래펜션 #제주오션뷰 #서귀포숙소 #제이앤클로이 #제주노을 #펜캉스 #제주자쿠지" },
+    ]
+  },
+  {
+    id: "clean",
+    icon: "🧹",
+    title: "청소 외주",
+    subtitle: "사장님은 검수만",
+    content: [
+      { type: "h3", text: "목표: 사장님은 청소에서 완전히 손 떼고, 검수만 하는 구조" },
+      { type: "p", text: "19실을 혼자 청소하는 건 체력 소모가 가장 큰 부분입니다. 이 업무를 가장 먼저 외주로 돌리셔야 합니다." },
+      { type: "h3", text: "인력 구인 방법" },
+      { type: "table", headers: ["채널", "방법", "장점", "단점"],
+        rows: [
+          ["당근마켓", "'대정읍 펜션 청소 알바' 게시", "지역밀착, 빠른 매칭", "개인이라 불안정"],
+          ["알바몬/알바천국", "일당제 청소 알바 공고 등록", "체계적 구인", "외곽 지원자 적을 수 있음"],
+          ["펜션 청소 대행업체", "업체에 위탁 (건당 계약)", "안정적, 교육 불필요", "건당 비용 높음"],
+          ["지역 주민 직접고용", "마을 이장님/부녀회 통해", "신뢰도 높음, 오래 유지", "구인까지 시간 소요"],
+        ]},
+      { type: "info", text: "추천: 초기에는 당근마켓 + 지역 주민 루트를 동시에 시도하고, 안정적인 분을 찾으면 고정 계약으로 전환하세요." },
+      { type: "h3", text: "청소 비용 산정" },
+      { type: "table", headers: ["항목", "호텔형 1실", "펜션형 1실"],
+        rows: [
+          ["청소 시간", "약 30~40분", "약 40~60분 (취사도구 포함)"],
+          ["건당 인건비", "15,000~18,000원", "18,000~22,000원"],
+          ["성수기 일 10실", "15~18만원/일", "18~22만원/일"],
+          ["비수기 일 3실", "4.5~5.4만원/일", "5.4~6.6만원/일"],
+        ]},
+      { type: "info", text: "핵심 포인트: 일당제/건당제로 운영하면 예약이 없는 날에는 비용이 0원입니다. 정규 고용과 달리 고정 인건비 부담이 없습니다." },
+      { type: "h3", text: "객실 청소 체크리스트 (프린트해서 청소 담당자에게)" },
+      { type: "checklist", items: [
+        "1. 침실: 침구 교체, 매트리스 상태 확인, 먼지 제거, 슬리퍼 교체",
+        "2. 욕실: 변기/세면대/거울 세척, 수건 교체, 욕실용품 보충, 배수구 확인",
+        "3. 자쿠지(해당 시): 물 교체, 내부 세척, 입욕제 안내문 비치",
+        "4. 주방(펜션형): 식기류 세척, 조리도구 정리, 냉장고 비우기, 쓰레기 처리",
+        "5. 거실/테라스: 바닥 청소, 테이블 닦기, 리모컨/에어컨 확인",
+        "6. 비품 보충: 생수 2병, 커피/티백, 드라이기, 리모컨 정위치",
+        "7. 최종 점검: 조명 전체 점등, 와이파이 작동, 에어컨/보일러 정상, 문 잠금",
+      ]},
+    ]
+  },
+  {
+    id: "booking",
+    icon: "📞",
+    title: "직접 예약",
+    subtitle: "OTA 수수료 17% 절약",
+    content: [
+      { type: "h3", text: "목표: OTA 수수료 17%를 절약하는 직접 예약 비중 30% 이상" },
+      { type: "h3", text: "네이버 스마트플레이스 최적화" },
+      { type: "p", text: "네이버에서 '제이앤클로이'를 검색했을 때 가장 먼저 보이는 곳이 스마트플레이스입니다. 이곳을 최적화하는 것이 직접 예약의 첫 단계입니다." },
+      { type: "checklist", items: [
+        "사진을 최소 30장 이상 등록 (객실별 + 뷰 + 바비큐 + 카페 + 주변 환경)",
+        "소개글에 핵심 키워드 자연스럽게 포함 (돌고래 뷰, 오션뷰 자쿠지, 서귀포 바비큐 펜션)",
+        "'소식' 탭에 주 1회 이상 근황 업데이트 (돌고래 출현, 노을 사진, 신메뉴 등)",
+        "예약 링크를 공식 홈페이지 또는 카카오톡 채널로 연결",
+        "방문자 리뷰에 24시간 이내 답글",
+      ]},
+      { type: "h3", text: "카카오톡 채널 활용" },
+      { type: "p", text: "카카오톡 채널은 무료로 개설 가능하며, 직접 예약의 핵심 창구가 됩니다." },
+      { type: "checklist", items: [
+        "채널명: '제이앤클로이 제주펜션' (검색 노출용)",
+        "자동 응답 메시지 설정: 객실 종류, 가격, 예약 방법 안내",
+        "직접 예약 혜택: 카톡 예약 시 바비큐 세트 10% 할인 또는 입욕제 무료 제공",
+        "주 1회 메시지 발송: 비수기 특가, 돌고래 소식, 이벤트 안내",
+      ]},
+      { type: "h3", text: "직접 예약 시 수익 비교 (15만원 객실 기준)" },
+      { type: "table", headers: ["예약 경로", "사장님 수익", "고객 혜택"],
+        rows: [
+          ["OTA (야놀자/여기어때)", "124,500원 (수수료 25,500원 차감)", "없음"],
+          ["✅ 직접 예약 (카톡/전화)", "140,000원 (+15,500원 더!)", "1만원 할인 + 입욕제"],
+        ]},
+      { type: "info", text: "1만원을 할인해드려도 사장님 수익은 15,500원 더 높고, 고객은 할인+서비스를 받습니다. 모두가 이기는 구조입니다." },
+    ]
+  },
+  {
+    id: "offseason",
+    icon: "📦",
+    title: "비수기 전략",
+    subtitle: "3가지 패키지",
+    content: [
+      { type: "h3", text: "11월~2월 평일 공실을 메우는 구체적 방법" },
+      { type: "h3", text: "패키지 1: 워케이션 (Work + Vacation)" },
+      { type: "p", text: "프리랜서, 원격 근무자를 타겟으로 한 장기 체류 상품입니다. 제이앤클로이의 조용한 환경과 오션뷰는 이 타겟에 완벽합니다." },
+      { type: "table", headers: ["항목", "내용"],
+        rows: [
+          ["패키지명", "'바다 앞 워케이션' - 5박/7박/30박"],
+          ["가격", "5박 35만 / 7박 45만 / 30박 120만원 (정가 대비 40~50% 할인)"],
+          ["포함 혜택", "고속 와이파이, 카페 아메리카노 매일 1잔, 세탁기, 주1회 청소"],
+          ["홍보 채널", "크몽/브런치/워케이션 커뮤니티, #제주워케이션"],
+        ]},
+      { type: "h3", text: "패키지 2: 기념일/프로포즈" },
+      { type: "p", text: "제이앤클로이의 로맨틱한 분위기를 극대화한 프리미엄 상품입니다." },
+      { type: "checklist", items: [
+        "구성: 오션뷰 최상층 객실 + 와인 1병 + 케이크 + 장미꽃 세팅 + 바비큐 2인분",
+        "추가 가격: 기본 객실가 + 5~8만원 (원가 2~3만원, 순이익 3~5만원)",
+        "홍보: 인스타 릴스에 실제 세팅 영상 + '제주 프로포즈 숙소' 키워드 블로그",
+      ]},
+      { type: "h3", text: "패키지 3: 올레길 도보여행자" },
+      { type: "p", text: "대정읍 위치가 올레길 11, 12, 13코스와 인접한 점을 활용합니다. 올레길 여행자는 비수기에도 꾸준한 수요가 있습니다." },
+      { type: "checklist", items: [
+        "구성: 1박 + 도시락(김밥/샌드위치) + 올레길 지도 제공",
+        "가격: 평일 7만원대 (가성비 어필)",
+        "홍보: 제주올레 공식 카페, 올레길 네이버 카페",
+      ]},
+    ]
+  },
+  {
+    id: "schedule",
+    icon: "⏰",
+    title: "하루 일과",
+    subtitle: "Before → After",
+    content: [
+      { type: "h3", text: "🔴 변경 전 (현재)" },
+      { type: "table", headers: ["시간", "업무", "체력 소모"],
+        rows: [
+          ["07~08시", "기상, 숙소 점검", "★☆☆☆☆"],
+          ["08~13시", "체크아웃 + 전 객실 청소 (5시간+)", "★★★★★"],
+          ["13~14시", "점심 (급하게)", "★☆☆☆☆"],
+          ["14~15시", "체크인 준비 + 비품 보충", "★★★☆☆"],
+          ["15~17시", "체크인 대응 + 안내", "★★☆☆☆"],
+          ["17~18시", "네이버 광고관리 / 예약확인", "★★☆☆☆"],
+          ["18~22시", "바비큐 운영 + 고객 응대", "★★★★☆"],
+          ["22시~", "정리 + 다음날 준비", "★★★☆☆"],
+        ]},
+      { type: "warn", text: "하루 15시간+ 근무, 가정 시간 거의 없음" },
+      { type: "h3", text: "🟢 변경 후 (외주 도입)" },
+      { type: "table", headers: ["시간", "업무", "체력 소모"],
+        rows: [
+          ["08~09시", "기상, 여유있는 아침", "☆☆☆☆☆"],
+          ["09~10시", "예약 확인 + 청소팀 카톡 지시", "★☆☆☆☆"],
+          ["10~12시", "🟢 자유시간 (가족/개인)", "☆☆☆☆☆"],
+          ["12~13시", "청소 검수 (체크리스트, 10분/실)", "★☆☆☆☆"],
+          ["13~15시", "🟢 자유시간", "☆☆☆☆☆"],
+          ["15~16시", "체크인 인사 (따뜻한 한마디)", "★☆☆☆☆"],
+          ["16~18시", "🟢 자유시간 (가족과 저녁준비)", "☆☆☆☆☆"],
+          ["18~20시", "바비큐 관리 (세팅 후 셀프)", "★★☆☆☆"],
+          ["20시~", "🟢 가족시간 + 휴식", "☆☆☆☆☆"],
+        ]},
+      { type: "info", text: "실 근무 3~4시간, 나머지는 관리 + 가족시간" },
+    ]
+  },
+  {
+    id: "cost",
+    icon: "💰",
+    title: "종합 비교",
+    subtitle: "비용 & 시간",
+    content: [
+      { type: "h3", text: "월간 비용 Before → After" },
+      { type: "table", headers: ["항목", "현재 (월)", "변경 후 (월)"],
+        rows: [
+          ["네이버 광고비", "~300만원", "✅ 100~150만원"],
+          ["SNS/콘텐츠 제작", "0원 (사장님 직접)", "60~90만원 (외주)"],
+          ["청소 인건비", "0원 (사장님 직접)", "100~150만원 (건당제)"],
+          ["OTA 수수료", "매출의 ~17%", "✅ 직접예약 30% 달성 시 수수료 30% 절감"],
+          ["월 총 비용", "~300만원", "260~390만원"],
+          ["사장님 근무시간", "15시간+/일", "✅ 3~4시간/일"],
+          ["가족과 보내는 시간", "거의 없음", "✅ 하루 6시간 이상"],
+        ]},
+      { type: "info", text: "비수기에는 청소 비용이 크게 줄어들고, 직접 예약이 늘어나면 OTA 수수료 절감분이 외주 비용을 상쇄합니다. 무엇보다 사장님의 건강과 가정의 평화라는 가치는 숫자로 환산할 수 없는 부분입니다." },
+      { type: "h3", text: "실행 우선순위" },
+      { type: "p", text: "1단계 - 청소 외주 (체력을 먼저 회복해야 나머지도 할 수 있습니다)" },
+      { type: "p", text: "2단계 - 광고비 최적화 (가장 큰 비용 절감 효과)" },
+      { type: "p", text: "3단계 - SNS 콘텐츠 외주 (자연유입 확대)" },
+      { type: "p", text: "4단계 - 직접 예약 시스템 구축 (수수료 절감)" },
+      { type: "h3", text: "마지막으로" },
+      { type: "p", text: "제이앤클로이는 이미 훌륭한 숙소입니다. 고객 평점 9.6점이 그 증거입니다. 지금 필요한 것은 '더 열심히 일하는 것'이 아니라 '구조를 바꾸는 것'입니다. 사장님의 진심 어린 서비스는 대체할 수 없는 가치이며, 그 가치를 지키기 위해서라도 대체 가능한 업무는 과감히 내려놓으시길 권합니다." },
+    ]
+  },
+];
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+}
+
+function renderBlock(b) {
+  if (b.type === "h3") return `<h3>${esc(b.text)}</h3>`;
+  if (b.type === "p") return `<p>${esc(b.text)}</p>`;
+  if (b.type === "info") return `<div class="info-box">${esc(b.text)}</div>`;
+  if (b.type === "warn") return `<div class="warn-box">⚠️ ${esc(b.text)}</div>`;
+  if (b.type === "table") {
+    const th = b.headers.map(h => `<th>${esc(h)}</th>`).join("");
+    const tr = b.rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("");
+    return `<div class="table-wrap"><table><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`;
+  }
+  if (b.type === "tags") {
+    return `<div class="tags">${b.items.map(t => `<span class="tag-item">${esc(t)}</span>`).join("")}</div>`;
+  }
+  if (b.type === "checklist") {
+    return `<div class="checklist">${b.items.map(i => `<div class="check-item">${esc(i)}</div>`).join("")}</div>`;
+  }
+  if (b.type === "grid") {
+    return `<div class="grid">${b.items.map(g => `
+      <div class="grid-item" style="background:${g.color};border-left-color:${g.border}">
+        <div class="g-label">${esc(g.label)}</div>
+        <div class="g-body">${esc(g.items)}</div>
+      </div>`).join("")}</div>`;
+  }
+  return "";
+}
+
+function renderSection(id) {
+  const s = SECTIONS.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById("sectionSub").textContent = s.subtitle;
+  document.getElementById("sectionTitle").textContent = `${s.icon} ${s.title}`;
+  document.getElementById("sectionContent").innerHTML = s.content.map(renderBlock).join("");
+  document.querySelectorAll(".tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.id === id);
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function buildTabs() {
+  const nav = document.getElementById("tabs");
+  nav.innerHTML = SECTIONS.map(s => `
+    <button class="tab" data-id="${s.id}">
+      <span class="icon">${s.icon}</span>${esc(s.title)}
+    </button>`).join("");
+  nav.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click", () => renderSection(btn.dataset.id));
+  });
+}
+
+buildTabs();
+renderSection("overview");
+</script>
+
+</body>
+</html>
