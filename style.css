@@ -3755,6 +3755,161 @@ textarea {
     font-size: 0.68rem; color: var(--muted); margin: 2px 0 0; line-height: 1.55;
 }
 .q2-tag-source-norm strong { font-weight: 800; color: var(--accent-strong); }
+
+/* ═══ Q2 가중치 카드 재설계 ═══ */
+.q2-weight-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 0 2px;
+}
+.q2-weight-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px 5px 8px;
+    border-radius: 999px;
+    font-size: 0.72rem; font-weight: 600;
+    color: var(--accent-strong, #003366);
+    background: rgba(0, 51, 102, 0.05);
+    border: 1px solid rgba(0, 51, 102, 0.1);
+    white-space: nowrap;
+}
+.q2-weight-chip-icon {
+    font-size: 0.82rem; line-height: 1;
+}
+.q2-weight-summary-line {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--fg, #121826);
+    line-height: 1.55;
+    padding: 4px 0;
+}
+.q2-weight-summary-line strong {
+    font-weight: 800;
+    color: var(--accent-strong, #003366);
+}
+.q2-weight-pct-hero {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 44px; height: 26px;
+    margin-left: 6px;
+    padding: 0 10px;
+    border-radius: 8px;
+    font-size: 0.82rem; font-weight: 800;
+    color: #fff;
+    background: var(--accent-strong, #003366);
+    vertical-align: middle;
+    letter-spacing: 0.02em;
+}
+
+.q2-weight-board {
+    display: grid; gap: 2px;
+}
+
+.q2-weight-row {
+    padding: 12px 14px 10px;
+    border-radius: var(--radius-lg, 12px);
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid var(--line, rgba(10,34,68,0.08));
+    transition: box-shadow 0.15s ease;
+}
+.q2-weight-row--lead {
+    background: linear-gradient(135deg, rgba(0, 51, 102, 0.04), rgba(37, 99, 235, 0.03));
+    border-color: rgba(0, 51, 102, 0.14);
+}
+.q2-weight-row--minor {
+    padding: 10px 14px 8px;
+}
+.q2-weight-row-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px; margin-bottom: 6px;
+}
+.q2-weight-label {
+    font-size: 0.82rem; font-weight: 700;
+    color: var(--fg, #121826);
+    flex: 1; min-width: 0;
+}
+.q2-weight-row--lead .q2-weight-label {
+    font-size: 0.88rem; font-weight: 800;
+}
+.q2-weight-pct {
+    font-size: 0.82rem; font-weight: 800;
+    color: var(--accent-strong, #003366);
+    flex-shrink: 0;
+}
+.q2-weight-row--lead .q2-weight-pct {
+    font-size: 0.95rem;
+}
+.q2-weight-bar-track {
+    height: 6px; border-radius: 3px;
+    background: rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+.q2-weight-row--lead .q2-weight-bar-track { height: 8px; border-radius: 4px; }
+.q2-weight-bar-fill {
+    height: 100%; border-radius: inherit;
+    transform-origin: left;
+    transition: transform 0.5s ease;
+    will-change: transform;
+}
+.q2-weight-rationale {
+    margin: 5px 0 0;
+    font-size: 0.72rem;
+    color: var(--muted, #5d6677);
+    line-height: 1.5;
+    font-style: italic;
+}
+.q2-weight-row--lead .q2-weight-rationale {
+    font-size: 0.75rem;
+    color: var(--accent-strong, #003366);
+    font-style: normal;
+    opacity: 0.7;
+}
+
+.q2-weight-more-wrap {
+    display: grid; gap: 2px;
+}
+.q2-weight-more-btn {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    width: 100%;
+    padding: 8px 14px;
+    border: 1px dashed var(--line, rgba(10,34,68,0.12));
+    border-radius: var(--radius-lg, 12px);
+    background: none;
+    color: var(--muted, #5d6677);
+    font-size: 0.72rem; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+.q2-weight-more-btn:hover {
+    background: rgba(0, 51, 102, 0.03);
+    border-color: rgba(0, 51, 102, 0.18);
+    color: var(--accent-strong, #003366);
+}
+.q2-weight-more-arrow {
+    font-size: 0.68rem; transition: transform 0.2s;
+}
+.q2-weight-hidden-rows {
+    display: grid; gap: 2px;
+}
+
+.q2-weight-next {
+    padding: 10px 14px;
+    border-radius: var(--radius-lg, 12px);
+    background: linear-gradient(135deg, rgba(0, 51, 102, 0.06), rgba(37, 99, 235, 0.04));
+    border: 1px solid rgba(0, 51, 102, 0.1);
+    font-size: 0.78rem; font-weight: 700;
+    color: var(--accent-strong, #003366);
+    text-align: center;
+    letter-spacing: 0.01em;
+}
+
+/* 반응형 */
+@media (max-width: 480px) {
+    .q2-weight-summary-line { font-size: 0.85rem; }
+    .q2-weight-pct-hero { min-width: 38px; height: 22px; font-size: 0.75rem; }
+    .q2-weight-row { padding: 10px 12px 8px; }
+    .q2-weight-label { font-size: 0.75rem; }
+    .q2-weight-row--lead .q2-weight-label { font-size: 0.82rem; }
+}
+
 .q2-scenario-hint {
     font-size: 0.72rem; font-weight: 600; color: var(--accent-strong);
     margin: 6px 0 0; line-height: 1.55;

@@ -3217,6 +3217,20 @@ function bindQ2EvidenceToggles(container) {
             }
         });
     });
+
+    // 가중치 "더보기" 토글
+    container.querySelectorAll(".q2-weight-more-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const wrap = btn.closest(".q2-weight-more-wrap");
+            const rows = wrap?.querySelector(".q2-weight-hidden-rows");
+            if (!rows) return;
+            const isOpen = btn.dataset.expanded === "true";
+            rows.style.display = isOpen ? "none" : "grid";
+            btn.dataset.expanded = isOpen ? "false" : "true";
+            const arrow = btn.querySelector(".q2-weight-more-arrow");
+            if (arrow) arrow.textContent = isOpen ? "▾" : "▴";
+        });
+    });
 }
 
 function bindQ3RoutineToggles(container) {
@@ -7050,104 +7064,150 @@ function buildStep3Insight() {
             </div>`;
         }).join("");
 
-        // ── 후보 시나리오 방향 요약 ──
-        const top3Tags = topTags.slice(0, 3).map(([tag]) => isKo ? (tagKoMap[tag] || tag) : tag);
-        const scenarioHint = top3Tags.length > 0
-            ? (isKo
-                ? `이 조합이면 <strong>${top3Tags.join(", ")}</strong> 중심의 시나리오가 높은 점수로 매칭될 가능성이 큽니다.`
-                : `Scenarios focused on <strong>${top3Tags.join(", ")}</strong> are most likely to score highest.`)
+        // ── 가중치 비율(%) 계산 ──
+        const totalRaw = topTags.reduce((s, [, v]) => s + v, 0) || 1;
+        const tagPercents = topTags.map(([tag, raw]) => ({
+            tag,
+            raw,
+            pct: Math.round((raw / totalRaw) * 100),
+            display: isKo ? (tagKoMap[tag] || tag) : tag,
+        }));
+        // 반올림 오차 보정: 1위에 나머지 몰아줌
+        const pctSum = tagPercents.reduce((s, t) => s + t.pct, 0);
+        if (tagPercents.length > 0 && pctSum !== 100) tagPercents[0].pct += (100 - pctSum);
+
+        // ── 근거 자연어 변환 ──
+        const SOURCE_NATURAL = {
+            "명시선택": isKo ? "직접 선택한 항목" : "your explicit selection",
+            "세대구성": isKo ? "세대 구성 선택" : "household selection",
+            "거주지":   isKo ? "거주지 유형 선택" : "housing type selection",
+            "라이프스테이지": isKo ? "라이프스테이지 선택" : "life-stage selection",
+            "도시맥락": isKo ? "도시 프로필 분석" : "city profile analysis",
+            "household": isKo ? "세대 구성 선택" : "household selection",
+            "housing":   isKo ? "거주지 유형 선택" : "housing type selection",
+            "lifestage": isKo ? "라이프스테이지 선택" : "life-stage selection",
+            "city":      isKo ? "도시 프로필 분석" : "city profile analysis",
+            "explicit":  isKo ? "직접 선택한 항목" : "your explicit selection",
+        };
+        function buildRationale(tag) {
+            const sources = (tagSources[tag] || []).sort((a, b) => b.pts - a.pts);
+            if (sources.length === 0) return "";
+            const topSource = sources[0];
+            // 라벨에서 자연어 힌트 추출
+            const label = topSource.label || "";
+            // "OOO (명시선택 +15)" 패턴에서 이름과 소스 타입 추출
+            const match = label.match(/^(.+?)\s*\((.+?)\s*\+/);
+            if (match) {
+                const itemName = match[1].trim();
+                const srcType = match[2].trim();
+                const natural = SOURCE_NATURAL[srcType] || srcType;
+                return isKo
+                    ? `${natural}에서 "${itemName}"이(가) 반영됐어요`
+                    : `"${itemName}" from ${natural}`;
+            }
+            // Q1 도시맥락 또는 마켓 리서치
+            if (label.includes("Q1") || label.includes("도시맥락") || label.includes("city")) {
+                return isKo ? `도시 프로필에서 관련 맥락이 반영됐어요` : `Related context from city profile`;
+            }
+            if (label.includes("마켓 리서치") || label.includes("Market Research")) {
+                return isKo ? `커스텀 마켓 리서치 결과가 반영됐어요` : `From custom market research`;
+            }
+            if (label.includes("추가 설명") || label.includes("context text")) {
+                return isKo ? `추가로 작성하신 설명이 반영됐어요` : `From your context description`;
+            }
+            return isKo ? `선택하신 항목이 이 방향을 가리켜요` : `Your selections point in this direction`;
+        }
+
+        // ── 입력 칩 HTML ──
+        const inputChips = [];
+        if (cityDisplay) inputChips.push(`<span class="q2-weight-chip"><span class="q2-weight-chip-icon">📍</span>${escapeHtml(cityDisplay)}</span>`);
+        const personaChipIds = getSelectedPersonaOptionIds();
+        const chipGroupLabels = { housing: [], household: [], lifestage: [], interest: [] };
+        personaChipIds.forEach(id => {
+            const lbl = (document.querySelector(`input[value="${id}"]`)?.dataset?.label || "").trim();
+            if (!lbl) return;
+            if (id.startsWith("h_")) chipGroupLabels.housing.push(lbl);
+            else if (id.startsWith("hh_")) chipGroupLabels.household.push(lbl);
+            else if (id.startsWith("ls_")) chipGroupLabels.lifestage.push(lbl);
+            else chipGroupLabels.interest.push(lbl);
+        });
+        if (chipGroupLabels.interest.length) inputChips.push(`<span class="q2-weight-chip"><span class="q2-weight-chip-icon">🎯</span>${escapeHtml(chipGroupLabels.interest.join(", "))}</span>`);
+        if (chipGroupLabels.household.length) inputChips.push(`<span class="q2-weight-chip"><span class="q2-weight-chip-icon">👨‍👩‍👧</span>${escapeHtml(chipGroupLabels.household.join(", "))}</span>`);
+        if (chipGroupLabels.housing.length) inputChips.push(`<span class="q2-weight-chip"><span class="q2-weight-chip-icon">🏠</span>${escapeHtml(chipGroupLabels.housing.join(", "))}</span>`);
+        if (chipGroupLabels.lifestage.length) inputChips.push(`<span class="q2-weight-chip"><span class="q2-weight-chip-icon">⏳</span>${escapeHtml(chipGroupLabels.lifestage.join(", "))}</span>`);
+        const inputChipsHtml = inputChips.length > 0
+            ? `<div class="q2-weight-chips">${inputChips.join("")}</div>`
             : "";
 
-        const topCategoryLabel = top3Tags[0] || (isKo ? "아직 없음" : "Not enough data");
-        const weightingSummary = isKo
-            ? `Q1 도시 신호 ${Q1_WEIGHT}점 + Q2 생활 신호 ${Q2_WEIGHT}점`
-            : `Q1 city signals ${Q1_WEIGHT}pt + Q2 lifestyle signals ${Q2_WEIGHT}pt`;
-        const boostSummary = isKo
-            ? `${activeClusterHtml ? "클러스터 시너지와 교차검증이 있으면 추가 가중" : "선택이 쌓이면 시너지/교차검증 가중 시작"}`
-            : `${activeClusterHtml ? "Cluster synergy and cross-validation apply extra weighting" : "More aligned selections unlock synergy and cross-validation boosts"}`;
-        const statusCopy = confidence >= 80
-            ? (isKo ? "현재 선택은 바로 시나리오 매칭에 들어가도 될 정도로 충분히 구체적입니다." : "Your current inputs are already specific enough for strong scenario matching.")
-            : confidence >= 40
-                ? (isKo ? "방향은 잡혔고, Q2 선택을 더하면 가중치와 매칭 정확도가 더 선명해집니다." : "The direction is visible, and more Q2 input will sharpen weighting and matching.")
-                : (isKo ? "아직 초기 방향입니다. Q2 선택이 늘어나면 예상 방향이 안정됩니다." : "This is still an early direction. More Q2 input will stabilize the prediction.");
+        // ── 한 줄 요약 ──
+        const topLabel = tagPercents[0]?.display || (isKo ? "아직 없음" : "Not enough data");
+        const topPct = tagPercents[0]?.pct || 0;
+        const summaryLine = topPct > 0
+            ? (isKo
+                ? `선택하신 내용을 종합하면, <strong>${escapeHtml(topLabel)}</strong>이(가) 핵심 축<span class="q2-weight-pct-hero">${topPct}%</span>입니다`
+                : `Based on your selections, <strong>${escapeHtml(topLabel)}</strong> is the key focus<span class="q2-weight-pct-hero">${topPct}%</span>`)
+            : (isKo ? "항목을 선택하면 시나리오 방향이 여기에 표시됩니다" : "Select items above to see your scenario direction here");
+
+        // ── 가중치 바 HTML (상위 3개 표시, 나머지 접힘) ──
+        const BAR_COLORS = ["#1d4ed8", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe"];
+        const visibleTags = tagPercents.slice(0, 3);
+        const hiddenTags = tagPercents.slice(3);
+
+        const weightBarsHtml = visibleTags.map((t, i) => {
+            const rationale = buildRationale(t.tag);
+            return `<div class="q2-weight-row${i === 0 ? " q2-weight-row--lead" : ""}">
+                <div class="q2-weight-row-head">
+                    <span class="q2-weight-label">${escapeHtml(t.display)}</span>
+                    <span class="q2-weight-pct">${t.pct}%</span>
+                </div>
+                <div class="q2-weight-bar-track"><div class="q2-weight-bar-fill" style="transform:scaleX(${t.pct / 100});background:${BAR_COLORS[i]}"></div></div>
+                ${rationale ? `<p class="q2-weight-rationale">${rationale}</p>` : ""}
+            </div>`;
+        }).join("");
+
+        const hiddenBarsHtml = hiddenTags.length > 0
+            ? `<div class="q2-weight-more-wrap">
+                <button type="button" class="q2-weight-more-btn" data-expanded="false">
+                    ${isKo ? `+${hiddenTags.length}개 카테고리 더보기` : `+${hiddenTags.length} more categories`} <span class="q2-weight-more-arrow">▾</span>
+                </button>
+                <div class="q2-weight-hidden-rows" style="display:none">
+                    ${hiddenTags.map((t, i) => {
+                        const rationale = buildRationale(t.tag);
+                        return `<div class="q2-weight-row q2-weight-row--minor">
+                            <div class="q2-weight-row-head">
+                                <span class="q2-weight-label">${escapeHtml(t.display)}</span>
+                                <span class="q2-weight-pct">${t.pct}%</span>
+                            </div>
+                            <div class="q2-weight-bar-track"><div class="q2-weight-bar-fill" style="transform:scaleX(${t.pct / 100});background:${BAR_COLORS[3 + i]}"></div></div>
+                            ${rationale ? `<p class="q2-weight-rationale">${rationale}</p>` : ""}
+                        </div>`;
+                    }).join("")}
+                </div>
+            </div>`
+            : "";
+
+        // ── 다음 단계 연결 ──
+        const nextStepHtml = isKo
+            ? `<div class="q2-weight-next">이 비중으로 시나리오를 탐색합니다 →</div>`
+            : `<div class="q2-weight-next">Searching scenarios with this weighting →</div>`;
 
         synthesisHtml = `
             <section class="q2-stage-card q2-stage-card--direction">
                 <div class="q2-stage-card-head">
                     <div>
                         <span class="q2-stage-kicker">${isKo ? "예상 시나리오 방향" : "Expected scenario direction"}</span>
-                        <h4>${isKo ? "현재 입력이 어떤 카테고리와 매칭되는지 한눈에 확인하세요" : "See at a glance which categories your current inputs map to"}</h4>
+                        <h4>${isKo ? "입력을 종합한 시나리오 비중을 확인하세요" : "See how your inputs shape scenario priorities"}</h4>
                     </div>
                     <span class="q2-stage-status q2-stage-status--${confColor}">${escapeHtml(confLabel)}</span>
                 </div>
                 ${caveat}
-                <div class="q2-direction-hero">
-                    <div class="q2-direction-main">
-                        <p class="q2-synthesis-direction">${escapeHtml(direction)}</p>
-                        <p class="q2-direction-copy">${escapeHtml(statusCopy)}</p>
-                        <div class="q2-synthesis-values">${valuesPills}</div>
-                    </div>
-                    <div class="q2-direction-summary-grid">
-                        <article class="q2-direction-summary-card">
-                            <span class="q2-direction-summary-label">${isKo ? "우선 카테고리" : "Leading category"}</span>
-                            <strong>${escapeHtml(topCategoryLabel)}</strong>
-                            <p>${isKo ? "현재 입력 기준으로 가장 높은 매칭 가능성" : "Highest current match likelihood"}</p>
-                        </article>
-                        <article class="q2-direction-summary-card">
-                            <span class="q2-direction-summary-label">${isKo ? "가중치 구조" : "Weighting"}</span>
-                            <strong>${escapeHtml(weightingSummary)}</strong>
-                            <p>${escapeHtml(boostSummary)}</p>
-                        </article>
-                        <article class="q2-direction-summary-card">
-                            <span class="q2-direction-summary-label">${isKo ? "매칭 해석" : "How to read it"}</span>
-                            <strong>${isKo ? "점수 + 근거 + 보정" : "Score + evidence + boosts"}</strong>
-                            <p>${isKo ? "아래에서 항목별 점수, 가중치, 산출 근거를 바로 확인할 수 있습니다." : "Check the item-level scores, weighting, and breakdowns below."}</p>
-                        </article>
-                    </div>
+                ${inputChipsHtml}
+                <div class="q2-weight-summary-line">${summaryLine}</div>
+                <div class="q2-weight-board">
+                    ${weightBarsHtml}
+                    ${hiddenBarsHtml}
                 </div>
-
-                <div class="q2-scoreboard">
-                    <div class="q2-scoreboard-topline">
-                        <p class="q2-scoreboard-title">${isKo ? "점수와 가중치 구조" : "Scoring and weighting structure"}</p>
-                        <button type="button" class="q2-legend-help-btn q2-legend-help-btn--loud" id="q2-legend-help-btn" title="${isKo ? "점수 읽는 방법 안내" : "How to read this score"}">${isKo ? "읽는 법" : "Guide"}</button>
-                    </div>
-                    <p class="q2-scoreboard-method">${isKo
-                        ? "Q1(40점)과 Q2(60점) 신호를 합산합니다. 같은 테마 클러스터의 신호가 2개 이상이면 시너지(×1.2), Q1·Q2 양쪽에서 교차 검증된 신호는 강화(×1.5)됩니다. 각 행의 우측 버튼으로 산출 근거를 펼칠 수 있습니다."
-                        : "Q1 (40pt) + Q2 (60pt) signals are combined. Signals in the same theme cluster get synergy (×1.2), and signals validated by both Q1 and Q2 get a stronger ×1.5 boost. Use the right-side buttons to open the breakdown."}</p>
-                    ${activeClusterHtml ? `<div class="q2-cluster-row">${activeClusterHtml}</div>` : ""}
-
-                    <div class="q2-legend">
-                        <span class="q2-legend-item"><span class="q2-legend-bar q2-score-bar--q1"></span> ${isKo ? "Q1 도시 맥락 점수" : "Q1 city context score"}</span>
-                        <span class="q2-legend-item"><span class="q2-legend-bar q2-score-bar--q2"></span> ${isKo ? "Q2 생활 맥락 점수" : "Q2 lifestyle score"}</span>
-                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#dc2626"></span> ${isKo ? "패밀리 케어" : "Family Care"}</span>
-                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#ea580c"></span> ${isKo ? "시간·효율" : "Time & Efficiency"}</span>
-                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#d97706"></span> ${isKo ? "절약·비용" : "Savings"}</span>
-                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#16a34a"></span> ${isKo ? "건강·여가" : "Health & Leisure"}</span>
-                        <span class="q2-legend-item"><span class="q2-legend-dot" style="background:#2563eb"></span> ${isKo ? "안전·보안" : "Security"}</span>
-                        <span class="q2-legend-item"><span class="q2-corro-badge">${isKo ? "교차검증 ×1.5" : "cross-validated ×1.5"}</span></span>
-                    </div>
-
-                    <div class="q2-score-layout">
-                        <div class="q2-score-section q2-score-section--emphasis">
-                            <p class="q2-score-section-label"><span class="q2-score-section-icon">📍</span> ${isKo ? "도시 맥락 (Q1)" : "City Context (Q1)"} <span class="q2-score-section-weight">${Q1_WEIGHT}${isKo ? "점" : "pt"}</span></p>
-                            ${q1ScoreBars || `<p class="q2-score-empty">${isKo ? "Q1 도시 프로필 미반영" : "No Q1 city profile applied"}</p>`}
-                        </div>
-
-                        <div class="q2-score-section q2-score-section--emphasis">
-                            <p class="q2-score-section-label"><span class="q2-score-section-icon">🎯</span> ${isKo ? "생활 맥락 (Q2)" : "Lifestyle Context (Q2)"} <span class="q2-score-section-weight">${Q2_WEIGHT}${isKo ? "점" : "pt"}</span></p>
-                            ${q2ScoreBars || `<p class="q2-score-empty">${isKo ? "아직 Q2 항목을 선택하지 않았습니다. 위의 A·B·C 항목을 선택하면 생활 맥락 신호가 여기에 표시됩니다." : "No Q2 selections yet. Choose items from A·B·C above to see lifestyle signals here."}</p>`}
-                        </div>
-                    </div>
-
-                    <div class="q2-score-divider"></div>
-
-                    <div class="q2-scoreboard-topline">
-                        <p class="q2-scoreboard-title">${isKo ? "시나리오 매칭 예측" : "Scenario match prediction"}</p>
-                        <span class="q2-scoreboard-mini">${isKo ? "클릭해서 산출 근거 확인" : "Open rows to inspect weighting"}</span>
-                    </div>
-                    ${tagBarsHtml}
-                    ${scenarioHint ? `<p class="q2-scenario-hint">${scenarioHint}</p>` : ""}
-                </div>
+                ${nextStepHtml}
             </section>`;
     }
 
