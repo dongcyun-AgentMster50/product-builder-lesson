@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(grep -r \"function formatCurationResult\\\\|const formatCurationResult\" /c/Users/YDC/product-builder-lesson/*.js)",
+      "Bash(grep:*)",
+      "Bash(wc -l /c/Users/YDC/product-builder-lesson/js/*.js)",
+      "Bash(/tmp/check_unmapped.txt:*)",
+      "Read(//tmp/**)",
+      "Bash(node:*)",
+      "WebSearch",
+      "Bash(npx bun:*)",
+      "Bash(node -e \":*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(git worktree:*)",
+      "Bash(git merge:*)",
+      "WebFetch(domain:namu.wiki)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:teen.mk.co.kr)",
+      "WebFetch(domain:web.archive.org)",
+      "Bash(claude:*)",
+      "Bash(npm list:*)",
+      "Bash(npm show:*)",
+      "Bash(wc:*)"
+    ]
+  }
+}

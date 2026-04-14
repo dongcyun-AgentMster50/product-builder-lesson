@@ -18,3 +18,6 @@ Thumbs.db
 # Node
 node_modules/
 project_export.tar.gz
+
+.dev.vars
+.wrangler/

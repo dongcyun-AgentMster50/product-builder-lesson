@@ -127,3 +127,10 @@
 - Files changed: `session-notes.md`
 - Git: worktree was clean before this note; latest pushed application commit remained on `origin/main`.
 - Next: on the next machine, continue from the prompt-source unification issue by switching deployed serverless generation/refine to the latest prompt source or updating the deployed `SYSTEM_PROMPT`.
+
+## 2026-04-12 13:12 (UTC)
+- User message (raw): "내가 지금 이 시스템에서 사용하는 모든 기능, 모듈에 대해 설명해줘 머가 먼지 모르고 사용중이야"
+- Actions: Reviewed system structure and provided a comprehensive overview of the front-end wizard, back-end APIs, prompt system, and project reference files.
+- Files changed: none.
+- Git: not committed yet.
+- Next: Resume user tasks based on system understanding.

@@ -1,0 +1,12 @@
+﻿분류,기능 명칭,도메인(FQDN),통신 포트,용도 설명,IP 대응 정보
+AI 엔진,OpenAI API,api.openai.com,TCP 443 (HTTPS),"메인 시나리오 생성, AI분석 및 요약(GPT 계열 모델)",동적 IP (AWS/Cloudflare 등) - 도메인 예외 처리 필수
+AI 엔진,Anthropic API,api.anthropic.com,TCP 443 (HTTPS),"클로드(Claude) 기반 시나리오 텍스트 보조/대체 엔진",동적 IP - 도메인 예외 처리 필수
+데이터 수집,World Bank API,api.worldbank.org,TCP 443 (HTTPS),"로컬 마케팅을 위한 거시 데이터(국가별 GDP, 도시화율 등) 수집",동적 IP - 도메인 예외 처리 권장
+데이터 수집,Open-Meteo Geocoding,geocoding-api.open-meteo.com,TCP 443 (HTTPS),입력된 타겟 도시 이름의 정확한 위/경도(Geocode) 변환,동적 IP - 도메인 예외 처리 권장
+데이터 수집,Open-Meteo API,api.open-meteo.com,TCP 443 (HTTPS),타겟 도시 위치의 실시간 7일간 기상/날씨 예보 제공,동적 시각 리소스 배포망
+데이터 수집,OSM Nominatim API,nominatim.openstreetmap.org,TCP 443 (HTTPS),보조 지오코딩 및 도시 행정 규모(핵심/주거 등) 분석,동적 IP - 도메인 예외 처리 권장
+데이터 수집,REST Countries API,restcountries.com,TCP 443 (HTTPS),타겟 국가의 상세 프로필(인구수/인접경계 등) 정보 확보,동적 IP 통신망 사용
+콘텐츠 수집,Unsplash API,api.unsplash.com,TCP 443 (HTTPS),시나리오 리포트 내 타겟 도시/문화권의 랜드마크 이미지 자동 수집,동적 IP(CDN 배포망)
+콘텐츠 수집,Wikipedia API,en.wikipedia.org,TCP 443 (HTTPS),Unsplash 장애 시 랜드마크 및 로컬 문화 사진용 위키피디아 검색 보조원,동적 IP(CDN 배포망)
+콘텐츠 수집,OSM Tile Map,tile.openstreetmap.org,TCP 443 (HTTPS),결과 보고서에 출력할 타겟 도시 주변 정적 지도 타일(이미지 조각) 통신망,동적 IP
+내부 통신,로컬 서비스,127.0.0.1 (localhost),TCP 8000 (HTTP),시나리오 에이전트 사용자 접속(로컬 테스트 망),사내/로컬 통신
