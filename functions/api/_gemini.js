@@ -2,7 +2,7 @@
 // BYOK: key resolved per-request from X-User-Api-Key header, fallback env.GEMINI_API_KEY (dev).
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
-const DEFAULT_MODEL = "gemini-2.0-flash";
+const DEFAULT_MODEL = "gemini-2.5-flash";
 
 function maskKey(key) {
     if (!key) return "(none)";

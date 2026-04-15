@@ -67,7 +67,7 @@ export async function onRequestPost(context) {
         : "Retail/in-store marketer";
 
     const userMessage = `Market: ${marketLabel}\nRole: ${roleName}\nLocale: ${locale}`;
-    const model = String(context.env.GEMINI_MODEL || "gemini-2.0-flash").trim();
+    const model = String(context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
     const maxTokens = 1000;
 
     console.info(JSON.stringify({

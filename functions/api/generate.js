@@ -202,7 +202,7 @@ export async function onRequestPost(context) {
     }
 
     const userMessage = buildGeneratePrompt(body);
-    const model = String(context.env.GEMINI_MODEL || "gemini-2.0-flash").trim();
+    const model = String(context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
     const maxTokens = Number(context.env.OPENAI_MAX_TOKENS || 8000);
 
     // Selection Summary 존재 시 JSON 모드 활성화

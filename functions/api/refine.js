@@ -116,7 +116,7 @@ export async function onRequestPost(context) {
         return json({ ok: false, error: { code: "MISSING_REQUEST", message: built.error } }, 400);
     }
 
-    const model = String(context.env.GEMINI_MODEL || "gemini-2.0-flash").trim();
+    const model = String(context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
     const maxTokens = Number(context.env.OPENAI_REFINE_MAX_TOKENS || 4000);
 
     console.info(JSON.stringify({

@@ -623,7 +623,7 @@ async function handleCityProfile(context) {
     // BYOK: prefer user's Gemini key from request header, fallback env for dev
     const { key: apiKey, source: keySource } = resolveGeminiKey(context);
     // Gemini MVP: flash model, fast + cheap
-    const model = String(context.env.CITY_PROFILE_MODEL || "gemini-2.0-flash").trim();
+    const model = String(context.env.CITY_PROFILE_MODEL || "gemini-2.5-flash").trim();
 
     if (customQuery && !apiKey) {
         return json({
