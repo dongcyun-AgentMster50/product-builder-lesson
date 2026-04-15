@@ -175,7 +175,7 @@ async function buildLiveRegionInsight({ country, city, cityLocal, locale, role, 
 
     // BYOK MVP: 웹검색 기반 live trends는 OpenAI Responses API 전용 기능이므로 MVP에서 비활성화.
     // region-insight는 공개 API (Nominatim, Open-Meteo, Wikidata 등) 기반 macro/local 정보로만 동작.
-    const liveStatus = "skipped_byok_mvp";
+    let liveStatus = "skipped_byok_mvp";
 
     const settled = await Promise.allSettled(tasks);
     const values = settled.filter((entry) => entry.status === "fulfilled").map((entry) => entry.value);
