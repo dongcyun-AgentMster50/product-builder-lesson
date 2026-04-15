@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경영진 5분 데모 스크립트 — Scenario Self Generation Agent</title>
+    <style>
+        :root {
+            --bg: #eef3f9;
+            --ink: #0b1220;
+            --ink-soft: #30395e;
+            --muted: #5d6677;
+            --line: rgba(10, 34, 68, 0.12);
+            --accent: #0000ff;
+            --accent-soft: rgba(0, 0, 255, 0.08);
+            --accent-strong: #003366;
+            --card: #ffffff;
+            --shadow: 0 20px 48px rgba(8, 28, 60, 0.08);
+            --shadow-soft: 0 8px 22px rgba(8, 28, 60, 0.06);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: "SamsungOne", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 85% 12%, rgba(41, 149, 213, 0.14), transparent 22%),
+                radial-gradient(circle at 10% 85%, rgba(0, 74, 153, 0.12), transparent 26%),
+                linear-gradient(160deg, #f4f8fc, #e8eef6 55%, #dce6f0);
+            min-height: 100vh;
+            line-height: 1.55;
+            letter-spacing: -0.1px;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, rgba(0, 24, 52, 0.97), rgba(0, 51, 102, 0.93) 50%, rgba(6, 84, 140, 0.82));
+            color: #fff;
+            padding: 56px 32px 44px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::after {
+            content: "";
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at 72% 28%, rgba(255,255,255,0.07), transparent 50%);
+            pointer-events: none;
+        }
+        .hero-badge {
+            display: inline-block;
+            padding: 5px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.82);
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 999px;
+            margin-bottom: 18px;
+        }
+        .hero h1 {
+            font-size: clamp(26px, 4vw, 38px);
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+        .hero .subtitle {
+            font-size: 15px;
+            color: rgba(255,255,255,0.78);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .hero .meta {
+            margin-top: 22px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.55);
+            letter-spacing: 0.4px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 48px 28px 80px;
+        }
+
+        /* Section titles */
+        .section-title {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin: 48px 0 20px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent-strong);
+        }
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 22px; height: 2px;
+            background: var(--accent-strong);
+            transform: translateY(-3px);
+        }
+        .section-title:first-of-type { margin-top: 0; }
+
+        /* Pitch box */
+        .pitch {
+            padding: 36px 40px;
+            background: var(--card);
+            border-left: 5px solid var(--accent-strong);
+            border-radius: 4px 14px 14px 4px;
+            box-shadow: var(--shadow);
+            font-size: 17px;
+            line-height: 1.75;
+            color: var(--ink-soft);
+        }
+        .pitch strong {
+            color: var(--ink);
+            background: linear-gradient(transparent 55%, rgba(0,102,204,0.14) 55%);
+            padding: 0 2px;
+            font-weight: 700;
+        }
+
+        /* Flow timeline */
+        .flow-timeline {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        .flow-step {
+            position: relative;
+            padding: 22px 24px 22px 116px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            box-shadow: var(--shadow-soft);
+        }
+        .flow-time {
+            position: absolute;
+            left: 22px; top: 22px;
+            width: 80px;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--accent-strong);
+            letter-spacing: 0.5px;
+        }
+        .flow-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 6px;
+        }
+        .flow-scene {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+        .flow-script {
+            font-size: 14.5px;
+            color: var(--ink-soft);
+            background: #f6f9fc;
+            border-left: 3px solid var(--accent-strong);
+            padding: 14px 16px;
+            border-radius: 0 8px 8px 0;
+            line-height: 1.65;
+        }
+        .flow-script strong { color: var(--ink); font-weight: 700; }
+        .flow-action {
+            margin-top: 10px;
+            font-size: 12.5px;
+            color: var(--muted);
+        }
+
+        /* Card lists (5 result cards) */
+        .result-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+            margin-top: 14px;
+        }
+        .result-card {
+            padding: 16px 18px;
+            background: #f8fafc;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+        }
+        .result-card-name {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+        .result-card-desc {
+            font-size: 12.5px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        /* Q&A */
+        .qa-item {
+            padding: 20px 24px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-soft);
+        }
+        .qa-q {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .qa-q-badge {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px; height: 24px;
+            background: var(--accent-strong);
+            color: #fff;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 800;
+        }
+        .qa-a {
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: var(--ink-soft);
+            padding-left: 34px;
+        }
+        .qa-a strong { color: var(--ink); }
+        .qa-a code {
+            font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+            font-size: 12px;
+            background: #eef3f9;
+            padding: 1px 6px;
+            border-radius: 3px;
+            color: var(--accent-strong);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 14px;
+        }
+        .stat {
+            padding: 20px 18px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent-strong);
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+        .stat-label {
+            font-size: 11.5px;
+            color: var(--muted);
+            letter-spacing: 0.3px;
+            line-height: 1.4;
+        }
+
+        /* Brand footer */
+        .brand-footer {
+            margin-top: 56px;
+            padding: 28px 32px;
+            background: linear-gradient(135deg, rgba(0,24,52,0.97), rgba(0,51,102,0.93));
+            color: rgba(255,255,255,0.88);
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .brand-footer .principle {
+            display: inline-block;
+            padding: 4px 12px;
+            margin: 4px 4px 0;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 999px;
+        }
+        .brand-footer-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .brand-footer-note {
+            margin-top: 12px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.65);
+            line-height: 1.55;
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 32px;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: var(--accent-strong);
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background .15s;
+        }
+        .back-link:hover { background: #f1f5f9; }
+
+        /* Mobile */
+        @media (max-width: 640px) {
+            .hero { padding: 40px 20px 32px; }
+            .container { padding: 36px 18px 60px; }
+            .pitch { padding: 26px 22px; font-size: 15px; }
+            .flow-step { padding: 18px 18px 18px 20px; }
+            .flow-time {
+                position: static;
+                width: auto;
+                display: block;
+                margin-bottom: 4px;
+            }
+            .qa-a { padding-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="hero-badge">Executive Pitch · 5 min</div>
+    <h1>Scenario Self Generation Agent</h1>
+    <p class="subtitle">
+        지역·타겟·기기 세 가지 답이면 충분합니다.<br>
+        5분 안에 추천 시나리오부터 Sales Talk까지 — 회사 AI 비용 0원으로.
+    </p>
+    <div class="meta">Samsung Global Marketing · BYOK MVP · Gemini 2.5 Flash · 2026</div>
+</header>
+
+<main class="container">
+
+    <!-- Elevator Pitch -->
+    <div class="section-title">🎯 30초 엘리베이터 피치</div>
+    <div class="pitch">
+        Samsung 마케터가 캠페인 브리프를 받아 "어떤 SmartThings 시나리오를 어떤 카피로 풀어낼지"를 정하기까지 <strong>보통 반나절</strong>. 자료 리서치·팀 논의·카피 드래프트를 거쳐야 합니다.
+        <br><br>
+        이 Agent는 지역·타겟·기기 세 답만 받아 <strong>5분 안에 바로 쓸 수 있는 추천 시나리오 + 타겟 페르소나 + Sales Talk + Copy 3종</strong>을 내놓습니다.
+        <br><br>
+        데이터는 SmartThings Explore 실제 28개 시나리오 자산. AI는 본인 Google 계정으로 동작하는 Gemini 2.5 Flash. <strong>회사 AI 비용 0원, 마케터 준비 시간 95% 단축.</strong>
+    </div>
+
+    <!-- 5-minute flow -->
+    <div class="section-title">🎬 5분 데모 플로우 + PM 대본</div>
+    <div class="flow-timeline">
+
+        <div class="flow-step">
+            <div class="flow-time">0:00–0:30</div>
+            <div class="flow-title">접근 확인</div>
+            <div class="flow-scene">Hero 헤더 + 4단계 플로우 바 (01 접근 → 02 4단계 질문 → 03 매칭 → 04 활용)</div>
+            <div class="flow-script">
+                "화면 상단에 제품 플로우가 네 단계로 나와 있습니다. 오늘 이 <strong>전체를 5분 안에</strong> 보여드립니다. 마케터가 브리프를 받아 시나리오를 뽑기까지 걸리는 시간 — 이 Agent 기준 5분입니다."
+            </div>
+            <div class="flow-action">▶ 액션: 접근 코드 입력 → [Enter Agent]</div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-time">0:30–1:00</div>
+            <div class="flow-title">AI 연결 설정 (BYOK)</div>
+            <div class="flow-scene">💰🔒⚡ 신뢰 배너 + Gemini 키 발급 5단계 가이드</div>
+            <div class="flow-script">
+                "이 Agent의 AI 비용은 회사가 아니라 <strong>마케터 본인의 Google 계정</strong>이 부담합니다. 일 1,500회까지 무료, 신용카드 불필요, 키는 서버에 기록되지 않고 탭 닫으면 자동 삭제. 마케터 한 명이 하루 종일 써도 회사는 한 푼도 안 냅니다."
+            </div>
+            <div class="flow-action">▶ 액션: Gemini 키 붙여넣기 → [시작하기]</div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-time">1:00–2:00</div>
+            <div class="flow-title">Q1 — 담당 업무 + 지역</div>
+            <div class="flow-scene">리테일 / 브랜드 / 디지털 커머스 역할 + 서울특별시</div>
+            <div class="flow-script">
+                "첫 질문: <strong>어떤 관점에서 시나리오를 만들 것인가.</strong> 담당 지역 입력. 서울을 넣으면 Wikipedia·World Bank·Open-Meteo 같은 <strong>공공 API 6종을 병렬 호출</strong>해 이 도시의 기후·인구·1인 가구 비율을 실시간 수집합니다. 검색 API 비용도 0원 — 공개 API입니다."
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-time">2:00–3:00</div>
+            <div class="flow-title">Q2 — 타겟 고객 및 상황</div>
+            <div class="flow-scene">페르소나 그룹 선택 (맞벌이 부부 / 1인 가구 / 반려동물 보호자 등)</div>
+            <div class="flow-script">
+                "두 번째: <strong>누구를 위한 시나리오인가.</strong> 차별 포인트가 여기입니다. 프롬프트에 '서울 거주 30대 여성' 같은 <strong>일반화는 금지, 강남·서초·마포 같은 구체 지역명 인용 강제</strong>를 박아 뒀습니다. 직역체 영어 흔적 없는, 한국 마케터가 쓸 법한 문장만 출력되도록 시스템 레벨에서 제약했습니다."
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-time">3:00–3:30</div>
+            <div class="flow-title">Q3 — 반영 기기</div>
+            <div class="flow-scene">A·B·C 3영역 기기 선택 그리드</div>
+            <div class="flow-script">
+                "세 번째: <strong>어떤 기기를 시나리오에 포함할지.</strong> A·B·C 각 영역에서 최소 하나. 조합이 구체적일수록 시나리오가 날카로워집니다. 여기서 <strong>SmartThings Explore 실제 자산 28개</strong>와 매칭됩니다. Easy to use 12개, Time saving 8개 등 — 앱에 실제로 나오는 콘텐츠 그대로입니다."
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-time">3:30–4:30</div>
+            <div class="flow-title">Build → 5-카드 결과물</div>
+            <div class="flow-scene">결과 화면 5개 카드 순차 생성</div>
+            <div class="flow-script">
+                "빌드를 누르면 다섯 카드가 뜹니다:"
+            </div>
+            <div class="result-cards">
+                <div class="result-card">
+                    <div class="result-card-name">✨ 추천 시나리오</div>
+                    <div class="result-card-desc">매칭된 최적 시나리오 제목 + 한 줄 핵심 가치</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-card-name">🔗 연결 기기 + 활용 예시</div>
+                    <div class="result-card-desc">구체 기기 리스트 + 사용 맥락</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-card-name">👥 타겟 페르소나</div>
+                    <div class="result-card-desc">서울 구체 지역명이 박힌 1~2문장</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-card-name">✍️ Copy 후보 3종</div>
+                    <div class="result-card-desc">헤드라인 · 서브카피 · CTA, 톤별 세트</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-card-name">🎤 Sales Talk</div>
+                    <div class="result-card-desc">임원진 앞에서 그대로 발표 가능한 결론형 화법</div>
+                </div>
+            </div>
+            <div class="flow-action" style="margin-top:14px">▶ 여기까지 총 5분. 기존이면 자료 리서치만 반나절.</div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-time">4:30–5:00</div>
+            <div class="flow-title">결과 활용</div>
+            <div class="flow-scene">Download Markdown / JSON / PDF 버튼</div>
+            <div class="flow-script">
+                "결과는 Markdown, JSON, PDF로 즉시 다운로드. 팀 Slack에 붙이거나 PPT 초안으로 쓰거나 고객 응대 준비에 바로 씁니다. <strong>'검토 가능한 결과'가 아니라 '실행 가능한 결과'</strong>입니다."
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Q&A -->
+    <div class="section-title">🗣 Q&amp;A 예상 5개</div>
+
+    <div class="qa-item">
+        <div class="qa-q"><span class="qa-q-badge">Q1</span><span>AI가 환각(hallucination)으로 엉뚱한 걸 만들지 않습니까?</span></div>
+        <div class="qa-a">시스템 프롬프트 Part 0에 <strong>"자유 생성 금지, 선택된 Explore 시나리오의 목적별 변형만"</strong>이 박혀 있습니다. AI는 실제 28개 자산 중 매칭된 원본을 그대로 받아 변형만 수행합니다. 품질 자가 점검 (한국어 비율 90%+, 원본 관계 명확성) 통과 못 하면 해당 필드만 재작성합니다.</div>
+    </div>
+
+    <div class="qa-item">
+        <div class="qa-q"><span class="qa-q-badge">Q2</span><span>각 마케터가 Gemini 키를 발급받는 게 허들 아닌가요?</span></div>
+        <div class="qa-a">1분 내 발급 가능하고 UI에 5단계 가이드가 내장돼 있습니다. 대신 <strong>회사 AI 비용 0원</strong>, <strong>개인 프로젝트 단위 격리</strong>로 보안 관리도 투명합니다. 발표자 1명이 일괄 시연하는 자리라면 서버 env에 기본 키 넣고 모달 건너뛰도록 1분이면 전환 가능합니다.</div>
+    </div>
+
+    <div class="qa-item">
+        <div class="qa-q"><span class="qa-q-badge">Q3</span><span>한국어 품질, 진짜 자연스럽나요?</span></div>
+        <div class="qa-a">프롬프트에 네 가지를 강제했습니다: ① '서울 거주 30대' 같은 일반화 금지 ② '강남·서초·마포' 구체 지역 인용 ③ Sales Talk는 임원진 보고 톤 ④ 헤드라인·서브카피·CTA 3종 명확 구분. 지금 이 자리에서 실제 결과물로 확인하실 수 있습니다.</div>
+    </div>
+
+    <div class="qa-item">
+        <div class="qa-q"><span class="qa-q-badge">Q4</span><span>시나리오 데이터 관리는 누가?</span></div>
+        <div class="qa-a">SmartThings Explore 웹·앱에서 직접 추출한 구조화 JSON(<code>master_v2.json</code>)이 28개 자산을 관리합니다. Explore가 갱신되면 추출 스크립트 한 번 돌려 재생성. 웹엔 없는 앱 전용 시나리오는 수동 캡처본을 별도로 누적 관리해 자동 병합합니다.</div>
+    </div>
+
+    <div class="qa-item">
+        <div class="qa-q"><span class="qa-q-badge">Q5</span><span>확장 가능합니까? 다른 시장, 다른 제품군으로?</span></div>
+        <div class="qa-a">가능합니다. 다국어 8개(ko·en·de·fr·es·pt·it·nl·ar) 구조 준비 완료. <strong>시나리오 JSON만 교체하면 다른 제품군도 동일 엔진으로 동작</strong>합니다. 이 Agent는 SmartThings 전용이 아니라 <strong>시나리오 기반 마케팅 생성 엔진</strong> 그 자체입니다. 모델도 env 한 줄로 전환 가능.</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="section-title">📊 한눈에 보는 수치</div>
+    <div class="stats-grid">
+        <div class="stat">
+            <div class="stat-value">28</div>
+            <div class="stat-label">시나리오 자산<br>(web 26 + 앱 수동 2)</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value">8</div>
+            <div class="stat-label">대 카테고리<br>(Easy·Time·Energy 등)</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value">8</div>
+            <div class="stat-label">지원 언어</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value">5분</div>
+            <div class="stat-label">마케터 소요 시간<br>(기존 반나절 → 95% 단축)</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value">0원</div>
+            <div class="stat-label">회사 AI 비용<br>(BYOK + 공공 API)</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value">1,500</div>
+            <div class="stat-label">일일 무료 한도<br>(Gemini 2.5 Flash)</div>
+        </div>
+    </div>
+
+    <!-- Brand Footer -->
+    <div class="brand-footer">
+        <div class="brand-footer-title">Samsung Brand Voice</div>
+        <span class="principle">Confident</span>
+        <span class="principle">Modern</span>
+        <span class="principle">Premium</span>
+        <div class="brand-footer-note">
+            Confident Explorer — 결과로 리드, 기술 의인화, 경쟁사 언급 금지.<br>
+            공식 verbal guideline 준수 · "AI Home" / "AI Living" 용어 사용.
+        </div>
+    </div>
+
+    <a href="index.html" class="back-link">← Overview로 돌아가기</a>
+
+</main>
+
+</body>
+</html>
