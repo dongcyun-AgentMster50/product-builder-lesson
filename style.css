@@ -11975,7 +11975,7 @@ a.source-tag-link:hover {
     border-color: rgba(255, 255, 255, 0.36);
 }
 
-/* === BYOK 모달 — 단계별 가이드 (v2) === */
+/* === BYOK 모달 — 신뢰 배너 + 단계별 가이드 + FAQ (v3) === */
 .byok-screen {
     display: flex;
     align-items: flex-start;
@@ -11985,45 +11985,76 @@ a.source-tag-link:hover {
 
 .byok-container {
     width: 100%;
-    max-width: 560px;
-    padding: 36px 36px 32px;
+    max-width: 600px;
+    padding: 32px 32px 28px;
     background: #ffffff;
-    border: 1px solid rgba(15, 36, 96, 0.08);
-    border-radius: 18px;
-    box-shadow: 0 20px 48px rgba(15, 36, 96, 0.08);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
 }
 
 .byok-container h2 {
-    margin: 0 0 10px 0;
-    font-size: 24px;
+    margin: 0 0 20px 0;
+    font-size: 22px;
     font-weight: 700;
-    color: var(--ink-strong, #0f2460);
+    color: #0f172a;
     text-align: center;
     letter-spacing: -0.2px;
 }
 
-.byok-intro {
-    margin: 0 0 24px 0;
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: var(--ink-light, #5a6380);
-    text-align: center;
+/* 신뢰 배너 */
+.byok-trust-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 8px;
+    margin-bottom: 24px;
 }
 
+.byok-trust-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.byok-trust-icon {
+    font-size: 24px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.byok-trust-item strong {
+    display: block;
+    font-size: 15px;
+    color: #0c4a6e;
+    margin-bottom: 2px;
+}
+
+.byok-trust-item p {
+    margin: 0;
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.4;
+}
+
+/* 단계 카드 */
 .byok-step {
-    margin: 16px 0;
-    padding: 20px 22px;
-    background: rgba(15, 36, 96, 0.025);
-    border: 1px solid rgba(15, 36, 96, 0.08);
-    border-radius: 12px;
+    margin-bottom: 20px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
     text-align: left;
 }
 
 .byok-step-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
+    gap: 10px;
+    margin-bottom: 12px;
 }
 
 .byok-step-num {
@@ -12032,27 +12063,26 @@ a.source-tag-link:hover {
     justify-content: center;
     width: 28px;
     height: 28px;
-    font-size: 14px;
-    font-weight: 700;
-    color: #ffffff;
-    background: var(--accent-strong, #1428a0);
     border-radius: 50%;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
     flex-shrink: 0;
 }
 
 .byok-step-title {
+    font-weight: 600;
     font-size: 16px;
-    font-weight: 700;
-    color: var(--ink-strong, #0f2460);
-    line-height: 1.35;
+    color: #0f172a;
 }
 
 .byok-guide {
-    margin: 0 0 14px 0;
-    padding-left: 22px;
-    font-size: 13.5px;
+    margin: 12px 0;
+    padding-left: 20px;
     line-height: 1.6;
-    color: var(--ink, #30395e);
+    font-size: 14px;
+    color: #334155;
 }
 
 .byok-guide li {
@@ -12060,94 +12090,74 @@ a.source-tag-link:hover {
 }
 
 .byok-guide strong {
+    background: #fef08a;
     padding: 1px 5px;
-    font-weight: 600;
-    color: #5a4d00;
-    background: #fff3cd;
     border-radius: 3px;
+    color: #422006;
+    font-weight: 600;
 }
 
 .byok-guide code {
     padding: 1px 5px;
     font-family: "SFMono-Regular", Menlo, Consolas, "Courier New", monospace;
-    font-size: 12.5px;
-    color: var(--ink-strong, #0f2460);
-    background: rgba(15, 36, 96, 0.06);
+    font-size: 13px;
+    color: #0f172a;
+    background: #f1f5f9;
     border-radius: 3px;
 }
 
 .byok-link-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 11px 14px;
+    display: inline-block;
+    padding: 10px 16px;
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #1e293b;
+    font-weight: 500;
     font-size: 14px;
-    font-weight: 600;
-    color: var(--ink-strong, #0f2460);
-    background: #ffffff;
-    border: 1.5px solid rgba(15, 36, 96, 0.22);
-    border-radius: 8px;
     cursor: pointer;
-    transition: background .15s, border-color .15s, transform .15s;
+    transition: background .15s, border-color .15s;
 }
 
 .byok-link-btn:hover {
-    background: rgba(20, 40, 160, 0.04);
-    border-color: rgba(20, 40, 160, 0.4);
-}
-
-.byok-link-btn:active {
-    transform: translateY(1px);
-}
-
-.byok-cost-note {
-    margin: 12px 0 0 0;
-    font-size: 12px;
-    line-height: 1.5;
-    color: var(--ink-light, #5a6380);
-    text-align: center;
+    background: #f1f5f9;
+    border-color: #94a3b8;
 }
 
 .byok-key-input {
     width: 100%;
-    padding: 12px 14px;
+    padding: 12px;
     font-family: "SFMono-Regular", Menlo, Consolas, "Courier New", monospace;
     font-size: 14px;
-    letter-spacing: 0.2px;
-    color: var(--ink-strong, #0f2460);
-    background: #ffffff;
-    border: 1.5px solid rgba(15, 36, 96, 0.18);
-    border-radius: 8px;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
     outline: none;
     transition: border-color .15s, box-shadow .15s;
     box-sizing: border-box;
 }
 
 .byok-key-input:focus {
-    border-color: var(--accent-strong, #1428a0);
-    box-shadow: 0 0 0 3px rgba(20, 40, 160, 0.15);
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .byok-start-btn {
-    display: block;
     width: 100%;
-    margin-top: 20px;
-    padding: 14px 18px;
-    font-size: 15px;
-    font-weight: 700;
-    color: #ffffff;
-    background: var(--accent-strong, #1428a0);
+    padding: 14px;
+    margin-top: 8px;
+    background: #2563eb;
+    color: #fff;
     border: none;
-    border-radius: 10px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 16px;
     cursor: pointer;
-    transition: background .15s, transform .15s, opacity .15s;
-    letter-spacing: 0.2px;
+    transition: background .15s, transform .15s;
 }
 
 .byok-start-btn:hover:not(:disabled) {
-    background: #0d1f80;
+    background: #1d4ed8;
 }
 
 .byok-start-btn:active:not(:disabled) {
@@ -12155,10 +12165,65 @@ a.source-tag-link:hover {
 }
 
 .byok-start-btn:disabled {
-    background: #c7ccdb;
-    color: #ffffff;
+    background: #94a3b8;
     cursor: not-allowed;
-    opacity: 0.85;
+}
+
+/* 비용 FAQ */
+.byok-faq {
+    margin-top: 20px;
+    padding: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.byok-faq summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: #475569;
+    user-select: none;
+    outline: none;
+}
+
+.byok-faq summary:hover {
+    color: #0f172a;
+}
+
+.byok-faq-content {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+    color: #334155;
+    line-height: 1.55;
+}
+
+.byok-faq-content p {
+    margin: 8px 0 4px 0;
+}
+
+.byok-faq-content strong {
+    color: #0f172a;
+}
+
+.byok-faq-content ul {
+    margin: 4px 0 12px 0;
+    padding-left: 20px;
+    line-height: 1.55;
+}
+
+.byok-faq-content ul li {
+    margin: 3px 0;
+}
+
+.byok-faq-note {
+    margin-top: 12px !important;
+    padding-top: 10px;
+    border-top: 1px dashed #cbd5e1;
+    color: #64748b;
+    font-style: italic;
+    font-size: 12.5px;
 }
 
 /* 모바일 */
@@ -12167,24 +12232,30 @@ a.source-tag-link:hover {
         padding: 24px 12px 40px;
     }
     .byok-container {
-        padding: 24px 20px 22px;
-        border-radius: 14px;
+        padding: 22px 18px 20px;
+        border-radius: 12px;
     }
     .byok-container h2 {
-        font-size: 20px;
+        font-size: 19px;
+    }
+    .byok-trust-banner {
+        padding: 14px;
+    }
+    .byok-trust-item strong {
+        font-size: 14px;
     }
     .byok-step {
-        padding: 16px 16px;
+        padding: 14px;
     }
     .byok-step-title {
-        font-size: 14.5px;
+        font-size: 15px;
     }
     .byok-guide {
-        font-size: 13px;
-        padding-left: 20px;
+        font-size: 13.5px;
+        padding-left: 18px;
     }
     .byok-start-btn {
-        padding: 13px 16px;
-        font-size: 14.5px;
+        padding: 13px;
+        font-size: 15px;
     }
 }
