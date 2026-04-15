@@ -12259,3 +12259,94 @@ a.source-tag-link:hover {
         font-size: 15px;
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Campaign Output — Demo v2 (13 → 5 카드 축소)
+   데이터 생성 로직 유지, UI 렌더링만 축소
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* 숨길 8개 섹션 */
+.co-demo-v2 #co-sec-01,
+.co-demo-v2 #co-sec-03,
+.co-demo-v2 #co-sec-04,
+.co-demo-v2 #co-sec-06,
+.co-demo-v2 #co-sec-09,
+.co-demo-v2 #co-sec-10,
+.co-demo-v2 #co-sec-12,
+.co-demo-v2 #co-sec-13 {
+    display: none !important;
+}
+
+/* 섹션 nav 숨김 (5개 카드 순서가 명확하므로 불필요) */
+.co-demo-v2 #co-section-nav {
+    display: none;
+}
+
+/* 번호 배지 + AI Enhanced 뱃지 숨김 (데모 간결화) */
+.co-demo-v2 .co-sec-num,
+.co-demo-v2 .co-badge--api {
+    display: none;
+}
+
+/* 남은 5개 카드 강조: 간격·여백·폰트 크게 */
+.co-demo-v2 .co-section {
+    margin-bottom: 28px;
+    padding: 24px 26px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+.co-demo-v2 .co-section-head {
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.co-demo-v2 .co-sec-title {
+    margin: 0 0 4px 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.2px;
+}
+
+.co-demo-v2 .co-sec-helper {
+    margin: 0;
+    font-size: 13.5px;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+/* Sales Talk · Copy 영역 폰트 약간 키우기 (데모 영상에서도 잘 읽히게) */
+.co-demo-v2 #co-sec-08 .co-msg-grid p,
+.co-demo-v2 #co-sec-08 .co-headline,
+.co-demo-v2 #co-sec-08 .co-msg-item ul li,
+.co-demo-v2 #co-sec-11 p,
+.co-demo-v2 #co-sec-11 li {
+    font-size: 15px;
+    line-height: 1.65;
+}
+
+.co-demo-v2 #co-sec-08 .co-msg-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #2563eb;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 모바일 */
+@media (max-width: 640px) {
+    .co-demo-v2 .co-section {
+        padding: 18px 18px;
+        margin-bottom: 20px;
+    }
+    .co-demo-v2 .co-sec-title {
+        font-size: 17px;
+    }
+    .co-demo-v2 .co-sec-helper {
+        font-size: 12.5px;
+    }
+}
