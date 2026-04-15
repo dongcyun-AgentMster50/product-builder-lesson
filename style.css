@@ -11975,11 +11975,45 @@ a.source-tag-link:hover {
     border-color: rgba(255, 255, 255, 0.36);
 }
 
-/* === BYOK 모달 — 단계별 가이드 === */
+/* === BYOK 모달 — 단계별 가이드 (v2) === */
+.byok-screen {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px 60px;
+}
+
+.byok-container {
+    width: 100%;
+    max-width: 560px;
+    padding: 36px 36px 32px;
+    background: #ffffff;
+    border: 1px solid rgba(15, 36, 96, 0.08);
+    border-radius: 18px;
+    box-shadow: 0 20px 48px rgba(15, 36, 96, 0.08);
+}
+
+.byok-container h2 {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ink-strong, #0f2460);
+    text-align: center;
+    letter-spacing: -0.2px;
+}
+
+.byok-intro {
+    margin: 0 0 24px 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink-light, #5a6380);
+    text-align: center;
+}
+
 .byok-step {
     margin: 16px 0;
-    padding: 14px 16px;
-    background: rgba(15, 36, 96, 0.03);
+    padding: 20px 22px;
+    background: rgba(15, 36, 96, 0.025);
     border: 1px solid rgba(15, 36, 96, 0.08);
     border-radius: 12px;
     text-align: left;
@@ -11988,17 +12022,17 @@ a.source-tag-link:hover {
 .byok-step-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 12px;
+    margin-bottom: 14px;
 }
 
 .byok-step-num {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    font-size: 13px;
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
     font-weight: 700;
     color: #ffffff;
     background: var(--accent-strong, #1428a0);
@@ -12006,70 +12040,151 @@ a.source-tag-link:hover {
     flex-shrink: 0;
 }
 
-.byok-step-label {
-    font-size: 14px;
-    font-weight: 600;
+.byok-step-title {
+    font-size: 16px;
+    font-weight: 700;
     color: var(--ink-strong, #0f2460);
-    line-height: 1.3;
+    line-height: 1.35;
 }
 
-.byok-secondary-btn {
+.byok-guide {
+    margin: 0 0 14px 0;
+    padding-left: 22px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink, #30395e);
+}
+
+.byok-guide li {
+    margin: 4px 0;
+}
+
+.byok-guide strong {
+    padding: 1px 5px;
+    font-weight: 600;
+    color: #5a4d00;
+    background: #fff3cd;
+    border-radius: 3px;
+}
+
+.byok-guide code {
+    padding: 1px 5px;
+    font-family: "SFMono-Regular", Menlo, Consolas, "Courier New", monospace;
+    font-size: 12.5px;
+    color: var(--ink-strong, #0f2460);
+    background: rgba(15, 36, 96, 0.06);
+    border-radius: 3px;
+}
+
+.byok-link-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     width: 100%;
-    padding: 10px 14px;
-    font-size: 13.5px;
+    padding: 11px 14px;
+    font-size: 14px;
     font-weight: 600;
-    color: var(--accent-strong, #1428a0);
+    color: var(--ink-strong, #0f2460);
     background: #ffffff;
-    border: 1.5px solid rgba(20, 40, 160, 0.35);
+    border: 1.5px solid rgba(15, 36, 96, 0.22);
     border-radius: 8px;
     cursor: pointer;
     transition: background .15s, border-color .15s, transform .15s;
 }
 
-.byok-secondary-btn:hover {
-    background: rgba(20, 40, 160, 0.05);
-    border-color: rgba(20, 40, 160, 0.6);
+.byok-link-btn:hover {
+    background: rgba(20, 40, 160, 0.04);
+    border-color: rgba(20, 40, 160, 0.4);
 }
 
-.byok-secondary-btn:active {
+.byok-link-btn:active {
     transform: translateY(1px);
 }
 
-.byok-ext-icon {
+.byok-cost-note {
+    margin: 12px 0 0 0;
     font-size: 12px;
-    opacity: 0.75;
-}
-
-.byok-step-hint {
-    margin: 10px 0 0 0;
-    font-size: 12.5px;
-    line-height: 1.55;
+    line-height: 1.5;
     color: var(--ink-light, #5a6380);
+    text-align: center;
 }
 
-.byok-step-hint strong {
+.byok-key-input {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: "SFMono-Regular", Menlo, Consolas, "Courier New", monospace;
+    font-size: 14px;
+    letter-spacing: 0.2px;
     color: var(--ink-strong, #0f2460);
-    font-weight: 600;
+    background: #ffffff;
+    border: 1.5px solid rgba(15, 36, 96, 0.18);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+    box-sizing: border-box;
+}
+
+.byok-key-input:focus {
+    border-color: var(--accent-strong, #1428a0);
+    box-shadow: 0 0 0 3px rgba(20, 40, 160, 0.15);
+}
+
+.byok-start-btn {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px 18px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    background: var(--accent-strong, #1428a0);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background .15s, transform .15s, opacity .15s;
+    letter-spacing: 0.2px;
+}
+
+.byok-start-btn:hover:not(:disabled) {
+    background: #0d1f80;
+}
+
+.byok-start-btn:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.byok-start-btn:disabled {
+    background: #c7ccdb;
+    color: #ffffff;
+    cursor: not-allowed;
+    opacity: 0.85;
 }
 
 /* 모바일 */
-@media (max-width: 480px) {
+@media (max-width: 520px) {
+    .byok-screen {
+        padding: 24px 12px 40px;
+    }
+    .byok-container {
+        padding: 24px 20px 22px;
+        border-radius: 14px;
+    }
+    .byok-container h2 {
+        font-size: 20px;
+    }
     .byok-step {
-        padding: 12px 14px;
-        margin: 12px 0;
+        padding: 16px 16px;
     }
-    .byok-step-label {
+    .byok-step-title {
+        font-size: 14.5px;
+    }
+    .byok-guide {
         font-size: 13px;
+        padding-left: 20px;
     }
-    .byok-secondary-btn {
-        font-size: 13px;
-        padding: 9px 12px;
-    }
-    .byok-step-hint {
-        font-size: 12px;
+    .byok-start-btn {
+        padding: 13px 16px;
+        font-size: 14.5px;
     }
 }

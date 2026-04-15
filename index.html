@@ -54,39 +54,43 @@
 
         <main class="workspace">
             <section class="control-panel">
-                <section id="byok-screen" class="access-screen hidden">
-                    <div class="access-card-v2">
-                        <div class="access-v2-inner">
-                            <div class="access-v2-icon">🔑</div>
-                            <h2 class="access-v2-title">AI 연결 설정</h2>
-                            <p class="access-v2-subtitle">이 데모는 본인의 Google Gemini API 키로 동작합니다.<br>키는 브라우저 sessionStorage에만 저장되며 서버에 기록되지 않습니다.</p>
+                <section id="byok-screen" class="byok-screen hidden">
+                    <div class="byok-container">
+                        <h2>AI 연결 설정</h2>
+                        <p class="byok-intro">
+                            이 데모는 본인의 Google Gemini API 키로 동작합니다.<br>
+                            키는 브라우저에만 저장되며 서버에 기록되지 않습니다.
+                        </p>
 
-                            <div class="byok-step">
-                                <div class="byok-step-header">
-                                    <span class="byok-step-num">1</span>
-                                    <span class="byok-step-label">Gemini 키가 없으신가요?</span>
-                                </div>
-                                <button type="button" id="byok-open-aistudio"
-                                    class="byok-secondary-btn"
-                                    onclick="window.open('https://aistudio.google.com/apikey', '_blank', 'noopener,noreferrer')">
-                                    Google AI Studio에서 키 발급받기
-                                    <span class="byok-ext-icon" aria-hidden="true">↗</span>
-                                </button>
-                                <p class="byok-step-hint">로그인 후 <strong>[Create API key]</strong> 클릭 → 생성된 키 복사 → 이 화면으로 돌아와 붙여넣기</p>
+                        <div class="byok-step">
+                            <div class="byok-step-header">
+                                <span class="byok-step-num">1</span>
+                                <span class="byok-step-title">Gemini API 키 발급받기 (무료, 약 1분)</span>
                             </div>
-
-                            <div class="byok-step">
-                                <div class="byok-step-header">
-                                    <span class="byok-step-num">2</span>
-                                    <span class="byok-step-label">발급받은 키를 붙여넣으세요</span>
-                                </div>
-                                <div class="access-v2-input-wrap">
-                                    <input type="password" id="user-api-key" class="access-v2-input" placeholder="AIza..." autocomplete="off">
-                                </div>
-                            </div>
-
-                            <button type="button" id="byok-start-btn" class="access-v2-btn" disabled>시작하기</button>
+                            <ol class="byok-guide">
+                                <li>아래 버튼을 눌러 Google AI Studio를 새 탭에서 엽니다</li>
+                                <li>Google 계정으로 로그인합니다</li>
+                                <li><strong>[Create API key]</strong> 버튼을 클릭합니다</li>
+                                <li>프로젝트 선택 창이 뜨면 <strong>[Create API key in new project]</strong>를 선택합니다</li>
+                                <li>생성된 키(<code>AIza...</code>로 시작)를 복사합니다</li>
+                            </ol>
+                            <button type="button" id="byok-open-aistudio" class="byok-link-btn">
+                                🔗 Google AI Studio 열기
+                            </button>
+                            <p class="byok-cost-note">
+                                무료 사용량이 넉넉합니다 (분당 15회, 일 1,500회). 신용카드 등록 불필요.
+                            </p>
                         </div>
+
+                        <div class="byok-step">
+                            <div class="byok-step-header">
+                                <span class="byok-step-num">2</span>
+                                <span class="byok-step-title">발급받은 키를 여기에 붙여넣으세요</span>
+                            </div>
+                            <input type="password" id="user-api-key" placeholder="AIza..." class="byok-key-input" autocomplete="off">
+                        </div>
+
+                        <button type="button" id="byok-start-btn" class="byok-start-btn" disabled>시작하기</button>
                     </div>
                 </section>
 

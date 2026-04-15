@@ -2766,11 +2766,15 @@ function showByokScreen() {
     startBtn.disabled = true;
     setTimeout(() => keyInput.focus(), 0);
 
-    const onInput = () => { startBtn.disabled = keyInput.value.trim().length === 0; };
+    const isValidKey = (v) => {
+        const t = String(v || "").trim();
+        return t.startsWith("AIza") && t.length >= 30;
+    };
+    const onInput = () => { startBtn.disabled = !isValidKey(keyInput.value); };
     const onKeyDown = (e) => { if (e.key === "Enter" && !startBtn.disabled) { e.preventDefault(); onStart(); } };
     const onStart = () => {
         const val = keyInput.value.trim();
-        if (!val) return;
+        if (!isValidKey(val)) return;
         sessionStorage.setItem("userApiKey", val);
         byokScreen.classList.add("hidden");
         keyInput.removeEventListener("input", onInput);
@@ -2780,9 +2784,14 @@ function showByokScreen() {
         if (logoutBtnByok) logoutBtnByok.classList.remove("hidden");
         showGuideScreen();
     };
+    const openBtn = document.getElementById("byok-open-aistudio");
+    const onOpenAistudio = () => {
+        window.open("https://aistudio.google.com/apikey", "_blank", "noopener,noreferrer");
+    };
     keyInput.addEventListener("input", onInput);
     keyInput.addEventListener("keydown", onKeyDown);
     startBtn.addEventListener("click", onStart);
+    if (openBtn) openBtn.addEventListener("click", onOpenAistudio);
 }
 
 async function verifyAccessCode(code) {
