@@ -59,12 +59,33 @@
                         <div class="access-v2-inner">
                             <div class="access-v2-icon">🔑</div>
                             <h2 class="access-v2-title">AI 연결 설정</h2>
-                            <p class="access-v2-subtitle">이 데모는 시연자의 Google Gemini API 키로 동작합니다.<br>키는 브라우저 sessionStorage에만 저장되며 서버에 기록되지 않습니다.</p>
-                            <div class="access-v2-input-wrap">
-                                <input type="password" id="user-api-key" class="access-v2-input" placeholder="AIza..." autocomplete="off">
+                            <p class="access-v2-subtitle">이 데모는 본인의 Google Gemini API 키로 동작합니다.<br>키는 브라우저 sessionStorage에만 저장되며 서버에 기록되지 않습니다.</p>
+
+                            <div class="byok-step">
+                                <div class="byok-step-header">
+                                    <span class="byok-step-num">1</span>
+                                    <span class="byok-step-label">Gemini 키가 없으신가요?</span>
+                                </div>
+                                <button type="button" id="byok-open-aistudio"
+                                    class="byok-secondary-btn"
+                                    onclick="window.open('https://aistudio.google.com/apikey', '_blank', 'noopener,noreferrer')">
+                                    Google AI Studio에서 키 발급받기
+                                    <span class="byok-ext-icon" aria-hidden="true">↗</span>
+                                </button>
+                                <p class="byok-step-hint">로그인 후 <strong>[Create API key]</strong> 클릭 → 생성된 키 복사 → 이 화면으로 돌아와 붙여넣기</p>
                             </div>
+
+                            <div class="byok-step">
+                                <div class="byok-step-header">
+                                    <span class="byok-step-num">2</span>
+                                    <span class="byok-step-label">발급받은 키를 붙여넣으세요</span>
+                                </div>
+                                <div class="access-v2-input-wrap">
+                                    <input type="password" id="user-api-key" class="access-v2-input" placeholder="AIza..." autocomplete="off">
+                                </div>
+                            </div>
+
                             <button type="button" id="byok-start-btn" class="access-v2-btn" disabled>시작하기</button>
-                            <p class="access-v2-note">Gemini API 키가 없으면 https://aistudio.google.com/apikey 에서 무료로 발급받을 수 있어요.</p>
                         </div>
                     </div>
                 </section>
