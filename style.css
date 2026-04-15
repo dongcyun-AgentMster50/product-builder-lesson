@@ -5161,6 +5161,49 @@ textarea {
     color: var(--ink);
 }
 
+/* === Provider 버튼 — BYOK 키 기반 활성 상태 동기화 === */
+.provider-btn.provider-active {
+    opacity: 1;
+    background: #2563eb;
+    color: #ffffff;
+    border: 2px solid #1d4ed8;
+    font-weight: 700;
+    cursor: pointer;
+    position: relative;
+    overflow: visible;
+}
+.provider-btn.provider-active::after {
+    content: "✓";
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    background: #10b981;
+    color: #ffffff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(16, 185, 129, 0.4);
+}
+
+.provider-btn.provider-disabled {
+    opacity: 0.38;
+    background: #f1f5f9;
+    color: #94a3b8;
+    border: 1px solid #e2e8f0;
+    cursor: not-allowed;
+    filter: grayscale(80%);
+}
+.provider-btn.provider-disabled:hover {
+    opacity: 0.4;
+    background: #f1f5f9;
+    color: #94a3b8;
+}
+
 .hidden {
     display: none !important;
 }

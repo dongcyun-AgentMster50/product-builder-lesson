@@ -593,6 +593,43 @@ function resolveEffectiveLocale(countryLocale) {
     return detectBrowserLocale();
 }
 
+// === BYOK: 키 형식 기반 provider 자동 감지 + 버튼 동기화 ===
+function detectActiveProvider() {
+    const key = String(sessionStorage.getItem("userApiKey") || "").trim();
+    if (!key) return null;
+    if (key.startsWith("AIza")) return "gemini";
+    if (key.startsWith("sk-ant-")) return "claude";
+    if (key.startsWith("sk-")) return "openai";
+    return null;
+}
+
+function syncProviderButtons() {
+    const active = detectActiveProvider();
+    const buttons = document.querySelectorAll(".provider-btn[data-provider]");
+    if (active) {
+        // 활성 provider를 selectedProvider / sessionStorage에도 반영
+        selectedProvider = active;
+        try { sessionStorage.setItem("aiProvider", active); } catch (_) { /* ignore */ }
+    }
+    buttons.forEach((btn) => {
+        const provider = btn.dataset.provider;
+        const isActive = active && provider === active;
+        btn.disabled = !isActive;
+        btn.classList.toggle("active", isActive);
+        btn.classList.toggle("provider-active", isActive);
+        btn.classList.toggle("provider-disabled", !isActive);
+        if (!isActive) {
+            btn.style.pointerEvents = "none";
+            btn.title = active
+                ? "현재 입력하신 키에서는 사용할 수 없습니다"
+                : "AI 키를 입력하면 해당 provider가 활성화됩니다";
+        } else {
+            btn.style.pointerEvents = "auto";
+            btn.title = "현재 활성화된 AI provider";
+        }
+    });
+}
+
 // === BYOK MVP — Gemini 단일 provider ===
 // 모든 /api/* fetch에 X-User-Api-Key 헤더 자동 주입.
 (function installByokFetchShim() {
@@ -647,6 +684,7 @@ function bindEvents() {
     const byokLogoutBtn = document.getElementById("byok-logout-btn");
     if (byokLogoutBtn) byokLogoutBtn.addEventListener("click", () => {
         sessionStorage.removeItem("userApiKey");
+        syncProviderButtons();
         location.reload();
     });
     logoutBtn.addEventListener("click", handleLogout);
@@ -659,12 +697,15 @@ function bindEvents() {
     generateBtn.addEventListener("click", generateScenario);
     document.getElementById("provider-toggle")?.addEventListener("click", (e) => {
         const btn = e.target.closest("[data-provider]");
-        if (!btn) return;
+        if (!btn || btn.disabled) return;
+        // BYOK: 사용자 키와 맞지 않는 provider 클릭 차단
+        const active = detectActiveProvider();
+        if (active && btn.dataset.provider !== active) return;
         selectedProvider = btn.dataset.provider;
         sessionStorage.setItem("aiProvider", selectedProvider);
-        document.querySelectorAll(".provider-btn").forEach((b) => b.classList.toggle("active", b.dataset.provider === selectedProvider));
+        syncProviderButtons();
     });
-    document.querySelectorAll(".provider-btn").forEach((b) => b.classList.toggle("active", b.dataset.provider === selectedProvider));
+    syncProviderButtons();
     roleSelectionContainer?.addEventListener("click", handleRoleCardClick);
     roleSelectionContainer?.addEventListener("click", clearQ3AutoMode);
     roleSelectionContainer?.addEventListener("keydown", handleRoleCardKeydown);
@@ -2782,6 +2823,7 @@ function showByokScreen() {
         startBtn.removeEventListener("click", onStart);
         const logoutBtnByok = document.getElementById("byok-logout-btn");
         if (logoutBtnByok) logoutBtnByok.classList.remove("hidden");
+        syncProviderButtons();
         showGuideScreen();
     };
     const openBtn = document.getElementById("byok-open-aistudio");
