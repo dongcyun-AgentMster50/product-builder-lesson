@@ -2785,13 +2785,26 @@ async function handleUnlock() {
     showByokScreen();
 }
 
+// 키 형식 → provider 추론
+function validateApiKey(value) {
+    const v = String(value || "").trim();
+    if (!v) return null;
+    if (v.startsWith("AIza") && v.length >= 30) return "gemini";
+    if (v.startsWith("sk-ant-") && v.length >= 20) return "claude";
+    if (v.startsWith("sk-") && v.length >= 20) return "openai";
+    return null;
+}
+
 function showByokScreen() {
     const byokScreen = document.getElementById("byok-screen");
-    const keyInput = document.getElementById("user-api-key");
     const startBtn = document.getElementById("byok-start-btn");
-    if (!byokScreen || !keyInput || !startBtn) { showGuideScreen(); return; }
+    const tabs = byokScreen?.querySelectorAll(".byok-tab");
+    const contents = byokScreen?.querySelectorAll(".byok-tab-content");
+    const inputs = byokScreen?.querySelectorAll(".byok-key-input");
+    const linkBtns = byokScreen?.querySelectorAll("[data-open-url]");
+    if (!byokScreen || !startBtn || !tabs?.length) { showGuideScreen(); return; }
 
-    // Skip if key already stored in this session
+    // Skip if key already stored
     const existing = sessionStorage.getItem("userApiKey") || "";
     if (existing) {
         accessScreen.classList.add("hidden");
@@ -2803,37 +2816,78 @@ function showByokScreen() {
 
     accessScreen.classList.add("hidden");
     byokScreen.classList.remove("hidden");
-    keyInput.value = "";
+    inputs.forEach((i) => { i.value = ""; });
     startBtn.disabled = true;
-    setTimeout(() => keyInput.focus(), 0);
 
-    const isValidKey = (v) => {
-        const t = String(v || "").trim();
-        return t.startsWith("AIza") && t.length >= 30;
+    // 탭 전환
+    const activateTab = (provider) => {
+        tabs.forEach((t) => {
+            const on = t.dataset.provider === provider;
+            t.classList.toggle("active", on);
+            t.setAttribute("aria-selected", String(on));
+        });
+        contents.forEach((c) => {
+            const on = c.dataset.provider === provider;
+            c.classList.toggle("active", on);
+            if (on) c.removeAttribute("hidden"); else c.setAttribute("hidden", "");
+        });
+        // 포커스 해당 탭 입력창
+        const focusInput = byokScreen.querySelector(`.byok-tab-content.active .byok-key-input`);
+        if (focusInput) setTimeout(() => focusInput.focus(), 0);
+        updateStartBtn();
     };
-    const onInput = () => { startBtn.disabled = !isValidKey(keyInput.value); };
+
+    const getActiveInput = () => byokScreen.querySelector(".byok-tab-content.active .byok-key-input");
+    const updateStartBtn = () => {
+        const input = getActiveInput();
+        const provider = validateApiKey(input?.value || "");
+        startBtn.disabled = !provider;
+    };
+
+    const onTabClick = (e) => {
+        const tab = e.currentTarget;
+        activateTab(tab.dataset.provider);
+    };
+    const onInput = () => updateStartBtn();
     const onKeyDown = (e) => { if (e.key === "Enter" && !startBtn.disabled) { e.preventDefault(); onStart(); } };
+    const onOpenLink = (e) => {
+        const url = e.currentTarget.dataset.openUrl;
+        if (url) window.open(url, "_blank", "noopener,noreferrer");
+    };
     const onStart = () => {
-        const val = keyInput.value.trim();
-        if (!isValidKey(val)) return;
+        const input = getActiveInput();
+        const val = String(input?.value || "").trim();
+        const provider = validateApiKey(val);
+        if (!provider) return;
         sessionStorage.setItem("userApiKey", val);
-        byokScreen.classList.add("hidden");
-        keyInput.removeEventListener("input", onInput);
-        keyInput.removeEventListener("keydown", onKeyDown);
+        sessionStorage.setItem("userProvider", provider);
+        sessionStorage.setItem("aiProvider", provider);
+        selectedProvider = provider;
+        // Cleanup
+        tabs.forEach((t) => t.removeEventListener("click", onTabClick));
+        inputs.forEach((i) => {
+            i.removeEventListener("input", onInput);
+            i.removeEventListener("keydown", onKeyDown);
+        });
+        linkBtns?.forEach((b) => b.removeEventListener("click", onOpenLink));
         startBtn.removeEventListener("click", onStart);
+        byokScreen.classList.add("hidden");
         const logoutBtnByok = document.getElementById("byok-logout-btn");
         if (logoutBtnByok) logoutBtnByok.classList.remove("hidden");
         syncProviderButtons();
         showGuideScreen();
     };
-    const openBtn = document.getElementById("byok-open-aistudio");
-    const onOpenAistudio = () => {
-        window.open("https://aistudio.google.com/apikey", "_blank", "noopener,noreferrer");
-    };
-    keyInput.addEventListener("input", onInput);
-    keyInput.addEventListener("keydown", onKeyDown);
+
+    tabs.forEach((t) => t.addEventListener("click", onTabClick));
+    inputs.forEach((i) => {
+        i.addEventListener("input", onInput);
+        i.addEventListener("keydown", onKeyDown);
+    });
+    linkBtns?.forEach((b) => b.addEventListener("click", onOpenLink));
     startBtn.addEventListener("click", onStart);
-    if (openBtn) openBtn.addEventListener("click", onOpenAistudio);
+
+    // 기본 탭: Gemini
+    activateTab("gemini");
 }
 
 async function verifyAccessCode(code) {

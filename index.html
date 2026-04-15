@@ -82,29 +82,73 @@
                             </div>
                         </div>
 
-                        <div class="byok-step">
-                            <div class="byok-step-header">
-                                <span class="byok-step-num">1</span>
-                                <span class="byok-step-title">Gemini API 키 발급받기</span>
-                            </div>
+                        <div class="byok-tabs" role="tablist">
+                            <button type="button" class="byok-tab active" role="tab" data-provider="gemini" aria-selected="true">🟢 Gemini</button>
+                            <button type="button" class="byok-tab" role="tab" data-provider="openai" aria-selected="false">⬜ ChatGPT</button>
+                            <button type="button" class="byok-tab" role="tab" data-provider="claude" aria-selected="false">⬜ Claude</button>
+                        </div>
+
+                        <!-- Tab: Gemini -->
+                        <div class="byok-tab-content active" id="byok-content-gemini" role="tabpanel" data-provider="gemini">
                             <ol class="byok-guide">
                                 <li>아래 버튼을 클릭해 Google AI Studio를 새 탭에서 엽니다</li>
-                                <li>본인 Google 계정으로 로그인합니다</li>
+                                <li>Google 계정으로 로그인합니다</li>
                                 <li><strong>[Create API key]</strong> 버튼을 클릭합니다</li>
                                 <li>프로젝트 선택 창이 뜨면 <strong>[Create API key in new project]</strong>를 선택합니다</li>
                                 <li>생성된 키(<code>AIza...</code>로 시작)를 복사합니다</li>
                             </ol>
-                            <button type="button" id="byok-open-aistudio" class="byok-link-btn">
-                                🔗 Google AI Studio 열기
+                            <p class="byok-cost-note">
+                                💡 <strong>무료 사용</strong>: 분당 15회, 일 1,500회까지 무료. 신용카드 등록 불필요.<br>
+                                💰 <strong>유료 사용</strong>: Gemini 2.5 Flash 기준 100만 토큰당 약 $0.30
+                            </p>
+                            <button type="button" class="byok-link-btn" data-open-url="https://aistudio.google.com/apikey">
+                                🔗 Google AI Studio에서 키 발급받기
                             </button>
+                            <input type="password" class="byok-key-input" data-provider="gemini" placeholder="AIza..." autocomplete="off">
                         </div>
 
-                        <div class="byok-step">
-                            <div class="byok-step-header">
-                                <span class="byok-step-num">2</span>
-                                <span class="byok-step-title">발급받은 키를 여기에 붙여넣으세요</span>
-                            </div>
-                            <input type="password" id="user-api-key" placeholder="Gemini 키 (AIza...) — 현재 데모는 Gemini만 지원합니다" class="byok-key-input" autocomplete="off">
+                        <!-- Tab: OpenAI -->
+                        <div class="byok-tab-content" id="byok-content-openai" role="tabpanel" data-provider="openai" hidden>
+                            <ol class="byok-guide">
+                                <li>아래 버튼을 클릭해 OpenAI API Keys 페이지를 새 탭에서 엽니다</li>
+                                <li>OpenAI 계정으로 로그인합니다 (ChatGPT 계정과 동일)</li>
+                                <li><strong>[+ Create new secret key]</strong> 버튼을 클릭합니다</li>
+                                <li>이름 입력 (예: "SmartThings Demo") → <strong>[Create secret key]</strong> 클릭</li>
+                                <li>생성된 키(<code>sk-...</code>로 시작)를 복사합니다 ⚠️ 키는 이 순간에만 표시됩니다</li>
+                            </ol>
+                            <p class="byok-cost-note">
+                                ⚠️ OpenAI는 무료 사용량이 제한적입니다. 신규 가입 시 $5 크레딧 제공 (3개월 유효).<br>
+                                💰 이후: GPT-4o mini 기준 100만 토큰당 약 $0.15 (입력) / $0.60 (출력)
+                            </p>
+                            <button type="button" class="byok-link-btn" data-open-url="https://platform.openai.com/api-keys">
+                                🔗 OpenAI에서 키 발급받기
+                            </button>
+                            <input type="password" class="byok-key-input" data-provider="openai" placeholder="sk-proj-..." autocomplete="off">
+                            <p class="byok-coming-soon">
+                                🚧 OpenAI 백엔드 연결은 준비 중입니다. 키를 미리 등록해 두시면 연결 즉시 사용 가능합니다.
+                            </p>
+                        </div>
+
+                        <!-- Tab: Claude -->
+                        <div class="byok-tab-content" id="byok-content-claude" role="tabpanel" data-provider="claude" hidden>
+                            <ol class="byok-guide">
+                                <li>아래 버튼을 클릭해 Anthropic Console을 새 탭에서 엽니다</li>
+                                <li>Anthropic 계정으로 로그인합니다 (없으면 무료 가입)</li>
+                                <li>좌측 메뉴에서 <strong>[API Keys]</strong>를 클릭합니다</li>
+                                <li><strong>[Create Key]</strong> 버튼을 클릭합니다</li>
+                                <li>이름 입력 → 생성된 키(<code>sk-ant-...</code>로 시작)를 복사합니다 ⚠️ 키는 이 순간에만 표시됩니다</li>
+                            </ol>
+                            <p class="byok-cost-note">
+                                ⚠️ Anthropic은 무료 사용량이 없습니다. 최소 $5 크레딧 충전 필요.<br>
+                                💰 Claude Haiku 기준 100만 토큰당 약 $0.25 (입력) / $1.25 (출력)
+                            </p>
+                            <button type="button" class="byok-link-btn" data-open-url="https://console.anthropic.com/settings/keys">
+                                🔗 Anthropic Console에서 키 발급받기
+                            </button>
+                            <input type="password" class="byok-key-input" data-provider="claude" placeholder="sk-ant-..." autocomplete="off">
+                            <p class="byok-coming-soon">
+                                🚧 Claude 백엔드 연결은 준비 중입니다. 키를 미리 등록해 두시면 연결 즉시 사용 가능합니다.
+                            </p>
                         </div>
 
                         <button type="button" id="byok-start-btn" class="byok-start-btn" disabled>시작하기</button>
