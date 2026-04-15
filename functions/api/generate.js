@@ -1,5 +1,6 @@
 import { clearSessionCookie, getConfig, json, readSession } from "./access/_shared.js";
 import { enforceMonthlyBudget, estimateUsageCost, recordUsageCost } from "./_shared_ai.js";
+import { streamGeminiAsOpenAI, resolveGeminiKey } from "./_gemini.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
@@ -174,9 +175,9 @@ export async function onRequestPost(context) {
         );
     }
 
-    const apiKey = String(context.env.OPENAI_API_KEY || "").trim();
+    const { key: apiKey } = resolveGeminiKey(context);
     if (!apiKey) {
-        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "OPENAI_API_KEY is not set." } }, 500);
+        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "No Gemini API key: provide one via the BYOK screen." } }, 400);
     }
 
     const budgetBlocked = await enforceMonthlyBudget(context.env);
@@ -201,7 +202,7 @@ export async function onRequestPost(context) {
     }
 
     const userMessage = buildGeneratePrompt(body);
-    const model = String(context.env.OPENAI_MODEL || "gpt-5.4").trim();
+    const model = String(context.env.GEMINI_MODEL || "gemini-2.0-flash").trim();
     const maxTokens = Number(context.env.OPENAI_MAX_TOKENS || 8000);
 
     // Selection Summary 존재 시 JSON 모드 활성화
@@ -224,7 +225,16 @@ export async function onRequestPost(context) {
 
     let apiResponse;
     try {
-        apiResponse = await streamOpenAIResponse({ apiKey, systemPrompt, userMessage, model, maxTokens, jsonMode });
+        apiResponse = streamGeminiAsOpenAI({
+            apiKey,
+            model,
+            maxTokens,
+            jsonMode,
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userMessage }
+            ]
+        });
     } catch (error) {
         return json({ ok: false, error: { code: "UPSTREAM_ERROR", message: error.message } }, 502);
     }

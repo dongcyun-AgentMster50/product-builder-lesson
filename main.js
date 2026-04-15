@@ -593,9 +593,31 @@ function resolveEffectiveLocale(countryLocale) {
     return detectBrowserLocale();
 }
 
+// === BYOK MVP — Gemini 단일 provider ===
+// 모든 /api/* fetch에 X-User-Api-Key 헤더 자동 주입.
+(function installByokFetchShim() {
+    const original = window.fetch.bind(window);
+    window.fetch = function patchedFetch(input, init) {
+        try {
+            const url = typeof input === "string" ? input : (input?.url || "");
+            if (typeof url === "string" && url.startsWith("/api/")) {
+                const key = sessionStorage.getItem("userApiKey") || "";
+                if (key) {
+                    const opts = { ...(init || {}) };
+                    const headers = new Headers(opts.headers || (typeof input !== "string" ? input.headers : undefined) || {});
+                    headers.set("X-User-Api-Key", key);
+                    opts.headers = headers;
+                    return original(input, opts);
+                }
+            }
+        } catch (_) { /* fall through */ }
+        return original(input, init);
+    };
+})();
+
 document.addEventListener("DOMContentLoaded", () => {
     accessClientSessionId = ensureAccessClientSessionId();
-    sessionStorage.setItem("aiProvider", "openai");
+    sessionStorage.setItem("aiProvider", "gemini");
     sessionStorage.removeItem("aiApiKey");
     currentLocale = detectBrowserLocale();
     document.documentElement.lang = currentLocale;
@@ -622,6 +644,11 @@ function bindEvents() {
         }
     });
     accessToggleBtn.addEventListener("click", toggleAccessCodeVisibility);
+    const byokLogoutBtn = document.getElementById("byok-logout-btn");
+    if (byokLogoutBtn) byokLogoutBtn.addEventListener("click", () => {
+        sessionStorage.removeItem("userApiKey");
+        location.reload();
+    });
     logoutBtn.addEventListener("click", handleLogout);
     wizardLogoutBtn.addEventListener("click", handleLogout);
     guideYesBtn.addEventListener("click", openWizard);
@@ -2712,11 +2739,50 @@ async function handleUnlock() {
     }
 
     setAccessStatus("success", "accessGranted");
-    // If provider already chosen in this session, skip provider screen
-    selectedProvider = "openai";
-    sessionStorage.setItem("aiProvider", "openai");
-    sessionStorage.removeItem("aiApiKey");
-    showGuideScreen();
+    selectedProvider = "gemini";
+    sessionStorage.setItem("aiProvider", "gemini");
+    showByokScreen();
+}
+
+function showByokScreen() {
+    const byokScreen = document.getElementById("byok-screen");
+    const keyInput = document.getElementById("user-api-key");
+    const startBtn = document.getElementById("byok-start-btn");
+    if (!byokScreen || !keyInput || !startBtn) { showGuideScreen(); return; }
+
+    // Skip if key already stored in this session
+    const existing = sessionStorage.getItem("userApiKey") || "";
+    if (existing) {
+        accessScreen.classList.add("hidden");
+        const logoutBtnByok = document.getElementById("byok-logout-btn");
+        if (logoutBtnByok) logoutBtnByok.classList.remove("hidden");
+        showGuideScreen();
+        return;
+    }
+
+    accessScreen.classList.add("hidden");
+    byokScreen.classList.remove("hidden");
+    keyInput.value = "";
+    startBtn.disabled = true;
+    setTimeout(() => keyInput.focus(), 0);
+
+    const onInput = () => { startBtn.disabled = keyInput.value.trim().length === 0; };
+    const onKeyDown = (e) => { if (e.key === "Enter" && !startBtn.disabled) { e.preventDefault(); onStart(); } };
+    const onStart = () => {
+        const val = keyInput.value.trim();
+        if (!val) return;
+        sessionStorage.setItem("userApiKey", val);
+        byokScreen.classList.add("hidden");
+        keyInput.removeEventListener("input", onInput);
+        keyInput.removeEventListener("keydown", onKeyDown);
+        startBtn.removeEventListener("click", onStart);
+        const logoutBtnByok = document.getElementById("byok-logout-btn");
+        if (logoutBtnByok) logoutBtnByok.classList.remove("hidden");
+        showGuideScreen();
+    };
+    keyInput.addEventListener("input", onInput);
+    keyInput.addEventListener("keydown", onKeyDown);
+    startBtn.addEventListener("click", onStart);
 }
 
 async function verifyAccessCode(code) {

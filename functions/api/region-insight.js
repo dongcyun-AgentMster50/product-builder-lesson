@@ -173,15 +173,9 @@ async function buildLiveRegionInsight({ country, city, cityLocal, locale, role, 
     if (city) tasks.push(withTimeout((signal) => fetchNominatim(city, country, signal), TIMEOUT_MS));
     if (city) tasks.push(withTimeout((signal) => fetchCityLandmarkImage(city, country, signal), TIMEOUT_MS));
 
-    // GPT-4o 웹검색 — 가장 중요하고 가장 느림, 병렬로 바로 시작
-    const apiKey = String(env?.OPENAI_API_KEY || "").trim();
-    let liveStatus = "skipped";
-    if (!apiKey) {
-        liveStatus = "no_key";
-    } else if (city) {
-        liveStatus = "pending";
-        tasks.push(fetchLiveTrends(city, country, locale, role, apiKey));
-    }
+    // BYOK MVP: 웹검색 기반 live trends는 OpenAI Responses API 전용 기능이므로 MVP에서 비활성화.
+    // region-insight는 공개 API (Nominatim, Open-Meteo, Wikidata 등) 기반 macro/local 정보로만 동작.
+    const liveStatus = "skipped_byok_mvp";
 
     const settled = await Promise.allSettled(tasks);
     const values = settled.filter((entry) => entry.status === "fulfilled").map((entry) => entry.value);

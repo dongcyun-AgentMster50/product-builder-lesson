@@ -1,5 +1,6 @@
 import { clearSessionCookie, getConfig, json, readSession } from "./access/_shared.js";
 import { enforceMonthlyBudget, estimateUsageCost, recordUsageCost } from "./_shared_ai.js";
+import { callGeminiAsOpenAI, resolveGeminiKey } from "./_gemini.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const CITY_PROFILE_UPSTREAM_TIMEOUT_MS = 65000;
@@ -619,9 +620,10 @@ async function handleCityProfile(context) {
         return json({ ok: false, error: { code: "MISSING_PARAMS", message: "country and city are required." } }, 400);
     }
 
-    const apiKey = String(context.env.OPENAI_API_KEY || "").trim();
-    // 도시 프로필은 RAG 기반 구조화 작업 — gpt-4.1이 지시 준수력·비용 최적
-    const model = String(context.env.CITY_PROFILE_MODEL || "gpt-4.1").trim();
+    // BYOK: prefer user's Gemini key from request header, fallback env for dev
+    const { key: apiKey, source: keySource } = resolveGeminiKey(context);
+    // Gemini MVP: flash model, fast + cheap
+    const model = String(context.env.CITY_PROFILE_MODEL || "gemini-2.0-flash").trim();
 
     if (customQuery && !apiKey) {
         return json({
@@ -633,7 +635,7 @@ async function handleCityProfile(context) {
     }
 
     if (!apiKey) {
-        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "OPENAI_API_KEY is not set." } }, 500);
+        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "No Gemini API key: provide one via the BYOK screen." } }, 400);
     }
 
     console.info(JSON.stringify({
@@ -648,21 +650,20 @@ async function handleCityProfile(context) {
     if (customQuery) {
         const maxTokens = 4000;
         const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}${wikiContext ? `═══ 참고 자료 (백과사전 출처 — 팩트 근거로 활용) ═══\n${wikiContext}\n═══ 참고 자료 끝 ═══\n\n` : ""}위 도시에서 "${customQuery}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
-        const requestBody = {
-            model,
-            ...(/^gpt-5/i.test(model)
-                ? { max_completion_tokens: maxTokens }
-                : { max_tokens: maxTokens }),
-            response_format: { type: "json_object" },
-            messages: [
-                { role: "system", content: CUSTOM_RESEARCH_SYSTEM_PROMPT },
-                { role: "user", content: userMessage }
-            ]
-        };
 
         let result;
         try {
-            result = await fetchOpenAiChatCompletionWithRetry({ apiKey, requestBody });
+            result = await callGeminiAsOpenAI({
+                apiKey,
+                model,
+                maxTokens,
+                jsonMode: true,
+                messages: [
+                    { role: "system", content: CUSTOM_RESEARCH_SYSTEM_PROMPT },
+                    { role: "user", content: userMessage }
+                ],
+                timeoutMs: CITY_PROFILE_UPSTREAM_TIMEOUT_MS
+            });
         } catch (error) {
             return json({
                 ok: true,
@@ -709,19 +710,16 @@ Build a source-bound localization evidence pack for this city. Use only evidence
 
     let result;
     try {
-        result = await fetchOpenAiChatCompletionWithRetry({
+        result = await callGeminiAsOpenAI({
             apiKey,
-            requestBody: {
-                model,
-                ...(/^gpt-5/i.test(model)
-                    ? { max_completion_tokens: maxTokens }
-                    : { max_tokens: maxTokens }),
-                response_format: { type: "json_object" },
-                messages: [
-                    { role: "system", content: CITY_PROFILE_SYSTEM_PROMPT },
-                    { role: "user", content: userMessage }
-                ]
-            }
+            model,
+            maxTokens,
+            jsonMode: true,
+            messages: [
+                { role: "system", content: CITY_PROFILE_SYSTEM_PROMPT },
+                { role: "user", content: userMessage }
+            ],
+            timeoutMs: CITY_PROFILE_UPSTREAM_TIMEOUT_MS
         });
     } catch (error) {
         return json({ ok: false, error: { code: "UPSTREAM_ERROR", message: error.message } }, 502);

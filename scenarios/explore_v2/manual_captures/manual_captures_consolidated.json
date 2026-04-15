@@ -1,0 +1,725 @@
+{
+  "source": "SmartThings App > Explore (manual capture, consolidated)",
+  "captured_at": "2026-04-15",
+  "note": "DOC1(2026-04-14, rich pet/door) + DOC2(2026-04-15, 6 scenarios) + DOC3(lighting/sleep with full devices) 통합본. 모든 시나리오가 동일한 rich 스키마(icons_shown + device_categories + key_devices + now_available_devices + devices_in_story)를 사용하도록 정규화. 파서의 3가지 스키마(legacy/spec/flat) 어디서든 인식 가능.",
+  "total": 6,
+  "scenarios": [
+    {
+      "id": "manual_001",
+      "internal_key": "caring_for_beloved_pet",
+      "tags": [
+        "Pet care"
+      ],
+      "_completeness": "rich",
+      "icons_shown": [
+        "robot_cleaner",
+        "air_conditioner",
+        "air_purifier",
+        "tv",
+        "lighting",
+        "window_treatment",
+        "pet_house"
+      ],
+      "device_categories": [
+        "robot_cleaner",
+        "air_conditioner",
+        "air_purifier",
+        "tv",
+        "lighting",
+        "window_treatment",
+        "pet_house"
+      ],
+      "localizations": {
+        "en-US": {
+          "thumbnail_title": "Caring for your beloved pet",
+          "overview_title": "Caring for your beloved pet",
+          "overview_description": "Start a customized care routine that's perfect for your pet. Build a breed-specific profile just for your pet and manage their daily needs. With easy scheduling of regular walks, your pet's needs and happiness will keep growing."
+        },
+        "ko-KR": {
+          "thumbnail_title": "사랑하는 반려동물 돌보기",
+          "overview_title": "사랑하는 반려동물 돌보기",
+          "overview_description": "우리 집 반려동물의 짖음 등을 빠르게 감지해 알려요. 출퇴근 후 등 우리 집 반려동물의 모습 등을 그동안 보지 못 하셨다면, 갑작스러운 외출도 하셨다면, 우리 집 반려동물과 친구가 되어주는 시간을 가져 보세요."
+        }
+      },
+      "stories": [
+        {
+          "content_no": 0,
+          "en-US": {
+            "title": "Start the perfect care for your pet",
+            "description": "Start [Pet Care] with just a photo. Take a picture of your pet's face, and the breed will be automatically identified to create a profile. You can also check how your pet is doing by reviewing the daily activity level, and even comparing the health condition with others of the same breed.",
+            "cta": "Start Pet Care"
+          },
+          "ko-KR": {
+            "title": "반려동물에게 딱 맞는 케어 시작하기",
+            "description": "사진 한 장으로 우리 집 반려동물에 맞는 케어를 시작해 보세요. 반려동물의 얼굴을 찍으면 품종을 자동으로 인식해 프로필을 만들어 줘요. 우리 집 반려동물이 잘 지내고 있는지 일일 활동량을 확인하고, 같은 품종의 다른 친구들과 건강 상태도 비교할 수 있어요.",
+            "cta": "펫 케어 시작"
+          }
+        },
+        {
+          "content_no": 1,
+          "en-US": {
+            "title": "Check your pet's health with just one photo",
+            "description": "Even if you're with your pet every day, spotting subtle health issues can be tricky. Let AI handle it: a quick eye shot can flag cloudy eyes, a mouth photo means lower tooth health, and a leg snap reveals the condition of the limping kneecap. AI results are automatically saved in [Health check up history], letting you notice changes instantly.",
+            "cta": "Start Pet Care"
+          },
+          "ko-KR": {
+            "title": "사진 한 장만으로 반려동물의 건강을 살펴요",
+            "description": "매일 함께 살아도 알기 어려운 반려동물의 건강 상태. 이제 AI에게 맡겨 보세요. 눈 사진을 찍어 백내장 위험을, 입 사진으로는 치아 건강을, 다리 사진으로는 무릎 관절 상태를 확인할 수 있어요. AI 진단 결과는 자동으로 [건강 검진 기록]에 저장돼 변화도 한눈에 볼 수 있답니다.",
+            "cta": "펫 케어 시작"
+          }
+        },
+        {
+          "content_no": 2,
+          "en-US": {
+            "title": "Don't forget to take your dog for a walk",
+            "description": "Make a schedule to take your pet on regular walks. We will promote notifications based on the schedule to help you remember. The distance, time, and route you walk together are automatically recorded to help keep track of the time you spend exercising together. If your dog wanders off using Galaxy SmartTag2, you can even check their location in real time.",
+            "cta": "Start Pet Care"
+          },
+          "ko-KR": {
+            "title": "반려동물 산책, 잊지 말고 챙겨봐요",
+            "description": "꾸준한 산책을 위한 일정을 만들 수 있어요. 약속한 시간에 알림을 보내 잊지 않도록 도와요. 산책 시간과 거리, 경로가 자동으로 기록되니 함께 한 운동 시간을 확인할 수 있어요. 만약 산책 도중 우리 집 강아지가 갤럭시 스마트태그2를 사용하면 어디에 있는지 위치를 실시간으로 확인할 수도 있어요.",
+            "cta": "펫 케어 시작"
+          }
+        }
+      ],
+      "key_devices": [
+        "젯봇 AI+ 3100",
+        "AI Q9000 에어컨",
+        "Infinite AI 공기청정기",
+        "2025 OLED SF90",
+        "갤럭시 스마트태그2"
+      ],
+      "now_available_devices": [
+        {
+          "name": "젯봇 AI+ 3100",
+          "category": "robot_cleaner",
+          "brand": "Samsung"
+        },
+        {
+          "name": "AI Q9000 56.9 ㎡ (리모컨 포함)",
+          "category": "air_conditioner",
+          "brand": "Samsung"
+        },
+        {
+          "name": "Infinite AI 공기청정기 (100㎡, 5 필터)",
+          "category": "air_purifier",
+          "brand": "Samsung"
+        },
+        {
+          "name": "Infinite AI 공기청정기 (33㎡, 5 필터)",
+          "category": "air_purifier",
+          "brand": "Samsung"
+        },
+        {
+          "name": "2025 OLED SF90 (163cm)",
+          "category": "tv",
+          "brand": "Samsung"
+        }
+      ],
+      "devices_in_story": {
+        "robot_cleaner": [
+          "Bespoke AI 스팀 플러스 자율 급배수 (자동 급배수+청정스테이션+안전회로+사물인식+음성+와이파이 지원+UV살균)",
+          "Bespoke AI 스팀 플러스+안전회로+사물인식+음성+와이파이 지원",
+          "Bespoke AI 스팀 콤보+"
+        ],
+        "air_conditioner": [
+          "TARUNE AC Remote",
+          "Bespoke AI 무풍윈드 갤러리 프로 청정 84.9㎡",
+          "Bespoke AI 무풍윈드 갤러리 프로 청정 58.9㎡"
+        ],
+        "air_purifier": [
+          "Infinite AI 공기청정기 (33㎡, 5 필터)",
+          "Infinite AI 공기청정기 (33㎡, 리프레셔 필터)",
+          "Infinite AI 공기청정기 (33㎡, 5 필터)"
+        ],
+        "tv": [
+          "2025 The Movingstyle",
+          "2025 Neo QLED QNF90 (138cm)",
+          "2025 Crystal UHD UF8500 (163cm)"
+        ],
+        "lighting": [
+          "Smart Wi-Fi Light Bulb",
+          "WiZ Gradient Light Bars",
+          "WiZ Gradient Floor lamp"
+        ],
+        "window_treatment": [
+          "WISTAR WSCMSH Smart Vertical Blind Motor",
+          "WISTAR WSCMSF Smart Vertical Blind Motor",
+          "WISTAR WSGRSO Smart Tubular Motor"
+        ],
+        "pet_house": [
+          "Aqara 스마트 자동 급식기 C1",
+          "PETKIT YUMSHARE SOLO",
+          "PETKIT YUMSHARE DUAL-HOPP"
+        ]
+      }
+    },
+    {
+      "id": "manual_002",
+      "internal_key": "easy_checks_safer_entry",
+      "tags": [
+        "Security"
+      ],
+      "_completeness": "rich",
+      "icons_shown": [
+        "tv",
+        "doorbell",
+        "door_lock",
+        "smartphone"
+      ],
+      "device_categories": [
+        "tv",
+        "doorbell",
+        "door_lock",
+        "smartphone"
+      ],
+      "localizations": {
+        "en-US": {
+          "thumbnail_title": "Easy checks, safer entry",
+          "overview_title": "Easy checks, safer entry",
+          "overview_description": "Enhance your daily routine with a smarter front door experience. From remotely checking visitors without needing to approach the door to effortlessly opening the entrance with your smartphone, these features seamlessly integrate into your lifestyle. Enjoy unparalleled convenience and peace of mind, whether you're relaxing at home or on the go."
+        },
+        "ko-KR": {
+          "thumbnail_title": "확인은 쉽게, 출입은 더 안전하게",
+          "overview_title": "확인은 쉽게, 출입은 더 안전하게",
+          "overview_description": "현관까지 갈 필요 없는 방문 확인부터, 스마트폰으로 간편하게 열리는 출입까지. 이제 우리 집 현관이 일상에 맞춰 더 똑똑해져요. 소파에 편히 앉아 계신 중에도, 외출 중에도 누릴 수 있는 안심과 편리함을 지금 경험해 보세요."
+        }
+      },
+      "stories": [
+        {
+          "content_no": 0,
+          "en-US": {
+            "title": "See who's at the door from anywhere",
+            "description": "Don't let anything interrupt movie night with the fam. When the doorbell rings, you can see who's at the front door on the TV thanks to SmartThings. You can even unlock the door without leaving the couch. And when you're out, don't worry — it's easy to keep an eye on who's visiting from your smartphone.",
+            "cta": ""
+          },
+          "ko-KR": {
+            "title": "현관 앞을 어디서든 내 눈앞처럼",
+            "description": "편안했던 TV 시청을 방해받지 마세요. 초인종이 울리면 TV 화면에서 방문객을 바로 확인할 수 있어요. 소파에 앉은 채로 문까지 열어둘 수 있으니 더 이상 식사 시간을 방해받을 필요 없죠. 외출 중에도 스마트폰으로 방문객을 확인할 수 있어, 언제 어디서든 늘 안심할 수 있답니다.",
+            "cta": ""
+          }
+        },
+        {
+          "content_no": 1,
+          "en-US": {
+            "title": "Convenient & secure with a Digital key",
+            "description": "Samsung Wallet's Digital key now offers a seamless and secure alternative to traditional door codes. By simply tapping your smartphone or bringing it close to the lock, the door will open effortlessly, even when your hands are occupied. This innovative feature ensures enhanced security, eliminating concerns about the exposure of your door code and providing you with peace of mind.",
+            "cta": "Add door lock"
+          },
+          "ko-KR": {
+            "title": "디지털 키로 편리함과 안전함을 동시에",
+            "description": "이제 비밀번호 대신 삼성 월렛 디지털 키로 현관문을 열어 보세요. 스마트폰을 태그하거나 가까이 다가가기만 하면 문이 자연스럽게 열리니, 양손 가득 짐을 든 순간에도 번거로움 없이 들어갈 수 있어요. 현관 비밀번호 노출 걱정 없이 편리함과 안심을 동시에 챙겨 보세요.",
+            "cta": "도어록 추가하기"
+          }
+        }
+      ],
+      "key_devices": [
+        "삼성 AI 도어캠",
+        "2025 OLED SF90",
+        "Wired Doorbell Plus/Pro/Elite",
+        "Aqara Smart Lock U200"
+      ],
+      "now_available_devices": [
+        {
+          "name": "삼성 AI 도어캠",
+          "category": "doorbell",
+          "brand": "Samsung"
+        },
+        {
+          "name": "2025 OLED SF90 (163cm)",
+          "category": "tv",
+          "brand": "Samsung"
+        }
+      ],
+      "devices_in_story": {
+        "tv": [
+          "2025 The Movingstyle",
+          "2025 Neo QLED QNF90 (138cm)",
+          "2025 Crystal UHD UF8500 (163cm)"
+        ],
+        "doorbell": [
+          "Wired Doorbell Plus (Ring)",
+          "Wired Doorbell Pro (Ring)",
+          "Wired Doorbell Elite (Ring)"
+        ],
+        "door_lock": [
+          "Aqara Smart Lock U200 Lite",
+          "Aqara 스마트 도어록 L100 (자가설치)",
+          "Aqara 스마트 도어록 K100 (자가설치)"
+        ]
+      }
+    },
+    {
+      "id": "manual_003",
+      "internal_key": "simplify_life_smart_lighting",
+      "tags": [
+        "Smart Life",
+        "Lighting"
+      ],
+      "_completeness": "rich",
+      "icons_shown": [
+        "lighting"
+      ],
+      "device_categories": [
+        "lighting"
+      ],
+      "localizations": {
+        "en-US": {
+          "thumbnail_title": "Simplify your life with convenient Smart lighting",
+          "overview_title": "Simplify your life with convenient Smart lighting",
+          "overview_description": "Lighting isn't just for lighting up your home, it's an important element that can create atmosphere and a comfortable vibe. With SmartThings you can transform your everyday life and change the lighting according to the situation or your mood."
+        },
+        "ko-KR": {
+          "thumbnail_title": "조명으로 생활의 편리함을 더해요",
+          "overview_title": "조명으로 생활의 편리함을 더해요",
+          "overview_description": "조명은 단순히 어둠을 밝히는 것을 넘어, 집 안의 분위기와 편안함을 완성하는 중요한 요소예요. 스마트싱스와 함께 상황에 어울리는 조명으로 감각적인 일상을 경험해 보세요."
+        }
+      },
+      "stories": [
+        {
+          "content_no": 0,
+          "en-US": {
+            "title": "Control lighting anytime, anywhere",
+            "description": "Control your home lighting anytime, anywhere with SmartThings and smart lighting. In addition to turning the lights on and off, you can adjust the brightness and color of the lighting to create the perfect ambiance. Turn on the lights conveniently with SmartThings, and create the lighting you need right now.",
+            "cta": "Check How to use"
+          },
+          "ko-KR": {
+            "title": "언제 어디서든 조명 제어하기",
+            "description": "스마트싱스와 스마트 조명으로 언제 어디서든 우리 집 조명을 제어해 보세요. 조명을 켜고 끄는 것뿐 아니라, 조명의 밝기와 색상까지 조절할 수 있어 분위기 있게 연출할 수 있어요.",
+            "cta": "사용 방법 확인"
+          }
+        },
+        {
+          "content_no": 1,
+          "en-US": {
+            "title": "Lights? On. Mood? Up",
+            "description": "Make sure your lighting always matches the mood. AI Home automatically pumps up the energy when you need it — and winds it down when you're ready to relax. Turn on the sleep light before getting cozy — and your lights will dim out when you're ready to sleep.",
+            "cta": "Check How to use"
+          },
+          "ko-KR": {
+            "title": "지금 딱 필요한 무드로 조명 켜기",
+            "description": "상황에 맞는 조명으로 일상에 분위기를 더해보세요. 운동할 땐 활기차게, 책을 읽을 땐 눈이 편안하게 조명이 바뀌어요. 잠들기 전엔 수면 조명을 켜 보세요.",
+            "cta": "사용 방법 확인"
+          }
+        },
+        {
+          "content_no": 2,
+          "en-US": {
+            "title": "Lighting that turns on when motion is detected",
+            "description": "Never search for the light switch in the dark again. With the occupancy sensor and smart lighting working together, your middle-of-the-night trips to the bathroom will automatically trigger the light to come on when it senses your movement.",
+            "cta": "Set Motion lights"
+          },
+          "ko-KR": {
+            "title": "움직임이 감지되면 켜지는 조명",
+            "description": "한밤중에 화장실을 갈 때, 캄캄한 어둠 속에서 조명 스위치를 찾곤 하죠. 그럴 땐 재실 센서와 스마트 조명을 함께 사용해 보세요. 움직임을 감지해 알아서 은은한 조명을 켜주니, 안전하게 다녀올 수 있답니다.",
+            "cta": "모션 조명 설정"
+          }
+        }
+      ],
+      "key_devices": [
+        "나노리프 에센셜 매터 스마트 전구",
+        "나노리프 4D LED 라이트 스트립 165cm"
+      ],
+      "now_available_devices": [
+        {
+          "name": "나노리프 에센셜 매터 스마트 전구 1팩",
+          "category": "lighting",
+          "brand": "Nanoleaf"
+        },
+        {
+          "name": "나노리프 에센셜 매터 스마트 전구",
+          "category": "lighting",
+          "brand": "Nanoleaf"
+        },
+        {
+          "name": "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)",
+          "category": "lighting",
+          "brand": "Nanoleaf"
+        }
+      ],
+      "devices_in_story": {
+        "lighting": [
+          "나노리프 에센셜 매터 스마트 전구 1팩",
+          "나노리프 에센셜 매터 스마트 전구",
+          "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)"
+        ]
+      }
+    },
+    {
+      "id": "manual_004",
+      "internal_key": "lighting_notifications_daily_life",
+      "tags": [
+        "Smart Life",
+        "Lighting",
+        "NEW"
+      ],
+      "_completeness": "rich",
+      "icons_shown": [
+        "washer",
+        "lighting",
+        "doorbell"
+      ],
+      "device_categories": [
+        "washer",
+        "lighting",
+        "doorbell"
+      ],
+      "localizations": {
+        "en-US": {
+          "thumbnail_title": "Receive notifications for daily life with lighting",
+          "overview_title": "Receive notifications for daily life with lighting",
+          "overview_description": "Use your home's lighting more intelligently. It helps you never miss notifications, reminds you when to ventilate, and even uses light to alert you when someone visits. Experience new ways to use lighting with SmartThings."
+        },
+        "ko-KR": {
+          "thumbnail_title": "조명으로 생활에 필요한 알림 받기",
+          "overview_title": "조명으로 생활에 필요한 알림 받기",
+          "overview_description": "집 안의 조명을 더 똑똑하게 사용해 보세요. 알림을 놓치지 않도록 도와주고, 환기 타이밍을 알려주며, 방문 소식도 불빛으로 전해줍니다. 스마트싱스와 함께 조명의 새로운 쓰임을 경험해 보세요."
+        }
+      },
+      "stories": [
+        {
+          "content_no": 0,
+          "en-US": {
+            "title": "The light turns on when laundry is complete",
+            "description": "We've all had to deal with soggy clothes after missing the laundry chime. With SmartThings and smart lighting, you'll never miss it again. Now you can program your dining room or living room Smart Lights to turn on or change color when your laundry is done.",
+            "cta": "Check How to use"
+          },
+          "ko-KR": {
+            "title": "세탁이 완료되면 조명이 켜져요",
+            "description": "세탁 완료 알림을 놓쳐 눅눅해진 세탁물, 한 번쯤 경험해 본 적이 있죠. 이제는 스마트싱스의 스마트 조명이 세탁 완료 알림을 놓치지 않도록 도와줘요. 세탁이 끝나면 조명이 켜지거나 색이 바뀌어, 알림 소리를 놓쳐도 한눈에 알아챌 수 있어요.",
+            "cta": "사용 방법 확인"
+          }
+        },
+        {
+          "content_no": 1,
+          "en-US": {
+            "title": "The best ventilation timing indicated by lighting",
+            "description": "Checking the weather and air quality each time to determine when to ventilate is quite inconvenient. Now, SmartThings [Air Care] analyzes the outdoor air quality in real time and lets you know through the color of lighting when it's a good time to ventilate.",
+            "cta": "Set Ventilation care"
+          },
+          "ko-KR": {
+            "title": "조명이 알려주는 최고의 환기 타이밍",
+            "description": "날씨와 공기질을 일일이 확인해야 환기할 때를 잡는 건 정말 번거로운 일이죠. 이제는 스마트싱스 에어 케어가 실시간으로 분석하고, 조명의 색으로 환기하기 좋은 때를 알려줘요.",
+            "cta": "환기 관리 설정"
+          }
+        },
+        {
+          "content_no": 2,
+          "en-US": {
+            "title": "Lighting also notifies you when the doorbell rings",
+            "description": "Have you ever missed the sound of the doorbell while listening to music or when working? Now you don't have to rely solely on the sound of the chime to know when someone is at the door.",
+            "cta": "Check How to use"
+          },
+          "ko-KR": {
+            "title": "초인종이 울리면 조명으로도 알려요",
+            "description": "음악을 듣거나 일에 집중하다 보면 초인종 소리를 놓칠 때가 있죠. 이제 초인종이 울릴 때, 조명으로도 방문객이 왔음을 확인해 보세요. 소리에만 의존하지 않아도 되니, 중요한 순간을 놓치지 않을 수 있답니다.",
+            "cta": "사용 방법 확인"
+          }
+        }
+      ],
+      "key_devices": [
+        "삼성 AI 도어캠",
+        "Bespoke AI 콤보 25/18kg",
+        "나노리프 에센셜 매터 스마트 전구",
+        "Wired Doorbell Plus/Pro/Elite"
+      ],
+      "now_available_devices": [
+        {
+          "name": "삼성 AI 도어캠",
+          "category": "doorbell",
+          "brand": "Samsung"
+        },
+        {
+          "name": "AI 통버블 세탁기 19kg",
+          "category": "washer",
+          "brand": "Samsung"
+        }
+      ],
+      "devices_in_story": {
+        "washer": [
+          "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)"
+        ],
+        "lighting": [
+          "나노리프 에센셜 매터 스마트 전구 1팩",
+          "나노리프 에센셜 매터 스마트 전구",
+          "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)"
+        ],
+        "doorbell": [
+          "Wired Doorbell Plus",
+          "Wired Doorbell Pro",
+          "Wired Doorbell Elite"
+        ]
+      }
+    },
+    {
+      "id": "manual_005",
+      "internal_key": "smart_changes_small_devices",
+      "tags": [
+        "Getting started",
+        "Smart Life"
+      ],
+      "_completeness": "rich",
+      "icons_shown": [
+        "tv",
+        "lighting",
+        "smart_home_hub",
+        "window_treatment"
+      ],
+      "device_categories": [
+        "tv",
+        "lighting",
+        "smart_home_hub",
+        "window_treatment"
+      ],
+      "localizations": {
+        "en-US": {
+          "thumbnail_title": "Smart changes starting with small devices",
+          "overview_title": "Smart changes starting with small devices",
+          "overview_description": "All it takes is just one smart device to make your home more comfortable. By connecting smart devices and sensors like buttons, switches and plugs to SmartThings you can create a completely personalized automated smart home experience in your home and control your devices remotely anytime, anywhere."
+        },
+        "ko-KR": {
+          "thumbnail_title": "작은 기기로 시작하는 스마트한 변화",
+          "overview_title": "작은 기기로 시작하는 스마트한 변화",
+          "overview_description": "스마트 기기 하나면 충분해요. 부담 없는 가격대에 다양한 스마트 기기들을 연결해 보세요. 집안 곳곳의 상황에 맞게 자동화된 스마트홈을 경험하고, 언제 어디서든 기기들을 원격으로 제어할 수 있어요."
+        }
+      },
+      "stories": [
+        {
+          "content_no": 0,
+          "en-US": {
+            "title": "Start your smart home hassle-free",
+            "description": "Affordable products such as smart buttons or plugs are enough to start enjoying a smart experience. Connect various smart products to SmartThings using a Smart Home Hub. Smart Home Hub supports the connection of smart home devices through Matter (Thread/WiFi) and Zigbee.",
+            "cta": "Check How to use"
+          },
+          "ko-KR": {
+            "title": "부담 없이 스마트홈 시작하기",
+            "description": "스마트 버튼이나 플러그처럼 가격 부담이 적은 제품으로도 충분히 스마트한 경험을 시작할 수 있어요. 스마트 허브를 이용하면 다양한 스마트홈 기기들을 연결하여, 언제 어디서든 원격으로 상태를 확인하거나 컨트롤이 가능해요.",
+            "cta": "사용 방법 확인"
+          }
+        },
+        {
+          "content_no": 1,
+          "en-US": {
+            "title": "Enjoy a movie theater mood with just a button",
+            "description": "If you want to watch a movie on a weekend evening, just press the smart button. The curtains close automatically and the lights dim softly to create an immersive movie theater mood. Press the button again, and you can instantly return to your usual preferred routine.",
+            "cta": "Movie mode"
+          },
+          "ko-KR": {
+            "title": "버튼 하나로 영화관 분위기 즐기기",
+            "description": "영화 한 편 보고 싶은 주말 저녁, 스마트 버튼을 눌러 보세요. 커튼이 자동으로 닫히고 조명은 은은해지며 즉시 영화관 분위기가 만들어져요. 다시 버튼 한 번이면 평소 모드로 돌아간답니다.",
+            "cta": "영화 모드"
+          }
+        },
+        {
+          "content_no": 2,
+          "en-US": {
+            "title": "Using smart switches and plugs",
+            "description": "You don't need to replace all the lights in your home with smart lights. You can turn the lights on and off anytime, anywhere by simply connecting the smart switch to your existing lighting. By managing electric appliances such as a coffee maker with a smart plug, you can also check if the power is turned off properly.",
+            "cta": "Check How to use"
+          },
+          "ko-KR": {
+            "title": "스마트 스위치와 플러그 활용하기",
+            "description": "우리 집의 조명을 굳이 스마트 조명으로 바꿀 필요는 없어요. 지금 쓰고 있는 조명에 스마트 스위치를 연결해, 언제 어디서든 조명을 켜고 끌 수 있답니다. 커피머신과 같은 전열 제품은 스마트 플러그에 연결해 사용해, 전원이 잘 꺼져 있는지도 확인할 수 있어요.",
+            "cta": "사용 방법 확인"
+          }
+        }
+      ],
+      "key_devices": [
+        "2025 OLED SF90",
+        "나노리프 에센셜 매터 스마트 전구",
+        "스마트싱스 스테이션",
+        "Eve MotionBlinds"
+      ],
+      "now_available_devices": [
+        {
+          "name": "2025 OLED SF90 (163cm)",
+          "category": "tv",
+          "brand": "Samsung"
+        }
+      ],
+      "devices_in_story": {
+        "tv": [
+          "2025 The Movingstyle",
+          "2025 Neo QLED QNF90 (138cm)",
+          "2025 Crystal UHD UF8500 (163cm)"
+        ],
+        "lighting": [
+          "나노리프 에센셜 매터 스마트 전구 1팩",
+          "나노리프 에센셜 매터 스마트 전구",
+          "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)"
+        ],
+        "smart_home_hub": [
+          "스마트싱스 스테이션 (15 W 무선 충전 솔로, 스마트 홈 허브)",
+          "스마트싱스 허브 / IM6001-V3P"
+        ],
+        "window_treatment": [
+          "Eve MotionBlinds for Venetian Blinds",
+          "Eve MotionBlinds for Curtains",
+          "Eve MotionBlinds for Roller Blinds"
+        ]
+      }
+    },
+    {
+      "id": "manual_006",
+      "internal_key": "secret_sleeping_well",
+      "tags": [
+        "Sleep",
+        "Health"
+      ],
+      "_completeness": "rich",
+      "icons_shown": [
+        "watch",
+        "air_conditioner",
+        "air_purifier",
+        "tv",
+        "lighting",
+        "window_treatment",
+        "humidity_sensor",
+        "air_quality_sensor"
+      ],
+      "device_categories": [
+        "watch",
+        "air_conditioner",
+        "air_purifier",
+        "tv",
+        "lighting",
+        "window_treatment",
+        "temp_humidity_sensor",
+        "air_quality_sensor",
+        "ring",
+        "pillow"
+      ],
+      "localizations": {
+        "en-US": {
+          "thumbnail_title": "The secret to sleeping well and waking up rested in your home",
+          "overview_title": "The secret to sleeping well and waking up rested in your home",
+          "overview_description": "Whether you're heading to bed for the night or waking up in the morning, SmartThings will be there to help. Lights and curtains respond as you drift off, and in the morning a few sunrise rays in your gently warm room get you bright, alert."
+        },
+        "ko-KR": {
+          "thumbnail_title": "잘 자고 잘 일어나는 우리 집의 비법",
+          "overview_title": "잘 자고 잘 일어나는 우리 집의 비법",
+          "overview_description": "편안한 숙면을 위해 잠들기 전 침실의 조명, 에어컨, 가전 등을 일일이 신경 쓰는 일은 번거롭죠. 스마트 플러그와 함께라면 잠들 때부터 일어날 때까지 모든 환경이 알아서 척척 준비돼요. 스마트싱스와 함께 평온한 수면과 상쾌한 아침을 경험해 보세요."
+        }
+      },
+      "stories": [
+        {
+          "content_no": 0,
+          "en-US": {
+            "title": "Create a peaceful bedtime atmosphere",
+            "description": "SmartThings makes your own optimal sleeping environment. When you fall asleep, the lights in your bedroom are turned off naturally, the curtains are slowly closed, and a comfortable atmosphere is ensured.",
+            "cta": "View supported devices"
+          },
+          "ko-KR": {
+            "title": "평온한 숙면을 위한 분위기 연출",
+            "description": "수면 모드를 설정해두면 침실의 조명과 에어컨, TV 등이 자동으로 적절하게 조절돼요. 추가 설정으로 침실 외의 다른 공간의 가전기기와 조명도 함께 제어할 수 있어, 온 가족이 편안한 수면 환경을 만들 수 있어요.",
+            "cta": "지원 기기 보기"
+          }
+        },
+        {
+          "content_no": 1,
+          "en-US": {
+            "title": "Wake up refreshed",
+            "description": "SmartThings gently brings the morning sunrise indoors and helps you wake up most well-rested. It can get the curtains to let the sun in. Even flip its switch to add some warmth without taking the sleep haze away with cooler lighting.",
+            "cta": "Gentle wake up"
+          },
+          "ko-KR": {
+            "title": "우리 집의 상쾌한 기상",
+            "description": "우리 집을 햇살처럼 밝혀주는 스마트 조명으로 자연스럽게 잠에서 깨어나 보세요. 미리 설정해둔 시간이 되면 조명이 서서히 켜지면서, 마치 햇살이 비추는 듯한 부드러운 기상을 도와줘요.",
+            "cta": "은은한 기상 모드"
+          }
+        },
+        {
+          "content_no": 2,
+          "en-US": {
+            "title": "Temperature and humidity control help optimize sleep",
+            "description": "Temperature, humidity, CO₂ concentration and brightness can all affect how well you sleep. Check on the temperature and humidity of your bedroom space in SmartThings, and the air conditioner, fan and night will sync improvements to your nest.",
+            "cta": "View supported devices"
+          },
+          "ko-KR": {
+            "title": "수면에 최적화된 온습도 관리",
+            "description": "쾌적한 수면을 위해서는 온도, 습도 등의 환경 요소들이 중요해요. 스마트싱스와 온습도 센서를 활용해, 우리 집의 환경을 자동으로 관리해 보세요. 수면에 최적화된 환경을 만들어 줄 거예요.",
+            "cta": "지원 기기 보기"
+          }
+        }
+      ],
+      "key_devices": [
+        "갤럭시 워치",
+        "Bespoke AI 무풍윈드 갤러리",
+        "Infinite AI 공기청정기",
+        "2025 OLED SF90",
+        "나노리프 에센셜 매터",
+        "Eve MotionBlinds",
+        "스마트 습도 센서",
+        "Air Monitor"
+      ],
+      "now_available_devices": [
+        {
+          "name": "갤럭시 워치7 (LTE, 40mm)",
+          "category": "watch",
+          "brand": "Samsung"
+        },
+        {
+          "name": "Bespoke AI 무풍갤러리 스탠드 에어컨 17평",
+          "category": "air_conditioner",
+          "brand": "Samsung"
+        },
+        {
+          "name": "Infinite AI 공기청정기 (32㎡)",
+          "category": "air_purifier",
+          "brand": "Samsung"
+        },
+        {
+          "name": "2025 OLED SF90 (163cm)",
+          "category": "tv",
+          "brand": "Samsung"
+        }
+      ],
+      "devices_in_story": {
+        "watch": [
+          "갤럭시 워치7 (LTE, 40mm)",
+          "갤럭시 워치7 (블루투스, 44mm)",
+          "갤럭시 워치 6 (M/L)"
+        ],
+        "air_conditioner": [
+          "Bespoke AI 무풍갤러리 스탠드 에어컨 17평",
+          "Bespoke AI 무풍갤러리 스탠드 에어컨 14.5평",
+          "Bespoke AI 무풍갤러리 스탠드 에어컨 13평"
+        ],
+        "air_purifier": [
+          "Infinite AI 공기청정기 (32㎡, 5등급)",
+          "Infinite AI 공기청정기 (35㎡, 1등급)",
+          "Infinite AI 공기청정기 (29㎡, 5등급)"
+        ],
+        "tv": [
+          "2025 The Movingstyle",
+          "2025 Neo QLED QNF90 (138cm)",
+          "2025 Crystal UHD UF8500 (163cm)"
+        ],
+        "lighting": [
+          "나노리프 에센셜 매터 스마트 전구 1팩",
+          "나노리프 에센셜 매터 스마트 전구",
+          "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)"
+        ],
+        "window_treatment": [
+          "Eve MotionBlinds for Venetian Blinds",
+          "Eve MotionBlinds for Curtains",
+          "Eve MotionBlinds for Roller Blinds"
+        ],
+        "temp_humidity_sensor": [
+          "SONOFF Zigbee Temperature and Humidity Sensor",
+          "Smart Humidity Sensor"
+        ],
+        "air_quality_sensor": [
+          "에어가스 모니터",
+          "Air Monitor"
+        ],
+        "ring": [
+          "갤럭시 링"
+        ],
+        "pillow": [
+          "스마트핏 베드 슬리프"
+        ]
+      }
+    }
+  ]
+}

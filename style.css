@@ -11953,3 +11953,24 @@ a.source-tag-link:hover {
 .wizard-progress--step-4 {
     background: rgba(255, 255, 255, 0.96);
 }
+
+/* BYOK Logout button */
+.byok-logout-btn {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+    z-index: 10;
+}
+.byok-logout-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.36);
+}

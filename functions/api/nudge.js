@@ -1,5 +1,6 @@
 import { clearSessionCookie, getConfig, json, readSession } from "./access/_shared.js";
 import { enforceMonthlyBudget, estimateUsageCost, recordUsageCost } from "./_shared_ai.js";
+import { streamGeminiAsOpenAI, resolveGeminiKey } from "./_gemini.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
@@ -36,9 +37,9 @@ export async function onRequestPost(context) {
         );
     }
 
-    const apiKey = String(context.env.OPENAI_API_KEY || "").trim();
+    const { key: apiKey } = resolveGeminiKey(context);
     if (!apiKey) {
-        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "OPENAI_API_KEY is not set." } }, 500);
+        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "No Gemini API key: provide one via the BYOK screen." } }, 400);
     }
 
     const budgetBlocked = await enforceMonthlyBudget(context.env);
@@ -66,7 +67,7 @@ export async function onRequestPost(context) {
         : "Retail/in-store marketer";
 
     const userMessage = `Market: ${marketLabel}\nRole: ${roleName}\nLocale: ${locale}`;
-    const model = "gpt-4o-mini";
+    const model = String(context.env.GEMINI_MODEL || "gemini-2.0-flash").trim();
     const maxTokens = 1000;
 
     console.info(JSON.stringify({
@@ -81,32 +82,18 @@ export async function onRequestPost(context) {
 
     let apiResponse;
     try {
-        apiResponse = await fetch(OPENAI_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-                model,
-                stream: true,
-                stream_options: { include_usage: true },
-                max_tokens: maxTokens,
-                messages: [
-                    { role: "system", content: NUDGE_SYSTEM_PROMPT },
-                    { role: "user", content: userMessage }
-                ]
-            })
+        apiResponse = streamGeminiAsOpenAI({
+            apiKey,
+            model,
+            maxTokens,
+            jsonMode: true,
+            messages: [
+                { role: "system", content: NUDGE_SYSTEM_PROMPT },
+                { role: "user", content: userMessage }
+            ]
         });
     } catch (error) {
         return json({ ok: false, error: { code: "UPSTREAM_ERROR", message: error.message } }, 502);
-    }
-
-    if (!apiResponse.ok) {
-        const errText = await apiResponse.text().catch(() => "");
-        let errMsg = `OpenAI API error ${apiResponse.status}`;
-        try { errMsg = JSON.parse(errText)?.error?.message || errMsg; } catch { /* ignore */ }
-        return json({ ok: false, error: { code: "UPSTREAM_ERROR", message: errMsg } }, 502);
     }
 
     const { readable, writable } = new TransformStream();
