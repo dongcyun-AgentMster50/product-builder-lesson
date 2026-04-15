@@ -328,6 +328,32 @@
         }
         .back-link:hover { background: #f1f5f9; }
 
+        /* Print / PDF */
+        @media print {
+            body {
+                background: #ffffff !important;
+            }
+            .hero {
+                page-break-after: avoid;
+                break-after: avoid;
+            }
+            .section-title {
+                page-break-after: avoid;
+                break-after: avoid;
+            }
+            .pitch,
+            .flow-step,
+            .qa-item,
+            .stat,
+            .brand-footer {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            .back-link { display: none !important; }
+            .container { padding: 24px 28px 32px; }
+        }
+        @page { size: A4; margin: 12mm; }
+
         /* Mobile */
         @media (max-width: 640px) {
             .hero { padding: 40px 20px 32px; }
