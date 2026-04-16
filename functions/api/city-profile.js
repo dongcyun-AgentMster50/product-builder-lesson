@@ -1,6 +1,7 @@
 import { clearSessionCookie, getConfig, json, readSession } from "./access/_shared.js";
 import { enforceMonthlyBudget, estimateUsageCost, recordUsageCost } from "./_shared_ai.js";
 import { callGeminiAsOpenAI, resolveGeminiKey } from "./_gemini.js";
+import { resolveProviderKey, maskKey } from "./_provider.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const CITY_PROFILE_UPSTREAM_TIMEOUT_MS = 65000;
@@ -620,12 +621,14 @@ async function handleCityProfile(context) {
         return json({ ok: false, error: { code: "MISSING_PARAMS", message: "country and city are required." } }, 400);
     }
 
-    // BYOK: prefer user's Gemini key from request header, fallback env for dev
-    const { key: apiKey, source: keySource } = resolveGeminiKey(context);
-    // Gemini MVP: flash model, fast + cheap
-    const model = String(context.env.CITY_PROFILE_MODEL || "gemini-2.5-flash").trim();
+    // BYOK: header key > env OpenAI > env Gemini (centralized in _provider.js)
+    const { provider, apiKey, source: keySource } = resolveProviderKey(context);
+    // Model selection by provider
+    const model = provider === "openai"
+        ? String(context.env.OPENAI_MODEL || "gpt-4o").trim()
+        : String(context.env.CITY_PROFILE_MODEL || context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
 
-    if (customQuery && !apiKey) {
+    if (customQuery && !provider) {
         return json({
             ok: true,
             data: normalizeCustomResearchPayload({ raw: "API_NOT_CONFIGURED" }, { query: customQuery, city, locale, baseProfiles }),
@@ -634,14 +637,19 @@ async function handleCityProfile(context) {
         });
     }
 
-    if (!apiKey) {
-        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "No Gemini API key: provide one via the BYOK screen." } }, 400);
+    if (!provider) {
+        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "No AI provider available: provide a key via the BYOK screen or configure env." } }, 400);
     }
 
     console.info(JSON.stringify({
         type: customQuery ? "custom_research_request" : "city_profile_request",
         ts: new Date().toISOString(),
-        model, country, city, locale, query: customQuery || null
+        provider,
+        source: keySource,
+        keyMask: maskKey(apiKey),
+        model, country, city, locale,
+        query: customQuery || null,
+        isCustomQuery: !!customQuery
     }));
 
     // Wiki RAG context — 두 모드 모두에서 사용
@@ -653,17 +661,37 @@ async function handleCityProfile(context) {
 
         let result;
         try {
-            result = await callGeminiAsOpenAI({
-                apiKey,
-                model,
-                maxTokens,
-                jsonMode: true,
-                messages: [
-                    { role: "system", content: CUSTOM_RESEARCH_SYSTEM_PROMPT },
-                    { role: "user", content: userMessage }
-                ],
-                timeoutMs: CITY_PROFILE_UPSTREAM_TIMEOUT_MS
-            });
+            if (provider === "openai") {
+                result = await fetchOpenAiChatCompletionWithRetry({
+                    apiKey,
+                    requestBody: {
+                        model,
+                        messages: [
+                            { role: "system", content: CUSTOM_RESEARCH_SYSTEM_PROMPT },
+                            { role: "user", content: userMessage }
+                        ],
+                        response_format: { type: "json_object" },
+                        max_tokens: maxTokens,
+                        temperature: 0.7
+                    },
+                    timeoutMs: CITY_PROFILE_UPSTREAM_TIMEOUT_MS,
+                    maxAttempts: CITY_PROFILE_UPSTREAM_MAX_ATTEMPTS
+                });
+            } else if (provider === "gemini") {
+                result = await callGeminiAsOpenAI({
+                    apiKey,
+                    model,
+                    maxTokens,
+                    jsonMode: true,
+                    messages: [
+                        { role: "system", content: CUSTOM_RESEARCH_SYSTEM_PROMPT },
+                        { role: "user", content: userMessage }
+                    ],
+                    timeoutMs: CITY_PROFILE_UPSTREAM_TIMEOUT_MS
+                });
+            } else {
+                return json({ ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported yet` } }, 400);
+            }
         } catch (error) {
             return json({
                 ok: true,
@@ -710,17 +738,37 @@ Build a source-bound localization evidence pack for this city. Use only evidence
 
     let result;
     try {
-        result = await callGeminiAsOpenAI({
-            apiKey,
-            model,
-            maxTokens,
-            jsonMode: true,
-            messages: [
-                { role: "system", content: CITY_PROFILE_SYSTEM_PROMPT },
-                { role: "user", content: userMessage }
-            ],
-            timeoutMs: CITY_PROFILE_UPSTREAM_TIMEOUT_MS
-        });
+        if (provider === "openai") {
+            result = await fetchOpenAiChatCompletionWithRetry({
+                apiKey,
+                requestBody: {
+                    model,
+                    messages: [
+                        { role: "system", content: CITY_PROFILE_SYSTEM_PROMPT },
+                        { role: "user", content: userMessage }
+                    ],
+                    response_format: { type: "json_object" },
+                    max_tokens: maxTokens,
+                    temperature: 0.7
+                },
+                timeoutMs: CITY_PROFILE_UPSTREAM_TIMEOUT_MS,
+                maxAttempts: CITY_PROFILE_UPSTREAM_MAX_ATTEMPTS
+            });
+        } else if (provider === "gemini") {
+            result = await callGeminiAsOpenAI({
+                apiKey,
+                model,
+                maxTokens,
+                jsonMode: true,
+                messages: [
+                    { role: "system", content: CITY_PROFILE_SYSTEM_PROMPT },
+                    { role: "user", content: userMessage }
+                ],
+                timeoutMs: CITY_PROFILE_UPSTREAM_TIMEOUT_MS
+            });
+        } else {
+            return json({ ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported yet` } }, 400);
+        }
     } catch (error) {
         return json({ ok: false, error: { code: "UPSTREAM_ERROR", message: error.message } }, 502);
     }

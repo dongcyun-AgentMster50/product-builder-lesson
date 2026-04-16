@@ -1,6 +1,7 @@
 import { clearSessionCookie, getConfig, json, readSession } from "./access/_shared.js";
 import { enforceMonthlyBudget, estimateUsageCost, recordUsageCost } from "./_shared_ai.js";
 import { streamGeminiAsOpenAI, resolveGeminiKey } from "./_gemini.js";
+import { resolveProviderKey, maskKey } from "./_provider.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
@@ -85,9 +86,9 @@ export async function onRequestPost(context) {
         );
     }
 
-    const { key: apiKey } = resolveGeminiKey(context);
-    if (!apiKey) {
-        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "No Gemini API key: provide one via the BYOK screen." } }, 400);
+    const { provider, apiKey, source: keySource } = resolveProviderKey(context);
+    if (!provider) {
+        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "No AI provider available: provide a key via the BYOK screen or configure env." } }, 400);
     }
 
     const budgetBlocked = await enforceMonthlyBudget(context.env);
@@ -116,12 +117,17 @@ export async function onRequestPost(context) {
         return json({ ok: false, error: { code: "MISSING_REQUEST", message: built.error } }, 400);
     }
 
-    const model = String(context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
+    const model = provider === "openai"
+        ? String(context.env.OPENAI_MODEL || "gpt-4o").trim()
+        : String(context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
     const maxTokens = Number(context.env.OPENAI_REFINE_MAX_TOKENS || 4000);
 
     console.info(JSON.stringify({
         type: "refine_request",
         ts: new Date().toISOString(),
+        provider,
+        source: keySource,
+        keyMask: maskKey(apiKey),
         model,
         locale: body?.context?.locale || "ko",
         role: body?.context?.role || "",
@@ -131,16 +137,28 @@ export async function onRequestPost(context) {
 
     let apiResponse;
     try {
-        apiResponse = streamGeminiAsOpenAI({
-            apiKey,
-            model,
-            maxTokens,
-            jsonMode: false,
-            messages: [
-                { role: "system", content: systemPrompt },
-                ...built.messages
-            ]
-        });
+        if (provider === "openai") {
+            apiResponse = await streamOpenAIResponse({
+                apiKey,
+                systemPrompt,
+                messages: built.messages,
+                model,
+                maxTokens
+            });
+        } else if (provider === "gemini") {
+            apiResponse = streamGeminiAsOpenAI({
+                apiKey,
+                model,
+                maxTokens,
+                jsonMode: false,
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    ...built.messages
+                ]
+            });
+        } else {
+            return json({ ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported yet` } }, 400);
+        }
     } catch (error) {
         return json({ ok: false, error: { code: "UPSTREAM_ERROR", message: error.message } }, 502);
     }

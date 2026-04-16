@@ -58,38 +58,67 @@
                     <div class="byok-container">
                         <h2>AI 연결 설정</h2>
 
+                        <!-- [영역 1] 상단 안심 배너 (3컬럼) -->
                         <div class="byok-trust-banner">
                             <div class="byok-trust-item">
                                 <span class="byok-trust-icon">💰</span>
-                                <div>
-                                    <strong>비용 걱정 없이 시작하세요</strong>
-                                    <p>본인의 Google 계정으로 무료 사용 가능 (일 1,500회까지)</p>
-                                </div>
+                                <strong>비용 0원</strong>
+                                <p>회사 운영비 X</p>
                             </div>
                             <div class="byok-trust-item">
                                 <span class="byok-trust-icon">🔒</span>
-                                <div>
-                                    <strong>키는 본인 브라우저에만 저장</strong>
-                                    <p>서버에 절대 기록되지 않으며, 탭을 닫으면 자동 삭제됩니다</p>
-                                </div>
+                                <strong>브라우저만</strong>
+                                <p>서버 저장 안됨</p>
                             </div>
                             <div class="byok-trust-item">
                                 <span class="byok-trust-icon">⚡</span>
-                                <div>
-                                    <strong>1분이면 발급 끝</strong>
-                                    <p>Google 계정만 있으면 신용카드 등록 없이 즉시 발급</p>
-                                </div>
+                                <strong>1분 발급</strong>
+                                <p>신용카드 불필요</p>
                             </div>
                         </div>
 
+                        <!-- [영역 2] 핵심 안내: 구독 vs API -->
+                        <div class="byok-clarify-box">
+                            <strong>⚠️ ChatGPT Plus / Claude Pro 구독 중이신가요?</strong>
+                            <p>구독료(월 $20)와 API는 <span class="highlight">별개의 상품</span>입니다.</p>
+                            <ul>
+                                <li><strong>구독</strong> = 본인이 <code>chat.openai.com</code> 같은 사이트에서 직접 채팅하는 용도</li>
+                                <li><strong>API</strong> = 우리 앱 같은 외부 도구에서 호출하는 용도 → 별도 등록·결제 필요</li>
+                            </ul>
+                            <p class="byok-clarify-cta">🎁 그래서 저희는 무료로 시작 가능한 <strong>Gemini</strong>를 기본 권장합니다.<br>(Google 계정만 있으면 일 1,500회 무료, 신용카드 불필요)</p>
+                        </div>
+
+                        <!-- [영역 3] Provider 탭 -->
                         <div class="byok-tabs" role="tablist">
-                            <button type="button" class="byok-tab active" role="tab" data-provider="gemini" aria-selected="true">🟢 Gemini</button>
+                            <button type="button" class="byok-tab byok-tab-recommended active" role="tab" data-provider="gemini" aria-selected="true">🟢 Gemini</button>
                             <button type="button" class="byok-tab" role="tab" data-provider="openai" aria-selected="false">⬜ ChatGPT</button>
                             <button type="button" class="byok-tab" role="tab" data-provider="claude" aria-selected="false">⬜ Claude</button>
                         </div>
 
                         <!-- Tab: Gemini -->
                         <div class="byok-tab-content active" id="byok-content-gemini" role="tabpanel" data-provider="gemini">
+                            <div class="byok-status byok-status-ready">✅ 백엔드 연결 완료 · 즉시 사용 가능</div>
+                            <p class="byok-tagline">🎁 완전 무료 시작 가능 <span class="byok-tagline-sub">(Google 계정만 있으면 됨)</span></p>
+
+                            <div class="byok-cost-card">
+                                <div class="byok-cost-row">
+                                    <strong>⚠️ 무료 사용량</strong>
+                                    <ul>
+                                        <li>분당 15회, 일 1,500회 호출 가능</li>
+                                        <li>신용카드 등록 불필요</li>
+                                        <li>마케터 한 명이 하루 종일 써도 충분</li>
+                                    </ul>
+                                </div>
+                                <div class="byok-cost-row">
+                                    <strong>💰 더 많이 쓰고 싶다면</strong>
+                                    <ul>
+                                        <li>Gemini 2.5 Flash: 100만 토큰당 약 $0.30 (300원)</li>
+                                        <li>본인 Google 계정으로 직접 결제</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <p class="byok-guide-title">📋 발급 안내</p>
                             <ol class="byok-guide">
                                 <li>아래 버튼을 클릭해 Google AI Studio를 새 탭에서 엽니다</li>
                                 <li>Google 계정으로 로그인합니다</li>
@@ -97,82 +126,159 @@
                                 <li>프로젝트 선택 창이 뜨면 <strong>[Create API key in new project]</strong>를 선택합니다</li>
                                 <li>생성된 키(<code>AIza...</code>로 시작)를 복사합니다</li>
                             </ol>
-                            <p class="byok-cost-note">
-                                💡 <strong>무료 사용</strong>: 분당 15회, 일 1,500회까지 무료. 신용카드 등록 불필요.<br>
-                                💰 <strong>유료 사용</strong>: Gemini 2.5 Flash 기준 100만 토큰당 약 $0.30
-                            </p>
                             <button type="button" class="byok-link-btn" data-open-url="https://aistudio.google.com/apikey">
-                                🔗 Google AI Studio에서 키 발급받기
+                                🔗 Google AI Studio에서 키 발급받기 →
                             </button>
-                            <input type="password" class="byok-key-input" data-provider="gemini" placeholder="AIza..." autocomplete="off">
+
+                            <label class="byok-key-label">Gemini API 키 붙여넣기</label>
+                            <div class="byok-key-wrapper">
+                                <input type="password" class="byok-key-input" data-provider="gemini" placeholder="AIza..." autocomplete="off">
+                                <button type="button" class="byok-key-toggle" aria-label="키 표시 전환">👁</button>
+                            </div>
                         </div>
 
                         <!-- Tab: OpenAI -->
                         <div class="byok-tab-content" id="byok-content-openai" role="tabpanel" data-provider="openai" hidden>
+                            <div class="byok-status byok-status-coming">🚧 백엔드 연결 준비 중 · 키는 미리 등록 가능</div>
+                            <p class="byok-tagline byok-tagline-warn">⚠️ 무료 tier 매우 제한적 <span class="byok-tagline-sub">(신규 가입 시 $5 크레딧, 3개월 유효)</span></p>
+
+                            <div class="byok-reemphasis">
+                                <strong>❗ ChatGPT Plus 구독자도 API는 별도입니다</strong>
+                                <ul>
+                                    <li><strong>ChatGPT Plus</strong> = <code>chat.openai.com</code> 에서 본인이 직접 채팅</li>
+                                    <li><strong>OpenAI API</strong> = 우리 앱 같은 외부 도구가 호출</li>
+                                    <li>두 개는 같은 회사가 운영하는 다른 상품. 결제도 따로.</li>
+                                </ul>
+                            </div>
+
+                            <div class="byok-cost-card">
+                                <div class="byok-cost-row">
+                                    <strong>⚠️ 무료 사용량</strong>
+                                    <ul>
+                                        <li>신규 가입 시 $5 크레딧 (3개월 후 만료)</li>
+                                        <li>이후엔 신용카드 등록 + 사용한 만큼 결제</li>
+                                    </ul>
+                                </div>
+                                <div class="byok-cost-row">
+                                    <strong>💰 GPT-4o mini 기준</strong>
+                                    <ul>
+                                        <li>입력 100만 토큰당 약 $0.15</li>
+                                        <li>출력 100만 토큰당 약 $0.60</li>
+                                        <li>본인 OpenAI 계정으로 직접 결제</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <p class="byok-guide-title">📋 발급 안내</p>
                             <ol class="byok-guide">
                                 <li>아래 버튼을 클릭해 OpenAI API Keys 페이지를 새 탭에서 엽니다</li>
                                 <li>OpenAI 계정으로 로그인합니다 (ChatGPT 계정과 동일)</li>
                                 <li><strong>[+ Create new secret key]</strong> 버튼을 클릭합니다</li>
-                                <li>이름 입력 (예: "SmartThings Demo") → <strong>[Create secret key]</strong> 클릭</li>
-                                <li>생성된 키(<code>sk-...</code>로 시작)를 복사합니다 ⚠️ 키는 이 순간에만 표시됩니다</li>
+                                <li>이름 입력 (예: "SmartThings Demo") 후 <strong>[Create secret key]</strong></li>
+                                <li>생성된 키(<code>sk-...</code>로 시작)를 복사합니다</li>
                             </ol>
-                            <p class="byok-cost-note">
-                                ⚠️ OpenAI는 무료 사용량이 제한적입니다. 신규 가입 시 $5 크레딧 제공 (3개월 유효).<br>
-                                💰 이후: GPT-4o mini 기준 100만 토큰당 약 $0.15 (입력) / $0.60 (출력)
-                            </p>
+                            <p class="byok-warn-inline">⚠️ 키는 이 순간에만 표시됩니다. 반드시 복사해 주세요.</p>
                             <button type="button" class="byok-link-btn" data-open-url="https://platform.openai.com/api-keys">
-                                🔗 OpenAI에서 키 발급받기
+                                🔗 OpenAI에서 키 발급받기 →
                             </button>
-                            <input type="password" class="byok-key-input" data-provider="openai" placeholder="sk-proj-..." autocomplete="off">
+
+                            <label class="byok-key-label">OpenAI API 키 붙여넣기</label>
+                            <div class="byok-key-wrapper">
+                                <input type="password" class="byok-key-input" data-provider="openai" placeholder="sk-proj-..." autocomplete="off">
+                                <button type="button" class="byok-key-toggle" aria-label="키 표시 전환">👁</button>
+                            </div>
                             <p class="byok-coming-soon">
-                                🚧 OpenAI 백엔드 연결은 준비 중입니다. 키를 미리 등록해 두시면 연결 즉시 사용 가능합니다.
+                                🚧 <strong>OpenAI 백엔드 연결은 곧 활성화됩니다</strong><br>
+                                지금 키를 등록해 두시면 활성화 즉시 사용 가능합니다.<br>
+                                (오늘 데모는 Gemini로 진행됩니다)
                             </p>
                         </div>
 
                         <!-- Tab: Claude -->
                         <div class="byok-tab-content" id="byok-content-claude" role="tabpanel" data-provider="claude" hidden>
+                            <div class="byok-status byok-status-coming">🚧 백엔드 연결 준비 중 · 키는 미리 등록 가능</div>
+                            <p class="byok-tagline byok-tagline-warn">⚠️ 무료 tier 없음 <span class="byok-tagline-sub">(최소 $5 충전 필요)</span></p>
+
+                            <div class="byok-reemphasis">
+                                <strong>❗ Claude Pro 구독자도 API는 별도입니다</strong>
+                                <ul>
+                                    <li><strong>Claude Pro</strong> = <code>claude.ai</code> 에서 본인이 직접 채팅</li>
+                                    <li><strong>Anthropic API</strong> = 우리 앱 같은 외부 도구가 호출</li>
+                                    <li>두 개는 같은 회사가 운영하는 다른 상품. 결제도 따로.</li>
+                                </ul>
+                            </div>
+
+                            <div class="byok-cost-card">
+                                <div class="byok-cost-row">
+                                    <strong>⚠️ 무료 사용량</strong>
+                                    <ul>
+                                        <li>무료 tier 없음</li>
+                                        <li>최소 $5 이상 선결제 필요</li>
+                                    </ul>
+                                </div>
+                                <div class="byok-cost-row">
+                                    <strong>💰 Claude Haiku 기준</strong>
+                                    <ul>
+                                        <li>입력 100만 토큰당 약 $0.25</li>
+                                        <li>출력 100만 토큰당 약 $1.25</li>
+                                        <li>본인 Anthropic 계정으로 직접 결제</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <p class="byok-guide-title">📋 발급 안내</p>
                             <ol class="byok-guide">
                                 <li>아래 버튼을 클릭해 Anthropic Console을 새 탭에서 엽니다</li>
                                 <li>Anthropic 계정으로 로그인합니다 (없으면 무료 가입)</li>
-                                <li>좌측 메뉴에서 <strong>[API Keys]</strong>를 클릭합니다</li>
-                                <li><strong>[Create Key]</strong> 버튼을 클릭합니다</li>
-                                <li>이름 입력 → 생성된 키(<code>sk-ant-...</code>로 시작)를 복사합니다 ⚠️ 키는 이 순간에만 표시됩니다</li>
+                                <li>좌측 메뉴에서 <strong>[API Keys]</strong> 클릭</li>
+                                <li><strong>[Create Key]</strong> 버튼 클릭</li>
+                                <li>이름 입력 후 생성된 키(<code>sk-ant-...</code>로 시작)를 복사합니다</li>
                             </ol>
-                            <p class="byok-cost-note">
-                                ⚠️ Anthropic은 무료 사용량이 없습니다. 최소 $5 크레딧 충전 필요.<br>
-                                💰 Claude Haiku 기준 100만 토큰당 약 $0.25 (입력) / $1.25 (출력)
-                            </p>
+                            <p class="byok-warn-inline">⚠️ 키는 이 순간에만 표시됩니다. 반드시 복사해 주세요.</p>
                             <button type="button" class="byok-link-btn" data-open-url="https://console.anthropic.com/settings/keys">
-                                🔗 Anthropic Console에서 키 발급받기
+                                🔗 Anthropic Console에서 키 발급받기 →
                             </button>
-                            <input type="password" class="byok-key-input" data-provider="claude" placeholder="sk-ant-..." autocomplete="off">
+
+                            <label class="byok-key-label">Claude API 키 붙여넣기</label>
+                            <div class="byok-key-wrapper">
+                                <input type="password" class="byok-key-input" data-provider="claude" placeholder="sk-ant-..." autocomplete="off">
+                                <button type="button" class="byok-key-toggle" aria-label="키 표시 전환">👁</button>
+                            </div>
                             <p class="byok-coming-soon">
-                                🚧 Claude 백엔드 연결은 준비 중입니다. 키를 미리 등록해 두시면 연결 즉시 사용 가능합니다.
+                                🚧 <strong>Claude 백엔드 연결은 곧 활성화됩니다</strong><br>
+                                지금 키를 등록해 두시면 활성화 즉시 사용 가능합니다.<br>
+                                (오늘 데모는 Gemini로 진행됩니다)
                             </p>
                         </div>
 
+                        <!-- [영역 5] 시작 버튼 -->
                         <button type="button" id="byok-start-btn" class="byok-start-btn" disabled>시작하기</button>
 
+                        <!-- [영역 6] 상세 FAQ -->
                         <details class="byok-faq">
-                            <summary>💡 비용에 대해 더 알아보기</summary>
+                            <summary>💡 비용·보안에 대해 더 알아보기</summary>
                             <div class="byok-faq-content">
-                                <p><strong>무료 사용자</strong> (Google 계정만 있는 경우):</p>
+                                <p><strong>Q. 제 키는 어디에 저장되나요?</strong></p>
+                                <p>A. 브라우저 <code>sessionStorage</code>에만 저장됩니다.</p>
                                 <ul>
-                                    <li>Gemini 2.5 Flash 모델 사용</li>
-                                    <li>분당 15회, 일 1,500회까지 무료</li>
-                                    <li>마케터 한 명이 하루 종일 사용해도 충분한 양</li>
-                                    <li>신용카드 등록 불필요</li>
+                                    <li>탭을 닫으면 자동 삭제</li>
+                                    <li>30분간 활동 없으면 자동 로그아웃</li>
+                                    <li>서버에는 어떤 형태로도 기록되지 않음</li>
                                 </ul>
-                                <p><strong>유료 전환 시</strong> (하루 1,500회 이상 필요한 경우):</p>
+
+                                <p><strong>Q. 우리 회사가 부담하는 비용은?</strong></p>
+                                <p>A. <strong>0원</strong>입니다.</p>
                                 <ul>
-                                    <li>Google AI Studio에서 결제 등록</li>
-                                    <li>Gemini 2.5 Flash 기준 100만 토큰당 약 $0.30 (약 300원)</li>
-                                    <li>비용은 사용자 본인 Google 계정으로 청구됨</li>
+                                    <li>AI 호출 비용은 사용자 본인 키로 청구</li>
+                                    <li>회사는 앱 호스팅 서버 비용만 부담 (월 몇만원 수준)</li>
                                 </ul>
-                                <p class="byok-faq-note">
-                                    이 앱은 사용자 키를 중계만 합니다. 회사는 AI 호출 비용을 일절 부담하지 않으며,
-                                    사용자 키는 어떤 형태로도 저장·로깅되지 않습니다.
-                                </p>
+
+                                <p><strong>Q. 다른 직원들도 각자 키를 발급받아야 하나요?</strong></p>
+                                <p>A. 네. 각 사용자가 본인 키를 입력합니다.</p>
+                                <ul>
+                                    <li>키 공유는 보안상 권장 X</li>
+                                    <li>각자 본인 한도 사용 가능</li>
+                                </ul>
                             </div>
                         </details>
                     </div>

@@ -1,8 +1,49 @@
 import { clearSessionCookie, getConfig, json, readSession } from "./access/_shared.js";
 import { enforceMonthlyBudget, estimateUsageCost, recordUsageCost } from "./_shared_ai.js";
 import { streamGeminiAsOpenAI, resolveGeminiKey } from "./_gemini.js";
+import { resolveProviderKey, maskKey } from "./_provider.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+
+async function streamOpenAIResponse({ apiKey, systemPrompt, userMessage, model, maxTokens, jsonMode = false }) {
+    const requestBody = {
+        model,
+        stream: true,
+        stream_options: { include_usage: true },
+        messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage }
+        ]
+    };
+
+    if (jsonMode) {
+        requestBody.response_format = { type: "json_object" };
+    }
+
+    if (/^gpt-5/i.test(String(model || "").trim())) {
+        requestBody.max_completion_tokens = maxTokens;
+    } else {
+        requestBody.max_tokens = maxTokens;
+    }
+
+    const response = await fetch(OPENAI_API_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+        const errText = await response.text().catch(() => "");
+        let errMsg = `OpenAI API error ${response.status}`;
+        try { errMsg = JSON.parse(errText)?.error?.message || errMsg; } catch { /* ignore */ }
+        throw new Error(errMsg);
+    }
+
+    return response;
+}
 
 const NUDGE_SYSTEM_PROMPT = `You are a Samsung SmartThings global marketing advisor.
 Given a country, city, and marketing role, generate exactly 3 nudge cards in JSON format.
@@ -37,9 +78,9 @@ export async function onRequestPost(context) {
         );
     }
 
-    const { key: apiKey } = resolveGeminiKey(context);
-    if (!apiKey) {
-        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "No Gemini API key: provide one via the BYOK screen." } }, 400);
+    const { provider, apiKey, source: keySource } = resolveProviderKey(context);
+    if (!provider) {
+        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "No AI provider available: provide a key via the BYOK screen or configure env." } }, 400);
     }
 
     const budgetBlocked = await enforceMonthlyBudget(context.env);
@@ -67,12 +108,17 @@ export async function onRequestPost(context) {
         : "Retail/in-store marketer";
 
     const userMessage = `Market: ${marketLabel}\nRole: ${roleName}\nLocale: ${locale}`;
-    const model = String(context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
+    const model = provider === "openai"
+        ? String(context.env.OPENAI_MODEL || "gpt-4o").trim()
+        : String(context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
     const maxTokens = 1000;
 
     console.info(JSON.stringify({
         type: "nudge_request",
         ts: new Date().toISOString(),
+        provider,
+        source: keySource,
+        keyMask: maskKey(apiKey),
         model,
         country,
         city,
@@ -82,16 +128,29 @@ export async function onRequestPost(context) {
 
     let apiResponse;
     try {
-        apiResponse = streamGeminiAsOpenAI({
-            apiKey,
-            model,
-            maxTokens,
-            jsonMode: true,
-            messages: [
-                { role: "system", content: NUDGE_SYSTEM_PROMPT },
-                { role: "user", content: userMessage }
-            ]
-        });
+        if (provider === "openai") {
+            apiResponse = await streamOpenAIResponse({
+                apiKey,
+                systemPrompt: NUDGE_SYSTEM_PROMPT,
+                userMessage,
+                model,
+                maxTokens,
+                jsonMode: true
+            });
+        } else if (provider === "gemini") {
+            apiResponse = streamGeminiAsOpenAI({
+                apiKey,
+                model,
+                maxTokens,
+                jsonMode: true,
+                messages: [
+                    { role: "system", content: NUDGE_SYSTEM_PROMPT },
+                    { role: "user", content: userMessage }
+                ]
+            });
+        } else {
+            return json({ ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported yet` } }, 400);
+        }
     } catch (error) {
         return json({ ok: false, error: { code: "UPSTREAM_ERROR", message: error.message } }, 502);
     }

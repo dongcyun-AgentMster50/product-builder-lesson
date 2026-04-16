@@ -2834,6 +2834,7 @@ function showByokScreen() {
         // 포커스 해당 탭 입력창
         const focusInput = byokScreen.querySelector(`.byok-tab-content.active .byok-key-input`);
         if (focusInput) setTimeout(() => focusInput.focus(), 0);
+        // 탭 전환 시 시작 버튼 상태 재계산
         updateStartBtn();
     };
 
@@ -2859,6 +2860,13 @@ function showByokScreen() {
         const val = String(input?.value || "").trim();
         const provider = validateApiKey(val);
         if (!provider) return;
+        // OpenAI/Claude는 백엔드 미연결 — confirm 후 진행
+        if (provider !== "gemini") {
+            const ok = window.confirm(
+                "현재 OpenAI/Claude 백엔드 연결은 준비 중입니다.\n키는 저장되지만 실제 AI 호출은 동작하지 않습니다.\n(오늘 데모는 Gemini로 진행하는 것을 권장합니다)\n\n그래도 진행하시겠습니까?"
+            );
+            if (!ok) return;
+        }
         sessionStorage.setItem("userApiKey", val);
         sessionStorage.setItem("userProvider", provider);
         sessionStorage.setItem("aiProvider", provider);
@@ -2870,6 +2878,7 @@ function showByokScreen() {
             i.removeEventListener("keydown", onKeyDown);
         });
         linkBtns?.forEach((b) => b.removeEventListener("click", onOpenLink));
+        toggles?.forEach((btn) => btn.removeEventListener("click", onToggleKey));
         startBtn.removeEventListener("click", onStart);
         byokScreen.classList.add("hidden");
         const logoutBtnByok = document.getElementById("byok-logout-btn");
@@ -2878,12 +2887,24 @@ function showByokScreen() {
         showGuideScreen();
     };
 
+    // 패스워드 표시/숨기기 토글 (탭마다 1개씩)
+    const toggles = byokScreen.querySelectorAll(".byok-key-toggle");
+    const onToggleKey = (e) => {
+        const wrapper = e.currentTarget.closest(".byok-key-wrapper");
+        const input = wrapper?.querySelector(".byok-key-input");
+        if (!input) return;
+        const showing = input.type === "text";
+        input.type = showing ? "password" : "text";
+        e.currentTarget.textContent = showing ? "👁" : "🙈";
+    };
+
     tabs.forEach((t) => t.addEventListener("click", onTabClick));
     inputs.forEach((i) => {
         i.addEventListener("input", onInput);
         i.addEventListener("keydown", onKeyDown);
     });
     linkBtns?.forEach((b) => b.addEventListener("click", onOpenLink));
+    toggles?.forEach((btn) => btn.addEventListener("click", onToggleKey));
     startBtn.addEventListener("click", onStart);
 
     // 기본 탭: Gemini
@@ -4515,6 +4536,35 @@ let _pendingCitySheetHtml = "";
 let _latestCityProfile = null;
 let _magicSelected = new Set();
 let _magicAppliedSelected = new Set();
+
+/**
+ * Q1 선택된 프로필 카테고리들의 원문을 AI 프롬프트용으로 구조화
+ * @param {Set<string>} selectedSet - _magicAppliedSelected (선택된 카테고리 key 집합)
+ * @param {object} profileData - _latestCityProfile
+ * @returns {object|null} - { [category]: { statement, evidence } } 또는 null
+ */
+function buildCityProfileContextForAI(selectedSet, profileData) {
+    if (!selectedSet || selectedSet.size === 0 || !profileData?.profile) return null;
+    const profile = profileData.profile;
+    const result = {};
+    for (const categoryKey of selectedSet) {
+        const statement = profile[categoryKey];
+        const evidence = profile?.evidence_pack?.[categoryKey];
+        if (!statement && !evidence) continue;
+        result[categoryKey] = {
+            statement: statement || "",
+            evidence: evidence ? {
+                localized_statement: evidence.localized_statement,
+                why_localized: evidence.why_localized,
+                evidence_ids: evidence.evidence_ids,
+                confidence: evidence.confidence,
+                smart_home_relevance: evidence.smart_home_relevance,
+                marketing_relevance: evidence.marketing_relevance
+            } : null
+        };
+    }
+    return Object.keys(result).length > 0 ? result : null;
+}
 
 /**
  * 정적 city_signals fallback
@@ -8514,7 +8564,10 @@ function generateScenario() {
         missionBucket: intent.missionBucket,
         locale: currentLocale,
         provider: selectedProvider,
-        selectionSummary: latestSelectionSummary || null
+        selectionSummary: latestSelectionSummary || null,
+        // 🔴 Q1 도시 가중치 시그널 — 사용자가 10개 프로필 중 최대 3개 선택
+        selectedCityProfileTags: Array.from(_magicAppliedSelected || []),
+        selectedCityProfileContext: buildCityProfileContextForAI(_magicAppliedSelected, _latestCityProfile)
     };
 
     // 매칭 프로세스 카드 표시 중이면 AI 즉시 시작하지 않음 (사용자가 시나리오 선택 후 시작)

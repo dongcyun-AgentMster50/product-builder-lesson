@@ -1,6 +1,7 @@
 import { clearSessionCookie, getConfig, json, readSession } from "./access/_shared.js";
 import { enforceMonthlyBudget, estimateUsageCost, recordUsageCost } from "./_shared_ai.js";
 import { streamGeminiAsOpenAI, resolveGeminiKey } from "./_gemini.js";
+import { resolveProviderKey, maskKey } from "./_provider.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
@@ -20,6 +21,23 @@ function buildGeneratePrompt(body) {
     const isCampaignSection = body?.campaignSection === true;
     const sectionPrompt = String(body?.sectionPrompt || "").trim();
 
+    // 🔴 Q1 도시 가중치 시그널
+    const cityTags = Array.isArray(body?.selectedCityProfileTags) ? body.selectedCityProfileTags : [];
+    const cityContext = body?.selectedCityProfileContext || null;
+
+    const citySignalBlock = cityTags.length > 0 ? [
+        ``,
+        `## 🔴 도시 가중치 신호 (Q1 사용자 선택 — 1순위 반영 필수)`,
+        `선택된 카테고리: ${cityTags.join(", ")}`,
+        cityContext ? `\n### 선택된 프로필 원문\n\`\`\`json\n${JSON.stringify(cityContext, null, 2)}\n\`\`\`` : "",
+        ``,
+        `**반영 규칙:**`,
+        `- 위 카테고리들의 localized_statement에 포함된 로컬 앵커(구/역/도로/시설)를 페르소나·상황·가치에 **반드시 인용**`,
+        `- 선택되지 않은 카테고리는 **언급 금지**`,
+        `- evidence 중 confidence가 "Low"면 "참고로" 같은 약한 표현으로 처리`,
+        `- 출력 시나리오 본문에 선택 태그 대응 문장 **최소 1개 이상** 등장해야 함`
+    ].filter(Boolean).join("\n") : "";
+
     if (isCampaignSection && sectionPrompt) {
         const langInstruction = locale === "ko"
             ? "Write entirely in Korean. English may appear only for unavoidable proper nouns."
@@ -33,6 +51,7 @@ function buildGeneratePrompt(body) {
             `- Devices: ${devices || "(none)"}`,
             `- Mission / Value Focus: ${mission || "Discover"}`,
             regionCtx ? `\n## Regional Data\n${regionCtx}\n` : "",
+            citySignalBlock,
             `\n## Task`,
             sectionPrompt,
             ``,
@@ -70,6 +89,7 @@ function buildGeneratePrompt(body) {
             `## Context`,
             `- Role: ${role}`,
             `- Output Language: ${locale === "ko" ? "Korean-primary (한국어 90% 이상)" : "English-primary"}`,
+            citySignalBlock,
             "",
             "## Task: Transform the selected Explore scenario into JSON",
             "",
@@ -102,6 +122,7 @@ function buildGeneratePrompt(body) {
         `- Mission Bucket: ${mission || "Discover"}`,
         `- Output Language: ${locale === "ko" ? "Korean-primary (English for Section 04 marketing hooks)" : "English-primary"}`,
         regionCtx ? `\n## Live Regional Data\n\`\`\`json\n${regionCtx}\n\`\`\`` : "",
+        citySignalBlock,
         "\n## Task",
         "Generate a Samsung SmartThings CX scenario following Part 5-B (Markdown Sections Mode) in the system prompt.",
         "Output sections (01) through (07) only. Then suggest next steps in natural language — do NOT mention section numbers like 10 or 11.",
@@ -175,9 +196,9 @@ export async function onRequestPost(context) {
         );
     }
 
-    const { key: apiKey } = resolveGeminiKey(context);
-    if (!apiKey) {
-        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "No Gemini API key: provide one via the BYOK screen." } }, 400);
+    const { provider, apiKey, source: keySource } = resolveProviderKey(context);
+    if (!provider) {
+        return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "No AI provider available: provide a key via the BYOK screen or configure env." } }, 400);
     }
 
     const budgetBlocked = await enforceMonthlyBudget(context.env);
@@ -202,7 +223,9 @@ export async function onRequestPost(context) {
     }
 
     const userMessage = buildGeneratePrompt(body);
-    const model = String(context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
+    const model = provider === "openai"
+        ? String(context.env.OPENAI_MODEL || "gpt-4o").trim()
+        : String(context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
     const maxTokens = Number(context.env.OPENAI_MAX_TOKENS || 8000);
 
     // Selection Summary 존재 시 JSON 모드 활성화
@@ -214,27 +237,44 @@ export async function onRequestPost(context) {
     console.info(JSON.stringify({
         type: "generate_request",
         ts: new Date().toISOString(),
+        provider,
+        source: keySource,
+        keyMask: maskKey(apiKey),
         model,
         jsonMode,
         locale: body?.locale || "ko",
         role: body?.role || "",
         country: body?.country || "",
         city: body?.city || "",
-        missionBucket: body?.missionBucket || ""
+        missionBucket: body?.missionBucket || "",
+        hasCitySignal: Array.isArray(body?.selectedCityProfileTags) && body.selectedCityProfileTags.length > 0
     }));
 
     let apiResponse;
     try {
-        apiResponse = streamGeminiAsOpenAI({
-            apiKey,
-            model,
-            maxTokens,
-            jsonMode,
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userMessage }
-            ]
-        });
+        if (provider === "openai") {
+            apiResponse = await streamOpenAIResponse({
+                apiKey,
+                systemPrompt,
+                userMessage,
+                model,
+                maxTokens,
+                jsonMode
+            });
+        } else if (provider === "gemini") {
+            apiResponse = streamGeminiAsOpenAI({
+                apiKey,
+                model,
+                maxTokens,
+                jsonMode,
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userMessage }
+                ]
+            });
+        } else {
+            return json({ ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported yet` } }, 400);
+        }
     } catch (error) {
         return json({ ok: false, error: { code: "UPSTREAM_ERROR", message: error.message } }, 502);
     }
