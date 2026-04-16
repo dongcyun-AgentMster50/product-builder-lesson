@@ -643,6 +643,9 @@ function syncProviderButtons() {
                     const opts = { ...(init || {}) };
                     const headers = new Headers(opts.headers || (typeof input !== "string" ? input.headers : undefined) || {});
                     headers.set("X-User-Api-Key", key);
+                    // Gemini 모델 힌트 (Flash/Pro 선택값) — 있을 때만 전송
+                    const modelHint = sessionStorage.getItem("userGeminiModel") || "";
+                    if (modelHint) headers.set("X-User-Model-Hint", modelHint);
                     opts.headers = headers;
                     return original(input, opts);
                 }
@@ -684,6 +687,7 @@ function bindEvents() {
     const byokLogoutBtn = document.getElementById("byok-logout-btn");
     if (byokLogoutBtn) byokLogoutBtn.addEventListener("click", () => {
         sessionStorage.removeItem("userApiKey");
+        sessionStorage.removeItem("userGeminiModel");
         syncProviderButtons();
         location.reload();
     });
@@ -2872,6 +2876,14 @@ function showByokScreen() {
         sessionStorage.setItem("userApiKey", val);
         sessionStorage.setItem("userProvider", provider);
         sessionStorage.setItem("aiProvider", provider);
+        // Gemini 모델 선택값 저장 (Flash/Pro)
+        if (provider === "gemini") {
+            const modelRadio = byokScreen.querySelector('input[name="gemini-model"]:checked');
+            const selectedModel = modelRadio?.value || "gemini-2.5-flash";
+            sessionStorage.setItem("userGeminiModel", selectedModel);
+        } else {
+            sessionStorage.removeItem("userGeminiModel");
+        }
         selectedProvider = provider;
         // Cleanup
         tabs.forEach((t) => t.removeEventListener("click", onTabClick));

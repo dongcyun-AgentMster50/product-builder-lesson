@@ -85,7 +85,7 @@
                                 <li><strong>구독</strong> = 본인이 <code>chat.openai.com</code> 같은 사이트에서 직접 채팅하는 용도</li>
                                 <li><strong>API</strong> = 우리 앱 같은 외부 도구에서 호출하는 용도 → 별도 등록·결제 필요</li>
                             </ul>
-                            <p class="byok-clarify-cta">🎁 그래서 저희는 무료로 시작 가능한 <strong>Gemini</strong>를 기본 권장합니다.<br>(Google 계정만 있으면 일 1,500회 무료, 신용카드 불필요)</p>
+                            <p class="byok-clarify-cta">🎁 그래서 저희는 무료로 시작 가능한 <strong>Gemini</strong>를 기본 권장합니다.<br>(Google 계정만 있으면 Flash 일 250회 / Pro 일 100회 무료, 신용카드 불필요)</p>
                         </div>
 
                         <!-- [영역 3] Provider 탭 -->
@@ -98,21 +98,22 @@
                         <!-- Tab: Gemini -->
                         <div class="byok-tab-content active" id="byok-content-gemini" role="tabpanel" data-provider="gemini">
                             <div class="byok-status byok-status-ready">✅ 백엔드 연결 완료 · 즉시 사용 가능</div>
-                            <p class="byok-tagline">🎁 완전 무료 시작 가능 <span class="byok-tagline-sub">(Google 계정만 있으면 됨)</span></p>
+                            <p class="byok-tagline">🎁 Google 계정만 있으면 무료 시작 가능</p>
 
                             <div class="byok-cost-card">
                                 <div class="byok-cost-row">
-                                    <strong>⚠️ 무료 사용량</strong>
+                                    <strong>⚠️ 무료 사용량 (2025 현행)</strong>
                                     <ul>
-                                        <li>분당 15회, 일 1,500회 호출 가능</li>
-                                        <li>신용카드 등록 불필요</li>
-                                        <li>마케터 한 명이 하루 종일 써도 충분</li>
+                                        <li><strong>Flash</strong>: 일 <strong>250회</strong> 무료 — 간단한 시나리오·빠른 응답</li>
+                                        <li><strong>Pro</strong>: 일 <strong>100회</strong> 무료 — 초개인화·깊은 분석</li>
+                                        <li>둘 다 신용카드 등록 불필요</li>
                                     </ul>
                                 </div>
                                 <div class="byok-cost-row">
-                                    <strong>💰 더 많이 쓰고 싶다면</strong>
+                                    <strong>💰 유료 전환 시 (월 커피값 수준)</strong>
                                     <ul>
-                                        <li>Gemini 2.5 Flash: 100만 토큰당 약 $0.30 (300원)</li>
+                                        <li>Flash: 월 <strong>$1 ~ $3</strong> (가벼운 사용)</li>
+                                        <li>Pro: 월 <strong>$5 ~ $10</strong> (적극 사용)</li>
                                         <li>본인 Google 계정으로 직접 결제</li>
                                     </ul>
                                 </div>
@@ -129,6 +130,25 @@
                             <button type="button" class="byok-link-btn" data-open-url="https://aistudio.google.com/apikey">
                                 🔗 Google AI Studio에서 키 발급받기 →
                             </button>
+
+                            <!-- Gemini 모델 선택 -->
+                            <p class="byok-model-picker-title">🎛 모델 선택</p>
+                            <div class="byok-model-picker" role="radiogroup" aria-label="Gemini 모델 선택">
+                                <label class="byok-radio">
+                                    <input type="radio" name="gemini-model" value="gemini-2.5-flash" checked>
+                                    <div class="byok-radio-body">
+                                        <strong>Flash (빠르고 무료)</strong>
+                                        <small>일 250회 무료 · 간단한 시나리오에 적합</small>
+                                    </div>
+                                </label>
+                                <label class="byok-radio">
+                                    <input type="radio" name="gemini-model" value="gemini-2.5-pro">
+                                    <div class="byok-radio-body">
+                                        <strong>Pro (고품질, 권장) <span class="byok-radio-star">⭐</span></strong>
+                                        <small>일 100회 무료 · 초개인화·깊은 분석에 적합</small>
+                                    </div>
+                                </label>
+                            </div>
 
                             <label class="byok-key-label">Gemini API 키 붙여넣기</label>
                             <div class="byok-key-wrapper">

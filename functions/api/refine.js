@@ -86,7 +86,7 @@ export async function onRequestPost(context) {
         );
     }
 
-    const { provider, apiKey, source: keySource } = resolveProviderKey(context);
+    const { provider, apiKey, source: keySource, modelHint } = resolveProviderKey(context);
     if (!provider) {
         return json({ ok: false, error: { code: "API_NOT_CONFIGURED", message: "No AI provider available: provide a key via the BYOK screen or configure env." } }, 400);
     }
@@ -119,7 +119,7 @@ export async function onRequestPost(context) {
 
     const model = provider === "openai"
         ? String(context.env.OPENAI_MODEL || "gpt-4o").trim()
-        : String(context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
+        : String(modelHint || context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
     const maxTokens = Number(context.env.OPENAI_REFINE_MAX_TOKENS || 4000);
 
     console.info(JSON.stringify({

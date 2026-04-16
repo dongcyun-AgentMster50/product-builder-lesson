@@ -622,11 +622,11 @@ async function handleCityProfile(context) {
     }
 
     // BYOK: header key > env OpenAI > env Gemini (centralized in _provider.js)
-    const { provider, apiKey, source: keySource } = resolveProviderKey(context);
-    // Model selection by provider
+    const { provider, apiKey, source: keySource, modelHint } = resolveProviderKey(context);
+    // Model selection by provider — Gemini는 사용자 modelHint(Flash/Pro) 최우선
     const model = provider === "openai"
         ? String(context.env.OPENAI_MODEL || "gpt-4o").trim()
-        : String(context.env.CITY_PROFILE_MODEL || context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
+        : String(modelHint || context.env.CITY_PROFILE_MODEL || context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
 
     if (customQuery && !provider) {
         return json({

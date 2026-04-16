@@ -12,26 +12,29 @@ export function detectProvider(apiKey) {
 
 // Resolves which provider/key to use for this request.
 // Priority: 1) BYOK header (user key) → 2) env OPENAI_API_KEY → 3) env GEMINI_API_KEY
+// Returns additionally `modelHint` — user's explicit model preference (e.g. "gemini-2.5-pro")
 export function resolveProviderKey(context) {
+    const modelHint = String(context.request.headers.get("X-User-Model-Hint") || "").trim() || null;
+
     // 1. BYOK header (user's own key) — highest priority
     const headerKey = String(context.request.headers.get("X-User-Api-Key") || "").trim();
     const headerProvider = detectProvider(headerKey);
     if (headerProvider) {
-        return { provider: headerProvider, apiKey: headerKey, source: "header" };
+        return { provider: headerProvider, apiKey: headerKey, source: "header", modelHint };
     }
 
     // 2. Fallback: OpenAI first (for Q1 RAG quality), Gemini second (free tier)
     const openaiKey = String(context.env?.OPENAI_API_KEY || "").trim();
     if (openaiKey) {
-        return { provider: "openai", apiKey: openaiKey, source: "env_openai" };
+        return { provider: "openai", apiKey: openaiKey, source: "env_openai", modelHint };
     }
 
     const geminiKey = String(context.env?.GEMINI_API_KEY || "").trim();
     if (geminiKey) {
-        return { provider: "gemini", apiKey: geminiKey, source: "env_gemini" };
+        return { provider: "gemini", apiKey: geminiKey, source: "env_gemini", modelHint };
     }
 
-    return { provider: null, apiKey: null, source: null };
+    return { provider: null, apiKey: null, source: null, modelHint: null };
 }
 
 // Helper: mask key for safe logging
