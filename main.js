@@ -2818,6 +2818,8 @@ function showByokScreen() {
     byokScreen.classList.remove("hidden");
     inputs.forEach((i) => { i.value = ""; });
     startBtn.disabled = true;
+    // BYOK 진입 시 화면 최상단으로 리셋 — Access Code 입력 위치에서 내려와 있으면 잘려 보임
+    window.scrollTo({ top: 0, behavior: "auto" });
 
     // 탭 전환
     const activateTab = (provider) => {
@@ -2831,9 +2833,9 @@ function showByokScreen() {
             c.classList.toggle("active", on);
             if (on) c.removeAttribute("hidden"); else c.setAttribute("hidden", "");
         });
-        // 포커스 해당 탭 입력창
+        // 포커스 해당 탭 입력창 — preventScroll로 자동 스크롤 방지
         const focusInput = byokScreen.querySelector(`.byok-tab-content.active .byok-key-input`);
-        if (focusInput) setTimeout(() => focusInput.focus(), 0);
+        if (focusInput) setTimeout(() => focusInput.focus({ preventScroll: true }), 0);
         // 탭 전환 시 시작 버튼 상태 재계산
         updateStartBtn();
     };
