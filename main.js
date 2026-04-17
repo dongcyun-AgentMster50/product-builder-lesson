@@ -3699,25 +3699,35 @@ function showLegendHelpPopup() {
 
 /** 피자 원형 프로그레스를 0~100%로 업데이트 */
 function updatePizzaProgress(container, pct) {
-    const wedge = container.querySelector("[data-pizza-wedge]");
+    const el = container.querySelector("[data-pizza-wedge]");
     const label = container.querySelector("[data-pizza-pct]");
-    if (!wedge) return;
+    if (!el) return;
     const clamped = Math.min(100, Math.max(0, pct));
-    const cx = 20, cy = 20, r = 18;
-    if (clamped <= 0) {
-        wedge.setAttribute("d", "");
-    } else if (clamped >= 100) {
-        // 완전한 원
-        wedge.setAttribute("d",
-            `M${cx},${cy - r} A${r},${r} 0 1,1 ${cx - 0.001},${cy - r} Z`);
+
+    // 바 형태 (div) vs 피자 형태 (SVG path) 자동 판별
+    if (el.tagName === "path") {
+        const cx = 20, cy = 20, r = 18;
+        if (clamped <= 0) {
+            el.setAttribute("d", "");
+        } else if (clamped >= 100) {
+            el.setAttribute("d", `M${cx},${cy - r} A${r},${r} 0 1,1 ${cx - 0.001},${cy - r} Z`);
+        } else {
+            const angle = (clamped / 100) * 360;
+            const rad = (angle - 90) * Math.PI / 180;
+            const x = cx + r * Math.cos(rad);
+            const y = cy + r * Math.sin(rad);
+            const large = angle > 180 ? 1 : 0;
+            el.setAttribute("d", `M${cx},${cy} L${cx},${cy - r} A${r},${r} 0 ${large},1 ${x.toFixed(2)},${y.toFixed(2)} Z`);
+        }
     } else {
-        const angle = (clamped / 100) * 360;
-        const rad = (angle - 90) * Math.PI / 180;
-        const x = cx + r * Math.cos(rad);
-        const y = cy + r * Math.sin(rad);
-        const large = angle > 180 ? 1 : 0;
-        wedge.setAttribute("d",
-            `M${cx},${cy} L${cx},${cy - r} A${r},${r} 0 ${large},1 ${x.toFixed(2)},${y.toFixed(2)} Z`);
+        el.style.transform = `scaleX(${clamped / 100})`;
+        if (clamped >= 100) {
+            el.classList.add("done");
+            el.classList.remove("active");
+        } else {
+            el.classList.add("active");
+            el.classList.remove("done");
+        }
     }
     if (label) label.textContent = `${Math.round(clamped)}%`;
 }
@@ -3729,14 +3739,13 @@ function buildInsightMarkup(insight) {
     const spotlight = insight.spotlight ? `<p class="insight-spotlight">${escapeHtml(insight.spotlight)}</p>` : "";
     const loading = insight.loading
         ? `<div class="insight-loading" role="status" aria-live="polite">
-               <div class="pizza-spinner" aria-hidden="true">
-                   <svg viewBox="0 0 40 40" class="pizza-svg">
-                       <circle cx="20" cy="20" r="18" class="pizza-track"/>
-                       <path d="" class="pizza-wedge" data-pizza-wedge/>
-                   </svg>
-                   <span class="pizza-pct" data-pizza-pct>0%</span>
+               <div class="insight-progress-bar" aria-hidden="true">
+                   <div class="insight-progress-track">
+                       <div class="insight-progress-fill" data-pizza-wedge></div>
+                   </div>
+                   <span class="insight-progress-pct" data-pizza-pct>0%</span>
                </div>
-               <span class="pizza-label">${escapeHtml(insight.loadingLabel || "Loading")}</span>
+               <span class="insight-progress-label">${escapeHtml(insight.loadingLabel || "Loading")}</span>
            </div>`
         : "";
     const chips = Array.isArray(insight.chips) && insight.chips.length

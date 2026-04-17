@@ -2162,12 +2162,32 @@ textarea {
     box-shadow: 0 6px 20px rgba(13, 71, 161, 0.35);
 }
 .q1-action-btn--secondary {
-    background: rgba(13, 71, 161, 0.08);
-    color: var(--accent-strong);
+    background: rgba(124, 58, 237, 0.10);
+    color: #6d28d9;
     flex-shrink: 0;
 }
 .q1-action-btn--secondary:not(:disabled):hover {
-    background: rgba(13, 71, 161, 0.14);
+    background: rgba(124, 58, 237, 0.18);
+}
+
+/* 커스텀 프로필 영역 — 기본 프로필과 시각 차별화 */
+#q1-custom-row {
+    background: rgba(124, 58, 237, 0.04);
+    border: 1px solid rgba(124, 58, 237, 0.12);
+    border-radius: 12px;
+    padding: 12px;
+}
+#q1-custom-row .q1-energy-fill {
+    background: #7c3aed;
+}
+#q1-custom-row .q1-energy-fill.done {
+    background: #16a34a;
+}
+#q1-custom-row .q1-energy-pct {
+    color: #7c3aed;
+}
+#q1-custom-row .q1-energy-pct.done {
+    color: #16a34a;
 }
 
 /* 커스텀 입력 래퍼 */
@@ -2180,7 +2200,7 @@ textarea {
     flex: 1;
     min-height: 44px;
     padding: 8px 14px;
-    border: 1.5px solid var(--line);
+    border: 1.5px solid rgba(124, 58, 237, 0.25);
     border-radius: 10px;
     font-size: 0.82rem;
     background: var(--paper);
@@ -2188,7 +2208,7 @@ textarea {
     transition: border-color 180ms ease;
 }
 .q1-custom-input:focus {
-    border-color: var(--accent);
+    border-color: #7c3aed;
     outline: none;
 }
 .q1-custom-input::placeholder {
@@ -2638,9 +2658,7 @@ textarea {
     overflow: visible;
 }
 
-.insight-card.insight-refresh {
-    animation: insightRefresh 320ms ease;
-}
+
 
 .insight-head {
     display: grid;
@@ -2683,57 +2701,70 @@ textarea {
 
 .insight-loading {
     margin: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    width: fit-content;
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: rgba(0, 51, 102, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: rgba(0, 51, 102, 0.05);
     color: var(--accent-strong);
     font-weight: 700;
     font-size: 0.84rem;
 }
 
-/* ── 피자 프로그레스 (면적 채우기) ── */
-.pizza-spinner {
-    position: relative;
-    width: 38px;
-    height: 38px;
-    flex-shrink: 0;
-}
-
-.pizza-svg {
-    width: 100%;
-    height: 100%;
-}
-
-.pizza-track {
-    fill: rgba(0, 51, 102, 0.06);
-    stroke: rgba(0, 51, 102, 0.15);
-    stroke-width: 1.2;
-}
-
-.pizza-wedge {
-    fill: var(--accent);
-    opacity: 0.85;
-    transition: d 0.2s ease-out;
-}
-
-.pizza-pct {
-    position: absolute;
-    inset: 0;
+/* ── 인사이트 프로그레스 바 (긴 바 형태) ── */
+.insight-progress-bar {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 0.55rem;
+    gap: 10px;
+    width: 100%;
+}
+.insight-progress-track {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(0, 51, 102, 0.08);
+    overflow: hidden;
+    position: relative;
+}
+.insight-progress-fill {
+    position: absolute;
+    inset: 0;
+    border-radius: 4px;
+    background: var(--accent-strong);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.insight-progress-fill.active::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+    animation: q1EnergyShimmer 1.8s ease-in-out infinite;
+}
+.insight-progress-fill.done {
+    background: #16a34a;
+    transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.insight-progress-fill.done::after { display: none; }
+.insight-progress-pct {
+    font-size: 0.74rem;
     font-weight: 800;
     color: var(--accent-strong);
-    pointer-events: none;
+    min-width: 36px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
 }
-
-.pizza-label {
+.insight-progress-fill.done ~ .insight-progress-pct,
+.insight-progress-pct.done { color: #16a34a; }
+.insight-progress-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
     white-space: nowrap;
+    margin-top: 4px;
 }
 
 .insight-loading-dots::after {
@@ -4804,13 +4835,20 @@ textarea {
 
 @keyframes insightRefresh {
     0% {
-        transform: translateY(6px);
-        opacity: 0.72;
+        transform: translateY(16px) scale(0.97);
+        opacity: 0;
     }
-    100% {
-        transform: translateY(0);
+    60% {
+        transform: translateY(-2px) scale(1.005);
         opacity: 1;
     }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+.insight-card.insight-refresh {
+    animation: insightRefresh 450ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes loadingDots {
