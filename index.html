@@ -279,12 +279,13 @@
                             <summary>💡 비용·보안에 대해 더 알아보기</summary>
                             <div class="byok-faq-content">
                                 <p><strong>Q. 제 키는 어디에 저장되나요?</strong></p>
-                                <p>A. 브라우저 <code>sessionStorage</code>에만 저장됩니다.</p>
+                                <p>A. 브라우저 <code>localStorage</code>에 난독화(Base64)하여 저장됩니다.</p>
                                 <ul>
-                                    <li>탭을 닫으면 자동 삭제</li>
-                                    <li>30분간 활동 없으면 자동 로그아웃</li>
+                                    <li>탭을 닫아도 키가 유지됩니다</li>
                                     <li>서버에는 어떤 형태로도 기록되지 않음</li>
+                                    <li>아래 버튼으로 언제든 키를 삭제할 수 있습니다</li>
                                 </ul>
+                                <button type="button" id="byok-clear-key-btn" class="byok-clear-key-btn" style="margin:8px 0;padding:8px 16px;border:1px solid #d32f2f;border-radius:8px;background:#fff;color:#d32f2f;cursor:pointer;font-size:13px;">저장된 키 삭제</button>
 
                                 <p><strong>Q. 우리 회사가 부담하는 비용은?</strong></p>
                                 <p>A. <strong>0원</strong>입니다.</p>

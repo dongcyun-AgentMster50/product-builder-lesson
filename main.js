@@ -61,6 +61,46 @@ let q3ManualAddedIds = new Set();
 let q3ManualRemovedIds = new Set();
 let q3AutoRecommendationMeta = null;
 
+/* ── BYOK 키 저장소 헬퍼 (localStorage + Base64 난독화) ── */
+const BYOK_STORAGE_KEY = "userApiKey_v2";
+
+function saveBYOKKey(plainKey) {
+    if (!plainKey) {
+        localStorage.removeItem(BYOK_STORAGE_KEY);
+        sessionStorage.removeItem("userApiKey"); // 구버전 정리
+        return;
+    }
+    try {
+        const encoded = btoa(unescape(encodeURIComponent(plainKey)));
+        localStorage.setItem(BYOK_STORAGE_KEY, encoded);
+        sessionStorage.removeItem("userApiKey"); // 구버전 정리
+    } catch (e) {
+        console.error("BYOK key save failed:", e);
+    }
+}
+
+function loadBYOKKey() {
+    try {
+        const encoded = localStorage.getItem(BYOK_STORAGE_KEY);
+        if (encoded) return decodeURIComponent(escape(atob(encoded)));
+        // 마이그레이션: 구버전 sessionStorage 키 → 신버전 localStorage
+        const legacy = sessionStorage.getItem("userApiKey");
+        if (legacy) {
+            saveBYOKKey(legacy);
+            return legacy;
+        }
+        return "";
+    } catch (e) {
+        console.error("BYOK key load failed:", e);
+        return "";
+    }
+}
+
+function clearBYOKKey() {
+    localStorage.removeItem(BYOK_STORAGE_KEY);
+    sessionStorage.removeItem("userApiKey");
+}
+
 /* ── 한국 도시 마스터 데이터 (행정안전부 2024.04 주민등록인구) ── */
 const KR_CITY_MASTER = {
     "특별시·광역시·특별자치시": [
@@ -595,7 +635,7 @@ function resolveEffectiveLocale(countryLocale) {
 
 // === BYOK: 키 형식 기반 provider 자동 감지 + 버튼 동기화 ===
 function detectActiveProvider() {
-    const key = String(sessionStorage.getItem("userApiKey") || "").trim();
+    const key = String(loadBYOKKey() || "").trim();
     if (!key) return null;
     if (key.startsWith("AIza")) return "gemini";
     if (key.startsWith("sk-ant-")) return "claude";
@@ -638,7 +678,7 @@ function syncProviderButtons() {
         try {
             const url = typeof input === "string" ? input : (input?.url || "");
             if (typeof url === "string" && url.startsWith("/api/")) {
-                const key = sessionStorage.getItem("userApiKey") || "";
+                const key = loadBYOKKey() || "";
                 if (key) {
                     const opts = { ...(init || {}) };
                     const headers = new Headers(opts.headers || (typeof input !== "string" ? input.headers : undefined) || {});
@@ -686,10 +726,19 @@ function bindEvents() {
     accessToggleBtn.addEventListener("click", toggleAccessCodeVisibility);
     const byokLogoutBtn = document.getElementById("byok-logout-btn");
     if (byokLogoutBtn) byokLogoutBtn.addEventListener("click", () => {
-        sessionStorage.removeItem("userApiKey");
+        clearBYOKKey();
         sessionStorage.removeItem("userGeminiModel");
         syncProviderButtons();
         location.reload();
+    });
+    const byokClearKeyBtn = document.getElementById("byok-clear-key-btn");
+    if (byokClearKeyBtn) byokClearKeyBtn.addEventListener("click", () => {
+        if (!window.confirm("저장된 API 키를 삭제하시겠습니까?")) return;
+        clearBYOKKey();
+        sessionStorage.removeItem("userGeminiModel");
+        byokClearKeyBtn.textContent = "키가 삭제되었습니다";
+        byokClearKeyBtn.disabled = true;
+        setTimeout(() => location.reload(), 1200);
     });
     logoutBtn.addEventListener("click", handleLogout);
     wizardLogoutBtn.addEventListener("click", handleLogout);
@@ -2367,11 +2416,40 @@ function highlightMatch(text, query) {
     return `${before}<mark>${match}</mark>${after}`;
 }
 
+// 도시 검색용 토큰 매칭 유틸
+// "서울시" → "서울특별시" 같은 행정구역 접미사 불일치 해결
+function normalizeCityQuery(text) {
+    if (!text) return "";
+    return String(text)
+        .toLowerCase()
+        .replace(/특별시|광역시|특별자치시|특별자치도|자치시|자치도/g, "")
+        .replace(/[시군구도읍면]$/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function tokenizeCityQuery(text) {
+    const normalized = normalizeCityQuery(text);
+    if (!normalized) return [];
+    return normalized
+        .split(/\s+/)
+        .map(t => t.trim())
+        .filter(t => t.length > 0);
+}
+
+function matchCityItem(searchText, query) {
+    if (!query) return true;
+    const normalizedTarget = normalizeCityQuery(searchText);
+    const queryTokens = tokenizeCityQuery(query);
+    if (queryTokens.length === 0) return true;
+    return queryTokens.every(token => normalizedTarget.includes(token));
+}
+
 function renderCityDropdownItems(query = "") {
     const q = query.trim().toLowerCase();
-    const MAX_RENDER = 80;
+    const MAX_RENDER = 200;
     let filtered = q
-        ? _cityItems.filter((item) => item.searchText.includes(q))
+        ? _cityItems.filter((item) => matchCityItem(item.searchText, q))
         : _cityItems;
     const totalCount = filtered.length;
     const truncated = filtered.length > MAX_RENDER;
@@ -2478,7 +2556,7 @@ function closeCityDropdown() {
     updateCityIconAria();
 }
 
-function selectCity(value, label) {
+function selectCity(value, label, isCustom = false) {
     cityHiddenInput.value = value;
     citySearchInput.value = label || value;
     citySearchWrap.classList.toggle("has-value", !!value);
@@ -2493,11 +2571,18 @@ function selectCity(value, label) {
     }
     // Trigger downstream updates
     updateStatePreview();
-    // 도시 선택 시 — 검색 시작 버튼 활성화 (자동 검색 대신 수동 트리거)
     syncQ1SearchButtons();
     if (value) {
-        // 도시 가이드 → 검색 대기 상태 표시
-        if (currentStep === 2) {
+        // 도시 선택 즉시 RAG 자동 호출
+        // 조건: (1) 유효한 도시 값 (2) RAG 실행 중 아님 (3) 커스텀 입력 아님
+        if (currentStep === 2 && !_q1CitySearchRunning && !isCustom) {
+            setTimeout(() => {
+                if (typeof triggerCityProfileSearch === "function") {
+                    triggerCityProfileSearch();
+                }
+            }, 150);
+        } else if (currentStep === 2) {
+            // 커스텀 입력이거나 RAG 실행 중 → 기존 안내 메시지 표시
             const selectedMarket = marketOptions.find((m) => m.siteCode === countrySelect.value);
             const country = selectedMarket ? resolveCountry(selectedMarket) : null;
             const localCity = getCityDisplayValue(country?.countryCode, value) || value;
@@ -2582,11 +2667,12 @@ function initCitySearchDropdown() {
             e.preventDefault();
             if (_cityFocusIdx >= 0 && options[_cityFocusIdx]) {
                 const opt = options[_cityFocusIdx];
-                selectCity(opt.dataset.value, opt.querySelector(".city-option-name")?.textContent || opt.dataset.value);
+                const isCustom = !!opt.dataset.custom;
+                selectCity(opt.dataset.value, opt.querySelector(".city-option-name")?.textContent || opt.dataset.value, isCustom);
             } else {
                 // Enter with typed text → use as custom city
                 const val = citySearchInput.value.trim();
-                if (val) selectCity(val, val);
+                if (val) selectCity(val, val, true);
             }
         } else if (e.key === "Escape") {
             e.preventDefault();
@@ -2605,8 +2691,9 @@ function initCitySearchDropdown() {
         const opt = e.target.closest(".city-option");
         if (!opt) return;
         const val = opt.dataset.value;
+        const isCustom = !!opt.dataset.custom;
         const label = opt.querySelector(".city-option-name")?.textContent || val;
-        selectCity(val, opt.dataset.custom ? val : label);
+        selectCity(val, isCustom ? val : label, isCustom);
     });
 
     // Click outside → close
@@ -2809,7 +2896,7 @@ function showByokScreen() {
     if (!byokScreen || !startBtn || !tabs?.length) { showGuideScreen(); return; }
 
     // Skip if key already stored
-    const existing = sessionStorage.getItem("userApiKey") || "";
+    const existing = loadBYOKKey() || "";
     if (existing) {
         accessScreen.classList.add("hidden");
         const logoutBtnByok = document.getElementById("byok-logout-btn");
@@ -2873,7 +2960,7 @@ function showByokScreen() {
             );
             if (!ok) return;
         }
-        sessionStorage.setItem("userApiKey", val);
+        saveBYOKKey(val);
         sessionStorage.setItem("userProvider", provider);
         sessionStorage.setItem("aiProvider", provider);
         // Gemini 모델 선택값 저장 (Flash/Pro)
@@ -4009,7 +4096,9 @@ function syncQ1SearchButtons() {
                     resolveCountry(marketOptions.find(m => m.siteCode === countrySelect.value))?.countryCode,
                     city
                 ) || city;
-                label.textContent = isKo ? `${localCity} 프로필 검색` : `Search ${localCity} profile`;
+                label.textContent = _latestCityProfile
+                    ? (isKo ? `${localCity} 다시 검색` : `Re-search ${localCity}`)
+                    : (isKo ? `${localCity} 프로필 검색` : `Search ${localCity} profile`);
             } else {
                 label.textContent = isKo ? "도시를 먼저 선택하세요" : "Select a city first";
             }
