@@ -4559,6 +4559,7 @@ function renderCityProfileInsight(countryName, localCity, profile, countryCode) 
 
     // 도시 프로필을 전역 저장 (태그 선택 후 카드 렌더에 사용)
     _latestCityProfile = { countryName, localCity, profile, available };
+    autoSelectTopProfileTags(_latestCityProfile);
 
     // 바텀시트 콘텐츠 준비
     const categoriesHtml = available.map(cat => `
@@ -4588,13 +4589,18 @@ function renderCityProfileInsight(countryName, localCity, profile, countryCode) 
         <div class="city-profile-grid">${categoriesHtml}</div>
     `;
 
-    // Magic Setup: 태그 선택형 UI
-    const tagsHtml = available.map(cat => `
-        <button type="button" class="magic-tag" data-cat-key="${cat.key}" style="--magic-accent:${cat.color}">
-            <span class="magic-tag-icon">${cat.icon}</span>
+    // Magic Setup: 태그 선택형 UI (자동 선택된 태그에 selected + 배지)
+    const tagsHtml = available.map(cat => {
+        const isAutoSelected = _magicSelected.has(cat.key);
+        const selClass = isAutoSelected ? " selected" : "";
+        const badge = (isAutoSelected && _magicAutoSelected)
+            ? `<span class="auto-selected-badge">${isKo ? "AI 추천" : "AI pick"}</span>`
+            : "";
+        return `<button type="button" class="magic-tag${selClass}" data-cat-key="${cat.key}" style="--magic-accent:${cat.color}">
+            ${badge}<span class="magic-tag-icon">${cat.icon}</span>
             <span class="magic-tag-label">${escapeHtml(isKo ? cat.labelKo : cat.labelEn)}</span>
-        </button>
-    `).join("");
+        </button>`;
+    }).join("");
 
     const customPlaceholder = isKo
         ? "예: 겨울철 한파 대비, 미세먼지 심한 지역, 다문화 가정, 반지하 습기 문제, 태풍 잦은 해안 도시..."
@@ -4648,6 +4654,35 @@ let _pendingCitySheetHtml = "";
 let _latestCityProfile = null;
 let _magicSelected = new Set();
 let _magicAppliedSelected = new Set();
+let _magicAutoSelected = false; // 자동 선택 여부 플래그
+
+/** Q1 프로필 로드 후 confidence 기반 상위 3개 태그 자동 선택 */
+function autoSelectTopProfileTags(profileData) {
+    if (!profileData || !profileData.profile) return;
+    const evidencePack = profileData.profile.evidence_pack || {};
+    const categoryKeys = ['climate', 'housing', 'family', 'daily_rhythm', 'safety',
+        'energy', 'health', 'pets', 'mobility', 'events'];
+
+    const scoredTags = categoryKeys
+        .filter(key => evidencePack[key])
+        .map(key => {
+            const conf = evidencePack[key].confidence || 'Medium';
+            const score = conf === 'High' ? 3 : conf === 'Medium' ? 2 : 1;
+            return { key, score };
+        })
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
+
+    if (scoredTags.length === 0) return;
+
+    _magicSelected.clear();
+    _magicAppliedSelected = new Set();
+    scoredTags.forEach(({ key }) => {
+        _magicSelected.add(key);
+        _magicAppliedSelected.add(key);
+    });
+    _magicAutoSelected = true;
+}
 
 /**
  * Q1 선택된 프로필 카테고리들의 원문을 AI 프롬프트용으로 구조화
@@ -4687,10 +4722,12 @@ function bindCityProfileDrawer(container) {
         btn.addEventListener("click", () => openCitySheet());
     });
 
-    // Magic Setup 태그 선택
-    _magicSelected.clear();
+    // Magic Setup 태그 선택 (자동 선택은 유지, 사용자 클릭 시 수동 모드 전환)
+    if (!_magicAutoSelected) _magicSelected.clear();
     container.querySelectorAll(".magic-tag").forEach(tag => {
         tag.addEventListener("click", () => {
+            _magicAutoSelected = false; // 수동 모드 전환
+            container.querySelectorAll(".auto-selected-badge").forEach(b => b.remove());
             const key = tag.dataset.catKey;
             if (_magicSelected.has(key)) {
                 _magicSelected.delete(key);
@@ -4699,6 +4736,8 @@ function bindCityProfileDrawer(container) {
                 _magicSelected.add(key);
                 tag.classList.add("selected");
             }
+            // 수동 변경 시 즉시 _magicAppliedSelected 동기화
+            _magicAppliedSelected = new Set(_magicSelected);
             renderMagicCards(container);
         });
     });
@@ -4754,6 +4793,11 @@ function bindCityProfileDrawer(container) {
     }
 
     renderQ1ScenarioReferencePanel(container);
+
+    // 자동 선택 시 카드 렌더링 즉시 트리거
+    if (_magicAutoSelected && _magicSelected.size > 0) {
+        renderMagicCards(container);
+    }
 }
 
 /** 커스텀 도시 리서치 — AI 마켓 리서치 실행 */
@@ -8679,7 +8723,8 @@ function generateScenario() {
         selectionSummary: latestSelectionSummary || null,
         // 🔴 Q1 도시 가중치 시그널 — 사용자가 10개 프로필 중 최대 3개 선택
         selectedCityProfileTags: Array.from(_magicAppliedSelected || []),
-        selectedCityProfileContext: buildCityProfileContextForAI(_magicAppliedSelected, _latestCityProfile)
+        selectedCityProfileContext: buildCityProfileContextForAI(_magicAppliedSelected, _latestCityProfile),
+        cityProfile: _latestCityProfile?.profile || null  // 전체 프로필 (폴백용)
     };
 
     // 매칭 프로세스 카드 표시 중이면 AI 즉시 시작하지 않음 (사용자가 시나리오 선택 후 시작)

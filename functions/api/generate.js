@@ -24,12 +24,29 @@ function buildGeneratePrompt(body) {
     // 🔴 Q1 도시 가중치 시그널
     const cityTags = Array.isArray(body?.selectedCityProfileTags) ? body.selectedCityProfileTags : [];
     const cityContext = body?.selectedCityProfileContext || null;
+    const cityFullProfile = body?.cityProfile || null;
 
-    const citySignalBlock = cityTags.length > 0 ? [
+    // 폴백: 태그 0개 + 전체 프로필 있으면 전체 프로필 사용
+    let effectiveCityTags = cityTags;
+    let effectiveCityContext = cityContext;
+    if (cityTags.length === 0 && cityFullProfile) {
+        effectiveCityTags = ['climate', 'housing', 'family', 'daily_rhythm', 'safety',
+            'energy', 'health', 'pets', 'mobility', 'events'].filter(k => cityFullProfile[k]);
+        const fallbackCtx = {};
+        for (const key of effectiveCityTags) {
+            fallbackCtx[key] = {
+                statement: cityFullProfile[key] || "",
+                evidence: cityFullProfile.evidence_pack?.[key] || null
+            };
+        }
+        effectiveCityContext = Object.keys(fallbackCtx).length > 0 ? fallbackCtx : null;
+    }
+
+    const citySignalBlock = effectiveCityTags.length > 0 ? [
         ``,
         `## 🔴 도시 가중치 신호 (Q1 사용자 선택 — 1순위 반영 필수)`,
-        `선택된 카테고리: ${cityTags.join(", ")}`,
-        cityContext ? `\n### 선택된 프로필 원문\n\`\`\`json\n${JSON.stringify(cityContext, null, 2)}\n\`\`\`` : "",
+        `선택된 카테고리: ${effectiveCityTags.join(", ")}`,
+        effectiveCityContext ? `\n### 선택된 프로필 원문\n\`\`\`json\n${JSON.stringify(effectiveCityContext, null, 2)}\n\`\`\`` : "",
         ``,
         `**반영 규칙:**`,
         `- 위 카테고리들의 localized_statement에 포함된 로컬 앵커(구/역/도로/시설)를 페르소나·상황·가치에 **반드시 인용**`,
