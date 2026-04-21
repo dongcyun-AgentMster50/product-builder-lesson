@@ -1,0 +1,61 @@
+{
+  "id": "scenario_017",
+  "depth_0": {
+    "category": "가전 활용",
+    "card_title": "집안일은 맡기고, 필요한 건 물어보세요",
+    "thumbnail_desc": "Bespoke AI 콤보 세탁건조기와 AI 맞춤 코스 화면",
+    "stats": {
+      "views": 80000,
+      "views_display": "8만",
+      "likes": 845
+    }
+  },
+
+  "depth_1": {
+    "title": "집안일은 맡기고, 필요한 건 물어보세요",
+    "description": "세탁부터 건조, 제품 사용까지 이제는 AI와 대화하며 더 똑똑하게 관리해 보세요. 세탁물 상태에 맞는 맞춤 세탁은 물론, 목소리만으로 원하는 설정을 실행하고 궁금한 점도 바로 해결할 수 있어요. 일상 속 가전 제품 사용이 훨씬 쉬워질 거예요.",
+    "device_icons": ["세탁기"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "세탁부터 건조까지 알아서 하는 AI 맞춤 코스",
+        "content": "매일 달라지는 우리 집 세탁물, 이제 세탁과 건조는 AI에게 맡겨 보세요. AI가 세탁물의 종류와 무게, 오염도를 파악해 세탁부터 건조까지 맞춤으로 진행해 줘요. 세탁물 무게에 맞춰 권장 세제량도 알아서 투입하니, 이제는 세탁물을 넣기만 하면 끝이에요.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 2,
+        "title": "터치와 음성으로 간편하게 제어하기",
+        "content": "비스포크 AI 콤보의 터치스크린을 통해 세탁과 건조에 대한 다양한 정보를 확인하고 제어해 보세요. 손으로 조작하기 어려울 때는 빅스비를 불러 이야기해 보세요. \"하이 빅스비, 타월 코스 설정하고 헹굼 한 번 추가해 줘.\" 빅스비가 똑똑하게 원하는 동작을 시작해 줄 거예요.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 3,
+        "title": "기기 사용이 궁금할 땐 빅스비에게 묻기",
+        "content": "궁금한 것이 생기면 주저하지 말고 빅스비를 불러 보세요. \"하이 빅스비, 세탁기 배수 필터 청소 방법이 뭐야?\", \"냉장고에 기름을 넣어도 돼?\", \"로봇 청소기 물걸레 세척 방법 알려줘\"와 같이 궁금한 것을 언제든지 묻고 정확한 답을 확인하여 제품을 알맞게 사용해 보세요.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "type": "세탁기" },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "type": "세탁기" },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "type": "세탁기" }
+    ],
+    "devices_used": ["세탁기"]
+  },
+
+  "depth_2": [],
+
+  "devices_detail": {
+    "세탁기": [
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ]
+  }
+}
