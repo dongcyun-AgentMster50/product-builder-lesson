@@ -52,8 +52,7 @@
       "plugin_id": "energy",
       "name": "에너지",
       "desc": "이번 달 AI 절약 모드 절약량, 누진 단계, 기기별 에너지 사용량, 탄소 배출량 인사이트",
-      "download_required": false,
-      "note": "SmartThings 기본 내장 서비스 (별도 다운로드 불필요)",
+      "download_required": true,
       "related_scenarios": ["scenario_015", "scenario_019"],
       "related_devices": ["에어컨", "세탁기", "건조기", "제습기", "냉장고", "TV", "식기세척기"]
     },
@@ -61,8 +60,7 @@
       "plugin_id": "find",
       "name": "파인드",
       "desc": "갤럭시 기기(스마트폰, 워치, 태블릿 등) 현재 위치 지도 표시 및 분실 기기 찾기",
-      "download_required": false,
-      "note": "SmartThings 기본 내장 서비스",
+      "download_required": true,
       "related_scenarios": [],
       "related_devices": ["스마트폰", "워치", "태블릿"]
     },
@@ -70,8 +68,7 @@
       "plugin_id": "home_monitor",
       "name": "홈 모니터",
       "desc": "보안 카메라, 도어/창문 센서, 동작 감지 등 홈 보안 모니터링",
-      "download_required": false,
-      "note": "SmartThings 기본 내장 서비스",
+      "download_required": true,
       "related_scenarios": [],
       "related_devices": ["카메라", "도어락", "센서"]
     },
