@@ -1,0 +1,187 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-04-20",
+    "total_scenarios": 27,
+    "categories": ["내 기기 관련", "시작하기", "안전", "스마트 라이프", "케어", "절약", "관리"],
+    "depth_structure": {
+      "depth_0": "27개 시나리오 카드 그리드",
+      "depth_1": "시나리오 상세 (설명 + 2~3개 스토리 + 구매가능 기기)",
+      "depth_2": "스토리 CTA 클릭 → 사용 방법 튜토리얼",
+      "depth_3": "루틴 만들기 / 자동화 설정 화면"
+    }
+  },
+
+  "scenarios": [
+    {
+      "id": "scenario_001",
+      "depth_0": {
+        "category": "스마트 라이프",
+        "card_title": "조명으로 생활의 편리함을 더해요",
+        "thumbnail_desc": "따뜻한 조명이 켜진 거실 이미지",
+        "stats": {
+          "views": 40000,
+          "views_display": "4만",
+          "likes": 584
+        }
+      },
+
+      "depth_1": {
+        "title": "조명으로 생활의 편리함을 더해요",
+        "description": "조명은 단순히 어둠을 밝히는 것을 넘어, 집 안의 분위기와 편안함을 완성하는 중요한 요소예요. 스마트싱스와 함께 상황에 어울리는 조명으로 감각적인 일상을 경험해 보세요.",
+        "device_icons": ["조명", "모션센서"],
+        "stories": [
+          {
+            "story_no": 1,
+            "title": "언제 어디서든 조명 제어하기",
+            "content": "스마트싱스와 스마트 조명으로 언제 어디서든 우리 집 조명을 제어해 보세요. 조명을 켜고 끄는 것뿐 아니라, 조명의 밝기와 색상까지 조절할 수 있어 분위기 있게 연출할 수 있어요. 스마트싱스로 손쉽게 조명을 켜고, 지금 내게 필요한 빛을 만들어 보세요.",
+            "cta_label": "사용 방법 확인",
+            "cta_type": "usage_guide",
+            "depth_2_ref": "usage_001_1"
+          },
+          {
+            "story_no": 2,
+            "title": "지금 딱 필요한 무드로 조명 켜기",
+            "content": "상황에 맞는 조명으로 일상에 분위기를 더해보세요. 운동할 땐 활기차게, 책을 읽을 땐 눈이 편안하게 조명이 바뀌어요. 잠들기 전엔 수면 조명을 켜 보세요. 조명이 은은하게 어두워지며 자동으로 꺼지니까, 불을 끄러 일어나지 않아도 돼요.",
+            "cta_label": "사용 방법 확인",
+            "cta_type": "routine_guide",
+            "depth_2_ref": "usage_001_2"
+          },
+          {
+            "story_no": 3,
+            "title": "움직임이 감지되면 켜지는 조명",
+            "content": "한밤중에 화장실을 갈 때, 캄캄한 어둠 속에서 조명 스위치를 찾곤 하죠. 그럴 땐 재실 센서와 스마트 조명을 함께 사용해 보세요. 움직임을 감지해 알아서 은은한 조명을 켜주니, 안전하게 다녀올 수 있답니다. 이제 더는 밤중에 조명 스위치를 찾는 일은 없을 거에요.",
+            "cta_label": "모션 조명 설정",
+            "cta_type": "routine_setup",
+            "depth_2_ref": "usage_001_3"
+          }
+        ],
+        "purchasable_products": [
+          {
+            "product_name": "나노리프 에센셜 매터 스마트 전구 1팩",
+            "brand": "Nanoleaf",
+            "type": "조명"
+          },
+          {
+            "product_name": "나노리프 에센셜 매터 스마트 전구",
+            "brand": "Nanoleaf",
+            "type": "조명"
+          },
+          {
+            "product_name": "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)",
+            "brand": "Nanoleaf",
+            "type": "조명"
+          }
+        ],
+        "devices_used": ["조명"]
+      },
+
+      "depth_2": [
+        {
+          "id": "usage_001_1",
+          "story_ref": 1,
+          "title": "기기 제어하기",
+          "intro": "스마트싱스에 기기를 추가했다면 이제 간편하게 제어해 보세요.",
+          "steps": [
+            {
+              "step_no": 1,
+              "instruction": "기본 동작 버튼을 눌러 기기에서 가장 많이 사용하는 동작을 제어해 보세요.",
+              "has_image": true
+            },
+            {
+              "step_no": 2,
+              "instruction": "에어컨 온도, 전구 밝기 등의 다른 제어 옵션을 더 보려면 기기 카드를 누르세요.",
+              "has_image": true
+            },
+            {
+              "step_no": 3,
+              "instruction": "기기 탭의 모든 기기에서 내 장소에 추가된 기기 전체를 확인하고 관리할 수 있습니다.",
+              "has_image": true
+            }
+          ]
+        },
+        {
+          "id": "usage_001_2",
+          "story_ref": 2,
+          "title": "루틴 만들기",
+          "intro": "루틴을 만들어 여러 기기를 동시에 제어해 보세요. 원할 때 루틴을 직접 눌러 수동으로 실행할 수 있고, 조건이 만족될 때 자동으로 실행되도록 설정할 수 있어요.",
+          "steps": [
+            {
+              "step_no": 1,
+              "instruction": "자동화 탭에서 + 버튼을 누르세요.",
+              "has_image": true
+            },
+            {
+              "step_no": 2,
+              "instruction": "루틴을 실행할 조건을 추가하려면 상단의 + 버튼을 누르세요.",
+              "has_image": true
+            },
+            {
+              "step_no": 3,
+              "instruction": "수동 루틴을 만들려면 조건을 [수동으로 실행]으로 선택하세요. 나머지 조건들은 조건이 만족될 때 자동으로 실행됩니다.",
+              "has_image": true
+            },
+            {
+              "step_no": 4,
+              "instruction": "루틴이 실행될 때의 동작을 추가하려면 아래에 있는 +를 누르세요.",
+              "has_image": true
+            },
+            {
+              "step_no": 5,
+              "instruction": "루틴의 이름을 설정하고 아이콘을 선택하세요.",
+              "has_image": true
+            },
+            {
+              "step_no": 6,
+              "instruction": "루틴 생성 어시스턴트로 AI와 대화하며 루틴을 만들 수도 있어요. 입력한 상황에 맞는 자동 루틴이 만들어집니다.",
+              "has_image": true
+            }
+          ]
+        },
+        {
+          "id": "usage_001_3",
+          "story_ref": 3,
+          "title": "루틴 만들기 (모션 조명 자동화)",
+          "routine_template": {
+            "trigger_label": "언제 실행할까요?",
+            "conditions": [
+              {
+                "type": "time",
+                "value": "오후 11:00 - 오전 6:00 (다음 날)",
+                "repeat": "매일"
+              },
+              {
+                "type": "device_sensor",
+                "device": "동작감지센서",
+                "event": "움직임 감지됨",
+                "note": "사용 가능한 기기 없음 (사용자가 기기 연결 필요)"
+              }
+            ],
+            "action_label": "무엇을 할까요?",
+            "actions": [
+              {
+                "step_no": 1,
+                "device": "조명",
+                "action": "켜기",
+                "params": { "brightness": 20, "color_temp": 0 },
+                "note": "사용 가능한 기기 없음 (사용자가 기기 연결 필요)"
+              },
+              {
+                "step_no": 2,
+                "device": "시스템",
+                "action": "대기",
+                "params": { "duration": "1분" }
+              },
+              {
+                "step_no": 3,
+                "device": "조명",
+                "action": "끄기",
+                "note": "기기를 선택하세요 (사용자 설정 필요)"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

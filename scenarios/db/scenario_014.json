@@ -1,0 +1,195 @@
+{
+  "id": "scenario_014",
+  "depth_0": {
+    "category": "내 기기 관련",
+    "card_title": "빠르게 열리는 스마트한 일상",
+    "thumbnail_desc": "갤럭시 워치/플립/태블릿으로 스마트싱스를 제어하는 장면",
+    "stats": {
+      "views": 80000,
+      "views_display": "8만",
+      "likes": 3778
+    }
+  },
+
+  "depth_1": {
+    "title": "빠르게 열리는 스마트한 일상",
+    "description": "집 안을 끄거나 에어컨을 켜는 일, 굳이 앱을 열어 여러 단계를 거칠 필요 없어요. 스마트폰과 태블릿, 워치에서 바로 기기를 제어하고, 평소 즐겨 쓰는 자동화 루틴까지 단번에 실행할 수 있어요. 어떤 기기를 쓰든 일상 속 스마트홈 경험을 더 편리하게 누려 보세요.",
+    "device_icons": ["워치", "로봇청소기", "TV", "조명", "커튼/블라인드", "스마트폰", "태블릿"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "갤럭시 Z 플립 커버에서 바로 제어하기",
+        "content": "갤럭시 Z 플립의 커버 화면에서 스마트싱스 [위젯]을 바로 사용할 수 있어요. 덕분에 플립을 열지 않고도 즐겨 사용하던 스마트싱스 [루틴]은 물론, 우리 집 기기들도 손쉽게 켜고 끌 수 있답니다. 이제부터 플립은 당신만의 휴대용 만능 단축키가 될 거에요.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 2,
+        "title": "갤럭시 태블릿에서 바로 제어하기",
+        "content": "갤럭시 태블릿에서 스마트싱스 [위젯]을 사용해 보세요. 자주 쓰는 루틴을 위에 두면 필요할 때 바로 실행할 수 있어요. TV 같은 삼성 스크린 기기도 위젯으로 간편하게 제어할 수 있어요. 홈 인사이트 위젯으로 우리 집의 주요 상황을 한 눈에 확인할 수 있답니다.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 3,
+        "title": "갤럭시 워치에서 바로 제어하기",
+        "content": "갤럭시 워치에서 스마트싱스 앱을 빠르게 실행하고 싶다면 [타일]을 활용해 보세요. 밖에서 운동 중이거나 스마트폰이 곁에 없어도 집 안의 기기를 제어하고 루틴을 실행할 수 있어요. TV와 조명처럼 자주 쓰는 기기는 워치에서 리모컨처럼 조작할 수 있고, 전원도 간편하게 끄고 켤 수 있답니다.",
+        "usage_notes": [
+          "본 경험은 갤럭시 워치가 네트워크(LTE, Wifi, Bluetooth)와 스마트폰에 연결되어 있을 때 지원 가능합니다."
+        ],
+        "cta_label": "사용 방법 확인",
+        "cta_type": "usage_guide",
+        "depth_2_ref": "usage_014_3"
+      },
+      {
+        "story_no": 4,
+        "title": "갤럭시 워치로 TV를 내 마음대로",
+        "content": "갤럭시 워치를 툭! 누르면 TV 제어가 시작돼요. 워치에서 제어하고 싶은 TV 항목을 선택하면 리모컨 없이도 TV를 제어할 수 있어요. 손을 움직여 TV를 제어하고, 손가락 제스처를 활용하여 원하는 메뉴를 선택할 수 있어요. 이제 더 편리하게 TV를 조작해 보세요.",
+        "usage_notes": [
+          "갤럭시 워치로 TV 제어하기는 TV의 일부 앱에서는 지원되지 않을 수 있습니다.",
+          "지원 기기 — 워치: 갤럭시 워치 4 이상 (Wear OS 5 이상), TV: 2025년형 TV (2023/2024형 TV는 Tizen 9.0으로 OS 업그레이드 이후 사용 가능)"
+        ],
+        "cta_label": "사용 방법 확인",
+        "cta_type": "usage_guide",
+        "depth_2_ref": "usage_014_4"
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "갤럭시 워치7 (LTE 자급제, 44mm)", "brand": "Samsung", "type": "워치" },
+      { "product_name": "Bespoke AI 스팀 플러스 자동 급배...", "brand": "Samsung", "type": "로봇청소기" },
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "type": "TV" },
+      { "product_name": "나노리프 에센셜 매터 스마트 전구 1팩", "brand": "Nanoleaf", "type": "조명" },
+      { "product_name": "갤럭시 워치7 (블루투스, 44mm)", "brand": "Samsung", "type": "워치" },
+      { "product_name": "Bespoke AI 스팀 플러스+먼지봉투+먼...", "brand": "Samsung", "type": "로봇청소기" }
+    ],
+    "devices_used": ["워치", "로봇청소기", "TV", "조명", "커튼/블라인드"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_014_3",
+      "story_ref": 3,
+      "title": "갤럭시 워치용 스마트싱스",
+      "type": "usage_guide",
+      "intro": "갤럭시 워치용 스마트싱스에서 모든 기기와 루틴을 제어할 수 있습니다.",
+      "steps": [
+        {
+          "step_no": 1,
+          "instruction": "장소를 선택하세요. 워치에서 선택한 장소의 모든 기기와 루틴을 제어할 수 있습니다.",
+          "has_image": true
+        },
+        {
+          "step_no": 2,
+          "instruction": "실행할 루틴을 누르세요.",
+          "has_image": true
+        },
+        {
+          "step_no": 3,
+          "instruction": "기기의 상태를 점검하고 기기의 기본 동작을 제어할 수 있습니다. 일부 기기에서는 워치에서 사용할 수 있는 추가 기능을 제공합니다.",
+          "has_image": true,
+          "device_extra_features": {
+            "label": "* 기기별 추가 기능",
+            "items": [
+              "(1) 조명: 밝기 조절, 색상 조절",
+              "(2) TV: 음량 조절, 음소거 설정, 채널 변경, 방향 버튼(4방향/확인/뒤로가기/홈)",
+              "(3) 스피커: 음량 조절, 음악 플레이어(시작/정지, 이전곡/다음곡)",
+              "(4) 에어컨: 냉방 온도 설정",
+              "(5) 로봇청소기: 자동청소 시작/정지, 충전 시작",
+              "(6) 태그: 벨소리 울리기 시작/중지, 음량 크게, 음량 작게",
+              "(7) 공기청정기: 바람 세기 조절",
+              "(8) 카메라: 라이브 영상 재생/정지, 마이크 켜기/끄기, 스피커 켜기/끄기",
+              "(9) 온도조절기: 모드 설정, 모드별 온도 조절",
+              "(10) 커튼: 열기/닫기/정지, 열기 비율 조절"
+            ]
+          }
+        },
+        {
+          "step_no": 4,
+          "instruction": "워치에 스마트싱스 타일을 추가하면 쉽고 빠르게 루틴을 실행할 수 있습니다. 시계 화면에서 마지막 타일이 나올 때까지 왼쪽으로 밀어 넘긴 후 3가지 타일 유형(루틴, 기기 제어, 멀티 컨트롤) 중에서 원하는 타일을 선택하세요.",
+          "tile_types": ["(1) 루틴", "(2) 기기 제어", "(3) 멀티 컨트롤"],
+          "has_image": true
+        },
+        {
+          "step_no": 5,
+          "instruction": "컴플리케이션을 사용하면 시계 화면에서 스마트싱스 앱을 바로 열 수 있습니다. 갤럭시 웨어러블 앱의 [시계 화면 > 꾸미기]에서 스마트싱스 앱 바로가기를 추가할 수도 있습니다.",
+          "has_image": true,
+          "complications": ["스마트싱스 메인 페이지", "모든 기기", "모든 루틴"],
+          "supported_devices": "Galaxy Watch 4 이상"
+        }
+      ]
+    },
+    {
+      "id": "usage_014_4",
+      "story_ref": 4,
+      "title": "갤럭시 워치에서 제스처 사용하기",
+      "type": "usage_guide",
+      "intro": "갤럭시 워치의 스마트싱스 앱에서 제스처로 TV를 제어할 수 있어요.",
+      "steps": [
+        {
+          "step_no": 1,
+          "instruction": "워치에서 제어하기를 원하는 TV 카드를 누르세요.",
+          "has_image": true
+        },
+        {
+          "step_no": 2,
+          "instruction": "워치 화면을 밀거나 손을 흔들어 포인터 모드를 실행하세요. 워치와 TV가 블루투스로 연결되면 TV 화면에 커서가 표시됩니다.",
+          "has_image": true,
+          "gestures": {
+            "label": "* TV 제어 제스처",
+            "items": [
+              "(1) 손목 이동: 커서 이동",
+              "(2) 베젤 회전: 화면 위아래 스크롤",
+              "(3) 엄지 검지 맞대기: 선택/확인",
+              "(4) 주먹 한 번 쥐기: 돌아가기/뒤로가기",
+              "(5) 주먹 두 번 쥐기: 홈으로 이동",
+              "(6) 앞뒤로 움직이기: 재생/일시정지"
+            ]
+          }
+        },
+        {
+          "step_no": 3,
+          "instruction": "화면을 덮어 포인터 모드를 종료할 수 있습니다.",
+          "has_image": true
+        }
+      ],
+      "supported_devices": {
+        "워치": "갤럭시 워치4 이상 (Wear OS 5 이상)",
+        "TV": "2025형 TV (2023/2024형 TV는 OS 업그레이드 이후 사용 가능)"
+      },
+      "notes": [
+        "제스처 인식 정확도를 높이려면 워치를 손목에 꼭 맞게 착용하세요.",
+        "이 기능은 TV의 일부 앱에서는 지원되지 않을 수 있습니다."
+      ]
+    }
+  ],
+
+  "devices_detail": {
+    "워치": [
+      { "product_name": "갤럭시 워치7 (LTE 자급제, 44mm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "갤럭시 워치7 (블루투스, 44mm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "갤럭시 워치7 40mm (LTE)", "brand": "Samsung", "purchase": true }
+    ],
+    "로봇청소기": [
+      { "product_name": "Bespoke AI 스팀 플러스 자동 급배수 (리폼비 포함)+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 플러스+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 울트라", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "조명": [
+      { "product_name": "나노리프 에센셜 매터 스마트 전구 1팩", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 에센셜 매터 스마트 전구", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)", "brand": "Nanoleaf", "purchase": true }
+    ],
+    "커튼/블라인드": [
+      { "product_name": "Eve MotionBlinds for Venetian Blinds", "brand": "Eve", "purchase": true },
+      { "product_name": "Eve MotionBlinds for Curtains", "brand": "Eve", "purchase": true },
+      { "product_name": "Eve MotionBlinds for Roller Blinds", "brand": "Eve", "purchase": true }
+    ]
+  }
+}

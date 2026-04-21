@@ -1,0 +1,162 @@
+{
+  "id": "scenario_008",
+  "depth_0": {
+    "category": "케어",
+    "card_title": "가족의 안녕을 지키는 패밀리 케어",
+    "thumbnail_desc": "부모님과 자녀가 스마트폰으로 연결된 장면",
+    "stats": {
+      "views": 20000,
+      "views_display": "2만",
+      "likes": 1064
+    }
+  },
+
+  "depth_1": {
+    "title": "가족의 안녕을 지키는 패밀리 케어",
+    "description": "스마트싱스 패밀리 케어로 가족의 하루를 따뜻하게 살펴보세요. 부모님이 잘 지내고 계시는지, 평소와 다른 이상은 없는지 멀리서도 확인하고 안심할 수 있어요. 부모님께서 자녀에게 공유하고 싶은 정보도 자유롭게 선택할 수 있어 부담 없이 시작할 수 있답니다.",
+    "device_icons": ["보안카메라", "냉장고", "TV", "세탁기", "오븐", "정수기", "스마트폰"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "부모님의 하루를 따뜻하게 살펴요",
+        "content": "패밀리 케어는 부모님 댁의 냉장고와 TV, 세탁기, 오븐, 스마트폰 등의 사용을 통해 부모님이 평소처럼 잘 지내시는지 알려줘요. 걸음 수를 통해 오늘도 활기차게 움직이셨는지 확인할 수 있고, 중요한 병원 일정도 미리 챙겨 드릴 수 있으니 멀리서도 부모님의 하루를 따뜻하게 살필 수 있어요.",
+        "cta_label": "패밀리 케어 시작",
+        "cta_type": "feature_flow",
+        "depth_2_ref": "usage_008_shared"
+      },
+      {
+        "story_no": 2,
+        "title": "일상의 작은 신호도 놓치지 않아요",
+        "content": "패밀리 케어는 멀리 사는 가족이 평소와 다르게 오랜 시간 동안 활동이 없을 때 알림으로 알려줘요. 혹시 몸이 안 좋은 건 아닐지, 깜빡 잠들어 계신 건 아닐지 전화 한 통으로 안부를 전해 보세요.",
+        "cta_label": "패밀리 케어 시작",
+        "cta_type": "feature_flow",
+        "depth_2_ref": "usage_008_shared"
+      },
+      {
+        "story_no": 3,
+        "title": "패밀리 케어 손쉽게 시작해요",
+        "content": "멀리 있어도 가족을 생각하는 마음은 같아요. 패밀리 케어로 가족들의 건강과 안녕을 살펴보세요. 초대 링크 하나만 쉽게 바로 이용할 수 있어요. 또, 가족에게 필요한 만큼만 정보 항목을 선택해 공유할 수 있으니 부담 없이 편하게 시작해 보세요.",
+        "cta_label": "패밀리 케어 시작",
+        "cta_type": "feature_flow",
+        "depth_2_ref": "usage_008_shared"
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "Infinite AI 김치플러스 1도어 키친...", "brand": "Samsung", "type": "김치냉장고" },
+      { "product_name": "Bespoke 큐커 오븐 32L (스팀쿠커)", "brand": "Samsung", "type": "오븐" },
+      { "product_name": "Bespoke 정수기 일체형 (냉/온/정...)", "brand": "Samsung", "type": "정수기" },
+      { "product_name": "Bespoke 김치플러스 3도어 키친핏...", "brand": "Samsung", "type": "김치냉장고" },
+      { "product_name": "AI 통버블 세탁기 19kg", "brand": "Samsung", "type": "세탁기" },
+      { "product_name": "Bespoke 큐커 멀티 22L", "brand": "Samsung", "type": "오븐" }
+    ],
+    "devices_used": ["로봇청소기", "냉장고", "TV", "세탁기", "오븐", "정수기"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_008_shared",
+      "story_ref": "1, 2, 3 공통",
+      "title": "패밀리 케어 시작",
+      "type": "feature_flow",
+      "note": "3개 스토리 모두 동일한 CTA → 동일한 플로우로 연결. 아내 계정만 초대된 상태라 화면이 단촐함.",
+      "flow_steps": [
+        {
+          "flow_step": 1,
+          "screen_title": "패밀리 케어 동의",
+          "intro": "패밀리 케어 서비스로 가족 구성원이 내 안부를 간편하게 확인할 수 있어요",
+          "guide": "계속하려면 다음에 동의해 주세요.",
+          "consent_items": [
+            "위치정보 제3자 제공 동의",
+            "민감정보 수집·이용 동의",
+            "민감정보 제3자 제공 동의",
+            "개인정보 제3자 제공 동의",
+            "전체"
+          ],
+          "cta": "동의"
+        },
+        {
+          "flow_step": 2,
+          "screen_title": "패밀리 케어 — 수락 대기 중",
+          "example_member": "어머니",
+          "status": "수락 대기 중",
+          "content": "요청 수락을 기다리는 중. 내가 보낸 활동 공유 요청을 어머니가 수락하면 안부를 확인할 수 있습니다. 요청을 수락하지 않았거나 요청을 다른 사람에게 보냈다면, 다시 요청을 보낼 수 있습니다.",
+          "action": "다시 요청하기"
+        },
+        {
+          "flow_step": 3,
+          "screen_title": "패밀리 케어 — 활성 대시보드",
+          "example_member": "아내",
+          "status_example": "14분 전 활동함",
+          "note": "수락 완료 후 표시되는 화면. 가족이 수락한 정보 항목에 따라 내용 다름.",
+          "dashboard_sections": [
+            {
+              "section": "안부 상태",
+              "content_example": "아내가 하루를 건강하게 보내고 있습니다.",
+              "action": "전화 연결 아이콘"
+            },
+            {
+              "section": "활동",
+              "data": {
+                "첫_활동": "오전 7:20",
+                "최근_활동": "오후 4:47",
+                "기기_예시": "선미의 Z Fold5",
+                "주간_활동그래프": "화~오늘 (7일)"
+              }
+            },
+            {
+              "section": "걸음 수",
+              "data_example": "3896걸음 / 6000걸음 (64%)"
+            },
+            {
+              "section": "기기 사용 정보",
+              "subsection": "모바일 사용량",
+              "data_example": {
+                "오늘": "5시간 50분",
+                "주간_평균": "6시간 0분"
+              }
+            },
+            {
+              "section": "일상 더 자세히 알기",
+              "content": "아내가 사용하는 스마트싱스 기기를 설정하면 일상 활동을 더 잘 파악할 수 있습니다.",
+              "actions": ["나중에", "지금 설정하기"]
+            }
+          ],
+          "bottom_tabs": ["활동", "위치", "일정"]
+        }
+      ]
+    }
+  ],
+
+  "devices_detail": {
+    "로봇청소기": [
+      { "product_name": "Bespoke AI 스팀 플러스 자동 급배수 (리폼비 포함)+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 플러스+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 울트라", "brand": "Samsung", "purchase": true }
+    ],
+    "냉장고": [
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 864L (81.2cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 하이브리드 4도어 901L (에너지 1등급 최저기준 대비 -35%, UV탈취)", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "세탁기": [
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ],
+    "오븐": [
+      { "product_name": "Bespoke 큐커 멀티 22L", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke 큐커 멀티 22L", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke 큐커 멀티 22L", "brand": "Samsung", "purchase": true }
+    ],
+    "정수기": [
+      { "product_name": "Bespoke AI 정수기 (냉/온/정수)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 정수기 (냉/온/정수)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke 정수기 일체형 (정수전용)+교체용 필터 1SET", "brand": "Samsung", "purchase": true }
+    ]
+  }
+}

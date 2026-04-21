@@ -1,0 +1,160 @@
+{
+  "id": "scenario_013",
+  "depth_0": {
+    "category": "시작하기",
+    "card_title": "가족과 함께 사용하는 스마트싱스",
+    "thumbnail_desc": "가족이 함께 스마트폰으로 스마트싱스를 사용하는 장면",
+    "stats": {
+      "views": 10000,
+      "views_display": "1만",
+      "likes": 1452
+    }
+  },
+
+  "depth_1": {
+    "title": "가족과 함께 사용하는 스마트싱스",
+    "description": "스마트싱스로 가족 모두가 함께 집을 관리해 보세요. 가족을 초대해 기기 제어 권한을 나누고, 각자 필요한 알림만 받아볼 수 있어요. 손님에게는 필요한 기기만 잠시 허용해 줄 수도 있답니다.",
+    "device_icons": ["에어컨", "TV", "조명", "커튼/블라인드", "스마트폰"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "스마트싱스에 초대하기 어렵지 않아요",
+        "content": "혼자만 쓰기 아까운 스마트싱스, 이제 가족과 함께 써보세요. 가족을 우리 집 스마트싱스에 초대하면 각자 기기를 제어하고 알림을 받을 수 있어요. 초대는 간단해요. 링크를 공유하거나 QR 코드를 스캔하면 바로 초대할 수 있답니다.",
+        "cta_label": "사용 방법 확인",
+        "cta_type": "usage_guide",
+        "depth_2_ref": "usage_013_1"
+      },
+      {
+        "story_no": 2,
+        "title": "필요한 만큼 제어하고 알림을 받아요.",
+        "content": "스마트싱스는 가족 구성원에 따라 제어할 수 있는 기기를 설정할 수 있어, 각자 필요한 기기만 나눠 가질 수 있어요. 그 뿐만 아니라, 기기 알림도 각자 필요한 것만 선택하여 받을 수 있어, 나에게 중요한 알림만 확인할 수 있어요.",
+        "cta_label": "알림설정",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_013_2"
+      },
+      {
+        "story_no": 3,
+        "title": "손님을 위한 맞춤형 스마트싱스",
+        "content": "집에 방문한 손님이 편안하게 머무르도록 스마트싱스로 세심하게 배려해 보세요. 필요한 기기를 선택해 제어 권한을 부여하면, 낯선 공간에서도 어려움 없이 편리하게 사용할 수 있도록 도와줄 수 있어요. 손님이 떠나면 권한은 자동으로 회수되니 보안도 걱정 없어요.",
+        "usage_notes": [
+          "자동으로 권한을 회수하는 기능은 [장소 QR 코드 > 사용 기능 설정 > 기기 제어만 > 만료일]에서 설정할 수 있습니다.",
+          "해당 기능은 정식 출시 준비 중으로 에고 없이 종료될 수 있습니다."
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로...", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "type": "TV" },
+      { "product_name": "나노리프 에센셜 매터 스마트 전구 1팩", "brand": "Nanoleaf", "type": "조명" },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로...", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "2025 The Frame Pro (163cm) 챔...", "brand": "Samsung", "type": "TV" },
+      { "product_name": "나노리프 에센셜 매터 스마트 전구", "brand": "Nanoleaf", "type": "조명" }
+    ],
+    "devices_used": ["에어컨", "TV", "조명", "커튼/블라인드"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_013_1",
+      "story_ref": 1,
+      "title": "함께 기기 제어하기",
+      "type": "usage_guide",
+      "intro": "멤버로 추가하면 내 스마트 기기를 함께 제어할 수 있습니다.",
+      "steps": [
+        {
+          "step_no": 1,
+          "instruction": "홈 탭에서 장소 이름을 누르고 장소 관리하기로 이동한 후 사람을 초대할 장소를 선택하세요.",
+          "has_image": true
+        },
+        {
+          "step_no": 2,
+          "instruction": "멤버 초대를 누른 다음 이메일 주소를 입력하거나 초대하려는 사람의 폰으로 QR 코드를 스캔하여 초대할 수 있습니다.",
+          "has_image": true
+        },
+        {
+          "step_no": 3,
+          "instruction": "초대장을 보내려면 받을 사람의 이메일 주소를 입력하세요.",
+          "has_image": true
+        },
+        {
+          "step_no": 4,
+          "instruction": "초대할 사람이 옆에 있으면 QR 코드 사용을 누르고 상대방 폰에서 QR 코드를 직접 스캔하여 빠르게 추가할 수 있습니다.",
+          "has_image": true
+        },
+        {
+          "step_no": 5,
+          "instruction": "초대를 수락한 사람은 내 장소의 모든 기기 상태를 확인하고 제어할 수 있습니다.",
+          "has_image": true,
+          "note": "* 장소 관리자만 멤버를 초대할 수 있습니다."
+        }
+      ]
+    },
+    {
+      "id": "usage_013_2",
+      "story_ref": 2,
+      "title": "알림",
+      "type": "feature_page",
+      "note": "스마트싱스 알림 설정 페이지 — 서비스별 알림 ON/OFF 토글 구조",
+      "page_structure": {
+        "toggle_top": "사용 중 (ON)",
+        "location_selector": "우리 집 (드롭다운)",
+        "advanced_settings": {
+          "items": [
+            { "name": "내가 이 장소에 있을 때만 알림", "toggle": "OFF" },
+            { "name": "방해 금지", "description": "알림을 받지 않을 시간을 설정할 수 있습니다." },
+            { "name": "긴급 알림 항상 받기", "toggle": "ON" }
+          ]
+        },
+        "device_notification_settings": {
+          "section": "기기 알림 설정",
+          "subsections": [
+            {
+              "name": "어디서나 사용",
+              "items": [
+                { "name": "세이프 버튼", "toggle": "ON" }
+              ]
+            }
+          ]
+        },
+        "service_notification_settings": {
+          "section": "서비스 알림 설정",
+          "items": [
+            { "name": "에너지", "toggle": "ON" },
+            { "name": "에어 케어", "toggle": "ON" },
+            { "name": "클로딩 케어", "toggle": "ON" },
+            { "name": "파인드", "toggle": "ON" },
+            { "name": "패밀리 케어", "toggle": "ON" },
+            { "name": "펫 케어", "toggle": "ON" },
+            { "name": "홈 케어", "toggle": "ON" }
+          ]
+        }
+      }
+    }
+  ],
+
+  "devices_detail": {
+    "에어컨": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 81.8㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 62.6㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 56.9㎡", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "조명": [
+      { "product_name": "나노리프 에센셜 매터 스마트 전구 1팩", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 에센셜 매터 스마트 전구", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)", "brand": "Nanoleaf", "purchase": true }
+    ],
+    "커튼/블라인드": [
+      { "product_name": "Eve MotionBlinds for Venetian Blinds", "brand": "Eve", "purchase": true },
+      { "product_name": "Eve MotionBlinds for Curtains", "brand": "Eve", "purchase": true },
+      { "product_name": "Eve MotionBlinds for Roller Blinds", "brand": "Eve", "purchase": true }
+    ]
+  }
+}

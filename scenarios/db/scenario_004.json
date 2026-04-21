@@ -1,0 +1,194 @@
+{
+  "id": "scenario_004",
+  "depth_0": {
+    "category": "케어",
+    "card_title": "잘 자고 잘 일어나는 우리 집의 비법",
+    "thumbnail_desc": "침실에서 편안하게 잠든 사람과 스마트 기기들",
+    "stats": {
+      "views": 30000,
+      "views_display": "3만",
+      "likes": 665
+    }
+  },
+
+  "depth_1": {
+    "title": "잘 자고 잘 일어나는 우리 집의 비법",
+    "description": "하루의 시작과 끝, 스마트싱스가 당신과 함께해요. 잠이 드는 순간엔 조명과 커튼이 자연스럽게 바뀌고, 아침이 오면 햇살과 함께 기분 좋은 하루가 열려요. 수면 환경도 세심하게 살펴 더 깊고 편안한 숙면을 도와준답니다.",
+    "device_icons": ["워치", "에어컨", "공기청정기", "TV", "조명", "커튼/블라인드", "온도/습도 센서", "공기질 센서", "링", "베개"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "잠드는 순간 펼쳐지는 숙면 분위기",
+        "content": "스마트싱스가 나만의 최적 수면 환경을 만들어줘요. 내가 잠이 들면, 침실의 조명은 자연스럽게 꺼지고 커튼은 닫히며 안락한 분위기가 완성돼요. 에어컨과 공기청정기도 모두 나의 수면에 맞춰 조용히 동작하니 쾌적한 숙면을 즐길 수 있어요. 갤럭시 워치나 갤럭시 링을 착용하면 내가 잠든 순간을 자동으로 인식해 이 모든 변화가 더욱 자연스럽게 이어져요.",
+        "usage_notes": [
+          "취침을 인식한 자동화 실행은 [루틴 만들기]에서 설정할 수 있습니다.",
+          "[수면 환경 리포트]를 설정한 후, 갤럭시 워치 혹은 갤럭시 링을 착용하고 하루 동안 취침하여 수면 관련 이벤트를 생성한 후에 수면 조건으로 설정할 수 있습니다.",
+          "수면 자동화를 사용하기 위해서는 '헬스 앱 연결' 설정에서 '취침 및 기상' 항목을 동의해야 하고, [민감정보 수집 > 이용 동의] 설정에서 '루틴을 실행하기 위한 수면 정보 처리' 항목을 동의해야 합니다.",
+          "갤럭시 웨어러블에서 수면 및 기상 시간을 감지하는 시간은 환경에 따라 달라질 수 있습니다."
+        ],
+        "cta_label": "수면 경험 시작",
+        "cta_type": "feature_flow",
+        "depth_2_ref": "usage_004_1"
+      },
+      {
+        "story_no": 2,
+        "title": "우리 집의 상쾌한 기상",
+        "content": "내가 잠에서 깨어나면, 스마트싱스가 우리 집의 아침을 열어줘요. 자동으로 커튼을 열어 아침 햇살이 기분 좋게 들어오게 하고, TV는 내가 좋아하는 채널을 알아서 틀어줘요. 평소에 뉴스를 즐겨 본다면 오늘의 뉴스로 아침을 시작할 수 있어요.",
+        "usage_notes": [
+          "취침을 인식한 자동화 실행은 [루틴 만들기]에서 설정할 수 있습니다.",
+          "갤럭시 웨어러블에서 수면 및 기상 시간을 감지하는 시간은 환경에 따라 달라질 수 있습니다."
+        ],
+        "cta_label": "편안하게 일어나기",
+        "cta_type": "routine_setup",
+        "depth_2_ref": "usage_004_2"
+      },
+      {
+        "story_no": 3,
+        "title": "수면에 최적화된 온습도 관리",
+        "content": "침실의 온도, 이산화탄소 농도, 조도 등 수면에 영향을 미치는 요소는 참 다양하죠. 지난밤 나의 수면 환경은 어떠했는지, 쾌적한 수면을 위해 개선이 필요한 부분은 없는지, 스마트싱스의 [수면 환경 리포트]가 알려주는 정보를 확인해 보세요.",
+        "cta_label": "수면 환경 리포트",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_004_3"
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "싱글 에어컨 무풍 4Way (1등급, 3...)", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "블루스카이 3100 (33.1㎡)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "에어모니터 플러스", "brand": "Samsung", "type": "공기질 센서" },
+      { "product_name": "AI Q9000 56.9㎡ (리모컨 포함)", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "Infinite AI 공기청정기 (100㎡, S...)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "Infinite AI 공기청정기 (33㎡...)", "brand": "Samsung", "type": "공기청정기" }
+    ],
+    "devices_used": ["워치", "에어컨", "공기청정기", "TV", "조명", "커튼/블라인드", "온도/습도 센서", "공기질 센서", "링", "베개"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_004_1",
+      "story_ref": 1,
+      "title": "수면 경험 시작 → 수면 환경 리포트",
+      "type": "feature_flow",
+      "note": "3단계 플로우: 소개 → 설정 → 리포트 결과. 설정 완료 후 usage_004_3과 동일한 화면으로 연결됨",
+      "flow_steps": [
+        {
+          "flow_step": 1,
+          "screen_title": "수면 환경 리포트 (소개)",
+          "content": "수면 리포트를 확인하여 우리 집을 숙면을 취할 수 있는 공간으로 만들어 보세요. 스마트 기기를 자동으로 제어하도록 설정하여 최적의 수면 환경을 만들 수 있습니다.",
+          "cta": "시작",
+          "has_image": true
+        },
+        {
+          "flow_step": 2,
+          "screen_title": "수면 환경 리포트 설정",
+          "content": "수면을 취하려면 우리 집의 온도, 습도, 조도, 이산화탄소 농도를 적절하게 관리하는 것이 중요합니다. 수면 리포트에 포함할 공간과 기기를 선택하여 수면 환경을 확인할 수 있습니다.",
+          "guide": "내가 주로 잠자는 방을 설정하세요.",
+          "selectable_rooms_example": ["침실1", "침실2", "기타", "거실", "안방"],
+          "cta_options": ["취소", "저장"],
+          "has_image": true
+        },
+        {
+          "flow_step": 3,
+          "screen_title": "수면 환경 리포트 (결과)",
+          "ref": "usage_004_3",
+          "note": "설정 완료 후 리포트 결과 화면으로 연결 — Story 3 CTA와 동일 화면"
+        }
+      ]
+    },
+    {
+      "id": "usage_004_2",
+      "story_ref": 2,
+      "title": "편안하게 일어나기 루틴",
+      "type": "routine_setup",
+      "routine_template": {
+        "trigger_label": "언제 실행할까요?",
+        "conditions": [
+          { "type": "time", "value": "오전 7:00", "repeat": "매일" }
+        ],
+        "action_label": "무엇을 할까요?",
+        "actions": [
+          { "step_no": 1, "device": "TV", "action": "매직스크린 켜기", "note": "사용 가능한 기기 없음" },
+          { "step_no": 2, "device": "블라인드", "action": "열림", "params": { "blind_open_percent": 40 }, "note": "사용 가능한 기기 없음" },
+          { "step_no": 3, "device": "조명", "action": "켜기", "params": { "brightness": 100, "color_temp_k": 5000 }, "note": "사용 가능한 기기 없음" },
+          { "step_no": 4, "device": "조명", "action": "켜기", "params": { "brightness": 100, "color_temp_k": 5000 }, "note": "두 번째 조명 구역" },
+          { "step_no": 5, "device": "시스템", "action": "대기", "params": { "duration": "30분" } },
+          { "step_no": 6, "device": "조명", "action": "끄기", "note": "기기를 선택하세요 (사용자 설정 필요)" }
+        ]
+      }
+    },
+    {
+      "id": "usage_004_3",
+      "story_ref": 3,
+      "title": "수면 환경 리포트",
+      "type": "feature_page",
+      "note": "Story 1 '수면 경험 시작' 설정 완료 후 연결되는 화면과 동일",
+      "report_structure": {
+        "room_selector": "침실1 (드롭다운 — 설정된 공간 선택 가능)",
+        "date_selector": "날짜 좌우 탐색 가능",
+        "base_time": "오후 11:00 - 오전 7:00",
+        "insight_message_example": "지난밤 자면서 더운 느낌은 없었나요? 지난밤 오후 11:00-오전 07:00에 침실1의 온도는 26.0℃로 23.1℃를 넘었어요.",
+        "sleep_env_graph": {
+          "metric": "온도",
+          "alert_value_example": "26°C",
+          "comfortable_range": "20.5 - 23.1°C",
+          "bar_colors": { "normal": "회색", "exceeded": "주황색" }
+        },
+        "sub_sections": [
+          { "title": "취침 시간에 기기 제어하기", "description": "수면 중에도 스마트싱스 기기가 자동으로 작동하도록 설정하여, 최적의 수면 환경을 만들어 보세요." },
+          { "title": "수면 환경 알아보기", "description": "수면 환경에 영향을 미치는 요인과 이를 효과적으로 관리하는 방법에 대해 알아보세요." }
+        ]
+      }
+    }
+  ],
+
+  "devices_detail": {
+    "워치": [
+      { "product_name": "갤럭시 워치7 (LTE 자급제, 44mm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "갤럭시 워치7 (블루투스, 44mm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "갤럭시 워치7 40mm (LTE)", "brand": "Samsung", "purchase": true }
+    ],
+    "에어컨": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 81.8㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 62.6㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 56.9㎡", "brand": "Samsung", "purchase": true }
+    ],
+    "공기청정기": [
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, 리유저블 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "조명": [
+      { "product_name": "나노리프 에센셜 매터 스마트 전구 1팩", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 에센셜 매터 스마트 전구", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)", "brand": "Nanoleaf", "purchase": true }
+    ],
+    "커튼/블라인드": [
+      { "product_name": "Eve MotionBlinds for Venetian Blinds", "brand": "Eve", "purchase": true },
+      { "product_name": "Eve MotionBlinds for Curtains", "brand": "Eve", "purchase": true },
+      { "product_name": "Eve MotionBlinds for Roller Blinds", "brand": "Eve", "purchase": true }
+    ],
+    "온도/습도 센서": [
+      { "product_name": "SONOFF Zigbee Temperature and Humidity Sensor", "brand": "SONOFF", "purchase": true },
+      { "product_name": "Smart Humidity Sensor", "brand": "Frient", "purchase": true },
+      { "product_name": "Smart Humidity Sensor", "brand": "Frient", "purchase": true }
+    ],
+    "공기질 센서": [
+      { "product_name": "에어모니터 플러스", "brand": "Samsung", "purchase": true },
+      { "product_name": "Air Monitor", "brand": "Samsung", "purchase": true },
+      { "product_name": "Air Monitor", "brand": "Samsung", "purchase": true }
+    ],
+    "링": [
+      { "product_name": "갤럭시 링", "brand": "Samsung", "purchase": true },
+      { "product_name": "갤럭시 링", "brand": "Samsung", "purchase": true },
+      { "product_name": "갤럭시 링", "brand": "Samsung", "purchase": true }
+    ],
+    "베개": [
+      { "product_name": "AI하린루 에스필로우 [딜럭스]", "brand": "AiHarinroo", "purchase": true },
+      { "product_name": "AI하린루 에스필로우 [딜럭스]", "brand": "AiHarinroo", "purchase": true }
+    ]
+  }
+}

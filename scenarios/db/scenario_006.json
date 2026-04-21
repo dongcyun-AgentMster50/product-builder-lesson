@@ -1,0 +1,199 @@
+{
+  "id": "scenario_006",
+  "depth_0": {
+    "category": "케어",
+    "card_title": "우리 아이를 위한 안심의 시작",
+    "thumbnail_desc": "아이가 집에 돌아오는 장면과 스마트 기기들",
+    "stats": {
+      "views": 10000,
+      "views_display": "1만",
+      "likes": 379
+    }
+  },
+
+  "depth_1": {
+    "title": "우리 아이를 위한 안심의 시작",
+    "description": "스마트싱스로 우리 아이에게 더 따뜻하고 안전한 집을 만들어 주세요. 학교에서 돌아온 순간부터 반가운 목소리로 맞이하고, 더운 날엔 시원한 공기까지 미리 준비해 줘요. 주방 기기 사용 시에도 세심하게 케어하니, 언제든 안심할 수 있답니다.",
+    "device_icons": ["스피커", "도어락", "에어컨", "쿡탑"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "다정한 목소리로 우리 아이 맞이하는 방법",
+        "content": "우리 아이가 집에 도착하는 순간 알림을 받고, 아이를 반갑게 맞이해 보세요. 스마트싱스를 통해 집 안에 있는 스피커로 아이에게 목소리로 인사를 전할 수 있어요. 다정한 목소리에 아이가 포근함을 느낄 거예요.",
+        "usage_notes": [
+          "[음성 방송하기]는 스피커가 연결되어 있을 때 사용 가능합니다."
+        ],
+        "cta_label": "루틴 설정",
+        "cta_type": "routine_setup",
+        "depth_2_ref": "usage_006_1"
+      },
+      {
+        "story_no": 2,
+        "title": "쾌적한 집으로 우리아이 맞이하기",
+        "content": "무더운 날씨, 아이가 집에 도착했을 때 스마트싱스가 알아서 에어컨을 켜고, 집 안을 시원하게 만들어 줄게요. 공기질이 좋지 않은 날에는 공기청정기를 틀어, 아이가 깨끗한 공기를 마시며 편히 쉴 수 있도록 도와줄 수 있답니다.",
+        "cta_label": "루틴 설정",
+        "cta_type": "routine_setup",
+        "depth_2_ref": "usage_006_2"
+      },
+      {
+        "story_no": 3,
+        "title": "주방 안전사고 대비하는 방법",
+        "content": "주방에서 가열 기기 사용은 늘 주의가 필요하죠. 인덕션이 켜져 있다면 [AI 끓음 감지]가 자동으로 화력을 조절하여 넘치지 않도록 도와줘요. 잠깐 외출했을 때 인덕션이 켜진다면 스마트싱스가 바로 알려줘서 아이가 있는 집도 걱정 없어요.",
+        "usage_notes": [
+          "[AI 끓음 감지]는 물 혹은 명시된 가정 간편식(HMR)에서만 가능하며, 일부 모델에 따라 지원되지 않을 수 있습니다.",
+          "지원 모델: NZ9000D"
+        ],
+        "cta_label": "루틴 설정",
+        "cta_type": "routine_setup",
+        "depth_2_ref": "usage_006_3"
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "블루스카이 3100 (33.1㎡)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "Bespoke 인덕선", "brand": "Samsung", "type": "쿡탑" },
+      { "product_name": "AI Q9000 56.9㎡ (리모컨 포함)", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "Infinite AI 공기청정기 (100㎡, S...)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "Infinite AI 인덕선 (플렉스존)", "brand": "Samsung", "type": "쿡탑" },
+      { "product_name": "뮤직 프레임 LS60D", "brand": "Samsung", "type": "스피커" }
+    ],
+    "devices_used": ["에어컨", "공기청정기", "쿡탑", "스피커"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_006_1",
+      "story_ref": 1,
+      "title": "루틴 만들기 — 아이 도착 알림",
+      "type": "routine_setup",
+      "routine_template": {
+        "trigger_label": "언제 실행할까요?",
+        "conditions": [
+          {
+            "type": "presence",
+            "event": "모든 멤버가 도착할 때",
+            "location": "마이 홈",
+            "member": "나"
+          }
+        ],
+        "action_label": "무엇을 할까요?",
+        "actions": [
+          {
+            "step_no": 1,
+            "device": "멤버에게 알림 보내기",
+            "action": "알림 전송",
+            "params": {
+              "message": "집에 도착했습니다.",
+              "target": "모든 멤버에게 전송"
+            }
+          }
+        ],
+        "test_button": "루틴 동작 테스트"
+      }
+    },
+    {
+      "id": "usage_006_2",
+      "story_ref": 2,
+      "title": "루틴 만들기 — 쾌적한 귀가 환경",
+      "type": "routine_setup",
+      "routine_template": {
+        "trigger_label": "언제 실행할까요?",
+        "preconditions": [
+          {
+            "type": "sensor",
+            "device": "온도",
+            "condition": "30°C 이상일 때"
+          }
+        ],
+        "conditions": [
+          {
+            "type": "presence",
+            "event": "모든 멤버가 도착할 때",
+            "location": "마이 홈",
+            "member": "나"
+          }
+        ],
+        "action_label": "무엇을 할까요?",
+        "actions": [
+          {
+            "step_no": 1,
+            "device": "에어컨",
+            "action": "켜기",
+            "note": "기기를 선택하세요 (사용자 설정 필요)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "usage_006_3",
+      "story_ref": 3,
+      "title": "루틴 만들기 — 주방 안전 알림",
+      "type": "routine_setup",
+      "note": "🆕 AND/OR 조건 분기 로직 첫 등장: '아래 조건을 모두 만족하면' vs '아래 조건 중 하나라도 만족하면'",
+      "routine_template": {
+        "trigger_label": "언제 실행할까요?",
+        "preconditions": [
+          {
+            "type": "presence",
+            "event": "모든 멤버가 떠날 때",
+            "location": "마이 홈",
+            "member": "나"
+          }
+        ],
+        "condition_logic": {
+          "options": ["아래 조건을 모두 만족하면 (AND)", "아래 조건 중 하나라도 만족하면 (OR)"],
+          "selected": "아래 조건 중 하나라도 만족하면 (OR)"
+        },
+        "conditions": [
+          {
+            "type": "device_state",
+            "device": "쿡탑",
+            "condition": "쿡탑 상태: 쿡탑 화구 켜짐",
+            "note": "사용 가능한 기기 없음 (사용자 연결 필요)"
+          },
+          {
+            "type": "device_state",
+            "device": "오븐",
+            "condition": "기기 상태: 동작 중",
+            "note": "사용 가능한 기기 없음 (사용자 연결 필요)"
+          }
+        ],
+        "action_label": "무엇을 할까요?",
+        "actions": [
+          {
+            "step_no": 1,
+            "device": "멤버에게 알림 보내기",
+            "action": "알림 전송",
+            "params": {
+              "message": "요리 중입니다.",
+              "target": "모든 멤버에게 전송"
+            }
+          }
+        ],
+        "test_button": "루틴 동작 테스트"
+      }
+    }
+  ],
+
+  "devices_detail": {
+    "에어컨": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 81.8㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 62.6㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 56.9㎡", "brand": "Samsung", "purchase": true }
+    ],
+    "공기청정기": [
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, 리유저블 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true }
+    ],
+    "쿡탑": [
+      { "product_name": "Bespoke AI 인덕선", "brand": "Samsung", "purchase": true },
+      { "product_name": "인덕선", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 인덕선 (플렉스존)", "brand": "Samsung", "purchase": true }
+    ],
+    "스피커": [
+      { "product_name": "뮤직 스튜디오 5 LS50H", "brand": "Samsung", "purchase": true },
+      { "product_name": "뮤직 스튜디오 7 LS70H", "brand": "Samsung", "purchase": true },
+      { "product_name": "뮤직 스튜디오 5 LS51H", "brand": "Samsung", "purchase": true }
+    ]
+  }
+}

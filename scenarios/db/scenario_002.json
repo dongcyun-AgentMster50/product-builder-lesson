@@ -1,0 +1,130 @@
+{
+  "id": "scenario_002",
+  "depth_0": {
+    "category": "스마트 라이프",
+    "card_title": "조명으로 생활에 필요한 알림 받기",
+    "thumbnail_desc": "세탁기와 스마트 조명이 함께 있는 공간 이미지",
+    "stats": {
+      "views": 7481,
+      "views_display": "7481",
+      "likes": 459
+    }
+  },
+
+  "depth_1": {
+    "title": "조명으로 생활에 필요한 알림 받기",
+    "description": "집 안의 조명을 더 똑똑하게 사용해 보세요. 알림을 놓치지 않도록 도와주고, 환기 타이밍을 알려주며, 방문 소식도 불빛으로 전해줍니다. 스마트싱스와 함께 조명의 새로운 쓰임을 경험해 보세요.",
+    "device_icons": ["세탁기", "조명", "초인종"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "세탁이 완료되면 조명이 켜져요",
+        "content": "세탁 강요 알림을 놓쳐 눅눅해진 세탁물, 한 번쯤 경험해 본 적이 있죠. 이제는 스마트싱스와 스마트 조명이 세탁 완료 알림을 놓치지 않도록 도와드려요. 세탁이 끝나면 침실이나 거실 조명이 켜지면서 색이 바뀌어, 알림 소리를 놓쳐도 한눈에 알아볼 수 있어요.",
+        "cta_label": "사용 방법 확인",
+        "cta_type": "routine_guide",
+        "depth_2_ref": "usage_002_1"
+      },
+      {
+        "story_no": 2,
+        "title": "조명이 알려주는 최고의 환기 타이밍",
+        "content": "날씨와 공기질을 일일이 확인하여 환기할 타이밍을 잡는 건 정말 번거로운 일이죠. 이제는 스마트싱스 에어 케어가 실외 공기질을 실시간으로 분석하고, 조명의 색으로 환기하기 좋은 때를 알려드릴게요.",
+        "cta_label": "환기 관리 설정",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_002_2"
+      },
+      {
+        "story_no": 3,
+        "title": "초인종이 울리면 조명으로도 알려줘요",
+        "content": "음악을 즐기거나 일에 집중하다 보면 초인종 소리를 놓칠 때가 있죠. 이제 초인종이 울릴 때, 조명으로도 방문객의 알림을 확인해 보세요. 소리에만 의존하지 않아도 되니, 중요한 순간을 놓치지 않을 수 있답니다.",
+        "cta_label": "사용 방법 확인",
+        "cta_type": "routine_guide",
+        "depth_2_ref": "usage_002_3"
+      }
+    ],
+    "purchasable_products": [
+      {
+        "product_name": "삼성 AI 도어캠",
+        "brand": "Samsung",
+        "type": "초인종/카메라"
+      },
+      {
+        "product_name": "AI 돌버블 세탁기 19kg",
+        "brand": "Samsung",
+        "type": "세탁기"
+      }
+    ],
+    "devices_used": ["세탁기", "조명", "초인종"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_002_1",
+      "story_ref": 1,
+      "title": "루틴 만들기",
+      "type": "routine_guide",
+      "ref_shared": "shared_routine_guide_v1",
+      "note": "공통 루틴 만들기 6단계 튜토리얼 (shared component)"
+    },
+    {
+      "id": "usage_002_2",
+      "story_ref": 2,
+      "title": "에어 케어",
+      "type": "feature_page",
+      "feature_name": "에어 케어 (Air Care)",
+      "intro": "창문을 열어 환기를 해도 될 만큼 실외 공기가 좋은지 조명 색상으로 확인하세요.",
+      "current_status_example": {
+        "outdoor_air_quality": "보통",
+        "indoor": {
+          "location": "거실",
+          "air_quality": "좋음",
+          "pm10": "측정중",
+          "pm2_5": "측정중",
+          "comfort": "습도 센서 필요",
+          "temperature": "25.6°C (적정)",
+          "humidity": "측정 불가"
+        }
+      },
+      "air_quality_chart": {
+        "metrics": ["PM 10", "PM 2.5", "PM 1.0"],
+        "sample_values": {
+          "PM10": 5,
+          "PM2_5": 5,
+          "PM1_0": 5,
+          "outdoor_PM10": 78,
+          "outdoor_PM2_5": 27
+        },
+        "unit": "μg/m³"
+      },
+      "auto_air_management": {
+        "description": "전구 불빛으로 실외 공기질 표시 사용 가능",
+        "toggle": "off (기본)"
+      },
+      "connected_devices_example": ["에어컨 1", "에어컨 2", "에어컨 3", "에어컨 4"],
+      "note": "사용자의 실제 연결 기기에 따라 화면 내용이 다르게 표시됨"
+    },
+    {
+      "id": "usage_002_3",
+      "story_ref": 3,
+      "title": "루틴 만들기",
+      "type": "routine_guide",
+      "ref_shared": "shared_routine_guide_v1",
+      "note": "공통 루틴 만들기 6단계 튜토리얼 (shared component)"
+    }
+  ],
+
+  "devices_detail": {
+    "세탁기": [
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ],
+    "조명": [
+      { "product_name": "나노리프 에센셜 매터 스마트 전구 1팩", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 에센셜 매터 스마트 전구", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)", "brand": "Nanoleaf", "purchase": true }
+    ],
+    "초인종": [
+      { "product_name": "Wired Doorbell Plus", "brand": "Ring", "purchase": true },
+      { "product_name": "Wired Doorbell Pro", "brand": "Ring", "purchase": true },
+      { "product_name": "Wired Doorbell Elite", "brand": "Ring", "purchase": true }
+    ]
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "id": "scenario_005",
+  "depth_0": {
+    "category": "안전",
+    "card_title": "안전한 집, 안심되는 하루",
+    "thumbnail_desc": "집 밖에서 스마트폰으로 집을 모니터링하는 캐릭터",
+    "stats": {
+      "views": 40000,
+      "views_display": "4만",
+      "likes": 1857
+    }
+  },
+
+  "depth_1": {
+    "title": "안전한 집, 안심되는 하루",
+    "description": "집을 지킨다는 건 단순한 기능이 아니라, 늘 곁에 있다는 든든함이죠. 스마트싱스는 집 안에서나 밖에서나 당신의 하루를 지켜줘요. 작은 불편부터 위급한 상황까지, 생활 속 모든 순간을 안전하게 감싸주는 스마트한 보안 경험을 만나 보세요.",
+    "device_icons": ["보안카메라", "도어락", "TV", "조명", "스마트폰"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "집을 비워도 안심할 수 있도록",
+        "content": "집을 오래 비울 땐, 비어 있는 집이 신경 쓰이기 마련이죠. 스마트싱스는 집 안에 누군가 있는 것처럼 재실 분위기를 만들 수 있도록 루틴을 추천해 줘요. TV, 조명, 로봇청소기와 공기청정기까지 일상처럼 움직여주니, 오랜 기간 집을 비워도 안심할 수 있어요.",
+        "usage_notes": [
+          "재실 연출 루틴 추천은 갤럭시 Z 플립 7, 갤럭시 Z 폴드 7 제품에서 지원됩니다."
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 2,
+        "title": "홈 모니터링까지 가능한 로봇청소기",
+        "content": "집을 비울 때도 집 안의 상황이 궁금할 때가 있죠. 우리 집 로봇청소기는 이제 청소를 넘어, 예약된 시간에 집 안을 순찰하며 살펴줘요. 움직임이 감지되면 즉시 알림을 보내주니, 촬영된 영상이나 실시간 모니터링으로 상황을 바로 확인할 수 있어 언제 어디서든 안심할 수 있어요.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 3,
+        "title": "언제나 안심할 수 있도록, 스마트싱스 세이프",
+        "content": "도움이 필요할 땐, 스마트싱스 세이프로 신속하게 도움을 요청할 수 있어요. 어두운 귀갓길이 불안할 때, 인적이 드문 곳에서 갑자기 넘어졌을 때, 세이프 버튼을 눌러 보세요. 가족에게 나의 위치와 상황이 즉시 전달됩니다. 유료 서비스를 구독하면 24시간 콜센터까지 자동으로 연결되어 한층 더 든든하게 지켜줘요.",
+        "usage_notes": [
+          "응급 구조 자동 연결은 유료 서비스 구독 시 제공되며, 미국 지역에서 지원됩니다."
+        ],
+        "cta_label": "세이프 시작",
+        "cta_type": "feature_flow",
+        "depth_2_ref": "usage_005_3"
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "블루스카이 3100 (33.1㎡)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "Infinite AI 공기청정기 (100㎡, S...)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필...)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "2025 OLED SF90 (163cm)", "brand": "Samsung", "type": "TV" }
+    ],
+    "devices_used": ["로봇청소기", "공기청정기", "TV", "조명"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_005_3",
+      "story_ref": 3,
+      "title": "세이프 시작 (설치 플로우)",
+      "type": "feature_flow",
+      "note": "국적별 전화번호 입력 및 권한 동의 단계 포함 — 상세 단계는 생략, 기능 존재 여부만 기록",
+      "flow_steps": [
+        {
+          "flow_step": 1,
+          "screen_title": "긴급 상황에서 세이프 버튼으로 도움을 요청하세요 (소개)",
+          "content": "긴급 상황 시, 내 위치를 멤버들에게 공유하여 도움을 받으세요. 프리미엄 요금제를 이용하면 간편하게 긴급 출동 서비스도 받을 수 있어요.",
+          "location_selector": "우리 집 (드롭다운)",
+          "guide": "세이프 버튼이 이 장소에 추가됩니다. [홈 탭 > 즐겨찾기] 또는 [기기 탭 > 어디서나 사용]에서 확인할 수 있습니다.",
+          "cta": "시작"
+        },
+        {
+          "flow_step": 2,
+          "screen_title": "권한 요청 및 약관 동의",
+          "content": "전화 권한 요청, 이용약관, 개인정보 제3자 제공 동의 포함",
+          "permissions": [
+            "스마트싱스에서 전화를 걸고 관리하도록 허용 (허용 / 허용 안함)",
+            "이용약관 동의",
+            "개인정보 제3자 제공 동의"
+          ],
+          "note": "국적별 전화번호 입력 단계 포함 (상세 생략)"
+        },
+        {
+          "flow_step": 3,
+          "screen_title": "위치 공유 멤버 설정",
+          "content": "긴급 상황 시 위치를 공유할 멤버를 설정하는 단계",
+          "note": "상세 단계 생략"
+        },
+        {
+          "flow_step": 4,
+          "screen_title": "세이프 버튼 설치 완료",
+          "content": "이제 긴급 상황에서 도움 요청 버튼을 눌러 도움을 요청할 수 있습니다.",
+          "toast": "전화번호 인증이 완료되었습니다.",
+          "cta": "다음"
+        },
+        {
+          "flow_step": 5,
+          "screen_title": "세이프 버튼 메인 화면 (설치 완료 후)",
+          "sections": [
+            {
+              "title": "기록",
+              "content": "아직 사용 기록이 없습니다. 등록된 멤버와 내가 보낸 도움 요청이 여기에 표시됩니다."
+            },
+            {
+              "title": "도움 요청 연습하기",
+              "content": "실제 상황에 대비할 수 있도록 미리 연습해 보세요. 긴급 상황이 발생했을 때 어떻게 행동해야 하는지를 알 수 있어 침착하게 대응할 수 있습니다."
+            }
+          ],
+          "main_cta": "도움 요청 (빨간 버튼)"
+        }
+      ]
+    }
+  ],
+
+  "devices_detail": {
+    "로봇청소기": [
+      { "product_name": "Bespoke AI 스팀 플러스 자동 급배수 (리폼비 포함)+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 플러스+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 울트라", "brand": "Samsung", "purchase": true }
+    ],
+    "공기청정기": [
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, 리유저블 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "조명": [
+      { "product_name": "나노리프 에센셜 매터 스마트 전구 1팩", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 에센셜 매터 스마트 전구", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)", "brand": "Nanoleaf", "purchase": true }
+    ]
+  }
+}

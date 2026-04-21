@@ -1,0 +1,101 @@
+{
+  "_meta": {
+    "description": "여러 시나리오에서 반복 사용되는 공통 Depth2 콘텐츠",
+    "usage": "scenario의 depth_2에서 ref_shared 키로 참조"
+  },
+  "shared_routine_guide_v1": {
+    "id": "shared_routine_guide_v1",
+    "title": "루틴 만들기",
+    "type": "routine_guide",
+    "intro": "루틴을 만들어 여러 기기를 동시에 제어해 보세요. 원할 때 루틴을 직접 눌러 수동으로 실행할 수 있고, 조건이 만족될 때 자동으로 실행되도록 설정할 수 있어요.",
+    "steps": [
+      {
+        "step_no": 1,
+        "instruction": "자동화 탭에서 + 버튼을 누르세요.",
+        "has_image": true
+      },
+      {
+        "step_no": 2,
+        "instruction": "루틴을 실행할 조건을 추가하려면 상단의 + 버튼을 누르세요.",
+        "has_image": true
+      },
+      {
+        "step_no": 3,
+        "instruction": "수동 루틴을 만들려면 조건을 [수동으로 실행]으로 선택하세요. 나머지 조건들은 조건이 만족될 때 자동으로 실행됩니다.",
+        "has_image": true
+      },
+      {
+        "step_no": 4,
+        "instruction": "루틴이 실행될 때의 동작을 추가하려면 아래에 있는 +를 누르세요.",
+        "has_image": true
+      },
+      {
+        "step_no": 5,
+        "instruction": "루틴의 이름을 설정하고 아이콘을 선택하세요.",
+        "has_image": true
+      },
+      {
+        "step_no": 6,
+        "instruction": "루틴 생성 어시스턴트로 AI와 대화하며 루틴을 만들 수도 있어요. 입력한 상황에 맞는 자동 루틴이 만들어집니다.",
+        "has_image": true
+      }
+    ],
+    "confirmed_in_scenarios": [
+      "scenario_001",
+      "scenario_002"
+    ]
+  },
+  "shared_device_control_guide_v1": {
+    "id": "shared_device_control_guide_v1",
+    "title": "기기 제어하기",
+    "type": "usage_guide",
+    "intro": "스마트싱스에 기기를 추가했다면 이제 간편하게 제어해 보세요.",
+    "steps": [
+      {
+        "step_no": 1,
+        "instruction": "기본 동작 버튼을 눌러 기기에서 가장 많이 사용하는 동작을 제어해 보세요.",
+        "has_image": true
+      },
+      {
+        "step_no": 2,
+        "instruction": "에어컨 온도, 전구 밝기 등의 다른 제어 옵션을 더 보려면 기기 카드를 누르세요.",
+        "has_image": true
+      },
+      {
+        "step_no": 3,
+        "instruction": "기기 탭의 모든 기기에서 내 장소에 추가된 기기 전체를 확인하고 관리할 수 있습니다.",
+        "has_image": true
+      }
+    ],
+    "confirmed_in_scenarios": [
+      "scenario_001",
+      "scenario_003"
+    ]
+  },
+  "shared_smartthings_start_guide_v1": {
+    "id": "shared_smartthings_start_guide_v1",
+    "title": "스마트싱스 시작하기",
+    "type": "usage_guide",
+    "intro": "스마트싱스로 스마트한 생활을 경험해 보세요.",
+    "steps": [
+      {
+        "step_no": 1,
+        "instruction": "Wi-Fi 네트워크에 연결되었는지, 삼성 계정에 로그인되었는지 확인하세요.",
+        "has_image": true
+      },
+      {
+        "step_no": 2,
+        "instruction": "스마트싱스는 TV, 가전제품, 조명 등 다양한 스마트 기기를 지원합니다. 아래 링크를 눌러, 스마트싱스에서 지원되는 기기를 확인해 보세요.",
+        "has_link": true,
+        "link_label": "지원되는 기기"
+      },
+      {
+        "step_no": 3,
+        "instruction": "지원되는 기기가 있다면, 지금 바로 시작해 보세요."
+      }
+    ],
+    "confirmed_in_scenarios": [
+      "scenario_003"
+    ]
+  }
+}

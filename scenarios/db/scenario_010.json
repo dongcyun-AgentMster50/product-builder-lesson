@@ -1,0 +1,187 @@
+{
+  "id": "scenario_010",
+  "depth_0": {
+    "category": "내 기기 관련",
+    "card_title": "맵뷰로 우리 집 관리 한 번에",
+    "thumbnail_desc": "집 평면도 맵뷰와 스마트폰을 들고 있는 캐릭터",
+    "stats": {
+      "views": 140000,
+      "views_display": "14만",
+      "likes": 3709
+    }
+  },
+
+  "depth_1": {
+    "title": "맵뷰로 우리 집 관리 한 번에",
+    "description": "스마트싱스 맵뷰로 우리 집의 모습을 한눈에 살펴보세요. 내가 원하는 방식으로 손쉽게 맵뷰를 만들고, 집 안 곳곳의 온도와 공기질, 에너지 사용량까지 확인할 수 있어요.",
+    "device_icons": ["로봇청소기", "냉장고", "TV", "세탁기"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "손쉽게 만드는 우리 집 맵뷰",
+        "content": "우리 집을 한눈에 볼 수 있는 맵뷰를 다양한 방법으로 만들어 보세요. 지도에서 우리 집을 선택해 평면도를 불러오거나, 직접 찍은 평면도 사진이나 손 그림을 등록해 맵뷰를 만들 수도 있어요. 로봇청소기가 있다면, 이미 만들어둔 맵을 활용하여 더욱 간편하게 맵뷰를 만들 수 있어요.",
+        "cta_label": "맵뷰 바로가기",
+        "cta_type": "feature_flow",
+        "depth_2_ref": "usage_010_1"
+      },
+      {
+        "story_no": 2,
+        "title": "한눈에 살피고 제어하는 맵뷰",
+        "content": "우리 집을 꼭 닮은 맵뷰에서 온도와 공기질, 에너지 사용량까지 한눈에 살펴보세요. 맵뷰에서 에어컨을 제어해 집 안을 쾌적하게 유지하고, 불필요하게 켜진 기기도 손쉽게 끌 수 있어요. 우리 집 상태를 한눈에 파악하고 간편하게 제어할 수 있으니, 한층 더 편리한 스마트홈을 경험해 보세요.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 3,
+        "title": "집 안 어디서든 맵뷰와 함께",
+        "content": "우리 집을 한눈에 살펴볼 수 있는 맵뷰, 스마트폰에서는 물론 TV의 큰 화면에서도 확인해 보세요. 넓은 화면에서 집안 곳곳을 한눈에 보고 기기를 제어할 수 있어요. 스크린이 있는 비스포크 AI 패밀리허브와 비스포크 AI 콤보에서도 맵뷰를 확인할 수 있어, 이제 집 안 어디서든 편리하게 우리 집을 관리할 수 있답니다.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "Infinite AI 김치플러스 1도어 키친...", "brand": "Samsung", "type": "김치냉장고" },
+      { "product_name": "Bespoke 김치플러스 3도어 키친핏...", "brand": "Samsung", "type": "김치냉장고" },
+      { "product_name": "AI 통버블 세탁기 19kg", "brand": "Samsung", "type": "세탁기" },
+      { "product_name": "2025 OLED SF90 (163cm)", "brand": "Samsung", "type": "TV" }
+    ],
+    "devices_used": ["로봇청소기", "냉장고", "TV", "세탁기"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_010_1",
+      "story_ref": 1,
+      "title": "맵뷰 바로가기 — 맵뷰 생성 전체 플로우",
+      "type": "feature_flow",
+      "note": "🆕 가장 복잡한 feature_flow. 대용량 다운로드(262MB) + 3D 오브젝트 다운로드 포함. 맵뷰 편집기(레이아웃+인테리어) 전체 진행.",
+      "flow_steps": [
+        {
+          "flow_step": 1,
+          "screen_title": "맵뷰 다운로드 안내 팝업",
+          "content": "이 기능을 사용하려면 맵뷰를 다운로드하세요.",
+          "actions": ["취소", "다운로드"]
+        },
+        {
+          "flow_step": 2,
+          "screen_title": "맵뷰 앱 다운로드 중",
+          "content": "맵뷰 기능 패키지 다운로드 진행",
+          "download_info": "262MB 패키지 (예: 80MB/262MB, 32%)",
+          "action": "백그라운드에서 진행"
+        },
+        {
+          "flow_step": 3,
+          "screen_title": "3D 오브젝트 다운로드 중",
+          "content": "3D 오브젝트 다운로드 중... (예: 42%)",
+          "ui": "스마트싱스 앱 내 좌측 사이드 메뉴 표시 (홈/기기/라이프/자동화/메뉴/알림)",
+          "note": "맵뷰 앱 다운로드 후 3D 에셋 별도 다운로드 단계 존재"
+        },
+        {
+          "flow_step": 4,
+          "screen_title": "맵뷰 메인 — 3D 오브젝트 소개 팝업",
+          "content": "이제 가전제품을 3D로 보세요. TV, 냉장고, 세탁기 등의 가전제품이 3D 오브젝트로 표시되고, 기기의 상태도 실시간으로 오브젝트에 반영됩니다. 맵뷰 편집에서 3D 오브젝트를 적용해 보세요.",
+          "actions": ["적용 안 함", "적용"],
+          "ui_context": {
+            "top_bar": ["모두 꺼짐", "26.0°C", "285.58kWh"],
+            "map_elements": ["3D 맵뷰", "방별 색상 구분", "기기 핀", "세탁기 남은 시간(00:42)"],
+            "view_toggle": "3D 버튼",
+            "mini_map": "우하단"
+          }
+        },
+        {
+          "flow_step": 5,
+          "screen_title": "맵뷰 편집기 — 온보딩 (1/2): 레이아웃 편집",
+          "content": "레이아웃 편집: 방 배치, 방 구분선, 벽 등 평면 구조를 편집하는 단계",
+          "tabs": ["레이아웃 (활성)", "인테리어"],
+          "right_panel_items": ["방", "마당", "벽", "벽", "방 구분선", "방 구분선"],
+          "bottom_actions": ["취소", "완료"],
+          "pagination": "1/2"
+        },
+        {
+          "flow_step": 6,
+          "screen_title": "맵뷰 편집기 — 온보딩 (2/2): 인테리어 편집",
+          "content": "인테리어 편집: 기기와 가구를 평면도 위에 배치하는 단계",
+          "tabs": ["레이아웃", "인테리어 (활성)"],
+          "pagination": "2/2",
+          "actions": ["이전", "완료"]
+        },
+        {
+          "flow_step": 7,
+          "screen_title": "맵뷰 편집기 — 레이아웃 탭 (전체)",
+          "content": "평면도 편집 모드 — 방 추가, 벽 배치, 층 추가 가능",
+          "tabs": ["레이아웃 (활성)", "인테리어"],
+          "right_panel": {
+            "categories": ["방", "마당", "벽", "방 구분선"],
+            "elements": ["방", "마당", "벽(실선)", "벽(점선)", "방 구분선(실선)", "방 구분선(점선)"]
+          },
+          "bottom_tools": ["실행취소", "다시실행", "3D 전환"],
+          "floor_button": "층 추가",
+          "actions": ["취소", "완료"]
+        },
+        {
+          "flow_step": 8,
+          "screen_title": "맵뷰 편집기 — 인테리어 탭 (전체)",
+          "content": "기기 및 가구 배치 모드 — 실제 연결된 기기와 3D 가구 오브젝트 배치",
+          "tabs": ["레이아웃", "인테리어 (활성)"],
+          "right_panel": {
+            "sub_tabs": ["기기 (활성)", "가구", "구조", "데코"],
+            "device_groups": ["기타 (번개/조명 아이콘)", "어디서나 사용 (스마트싱스 센서)"],
+            "furniture_list": [
+              "넓은 소파", "소파", "퀸 침대", "더블 침대", "싱글 침대", "아기 침대",
+              "원형 탁자", "탁자", "6인용 식탁", "4인용 식탁"
+            ]
+          },
+          "map_ui": {
+            "view_modes": "3D / 2D 전환 버튼",
+            "mini_map": "우하단"
+          },
+          "floor_button": "층 추가",
+          "actions": ["취소", "완료"]
+        },
+        {
+          "flow_step": 9,
+          "screen_title": "맵뷰 생성 완료 확인 팝업",
+          "content": "맵뷰 생성을 완료합니다. 배치되지 않은 기기는 나중에 추가로 배치할 수 있어요.",
+          "actions": ["취소", "완료"]
+        },
+        {
+          "flow_step": 10,
+          "screen_title": "맵뷰 완성 — 보기 모드 전환 툴팁",
+          "content": "상단의 버튼을 눌러 보기 모드를 변경할 수 있습니다. (기기 카드뷰 ↔ 맵뷰 전환)",
+          "map_features": {
+            "top_info_bar": ["모두 꺼짐", "온도", "에너지 사용량(kWh)"],
+            "device_pins": "각 방 내 기기 위치 핀으로 표시",
+            "view_modes": ["3D 입체 뷰", "2D 평면 뷰"],
+            "mini_map": "우하단 축소 맵",
+            "room_labels": ["거실", "안방", "화...(화장실)", "배란다", "실외기"]
+          }
+        }
+      ]
+    }
+  ],
+
+  "devices_detail": {
+    "로봇청소기": [
+      { "product_name": "Bespoke AI 스팀 플러스 자동 급배수 (리폼비 포함)+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 플러스+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 울트라", "brand": "Samsung", "purchase": true }
+    ],
+    "냉장고": [
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 864L (81.2cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 하이브리드 4도어 901L (에너지 1등급 최저기준 대비 -35%, UV탈취)", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "세탁기": [
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ]
+  }
+}

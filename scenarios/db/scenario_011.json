@@ -1,0 +1,226 @@
+{
+  "id": "scenario_011",
+  "depth_0": {
+    "category": "케어",
+    "card_title": "사랑하는 반려동물 돌보기",
+    "thumbnail_desc": "강아지와 스마트폰으로 반려동물 케어하는 장면",
+    "stats": {
+      "views": 2027,
+      "views_display": "2027",
+      "likes": 16
+    }
+  },
+
+  "depth_1": {
+    "title": "사랑하는 반려동물 돌보기",
+    "description": "우리 집 반려동물에 꼭 맞는 맞춤 케어를 시작해 보세요. 품종에 딱 맞는 우리 집 반려동물만의 프로필을 만들고 그들의 하루를 보살필 수 있어요. 규칙적인 산책도 손쉽게 챙길 수 있으니, 우리 집 반려동물의 건강과 행복이 날로 커질 거예요.",
+    "device_icons": ["로봇청소기", "에어컨", "공기청정기", "TV", "조명", "커튼/블라인드", "반려동물 급식기"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "반려동물에 딱 맞는 케어 시작하기",
+        "content": "사진 한 장으로 우리 집 반려동물을 위한 펫 케어를 시작해 보세요. 반려동물의 얼굴을 찍으면 품종을 자동으로 인식하고 프로필을 만들어줘요. 우리 집 반려동물이 잘 지냈는지 오늘의 활동량을 확인하고, 같은 품종과 비교해서 건강을 살펴줄 수도 있답니다.",
+        "cta_label": "펫 케어 시작",
+        "cta_type": "feature_flow",
+        "depth_2_ref": "usage_011_shared"
+      },
+      {
+        "story_no": 2,
+        "title": "사진 한장으로 반려동물의 건강을 살펴요",
+        "content": "매일 곁에 있어도 알기 어려운 반려동물의 건강 상태, 이제 AI에게 맡겨 보세요. 안구 사진을 찍어 백내장은 없는지 살펴볼 수 있고, 구강 사진으로는 치주 건강 상태를, 다리 사진을 통해서는 슬개골 상태를 확인할 수 있죠. 진단 결과는 [건강 검진 기록]에 차곡차곡 남으니, 상태의 변화를 한눈에 확인할 수 있어요.",
+        "cta_label": "펫 케어 시작",
+        "cta_type": "feature_flow",
+        "depth_2_ref": "usage_011_shared"
+      },
+      {
+        "story_no": 3,
+        "title": "반려동물 산책, 건강하고 안전하게",
+        "content": "규칙적인 산책을 위한 일정을 만들어 보세요. 오늘의 산책을 놓치지 않도록 알림을 받고, 바로 산책을 시작할 수 있어요. 함께 걸은 거리와 시간, 경로가 자동으로 기록되니 오늘의 산책이 더 특별하게 남아요. 갤럭시 스마트태그를 달아두면 강아지를 잃어버렸을 때도 실시간으로 위치를 확인할 수 있어요.",
+        "cta_label": "펫 케어 시작",
+        "cta_type": "feature_flow",
+        "depth_2_ref": "usage_011_shared"
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "Bespoke AI 스팀 플러스 자동 급배...", "brand": "Samsung", "type": "로봇청소기" },
+      { "product_name": "TARUIE AC Remote", "brand": "TARUIE", "type": "에어컨 리모컨" },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필...)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "type": "TV" },
+      { "product_name": "Smart Wi-Fi Light Bulb", "brand": "Meross", "type": "조명" },
+      { "product_name": "WISTAR WSCMXH", "brand": "Wistar", "type": "커튼/블라인드" }
+    ],
+    "devices_used": ["로봇청소기", "에어컨", "공기청정기", "TV", "조명", "커튼/블라인드", "반려동물 급식기"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_011_shared",
+      "story_ref": "1, 2, 3 공통",
+      "title": "펫 케어 시작",
+      "type": "feature_flow",
+      "note": "3개 스토리 모두 동일 CTA → 동일 플로우. 다운로드(31MB) 후 펫 케어 앱 실행.",
+      "flow_steps": [
+        {
+          "flow_step": 1,
+          "screen_title": "펫 케어 앱 다운로드 중",
+          "download_info": "31MB 패키지 (예: 16MB/31MB, 50%)",
+          "action": "백그라운드에서 진행"
+        },
+        {
+          "flow_step": 2,
+          "screen_title": "펫 케어 메인 — 활동 탭",
+          "bottom_tabs": ["활동 (활성)", "케어"],
+          "sections": [
+            {
+              "section": "프로필 추가",
+              "description": "반려동물 정보를 입력하세요."
+            },
+            {
+              "section": "산책 상태",
+              "status": "대기",
+              "action": "산책 시작 (초록 버튼)"
+            },
+            {
+              "section": "반려동물 위치 확인",
+              "description": "사랑하는 반려동물의 위치를 언제 어디서나 쉽고 빠르게 확인해 보세요."
+            },
+            {
+              "section": "반려동물 활동 기록",
+              "description": "반려동물의 활동량을 기록하고 반려동물의 건강을 관리하세요."
+            }
+          ]
+        },
+        {
+          "flow_step": 3,
+          "screen_title": "펫 케어 메인 — 케어 탭",
+          "bottom_tabs": ["활동", "케어 (활성)"],
+          "monitoring_section": {
+            "title": "모니터링",
+            "items": [
+              {
+                "name": "짖음 확인하기",
+                "status_example": "0회",
+                "description": "짖음을 감지하고 있지 않습니다."
+              }
+            ]
+          },
+          "calm_section": {
+            "title": "안정시키기",
+            "items": [
+              {
+                "name": "영상 재생하기",
+                "device_example": "75\" Neo QLED",
+                "status": "꺼짐"
+              }
+            ]
+          },
+          "care_section": {
+            "title": "돌보기",
+            "items": [
+              {
+                "name": "적정 온도 유지하기",
+                "device_example": "에어컨 3 외 4개",
+                "status": "꺼짐"
+              },
+              {
+                "name": "조명 켜기",
+                "device_example": "전구 (RGBW) 외 3개",
+                "status": "꺼짐"
+              }
+            ]
+          },
+          "feature_guide_section": {
+            "title": "돌봄 기능 알아보기",
+            "features": [
+              {
+                "name": "관찰하기",
+                "description": "선택한 구역에서 로봇청소기가 반려동물을 발견하면 영상을 녹화합니다."
+              },
+              {
+                "name": "음악 틀기",
+                "description": "반려동물을 위한 편안한 음악을 로봇청소기로 재생합니다."
+              },
+              {
+                "name": "급여하기",
+                "description": "자동 급식기로 급여 일정에 따라 자동으로 반려동물에게 급여합니다."
+              },
+              {
+                "name": "공기 청정하기",
+                "description": "공기청정기로 반려동물의 털과 냄새를 제거합니다."
+              },
+              {
+                "name": "조용히 청소하기",
+                "description": "반려동물이 놀라지 않도록 낮은 흡입력으로 조용히 청소합니다."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+
+  "depth_3_reference": {
+    "note": "더보기(⋮) > 사용 방법에서 진입. 참고용으로만 기록.",
+    "more_menu_items": ["홈 화면에 추가", "반려동물 프로필", "사용 방법", "설정", "정보"],
+    "usage_guide_pages": [
+      {
+        "page": "1/4",
+        "title": "활동",
+        "description": "반려동물의 산책을 매일 기록해 보세요. 스마트태그2로 반려동물의 산책 시간, 경로, 거리를 기록할 수 있습니다. 또한, 주기적으로 수집되는 반려동물의 활동 데이터로 반려동물이 오늘 하루 얼마나 활발하게 활동했는지 확인할 수 있습니다."
+      },
+      {
+        "page": "2/4",
+        "title": "관찰하기",
+        "description": "로봇청소기로 영상을 녹화하고, 반려동물이 감지되지 않거나 짖을 때 알림을 받을 수 있습니다. 오늘 짖음이 가장 많았던 시간대도 확인할 수 있어요."
+      },
+      {
+        "page": "3/4",
+        "title": "안정시키기",
+        "description": "반려동물이 집에 혼자 있을 때 외부 소리를 차단하고 반려동물이 안정된 상태를 유지하는 데 도움이 되는 음악이나 영상을 재생합니다."
+      },
+      {
+        "page": "4/4",
+        "title": "돌보기",
+        "description": "반려동물이 집에 혼자 있을 때 안정된 상태를 유지할 수 있도록 가전제품을 제어해 보세요. 예약한 시간에 반려동물에게 먹이를 주거나, 적정 실내 온도를 유지하거나, 실내가 어두울 때 조명을 켤 수 있습니다."
+      }
+    ]
+  },
+
+  "devices_detail": {
+    "로봇청소기": [
+      { "product_name": "Bespoke AI 스팀 플러스 자동 급배수 (리폼비 포함)+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 플러스+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 울트라", "brand": "Samsung", "purchase": true }
+    ],
+    "에어컨": [
+      { "product_name": "TARUIE AC Remote", "brand": "TARUIE", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 62.6㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 62.6㎡", "brand": "Samsung", "purchase": true }
+    ],
+    "공기청정기": [
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, 리유저블 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "조명": [
+      { "product_name": "Smart Wi-Fi Light Bulb", "brand": "Meross", "purchase": true },
+      { "product_name": "WiZ Gradient Light Bars", "brand": "WiZ", "purchase": true },
+      { "product_name": "WiZ Gradient Floor lamp", "brand": "WiZ", "purchase": true }
+    ],
+    "커튼/블라인드": [
+      { "product_name": "WISTAR WSCMXH Smart Vertical Blind Motor", "brand": "Wistar", "purchase": true },
+      { "product_name": "WISTAR WSCMXF Smart Vertical Blind Motor", "brand": "Wistar", "purchase": true },
+      { "product_name": "WISTAR WSER60 Smart Tubular Motor", "brand": "Wistar", "purchase": true }
+    ],
+    "반려동물 급식기": [
+      { "product_name": "Aqara 스마트 자동 급식기 C1", "brand": "Aqara", "purchase": true },
+      { "product_name": "PETKIT YUMSHARE SOLO", "brand": "petkit", "purchase": true },
+      { "product_name": "PETKIT YUMSHARE DUAL-HOPP", "brand": "petkit", "purchase": true }
+    ]
+  }
+}

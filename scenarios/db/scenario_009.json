@@ -1,0 +1,159 @@
+{
+  "id": "scenario_009",
+  "depth_0": {
+    "category": "절약",
+    "card_title": "에어컨이 알아서 쾌적하게, 똑똑하게",
+    "thumbnail_desc": "에어컨과 스마트 기기가 있는 쾌적한 거실",
+    "stats": {
+      "views": 6133,
+      "views_display": "6133",
+      "likes": 72
+    }
+  },
+
+  "depth_1": {
+    "title": "에어컨이 알아서 쾌적하게, 똑똑하게",
+    "description": "무더운 여름, 스마트싱스로 에어컨을 더 섬세하고 똑똑하게 관리해 보세요. 집에 도착하기 전엔 미리 시원하게, 잠들 땐 조용하고 쾌적하게, 언제나 똑똑하게 냉방을 도와줘요. 내 일상에 딱 맞는 에어컨과 매일 더 시원하고 편안한 여름을 보내세요.",
+    "device_icons": ["에어컨", "스마트폰", "커튼/블라인드", "실링팬"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "한밤중에도 시원하고 조용한 에어컨",
+        "content": "우리 집 에어컨이 나의 쾌적한 수면을 도와줘요. 에어컨 온도와 바람 세기, 예약 설정은 물론 에어컨 디스플레이의 불빛부터 효과음까지 섬세하게 제어할 수 있어요. 한여름 밤에도 조용하고 쾌적한 수면을 경험해 보세요.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 2,
+        "title": "내 위치에 따라 켜지고 꺼지는 에어컨",
+        "content": "스마트싱스의 [웰컴 에어 케어]가 집에 도착하기 전 에어컨을 켜주니 더위 대신 시원함이 반겨줘요. [AI쾌적]으로 최적의 온습도가 설정되어 언제나 쾌적한 공기를 만날 수 있어요. 주변에 사람이 없는 것이 감지되면 에어컨이 절전 운전 후 알아서 꺼지니 에너지도 똑똑하게 아낄 수 있어요.",
+        "usage_notes": [
+          "[웰컴 에어 케어]는 '기기 > 에어컨 > 기기 제어 > 웰컴 에어 케어'에서 설정할 수 있습니다.",
+          "[부재 절전]은 (스탠드형 모델) 기기 > 에어컨 > 기기 제어 > 동작 감지 > 부재 절전, (벽걸이형 모델) 기기 > 에어컨 > 기기 제어 > 동작 감지 > 사람이 없을 때'에서 설정할 수 있습니다."
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 3,
+        "title": "알아서 맞춰주는 맞춤 냉방",
+        "content": "에너지지를 시원하게 사용하는 방법 [맞춤 냉방]이 가장 알뜰하고 쾌적한 에어컨 온도를 알려주거나 직접 조절해 줘요. 같은 공간에 실링팬이 있다면, 에어컨이 켜질 때 알아서 함께 켤 수도 있어요. 실링팬이 시원한 공기를 구석구석 빠르게 순환시켜 냉방 효율이 높아지죠. 이제 복잡한 고민은 [맞춤 냉방]에 맡기고, 기분 좋은 시원함만 누려 보세요.",
+        "usage_notes": [
+          "[맞춤 냉방] 설정은 에어컨 연결이 필요하며 [에너지 > 절약 > 맞춤 냉방]에서 설정할 수 있습니다.",
+          "[팬을 켜서 냉기를 순환시키기]는 WWST 인증을 받은 실링팬 연결이 필요합니다."
+        ],
+        "cta_label": "설정 바로가기",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_009_3"
+      },
+      {
+        "story_no": 4,
+        "title": "스마트싱스로 냉방 효율 UP",
+        "content": "올여름을 시원함으로 가득 채워 보세요. 깜빡하고 창문을 연 채로 에어컨을 켜면, 문 열림 센서가 이를 인식해 스마트싱스로 알려주니 걱정 없어요. 강렬한 햇빛 때문에 급방 시원해지지 않는다면 [자동 블라인드]를 사용해 보세요. 에어컨이 켜지면 블라인드가 내려져 시원함이 더 빠르게 채워질 거예요.",
+        "usage_notes": [
+          "문 열림 센서를 통해 알림을 받기 위해서는 자동화 설정이 필요합니다.",
+          "[자동 블라인드] 설정은 에어컨 연결이 필요하며, [라이프 > 에너지 > 절약 > 자동 블라인드]에서 설정할 수 있습니다."
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "블루스카이 3100 (33.1㎡)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "AI Q9000 56.9㎡ (리모컨 포함)", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "Infinite AI 공기청정기 (100㎡, S...)", "brand": "Samsung", "type": "공기청정기" }
+    ],
+    "devices_used": ["에어컨", "공기청정기", "커튼/블라인드"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_009_3",
+      "story_ref": 3,
+      "title": "설정 바로가기 → Energy (절약 탭)",
+      "type": "feature_page",
+      "note": "🆕 Energy 앱 내 '절약' 탭으로 직접 연결. 사용 중인 절약 도우미 + 사용 가능한 절약 도우미 2섹션 구조.",
+      "page_structure": {
+        "app_title": "Energy",
+        "bottom_tabs": ["모니터링", "절약", "활동"],
+        "active_tab": "절약",
+        "sections": [
+          {
+            "section": "사용 중인 절약 도우미",
+            "items": [
+              {
+                "name": "AI 절약 모드",
+                "status": "항상 절약",
+                "description": "건조기를 에너지 절약 모드로 실행 중입니다.",
+                "devices_example": ["건조기 (절약 중)", "세탁기", "제습기"]
+              },
+              {
+                "name": "일일 사용량",
+                "status": "기기 4개 모니터링 중",
+                "description": "어제 기기에서 오전 8시부터 오늘 오전 8시까지 720원을 사용했습니다.",
+                "devices_example": [
+                  { "device": "에어드레서", "usage": "0 kWh", "cost": "0원" },
+                  { "device": "건조기", "usage": "0.90 kWh", "cost": "157원" },
+                  { "device": "제습기", "usage": "1.74 kWh", "cost": "302원" },
+                  { "device": "세탁기", "usage": "1.50 kWh", "cost": "261원" }
+                ]
+              },
+              {
+                "name": "비효율 감지",
+                "description": "아래 기기에서 에너지 비효율이 감지되면 알림을 받습니다.",
+                "devices_example": ["에어컨 3", "에어컨 2", "에어컨 4", "에어컨 1"]
+              }
+            ]
+          },
+          {
+            "section": "사용 가능한 절약 도우미",
+            "items": [
+              {
+                "name": "외출 모드",
+                "description": "이제 기기 전원을 켜고 외출해도 걱정마세요."
+              },
+              {
+                "name": "자동 블라인드",
+                "description": "냉난방 기기가 켜지면 자동으로 블라인드를 닫습니다."
+              },
+              {
+                "name": "월간 목표",
+                "description": "월간 목표를 설정하세요. 목표보다 많이 사용하면 알림을 받습니다."
+              },
+              {
+                "name": "맞춤 냉방",
+                "description": "실내를 쾌적하게 유지하면서도 에너지를 절약할 수 있는 맞춤 냉방을 경험해 보세요."
+              }
+            ]
+          },
+          {
+            "section": "에너지 절약 팁",
+            "description": "슬라이드형 카드 형태. 예: '큰 식품은 조각으로 나눠서 보관하면 더 빨리 차갑게 할 수 있습니다.'"
+          }
+        ],
+        "update_time_example": "업데이트 4월 21일 오전 8:20"
+      }
+    }
+  ],
+
+  "devices_detail": {
+    "에어컨": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 81.8㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 62.6㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 56.9㎡", "brand": "Samsung", "purchase": true }
+    ],
+    "공기청정기": [
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, 리유저블 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true }
+    ],
+    "커튼/블라인드": [
+      { "product_name": "Eve MotionBlinds for Venetian Blinds", "brand": "Eve", "purchase": true },
+      { "product_name": "Eve MotionBlinds for Curtains", "brand": "Eve", "purchase": true },
+      { "product_name": "Eve MotionBlinds for Roller Blinds", "brand": "Eve", "purchase": true }
+    ]
+  }
+}

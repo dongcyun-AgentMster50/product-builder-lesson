@@ -1,0 +1,168 @@
+{
+  "id": "scenario_007",
+  "depth_0": {
+    "category": "스마트 라이프",
+    "card_title": "운동의 시작부터 끝까지",
+    "thumbnail_desc": "홈트레이닝 중인 여성과 스마트 기기들",
+    "stats": {
+      "views": 2739,
+      "views_display": "2739",
+      "likes": 69
+    }
+  },
+
+  "depth_1": {
+    "title": "운동의 시작부터 끝까지",
+    "description": "더욱 편리하고 똑똑해진 홈 트레이닝을 경험해 보세요. 운동을 시작할 시간인가요? 쾌적한 환경을 미리 준비해 줄게요. 운동에 한창 집중하고 있나요? 갤럭시 워치의 운동 정보를 TV 화면에 띄워 줄게요. 운동이 끝나면? 운동복에 딱 맞는 세탁 코스까지 자동으로 설정해 줘요.",
+    "device_icons": ["워치", "스피커", "에어컨", "공기청정기", "TV", "세탁기", "건조기", "조명"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "한 번에 쾌적한 운동 환경 만들기",
+        "content": "오늘도 열심히 운동하는 당신을 위해 스마트싱스가 편리함을 선물할게요. 쾌적한 환경에서 운동에 집중할 수 있도록 에어컨과 공기청정기를 한 번에 켜 보세요. 운동 분위기에 맞게 조명의 조도와 밝기를 설정하고 힘찬 분위기까지 한번에 조성할 수 있답니다.",
+        "cta_label": "사용 방법 확인",
+        "cta_type": "routine_guide",
+        "depth_2_ref": "usage_007_1"
+      },
+      {
+        "story_no": 2,
+        "title": "TV로 한눈에 운동 정보 확인하기",
+        "content": "갤럭시 워치에서 제공하는 운동 정보를 TV에서 한눈에 살펴보세요. 운동 시간부터 칼로리 소모량, 심박수 등 실시간 활력 신호를 편하게 확인할 수 있습니다. 좋아하는 콘텐츠를 보며 운동 정보까지 확인할 수 있으니, 즐겁게 몰입하며 운동할 수 있어요.",
+        "usage_notes": [
+          "2024년형 삼성 TV와 갤럭시 워치 4 이상에서 지원됩니다."
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 3,
+        "title": "한 큐에 운동복 맞춤 세탁하기",
+        "content": "운동복에 따라 어떤 세탁 코스를 선택해야 하는지 고민인가요? [케어 라벨 스캔]으로 최적의 코스를 추천받아 보세요. 운동복의 세탁 라벨을 카메라로 촬영하면 최적의 세탁 코스를 설정해 줍니다. 이제 운동복을 쉽고 세심하게 세탁해 보세요.",
+        "usage_notes": [
+          "[케어 라벨 스캔]은 모델에 따라 지원되지 않을 수 있습니다."
+        ],
+        "cta_label": "클로딩 케어 시작",
+        "cta_type": "feature_flow",
+        "depth_2_ref": "usage_007_3"
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "블루스카이 3100 (33.1㎡)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "AI Q9000 56.9㎡ (리모컨 포함)", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "Infinite AI 공기청정기 (100㎡, S...)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "AI 통버블 세탁기 19kg", "brand": "Samsung", "type": "세탁기" },
+      { "product_name": "Bespoke AI 세탁기+건조기...", "brand": "Samsung", "type": "세탁기+건조기" },
+      { "product_name": "2025 OLED SF90 (163cm)", "brand": "Samsung", "type": "TV" }
+    ],
+    "devices_used": ["워치", "에어컨", "공기청정기", "TV", "세탁기", "건조기", "조명"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_007_1",
+      "story_ref": 1,
+      "title": "루틴 만들기",
+      "type": "routine_guide",
+      "ref_shared": "shared_routine_guide_v1",
+      "note": "공통 루틴 만들기 6단계 튜토리얼 (shared component)"
+    },
+    {
+      "id": "usage_007_3",
+      "story_ref": 3,
+      "title": "클로딩 케어 시작",
+      "type": "feature_flow",
+      "note": "🆕 앱 기능 다운로드 후 실행되는 플로우 — 로딩(다운로드) 화면 포함",
+      "flow_steps": [
+        {
+          "flow_step": 1,
+          "screen_title": "다운로드 중 (로딩)",
+          "content": "클로딩 케어 기능 로드 중",
+          "download_info": "17MB 기능 패키지 다운로드 (예: 7MB/17MB, 38%)",
+          "note": "백그라운드에서 진행 가능"
+        },
+        {
+          "flow_step": 2,
+          "screen_title": "클로딩 케어 메인",
+          "sections": [
+            {
+              "section": "세제 잔량 관리",
+              "description": "보유하고 있는 세제량을 입력해 주세요. 세제가 다 떨어지기 전에 미리 알려드릴게요.",
+              "actions": ["지우기", "시작하기"]
+            },
+            {
+              "section": "우리집 세제 관리",
+              "description": "세제가 떨어지기 전에 미리 알림도 받고 간편하게 관리할 수 있어요.",
+              "actions": ["시작하기"]
+            },
+            {
+              "section": "AI 추천",
+              "description": "날씨/환경 기반 AI 세탁 코스 추천. 예: '오늘은 미세먼지가 많습니다. 에어드레서에서 미세먼지 코스를 실행하여 옷에 붙은 먼지를 제거해 보세요.'",
+              "actions": ["에어드레서에 보내기"]
+            },
+            {
+              "section": "내가 만든 코스",
+              "description": "관심 의류와 라이프스타일에 맞게 맞춤 코스를 직접 추가해 보세요.",
+              "actions": ["추가하기"]
+            },
+            {
+              "section": "이런 코스는 어떠세요?",
+              "description": "의류 종류별 세탁 코스 추천 카드",
+              "course_examples": [
+                "폴로셔츠를 비롯한 면 소재의 셔츠를 세탁하고 관리합니다. (폴로셔츠)",
+                "티셔츠를 세탁하고 관리합니다. (티셔츠)",
+                "면 소재의 바지를 세탁하고 관리합니다. (면바지)",
+                "자주 입는 교복 상/하의를 깨끗하게 세탁하고 관리합니다. (교복)",
+                "가운을 깨끗하게 세탁하고 관리합니다. (가운)",
+                "작업복과 기동복을 깨끗하게 세탁하고 관리합니다. (작업복/기동복)"
+              ]
+            },
+            {
+              "section": "오염 제거 가이드",
+              "description": "의류 오염별 제거 방법 가이드",
+              "example": "풀을 얼룩을 지우면?"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "devices_detail": {
+    "워치": [
+      { "product_name": "갤럭시 워치7 (LTE 자급제, 44mm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "갤럭시 워치7 (블루투스, 44mm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "갤럭시 워치7 40mm (LTE)", "brand": "Samsung", "purchase": true }
+    ],
+    "에어컨": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 81.8㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 62.6㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 56.9㎡", "brand": "Samsung", "purchase": true }
+    ],
+    "공기청정기": [
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, 리유저블 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "세탁기": [
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ],
+    "건조기": [
+      { "product_name": "Bespoke AI 건조기 18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 건조기 20kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 건조기 20kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ],
+    "조명": [
+      { "product_name": "나노리프 에센셜 매터 스마트 전구 1팩", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 에센셜 매터 스마트 전구", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)", "brand": "Nanoleaf", "purchase": true }
+    ]
+  }
+}

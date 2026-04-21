@@ -1,0 +1,122 @@
+{
+  "id": "scenario_015",
+  "depth_0": {
+    "category": "절약",
+    "card_title": "전기 요금 걱정 없는 에너지 절약",
+    "thumbnail_desc": "집 안 가전제품들과 AI 절약 모드 아이콘",
+    "stats": {
+      "views": 2310000,
+      "views_display": "231만",
+      "likes": 853
+    }
+  },
+
+  "depth_1": {
+    "title": "전기 요금 걱정 없는 에너지 절약",
+    "description": "스마트싱스 [AI 절약모드]로 에너지를 더 똑똑하게 아껴보세요. 이번 달 목표 사용량에 맞춰 알아서 기기를 관리해 주고, 외출 시에는 불필요한 기기도 자동으로 꺼줘요. 제품별 특성에 맞춰 에너지를 절감할 수 있으니, 전기 요금을 줄일 수 있어요.",
+    "device_icons": ["에어컨", "에어드레서", "냉장고", "TV", "세탁기", "제습기", "건조기", "식기세척기", "후드", "조명", "스마트폰", "스마트홈허브"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "AI가 관리해 주는 전기 요금",
+        "content": "스마트싱스 [AI 절약 모드]를 켜 놓기만 하면 우리 집 기기를 하나하나 신경 쓰지 않아도 에너지 사용을 절감할 수 있어요. 이번 달의 목표 에너지 사용량이나 요금을 설정하면 그에 맞춰 알아서 관리해 주니, 전기 요금 걱정은 이제 안녕!",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 2,
+        "title": "제품의 특성을 고려한 에너지 절약",
+        "content": "스마트싱스 [AI 절약 모드]는 기기의 특성을 고려하여 에너지 소비를 최적화하고 에너지 절감 효과를 만들어 내요. 세탁기의 온수와 건조기 온도를 조절하거나, TV의 밝기를 제어하는 등 제품에 알맞은 방법으로 에너지를 절약해 준답니다.",
+        "cta_label": "AI 절약 모드 설정",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_015_2"
+      },
+      {
+        "story_no": 3,
+        "title": "외출 시에도 알아서 절약되는 에너지",
+        "content": "가족이 모두 외출하면 스마트싱스가 조용히 집을 챙겨줘요. 불필요하게 켜져 있는 기기는 알아서 꺼주니까, 에너지가 낭비되지 않도록 도와줘요. 스마트 플러그를 활용하면 스마트싱스에 직접 연결하지 못하는 기기도 함께 관리할 수 있어요.",
+        "cta_label": "외출 시 에너지 절약",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_015_3"
+      }
+    ],
+    "note": "🆕 조회수 231만 — DB 내 최다 조회수 시나리오",
+    "purchasable_products": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로...", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필...)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키...", "brand": "Samsung", "type": "냉장고" },
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "type": "TV" },
+      { "product_name": "Bespoke AI 콤보 25/18kg...", "brand": "Samsung", "type": "세탁기" },
+      { "product_name": "Bespoke AI 건조기 18kg (71.1m...)", "brand": "Samsung", "type": "건조기" }
+    ],
+    "devices_used": ["에어컨", "공기청정기", "냉장고", "TV", "세탁기", "건조기", "식기세척기", "후드", "조명"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_015_2",
+      "story_ref": 2,
+      "title": "AI 절약 모드 설정",
+      "type": "feature_page",
+      "note": "이미지 미수신 — 추후 캡처 시 업데이트 예정",
+      "depth_2_ref_note": "Energy 앱 → 절약 탭 → AI 절약 모드 항목으로 연결 추정 (scenario_009의 usage_009_3 참고)"
+    },
+    {
+      "id": "usage_015_3",
+      "story_ref": 3,
+      "title": "외출 시 에너지 절약",
+      "type": "feature_page",
+      "note": "이미지 미수신 — 추후 캡처 시 업데이트 예정",
+      "depth_2_ref_note": "Energy 앱 → 절약 탭 → 외출 모드 항목으로 연결 추정 (scenario_009의 usage_009_3 참고)"
+    }
+  ],
+
+  "devices_detail": {
+    "에어컨": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 81.8㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 62.6㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 56.9㎡", "brand": "Samsung", "purchase": true }
+    ],
+    "공기청정기": [
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, 리유저블 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true }
+    ],
+    "냉장고": [
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 864L (81.2cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 하이브리드 4도어 901L (에너지 1등급 최저기준 대비 -35%, UV탈취)", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "세탁기": [
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ],
+    "건조기": [
+      { "product_name": "Bespoke AI 건조기 18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 건조기 20kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 건조기 20kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ],
+    "식기세척기": [
+      { "product_name": "Bespoke AI 식기세척기 프리스탠딩 14인용", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 식기세척기 빌트인 12인용", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 식기세척기 빌트인 14인용", "brand": "Samsung", "purchase": true }
+    ],
+    "후드": [
+      { "product_name": "Bespoke 후드 Air", "brand": "Samsung", "purchase": true },
+      { "product_name": "NK90B8770CG", "brand": "Samsung", "purchase": false },
+      { "product_name": "Range Hood", "brand": "Samsung", "purchase": false }
+    ],
+    "조명": [
+      { "product_name": "나노리프 에센셜 매터 스마트 전구 1팩", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 에센셜 매터 스마트 전구", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)", "brand": "Nanoleaf", "purchase": true }
+    ]
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "id": "scenario_012",
+  "depth_0": {
+    "category": "절약",
+    "card_title": "지구를 생각하는 에너지 절약",
+    "thumbnail_desc": "태양광 패널이 설치된 집과 EV 충전 이미지",
+    "stats": {
+      "views": 6620,
+      "views_display": "6620",
+      "likes": 726
+    }
+  },
+
+  "depth_1": {
+    "title": "지구를 생각하는 에너지 절약",
+    "description": "우리 집 에너지, 환경까지 생각하며 더 효율적으로 관리해 보세요. 태양광으로 만든 전기를 알뜰하게 활용하고, 외부 열로 냉난방과 온수까지 똑똑하게 관리할 수 있어요. AI 홈에서 에너지 흐름을 한눈에 확인하고 손쉽게 제어하니, 전기 요금을 아낄 수 있어요.",
+    "device_icons": ["에어컨", "냉장고", "세탁기", "태양광/에너지", "플러그"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "효율적으로 사용하는 태양광 에너지",
+        "content": "태양광 패널로 깨끗한 에너지를 만들어 보세요. 스마트싱스가 생산되는 에너지의 양을 꼼꼼하게 분석하고, 우리 집에 가장 효율적인 방식으로 냉난방 기기를 알아서 조절해, 전기 요금도 낮출 수 있어요.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 2,
+        "title": "작은 열도 놓치지 않는 따뜻함",
+        "content": "EHS는 실외기의 열을 이용하여 실내의 난방과 온수로 만들어내요. 매일 쓰는 난방과 온수를 버려지는 작은 열을 모아 만들어 보세요. EHS에서 우리 집의 냉난방 에너지 흐름을 한눈에 확인하고, 공간에 맞춰 간편하게 제어할 수 있어요.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null,
+        "note": "EHS = 히트펌프 온수/난방 시스템 (Energy, Heat & Smart)"
+      }
+    ],
+    "depth_2": null,
+    "note": "🆕 스토리 2개 + CTA 없음 — 지금까지 중 유일한 패턴. depth_2 없음.",
+    "purchasable_products": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로...", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키...", "brand": "Samsung", "type": "냉장고" },
+      { "product_name": "Bespoke AI 콤보 25/18kg...", "brand": "Samsung", "type": "세탁기" },
+      { "product_name": "Bespoke AI 건조기 18kg (71.1m...)", "brand": "Samsung", "type": "건조기" },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로...", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "Bespoke AI 패밀리허브 4도어...", "brand": "Samsung", "type": "냉장고" }
+    ],
+    "devices_used": ["에어컨", "냉장고", "세탁기", "건조기"]
+  },
+
+  "devices_detail": {
+    "에어컨": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 81.8㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 62.6㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 56.9㎡", "brand": "Samsung", "purchase": true }
+    ],
+    "냉장고": [
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 864L (81.2cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 하이브리드 4도어 901L (에너지 1등급 최저기준 대비 -35%, UV탈취)", "brand": "Samsung", "purchase": true }
+    ],
+    "세탁기": [
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ],
+    "건조기": [
+      { "product_name": "Bespoke AI 건조기 18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 건조기 20kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 건조기 20kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ]
+  }
+}
