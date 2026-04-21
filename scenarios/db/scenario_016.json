@@ -1,0 +1,135 @@
+{
+  "id": "scenario_016",
+  "depth_0": {
+    "category": "보안",
+    "card_title": "프라이버시 걱정 없는 우리 집",
+    "thumbnail_desc": "Samsung Knox 보안 아이콘과 스마트홈 기기들",
+    "stats": {
+      "views": 10000,
+      "views_display": "1만",
+      "likes": 965
+    }
+  },
+
+  "depth_1": {
+    "title": "프라이버시 걱정 없는 우리 집",
+    "description": "우리 집에서 오고 가는 데이터 보안은 이제 그 어느 때보다 중요하죠. 스마트싱스는 정보 보호 분야의 권위 있는 표준을 획득하고, 삼성 제품들과 함께 오늘도 우리 집의 사생활과 보안을 지켜줍니다. 집 안의 안심과 믿음, 스마트싱스가 알아서 지켜드릴게요.",
+    "device_icons": ["스마트홈허브", "TV", "모니터", "세탁기", "스마트폰"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "데이터를 보호하는 Samsung Knox",
+        "content": "나의 개인정보가 외부로 노출될까 걱정된 적 있나요? 이제는 신경 쓰지 않아도, 삼성의 제품들이 당신의 소중한 정보를 안전하게 지켜줄게요. Samsung Knox Vault는 비밀번호와 생체 인식 데이터 등의 민감한 개인 정보를 다른 정보들과 분리해, 별도의 하드웨어 보안 칩에 안전하게 저장합니다. 해킹이나 물리적인 공격에도 강력하게 보호되니 언제나 안심할 수 있어요.",
+        "usage_notes": [
+          "Samsung Knox Vault는 일부 제품에는 적용되지 않으며 다음의 제품군에서 지원합니다. (2024년 12월 기준) | 갤럭시 S / A 시리즈 | 갤럭시 탭 S 시리즈 | 스마트 모니터 M8 (24년형: M80D, 23년형: M80C) | Neo QLED 8K TV (24년형 글로벌형: QN900D, QN800D, QN850D, 24년형 한국형: QND800, QND850, QND900, 23년형: QN700, QNC800, QNC850, QNC900, QNC990) | 2025년부터 출시되는 일부 스마트 가전제품"
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 2,
+        "title": "서로 연결되어 지켜주는 Samsung Knox",
+        "content": "Samsung Knox Matrix는 보이지 않는 곳에서 보안 위협을 받고 있는 기기는 없는지 감시하고, 위협이 감지된 기기는 즉시 차단하여 우리 집을 안전하게 지켜줘요. 보안 현황은 스마트폰에서도 실시간으로 살펴볼 수 있어요. 문제가 생기면 필요한 조치까지 제안 받아 빠르게 대응할 수 있으니, 언제 어디서든 안심할 수 있답니다.",
+        "usage_notes": [
+          "Samsung Knox Matrix는 일부 제품에는 적용되지 않으며 다음의 제품군에서 지원합니다. (2024년 12월 기준) | (갤럭시 OneUI 7 업데이트 모델) | 갤럭시 S21~, 갤럭시 Z 폴드/플립 3~ | (Tizen 9.0 업데이트 모델) 스마트 TV, 스마트 모니터 | (2025년부터 출시되는 가전 제품) 비스포크 AI 패밀리허브, 냉장고(9\" LCD), 세탁건조기(7\" LCD), 레인지(7\" LCD)"
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 3,
+        "title": "한층 더 강화된 보안으로 걱정 없는 우리 집",
+        "content": "전세계 가전 업계 최초로 UL Solutions 최고 보안 등급인 '다이아몬드' 등급을 획득한 삼성의 AI 가전 제품과 10년 연속 CC인증을 획득한 삼성의 스마트 TV와 함께 안심하고 스마트싱스를 즐겨 보세요. 업계 최고 수준의 스마트폰 보안 칩셋('EAL-5+' 등급이) 탑재된 갤럭시 스마트폰과 함께라면, 집 안에서도 집 밖에서도 언제나 안심하고 스마트싱스를 즐길 수 있습니다.",
+        "cta_label": "더 알아보기",
+        "cta_type": "external_link",
+        "depth_2_ref": "usage_016_3",
+        "external_url": "https://news.samsung.com/global/samsung-strengthens-smart-home-security-with-additional-diamond-security-ratings-from-ul-solutions-in-2025"
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "type": "냉장고" },
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "type": "TV" },
+      { "product_name": "오디세이 OLED G8 G85SD...", "brand": "Samsung", "type": "모니터" },
+      { "product_name": "Bespoke AI 콤보 25/18kg...", "brand": "Samsung", "type": "세탁기" },
+      { "product_name": "Bespoke AI 패밀리허브 4도어...", "brand": "Samsung", "type": "냉장고" },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "type": "TV" }
+    ],
+    "devices_used": ["냉장고", "TV", "모니터", "세탁기"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_016_3",
+      "story_ref": 3,
+      "title": "더 알아보기 — UL Solutions 다이아몬드 등급",
+      "type": "external_link",
+      "source": "Samsung Newsroom",
+      "url": "https://news.samsung.com/global/samsung-strengthens-smart-home-security-with-additional-diamond-security-ratings-from-ul-solutions-in-2025",
+      "published_date": "2025-08-19",
+      "key_facts": {
+        "ul_solutions_rating": {
+          "label": "UL Solutions IoT 보안 등급 체계",
+          "levels": ["Bronze", "Silver", "Gold", "Platinum", "Diamond"],
+          "highest": "Diamond",
+          "diamond_requirements": [
+            "악성 소프트웨어 감지 및 차단",
+            "무단 접근 시도 방지",
+            "사용자 데이터 익명화",
+            "알 수 없는 잠재적 취약점 탐지",
+            "보안 취약점 조기 탐지 프로그램 운영"
+          ]
+        },
+        "samsung_knox_technologies": {
+          "knox_vault": {
+            "label": "Knox Vault",
+            "desc": "비밀번호·인증 정보 등 민감한 사용자 정보를 별도 하드웨어 칩에 분리 저장. 2025년 가전제품 최초 적용.",
+            "protection": "해킹 및 물리적 공격 방어"
+          },
+          "knox_matrix_trust_chain": {
+            "label": "Knox Matrix Trust Chain",
+            "desc": "블록체인 기술 기반으로 연결된 기기들의 보안 상태를 실시간 모니터링",
+            "technology": "Private Blockchain"
+          },
+          "knox_matrix": {
+            "label": "Knox Matrix",
+            "desc": "연결된 기기 간 상호 보안 위협 감지 및 알림. Cross Platform으로 OS 무관 동일 보안 기준 적용.",
+            "components": ["Trust Chain", "Cross Platform", "Credential Sync"]
+          }
+        },
+        "diamond_certified_products_2025": [
+          "Bespoke AI Refrigerator",
+          "Bespoke AI Laundry lineup",
+          "Bespoke AI Jet Bot Steam (로봇청소기)"
+        ],
+        "industry_record": "가전 업계 최초 UL Solutions 다이아몬드 등급 획득 (2024~2025)",
+        "cc_certification": "삼성 스마트 TV 10년 연속 CC(Common Criteria) 인증",
+        "galaxy_security_chip": "갤럭시 스마트폰 보안 칩셋 EAL-5+ 등급"
+      }
+    }
+  ],
+
+  "devices_detail": {
+    "냉장고": [
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 864L (81.2cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 하이브리드 4도어 901L (에너지 1등급 최저기준 대비 -35%, UV탈취)", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "모니터": [
+      { "product_name": "오디세이 OLED G8 G85SD WQHD 175Hz 스마트 (LS34DG852)", "brand": "Samsung", "purchase": true },
+      { "product_name": "오디세이 OLED G9 G95SD DQHD 240Hz 스마트 (LS49DG952)", "brand": "Samsung", "purchase": true },
+      { "product_name": "오디세이 OLED G8 G80SD 4K 240Hz 스마트 (LS32DG802)", "brand": "Samsung", "purchase": true }
+    ],
+    "세탁기": [
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ]
+  }
+}

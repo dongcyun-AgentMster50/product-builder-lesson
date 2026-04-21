@@ -59,16 +59,210 @@
       "story_ref": 2,
       "title": "AI 절약 모드 설정",
       "type": "feature_page",
-      "note": "이미지 미수신 — 추후 캡처 시 업데이트 예정",
-      "depth_2_ref_note": "Energy 앱 → 절약 탭 → AI 절약 모드 항목으로 연결 추정 (scenario_009의 usage_009_3 참고)"
+      "app": "SmartThings Energy",
+      "tabs": [
+        {
+          "tab_name": "모니터링",
+          "sections": [
+            {
+              "label": "AI 절약 모드",
+              "status": "ON",
+              "sub_label": "항상 절약"
+            },
+            {
+              "label": "이번 달 에너지 사용 요금",
+              "value": "₩46,786",
+              "sub": "AI 절약 모드로 1,255원 절약",
+              "details": {
+                "이번 달 월말 예상 요금": "103,652원",
+                "지난달 요금": "95,440원"
+              }
+            },
+            {
+              "label": "총 에너지 사용량",
+              "value": "285.58 kWh",
+              "sub": "지난달 같은 기간보다 32.60 kWh 적게 사용하고 있습니다.",
+              "chart": "3월~4월 누적 사용량 추이 (꺾은선 그래프)"
+            },
+            {
+              "label": "현재 누진 단계",
+              "value": "누진 2단계",
+              "sub": "누진 3단계까지 114.42 kWh 남았습니다."
+            },
+            {
+              "label": "일별 에너지 사용량",
+              "total_usage": "데이터 없음",
+              "saving": "0.36 kWh",
+              "chart": "4/15~오늘 일별 막대 그래프"
+            },
+            {
+              "label": "기기 에너지 사용량",
+              "sub": "AI 절약 모드 8.3% 절약 / 제습기에서 에너지를 가장 많이 사용하고 있습니다.",
+              "total_usage": "64.71 kWh",
+              "total_saving": "5.87 kWh",
+              "top_devices": [
+                { "device": "제습기 - 거실", "usage_kwh": 24.86 },
+                { "device": "세탁기 - 세탁실", "usage_kwh": 22.60, "saving_kwh": 0.26 },
+                { "device": "건조기 - 세탁실", "usage_kwh": 12.80, "saving_kwh": 5.61 }
+              ],
+              "cta": "모두 보기"
+            },
+            {
+              "label": "탄소 배출량 인사이트",
+              "value": "433 g/kWh",
+              "sub": "하루 중 상대적으로 탄소 배출이 적은 시간대입니다.",
+              "chart": "오전 12시 ~ 오전 12시 탄소 집약도 그래프"
+            },
+            {
+              "label": "에너지 사용 분석",
+              "sub": "마이 홈의 에너지 사용 패턴을 확인해 보세요.",
+              "cta": "더보기 (카드 배너)"
+            }
+          ]
+        },
+        {
+          "tab_name": "절약",
+          "sections": [
+            {
+              "label": "사용 중인 절약 도우미",
+              "items": [
+                {
+                  "name": "AI 절약 모드",
+                  "sub_label": "항상 절약",
+                  "status": "ON",
+                  "active_devices": ["제습기", "건조기", "세탁기"]
+                }
+              ]
+            },
+            {
+              "label": "일일 사용량",
+              "sub": "기기 4개 모니터링 중 / 아래 기기에서 어제 오전 8시부터 오늘 오전 8시까지 720원을 사용했습니다.",
+              "devices": [
+                { "device": "에어드레서", "usage_kwh": 0.0, "cost": "0원" },
+                { "device": "건조기", "usage_kwh": 0.90, "cost": "157원" },
+                { "device": "제습기", "usage_kwh": 1.74, "cost": "302원" },
+                { "device": "세탁기", "usage_kwh": 1.50, "cost": "261원" }
+              ]
+            },
+            {
+              "label": "비효율 감지",
+              "sub": "아래 기기에서 에너지 비효율이 감지되면 알림을 받습니다.",
+              "monitored_devices": ["에어컨 3", "에어컨 2", "에어컨 4", "에어컨 1"]
+            },
+            {
+              "label": "사용 가능한 절약 도우미",
+              "items": [
+                {
+                  "name": "외출 모드",
+                  "desc": "이제 기기 전원을 켜고 외출해도 걱정마세요."
+                },
+                {
+                  "name": "자동 블라인드",
+                  "desc": "냉난방 기기가 켜지면 자동으로 블라인드를 닫습니다."
+                },
+                {
+                  "name": "월간 목표",
+                  "desc": "월간 목표를 설정하세요. 목표보다 많이 사용하면 알림을 받습니다."
+                },
+                {
+                  "name": "맞춤 냉방",
+                  "desc": "실내를 쾌적하게 유지하면서도 에너지를 절약할 수 있는 맞춤 냉방을 경험해 보세요."
+                }
+              ]
+            },
+            {
+              "label": "에너지 절약 팁",
+              "tip": "냉장고를 여유 있게 채워 주세요. 공기가 순환되어야 효율적으로 냉각됩니다.",
+              "image": "냉장고 채우기 일러스트"
+            }
+          ]
+        },
+        {
+          "tab_name": "활동",
+          "sections": [
+            {
+              "label": "에너지 등급",
+              "grade": "옐로우",
+              "points_current": 1851,
+              "points_max": 2000,
+              "breakdown": [
+                { "item": "에너지 모니터링 43회", "points": 129 },
+                { "item": "절약량 172.21 kWh", "points": 1722 }
+              ],
+              "total_points": 1851
+            },
+            {
+              "label": "활동 배지",
+              "badges": ["모니터링 30회", "절약 메이트", "절약의 달인"]
+            },
+            {
+              "label": "절약 순위 (AI 절약 모드 활동)",
+              "rank_desc": "내 절약량 상위 19%"
+            },
+            {
+              "label": "에너지 스탬프",
+              "count": 359,
+              "period": "2023년 7월 3일 ~ 2026년 4월 21일"
+            },
+            {
+              "label": "에너지 절약 미션 (DR)",
+              "desc": "스마트싱스 에너지 에너지 절약 미션(DR)에 가입해 보세요."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "usage_015_3",
       "story_ref": 3,
       "title": "외출 시 에너지 절약",
       "type": "feature_page",
-      "note": "이미지 미수신 — 추후 캡처 시 업데이트 예정",
-      "depth_2_ref_note": "Energy 앱 → 절약 탭 → 외출 모드 항목으로 연결 추정 (scenario_009의 usage_009_3 참고)"
+      "app": "SmartThings — 루틴 만들기",
+      "routine": {
+        "trigger": {
+          "label": "언제 실행할까요?",
+          "condition": "모든 멤버가 떠날 때",
+          "location": "마이 홈",
+          "member": "나",
+          "add_condition_available": true
+        },
+        "actions": [
+          {
+            "device_type": "공기청정기",
+            "action": "켜기",
+            "note": "사용 가능한 기기 없음 — 지원 기기 보기"
+          },
+          {
+            "device_type": "에어컨",
+            "action": "끄기",
+            "note": "기기를 선택하세요."
+          },
+          {
+            "device_type": "TV",
+            "model": "75\" Neo QLED",
+            "location": "거실",
+            "action": "끄기"
+          },
+          {
+            "device_type": "조명",
+            "action": "끄기",
+            "note": "기기를 선택하세요."
+          },
+          {
+            "device_type": "스마트 플러그",
+            "action": "끄기",
+            "note": "사용 가능한 기기 없음 — 지원 기기 보기"
+          },
+          {
+            "device_type": "스위치",
+            "action": "끄기",
+            "note": "사용 가능한 기기 없음 — 지원 기기 보기"
+          }
+        ],
+        "add_action_available": true,
+        "test_available": true,
+        "cta_buttons": ["취소", "저장"]
+      }
     }
   ],
 
