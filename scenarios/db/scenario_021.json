@@ -1,0 +1,148 @@
+{
+  "id": "scenario_021",
+  "depth_0": {
+    "category": "기기 관리",
+    "card_title": "든든한 우리 집 기기 관리",
+    "thumbnail_desc": "스마트싱스 홈 케어로 기기 상태 확인하는 장면",
+    "stats": {
+      "views": 10000,
+      "views_display": "1만",
+      "likes": 520
+    }
+  },
+
+  "depth_1": {
+    "title": "든든한 우리 집 기기 관리",
+    "description": "우리 집 기기들을 오래도록 최적의 상태로 사용할 수 있도록 스마트싱스가 함께 할게요. 기기 점검부터 유지 관리에 필요한 알림, 상담과 서비스 연결, 그리고 수리 이력 관리까지 모든 과정이 한 곳에서 이어지죠. 복잡한 절차 없이 편리하게 우리 집 기기를 관리할 수 있는 경험을 만나 보세요.",
+    "device_icons": ["에어컨", "냉장고", "세탁기", "건조기", "식기세척기", "쿡탑"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "우리 집 기기들 더 오래 사용할 수 있도록",
+        "content": "스마트싱스 홈 케어로 우리 집 삼성 제품들의 상태를 한눈에 살펴보세요. 각종 센서나 필터, 소모품의 상태를 확인하고, 고장이 진단되면 자가조치 가이드로 빠르게 해결할 수 있어요. 필요할 땐 서비스센터 연결이나 출장 서비스 예약으로 이어져, 관리가 한결 편해져요.",
+        "cta_label": "홈 케어 시작",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_021_1",
+        "plugin_required": true,
+        "plugin_name": "홈 케어"
+      },
+      {
+        "story_no": 2,
+        "title": "고객 지원 상담 예약도 빠르고 편리하게",
+        "content": "기기에 문제가 생기면 괜히 마음이 급해지곤 하죠. 스마트싱스는 복잡한 절차 없이 고객 상담 같은 지원 서비스를 바로 연결해 줘요. 상담 전 보증기간이나 제품 매뉴얼, 워런티 정보도 바로 확인할 수 있어, 상담 준비부터 해결까지 훨씬 수월하답니다.",
+        "usage_notes": [
+          "고객 지원 서비스는 [스마트싱스 > 메뉴 > 삼성 기기 고객 지원]을 통해 예약할 수 있습니다. (지원 국가: 한국, 호주)"
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 3,
+        "title": "수리 현황과 기록 조회도 한 번에",
+        "content": "기기를 수리 중인가요? 스마트싱스에서 [수리 이력]을 통해 수리 현황과 이력을 한눈에 확인해 보세요. 진행 중인 상황은 물론 완료된 기록까지 놓치지 않고 한곳에서 쉽게 살펴볼 수 있어요.",
+        "usage_notes": [
+          "[수리 이력]은 [스마트싱스 > 메뉴 > 수리 이력]을 통해 조회할 수 있습니다. (지원 국가: 한국, 호주)"
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로...", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "type": "냉장고" },
+      { "product_name": "Bespoke AI 콤보 25/18kg...", "brand": "Samsung", "type": "세탁기" },
+      { "product_name": "Bespoke AI 건조기 18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "type": "건조기" },
+      { "product_name": "Bespoke AI 식기세척기 프리스탠딩 14인용", "brand": "Samsung", "type": "식기세척기" },
+      { "product_name": "Bespoke AI 인덕션", "brand": "Samsung", "type": "쿡탑" }
+    ],
+    "devices_used": ["에어컨", "냉장고", "세탁기", "건조기", "식기세척기", "쿡탑"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_021_1",
+      "story_ref": 1,
+      "title": "홈 케어",
+      "type": "feature_page",
+      "app": "SmartThings — 홈 케어 (플러그인)",
+      "plugin_required": true,
+      "plugin_name": "홈 케어",
+      "access_path": "SmartThings 앱 > 라이프 탭 > 홈 케어",
+      "sections": [
+        {
+          "label": "기기 관리",
+          "desc": "연결된 기기 탭별 상태 확인 (모든 기기 / 건조기 / 제습기 / 에어컨 1~4 / 세탁기 등)",
+          "alert": "확인이 필요한 기기 수 표시 (예: 5개)",
+          "alert_devices_example": ["건조기", "제습기", "에어컨 1", "+2"],
+          "last_checked": "마지막 진단 시각 표시"
+        },
+        {
+          "label": "스마트 포워드",
+          "desc": "업데이트할 수 있는 가전기기 목록 및 펌웨어 업데이트 안내",
+          "example_device": "스틱 청소기"
+        },
+        {
+          "label": "내 기기에 맞는 삼성 정품 액세서리",
+          "desc": "연결된 기기별 정품 액세서리 추천 및 구매 연결",
+          "example_accessories": [
+            { "name": "제트 임회용 물걸레포 20매...", "model": "VCA-SPA92", "price": "10,800원" },
+            { "name": "제트/슬림용 다회용포 (VS90F/VS28D95...)", "model": "VCA-SPW95/VT", "price": "30,000원" },
+            { "name": "Bespoke 제트 청정스테이션 UV LED...", "model": "VCA-ADB95B", "price": "17,900원" },
+            { "name": "Bespoke AI 제트/제트 기본 배터리", "model": "VCA-SBTD95", "price": "144,000원" },
+            { "name": "에어드레서 아로마시트", "model": "DF-AS1", "price": "6,400원" },
+            { "name": "에어드레서 안감 옷걸이", "model": "DF-AH", "price": "일시품절" }
+          ]
+        },
+        {
+          "label": "사용 가이드",
+          "desc": "기기별 자가 관리 가이드 목록",
+          "example_guides": [
+            "물분사 물걸레 브러시 손질법",
+            "4Way 무풍 청정 패널 필터 분리 및 청소 방법",
+            "비스포크 AI 콤보 걸빙 예방 방법"
+          ]
+        }
+      ],
+      "bottom_cta": [
+        { "label": "상담봇 연결", "desc": "AI 챗봇을 통한 기기 문제 상담" },
+        { "label": "삼성케어플러스", "desc": "삼성 케어플러스 서비스 연결" }
+      ],
+      "top_banner": "업데이트할 수 있는 기기가 있습니다. 새로운 기능을 경험해 보세요! (지우기 / 업데이트 보기)"
+    }
+  ],
+
+  "devices_detail": {
+    "에어컨": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 81.8㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 62.6㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 56.9㎡", "brand": "Samsung", "purchase": true }
+    ],
+    "냉장고": [
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 864L (81.2cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 하이브리드 4도어 901L (에너지 1등급 최저기준 대비 -35%, UV탈취)", "brand": "Samsung", "purchase": true }
+    ],
+    "세탁기": [
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ],
+    "건조기": [
+      { "product_name": "Bespoke AI 건조기 18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 건조기 20kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 건조기 20kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ],
+    "식기세척기": [
+      { "product_name": "Bespoke AI 식기세척기 프리스탠딩 14인용", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 식기세척기 빌트인 12인용", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 식기세척기 빌트인 14인용", "brand": "Samsung", "purchase": true }
+    ],
+    "쿡탑": [
+      { "product_name": "Bespoke AI 인덕션", "brand": "Samsung", "purchase": true },
+      { "product_name": "인덕션", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 인덕션 (플렉스존)", "brand": "Samsung", "purchase": true }
+    ]
+  }
+}

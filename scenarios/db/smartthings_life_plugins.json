@@ -1,0 +1,117 @@
+{
+  "id": "smartthings_life_plugins",
+  "title": "SmartThings 라이프 탭 플러그인 서비스",
+  "description": "SmartThings 앱 > 라이프 탭에서 제공되는 플러그인 서비스 목록. 각 서비스는 별도 앱/플러그인 다운로드가 필요하며, 해당 시나리오의 CTA와 연결됩니다.",
+  "access_path": "SmartThings 앱 > 라이프 탭 (하단 네비게이션)",
+  "last_verified": "2026-04-21",
+
+  "plugins": [
+    {
+      "plugin_id": "air_care",
+      "name": "에어 케어",
+      "desc": "공기 모니터링 기기를 켜세요. 실내/외 공기질 상태 확인 (예: 매우 나쁨/좋음)",
+      "download_required": true,
+      "related_scenarios": [],
+      "related_devices": ["에어컨", "공기청정기"]
+    },
+    {
+      "plugin_id": "food",
+      "name": "푸드",
+      "desc": "냉장고 속 재료 기반 맞춤 레시피 추천, 식단 플래너, 장보기 목록, 커뮤니티",
+      "download_required": true,
+      "app_size_mb": 25,
+      "related_scenarios": ["scenario_018"],
+      "related_devices": ["냉장고"],
+      "deprecation_notice": "육류 라벨 스캔 및 e-식품관 장바구니 기능 2026년 5월 26일 종료 예정"
+    },
+    {
+      "plugin_id": "clothing_care",
+      "name": "클로딩 케어",
+      "desc": "우리집 세제 관리. 세제가 떨어지기 전에 미리 알림받고 간편하게 관리",
+      "download_required": true,
+      "related_scenarios": [],
+      "related_devices": ["세탁기", "에어드레서"]
+    },
+    {
+      "plugin_id": "music_sync",
+      "name": "뮤직 싱크",
+      "desc": "물감 넘치는 경험을 할 수 있도록 조명과 음악을 동기화",
+      "download_required": true,
+      "related_scenarios": [],
+      "related_devices": ["조명", "스피커"]
+    },
+    {
+      "plugin_id": "home_care",
+      "name": "홈 케어",
+      "desc": "기기 상태 점검, 소모품/필터 교체 알림, 자가조치 가이드, 정품 액세서리 추천, 상담봇 연결, 삼성케어플러스 연결",
+      "download_required": true,
+      "related_scenarios": ["scenario_021"],
+      "related_devices": ["에어컨", "냉장고", "세탁기", "건조기", "식기세척기", "쿡탑", "로봇청소기"]
+    },
+    {
+      "plugin_id": "energy",
+      "name": "에너지",
+      "desc": "이번 달 AI 절약 모드 절약량, 누진 단계, 기기별 에너지 사용량, 탄소 배출량 인사이트",
+      "download_required": false,
+      "note": "SmartThings 기본 내장 서비스 (별도 다운로드 불필요)",
+      "related_scenarios": ["scenario_015", "scenario_019"],
+      "related_devices": ["에어컨", "세탁기", "건조기", "제습기", "냉장고", "TV", "식기세척기"]
+    },
+    {
+      "plugin_id": "find",
+      "name": "파인드",
+      "desc": "갤럭시 기기(스마트폰, 워치, 태블릿 등) 현재 위치 지도 표시 및 분실 기기 찾기",
+      "download_required": false,
+      "note": "SmartThings 기본 내장 서비스",
+      "related_scenarios": [],
+      "related_devices": ["스마트폰", "워치", "태블릿"]
+    },
+    {
+      "plugin_id": "home_monitor",
+      "name": "홈 모니터",
+      "desc": "보안 카메라, 도어/창문 센서, 동작 감지 등 홈 보안 모니터링",
+      "download_required": false,
+      "note": "SmartThings 기본 내장 서비스",
+      "related_scenarios": [],
+      "related_devices": ["카메라", "도어락", "센서"]
+    },
+    {
+      "plugin_id": "pet_care",
+      "name": "펫 케어",
+      "desc": "스마트싱스에 연결된 기기를 활용하여 집 밖에서도 반려동물 돌봄. 반려동물 프로필 입력부터 시작",
+      "download_required": true,
+      "related_scenarios": ["scenario_011"],
+      "related_devices": ["카메라", "로봇청소기", "공기청정기"]
+    },
+    {
+      "plugin_id": "family_care",
+      "name": "패밀리 케어",
+      "desc": "가족의 안부를 확인하여 모두 잘 지내고 있는지 확인. 가족 구성원별 활동 상태 (활동 중/대기 중) 표시",
+      "download_required": true,
+      "related_scenarios": [],
+      "related_devices": ["스마트폰"]
+    },
+    {
+      "plugin_id": "plant_care",
+      "name": "플랜트 케어",
+      "desc": "식물 관리를 더 쉽고 즐겁게 할 수 있어요.",
+      "download_required": true,
+      "status": "실험실 (베타)",
+      "related_scenarios": [],
+      "related_devices": []
+    }
+  ],
+
+  "scenario_plugin_mapping": [
+    { "scenario_id": "scenario_011", "plugin": "펫 케어", "story_no": null, "note": "반려동물 돌보기 시나리오" },
+    { "scenario_id": "scenario_015", "plugin": "에너지", "story_no": 2, "cta": "AI 절약 모드 설정" },
+    { "scenario_id": "scenario_015", "plugin": "에너지", "story_no": 3, "cta": "외출 시 에너지 절약" },
+    { "scenario_id": "scenario_018", "plugin": "푸드", "story_no": 1, "cta": "푸드 시작" },
+    { "scenario_id": "scenario_019", "plugin": "에너지", "story_no": 1, "cta": "에너지 시작" },
+    { "scenario_id": "scenario_019", "plugin": "에너지", "story_no": 2, "cta": "에너지 시작" },
+    { "scenario_id": "scenario_019", "plugin": "에너지", "story_no": 3, "cta": "에너지 시작" },
+    { "scenario_id": "scenario_021", "plugin": "홈 케어", "story_no": 1, "cta": "홈 케어 시작" }
+  ],
+
+  "note": "라이프 탭 외 추가로 확인된 플러그인 서비스가 있을 경우 업데이트 필요. 022~027번 시나리오 진행 시 신규 플러그인 발견되면 plugins 배열에 추가."
+}
