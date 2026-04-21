@@ -1,0 +1,86 @@
+{
+  "id": "scenario_025",
+  "depth_0": {
+    "category": "보안/출입",
+    "card_title": "확인은 쉽게, 출입은 더 안전하게",
+    "thumbnail_desc": "초인종 카메라와 디지털 도어록 연동 장면",
+    "stats": {
+      "views": 701,
+      "views_display": "701",
+      "likes": 109
+    }
+  },
+
+  "depth_1": {
+    "title": "확인은 쉽게, 출입은 더 안전하게",
+    "description": "현관까지 갈 필요 없는 방문 확인부터, 스마트폰으로 간편하게 열리는 출입까지. 이제 우리 집 현관이 일상에 맞춰 더 똑똑해져요. 소파에 편히 있을 때도, 외출 중에도 누릴 수 있는 안심과 편리함을 지금 경험해 보세요.",
+    "device_icons": ["TV", "초인종", "도어록", "스마트폰"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "현관 앞을 어디서든 내 눈앞처럼",
+        "content": "편안한 TV 시청 시간을 방해받지 마세요. 초인종이 울리면 TV 화면에서 방문객을 바로 확인할 수 있어요. 소파에 앉은 채로 문까지 열어줄 수 있으니 더 이상 휴식 시간을 방해받을 필요 없죠. 외출 중에도 스마트폰으로 방문객을 확인할 수 있어, 언제 어디서든 늘 안심할 수 있답니다.",
+        "usage_notes": [
+          "TV에서 초인종 알림 받기는 [TV 스마트싱스 설정 > 알림 > 초인종]에서 설정할 수 있습니다.",
+          "TV의 '도어록 잠금 해제' 기능은 [스마트폰 스마트싱스 > 기기 > 초인종 > 옵션 더보기 > 설정 > 도어록 연결] 설정 후 사용 가능합니다."
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 2,
+        "title": "디지털 키로 편리함과 안전함을 동시에",
+        "content": "이제 비밀번호 대신 삼성 월렛 디지털 키로 현관문을 열어 보세요. 스마트폰을 태그하거나 가까이 다가가기만 하면 문이 자연스럽게 열리니, 양손 가득 짐을 든 순간에도 번거로움 없이 집에 들어갈 수 있어요. 현관 비밀번호가 노출될 걱정 없이 편리함과 안심을 동시에 챙겨 보세요.",
+        "usage_notes": [
+          "디지털 키로 문 열기는 삼성 월렛 지원 국가에서 사용할 수 있습니다.",
+          "스마트폰을 태그하여 문 열기는 NFC 지원 모델에서 사용할 수 있으며, 스마트폰을 가까이 하여 문 열기는 UWB 지원 모델에서 사용할 수 있습니다.",
+          "매터, Aliro 표준 적용 도어록에서 사용 가능하며, 제품에 따라 스마트싱스 기능 지원 여부, 지원환경 및 사양이 다를 수 있습니다."
+        ],
+        "cta_label": "도어록 추가하기",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_025_2"
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "type": "TV" },
+      { "product_name": "Wired Doorbell Plus", "brand": "Ring", "type": "초인종" },
+      { "product_name": "Aqara Smart Lock U200 Lite", "brand": "Aqara", "type": "도어록" },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "type": "TV" },
+      { "product_name": "Wired Doorbell Pro", "brand": "Ring", "type": "초인종" },
+      { "product_name": "Aqara 스마트 도어록 L100 (자가설치)", "brand": "Aqara", "type": "도어록" }
+    ],
+    "devices_used": ["TV", "초인종", "도어록"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_025_2",
+      "story_ref": 2,
+      "title": "도어록 추가",
+      "type": "feature_page",
+      "app": "삼성 월렛 — 도어록 추가",
+      "desc": "SmartThings 도어록을 삼성 월렛 앱에 추가하여 더 쉽게 이용할 수 있습니다. 언제든지 삼성 월렛 앱 내 설정에서 삭제할 수 있습니다.",
+      "empty_state": "SmartThings에 도어록이 없습니다",
+      "note": "SmartThings에 연결된 도어록이 있어야 목록에 표시됨. 도어록 미연결 시 빈 상태로 표시."
+    }
+  ],
+
+  "devices_detail": {
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "초인종": [
+      { "product_name": "Wired Doorbell Plus", "brand": "Ring", "purchase": true },
+      { "product_name": "Wired Doorbell Pro", "brand": "Ring", "purchase": true },
+      { "product_name": "Wired Doorbell Elite", "brand": "Ring", "purchase": true }
+    ],
+    "도어록": [
+      { "product_name": "Aqara Smart Lock U200 Lite", "brand": "Aqara", "purchase": true },
+      { "product_name": "Aqara 스마트 도어록 L100 (자가설치)", "brand": "Aqara", "purchase": true },
+      { "product_name": "Aqara 스마트 도어록 K100 (자가설치)", "brand": "Aqara", "purchase": true }
+    ]
+  }
+}
