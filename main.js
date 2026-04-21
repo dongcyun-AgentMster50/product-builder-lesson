@@ -4399,7 +4399,7 @@ async function renderStep2Insight(forceRefresh = false) {
         } catch { /* cache invalid, fetch fresh */ }
     }
 
-    // 2. 로딩 표시 — 오직 하나의 진행 UI만 노출 (커스텀 검색바는 렌더 자체 안 함)
+    // 2. 로딩 표시 — 진행 바는 상단 q1-energy-wrap 하나만 사용. insight 카드는 텍스트만.
     if (currentStep !== 2) return;
     _q1CustomSearchRunning = false;
     stepInsight.innerHTML = buildInsightMarkup({
@@ -4407,24 +4407,11 @@ async function renderStep2Insight(forceRefresh = false) {
         title: `${countryName} ${localCity}`,
         summary: currentLocale === "ko"
             ? "AI를 통한 마켓 리서치 중입니다..."
-            : "AI market research in progress...",
-        loading: true,
-        loadingLabel: currentLocale === "ko" ? "AI를 통한 마켓 리서치 중..." : "AI market research in progress..."
+            : "AI market research in progress..."
     });
     updateQuestionHelpers();
 
-    // 피자 프로그레스 시뮬레이션 (0→92% 구간을 서서히 채움)
-    // Wiki RAG(~3초) + OpenAI(~60~90초 — 긴 JSON 생성+정리) = 총 ~65~95초, 120초 기준 여유 설계
-    let pizzaProgress = 0;
-    let pizzaDone = false;
-    const pizzaInterval = setInterval(() => {
-        if (pizzaDone || currentStep !== 2) { clearInterval(pizzaInterval); return; }
-        // 점점 느려지며 92%까지 접근 (120초 기준 — 계수 0.009, 250ms 인터벌)
-        pizzaProgress += (92 - pizzaProgress) * 0.009;
-        updatePizzaProgress(stepInsight, Math.min(pizzaProgress, 92));
-    }, 250);
-
-    // 3. 라이브 API 호출
+    // 3. 라이브 API 호출 (피자 바 시뮬레이션 제거 — 상단 q1-energy-wrap 하나만 진행 표시)
     try {
         await ensureBypassSession();
         const params = new URLSearchParams({ country: country.countryCode, city, locale: currentLocale });
@@ -4438,20 +4425,13 @@ async function renderStep2Insight(forceRefresh = false) {
         });
         clearTimeout(timer);
 
-        if (requestId !== latestStep2InsightRequest || currentStep !== 2) {
-            pizzaDone = true; clearInterval(pizzaInterval); return;
-        }
+        if (requestId !== latestStep2InsightRequest || currentStep !== 2) return;
 
         if (response.ok) {
             const result = await response.json();
             if (result.ok && result.data) {
                 // 캐시 저장 (step과 무관하게)
                 sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
-                // 100%로 채우고 완료
-                pizzaDone = true; clearInterval(pizzaInterval);
-                if (currentStep !== 2) return;
-                updatePizzaProgress(stepInsight, 100);
-                await new Promise(r => setTimeout(r, 400));
                 if (currentStep !== 2) return;
                 stepInsight.innerHTML = renderCityProfileInsight(countryName, localCity, result.data, country.countryCode);
                 bindCityProfileDrawer(stepInsight);
@@ -4468,9 +4448,7 @@ async function renderStep2Insight(forceRefresh = false) {
                 return;
             }
         }
-        pizzaDone = true; clearInterval(pizzaInterval);
     } catch (err) {
-        pizzaDone = true; clearInterval(pizzaInterval);
         console.warn("[city-profile] fetch failed:", err.message);
     }
 
