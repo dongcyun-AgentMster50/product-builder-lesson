@@ -560,13 +560,53 @@ function buildScenarioSelectionReason(scenario, input, tagScores) {
  * 결과 포맷팅 — 큐레이션 모드 출력용
  */
 function formatCurationResult(scenario) {
+    // v1: original_text=영문 + analysis=한글 마케팅 카피
+    // v2: original_text=비어있음/영문 + narrative=한글 서술(일부 영문 혼재) + value_proposition=한글 요약
+    function _hasHangul(s) { return /[\uAC00-\uD7AF]/.test(String(s || "")); }
+    function _pickKorean(...candidates) {
+        for (const c of candidates) {
+            const t = String(c || "").trim();
+            if (t && _hasHangul(t)) return t;
+        }
+        return "";
+    }
+    function _pickEnglish(...candidates) {
+        for (const c of candidates) {
+            const t = String(c || "").trim();
+            // 한글이 거의 없는(10% 미만) 문자열은 영문으로 간주
+            if (t && !_hasHangul(t)) return t;
+        }
+        return "";
+    }
+
+    const englishBody = _pickEnglish(scenario.original_text, scenario.narrative);
+    const koreanRaw = _pickKorean(
+        scenario.analysis,
+        scenario.value_proposition,
+        scenario.narrative,
+        scenario.article_tech_background,
+        scenario.target_persona
+    );
+    // "메커니즘:", "UX 전략:" 등 기술 헤더 제거로 마케팅 카피만 추출
+    const koreanBody = koreanRaw
+        .replace(/\*\*/g, "")
+        .replace(/^(상황|메커니즘|UX 전략|기술 메커니즘|확장성|활용 시나리오|페르소나|기술 하이라이트)\s*:\s*/gm, "")
+        .replace(/\n{2,}/g, "\n")
+        .trim();
+
     const result = {
         title: scenario.story_title,
         source: scenario.source || `Explore Contents ${scenario._source}`,
         keyword: scenario.keyword || (scenario.tags || []).join(", "),
         article: scenario.article_title || "",
+        // 기존 호환 필드
         originalText: scenario.original_text || "",
         narrative: scenario.narrative || "",
+        // 명확한 언어별 본문 — UI 카드 렌더에서 직접 사용 (간이번역 우회)
+        englishBody,
+        koreanBody,
+        targetPersona: String(scenario.target_persona || "").trim(),
+        techHighlights: scenario.tech_highlights || [],
         devices: scenario.devices || [],
         relatedProducts: scenario.related_products || [],
         valueTags: scenario.value_tags || [],

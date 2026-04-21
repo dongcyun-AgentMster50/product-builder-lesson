@@ -11724,15 +11724,65 @@ function compactPurpose(text) {
 }
 
 function buildReflectedValues(payload) {
-    const mission = String(payload.scenarioMeta?.missionBucket || "").toLowerCase();
-    const primary = String(payload.exploreGrounding?.primaryValue || "").toLowerCase();
-    const values = [
-        { key: "care", ko: "돌봄/안심", en: "Care/Reassurance", hit: mission === "care" || primary.includes("reassurance") || primary.includes("care") },
-        { key: "save", ko: "절감/통제", en: "Savings/Control", hit: mission === "save" || primary.includes("saving") || primary.includes("control") },
-        { key: "ease", ko: "편의/효율", en: "Convenience/Efficiency", hit: mission === "discover" || mission === "play" || primary.includes("lighter") || primary.includes("comfort") },
-        { key: "secure", ko: "신뢰/보안", en: "Trust/Security", hit: mission === "secure" || primary.includes("security") || primary.includes("response") }
+    // Q1(도시 신호/Magic Keywords) + Q2(세그먼트/라이프스타일) + Q3(기기) + 선택된 시나리오의 valueTags/matchedTags 교차
+    const meta = payload.scenarioMeta || {};
+    const grounding = payload.exploreGrounding || {};
+    const state = payload.state || {};
+
+    const signals = new Set();
+    const _add = (v) => { if (v) signals.add(String(v).toLowerCase()); };
+
+    _add(meta.missionBucket);
+    _add(grounding.primaryValue);
+
+    // Q1 magic keywords (도시 관심 카테고리 → 가치 축)
+    const q1Map = {
+        climate: ["save"], housing: ["save", "secure"], family: ["care"],
+        safety: ["secure"], health: ["care"], energy: ["save"],
+        daily_rhythm: ["ease"], mobility: ["ease"], nightlife: ["play"],
+        culture: ["play"], work: ["ease"], care: ["care"]
+    };
+    (payload.q1MagicKeywords || meta.magicKeywords || []).forEach(k => {
+        (q1Map[String(k).toLowerCase()] || []).forEach(v => signals.add(v));
+    });
+
+    // Q2 세그먼트 → 가치 축
+    const q2Raw = String(state.segment || meta.selectedSegment || "").toLowerCase();
+    if (/kid|child|아이|자녀|parent/.test(q2Raw)) signals.add("care");
+    if (/senior|시니어|elderly|고령/.test(q2Raw)) signals.add("care");
+    if (/pet|반려|dog|cat/.test(q2Raw)) signals.add("care");
+    if (/solo|1인|single|혼자|혼자.살/.test(q2Raw)) signals.add("secure");
+    if (/energy|절약|saving/.test(q2Raw)) signals.add("save");
+    if (/security|보안|safe/.test(q2Raw)) signals.add("secure");
+    if (/chore|집안일|routine|time/.test(q2Raw)) signals.add("ease");
+    if (/mood|분위기|leisure|play/.test(q2Raw)) signals.add("play");
+
+    // Q3 기기 → 가치 축 기본 가중
+    const q3Devices = (payload.q3Devices || meta.devices || state.devices || []);
+    q3Devices.forEach(d => {
+        const dn = String(d).toLowerCase();
+        if (/sensor|camera|센서|카메라|lock|도어락/.test(dn)) signals.add("secure");
+        if (/watch|wearable|웨어|helper|blood|혈압/.test(dn)) signals.add("care");
+        if (/plug|meter|ac|에어컨|냉장고|refrig|washer|세탁/.test(dn)) signals.add("save");
+        if (/light|조명|speaker|스피커|tv/.test(dn)) signals.add("play");
+        if (/vacuum|청소기|dishwasher|식기/.test(dn)) signals.add("ease");
+    });
+
+    // 선택된 시나리오의 valueTags / matchedTags 도 포함
+    (payload.selectedValueTags || []).forEach(t => _add(t));
+
+    const axes = [
+        { key: "care",   ko: "돌봄/안심",      en: "Care/Reassurance",        triggers: ["care", "reassurance", "family", "pet"] },
+        { key: "save",   ko: "절감/통제",      en: "Savings/Control",         triggers: ["save", "saving", "energy", "control"] },
+        { key: "ease",   ko: "편의/효율",      en: "Convenience/Efficiency",  triggers: ["ease", "discover", "play", "comfort", "lighter", "time"] },
+        { key: "secure", ko: "신뢰/보안",      en: "Trust/Security",          triggers: ["secure", "security", "safe", "monitor", "response"] }
     ];
-    return values.map((item) => `${item.hit ? "✓" : "·"} ${currentLocale === "ko" ? item.ko : item.en}`);
+    return axes.map(axis => {
+        const hit = axis.triggers.some(t =>
+            [...signals].some(s => s.includes(t))
+        );
+        return `${hit ? "✓" : "·"} ${currentLocale === "ko" ? axis.ko : axis.en}`;
+    });
 }
 
 function buildSixLineSummary(payload) {
@@ -12151,13 +12201,15 @@ function findExploreScenario(intent) {
     let bestMatch = null;
     let maxScore = 0;
 
-    const tags = intent.lifestyleTags.map(t => t.toLowerCase());
-    const purpose = intent.purpose.toLowerCase();
-    const devices = intent.selectedDevices.map(d => d.toLowerCase());
+    const tags = (intent.lifestyleTags || []).map(t => String(t).toLowerCase());
+    const purpose = String(intent.purpose || "").toLowerCase();
+    const devices = (intent.selectedDevices || []).map(d => String(d).toLowerCase());
+    const segmentText = String(intent.segment || intent.selectedSegment || "").toLowerCase();
+    const missionBucket = String(intent.missionBucket || "").toLowerCase();
 
     EXPLORE_SCENARIOS.forEach(scenario => {
         let score = 0;
-        
+
         // Tag matching
         scenario.tags.forEach(tag => {
             if (tags.includes(tag.toLowerCase())) score += 10;
@@ -12173,6 +12225,16 @@ function findExploreScenario(intent) {
         keywords.forEach(word => {
             if (word.length > 3 && purpose.includes(word)) score += 3;
         });
+
+        // Q2 segment 키워드 부분일치 가점
+        scenario.tags.forEach(tag => {
+            const t = tag.toLowerCase();
+            if (segmentText && t && segmentText.includes(t.split(" ")[0])) score += 2;
+        });
+        // missionBucket 일치 가점
+        if (missionBucket && scenario.missionBucket && scenario.missionBucket.toLowerCase() === missionBucket) {
+            score += 4;
+        }
 
         if (score > maxScore) {
             maxScore = score;
@@ -14651,8 +14713,7 @@ function renderCurationResults(results, selectedDevices) {
 
     const isKo = currentLocale === "ko";
 
-    // 로케일 번역 매핑 (영어 시나리오 제목/본문 → 현지어)
-    const needsTranslation = currentLocale !== "en";
+    // 태그 로컬 라벨 (배지용만)
     const scenarioTitleTranslations = {
         ko: {
             "Save energy": "에너지 절약", "Keep your home safe": "집을 안전하게",
@@ -14675,66 +14736,68 @@ function renderCurationResults(results, selectedDevices) {
     };
     const localTagMap = scenarioTitleTranslations[currentLocale] || {};
 
-    // 확장 구문 번역 맵 (한국어) — Explore 시나리오 본문에 자주 등장하는 문구
-    const bodyPhraseMapKo = {
-        "Give your pet customised care": "반려동물에게 맞춤형 케어를 제공하세요",
-        "Take care of your pet even while you're away": "외출 중에도 반려동물을 돌보세요",
-        "Check up on them": "반려동물 상태를 확인하세요",
-        "Start Pet Care with just a photo": "사진 한 장으로 펫 케어를 시작하세요",
-        "automatically identify the breed": "자동으로 품종을 식별합니다",
-        "reviewing the daily activity": "일일 활동을 확인합니다",
-        "Help your pet enjoy its time alone": "반려동물이 혼자 있는 시간을 즐길 수 있게 도와주세요",
-        "automatic feeder": "자동 급식기", "regular meals": "규칙적인 식사",
-        "perfect temperature": "최적 온도", "atmosphere": "분위기",
-        "barking is detected": "짖는 소리가 감지되면",
-        "Set the right temperature": "적정 온도를 설정하세요",
-        "save energy": "에너지를 절약하세요", "Save energy": "에너지를 절약하세요",
-        "while you're away": "외출 중에도", "when you come home": "집에 돌아오면",
-        "before you arrive": "도착하기 전에",
-        "Smart TV": "스마트 TV", "Vacuum Cleaner": "로봇청소기",
-        "Air Conditioner": "에어컨", "Air Purifier": "공기청정기",
-        "Galaxy Smartphone": "갤럭시 스마트폰", "Galaxy Watch": "갤럭시 워치",
-        "SmartThings": "스마트싱스",
-        "your home safe": "집을 안전하게",
-        "monitor your home": "집을 모니터링하세요",
-        "security camera": "보안 카메라",
-        "door lock": "도어락", "motion sensor": "동작 센서",
-        "automate your daily routine": "일상을 자동화하세요",
-        "control your lights": "조명을 제어하세요",
-        "fresh air": "신선한 공기", "air quality": "공기질",
-        "sleep better": "숙면을 취하세요", "good night's sleep": "좋은 수면",
-        "washing machine": "세탁기", "dryer": "건조기",
-        "robot vacuum": "로봇청소기", "dishwasher": "식기세척기",
-        "refrigerator": "냉장고", "oven": "오븐",
-        "family members": "가족 구성원", "children": "자녀", "kids": "아이",
-        "seniors": "시니어", "elderly": "어르신",
-        "Pet Accessory": "펫 액세서리", "Third-party": "서드파티",
-        "Jet Bot": "제트봇"
-    };
+    // 현재 Q1~Q3 입력값 스냅샷 (카드 근거 렌더용)
+    const _q1MagicKeys = (typeof _magicAppliedSelected !== "undefined" && _magicAppliedSelected)
+        ? [..._magicAppliedSelected] : [];
+    const _q2Segment = (typeof getSelectedSegment === "function" ? getSelectedSegment() : "") || "";
+    const _q3Devices = selectedDevices || [];
 
-    // 간이 번역 함수: 영문 텍스트에서 알려진 키워드 및 구문을 로케일로 치환
-    function translateSnippet(text) {
-        if (!text || !needsTranslation) return "";
-        let translated = text;
-        // 긴 구문부터 먼저 치환 (더 정확한 매칭)
-        const phraseMap = currentLocale === "ko" ? bodyPhraseMapKo : {};
-        const allEntries = [...Object.entries(phraseMap), ...Object.entries(localTagMap)]
-            .sort((a, b) => b[0].length - a[0].length);
-        for (const [en, local] of allEntries) {
-            translated = translated.replace(new RegExp(en.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), local);
-        }
-        return translated !== text ? translated : "";
+    // 4대 가치 정규화 (v1/v2 value_tags + matchedTags 교차)
+    const _VALUE_AXIS = [
+        { key: "Care",   ko: "돌봄",     en: "Care",     match: ["Care", "Care for kids", "Care for seniors", "Care for your pet", "Family care"] },
+        { key: "Save",   ko: "절감",     en: "Save",     match: ["Save", "Save energy", "Energy Saving", "Time saving"] },
+        { key: "Secure", ko: "보안",     en: "Secure",   match: ["Secure", "Security", "Keep your home safe"] },
+        { key: "Play",   ko: "즐거움",   en: "Play",     match: ["Play", "Enhanced mood", "Easily control your lights"] }
+    ];
+    function _deriveValueHits(f) {
+        const signals = new Set([
+            ...(f.valueTags || []),
+            ...(f.matchedTags || [])
+        ].map(x => String(x)));
+        return _VALUE_AXIS.map(axis => ({
+            key: axis.key,
+            label: isKo ? axis.ko : axis.en,
+            hit: axis.match.some(m => signals.has(m))
+        }));
     }
 
     container.innerHTML = results.map((scenario, idx) => {
         const f = formatCurationResult(scenario);
-        const bodyText = f.originalText || f.narrative || "";
-        const truncated = bodyText.length > 250 ? bodyText.substring(0, 250) + "…" : bodyText;
 
-        // 로케일 번역
-        const titleTranslation = needsTranslation ? translateSnippet(f.title) : "";
-        const bodyTranslation = needsTranslation ? translateSnippet(truncated) : "";
+        // ① 영문 원문 (있을 때만)
+        const enRaw = f.englishBody || "";
+        const enSnip = enRaw.length > 260 ? enRaw.substring(0, 260) + "…" : enRaw;
 
+        // ② 한글 본문 (v1 analysis / v2 narrative — 직역 금지, DB의 자연스러운 카피 그대로)
+        const koRaw = f.koreanBody || "";
+        const koSnip = koRaw.length > 300 ? koRaw.substring(0, 300) + "…" : koRaw;
+
+        // ③ 4대 가치 반영
+        const valueHits = _deriveValueHits(f);
+        const valueBadgesHtml = valueHits.map(v => `
+            <span class="curation-value-badge ${v.hit ? "is-hit" : "is-miss"}" data-val="${v.key.toLowerCase()}">
+                ${v.hit ? "✓" : "·"} ${escapeHtml(v.label)}
+            </span>
+        `).join("");
+
+        // ④ Q1/Q2/Q3 반영 근거 (curation-engine.buildScenarioSelectionReason 산출물 사용)
+        const sr = f.selection_reason || {};
+        const q1c = (sr.q1_contribution || "").replace("직접 매칭 없음", isKo ? "이 시나리오와 직접 연결된 도시 신호는 없음" : "No direct city-signal link");
+        const q2c = (sr.q2_contribution || "").replace("직접 매칭 없음", isKo ? "Q2 세그먼트와 직접 매칭된 키워드는 없음" : "No direct Q2 segment match");
+        const q3c = (sr.q3_contribution || "").replace("직접 매칭 없음", isKo ? "선택한 기기와 직접 연결 없음" : "No direct device match");
+        const decisive = (sr.decisive_keywords || []).map(k => `<span class="curation-decisive-chip">${escapeHtml(k)}</span>`).join("");
+
+        // ⑤ 고객 효용 (v1 analysis에서 첫 2문장 / v2 value_proposition 우선)
+        const benefitSource = String(scenario.value_proposition || scenario.analysis || f.koreanBody || "");
+        const benefitText = benefitSource
+            .replace(/\s+/g, " ")
+            .split(/(?<=다\.|요\.|니다\.|\.)\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .join(" ")
+            .slice(0, 240);
+
+        // 매칭 태그 배지
         const tagsHtml = f.matchedTags.map(tag => {
             const localTag = localTagMap[tag] || "";
             return `<span class="curation-tag">${escapeHtml(tag)}${localTag ? ` <span class="curation-tag-local">(${escapeHtml(localTag)})</span>` : ""}</span>`;
@@ -14751,16 +14814,58 @@ function renderCurationResults(results, selectedDevices) {
             </a>`
         ).join("");
 
+        // 로컬라이즈된 타이틀
+        const titleLocal = isKo && localTagMap[f.title] ? localTagMap[f.title] : "";
+
         return `
             <article class="curation-card" data-curation-idx="${idx}">
                 <div class="curation-card-header">
                     <span class="curation-card-rank">${idx + 1}</span>
-                    <span class="curation-card-title">${escapeHtml(f.title)}${titleTranslation ? ` <span class="curation-title-local">(${escapeHtml(titleTranslation)})</span>` : ""}</span>
+                    <span class="curation-card-title">${escapeHtml(f.title)}${titleLocal ? ` <span class="curation-title-local">(${escapeHtml(titleLocal)})</span>` : ""}</span>
                     <span class="curation-card-source">${escapeHtml(f.source)}</span>
                 </div>
                 ${f.article ? `<div style="font-size:0.76rem;color:var(--muted);margin-bottom:8px">📂 ${escapeHtml(f.article)}</div>` : ""}
+
                 <div class="curation-card-meta">${tagsHtml}</div>
-                <div class="curation-card-body">${escapeHtml(truncated)}${bodyTranslation ? `<br><span class="curation-body-local">${escapeHtml(bodyTranslation)}</span>` : ""}</div>
+
+                <!-- ① 영문 원문 -->
+                ${enSnip ? `
+                <div class="curation-section curation-section--en">
+                    <span class="curation-section-label">${isKo ? "① 원문 (EN)" : "① Original (EN)"}</span>
+                    <p class="curation-section-body curation-body-en">${escapeHtml(enSnip)}</p>
+                </div>` : ""}
+
+                <!-- ② 한글 본문 (v1 analysis / v2 narrative — 직역 아님) -->
+                ${koSnip ? `
+                <div class="curation-section curation-section--ko">
+                    <span class="curation-section-label">${isKo ? "② 한글 본문" : "② Korean Body"}</span>
+                    <p class="curation-section-body curation-body-ko">${escapeHtml(koSnip)}</p>
+                </div>` : ""}
+
+                <!-- ③ 반영된 4대 가치 -->
+                <div class="curation-section curation-section--values">
+                    <span class="curation-section-label">${isKo ? "③ 반영된 4대 가치" : "③ Reflected 4 Values"}</span>
+                    <div class="curation-value-row">${valueBadgesHtml}</div>
+                </div>
+
+                <!-- ④ 고객 입력 반영 근거 (Q1/Q2/Q3) -->
+                <div class="curation-section curation-section--why">
+                    <span class="curation-section-label">${isKo ? "④ 고객 입력(Q1·Q2·Q3) 반영 근거" : "④ How Your Inputs Shape This"}</span>
+                    <ul class="curation-why-list">
+                        <li><strong>Q1 ${isKo ? "지역·도시 신호" : "Region/City signals"}</strong>: ${escapeHtml(q1c)}</li>
+                        <li><strong>Q2 ${isKo ? "타겟 세그먼트" : "Target segment"}</strong>: ${escapeHtml(q2c)}</li>
+                        <li><strong>Q3 ${isKo ? "선택 기기" : "Selected devices"}</strong>: ${escapeHtml(q3c)}</li>
+                    </ul>
+                    ${decisive ? `<div class="curation-decisive-row"><span class="curation-section-sublabel">${isKo ? "결정적 키워드" : "Decisive keywords"}</span>${decisive}</div>` : ""}
+                </div>
+
+                <!-- ⑤ 고객 효용성 (무엇을 얻을 수 있나) -->
+                ${benefitText ? `
+                <div class="curation-section curation-section--benefit">
+                    <span class="curation-section-label">${isKo ? "⑤ 고객이 얻는 효용" : "⑤ Customer Benefit"}</span>
+                    <p class="curation-section-body">${escapeHtml(benefitText)}</p>
+                </div>` : ""}
+
                 ${devicesHtml ? `<div class="curation-card-devices">${devicesHtml}</div>` : ""}
                 ${linksHtml ? `<div class="curation-card-links">${linksHtml}</div>` : ""}
                 <div class="curation-card-actions">

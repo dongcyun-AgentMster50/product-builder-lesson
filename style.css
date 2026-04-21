@@ -7297,6 +7297,114 @@ a.source-tag-link:hover {
     line-height: 1.55;
 }
 
+/* ── Curation-card 5개 항목 섹션 (원문·한글·가치·Q근거·효용) ── */
+.curation-section {
+    margin: 12px 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #fbfcfe;
+    border: 1px solid #eef1f6;
+}
+.curation-section--en { border-left: 3px solid #94a3b8; }
+.curation-section--ko { border-left: 3px solid #003366; background: rgba(0, 51, 102, 0.025); }
+.curation-section--values { border-left: 3px solid #16a34a; }
+.curation-section--why { border-left: 3px solid #d97706; }
+.curation-section--benefit { border-left: 3px solid #7c3aed; background: rgba(124, 58, 237, 0.04); }
+
+.curation-section-label {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent-strong);
+    letter-spacing: 0.02em;
+    margin-bottom: 6px;
+}
+.curation-section-sublabel {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-right: 6px;
+}
+.curation-section-body {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--ink);
+}
+.curation-body-en {
+    font-family: "Inter", "Segoe UI", sans-serif;
+    color: #475569;
+    font-style: italic;
+}
+.curation-body-ko {
+    color: var(--ink);
+    font-weight: 500;
+}
+
+.curation-value-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+.curation-value-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+.curation-value-badge.is-hit {
+    background: rgba(22, 163, 74, 0.1);
+    color: #15803d;
+    border-color: rgba(22, 163, 74, 0.3);
+}
+.curation-value-badge.is-miss {
+    background: #f1f5f9;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+}
+
+.curation-why-list {
+    margin: 4px 0 0;
+    padding-left: 0;
+    list-style: none;
+}
+.curation-why-list li {
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    padding: 4px 0;
+    border-bottom: 1px dashed #e7ebf2;
+}
+.curation-why-list li:last-child { border-bottom: none; }
+.curation-why-list strong {
+    color: var(--accent-strong);
+    font-size: 0.74rem;
+    margin-right: 6px;
+}
+
+.curation-decisive-row {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+.curation-decisive-chip {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(217, 119, 6, 0.12);
+    color: #b45309;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: 1px solid rgba(217, 119, 6, 0.25);
+}
+
 /* ── Curation completion helper ── */
 .curation-completion-helper {
     display: flex;
