@@ -1,0 +1,156 @@
+{
+  "id": "scenario_022",
+  "depth_0": {
+    "category": "기기 제어",
+    "card_title": "우리 집 만능 리모컨",
+    "thumbnail_desc": "스마트폰으로 TV, 에어컨 등 기기를 제어하는 장면",
+    "stats": {
+      "views": 390000,
+      "views_display": "39만",
+      "likes": 10000
+    }
+  },
+
+  "depth_1": {
+    "title": "우리 집 만능 리모컨",
+    "description": "리모컨이 어디 있는지, 배터리는 얼마나 남았는지 챙기지 않아도 돼요. 늘 손에 있는 스마트폰 하나로 우리 집 기기를 편하게 제어해 보세요. TV 앞에 다가가면 TV 리모컨이, 에어컨에 다가가면 에어컨 리모컨이 자동으로 나타나요. 가족 누구나 각자의 스마트폰으로 편하게 제어할 수 있어요.",
+    "device_icons": ["로봇청소기", "에어컨", "공기청정기", "냉장고", "TV", "세탁기", "식기세척기", "스마트폰"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "TV 앞에서 바로 꺼내 쓰는 리모컨",
+        "content": "TV 앞에선 스마트폰이 리모컨이 돼요. 리모컨을 찾느라 불편했다면 이제 걱정하지 마세요. TV에 가까이 가기만 해도 스마트폰에 리모컨이 자동으로 나타나요. 전원 켜고 끄는 건 물론, 보고 있던 스마트폰의 화면도 TV에 간편하게 공유할 수 있어요.",
+        "cta_label": "빠른 리모컨",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_022_1"
+      },
+      {
+        "story_no": 2,
+        "title": "필요할 때 나타나는 리모컨",
+        "content": "이제 거실에 리모컨이 잔뜩 굴러다닐 일은 없어요. 에어컨부터 공기청정기 그리고 로봇청소기까지, 가까이 다가가기만 하면 스마트폰에 쨘! 리모컨이 나타나요. 그때그때 필요한 리모컨을 찾지 않아도, 손안에서 바로 원하는 기능을 작동시킬 수 있어요.",
+        "usage_notes": [
+          "[빠른 리모컨] 기능의 지원 여부는 가전 기기의 모델에 따라 다를 수 있습니다."
+        ],
+        "cta_label": "사용 방법 확인",
+        "cta_type": "usage_guide",
+        "depth_2_ref": "usage_022_2"
+      },
+      {
+        "story_no": 3,
+        "title": "주방에서도 꺼내 쓰는 빠른 리모컨",
+        "content": "주방에서도 [빠른 리모컨]을 사용해 보세요. 세탁기와 식기세척기의 남은 시간을 확인하고, 필요할 땐 멈췄다가 다시 시작할 수 있어요. 냉장고의 온도 설정도 한눈에 확인할 수 있답니다. 바쁜 손은 그대로 두고 스마트폰 하나로 주방을 편하게 관리해 보세요.",
+        "usage_notes": [
+          "[빠른 리모컨] 기능의 지원 여부는 가전 기기의 모델에 따라 다를 수 있습니다."
+        ],
+        "cta_label": "사용 방법 확인",
+        "cta_type": "usage_guide",
+        "depth_2_ref": "usage_022_2",
+        "note": "스토리 2와 동일한 depth_2 연결"
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "Bespoke AI 스팀 플러스 자동 급배수 (리폼비 포함)+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "type": "로봇청소기" },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로...", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "type": "냉장고" },
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "type": "TV" },
+      { "product_name": "Bespoke AI 콤보 25/18kg...", "brand": "Samsung", "type": "세탁기" }
+    ],
+    "devices_used": ["로봇청소기", "에어컨", "공기청정기", "냉장고", "TV", "세탁기", "식기세척기"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_022_1",
+      "story_ref": 1,
+      "title": "빠른 리모컨 설정",
+      "type": "feature_page",
+      "access_path": "SmartThings 앱 > 설정 > 빠른 리모컨",
+      "settings": [
+        {
+          "label": "사용 중",
+          "type": "toggle",
+          "default": "ON",
+          "desc": "폰을 빠른 리모컨으로 사용합니다. 기기 근처에 있을 때 폰의 알림창에서 기기를 간편하게 제어할 수 있습니다."
+        },
+        {
+          "label": "장금화면에서 기기 제어",
+          "type": "toggle",
+          "default": "ON",
+          "desc": "잠금화면 상태에서도 빠른 리모컨으로 기기 제어 가능"
+        },
+        {
+          "label": "기기 선택",
+          "type": "link",
+          "desc": "빠른 리모컨에 표시할 기기 선택",
+          "example": "Bleu demo TV The Sero 43 외 4개 기기"
+        }
+      ]
+    },
+    {
+      "id": "usage_022_2",
+      "story_ref": [2, 3],
+      "title": "갤럭시에서 빠른 리모컨 사용하기",
+      "type": "usage_guide",
+      "intro": "TV와 가전제품의 리모컨을 빠른 설정창에서 간편하게 사용해 보세요.",
+      "note": "스토리 2, 3 동일 연결",
+      "steps": [
+        {
+          "step_no": 1,
+          "instruction": "홈 화면의 오른쪽 상단을 끌어내려 빠른 설정창을 열어보세요. 근처에 있는 TV나 가전제품을 제어할 수 있는 빠른 리모컨을 확인할 수 있습니다.",
+          "has_image": true
+        },
+        {
+          "step_no": 2,
+          "instruction": "빠른 리모컨에서 더보기 버튼을 눌러보세요. 근처에 있는 기기를 제어할 수 있는 리모컨을 사용할 수 있습니다.",
+          "has_image": true
+        }
+      ],
+      "usage_notes": [
+        "One UI 7.0 이상에서는 빠른 설정창에서 빠른 리모컨을 사용할 수 있습니다.",
+        "One UI 7.0 이전 버전에서는 알림창에서 빠른 리모컨을 사용할 수 있습니다.",
+        "빠른 리모컨 지원은 TV 및 가전제품의 모델에 따라 다를 수 있습니다.",
+        "빠른 리모컨은 TV 및 가전제품 근처에 있을 때에만 표시됩니다.",
+        "빠른 리모컨이 처음 표시될 때 사용 환경에 따라 시간이 걸릴 수 있습니다."
+      ]
+    }
+  ],
+
+  "devices_detail": {
+    "로봇청소기": [
+      { "product_name": "Bespoke AI 스팀 플러스 자동 급배수 (리폼비 포함)+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 플러스+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 울트라", "brand": "Samsung", "purchase": true }
+    ],
+    "에어컨": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 81.8㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 62.6㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 56.9㎡", "brand": "Samsung", "purchase": true }
+    ],
+    "공기청정기": [
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, 리유저블 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true }
+    ],
+    "냉장고": [
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 864L (81.2cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 하이브리드 4도어 901L (에너지 1등급 최저기준 대비 -35%, UV탈취)", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "세탁기": [
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ],
+    "식기세척기": [
+      { "product_name": "Bespoke AI 식기세척기 프리스탠딩 14인용", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 식기세척기 빌트인 12인용", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 식기세척기 빌트인 14인용", "brand": "Samsung", "purchase": true }
+    ]
+  }
+}
