@@ -1,0 +1,127 @@
+{
+  "id": "scenario_019",
+  "depth_0": {
+    "category": "절약/환경",
+    "card_title": "탄소까지 생각하는 에너지 습관",
+    "thumbnail_desc": "냉장고, 에어컨, 로봇청소기 등 가전기기와 탄소 절감 아이콘",
+    "stats": {
+      "views": 1804,
+      "views_display": "1804",
+      "likes": 16
+    }
+  },
+
+  "depth_1": {
+    "title": "탄소까지 생각하는 에너지 습관",
+    "description": "일상에서 환경을 지키는 일이 멀게만 느껴졌다면, 이제 스마트싱스로 쉽게 시작해 보세요. 탄소 배출량이 높은 시간대를 피해 똑똑하게 기기를 사용하고, 우리 집에서 얼마나 탄소를 줄였는지도 직접 확인할 수 있어요. 탄소 배출에 대한 관심으로 지구를 위한 변화를 시작해 보세요.",
+    "device_icons": ["로봇청소기", "스마트폰", "공기청정기", "냉장고", "TV", "세탁기", "건조기", "식기세척기"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "AI 절약모드로 탄소 배출량 줄이기",
+        "content": "이제 탄소 배출량을 고려하여 [AI 절약 모드]를 실행할 수 있어요. AI 절약 모드에서 [탄소 중립 실천] 옵션을 선택하면, 스마트싱스가 탄소 배출량이 높은 시간대에 자동으로 [AI 절약 모드]를 실행해 줍니다. 똑똑하게 에너지 소비량을 관리하고 탄소 배출량을 줄여 보세요.",
+        "cta_label": "에너지 시작",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_019_energy"
+      },
+      {
+        "story_no": 2,
+        "title": "탄소 저감을 실천하는 손쉬운 방법",
+        "content": "전기 요금 걱정은 줄이고, 환경도 생각해 보세요. 스마트싱스 에너지의 [맞춤 예약] 기능으로 전기요금이 높은 시간대를 피해 세탁기, 식기세척기, 비스포크 AI 콤보를 똑똑하게 사용할 수 있어요. 로봇청소기는 [최적 충전]으로 탄소 배출이 적은 시간대에 충전할 수 있어요. 전기요금도 아끼고 탄소 배출도 줄이는 일상, 지금부터 시작해 보세요.",
+        "cta_label": "에너지 시작",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_019_energy",
+        "note": "스토리 3과 동일한 depth_2 (Energy 앱 모니터링 탭 연결)"
+      },
+      {
+        "story_no": 3,
+        "title": "우리 집 탄소 저감량 한눈에 확인하기",
+        "content": "[탄소 배출량 인사이트]를 통해 우리 집에서 사용한 에너지의 탄소 배출량을 확인해 보세요. 그동안 스마트싱스 에너지를 통해 내가 줄인 탄소량도 한눈에 확인할 수 있어요.",
+        "cta_label": "에너지 시작",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_019_energy",
+        "note": "스토리 2와 동일한 depth_2 (Energy 앱 모니터링 탭 연결)"
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "Bespoke AI 스팀 플러스 자동 급배수 (리폼비 포함)+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "type": "로봇청소기" },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로...", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "type": "냉장고" },
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "type": "TV" },
+      { "product_name": "Bespoke AI 콤보 25/18kg...", "brand": "Samsung", "type": "세탁기" }
+    ],
+    "devices_used": ["로봇청소기", "에어컨", "공기청정기", "냉장고", "TV", "세탁기", "건조기", "식기세척기"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_019_energy",
+      "story_ref": [1, 2, 3],
+      "title": "에너지 시작 — SmartThings Energy 앱",
+      "type": "feature_page",
+      "app": "SmartThings Energy",
+      "note": "스토리 1, 2, 3 모두 동일한 Energy 앱 모니터링 탭으로 연결",
+      "ref_shared": "scenario_015의 usage_015_2 Energy 앱 구조와 동일",
+      "tabs": [
+        {
+          "tab_name": "모니터링",
+          "key_sections": [
+            { "label": "AI 절약 모드 ON/OFF 토글", "sub_label": "항상 절약 / 탄소 중립 실천 옵션 선택 가능" },
+            { "label": "이번 달 에너지 사용 요금", "desc": "AI 절약 모드로 절약된 요금 표시 / 이번 달 월말 예상 요금 / 지난달 요금 비교" },
+            { "label": "총 에너지 사용량 (kWh)", "desc": "지난달 동기간 대비 절약량 표시 / 월간 누적 사용량 추이 그래프" }
+          ]
+        }
+      ],
+      "carbon_specific_features": [
+        { "feature": "탄소 배출량 인사이트", "desc": "기기별 탄소 배출량 확인 / 탄소 집약도 낮은 시간대 표시" },
+        { "feature": "탄소 중립 실천 옵션", "desc": "AI 절약 모드 내 탄소 배출 낮은 시간대 자동 실행 설정" },
+        { "feature": "맞춤 예약", "desc": "전기요금/탄소 배출이 낮은 시간대에 세탁기·식기세척기·AI 콤보 자동 예약 실행" },
+        { "feature": "로봇청소기 최적 충전", "desc": "탄소 배출이 적은 시간대에 자동 충전 예약" }
+      ]
+    }
+  ],
+
+  "devices_detail": {
+    "로봇청소기": [
+      { "product_name": "Bespoke AI 스팀 플러스 자동 급배수 (리폼비 포함)+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 플러스+먼지봉투+다회용포+브러시 키트+모터필터", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 스팀 울트라", "brand": "Samsung", "purchase": true }
+    ],
+    "에어컨": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 81.8㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 62.6㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 56.9㎡", "brand": "Samsung", "purchase": true }
+    ],
+    "공기청정기": [
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, 리유저블 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true }
+    ],
+    "냉장고": [
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 864L (81.2cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 하이브리드 4도어 901L (에너지 1등급 최저기준 대비 -35%, UV탈취)", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "세탁기": [
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 콤보 25/18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ],
+    "건조기": [
+      { "product_name": "Bespoke AI 건조기 18kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 건조기 20kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 건조기 20kg (71.1mm LCD+다이얼)", "brand": "Samsung", "purchase": true }
+    ],
+    "식기세척기": [
+      { "product_name": "Bespoke AI 식기세척기 프리스탠딩 14인용", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 식기세척기 빌트인 12인용", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 식기세척기 빌트인 14인용", "brand": "Samsung", "purchase": true }
+    ]
+  }
+}
