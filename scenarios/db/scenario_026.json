@@ -1,0 +1,90 @@
+{
+  "id": "scenario_026",
+  "depth_0": {
+    "category": "AI 제안/홈 인사이트",
+    "card_title": "AI가 알려주는 우리 집 맞춤 제안",
+    "thumbnail_desc": "홈 인사이트 화면과 온도/공기질/에너지 현황",
+    "stats": {
+      "views": 7194,
+      "views_display": "7194",
+      "likes": 1063
+    }
+  },
+
+  "depth_1": {
+    "title": "AI가 알려주는 우리 집 맞춤 제안",
+    "description": "홈 인사이트로 우리 집을 최상의 상태로 만들어 보세요. 방마다 온습도와 공기질 분석은 물론, 알맞은 기기 제어까지 추천해 줍니다. 일상에 꼭 맞춘 제안으로 더욱 편리한 생활을 경험해 보세요. 외출 중에도 에너지 낭비를 막아주는 홈 인사이트로 언제 어디서든 우리 집을 관리할 수 있답니다.",
+    "device_icons": ["에어컨", "공기청정기", "TV", "조명", "온도/습도 센서"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "우리 집을 알아서 챙겨주는 [홈 인사이트]",
+        "content": "홈 인사이트에서 어제와 달라진 우리 집의 공간별 온습도와 공기 질 변화를 확인하고, 홈 인사이트가 알아서 제안하는 기기 제어로 집안 환경을 언제나 쾌적하게 유지할 수 있어요. 홈 인사이트로 더욱 편하게 우리 집을 관리해 보세요.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 2,
+        "title": "AI가 외출 중 켜져 있는 기기를 알려줘요",
+        "content": "분주한 아침, 에어컨이나 TV, 조명을 켜 둔 채 집을 나올 때가 있죠. 홈 인사이트는 모두가 외출했을 때 집 안에 불필요하게 켜진 기기가 있으면 알려주고, 바로 끌 수 있도록 도와줘요. 홈 인사이트로 외출 중에도 우리 집을 관리하고 에너지도 절약해 보세요.",
+        "usage_notes": [
+          "[홈 인사이트]의 부재 인식에 따른 자동화 추천은 한국과 미국에서 지원됩니다."
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 3,
+        "title": "가족과 반려동물까지 살피는 [홈 인사이트]",
+        "content": "멀리 떨어져 사는 가족의 안부가 걱정된다면 [홈 인사이트]를 살펴보세요. 안부를 전하고, 필요한 도움을 건넬 수 있어요. 혼자있는 반려동물이 평소보다 많이 짖는다면 그 변화도 알려주어, 어디서든 보살필 수 있어요. 함께 하지 못하는 순간에도 사랑하는 가족을 살피는 마음, [홈 인사이트]가 함께 해요.",
+        "usage_notes": [
+          "[홈 인사이트]의 가족과 반려동물을 돌보는 경험 추천은 갤럭시 스마트폰에서 지원됩니다."
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로...", "brand": "Samsung", "type": "에어컨" },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "type": "공기청정기" },
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "type": "TV" },
+      { "product_name": "나노리프 에센셜 매터 스마트 전구 1팩", "brand": "Nanoleaf", "type": "조명" },
+      { "product_name": "SONOFF Zigbee Temperature and Humidity Sensor", "brand": "SONOFF", "type": "온도/습도 센서" },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로...", "brand": "Samsung", "type": "에어컨" }
+    ],
+    "devices_used": ["에어컨", "공기청정기", "TV", "조명", "온도/습도 센서"]
+  },
+
+  "depth_2": [],
+
+  "devices_detail": {
+    "에어컨": [
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 청정 81.8㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 62.6㎡", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 무풍콤보 갤러리 프로 56.9㎡", "brand": "Samsung", "purchase": true }
+    ],
+    "공기청정기": [
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, 리유저블 필터)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Infinite AI 공기청정기 (33㎡, S 필터)", "brand": "Samsung", "purchase": true }
+    ],
+    "TV": [
+      { "product_name": "2026 Micro RGB RH9G (214cm)", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame Pro (163cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true },
+      { "product_name": "2025 The Frame (125cm) 챔퍼 샌드골드 베젤", "brand": "Samsung", "purchase": true }
+    ],
+    "조명": [
+      { "product_name": "나노리프 에센셜 매터 스마트 전구 1팩", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 에센셜 매터 스마트 전구", "brand": "Nanoleaf", "purchase": true },
+      { "product_name": "나노리프 4D LED 라이트 스트립 조명 165cm (TV 및 모니터용)", "brand": "Nanoleaf", "purchase": true }
+    ],
+    "온도/습도 센서": [
+      { "product_name": "SONOFF Zigbee Temperature and Humidity Sensor", "brand": "SONOFF", "purchase": true },
+      { "product_name": "Smart Humidity Sensor", "brand": "frient", "purchase": true },
+      { "product_name": "Smart Humidity Sensor", "brand": "frient", "purchase": true }
+    ]
+  }
+}
