@@ -1,0 +1,125 @@
+{
+  "id": "scenario_027",
+  "depth_0": {
+    "category": "자동차/모빌리티",
+    "card_title": "스마트싱스로 자동차까지 한눈에",
+    "thumbnail_desc": "스마트폰으로 자동차 상태를 확인하는 장면",
+    "stats": {
+      "views": 530,
+      "views_display": "530",
+      "likes": 13
+    }
+  },
+
+  "depth_1": {
+    "title": "스마트싱스로 자동차까지 한눈에",
+    "description": "스마트싱스로 자동차까지 더 편하게 관리해 보세요. 멀리서도 차량 상태를 확인하고, 시동 켜기나 문 잠그기, 주차 위치 찾기까지 모두 손쉽게 할 수 있어요. 집을 넘어 자동차까지 이어지는 새로운 편리함을 스마트싱스와 함께 경험해 보세요.",
+    "device_icons": ["도어록", "자동차"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "손안에서 확인하는 우리 집 자동차",
+        "content": "집에서도 주차장에 있는 내 차가 잘 있는지 살펴볼 수 있어요. 스마트싱스에서는 시동과 공조 상태, 전기차의 충전 상태, 문과 창문의 잠금 상태까지 한눈에 확인할 수 있답니다. 필요할 땐 원격으로 시동이나 공조를 켜거나, 문을 잠그거나 열 수도 있어 언제든 더 편하게 차를 관리할 수 있어요.",
+        "cta_label": "지원 차량 살펴보기",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_027_1"
+      },
+      {
+        "story_no": 2,
+        "title": "집과 자동차가 이어지는 편리함",
+        "content": "스마트싱스로 집 안의 기기와 자동차를 하나의 자동화로 연결해 보세요. 바쁜 아침, 현관을 나서는 순간 차가 미리 시동을 걸어 시간을 아껴주고, 날씨에 맞춰 에어컨이나 히터가 켜져 더욱 쾌적하게 출발할 수 있어요. 집과 자동차가 내 일상에 맞춰 자연스럽게 움직이는 편리함을 지금 시작해 보세요.",
+        "usage_notes": [
+          "현대·기아의 경우, 2022년 11월 이후 출시된 ccNC 인포테인먼트 플랫폼 탑재 차량에서 이용할 수 있으며, BlueLink·KIA Connect 서비스 가입이 필요합니다.",
+          "제네시스의 경우, 2023년 10월 이후에 출시된 ccIC27 인포테인먼트 플랫폼 탑재 차량에서 이용할 수 있으며, Genesis Connected 서비스 가입이 필요합니다."
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "Aqara Smart Lock U200 Lite", "brand": "Aqara", "type": "도어록" },
+      { "product_name": "Aqara 스마트 도어록 L100 (자가설치)", "brand": "Aqara", "type": "도어록" },
+      { "product_name": "Aqara 스마트 도어록 K100 (자가설치)", "brand": "Aqara", "type": "도어록" }
+    ],
+    "devices_used": ["도어록", "자동차"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_027_1",
+      "story_ref": 1,
+      "title": "지원 차량 살펴보기",
+      "type": "feature_page",
+      "app": "SmartThings — 자동차 연결",
+      "supported_brands": ["Genesis", "Hyundai Motor", "Kia"],
+      "total_supported_vehicles": 28,
+      "filter_tabs": ["전체", "Genesis", "Hyundai Motor", "Kia"],
+      "sort_options": ["추천순"],
+      "vehicles": {
+        "Genesis": {
+          "count": 4,
+          "models": [
+            { "name": "G80 2024, 2025", "brand": "Genesis" },
+            { "name": "GV80 2024, 2025", "brand": "Genesis" },
+            { "name": "2025 Electrified G80", "brand": "Genesis" },
+            { "name": "GV70 2024", "brand": "Genesis" }
+          ],
+          "service_required": "Genesis Connected",
+          "eligible_from": "2023년 10월 이후 출시, ccIC27 인포테인먼트 플랫폼 탑재 차량"
+        },
+        "Hyundai Motor": {
+          "count": 12,
+          "models": [
+            { "name": "IONIQ 9", "brand": "Hyundai Motor" },
+            { "name": "The all-new GRANDEUR", "brand": "Hyundai Motor" },
+            { "name": "The all-new SANTA FE", "brand": "Hyundai Motor" },
+            { "name": "SONATA The Edge", "brand": "Hyundai Motor" },
+            { "name": "SONATA Taxi", "brand": "Hyundai Motor" },
+            { "name": "The all-new PALISADE", "brand": "Hyundai Motor" },
+            { "name": "The all-new KONA", "brand": "Hyundai Motor" },
+            { "name": "The new TUCSON", "brand": "Hyundai Motor" },
+            { "name": "IONIQ 5 N", "brand": "Hyundai Motor" },
+            { "name": "The new IONIQ 5", "brand": "Hyundai Motor" },
+            { "name": "IONIQ 6", "brand": "Hyundai Motor" },
+            { "name": "The all-new KONA Electric", "brand": "Hyundai Motor" }
+          ],
+          "service_required": "BlueLink",
+          "eligible_from": "2022년 11월 이후 출시, ccNC 인포테인먼트 플랫폼 탑재 차량"
+        },
+        "Kia": {
+          "count": 12,
+          "models": [
+            { "name": "The Kia EV4", "brand": "Kia" },
+            { "name": "The new EV6 GT", "brand": "Kia" },
+            { "name": "EV9", "brand": "Kia" },
+            { "name": "The Kia EV9 GT", "brand": "Kia" },
+            { "name": "EV3", "brand": "Kia" },
+            { "name": "The Kia Tasman", "brand": "Kia" },
+            { "name": "The new EV6", "brand": "Kia" },
+            { "name": "The new K5", "brand": "Kia" },
+            { "name": "The new K8", "brand": "Kia" },
+            { "name": "The new Sportage", "brand": "Kia" },
+            { "name": "The new Sorento", "brand": "Kia" },
+            { "name": "The new Carnival", "brand": "Kia" }
+          ],
+          "service_required": "KIA Connect",
+          "eligible_from": "2022년 11월 이후 출시, ccNC 인포테인먼트 플랫폼 탑재 차량"
+        }
+      }
+    }
+  ],
+
+  "devices_detail": {
+    "도어록": [
+      { "product_name": "Aqara Smart Lock U200 Lite", "brand": "Aqara", "purchase": true },
+      { "product_name": "Aqara 스마트 도어록 L100 (자가설치)", "brand": "Aqara", "purchase": true },
+      { "product_name": "Aqara 스마트 도어록 K100 (자가설치)", "brand": "Aqara", "purchase": true }
+    ],
+    "자동차": [
+      { "product_name": "The Kia EV4", "brand": "Kia", "purchase": false },
+      { "product_name": "The new EV6 GT", "brand": "Kia", "purchase": false },
+      { "product_name": "The Kia EV9 GT", "brand": "Kia", "purchase": false }
+    ]
+  }
+}
