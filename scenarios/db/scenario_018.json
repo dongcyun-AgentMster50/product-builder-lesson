@@ -1,0 +1,137 @@
+{
+  "id": "scenario_018",
+  "depth_0": {
+    "category": "주방/식탁",
+    "card_title": "오늘의 식탁이 더 즐거워지는 방법",
+    "thumbnail_desc": "냉장고, 오븐, 식기세척기와 SmartThings Food 앱",
+    "stats": {
+      "views": 40000,
+      "views_display": "4만",
+      "likes": 709
+    }
+  },
+
+  "depth_1": {
+    "title": "오늘의 식탁이 더 즐거워지는 방법",
+    "description": "스마트싱스와 함께하는 새로운 주방의 일상을 시작해 보세요. 냉장고는 냉장고 속 식재료로 맞춤 레시피를 추천하고, 오븐은 재료를 인식해 최적의 온도로 요리를 완성합니다. 식기세척기는 식기의 오염도에 따라 똑똑하게 마무리하니, 요리부터 뒷정리까지 부담 없이 여유롭게 즐길 수 있어요.",
+    "device_icons": ["냉장고", "식기세척기", "오븐"],
+    "stories": [
+      {
+        "story_no": 1,
+        "title": "다양한 레시피를 탐색해요",
+        "content": "냉장고 속에 보관 중인 식재료들, 이제 스마트싱스 푸드로 맛있게 변신시켜 보세요. 우리 집 냉장고 속 재료로 만들 수 있는 다양한 메뉴와 레시피를 손쉽게 확인할 수 있어요. 계절요리와 베이킹 등 다양한 레시피를 살펴보고 매일 새로운 요리에 도전하는 즐거움을 느껴보세요.",
+        "cta_label": "푸드 시작",
+        "cta_type": "feature_page",
+        "depth_2_ref": "usage_018_1"
+      },
+      {
+        "story_no": 2,
+        "title": "오븐이 추천하는 레시피로 설정까지 해줘요",
+        "content": "어려운 오븐 요리도 걱정 없어요. 오븐에 식재료를 넣기만 하면 어떤 식재료인지 인식하여 최적의 레시피를 추천해줘요. 마음에 드는 레시피를 선택하기만 하면 오븐이 알아서 딱 맞는 온도와 시간을 설정해 줍니다. 이제 맛있는 음식이 완성될 때까지 기다리면 음식 준비 끝!",
+        "usage_notes": [
+          "일부 재료의 종류와 양은 인식되지 않을 수 있습니다.",
+          "식재료 인식으로 레시피 추천하기 기능은 일부 제품에는 적용되지 않으며 다음의 제품군에서 지원합니다. 북미/중남미: NV7000C 카메라 적용 모델 / 유럽: NV7000B 카메라 적용 모델"
+        ],
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      },
+      {
+        "story_no": 3,
+        "title": "알아서 깨끗하게 세척해 줘요",
+        "content": "맛있는 식사 뒤 밀려오는 설거지, 생각만 해도 부담스럽죠. 사용한 식기를 식기세척기에 넣기만 하면 식기의 오염도를 분석하여 최적의 세척 온도와 시간을 자동으로 설정해줘요. AI 알고리즘이 헹굼 횟수까지 결정해주니 처음부터 끝까지 알아서 척척, 설거지도 똑똑하게 끝낼 수 있어요.",
+        "cta_label": null,
+        "cta_type": "none",
+        "depth_2_ref": null
+      }
+    ],
+    "purchasable_products": [
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "type": "냉장고" },
+      { "product_name": "Bespoke AI 식기세척기 프리스탠딩 14인용", "brand": "Samsung", "type": "식기세척기" },
+      { "product_name": "Bespoke 큐커 멀티 22L", "brand": "Samsung", "type": "오븐" },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 864L (81.2cm, AI 푸드매니저)", "brand": "Samsung", "type": "냉장고" },
+      { "product_name": "Bespoke AI 식기세척기 빌트인 12인용", "brand": "Samsung", "type": "식기세척기" },
+      { "product_name": "Bespoke 큐커 멀티 22L", "brand": "Samsung", "type": "오븐" }
+    ],
+    "devices_used": ["냉장고", "식기세척기", "오븐"]
+  },
+
+  "depth_2": [
+    {
+      "id": "usage_018_1",
+      "story_ref": 1,
+      "title": "푸드 시작",
+      "type": "feature_page",
+      "app": "SmartThings Food",
+      "app_size_mb": 25,
+      "download_required": true,
+      "download_prompt": "이 기능을 사용하려면 푸드를 다운로드하세요.",
+      "onboarding": {
+        "title": "맞춤 레시피로 전문가처럼 요리해 보세요.",
+        "desc": "냉장고 속 재료, 선호 식단, 주방 가전에 따라 맞춤 레시피를 추천 받을 수 있습니다.",
+        "cta": "시작"
+      },
+      "usage_guide": {
+        "total_steps": 3,
+        "steps": [
+          {
+            "step_no": 1,
+            "title": "맞춤 레시피 및 식단 추천",
+            "desc": "내 식성향에 맞는 식단을 추천받아 보세요. 메뉴를 고민할 필요 없이 빠르게 요리를 시작할 수 있습니다.",
+            "has_image": true
+          },
+          {
+            "step_no": 2,
+            "title": "간편한 장보기",
+            "desc": "필요한 재료를 쇼핑 목록에 담아두면 하나도 빠짐없이 확인할 수 있어요.",
+            "has_image": true
+          },
+          {
+            "step_no": 3,
+            "title": "내 커뮤니티",
+            "desc": "관심 있는 커뮤니티에 가입하고 레시피를 확인해 보세요. 나만의 레시피를 만들어 공유할 수 있습니다.",
+            "has_image": true
+          }
+        ]
+      },
+      "main_screen_sections": [
+        { "section": "제안", "desc": "가족이 원하는 메뉴로 이번 주 식단 제안 / 메뉴 찾아보기 CTA" },
+        { "section": "지금 뜨는 레시피", "desc": "YouTube 인기 레시피 영상 목록" },
+        { "section": "저장한 레시피", "desc": "사용자가 저장한 레시피 목록" },
+        { "section": "냉장고 속 재료로 뚝딱!", "desc": "냉장고 인식 재료(소고기, 돼지고기, 닭고기, 생선 등) 기반 레시피 추천" },
+        { "section": "삼성 가전제품으로 더 맛있게", "desc": "연결 가전별 레시피 수 표시 (오븐/컴팩트 오븐/쿡탑/전자레인지/큐커/정수기)" },
+        { "section": "와인 페어링 레시피", "desc": "요리별 와인 추천 레시피" },
+        { "section": "추천 커뮤니티", "desc": "나만의 레시피 공유 커뮤니티" },
+        { "section": "내 입맛에 딱! 추천 요리", "desc": "사용자 식성향 반영 개인화 추천 요리" },
+        { "section": "추천 브랜드 레시피", "desc": "브랜드 제품을 활용한 레시피" }
+      ],
+      "settings": [
+        { "item": "음식취향", "desc": "식단, 영양, 좋아하는 식재료, 먹지못하는 식재료, 선호하는 조리 양" },
+        { "item": "오늘의 건강 데이터", "desc": "삼성 헬스와 연동하여 오늘의 칼로리를 관리하고 알맞은 레시피를 추천 받아 보세요" },
+        { "item": "레시피 언어", "desc": "레시피 표시 언어 선택 (기본: 한국어)" },
+        { "item": "자동 식단 플래너", "desc": "주간 식단이 업데이트되었을때 알림을 받습니다. (ON/OFF 토글)" }
+      ],
+      "deprecation_notice": {
+        "note": "육류 라벨 스캔 및 e-식품관 장바구니 기능이 5월 26일부로 종료됨 안내 팝업 존재"
+      }
+    }
+  ],
+
+  "devices_detail": {
+    "냉장고": [
+      { "product_name": "Bespoke AI 패밀리허브 4도어 키친핏 Max 602L (22.5cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 패밀리허브 4도어 864L (81.2cm, AI 푸드매니저)", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 하이브리드 4도어 901L (에너지 1등급 최저기준 대비 -35%, UV탈취)", "brand": "Samsung", "purchase": true }
+    ],
+    "식기세척기": [
+      { "product_name": "Bespoke AI 식기세척기 프리스탠딩 14인용", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 식기세척기 빌트인 12인용", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke AI 식기세척기 빌트인 14인용", "brand": "Samsung", "purchase": true }
+    ],
+    "오븐": [
+      { "product_name": "Bespoke 큐커 멀티 22L", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke 큐커 멀티 22L", "brand": "Samsung", "purchase": true },
+      { "product_name": "Bespoke 큐커 멀티 22L", "brand": "Samsung", "purchase": true }
+    ]
+  }
+}
