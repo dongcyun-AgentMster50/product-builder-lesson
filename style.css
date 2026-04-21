@@ -2104,6 +2104,10 @@ textarea {
     display: grid;
     gap: 8px;
 }
+.q1-action-row.q1-hidden,
+.q1-action-divider.q1-hidden {
+    display: none !important;
+}
 .q1-action-divider {
     display: flex;
     align-items: center;

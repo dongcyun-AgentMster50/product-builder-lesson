@@ -4,7 +4,8 @@ import { callGeminiAsOpenAI, resolveGeminiKey } from "./_gemini.js";
 import { resolveProviderKey, maskKey } from "./_provider.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-const CITY_PROFILE_UPSTREAM_TIMEOUT_MS = 65000;
+// 업스트림 타임아웃: 모델이 긴 JSON 생성 + 정리까지 완료할 여유 확보 (Cloudflare Workers 최대 CPU 300초)
+const CITY_PROFILE_UPSTREAM_TIMEOUT_MS = 110000;
 const CITY_PROFILE_UPSTREAM_MAX_ATTEMPTS = 2;
 
 const CITY_PROFILE_SYSTEM_PROMPT = `You are a Geo-Localization Evidence Extractor for a scenario-generation system.
@@ -656,7 +657,8 @@ async function handleCityProfile(context) {
     const wikiContext = await fetchWikiContext(country, city);
 
     if (customQuery) {
-        const maxTokens = 4000;
+        // 커스텀 리서치 토큰 상향: 응답 절삭(finish_reason=length) 방지 + 정리까지 여유
+        const maxTokens = 8000;
         const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}${wikiContext ? `═══ 참고 자료 (백과사전 출처 — 팩트 근거로 활용) ═══\n${wikiContext}\n═══ 참고 자료 끝 ═══\n\n` : ""}위 도시에서 "${customQuery}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
 
         let result;
@@ -734,7 +736,8 @@ ${wikiContext}
 IMPORTANT: Use the reference context above as your PRIMARY source of facts. Extract specific district names, statistics, facility names, event names, and policy names from it. Cite "Wikipedia ${getWikiLang(country).toUpperCase()}" in your source_map. Only mark a category as "Evidence insufficient" if the reference context truly contains NO relevant information for that category.
 ` : ""}
 Build a source-bound localization evidence pack for this city. Use only evidence-backed localized statements. If evidence is weak, mark that category as "Evidence insufficient for localized claim." Return valid JSON only.`;
-    const maxTokens = 10000;
+    // 10 카테고리 evidence pack 긴 JSON: 절삭 방지 위해 토큰 여유 확대
+    const maxTokens = 14000;
 
     let result;
     try {

@@ -14,7 +14,7 @@ const COOKIE_NAME = "scenario_agent_session";
 const SESSION_TTL_MS = Number(process.env.SESSION_TTL_MS || 1000 * 60 * 60 * 8);
 const REGION_INSIGHT_TIMEOUT_MS = Number(process.env.REGION_INSIGHT_TIMEOUT_MS || 20000);
 const REGION_INSIGHT_CACHE_TTL_MS = Number(process.env.REGION_INSIGHT_CACHE_TTL_MS || 1000 * 60 * 15);
-const CITY_PROFILE_UPSTREAM_TIMEOUT_MS = Number(process.env.CITY_PROFILE_UPSTREAM_TIMEOUT_MS || 65000);
+const CITY_PROFILE_UPSTREAM_TIMEOUT_MS = Number(process.env.CITY_PROFILE_UPSTREAM_TIMEOUT_MS || 110000);
 const CITY_PROFILE_UPSTREAM_MAX_ATTEMPTS = Number(process.env.CITY_PROFILE_UPSTREAM_MAX_ATTEMPTS || 2);
 const MAX_FAILED_ATTEMPTS = Number(process.env.MAX_FAILED_ATTEMPTS || 3);
 const LOCK_WINDOW_MS = Number(process.env.LOCK_WINDOW_MS || 1000 * 60);
@@ -3043,7 +3043,8 @@ async function handleCityProfile(req, res) {
 
     // custom_query가 있으면 커스텀 마켓 리서치 모드
     if (customQuery) {
-        const maxTokens = 2000;
+        // 절삭 방지 + 정리까지 여유
+        const maxTokens = 8000;
         const wikiCtx = await fetchWikiContext(country, city);
         const userMessage = `도시: ${city}, 국가: ${country}, 언어: ${locale}\n키워드: "${customQuery}"\n\n${baseProfiles ? `기존 base_profiles (중복 금지 대상):\n${baseProfiles}\n\n` : ""}${wikiCtx ? `═══ 참고 자료 (백과사전 출처 — 팩트 근거로 활용) ═══\n${wikiCtx}\n═══ 참고 자료 끝 ═══\n\n` : ""}위 도시에서 "${customQuery}" 키워드와 관련된 새로운 도시 맥락을 분석하세요. 기존 프로필에 이미 담긴 내용은 반복하지 말고, 키워드로 인해 새롭게 드러나는 인사이트만 출력하세요.`;
 
@@ -3091,8 +3092,8 @@ async function handleCityProfile(req, res) {
     }
 
     // 기본 도시 프로필 모드 — Wiki RAG context 주입
-    // Wiki context(~4K tokens) + system prompt(~2.5K) + user msg → 응답에 최소 4.5K 필요
-    const maxTokens = 5000;
+    // Wiki context(~4K) + system prompt(~2.5K) + user msg → 10 카테고리 JSON 응답 절삭 방지
+    const maxTokens = 14000;
     const wikiContext = await fetchWikiContext(country, city);
 
     const userMessage = `Target country: ${country}

@@ -4090,16 +4090,27 @@ function syncQ1SearchButtons() {
     const citySearchBtn = document.getElementById("q1-city-search-btn");
     const customSearchBtn = document.getElementById("q1-custom-search-btn");
     const customInput = document.getElementById("q1-custom-input");
+    const cityRow = document.getElementById("q1-city-search-row");
+    const customRow = document.getElementById("q1-custom-row");
+    const divider = document.querySelector(".q1-action-divider");
     const isKo = currentLocale === "ko";
+
+    // 상호 배타: 한쪽이 실행 중이면 다른 쪽 완전 숨김 (동시 진행 UI 제거)
+    const anyRunning = _q1CitySearchRunning || _q1CustomSearchRunning;
+    if (cityRow) cityRow.classList.toggle("q1-hidden", _q1CustomSearchRunning);
+    if (customRow) customRow.classList.toggle("q1-hidden", _q1CitySearchRunning);
+    if (divider) divider.classList.toggle("q1-hidden", anyRunning);
 
     // 도시 검색 버튼
     if (citySearchBtn) {
         const city = getCityValue();
-        citySearchBtn.disabled = !city || _q1CitySearchRunning;
+        citySearchBtn.disabled = !city || _q1CitySearchRunning || _q1CustomSearchRunning;
         const label = document.getElementById("q1-city-search-label");
         if (label) {
             if (_q1CitySearchRunning) {
                 label.textContent = isKo ? "검색 중..." : "Searching...";
+            } else if (_q1CustomSearchRunning) {
+                label.textContent = isKo ? "커스텀 리서치 완료 후 사용" : "Available after custom research";
             } else if (city) {
                 const localCity = getCityDisplayValue(
                     resolveCountry(marketOptions.find(m => m.siteCode === countrySelect.value))?.countryCode,
@@ -4114,9 +4125,9 @@ function syncQ1SearchButtons() {
         }
     }
 
-    // 커스텀 검색 버튼
+    // 커스텀 검색 버튼 — 타쪽 실행 중이면도 비활성
     if (customSearchBtn && customInput) {
-        customSearchBtn.disabled = !customInput.value.trim() || _q1CustomSearchRunning;
+        customSearchBtn.disabled = !customInput.value.trim() || _q1CustomSearchRunning || _q1CitySearchRunning;
     }
 }
 
@@ -4388,8 +4399,9 @@ async function renderStep2Insight(forceRefresh = false) {
         } catch { /* cache invalid, fetch fresh */ }
     }
 
-    // 2. 로딩 표시
+    // 2. 로딩 표시 — 오직 하나의 진행 UI만 노출 (커스텀 검색바는 렌더 자체 안 함)
     if (currentStep !== 2) return;
+    _q1CustomSearchRunning = false;
     stepInsight.innerHTML = buildInsightMarkup({
         badge: "Q1 Region",
         title: `${countryName} ${localCity}`,
@@ -4401,15 +4413,15 @@ async function renderStep2Insight(forceRefresh = false) {
     });
     updateQuestionHelpers();
 
-    // 피자 프로그레스 시뮬레이션 (0→90% 구간을 서서히 채움)
-    // Wiki RAG(~2초) + OpenAI(~30~45초) = 총 ~35~50초 예상, 60초 기준 여유 설계
+    // 피자 프로그레스 시뮬레이션 (0→92% 구간을 서서히 채움)
+    // Wiki RAG(~3초) + OpenAI(~60~90초 — 긴 JSON 생성+정리) = 총 ~65~95초, 120초 기준 여유 설계
     let pizzaProgress = 0;
     let pizzaDone = false;
     const pizzaInterval = setInterval(() => {
         if (pizzaDone || currentStep !== 2) { clearInterval(pizzaInterval); return; }
-        // 점점 느려지며 90%까지 접근 (60초 기준 — 계수 0.018, 250ms 인터벌)
-        pizzaProgress += (90 - pizzaProgress) * 0.018;
-        updatePizzaProgress(stepInsight, Math.min(pizzaProgress, 90));
+        // 점점 느려지며 92%까지 접근 (120초 기준 — 계수 0.009, 250ms 인터벌)
+        pizzaProgress += (92 - pizzaProgress) * 0.009;
+        updatePizzaProgress(stepInsight, Math.min(pizzaProgress, 92));
     }, 250);
 
     // 3. 라이브 API 호출
@@ -4417,7 +4429,8 @@ async function renderStep2Insight(forceRefresh = false) {
         await ensureBypassSession();
         const params = new URLSearchParams({ country: country.countryCode, city, locale: currentLocale });
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 75000);
+        // 클라이언트 타임아웃: 서버 타임아웃(110초) + 정리 여유(15초) = 125초
+        const timer = setTimeout(() => controller.abort(), 125000);
 
         const response = await fetch(`/api/city-profile?${params}`, {
             credentials: "include",
@@ -4921,7 +4934,8 @@ async function runCustomCityResearch(query, resultContainer, parentContainer) {
         });
 
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 75000);
+        // 커스텀 리서치 클라이언트 타임아웃: 서버 110초 + 정리 여유 15초 = 125초
+        const timer = setTimeout(() => controller.abort(), 125000);
 
         const response = await fetch(`/api/city-profile?${urlParams}`, {
             method: "POST",
