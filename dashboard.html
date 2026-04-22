@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartThings 27 시나리오 대시보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg0: #f5f7fa;
+  --bg1: #ffffff;
+  --bg3: #eef1f6;
+  --card: #ffffff;
+  --card-hover: #f8fafc;
+  --border: #e3e7ee;
+  --border-light: #c9d0db;
+  --accent: #1428a0;
+  --accent-mid: #2e45d4;
+  --text1: #15171a;
+  --text2: #505864;
+  --text3: #8a92a0;
+  --hero-bg: #0b1027;
+  --hero-text: #eef0f7;
+  --hero-border: #1a2040;
+  --shadow-sm: 0 1px 2px rgba(15,23,42,0.04), 0 1px 3px rgba(15,23,42,0.06);
+  --shadow-md: 0 4px 12px rgba(15,23,42,0.06), 0 2px 4px rgba(15,23,42,0.04);
+  --shadow-lg: 0 12px 32px rgba(15,23,42,0.08), 0 4px 12px rgba(15,23,42,0.05);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --cat-life: #7b2cbf;
+  --cat-safe: #c93d6a;
+  --cat-care: #d97706;
+  --cat-save: #0a8f6e;
+  --cat-mgmt: #1428a0;
+  --cat-start: #475569;
+  --cat-device: #0f766e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg0);
+  color: var(--text1);
+  font-family: 'IBM Plex Sans KR', -apple-system, 'Malgun Gothic', sans-serif;
+  min-height: 100vh;
+}
+
+/* ─── HEADER ─── */
+header {
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--hero-border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--hero-bg);
+  color: var(--hero-text);
+  position: sticky; top: 0; z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.logo-icon {
+  width: 32px; height: 32px; background: var(--accent);
+  border-radius: 7px; display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.logo-name {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 14px; letter-spacing: 0.04em; color: var(--hero-text);
+}
+.header-right { display: flex; gap: 8px; }
+.header-link {
+  font-size: 12px; color: rgba(238,240,247,0.85); padding: 8px 14px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm); text-decoration: none; transition: all 0.15s;
+}
+.header-link:hover { background: rgba(255,255,255,0.14); color: #fff; }
+.header-link.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ─── MAIN ─── */
+main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
+
+.page-intro { margin-bottom: 36px; }
+.page-intro h1 {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(24px, 3.6vw, 34px);
+  line-height: 1.2; margin-bottom: 10px;
+}
+.page-intro h1 span { color: var(--accent); }
+.page-intro p { font-size: 14px; color: var(--text2); max-width: 560px; line-height: 1.65; }
+
+/* ─── FILTER BAR ─── */
+.filter-bar {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 18px 20px; margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+}
+.search-box {
+  flex: 1; min-width: 220px; position: relative;
+}
+.search-box input {
+  width: 100%; padding: 10px 14px 10px 38px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 13px; color: var(--text1);
+  font-family: inherit; transition: all 0.15s;
+}
+.search-box input:focus {
+  outline: none; background: #fff; border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(20,40,160,0.1);
+}
+.search-box::before {
+  content: '🔍'; position: absolute; left: 12px; top: 50%;
+  transform: translateY(-50%); font-size: 14px; opacity: 0.6;
+}
+.cat-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.cat-pill {
+  padding: 7px 13px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--bg1);
+  font-size: 12px; font-weight: 500; color: var(--text2);
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+}
+.cat-pill:hover { border-color: var(--border-light); color: var(--text1); }
+.cat-pill.active {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+}
+
+/* ─── GRID ─── */
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.scenario-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden; cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column;
+}
+.scenario-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-light);
+}
+.scenario-thumb {
+  width: 100%; aspect-ratio: 16 / 10;
+  background: var(--bg3); position: relative; overflow: hidden;
+}
+.scenario-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform 0.35s ease;
+}
+.scenario-card:hover .scenario-thumb img { transform: scale(1.04); }
+.scenario-thumb .fallback {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px; background: linear-gradient(135deg, #eef1f6, #dce3ed);
+}
+.scenario-num {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(11,16,39,0.85); color: #fff;
+  font-family: 'Syne', sans-serif; font-weight: 700;
+  font-size: 10px; letter-spacing: 0.08em;
+  padding: 4px 8px; border-radius: 6px;
+}
+.cat-badge {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 10px; font-weight: 600;
+  padding: 4px 9px; border-radius: 6px;
+  background: #ffffff; color: var(--text1);
+  box-shadow: var(--shadow-sm);
+}
+.cat-badge[data-cat="스마트 라이프"] { color: var(--cat-life); }
+.cat-badge[data-cat="안전"] { color: var(--cat-safe); }
+.cat-badge[data-cat="케어"] { color: var(--cat-care); }
+.cat-badge[data-cat="절약"] { color: var(--cat-save); }
+.cat-badge[data-cat="관리"] { color: var(--cat-mgmt); }
+.cat-badge[data-cat="시작하기"] { color: var(--cat-start); }
+.cat-badge[data-cat="내 기기 관련"] { color: var(--cat-device); }
+
+.scenario-body {
+  padding: 16px 18px 18px;
+  display: flex; flex-direction: column; flex: 1;
+}
+.scenario-title {
+  font-size: 15px; font-weight: 600;
+  line-height: 1.35; color: var(--text1);
+  margin-bottom: 8px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.scenario-desc {
+  font-size: 12px; color: var(--text2);
+  line-height: 1.55; flex: 1;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; margin-bottom: 12px;
+}
+.scenario-meta {
+  display: flex; gap: 14px; align-items: center;
+  padding-top: 12px; border-top: 1px solid var(--border);
+  font-size: 11px; color: var(--text3);
+}
+.scenario-meta .meta-item { display: flex; align-items: center; gap: 4px; }
+.scenario-meta .story-count {
+  margin-left: auto; background: rgba(20,40,160,0.08);
+  color: var(--accent); padding: 3px 8px; border-radius: 10px;
+  font-weight: 600; font-size: 10px;
+}
+
+/* ─── MODAL ─── */
+#modal {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(11,16,39,0.6);
+  display: none; align-items: flex-start; justify-content: center;
+  padding: 40px 20px; overflow-y: auto;
+  backdrop-filter: blur(8px);
+}
+#modal.show { display: flex; }
+.modal-box {
+  background: #fff; border-radius: 20px;
+  max-width: 860px; width: 100%;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: modalIn 0.3s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.modal-hero {
+  width: 100%; aspect-ratio: 16 / 8; background: var(--bg3);
+  overflow: hidden; position: relative;
+}
+.modal-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.modal-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(11,16,39,0.7); color: #fff;
+  border: none; cursor: pointer; font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.modal-close:hover { background: rgba(11,16,39,0.9); transform: scale(1.05); }
+.modal-content { padding: 28px 32px 36px; }
+.modal-cat {
+  display: inline-block;
+  font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 6px;
+  background: rgba(20,40,160,0.08); color: var(--accent);
+  margin-bottom: 10px;
+}
+.modal-title {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 24px; line-height: 1.25; color: var(--text1);
+  margin-bottom: 8px;
+}
+.modal-meta-row {
+  display: flex; gap: 14px; font-size: 11px; color: var(--text3);
+  margin-bottom: 18px;
+}
+.modal-desc {
+  font-size: 14px; line-height: 1.7; color: var(--text2);
+  padding: 16px 18px; background: var(--bg3);
+  border-radius: var(--radius-sm);
+  margin-bottom: 24px;
+}
+.device-strip {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 26px;
+}
+.device-chip {
+  font-size: 11px; padding: 5px 10px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 16px; color: var(--text2);
+}
+.section-label {
+  font-family: 'Syne', sans-serif; font-weight: 700;
+  font-size: 12px; letter-spacing: 0.08em;
+  color: var(--text3); text-transform: uppercase;
+  margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+}
+.section-label::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.story-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+.story-item {
+  padding: 18px 20px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-sm);
+}
+.story-item-head {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.story-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.story-title {
+  font-size: 14px; font-weight: 600; color: var(--text1);
+  flex: 1;
+}
+.story-content {
+  font-size: 13px; line-height: 1.7; color: var(--text2);
+}
+.story-note {
+  font-size: 11px; color: var(--text3);
+  margin-top: 10px; padding: 8px 12px;
+  background: var(--bg3); border-radius: var(--radius-sm);
+  border-left: 2px solid var(--border-light);
+}
+.story-cta {
+  display: inline-block; margin-top: 10px;
+  font-size: 11px; color: var(--accent); font-weight: 600;
+  padding: 4px 10px; background: rgba(20,40,160,0.06);
+  border-radius: 12px;
+}
+.products {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+.product-chip {
+  padding: 10px 12px; background: var(--bg3);
+  border-radius: var(--radius-sm); font-size: 12px;
+}
+.product-chip .brand { color: var(--text3); font-size: 10px; margin-top: 2px; }
+
+.empty-state {
+  text-align: center; padding: 60px 20px; color: var(--text3);
+}
+.loading {
+  text-align: center; padding: 80px 20px; color: var(--text3);
+}
+
+@media (max-width: 640px) {
+  main { padding: 24px 16px 60px; }
+  .scenario-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .modal-content { padding: 20px; }
+  .modal-title { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-name">SmartThings Scenario Agent</div>
+  </div>
+  <div class="header-right">
+    <a href="./dashboard.html" class="header-link active">📋 대시보드</a>
+    <a href="./v2.html" class="header-link">🚀 시나리오 빌더</a>
+  </div>
+</header>
+
+<main>
+  <div class="page-intro">
+    <h1>SmartThings 27개 시나리오<br><span>한눈에 살펴보기</span></h1>
+    <p>스마트싱스 앱이 안내하는 27개 일상 시나리오. 카드를 누르면 원문 설명, 하위 스토리 2~3개, 사용 기기, 구매 가능 제품까지 한 번에 펼쳐 볼 수 있어요.</p>
+  </div>
+
+  <div class="filter-bar">
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="시나리오 제목·설명 검색...">
+    </div>
+    <div class="cat-pills" id="cat-pills"></div>
+  </div>
+
+  <div id="grid-wrap">
+    <div class="loading">27개 시나리오 불러오는 중...</div>
+  </div>
+</main>
+
+<div id="modal" role="dialog" aria-modal="true">
+  <div class="modal-box" id="modal-box"></div>
+</div>
+
+<script>
+const TOTAL = 27;
+const THUMB_PATH = (n) => `references/scenario_thumbs/scenario_${String(n).padStart(3,'0')}.jpg`;
+const DB_PATH = (n) => `scenarios/db/scenario_${String(n).padStart(3,'0')}.json`;
+
+const state = {
+  scenarios: [],
+  activeCategory: 'all',
+  searchQuery: '',
+};
+
+// Some scenario files wrap content in { _meta, scenarios: [...] }; others are flat.
+function normalize(json) {
+  if (json && Array.isArray(json.scenarios)) return json.scenarios[0];
+  return json;
+}
+
+async function loadAll() {
+  const results = [];
+  for (let i = 1; i <= TOTAL; i++) {
+    try {
+      const res = await fetch(DB_PATH(i));
+      if (!res.ok) throw new Error(res.statusText);
+      const json = await res.json();
+      const s = normalize(json);
+      if (s) results.push({ ...s, _no: i });
+    } catch (e) {
+      console.warn(`scenario_${i} load failed:`, e);
+    }
+  }
+  state.scenarios = results;
+  renderFilters();
+  render();
+}
+
+function renderFilters() {
+  const cats = ['all', ...new Set(state.scenarios.map(s => s?.depth_0?.category).filter(Boolean))];
+  const el = document.getElementById('cat-pills');
+  el.innerHTML = cats.map(c =>
+    `<button class="cat-pill ${c === 'all' ? 'active' : ''}" data-cat="${c}">${c === 'all' ? '전체' : c}</button>`
+  ).join('');
+  el.addEventListener('click', e => {
+    if (!e.target.classList.contains('cat-pill')) return;
+    state.activeCategory = e.target.dataset.cat;
+    el.querySelectorAll('.cat-pill').forEach(p => p.classList.toggle('active', p.dataset.cat === state.activeCategory));
+    render();
+  });
+}
+
+function filtered() {
+  const q = state.searchQuery.toLowerCase();
+  return state.scenarios.filter(s => {
+    const d0 = s.depth_0 || {};
+    const d1 = s.depth_1 || {};
+    if (state.activeCategory !== 'all' && d0.category !== state.activeCategory) return false;
+    if (!q) return true;
+    const hay = [d0.card_title, d1.title, d1.description].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+}
+
+function render() {
+  const wrap = document.getElementById('grid-wrap');
+  const list = filtered();
+  if (!list.length) {
+    wrap.innerHTML = `<div class="empty-state">검색 결과가 없습니다.</div>`;
+    return;
+  }
+  wrap.innerHTML = `<div class="scenario-grid">${list.map(cardHTML).join('')}</div>`;
+  wrap.querySelectorAll('.scenario-card').forEach(c => {
+    c.addEventListener('click', () => openModal(Number(c.dataset.no)));
+  });
+}
+
+function cardHTML(s) {
+  const d0 = s.depth_0 || {};
+  const d1 = s.depth_1 || {};
+  const stats = d0.stats || {};
+  const storyCount = (d1.stories || []).length;
+  const cat = d0.category || '';
+  return `
+    <article class="scenario-card" data-no="${s._no}">
+      <div class="scenario-thumb">
+        <img src="${THUMB_PATH(s._no)}" alt="${d0.card_title || ''}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="fallback" style="display:none">📷</div>
+        <div class="scenario-num">#${String(s._no).padStart(3,'0')}</div>
+        ${cat ? `<div class="cat-badge" data-cat="${cat}">${cat}</div>` : ''}
+      </div>
+      <div class="scenario-body">
+        <h3 class="scenario-title">${d0.card_title || d1.title || '(제목없음)'}</h3>
+        <p class="scenario-desc">${(d1.description || '').slice(0, 110)}${(d1.description || '').length > 110 ? '…' : ''}</p>
+        <div class="scenario-meta">
+          <span class="meta-item">👁 ${stats.views_display || '—'}</span>
+          <span class="meta-item">♥ ${stats.likes || 0}</span>
+          <span class="story-count">스토리 ${storyCount}</span>
+        </div>
+      </div>
+    </article>`;
+}
+
+function openModal(no) {
+  const s = state.scenarios.find(x => x._no === no);
+  if (!s) return;
+  const d0 = s.depth_0 || {};
+  const d1 = s.depth_1 || {};
+  const stats = d0.stats || {};
+  const stories = d1.stories || [];
+  const products = d1.purchasable_products || [];
+  const devices = d1.device_icons || d1.devices_used || [];
+  const cat = d0.category || '';
+
+  document.getElementById('modal-box').innerHTML = `
+    <div class="modal-hero">
+      <img src="${THUMB_PATH(no)}" alt="${d0.card_title || ''}" onerror="this.style.display='none'">
+      <button class="modal-close" onclick="closeModal()" aria-label="닫기">✕</button>
+    </div>
+    <div class="modal-content">
+      ${cat ? `<div class="modal-cat">${cat} · #${String(no).padStart(3,'0')}</div>` : ''}
+      <h2 class="modal-title">${d1.title || d0.card_title || ''}</h2>
+      <div class="modal-meta-row">
+        <span>👁 조회 ${stats.views_display || '—'}</span>
+        <span>♥ 좋아요 ${stats.likes || 0}</span>
+        <span>📖 스토리 ${stories.length}개</span>
+      </div>
+      ${d1.description ? `<p class="modal-desc">${d1.description}</p>` : ''}
+      ${devices.length ? `<div class="device-strip">${devices.map(d => `<span class="device-chip">🔹 ${d}</span>`).join('')}</div>` : ''}
+
+      ${stories.length ? `
+        <div class="section-label">스토리 ${stories.length}개</div>
+        <div class="story-list">
+          ${stories.map(storyHTML).join('')}
+        </div>
+      ` : ''}
+
+      ${products.length ? `
+        <div class="section-label">구매 가능한 제품 ${products.length}개</div>
+        <div class="products">
+          ${products.map(p => `
+            <div class="product-chip">
+              <div>${p.product_name || ''}</div>
+              <div class="brand">${p.brand || ''} · ${p.type || ''}</div>
+            </div>`).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `;
+  document.getElementById('modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function storyHTML(st) {
+  const notes = (st.usage_notes || []).map(n => `<div class="story-note">ℹ ${n}</div>`).join('');
+  const cta = st.cta_label ? `<div class="story-cta">→ ${st.cta_label}</div>` : '';
+  return `
+    <div class="story-item">
+      <div class="story-item-head">
+        <div class="story-num">${st.story_no || '•'}</div>
+        <div class="story-title">${st.title || ''}</div>
+      </div>
+      <p class="story-content">${st.content || ''}</p>
+      ${notes}
+      ${cta}
+    </div>`;
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target.id === 'modal') closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+document.getElementById('search-input').addEventListener('input', e => {
+  state.searchQuery = e.target.value.trim();
+  render();
+});
+
+loadAll();
+</script>
+</body>
+</html>

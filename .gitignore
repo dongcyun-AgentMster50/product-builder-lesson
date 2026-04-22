@@ -11,6 +11,10 @@ codex.v0.111_backup02/
 # Screen captures
 screen capture/
 
+# Scenario thumbnail raw sources (kept locally, crops committed)
+references/scenario_thumbs/_raw/
+Downloads.zip
+
 # OS
 .DS_Store
 Thumbs.db
