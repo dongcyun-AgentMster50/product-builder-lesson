@@ -2358,6 +2358,44 @@ textarea {
     100% { background-position: 100% 0; }
 }
 
+/* Hero browse CTA — 위저드 시작 전 27 시나리오 사전으로 진입 */
+.hero-browse-cta {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.hero-browse-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+    align-self: flex-start;
+}
+.hero-browse-link:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+.hero-browse-arrow {
+    font-size: 14px;
+    transition: transform 0.15s;
+}
+.hero-browse-link:hover .hero-browse-arrow { transform: translateX(3px); }
+.hero-browse-hint {
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
 /* ══════════════════════════════════════════
    Hero Flow Bar — 가로 스텝 인디케이터
    ══════════════════════════════════════════ */

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>27개 기본 시나리오 사전</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #f7f8fa;
+  color: #1a1c20;
+  font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "맑은 고딕", sans-serif;
+  line-height: 1.55;
+  min-height: 100vh;
+  padding: 24px 20px 60px;
+}
+
+.topbar {
+  max-width: 960px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.back-link {
+  font-size: 13px;
+  color: #555;
+  text-decoration: none;
+  padding: 7px 12px;
+  border: 1px solid #d0d4da;
+  border-radius: 6px;
+  background: #fff;
+}
+.back-link:hover { background: #eef1f6; }
+
+.header-block {
+  max-width: 960px;
+  margin: 0 auto 24px;
+}
+.header-block h1 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.header-block p {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.stats-bar {
+  max-width: 960px;
+  margin: 0 auto 18px;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid #e3e7ee;
+  border-radius: 8px;
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+  color: #333;
+  flex-wrap: wrap;
+}
+.stats-bar strong { color: #1a3a8f; font-weight: 700; }
+.stats-bar .divider { color: #c0c4cc; }
+
+.controls {
+  max-width: 960px;
+  margin: 0 auto 18px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.controls button {
+  font-size: 12px;
+  padding: 7px 13px;
+  border: 1px solid #d0d4da;
+  background: #fff;
+  border-radius: 16px;
+  cursor: pointer;
+  color: #444;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.controls button:hover { border-color: #1a3a8f; color: #1a3a8f; }
+.controls button.active {
+  background: #1a3a8f;
+  color: #fff;
+  border-color: #1a3a8f;
+  font-weight: 600;
+}
+.expand-btns {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+.card-grid {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+@media (min-width: 720px) {
+  .card-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.scenario-card {
+  background: #fff;
+  border: 1px solid #e3e7ee;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.scenario-card.expanded {
+  border-color: #1a3a8f;
+  box-shadow: 0 4px 12px rgba(26, 58, 143, 0.08);
+}
+
+.card-header {
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  background: #fff;
+  user-select: none;
+}
+.card-header:hover { background: #f8fafc; }
+
+.card-num {
+  font-family: "SF Mono", Consolas, monospace;
+  font-size: 11px;
+  color: #8a92a0;
+  font-weight: 600;
+  min-width: 36px;
+  padding-top: 2px;
+}
+.card-main { flex: 1; min-width: 0; }
+.card-cat {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  background: #eef1f6;
+  color: #505864;
+}
+.card-cat[data-cat="스마트 라이프"] { background: #f0e5fa; color: #6b2cbf; }
+.card-cat[data-cat="안전"]          { background: #fae5ec; color: #b8365f; }
+.card-cat[data-cat="케어"]          { background: #fbeacf; color: #a66600; }
+.card-cat[data-cat="절약"]          { background: #d8f2ea; color: #087055; }
+.card-cat[data-cat="관리"]          { background: #dce3f0; color: #1a3a8f; }
+.card-cat[data-cat="시작하기"]       { background: #e3e7ee; color: #475569; }
+.card-cat[data-cat="내 기기 관련"]    { background: #d4f0ec; color: #0f766e; }
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #15171a;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+.card-meta {
+  font-size: 11px;
+  color: #8a92a0;
+  display: flex;
+  gap: 10px;
+}
+.toggle-icon {
+  font-size: 16px;
+  color: #8a92a0;
+  transition: transform 0.2s;
+  padding-top: 6px;
+}
+.scenario-card.expanded .toggle-icon {
+  transform: rotate(180deg);
+  color: #1a3a8f;
+}
+
+.card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  border-top: 0 solid #e3e7ee;
+}
+.scenario-card.expanded .card-body {
+  max-height: 2400px;
+  border-top-width: 1px;
+}
+.card-body-inner {
+  padding: 14px 16px 16px;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: #333;
+  line-height: 1.7;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: #f7f8fa;
+  border-radius: 6px;
+  border-left: 3px solid #1a3a8f;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #505864;
+  text-transform: uppercase;
+  margin: 12px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e3e7ee;
+}
+
+.story-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.story-item {
+  padding: 10px 12px 10px 36px;
+  border: 1px solid #e3e7ee;
+  border-radius: 6px;
+  position: relative;
+  background: #fdfdfe;
+}
+.story-item::before {
+  content: attr(data-num);
+  position: absolute;
+  left: 10px; top: 10px;
+  width: 20px; height: 20px;
+  background: #1a3a8f;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.story-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #15171a;
+  margin-bottom: 5px;
+}
+.story-content {
+  font-size: 12px;
+  color: #444;
+  line-height: 1.65;
+}
+.story-cta {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 11px;
+  padding: 2px 8px;
+  background: rgba(26,58,143,0.08);
+  color: #1a3a8f;
+  border-radius: 10px;
+  font-weight: 500;
+}
+.story-note {
+  margin-top: 6px;
+  padding: 6px 9px;
+  background: #f7f8fa;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #666;
+  border-left: 2px solid #c0c4cc;
+}
+
+.device-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.device-chip {
+  font-size: 11px;
+  padding: 4px 9px;
+  background: #eef1f6;
+  color: #333;
+  border-radius: 12px;
+}
+
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 6px;
+}
+.product-item {
+  padding: 7px 10px;
+  background: #f7f8fa;
+  border: 1px solid #e3e7ee;
+  border-radius: 6px;
+  font-size: 11px;
+}
+.product-item .pname {
+  font-weight: 500;
+  color: #15171a;
+  line-height: 1.3;
+}
+.product-item .pmeta {
+  color: #8a92a0;
+  margin-top: 2px;
+  font-size: 10px;
+}
+
+.empty-note, .loading-note {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #8a92a0;
+  padding: 40px 20px;
+  font-size: 13px;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="./index.html" class="back-link">← v1으로 돌아가기</a>
+  <div style="display:flex; gap:6px;">
+    <a href="./dashboard.html" class="back-link">🖼 이미지 대시보드</a>
+    <a href="./v2.html" class="back-link">🚀 v2 빌더</a>
+  </div>
+</div>
+
+<div class="header-block">
+  <h1>27개 기본 시나리오 사전</h1>
+  <p>SmartThings 앱 Explore 탭에 실린 27개 시나리오와 하위 스토리 총 80여 개를 한글로 펼쳐봅니다. 카드를 클릭하면 각 시나리오의 원문 설명과 사용 순간별 스토리가 열립니다.</p>
+</div>
+
+<div class="stats-bar">
+  <div><strong id="stat-scenarios">–</strong> 시나리오</div>
+  <span class="divider">·</span>
+  <div><strong id="stat-stories">–</strong> 하위 스토리</div>
+  <span class="divider">·</span>
+  <div><strong id="stat-products">–</strong> 구매 가능 제품</div>
+</div>
+
+<div class="controls">
+  <button data-cat="all" class="active">전체</button>
+  <div id="cat-filter-pills" style="display:contents"></div>
+  <div class="expand-btns">
+    <button id="btn-expand-all">전체 펼치기</button>
+    <button id="btn-collapse-all">전체 접기</button>
+  </div>
+</div>
+
+<div class="card-grid" id="card-grid">
+  <div class="loading-note">27개 시나리오를 불러오는 중...</div>
+</div>
+
+<script>
+const TOTAL = 27;
+const state = {
+  scenarios: [],
+  activeCategory: "all",
+};
+
+function normalize(json) {
+  if (json && Array.isArray(json.scenarios)) return json.scenarios[0];
+  return json;
+}
+
+async function loadAll() {
+  const results = [];
+  for (let i = 1; i <= TOTAL; i++) {
+    const num = String(i).padStart(3, "0");
+    try {
+      const res = await fetch(`scenarios/db/scenario_${num}.json`);
+      if (!res.ok) continue;
+      const s = normalize(await res.json());
+      if (s) results.push({ ...s, _no: i });
+    } catch (e) {
+      console.warn(`scenario_${i} load failed:`, e);
+    }
+  }
+  state.scenarios = results;
+
+  // 통계
+  const totalStories = results.reduce((n, s) => n + (s.depth_1?.stories?.length || 0), 0);
+  const totalProducts = results.reduce((n, s) => n + (s.depth_1?.purchasable_products?.length || 0), 0);
+  document.getElementById("stat-scenarios").textContent = results.length;
+  document.getElementById("stat-stories").textContent = totalStories;
+  document.getElementById("stat-products").textContent = totalProducts;
+
+  renderCategoryPills();
+  render();
+}
+
+function renderCategoryPills() {
+  const cats = [...new Set(state.scenarios.map(s => s.depth_0?.category).filter(Boolean))];
+  const container = document.getElementById("cat-filter-pills");
+  container.innerHTML = cats.map(c => `<button data-cat="${c}">${c}</button>`).join("");
+  document.querySelectorAll(".controls [data-cat]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.activeCategory = btn.dataset.cat;
+      document.querySelectorAll(".controls [data-cat]").forEach(b => b.classList.toggle("active", b.dataset.cat === state.activeCategory));
+      render();
+    });
+  });
+}
+
+function render() {
+  const grid = document.getElementById("card-grid");
+  const list = state.activeCategory === "all"
+    ? state.scenarios
+    : state.scenarios.filter(s => s.depth_0?.category === state.activeCategory);
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-note">카테고리에 해당하는 시나리오가 없습니다.</div>`;
+    return;
+  }
+  grid.innerHTML = list.map(cardHTML).join("");
+  grid.querySelectorAll(".card-header").forEach(h => {
+    h.addEventListener("click", () => h.closest(".scenario-card").classList.toggle("expanded"));
+  });
+}
+
+function cardHTML(s) {
+  const d0 = s.depth_0 || {};
+  const d1 = s.depth_1 || {};
+  const stats = d0.stats || {};
+  const stories = d1.stories || [];
+  const products = d1.purchasable_products || [];
+  const devices = d1.device_icons || d1.devices_used || [];
+  const cat = d0.category || "";
+  const title = d0.card_title || d1.title || "(제목 없음)";
+  const num = String(s._no).padStart(3, "0");
+
+  return `
+    <article class="scenario-card" data-no="${s._no}">
+      <div class="card-header">
+        <div class="card-num">#${num}</div>
+        <div class="card-main">
+          ${cat ? `<span class="card-cat" data-cat="${cat}">${cat}</span>` : ""}
+          <div class="card-title">${title}</div>
+          <div class="card-meta">
+            <span>📖 스토리 ${stories.length}개</span>
+            ${stats.views_display ? `<span>👁 ${stats.views_display}</span>` : ""}
+            ${stats.likes ? `<span>♥ ${stats.likes}</span>` : ""}
+            ${devices.length ? `<span>🔹 기기 ${devices.length}</span>` : ""}
+          </div>
+        </div>
+        <div class="toggle-icon">⌄</div>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+          ${d1.description ? `<div class="card-desc">${d1.description}</div>` : ""}
+
+          ${devices.length ? `
+            <div class="section-title">사용 기기</div>
+            <div class="device-chips">
+              ${devices.map(d => `<span class="device-chip">${d}</span>`).join("")}
+            </div>` : ""}
+
+          ${stories.length ? `
+            <div class="section-title">하위 스토리 ${stories.length}개</div>
+            <ul class="story-list">
+              ${stories.map((st, i) => `
+                <li class="story-item" data-num="${st.story_no || (i+1)}">
+                  <div class="story-title">${st.title || ""}</div>
+                  <div class="story-content">${st.content || ""}</div>
+                  ${st.cta_label ? `<span class="story-cta">→ ${st.cta_label}</span>` : ""}
+                  ${(st.usage_notes || []).map(n => `<div class="story-note">ℹ ${n}</div>`).join("")}
+                </li>
+              `).join("")}
+            </ul>` : ""}
+
+          ${products.length ? `
+            <div class="section-title">구매 가능 제품 ${products.length}개</div>
+            <div class="product-list">
+              ${products.map(p => `
+                <div class="product-item">
+                  <div class="pname">${p.product_name || ""}</div>
+                  <div class="pmeta">${p.brand || ""}${p.type ? " · " + p.type : ""}</div>
+                </div>`).join("")}
+            </div>` : ""}
+        </div>
+      </div>
+    </article>`;
+}
+
+document.getElementById("btn-expand-all").addEventListener("click", () => {
+  document.querySelectorAll(".scenario-card").forEach(c => c.classList.add("expanded"));
+});
+document.getElementById("btn-collapse-all").addEventListener("click", () => {
+  document.querySelectorAll(".scenario-card").forEach(c => c.classList.remove("expanded"));
+});
+
+loadAll();
+</script>
+</body>
+</html>
