@@ -7314,6 +7314,85 @@ a.source-tag-link:hover {
 .curation-section--values { border-left: 3px solid #16a34a; }
 .curation-section--why { border-left: 3px solid #d97706; }
 .curation-section--benefit { border-left: 3px solid #7c3aed; background: rgba(124, 58, 237, 0.04); }
+.curation-section--stories { border-left: 3px solid #0ea5e9; background: rgba(14, 165, 233, 0.035); }
+.curation-section--products { border-left: 3px solid #0a8f6e; background: rgba(10, 143, 110, 0.035); }
+
+/* ⑥ 하위 스토리 */
+.curation-story-list {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    counter-reset: story-counter;
+}
+.curation-story-item {
+    padding: 10px 12px 10px 32px;
+    background: #ffffff;
+    border: 1px solid #e3e7ee;
+    border-radius: 8px;
+    position: relative;
+    counter-increment: story-counter;
+}
+.curation-story-item::before {
+    content: counter(story-counter);
+    position: absolute;
+    left: 8px; top: 10px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #0ea5e9;
+    color: #fff;
+    font-size: 0.66rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+}
+.curation-story-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #15171a;
+    margin-bottom: 4px;
+}
+.curation-story-content {
+    font-size: 0.76rem;
+    line-height: 1.55;
+    color: #505864;
+}
+.curation-story-cta {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #0ea5e9;
+    padding: 2px 8px;
+    background: rgba(14, 165, 233, 0.08);
+    border-radius: 10px;
+}
+
+/* ⑦ 구매 가능 제품 */
+.curation-product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+}
+.curation-product-chip {
+    padding: 8px 10px;
+    background: #ffffff;
+    border: 1px solid #e3e7ee;
+    border-radius: 6px;
+}
+.curation-product-name {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #15171a;
+    line-height: 1.3;
+}
+.curation-product-meta {
+    font-size: 0.66rem;
+    color: #8a92a0;
+    margin-top: 2px;
+}
 
 .curation-section-label {
     display: inline-block;

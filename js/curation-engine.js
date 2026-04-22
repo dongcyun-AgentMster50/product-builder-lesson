@@ -407,19 +407,20 @@ function determineDynamicCount(rankedScenarios, input, tagScores) {
         (input.devices || []).length
     );
 
+    // 27 DB 기반 5개 출력을 기본으로 — 입력 구체성에 따라 하향 조정
     let maxCount;
     if (consistencyRatio >= 0.8 && inputSpecificity >= 6) {
-        // 매우 구체적이고 일관된 입력 → 1개로 수렴
-        maxCount = 1;
-    } else if (consistencyRatio >= 0.5 || inputSpecificity >= 4) {
-        // 중간 수준 → 2개
-        maxCount = 2;
-    } else {
-        // 넓은 입력 → 최대 3개
+        // 매우 구체적이고 일관된 입력 → 3개로 수렴 (이전 1개에서 완화)
         maxCount = 3;
+    } else if (consistencyRatio >= 0.5 || inputSpecificity >= 4) {
+        // 중간 수준 → 4개
+        maxCount = 4;
+    } else {
+        // 넓은 입력 → 5개
+        maxCount = 5;
     }
 
-    return Math.min(maxCount, aboveThreshold.length, 3);
+    return Math.min(maxCount, aboveThreshold.length, 5);
 }
 
 /**

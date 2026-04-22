@@ -4379,8 +4379,8 @@ async function renderStep2Insight(forceRefresh = false) {
     const localCity = getCityDisplayValue(country.countryCode, city) || city;
     const countryName = selectedMarket?.label || getCountryName(country.countryCode);
 
-    // 1. sessionStorage 캐시 확인
-    const cacheKey = `city-profile-${country.countryCode}-${city}-${currentLocale}`;
+    // 1. sessionStorage 캐시 확인 (v3: 2026-04-21 max_tokens 상향으로 잘린 응답 무효화)
+    const cacheKey = `city-profile-v3-${country.countryCode}-${city}-${currentLocale}`;
     const cached = sessionStorage.getItem(cacheKey);
             if (cached && !forceRefresh) {
         try {
@@ -7921,10 +7921,12 @@ function buildStep4Insight() {
     const moreCount = devices.length > 8 ? devices.length - 8 : 0;
     const moreHtml = moreCount > 0 ? `<span class="insight-chip insight-chip--more">+${moreCount}</span>` : "";
 
-    // 시나리오 DB 수 (curation DB가 있으면)
-    const dbCount = (typeof curationDbV1 !== "undefined" && curationDbV1?.scenarios ? curationDbV1.scenarios.length : 0)
-        + (typeof curationDbV2 !== "undefined" && curationDbV2?.scenarios ? curationDbV2.scenarios.length : 0);
-    const dbLabel = dbCount > 0 ? `${dbCount}+` : "270+";
+    // 시나리오 DB 수 — 27 DB를 우선 집계
+    const v3Count = (typeof curationDbV3 !== "undefined" && curationDbV3?.scenarios ? curationDbV3.scenarios.length : 0);
+    const storyCount = (typeof curationDbV3 !== "undefined" && curationDbV3?.scenarios)
+        ? curationDbV3.scenarios.reduce((n, s) => n + (s._scenario27?.stories?.length || 0), 0) : 0;
+    const dbCount = v3Count;
+    const dbLabel = storyCount > 0 ? `${v3Count} 시나리오 · ${storyCount} 스토리` : (v3Count > 0 ? `${v3Count}개` : "27개");
 
     return {
         badge: "Q3 Devices",
@@ -13979,19 +13981,120 @@ function localizeRoleText(key, value = "") {
 
 let curationDbV1 = null;
 let curationDbV2 = null;
+let curationDbV3 = null;  // NEW: 27개 시나리오 + 하위 스토리 DB (scenarios/db/scenario_*.json)
 let curationLoaded = false;
 let latestSelectionSummary = null;  // Selection Stage 산출물 — AI 프롬프트 및 output 렌더링에 전달
 let _latestCurationResults = [];    // 최근 큐레이션 결과 (campaign output에서 참조)
 
+/**
+ * 27개 시나리오 DB 스키마 → curation-engine이 기대하는 스키마로 변환.
+ * 카테고리 + device_icons를 Explore 키워드 태그로 매핑해서 스코어링 가능하게 함.
+ */
+function adaptScenario27(raw) {
+    const s = Array.isArray(raw.scenarios) ? raw.scenarios[0] : raw;
+    if (!s) return null;
+    const d0 = s.depth_0 || {};
+    const d1 = s.depth_1 || {};
+    const stories = Array.isArray(d1.stories) ? d1.stories : [];
+
+    // 카테고리 → Explore 태그
+    const catTagMap = {
+        "스마트 라이프":   ["Enhanced mood", "Easily control your lights", "Help with chores"],
+        "안전":           ["Keep your home safe", "Security"],
+        "케어":           ["Care for kids", "Care for seniors", "Care for your pet", "Family care"],
+        "절약":           ["Save energy", "Energy Saving", "Time saving"],
+        "관리":           ["Help with chores", "Time saving"],
+        "시작하기":        ["Easy to use"],
+        "내 기기 관련":    ["Help with chores", "Find your belongings"]
+    };
+    const tags = [...(catTagMap[d0.category] || [])];
+
+    // device_icons → 보조 태그
+    const devTagMap = {
+        "조명":         ["Easily control your lights", "Enhanced mood"],
+        "모션센서":     ["Keep your home safe"],
+        "도어락":       ["Keep your home safe", "Security"],
+        "보안카메라":    ["Keep your home safe", "Security"],
+        "TV":           ["Enhanced mood"],
+        "공기청정기":    ["Keep the air fresh"],
+        "공기질 센서":   ["Keep the air fresh"],
+        "세탁기":       ["Help with chores", "Time saving"],
+        "건조기":       ["Help with chores", "Time saving"],
+        "식기세척기":    ["Help with chores"],
+        "냉장고":       ["Help with chores"],
+        "에어컨":       ["Save energy", "Keep the air fresh"],
+        "로봇청소기":    ["Help with chores"],
+        "스마트폰":     ["Find your belongings"],
+        "갤럭시 워치":   ["Stay fit & healthy"]
+    };
+    (d1.device_icons || []).forEach(dev => {
+        (devTagMap[dev] || []).forEach(t => { if (!tags.includes(t)) tags.push(t); });
+    });
+
+    const title = d1.title || d0.card_title || "(제목 없음)";
+    const description = d1.description || "";
+
+    // 고객 효용 합성: stories의 첫 2개 title을 2문 요약으로 결합 (② 와 차별화)
+    const storyValueLines = stories.slice(0, 2)
+        .map(st => st.title)
+        .filter(Boolean);
+    const valueProposition = storyValueLines.length >= 2
+        ? `${storyValueLines[0]}부터 ${storyValueLines[1]}까지, ${d1.title} 시나리오로 해결할 수 있어요.`
+        : (description.split(/(?<=다\.|요\.|니다\.)\s+/)[0] || description).slice(0, 180);
+
+    return {
+        _source: "v3.0",
+        article_title: title,
+        story_title: title,
+        tags,
+        keyword: tags[0] || "",
+        analysis: description,
+        value_proposition: valueProposition,
+        narrative: "",
+        original_text: "",
+        devices: d1.device_icons || d1.devices_used || [],
+        related_products: (d1.purchasable_products || []).map(p => p.product_name),
+        valueTags: tags,
+        target_persona: "",
+        tech_highlights: [],
+        // 27 DB 전용 확장 메타 — Phase 2 카드 렌더링에서 하위 스토리·구매 제품 섹션에 사용
+        _scenario27: {
+            id: s.id,
+            category: d0.category || "",
+            stats: d0.stats || {},
+            thumbnail_desc: d0.thumbnail_desc || "",
+            stories: stories,
+            purchasable_products: d1.purchasable_products || []
+        }
+    };
+}
+
 async function loadCurationDb() {
     if (curationLoaded) return;
     try {
+        // 구 v1/v2 DB는 폴백용으로만 유지 (로드 실패해도 무시)
         const [r1, r2] = await Promise.all([
-            fetch("references/explore_db_v1.json").then(r => r.json()),
-            fetch("references/explore_db_v2.json").then(r => r.json())
+            fetch("references/explore_db_v1.json").then(r => r.json()).catch(() => ({ scenarios: [] })),
+            fetch("references/explore_db_v2.json").then(r => r.json()).catch(() => ({ scenarios: [] }))
         ]);
         curationDbV1 = r1;
         curationDbV2 = r2;
+
+        // NEW: 27 DB 로드 — scenarios/db/scenario_001.json ~ scenario_027.json
+        const fetches = [];
+        for (let i = 1; i <= 27; i++) {
+            const num = String(i).padStart(3, "0");
+            fetches.push(
+                fetch(`scenarios/db/scenario_${num}.json`)
+                    .then(r => r.ok ? r.json() : null)
+                    .then(j => j ? adaptScenario27(j) : null)
+                    .catch(() => null)
+            );
+        }
+        const adapted = (await Promise.all(fetches)).filter(Boolean);
+        curationDbV3 = { scenarios: adapted, version: "v3.0", total: adapted.length };
+        console.log(`✅ 27-scenario DB 로드 완료: ${adapted.length}개`);
+
         curationLoaded = true;
     } catch (e) {
         console.warn("Curation DB load failed:", e);
@@ -14201,7 +14304,11 @@ function getIntegratedTagScores(input) {
 }
 
 function runCuration() {
-    if (!curationLoaded || !curationDbV1 || !curationDbV2) return;
+    if (!curationLoaded) return;
+    if (!curationDbV3 || !Array.isArray(curationDbV3.scenarios) || curationDbV3.scenarios.length === 0) {
+        console.warn("27 DB not loaded; curation aborted.");
+        return;
+    }
 
     const personaIds = getSelectedPersonaOptionIds();
     const segments = personaIds.filter(id => id.startsWith("hh_") || id.startsWith("ls_") || id.startsWith("t_"));
@@ -14235,11 +14342,13 @@ function runCuration() {
     // 중간 데이터 수집: 기존의 독립적 태그 도출 로직 폐기, Q2-Q3 결합 로직으로 변경
     const tagScores = getIntegratedTagScores(input);
 
-    const v2Scenarios = curationDbV2.scenarios || [];
-    const totalPool = (curationDbV1.scenarios || []).length + v2Scenarios.length;
-    
-    // 엔진에 통합 가중치 주입 (overrideTagScores)
-    const results = curateScenarios(input, curationDbV1.scenarios, v2Scenarios, { maxResults: 3, minScore: 5, overrideTagScores: tagScores });
+    // 27 DB를 주 소스로 사용 (scenarios/db/scenario_*.json을 어댑터로 변환한 것)
+    // curateScenarios는 두 풀을 받으므로, 27 DB를 첫 번째 풀로, 두 번째는 빈 배열로 전달
+    const v3Scenarios = curationDbV3.scenarios || [];
+    const totalPool = v3Scenarios.length;
+
+    // 엔진에 통합 가중치 주입 (overrideTagScores) — 결과는 최대 5개로 확장
+    const results = curateScenarios(input, v3Scenarios, [], { maxResults: 5, minScore: 3, overrideTagScores: tagScores });
 
     // Selection Summary 구축
     if (typeof buildSelectionSummary === "function") {
@@ -14856,6 +14965,35 @@ function renderCurationResults(results, selectedDevices) {
                 <div class="curation-section curation-section--benefit">
                     <span class="curation-section-label">${isKo ? "⑤ 고객이 얻는 효용" : "⑤ Customer Benefit"}</span>
                     <p class="curation-section-body">${escapeHtml(benefitText)}</p>
+                </div>` : ""}
+
+                <!-- ⑥ 하위 스토리 (27 DB 전용) — 시나리오당 2~3개 구체 사용 순간 -->
+                ${(scenario._scenario27?.stories && scenario._scenario27.stories.length > 0) ? `
+                <div class="curation-section curation-section--stories">
+                    <span class="curation-section-label">${isKo ? `⑥ 하위 스토리 ${scenario._scenario27.stories.length}개` : `⑥ ${scenario._scenario27.stories.length} Sub-stories`}</span>
+                    <ol class="curation-story-list">
+                        ${scenario._scenario27.stories.map(st => `
+                            <li class="curation-story-item">
+                                <div class="curation-story-title">${escapeHtml(st.title || "")}</div>
+                                <div class="curation-story-content">${escapeHtml((st.content || "").slice(0, 220))}${(st.content || "").length > 220 ? "…" : ""}</div>
+                                ${st.cta_label ? `<span class="curation-story-cta">→ ${escapeHtml(st.cta_label)}</span>` : ""}
+                            </li>
+                        `).join("")}
+                    </ol>
+                </div>` : ""}
+
+                <!-- ⑦ 구매 가능 제품 (27 DB 전용) -->
+                ${(scenario._scenario27?.purchasable_products && scenario._scenario27.purchasable_products.length > 0) ? `
+                <div class="curation-section curation-section--products">
+                    <span class="curation-section-label">${isKo ? `⑦ 구매 가능 제품 ${scenario._scenario27.purchasable_products.length}개` : `⑦ Purchasable products`}</span>
+                    <div class="curation-product-grid">
+                        ${scenario._scenario27.purchasable_products.slice(0, 6).map(p => `
+                            <div class="curation-product-chip">
+                                <div class="curation-product-name">${escapeHtml(p.product_name || "")}</div>
+                                <div class="curation-product-meta">${escapeHtml(p.brand || "")} · ${escapeHtml(p.type || "")}</div>
+                            </div>
+                        `).join("")}
+                    </div>
                 </div>` : ""}
 
                 ${devicesHtml ? `<div class="curation-card-devices">${devicesHtml}</div>` : ""}
