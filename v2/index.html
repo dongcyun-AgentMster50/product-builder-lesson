@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartThings Scenario Agent v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg0: #07080c;
+  --bg1: #0f1117;
+  --bg2: #171a24;
+  --bg3: #1e2230;
+  --card: #1a1e2b;
+  --card-hover: #222638;
+  --border: #2a2e3e;
+  --border-light: #363c52;
+  --accent: #1428a0;
+  --accent-mid: #2e45d4;
+  --accent-glow: #4060ff;
+  --accent-text: #7b96ff;
+  --text1: #eef0f7;
+  --text2: #9ba3bc;
+  --text3: #5c6380;
+  --success: #00d49b;
+  --warn: #f0a030;
+  --danger: #e05050;
+  --tag-care: #e85d8a;
+  --tag-play: #f0a030;
+  --tag-save: #00c79a;
+  --tag-secure: #7b96ff;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg0);
+  color: var(--text1);
+  font-family: 'IBM Plex Sans KR', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── MODAL ─── */
+#modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(7,8,12,0.96);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(12px);
+}
+.modal-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 44px 48px;
+  width: 480px;
+  max-width: 95vw;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px var(--border-light) inset;
+}
+.modal-logo {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 32px;
+}
+.modal-logo-icon {
+  width: 36px; height: 36px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.modal-logo-text {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 15px;
+  letter-spacing: 0.05em;
+  color: var(--text1);
+}
+.modal-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 22px;
+  margin-bottom: 8px;
+  color: var(--text1);
+}
+.modal-sub {
+  font-size: 13px; color: var(--text2); line-height: 1.6;
+  margin-bottom: 28px;
+}
+.provider-tabs {
+  display: flex; gap: 8px; margin-bottom: 20px;
+}
+.provider-tab {
+  flex: 1; padding: 9px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer;
+  font-size: 12px; font-weight: 500; color: var(--text2);
+  text-align: center; transition: all 0.15s;
+  font-family: inherit;
+}
+.provider-tab.active {
+  background: var(--accent); border-color: var(--accent);
+  color: white;
+}
+.provider-tab .cost-badge {
+  display: block; font-size: 10px; margin-top: 2px;
+  opacity: 0.75;
+}
+.provider-tab.active .cost-badge { opacity: 0.9; }
+.input-group { margin-bottom: 16px; }
+.input-label {
+  font-size: 12px; color: var(--text2); font-weight: 500;
+  margin-bottom: 6px; display: block;
+}
+.input-field {
+  width: 100%; padding: 12px 14px;
+  background: var(--bg1); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text1);
+  font-size: 13px; font-family: 'IBM Plex Mono', monospace;
+  transition: border-color 0.15s;
+}
+.input-field:focus {
+  outline: none; border-color: var(--accent-mid);
+  box-shadow: 0 0 0 3px rgba(46,69,212,0.2);
+}
+.input-hint { font-size: 11px; color: var(--text3); margin-top: 5px; }
+.input-hint a { color: var(--accent-text); }
+.btn-primary {
+  width: 100%; padding: 13px;
+  background: var(--accent); border: none; border-radius: var(--radius);
+  color: white; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+}
+.btn-primary:hover { background: var(--accent-mid); transform: translateY(-1px); }
+.modal-warning {
+  margin-top: 14px; padding: 10px 12px;
+  background: rgba(240,160,48,0.1); border: 1px solid rgba(240,160,48,0.3);
+  border-radius: var(--radius-sm); font-size: 11px; color: var(--warn);
+  display: none;
+}
+.modal-warning.show { display: block; }
+
+/* ─── HEADER ─── */
+header {
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg1);
+  position: sticky; top: 0; z-index: 100;
+}
+.header-left {
+  display: flex; align-items: center; gap: 12px;
+}
+.logo-icon {
+  width: 32px; height: 32px; background: var(--accent);
+  border-radius: 7px; display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.logo-name {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 14px; letter-spacing: 0.04em;
+}
+.logo-version {
+  font-size: 10px; background: var(--accent); color: white;
+  padding: 2px 6px; border-radius: 4px; font-weight: 600;
+}
+.header-right {
+  display: flex; align-items: center; gap: 10px;
+}
+.provider-badge {
+  font-size: 11px; color: var(--text2); padding: 4px 10px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 20px;
+}
+.key-btn {
+  font-size: 12px; color: var(--text2); padding: 6px 12px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s;
+  font-family: inherit;
+}
+.key-btn:hover { border-color: var(--border-light); color: var(--text1); }
+
+/* ─── MAIN ─── */
+main { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+.page-intro {
+  margin-bottom: 48px;
+}
+.page-intro h1 {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(24px, 4vw, 38px);
+  line-height: 1.2; margin-bottom: 12px;
+}
+.page-intro h1 span { color: var(--accent-text); }
+.page-intro p {
+  font-size: 14px; color: var(--text2); max-width: 480px; line-height: 1.7;
+}
+
+/* ─── 3-STEP FORM ─── */
+.step-form {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 36px;
+  margin-bottom: 40px;
+}
+.step-row {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;
+  margin-bottom: 28px;
+}
+@media (max-width: 720px) {
+  .step-row { grid-template-columns: 1fr; }
+}
+.step-block {}
+.step-num {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  color: var(--text3); text-transform: uppercase;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.step-num::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.step-label {
+  font-size: 13px; color: var(--text2); margin-bottom: 12px; font-weight: 500;
+}
+
+/* Role buttons */
+.role-btns { display: flex; flex-direction: column; gap: 8px; }
+.role-btn {
+  padding: 11px 14px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+  transition: all 0.15s; font-family: inherit;
+}
+.role-btn:hover { border-color: var(--border-light); background: var(--card-hover); }
+.role-btn.selected {
+  background: rgba(20,40,160,0.2);
+  border-color: var(--accent-mid);
+  box-shadow: 0 0 0 1px rgba(46,69,212,0.3);
+}
+.role-btn .icon { font-size: 18px; }
+.role-btn .name { font-size: 13px; font-weight: 500; color: var(--text1); }
+.role-btn .desc { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+/* Country select */
+select.country-select {
+  width: 100%; padding: 11px 14px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text1);
+  font-size: 13px; font-family: inherit; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235c6380' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 32px;
+}
+select.country-select:focus { outline: none; border-color: var(--accent-mid); }
+select.country-select option { background: var(--bg2); }
+
+/* Value tags */
+.value-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.value-tag {
+  padding: 8px 14px; border-radius: 20px;
+  border: 1.5px solid var(--border);
+  cursor: pointer; font-size: 12px; font-weight: 500;
+  transition: all 0.15s; font-family: inherit;
+  background: var(--bg3);
+}
+.value-tag[data-val="care"] { color: var(--tag-care); }
+.value-tag[data-val="play"] { color: var(--tag-play); }
+.value-tag[data-val="save"] { color: var(--tag-save); }
+.value-tag[data-val="secure"] { color: var(--tag-secure); }
+.value-tag.selected[data-val="care"] { background: rgba(232,93,138,0.15); border-color: var(--tag-care); }
+.value-tag.selected[data-val="play"] { background: rgba(240,160,48,0.15); border-color: var(--tag-play); }
+.value-tag.selected[data-val="save"] { background: rgba(0,199,154,0.15); border-color: var(--tag-save); }
+.value-tag.selected[data-val="secure"] { background: rgba(123,150,255,0.15); border-color: var(--tag-secure); }
+.value-hint { font-size: 11px; color: var(--text3); margin-top: 8px; }
+
+/* Run button */
+.run-btn {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-mid));
+  border: none; border-radius: var(--radius);
+  color: white; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  font-family: 'Syne', sans-serif; letter-spacing: 0.02em;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.run-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(20,40,160,0.4); }
+.run-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.run-btn .arrow { font-size: 18px; transition: transform 0.2s; }
+.run-btn:hover .arrow { transform: translateX(4px); }
+
+/* ─── PIPELINE STATUS ─── */
+#pipeline-status {
+  margin-bottom: 32px; display: none;
+}
+.pipeline-bar {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px 24px;
+}
+.pipeline-stages {
+  display: flex; gap: 0; align-items: center;
+}
+.stage {
+  flex: 1; text-align: center; position: relative;
+}
+.stage:not(:last-child)::after {
+  content: '';
+  position: absolute; right: -1px; top: 50%; transform: translateY(-50%);
+  width: 2px; height: 30px; background: var(--border);
+}
+.stage-icon { font-size: 20px; margin-bottom: 4px; }
+.stage-name { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--text3); }
+.stage-status { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.stage.active .stage-name { color: var(--accent-text); }
+.stage.active .stage-status { color: var(--accent-text); }
+.stage.done .stage-name { color: var(--success); }
+.stage.done .stage-status { color: var(--success); }
+.spinner { display: inline-block; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── STORY CARDS (A1 result) ─── */
+#curator-results { display: none; margin-bottom: 40px; }
+.section-title {
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px;
+  margin-bottom: 6px;
+}
+.section-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+.story-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 720px) { .story-grid { grid-template-columns: 1fr; } }
+
+.story-card {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: 16px; padding: 24px;
+  cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+}
+.story-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-glow));
+  opacity: 0; transition: opacity 0.2s;
+}
+.story-card:hover { border-color: var(--border-light); transform: translateY(-3px); }
+.story-card:hover::before { opacity: 1; }
+.story-card.selected {
+  border-color: var(--accent-mid);
+  background: rgba(20,40,160,0.1);
+  box-shadow: 0 0 0 1px var(--accent-mid), 0 20px 40px rgba(20,40,160,0.2);
+}
+.story-card.selected::before { opacity: 1; }
+.story-rank {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--text3); text-transform: uppercase; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.story-rank .match-pct {
+  margin-left: auto; background: rgba(0,212,155,0.15);
+  color: var(--success); padding: 2px 7px; border-radius: 10px;
+  font-size: 10px;
+}
+.story-num {
+  font-size: 10px; color: var(--text3); margin-bottom: 6px; font-weight: 600;
+}
+.story-title {
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px;
+  line-height: 1.35; margin-bottom: 10px; color: var(--text1);
+}
+.story-thumb {
+  font-size: 12px; color: var(--text2); line-height: 1.6;
+  margin-bottom: 14px;
+}
+.story-why {
+  font-size: 11px; color: var(--accent-text); line-height: 1.5;
+  padding: 8px 10px;
+  background: rgba(123,150,255,0.08);
+  border-radius: var(--radius-sm); border-left: 2px solid var(--accent-text);
+}
+.story-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
+.story-tag {
+  font-size: 10px; padding: 3px 8px; border-radius: 10px;
+  background: var(--bg3); color: var(--text2); border: 1px solid var(--border);
+}
+
+/* ─── STORY WORKSPACE ─── */
+#story-workspace { display: none; }
+.workspace-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 24px; gap: 16px; flex-wrap: wrap;
+}
+.workspace-title {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px;
+  flex: 1;
+}
+.workspace-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.meta-chip {
+  font-size: 11px; padding: 4px 10px; border-radius: 10px;
+  background: var(--bg3); color: var(--text2); border: 1px solid var(--border);
+}
+.meta-chip.accent { background: rgba(20,40,160,0.2); color: var(--accent-text); border-color: rgba(123,150,255,0.3); }
+.restart-btn {
+  padding: 8px 16px; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text2); cursor: pointer;
+  font-size: 12px; font-family: inherit; transition: all 0.15s; white-space: nowrap;
+}
+.restart-btn:hover { color: var(--text1); border-color: var(--border-light); }
+
+/* Localized story */
+#localized-panel {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px; margin-bottom: 24px;
+}
+.panel-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+}
+.panel-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 6px;
+}
+.panel-tag.auto { background: rgba(0,212,155,0.15); color: var(--success); }
+.panel-tag.optional { background: rgba(240,160,48,0.1); color: var(--warn); }
+.panel-title {
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px;
+}
+.panel-content {
+  font-size: 13px; color: var(--text2); line-height: 1.75;
+  white-space: pre-wrap; min-height: 40px;
+}
+.agent-loading {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--text3); padding: 12px 0;
+}
+.dot-pulse {
+  display: flex; gap: 4px; align-items: center;
+}
+.dot-pulse span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent-text);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.dot-pulse span:nth-child(2) { animation-delay: 0.2s; }
+.dot-pulse span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+
+/* Optional panels */
+.optional-panels {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; margin-bottom: 24px;
+}
+@media (max-width: 720px) { .optional-panels { grid-template-columns: 1fr; } }
+.opt-panel {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden;
+}
+.opt-panel-trigger {
+  width: 100%; padding: 20px 24px;
+  background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; gap: 12px;
+  text-align: left; font-family: inherit;
+}
+.opt-panel-trigger:hover { background: var(--card-hover); }
+.opt-icon { font-size: 22px; }
+.opt-info { flex: 1; }
+.opt-name { font-size: 14px; font-weight: 600; color: var(--text1); }
+.opt-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.opt-toggle {
+  font-size: 18px; color: var(--text3);
+  transition: transform 0.2s;
+}
+.opt-panel.open .opt-toggle { transform: rotate(90deg); }
+.opt-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease;
+  border-top: 0 solid var(--border);
+}
+.opt-panel.open .opt-body {
+  max-height: 1000px;
+  border-top-width: 1px;
+}
+.opt-body-inner { padding: 20px 24px; }
+
+/* Personalizer form */
+.signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+@media (max-width: 500px) { .signal-grid { grid-template-columns: 1fr; } }
+.signal-select {
+  width: 100%; padding: 9px 12px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text1);
+  font-size: 12px; font-family: inherit;
+  -webkit-appearance: none; appearance: none;
+}
+.signal-select:focus { outline: none; border-color: var(--accent-mid); }
+
+/* Expander channel checks */
+.channel-checks { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.ch-check { position: relative; }
+.ch-check input { position: absolute; opacity: 0; }
+.ch-check label {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 12px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 20px; cursor: pointer; font-size: 12px; color: var(--text2);
+  transition: all 0.15s;
+}
+.ch-check input:checked + label {
+  background: rgba(20,40,160,0.2); border-color: var(--accent-mid);
+  color: var(--accent-text);
+}
+
+/* A5 Activation */
+.activation-panel {
+  background: linear-gradient(135deg, rgba(20,40,160,0.15), rgba(64,96,255,0.1));
+  border: 1px solid rgba(123,150,255,0.25);
+  border-radius: 16px; padding: 28px; margin-top: 16px;
+}
+.activation-title {
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.activation-outputs { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.output-item {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px;
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  transition: all 0.15s;
+}
+.output-item:hover { border-color: var(--border-light); background: var(--bg3); }
+.output-item .file-icon { font-size: 22px; }
+.output-item .file-info .file-name { font-size: 12px; font-weight: 600; color: var(--text1); }
+.output-item .file-info .file-desc { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+/* Output text areas */
+.output-text {
+  width: 100%; min-height: 160px;
+  background: var(--bg1); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px;
+  color: var(--text2); font-size: 12px; line-height: 1.7;
+  white-space: pre-wrap; margin-top: 12px; resize: vertical;
+  font-family: inherit;
+}
+.mini-btn {
+  padding: 8px 16px;
+  background: var(--accent); border: none; border-radius: var(--radius-sm);
+  color: white; font-size: 12px; font-weight: 600; cursor: pointer;
+  font-family: inherit; transition: all 0.15s;
+}
+.mini-btn:hover { background: var(--accent-mid); }
+.mini-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.mini-btn.secondary {
+  background: var(--bg3); color: var(--text2); border: 1px solid var(--border);
+}
+.mini-btn.secondary:hover { color: var(--text1); border-color: var(--border-light); }
+
+/* Error toast */
+#error-toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--danger); color: white; padding: 12px 18px;
+  border-radius: var(--radius); font-size: 13px; font-weight: 500;
+  z-index: 9999; transform: translateY(80px); opacity: 0;
+  transition: all 0.3s; max-width: 360px;
+}
+#error-toast.show { transform: translateY(0); opacity: 1; }
+
+/* Utility */
+.hidden { display: none !important; }
+.fade-in { animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- BYOK MODAL -->
+<div id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-logo">
+      <div class="modal-logo-icon">⚡</div>
+      <div class="modal-logo-text">SMARTTHINGS SCENARIO AGENT</div>
+    </div>
+    <div class="modal-title">AI 키 설정</div>
+    <div class="modal-sub">시나리오 생성에 사용할 AI 제공사를 선택하고 API 키를 입력하세요. 키는 브라우저에만 저장됩니다.</div>
+    <div class="provider-tabs">
+      <button class="provider-tab active" onclick="selectProvider('openai')">
+        OpenAI <span class="cost-badge">gpt-4o · 권장</span>
+      </button>
+      <button class="provider-tab" onclick="selectProvider('anthropic')">
+        Anthropic <span class="cost-badge">Claude Sonnet</span>
+      </button>
+      <button class="provider-tab" onclick="selectProvider('gemini')">
+        Gemini <span class="cost-badge">Flash · 무료티어</span>
+      </button>
+    </div>
+    <div class="input-group">
+      <label class="input-label">API Key</label>
+      <input type="password" class="input-field" id="api-key-input" placeholder="sk-..." autocomplete="off">
+      <div class="input-hint" id="key-hint">
+        <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>에서 발급
+      </div>
+    </div>
+    <div class="modal-warning" id="gemini-warn">
+      ⚠️ Gemini Flash는 무료 티어이지만 시나리오 품질이 낮을 수 있습니다. 중요한 발표 전에는 gpt-4o 사용을 권장합니다.
+    </div>
+    <button class="btn-primary" onclick="saveKey()">시작하기 →</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-name">SmartThings Scenario Agent</div>
+    <div class="logo-version">v2.0</div>
+  </div>
+  <div class="header-right">
+    <div class="provider-badge" id="provider-badge">gpt-4o</div>
+    <button class="key-btn" onclick="showModal()">🔑 키 변경</button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main>
+  <div class="page-intro fade-in">
+    <h1>3가지 선택으로<br><span>완성되는 마케팅 시나리오</span></h1>
+    <p>역할 · 국가 · 가치 태그 3가지만 고르면 AI가 27개 DB에서 최적의 스토리를 찾고, 현지화부터 채널 확장까지 이어서 만들어줍니다.</p>
+  </div>
+
+  <!-- STEP FORM -->
+  <div class="step-form fade-in">
+    <div class="step-row">
+      <!-- STEP 1 -->
+      <div class="step-block">
+        <div class="step-num">Step 1</div>
+        <div class="step-label">담당 채널이 뭔가요?</div>
+        <div class="role-btns">
+          <button class="role-btn" data-role="retail" onclick="selectRole(this)">
+            <span class="icon">🏪</span>
+            <div><div class="name">리테일</div><div class="desc">오프라인 매장 · 체험존</div></div>
+          </button>
+          <button class="role-btn" data-role="dotcom" onclick="selectRole(this)">
+            <span class="icon">🛒</span>
+            <div><div class="name">닷컴</div><div class="desc">온라인 스토어 · D2C</div></div>
+          </button>
+          <button class="role-btn" data-role="brand" onclick="selectRole(this)">
+            <span class="icon">📣</span>
+            <div><div class="name">브랜드</div><div class="desc">캠페인 · CRM · SNS</div></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-block">
+        <div class="step-num">Step 2</div>
+        <div class="step-label">어느 국가/지역인가요?</div>
+        <select class="country-select" id="country-select">
+          <option value="">국가 선택...</option>
+          <option value="KR">🇰🇷 한국</option>
+          <option value="US">🇺🇸 미국</option>
+          <option value="JP">🇯🇵 일본</option>
+          <option value="AU">🇦🇺 호주</option>
+          <option value="IN">🇮🇳 인도</option>
+          <option value="DE">🇩🇪 독일</option>
+          <option value="UK">🇬🇧 영국</option>
+          <option value="CN">🇨🇳 중국</option>
+          <option value="BR">🇧🇷 브라질</option>
+          <option value="MX">🇲🇽 멕시코</option>
+          <option value="SG">🇸🇬 싱가포르</option>
+          <option value="SE">🇸🇪 스웨덴</option>
+        </select>
+        <br>
+        <div class="step-label" style="margin-top:14px;">세부 도시 (선택)</div>
+        <input type="text" class="input-field" id="city-input" placeholder="예: 서울 강남, New York…" style="font-family:inherit; font-size:13px;">
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-block">
+        <div class="step-num">Step 3</div>
+        <div class="step-label">어떤 고객 가치에 집중할까요? (최대 2개)</div>
+        <div class="value-tags">
+          <button class="value-tag" data-val="care" onclick="toggleTag(this)">💛 Care</button>
+          <button class="value-tag" data-val="play" onclick="toggleTag(this)">🎮 Play</button>
+          <button class="value-tag" data-val="save" onclick="toggleTag(this)">💰 Save</button>
+          <button class="value-tag" data-val="secure" onclick="toggleTag(this)">🛡 Secure</button>
+        </div>
+        <div class="value-hint">최대 2개 선택 · 1개도 가능</div>
+      </div>
+    </div>
+
+    <!-- RUN BUTTON -->
+    <button class="run-btn" id="run-btn" onclick="runCurator()">
+      <span>시나리오 찾기</span>
+      <span class="arrow">→</span>
+    </button>
+  </div>
+
+  <!-- PIPELINE STATUS -->
+  <div id="pipeline-status">
+    <div class="pipeline-bar">
+      <div class="pipeline-stages">
+        <div class="stage" id="stage-a1">
+          <div class="stage-icon">🔍</div>
+          <div class="stage-name">A1 CURATOR</div>
+          <div class="stage-status">대기</div>
+        </div>
+        <div class="stage" id="stage-a2">
+          <div class="stage-icon">🌏</div>
+          <div class="stage-name">A2 LOCALIZER</div>
+          <div class="stage-status">대기</div>
+        </div>
+        <div class="stage" id="stage-a3">
+          <div class="stage-icon">🎯</div>
+          <div class="stage-name">A3 PERSONALIZER</div>
+          <div class="stage-status">선택</div>
+        </div>
+        <div class="stage" id="stage-a4">
+          <div class="stage-icon">📣</div>
+          <div class="stage-name">A4 EXPANDER</div>
+          <div class="stage-status">선택</div>
+        </div>
+        <div class="stage" id="stage-a5">
+          <div class="stage-icon">🚀</div>
+          <div class="stage-name">A5 ACTIVATOR</div>
+          <div class="stage-status">선택</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- A1: TOP 3 STORY CARDS -->
+  <div id="curator-results" class="fade-in">
+    <div class="section-title">시나리오 TOP 3 추천</div>
+    <div class="section-sub" id="curator-sub">A1 Curator가 선택한 최적의 스토리입니다. 하나를 선택하면 자동으로 현지화됩니다.</div>
+    <div class="story-grid" id="story-grid"></div>
+  </div>
+
+  <!-- STORY WORKSPACE (A2 + optional A3/A4/A5) -->
+  <div id="story-workspace" class="fade-in">
+    <div class="workspace-header">
+      <div>
+        <div class="workspace-title" id="workspace-title">선택된 스토리</div>
+        <div class="workspace-meta" id="workspace-meta"></div>
+      </div>
+      <button class="restart-btn" onclick="restart()">← 다시 선택</button>
+    </div>
+
+    <!-- A2 Localized -->
+    <div id="localized-panel" class="panel">
+      <div class="panel-header">
+        <div class="panel-tag auto">A2 AUTO</div>
+        <div class="panel-title">현지화된 시나리오</div>
+      </div>
+      <div class="panel-content" id="localized-content">
+        <div class="agent-loading">
+          <div class="dot-pulse"><span></span><span></span><span></span></div>
+          현지화 중...
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional panels -->
+    <div class="optional-panels">
+
+      <!-- A3 Personalizer -->
+      <div class="opt-panel" id="panel-a3">
+        <button class="opt-panel-trigger" onclick="togglePanel('a3')">
+          <span class="opt-icon">🎯</span>
+          <div class="opt-info">
+            <div class="opt-name">초개인화</div>
+            <div class="opt-desc">A3 Personalizer · 고객 보유기기 + 거주형태로 개인화</div>
+          </div>
+          <span class="opt-toggle">›</span>
+        </button>
+        <div class="opt-body" id="body-a3">
+          <div class="opt-body-inner">
+            <div class="signal-grid">
+              <select class="signal-select" id="sig-home">
+                <option value="">거주형태</option>
+                <option value="apartment">아파트</option>
+                <option value="house">단독주택</option>
+                <option value="villa">빌라/연립</option>
+                <option value="studio">원룸/스튜디오</option>
+              </select>
+              <select class="signal-select" id="sig-family">
+                <option value="">가족구성</option>
+                <option value="single">1인 가구</option>
+                <option value="couple">2인 (커플)</option>
+                <option value="family_kids">가족 (자녀 있음)</option>
+                <option value="family_senior">가족 (시니어 있음)</option>
+                <option value="pet">반려동물 있음</option>
+              </select>
+              <select class="signal-select" id="sig-device">
+                <option value="">주요 보유기기</option>
+                <option value="tv_soundbar">TV + 사운드바</option>
+                <option value="washer_dryer">세탁기 + 건조기</option>
+                <option value="fridge_ac">냉장고 + 에어컨</option>
+                <option value="robot_vacuum">로봇청소기</option>
+                <option value="air_purifier">공기청정기</option>
+              </select>
+              <select class="signal-select" id="sig-interest">
+                <option value="">주요 관심사</option>
+                <option value="energy">에너지 절약</option>
+                <option value="kids_care">육아/자녀케어</option>
+                <option value="health">건강/웰니스</option>
+                <option value="entertainment">홈 엔터테인먼트</option>
+                <option value="security">홈 보안</option>
+              </select>
+            </div>
+            <button class="mini-btn" id="btn-a3" onclick="runPersonalizer()">개인화 시나리오 생성</button>
+            <div class="output-text hidden" id="output-a3"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- A4 Expander -->
+      <div class="opt-panel" id="panel-a4">
+        <button class="opt-panel-trigger" onclick="togglePanel('a4')">
+          <span class="opt-icon">📣</span>
+          <div class="opt-info">
+            <div class="opt-name">채널 확장</div>
+            <div class="opt-desc">A4 Expander · 원하는 채널용 마케팅 결과물 생성</div>
+          </div>
+          <span class="opt-toggle">›</span>
+        </button>
+        <div class="opt-body" id="body-a4">
+          <div class="opt-body-inner">
+            <div class="channel-checks">
+              <div class="ch-check"><input type="checkbox" id="ch-copy" value="copy"><label for="ch-copy">📝 카피라이팅</label></div>
+              <div class="ch-check"><input type="checkbox" id="ch-kv" value="kv"><label for="ch-kv">🎨 KV 프롬프트</label></div>
+              <div class="ch-check"><input type="checkbox" id="ch-email" value="email"><label for="ch-email">📧 이메일 템플릿</label></div>
+              <div class="ch-check"><input type="checkbox" id="ch-store" value="store"><label for="ch-store">🏪 매장 세일즈 토크</label></div>
+              <div class="ch-check"><input type="checkbox" id="ch-social" value="social"><label for="ch-social">📱 소셜 포스트</label></div>
+              <div class="ch-check"><input type="checkbox" id="ch-landing" value="landing"><label for="ch-landing">💻 랜딩 페이지 구조</label></div>
+            </div>
+            <button class="mini-btn" id="btn-a4" onclick="runExpander()">채널 결과물 생성</button>
+            <div class="output-text hidden" id="output-a4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- A5 Activation -->
+    <div class="activation-panel" id="panel-a5" style="display:none;">
+      <div class="activation-title">🚀 A5 Activation — 배포 준비 완료</div>
+      <div class="activation-outputs" id="activation-outputs"></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ERROR TOAST -->
+<div id="error-toast"></div>
+
+<script>
+// ─── STATE ───
+const state = {
+  provider: 'openai',
+  apiKey: '',
+  selectedRole: null,
+  selectedCountry: '',
+  selectedCity: '',
+  selectedValues: [],
+  scenarios: [],
+  topStories: [],
+  selectedStory: null,
+  localizedStory: '',
+};
+
+// ─── PROVIDER SETUP ───
+function selectProvider(p) {
+  state.provider = p;
+  document.querySelectorAll('.provider-tab').forEach((t, i) => {
+    t.classList.toggle('active', ['openai','anthropic','gemini'][i] === p);
+  });
+  const hints = {
+    openai: '<a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>에서 발급 · 권장',
+    anthropic: '<a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>에서 발급',
+    gemini: '<a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a>에서 무료 발급'
+  };
+  document.getElementById('key-hint').innerHTML = hints[p];
+  document.getElementById('gemini-warn').classList.toggle('show', p === 'gemini');
+  document.getElementById('api-key-input').placeholder = p === 'openai' ? 'sk-...' : p === 'anthropic' ? 'sk-ant-...' : 'AIza...';
+}
+
+function saveKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key) { showError('API 키를 입력해주세요.'); return; }
+  state.apiKey = key;
+  const labels = { openai: 'gpt-4o', anthropic: 'Claude Sonnet', gemini: 'Gemini Flash' };
+  document.getElementById('provider-badge').textContent = labels[state.provider];
+  document.getElementById('modal-overlay').style.display = 'none';
+  loadScenarios();
+}
+
+function showModal() {
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+// ─── SCENARIO LOADING ───
+async function loadScenarios() {
+  const base = 'https://raw.githubusercontent.com/dongcyun-AgentMster50/product-builder-lesson/main/references/';
+  const results = [];
+  for (let i = 1; i <= 27; i++) {
+    const num = String(i).padStart(3, '0');
+    try {
+      const res = await fetch(`${base}scenario_${num}.json`);
+      if (res.ok) results.push(await res.json());
+    } catch(e) { /* skip if unavailable */ }
+  }
+  state.scenarios = results;
+  console.log(`✅ ${results.length}개 시나리오 로드 완료`);
+}
+
+// ─── STEP INTERACTIONS ───
+function selectRole(btn) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.selectedRole = btn.dataset.role;
+}
+
+function toggleTag(btn) {
+  const val = btn.dataset.val;
+  if (btn.classList.contains('selected')) {
+    btn.classList.remove('selected');
+    state.selectedValues = state.selectedValues.filter(v => v !== val);
+  } else {
+    if (state.selectedValues.length >= 2) { showError('가치 태그는 최대 2개까지 선택 가능합니다.'); return; }
+    btn.classList.add('selected');
+    state.selectedValues.push(val);
+  }
+}
+
+// ─── AI CALL ROUTER ───
+async function callAI(systemPrompt, userPrompt) {
+  const { provider, apiKey } = state;
+
+  if (provider === 'openai') {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }],
+        temperature: 0.7, max_tokens: 2000
+      })
+    });
+    if (!res.ok) throw new Error(`OpenAI 오류: ${res.status}`);
+    const d = await res.json();
+    return d.choices[0].message.content;
+  }
+
+  if (provider === 'anthropic') {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+    if (!res.ok) throw new Error(`Anthropic 오류: ${res.status}`);
+    const d = await res.json();
+    return d.content[0].text;
+  }
+
+  if (provider === 'gemini') {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: systemPrompt + '\n\n' + userPrompt }] }],
+        generationConfig: { maxOutputTokens: 2000, temperature: 0.7 }
+      })
+    });
+    if (!res.ok) throw new Error(`Gemini 오류: ${res.status}`);
+    const d = await res.json();
+    return d.candidates[0].content.parts[0].text;
+  }
+}
+
+// ─── PIPELINE STAGE HELPERS ───
+function setStage(id, status) {
+  const el = document.getElementById(`stage-${id}`);
+  el.className = 'stage ' + status;
+  const statusEl = el.querySelector('.stage-status');
+  const msgs = { active: '처리 중...', done: '완료 ✓', error: '오류' };
+  if (msgs[status]) statusEl.textContent = msgs[status];
+}
+
+// ─── A1: CURATOR ───
+async function runCurator() {
+  if (!state.selectedRole) { showError('Step 1: 담당 채널을 선택해주세요.'); return; }
+  if (!document.getElementById('country-select').value) { showError('Step 2: 국가를 선택해주세요.'); return; }
+  if (state.selectedValues.length === 0) { showError('Step 3: 가치 태그를 최소 1개 선택해주세요.'); return; }
+
+  state.selectedCountry = document.getElementById('country-select').value;
+  state.selectedCity = document.getElementById('city-input').value.trim();
+
+  document.getElementById('run-btn').disabled = true;
+  document.getElementById('pipeline-status').style.display = 'block';
+  document.getElementById('curator-results').style.display = 'none';
+  document.getElementById('story-workspace').style.display = 'none';
+  setStage('a1', 'active');
+
+  const roleNames = { retail: '리테일(매장)', dotcom: '닷컴(온라인)', brand: '브랜드(캠페인)' };
+  const countryNames = {
+    KR: '한국', US: '미국', JP: '일본', AU: '호주', IN: '인도',
+    DE: '독일', UK: '영국', CN: '중국', BR: '브라질', MX: '멕시코', SG: '싱가포르', SE: '스웨덴'
+  };
+
+  const scenarioSummaries = state.scenarios.length > 0
+    ? state.scenarios.map((s, i) => {
+        const d0 = s.depth_0 || s;
+        return `[${String(i+1).padStart(3,'0')}] ${d0.title || d0.scenario_title || '제목없음'} | 카테고리: ${d0.category || d0.life_category || '-'} | ${d0.thumbnail_summary || d0.summary || ''}`;
+      }).join('\n')
+    : `[001] 에너지 절약 루틴 | 카테고리: Save | 가족이 외출 시 SmartThings가 자동으로 에너지를 절약하는 시나리오
+[002] 아이 안전 케어 | 카테고리: Care | 어린 자녀를 둔 부모를 위한 홈 안전 자동화
+[003] 홈 엔터테인먼트 | 카테고리: Play | 거실 기기들이 연동되어 최적의 영상/음향 환경 조성
+[004] 시니어 케어 | 카테고리: Care | 부모님 안전과 건강을 원격으로 케어하는 시나리오
+[005] 반려동물 케어 | 카테고리: Care | 혼자 남은 반려동물의 환경을 자동으로 유지
+[006] 출근 루틴 자동화 | 카테고리: Save | 아침 출근 준비부터 외출까지 원터치 자동화
+[007] 쾌적한 취침 환경 | 카테고리: Care | 취침 시 조명/온도/공기질을 최적화하는 나이트 루틴
+[008] 홈 보안 강화 | 카테고리: Secure | 외출 중 도어락/카메라/센서 연동 보안 시나리오
+[009] 에어컨 절전 자동화 | 카테고리: Save | AI 기반 냉방 최적화로 전기요금 절감
+[010] 요리 어시스턴트 | 카테고리: Play | 주방 기기 연동으로 스마트한 요리 환경 구성
+[011] 홈 오피스 최적화 | 카테고리: Play | 재택근무 생산성을 높이는 스마트 환경 자동화
+[012] 공기질 관리 | 카테고리: Care | 실시간 공기질 모니터링 및 정화기 자동 제어
+[013] 세탁 스마트 루틴 | 카테고리: Save | 적정 부하 시간대 세탁기 자동 예약으로 절약
+[014] 신혼부부 스마트홈 | 카테고리: Play | 커플이 함께 즐기는 스마트홈 첫 설정 스토리
+[015] 리턴홈 웰컴 루틴 | 카테고리: Care | 귀가 감지 시 조명/온도/음악이 맞춤 전환
+[016] 여름 폭염 대응 | 카테고리: Save | 폭염 경보 시 자동 차단/냉방 최적화 루틴
+[017] 겨울 난방 스마트 | 카테고리: Save | 기온 감지 기반 난방 자동 예약 및 절전
+[018] 스마트 플러그 에너지 | 카테고리: Save | 대기전력 자동 차단으로 월 전기요금 절감
+[019] 아이 귀가 알림 | 카테고리: Secure | 아이 귀가를 문 센서로 감지해 부모에게 알림
+[020] 홈 파티 모드 | 카테고리: Play | 손님 방문 시 조명/음악/온도를 파티 분위기로
+[021] 반응형 조명 시스템 | 카테고리: Play | 시간대/활동에 따라 자동 변하는 조명 연출
+[022] 수면 품질 향상 | 카테고리: Care | 수면 데이터 기반 취침/기상 루틴 최적화
+[023] 물 절약 루틴 | 카테고리: Save | 세탁/식기세척기 물 사용 최적화로 절약
+[024] 신축 아파트 입주 | 카테고리: Play | 새 아파트 입주 시 SmartThings 첫 세팅 가이드
+[025] 고령자 낙상 감지 | 카테goRY: Secure | 시니어 활동 이상 감지 및 가족 알림 시스템
+[026] 스마트 청소 루틴 | 카테고리: Care | 로봇청소기와 공기청정기 연동 청결 자동화
+[027] 에너지 리포트 | 카테고리: Save | 월간 에너지 사용 분석과 절약 팁 자동 제공`;
+
+  const system = `당신은 SmartThings 마케팅 시나리오 큐레이터입니다.
+마케터의 3가지 입력(채널/국가/가치태그)을 바탕으로 27개 시나리오 DB에서 가장 적합한 TOP 3를 선택합니다.
+
+반드시 JSON 형식으로만 응답하세요:
+{
+  "top3": [
+    {
+      "rank": 1,
+      "scenario_id": "XXX",
+      "title": "시나리오 제목",
+      "thumbnail": "2-3문장 스토리 요약",
+      "match_score": 95,
+      "why": "이 시나리오를 선택한 이유 (채널/국가/가치태그와의 연관성)",
+      "value_tags": ["Care", "Save"],
+      "key_devices": ["에어컨", "공기청정기"]
+    }
+  ],
+  "curation_note": "큐레이션 전략 한 줄 메모"
+}`;
+
+  const user = `마케터 입력:
+- 담당 채널: ${roleNames[state.selectedRole]}
+- 국가: ${countryNames[state.selectedCountry]}${state.selectedCity ? ' / ' + state.selectedCity : ''}
+- 가치 태그: ${state.selectedValues.join(', ')}
+
+시나리오 DB (27개):
+${scenarioSummaries}
+
+위 DB에서 이 마케터에게 가장 적합한 TOP 3 시나리오를 선택해주세요.`;
+
+  try {
+    const raw = await callAI(system, user);
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    const result = JSON.parse(cleaned);
+    setStage('a1', 'done');
+    renderStoryCards(result.top3, result.curation_note);
+  } catch(e) {
+    setStage('a1', 'error');
+    showError('A1 Curator 오류: ' + e.message);
+    document.getElementById('run-btn').disabled = false;
+  }
+}
+
+function renderStoryCards(stories, note) {
+  state.topStories = stories;
+  const grid = document.getElementById('story-grid');
+  grid.innerHTML = '';
+
+  document.getElementById('curator-sub').textContent =
+    note || 'AI가 선택한 최적의 시나리오입니다. 하나를 선택하면 자동으로 현지화됩니다.';
+
+  stories.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'story-card fade-in';
+    card.onclick = () => selectStory(s, card);
+    card.innerHTML = `
+      <div class="story-rank">
+        TOP ${s.rank}
+        <span class="match-pct">${s.match_score}% match</span>
+      </div>
+      <div class="story-num">#${s.scenario_id}</div>
+      <div class="story-title">${s.title}</div>
+      <div class="story-thumb">${s.thumbnail}</div>
+      <div class="story-why">${s.why}</div>
+      <div class="story-tags">
+        ${(s.value_tags || []).map(t => `<span class="story-tag">${t}</span>`).join('')}
+        ${(s.key_devices || []).map(d => `<span class="story-tag">📱 ${d}</span>`).join('')}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  document.getElementById('curator-results').style.display = 'block';
+  document.getElementById('run-btn').disabled = false;
+  document.getElementById('curator-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─── STORY SELECTION + A2 LOCALIZER ───
+async function selectStory(story, cardEl) {
+  document.querySelectorAll('.story-card').forEach(c => c.classList.remove('selected'));
+  cardEl.classList.add('selected');
+  state.selectedStory = story;
+
+  // Show workspace
+  document.getElementById('workspace-title').textContent = story.title;
+  document.getElementById('workspace-meta').innerHTML = `
+    <span class="meta-chip accent">#${story.scenario_id}</span>
+    ${(story.value_tags || []).map(t => `<span class="meta-chip">${t}</span>`).join('')}
+    <span class="meta-chip">${document.getElementById('country-select').options[document.getElementById('country-select').selectedIndex].text}</span>
+  `;
+
+  document.getElementById('story-workspace').style.display = 'block';
+  document.getElementById('panel-a5').style.display = 'none';
+  document.getElementById('localized-content').innerHTML = `
+    <div class="agent-loading">
+      <div class="dot-pulse"><span></span><span></span><span></span></div>
+      A2 Localizer 현지화 중...
+    </div>`;
+
+  document.getElementById('story-workspace').scrollIntoView({ behavior: 'smooth' });
+  setStage('a2', 'active');
+
+  await runLocalizer(story);
+}
+
+async function runLocalizer(story) {
+  const countryNames = {
+    KR: '한국', US: '미국', JP: '일본', AU: '호주', IN: '인도',
+    DE: '독일', UK: '영국', CN: '중국', BR: '브라질', MX: '멕시코', SG: '싱가포르', SE: '스웨덴'
+  };
+
+  const system = `당신은 SmartThings 시나리오 현지화 전문가(A2 Localizer)입니다.
+원문 시나리오를 받아 해당 국가/도시의 생활문화, 기후, 주거형태, 언어 톤에 맞게 자연스럽게 현지화합니다.
+
+규칙:
+- 원문의 스마트홈 가치와 SmartThings 제품은 유지
+- 현지 문화 앵커(명절, 기후 특성, 주거 문화)를 반드시 1~2개 포함
+- ${state.selectedCountry === 'KR' ? '한국어' : 'English'}로 출력
+- 마케팅 시나리오 형식으로, 자연스럽고 설득력 있게
+- 250~350자 분량`;
+
+  const user = `시나리오: ${story.title}
+요약: ${story.thumbnail}
+대상 국가: ${countryNames[state.selectedCountry]}${state.selectedCity ? ' / ' + state.selectedCity : ''}
+채널: ${state.selectedRole}
+가치 태그: ${state.selectedValues.join(', ')}
+
+이 시나리오를 현지화해주세요.`;
+
+  try {
+    const result = await callAI(system, user);
+    state.localizedStory = result;
+    document.getElementById('localized-content').textContent = result;
+    setStage('a2', 'done');
+  } catch(e) {
+    setStage('a2', 'error');
+    document.getElementById('localized-content').textContent = '현지화 오류: ' + e.message;
+  }
+}
+
+// ─── A3: PERSONALIZER ───
+async function runPersonalizer() {
+  const btn = document.getElementById('btn-a3');
+  btn.disabled = true; btn.textContent = '생성 중...';
+  setStage('a3', 'active');
+
+  const signals = {
+    home: document.getElementById('sig-home').value,
+    family: document.getElementById('sig-family').value,
+    device: document.getElementById('sig-device').value,
+    interest: document.getElementById('sig-interest').value
+  };
+
+  const system = `당신은 SmartThings 개인화 에이전트(A3 Personalizer)입니다.
+현지화된 시나리오와 고객 보유 신호를 결합해 "이 고객만을 위한" 맞춤 시나리오를 생성합니다.
+
+- 보유기기/거주형태/가족구성/관심사를 시나리오에 녹여내야 합니다
+- 고객이 "이건 나 얘기네"라고 느낄 정도로 구체적으로
+- 실제 SmartThings 설정 스텝 2~3개를 포함
+- ${state.selectedCountry === 'KR' ? '한국어' : 'English'}로 출력`;
+
+  const user = `현지화 시나리오:
+${state.localizedStory}
+
+고객 신호:
+- 거주형태: ${signals.home || '미입력'}
+- 가족구성: ${signals.family || '미입력'}
+- 주요 보유기기: ${signals.device || '미입력'}
+- 주요 관심사: ${signals.interest || '미입력'}
+
+이 고객만의 개인화 시나리오를 만들어주세요. SmartThings 실제 설정 스텝도 포함해주세요.`;
+
+  try {
+    const result = await callAI(system, user);
+    const out = document.getElementById('output-a3');
+    out.textContent = result;
+    out.classList.remove('hidden');
+    setStage('a3', 'done');
+    checkActivation();
+  } catch(e) {
+    setStage('a3', 'error');
+    showError('A3 오류: ' + e.message);
+  }
+  btn.disabled = false; btn.textContent = '개인화 시나리오 생성';
+}
+
+// ─── A4: EXPANDER ───
+async function runExpander() {
+  const checked = [...document.querySelectorAll('.ch-check input:checked')].map(i => i.value);
+  if (!checked.length) { showError('채널을 최소 1개 선택해주세요.'); return; }
+
+  const btn = document.getElementById('btn-a4');
+  btn.disabled = true; btn.textContent = '생성 중...';
+  setStage('a4', 'active');
+
+  const channelNames = {
+    copy: '카피라이팅 (헤드라인 3개 + 서브카피)',
+    kv: 'Key Visual 이미지 생성 프롬프트',
+    email: '이메일 제목 + 본문 구조',
+    store: '매장 판매사원용 세일즈 토크 (2분 분량)',
+    social: 'SNS 포스트 (인스타그램 + 트위터용)',
+    landing: '랜딩페이지 섹션 구조 + 주요 메시지'
+  };
+
+  const requestedChannels = checked.map(c => channelNames[c]).join('\n');
+
+  const system = `당신은 SmartThings 채널 확장 에이전트(A4 Expander)입니다.
+확정된 시나리오를 기반으로 각 마케팅 채널에 맞는 결과물을 생성합니다.
+
+규칙:
+- 채널별로 명확히 구분하여 출력
+- 시나리오의 핵심 메시지와 가치를 유지
+- 실제 사용 가능한 수준으로 구체적으로
+- ${state.selectedCountry === 'KR' ? '한국어' : 'English'}로 출력`;
+
+  const user = `확정 시나리오:
+${state.localizedStory}
+
+생성할 채널 결과물:
+${requestedChannels}
+
+각 채널별로 결과물을 생성해주세요.`;
+
+  try {
+    const result = await callAI(system, user);
+    const out = document.getElementById('output-a4');
+    out.textContent = result;
+    out.classList.remove('hidden');
+    setStage('a4', 'done');
+    checkActivation();
+  } catch(e) {
+    setStage('a4', 'error');
+    showError('A4 오류: ' + e.message);
+  }
+  btn.disabled = false; btn.textContent = '채널 결과물 생성';
+}
+
+// ─── A5: ACTIVATOR ───
+function checkActivation() {
+  const hasA3 = !document.getElementById('output-a3').classList.contains('hidden');
+  const hasA4 = !document.getElementById('output-a4').classList.contains('hidden');
+  if (hasA3 || hasA4) showActivation();
+}
+
+function showActivation() {
+  setStage('a5', 'done');
+  const panel = document.getElementById('panel-a5');
+  panel.style.display = 'block';
+
+  const outputs = [];
+  if (!document.getElementById('output-a3').classList.contains('hidden')) {
+    outputs.push({ icon: '📄', name: 'persona_scenario.txt', desc: '개인화 시나리오', key: 'a3' });
+  }
+  if (!document.getElementById('output-a4').classList.contains('hidden')) {
+    outputs.push({ icon: '📣', name: 'channel_assets.txt', desc: '채널별 마케팅 결과물', key: 'a4' });
+  }
+  outputs.push({ icon: '📋', name: 'localized_story.txt', desc: '현지화 확정 시나리오', key: 'local' });
+
+  const container = document.getElementById('activation-outputs');
+  container.innerHTML = outputs.map(o => `
+    <div class="output-item" onclick="downloadOutput('${o.key}', '${o.name}')">
+      <span class="file-icon">${o.icon}</span>
+      <div class="file-info">
+        <div class="file-name">${o.name}</div>
+        <div class="file-desc">${o.desc}</div>
+      </div>
+    </div>
+  `).join('') + `
+    <div class="output-item" onclick="copyAll()">
+      <span class="file-icon">📋</span>
+      <div class="file-info">
+        <div class="file-name">전체 복사</div>
+        <div class="file-desc">모든 결과물 클립보드에 복사</div>
+      </div>
+    </div>
+  `;
+
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function downloadOutput(key, filename) {
+  let content = '';
+  if (key === 'local') content = state.localizedStory;
+  else if (key === 'a3') content = document.getElementById('output-a3').textContent;
+  else if (key === 'a4') content = document.getElementById('output-a4').textContent;
+
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function copyAll() {
+  const parts = [];
+  parts.push('=== 현지화 시나리오 ===\n' + state.localizedStory);
+  const a3 = document.getElementById('output-a3');
+  if (!a3.classList.contains('hidden')) parts.push('\n\n=== 개인화 시나리오 ===\n' + a3.textContent);
+  const a4 = document.getElementById('output-a4');
+  if (!a4.classList.contains('hidden')) parts.push('\n\n=== 채널 결과물 ===\n' + a4.textContent);
+
+  navigator.clipboard.writeText(parts.join('\n')).then(() => {
+    showToast('클립보드에 복사되었습니다! 📋');
+  });
+}
+
+// ─── PANEL TOGGLE ───
+function togglePanel(id) {
+  const panel = document.getElementById(`panel-${id}`);
+  panel.classList.toggle('open');
+}
+
+// ─── RESTART ───
+function restart() {
+  state.topStories = [];
+  state.selectedStory = null;
+  state.localizedStory = '';
+  document.getElementById('story-workspace').style.display = 'none';
+  document.getElementById('curator-results').scrollIntoView({ behavior: 'smooth' });
+  document.querySelectorAll('.story-card').forEach(c => c.classList.remove('selected'));
+  ['a3','a4'].forEach(id => {
+    document.getElementById(`panel-${id}`).classList.remove('open');
+    document.getElementById(`output-${id}`).classList.add('hidden');
+    document.getElementById(`output-${id}`).textContent = '';
+  });
+  document.getElementById('panel-a5').style.display = 'none';
+  ['a2','a3','a4','a5'].forEach(id => setStage(id, 'idle'));
+  document.querySelector(`#stage-a3 .stage-status`).textContent = '선택';
+  document.querySelector(`#stage-a4 .stage-status`).textContent = '선택';
+  document.querySelector(`#stage-a5 .stage-status`).textContent = '선택';
+}
+
+// ─── UTILS ───
+function showError(msg) {
+  const t = document.getElementById('error-toast');
+  t.textContent = '⚠️ ' + msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('error-toast');
+  t.style.background = 'var(--success)'; t.textContent = msg; t.classList.add('show');
+  setTimeout(() => { t.classList.remove('show'); t.style.background = ''; }, 3000);
+}
+
+// ─── INIT ───
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('st_api_config');
+  if (saved) {
+    try {
+      const cfg = JSON.parse(saved);
+      state.provider = cfg.provider || 'openai';
+      state.apiKey = cfg.key || '';
+      if (state.apiKey) {
+        selectProvider(state.provider);
+        const labels = { openai: 'gpt-4o', anthropic: 'Claude Sonnet', gemini: 'Gemini Flash' };
+        document.getElementById('provider-badge').textContent = labels[state.provider];
+        document.getElementById('modal-overlay').style.display = 'none';
+        loadScenarios();
+      }
+    } catch(e) {}
+  }
+});
+
+const origSaveKey = saveKey;
+saveKey = function() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key) { showError('API 키를 입력해주세요.'); return; }
+  state.apiKey = key;
+  localStorage.setItem('st_api_config', JSON.stringify({ provider: state.provider, key }));
+  const labels = { openai: 'gpt-4o', anthropic: 'Claude Sonnet', gemini: 'Gemini Flash' };
+  document.getElementById('provider-badge').textContent = labels[state.provider];
+  document.getElementById('modal-overlay').style.display = 'none';
+  loadScenarios();
+};
+</script>
+</body>
+</html>
