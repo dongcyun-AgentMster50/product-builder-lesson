@@ -578,7 +578,7 @@ select.country-select option { background: var(--bg2); }
       <div class="modal-logo-text">SMARTTHINGS SCENARIO AGENT</div>
     </div>
     <div class="modal-title">AI 키 설정</div>
-    <div class="modal-sub">시나리오 생성에 사용할 AI 제공사를 선택하고 API 키를 입력하세요. 키는 브라우저에만 저장됩니다.</div>
+    <div class="modal-sub">시나리오 생성에 사용할 AI 제공사를 선택하고 API 키를 입력하세요. 키는 브라우저 localStorage에 평문으로 저장되므로 공용 기기에서는 사용을 피하세요.</div>
     <div class="provider-tabs">
       <button class="provider-tab active" onclick="selectProvider('openai')">
         OpenAI <span class="cost-badge">gpt-4o · 권장</span>
@@ -884,6 +884,7 @@ function saveKey() {
   const key = document.getElementById('api-key-input').value.trim();
   if (!key) { showError('API 키를 입력해주세요.'); return; }
   state.apiKey = key;
+  localStorage.setItem('st_api_config', JSON.stringify({ provider: state.provider, key }));
   const labels = { openai: 'gpt-4o', anthropic: 'Claude Sonnet', gemini: 'Gemini Flash' };
   document.getElementById('provider-badge').textContent = labels[state.provider];
   document.getElementById('modal-overlay').style.display = 'none';
@@ -957,7 +958,7 @@ async function callAI(systemPrompt, userPrompt) {
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }]
@@ -1042,7 +1043,7 @@ async function runCurator() {
 [022] 수면 품질 향상 | 카테고리: Care | 수면 데이터 기반 취침/기상 루틴 최적화
 [023] 물 절약 루틴 | 카테고리: Save | 세탁/식기세척기 물 사용 최적화로 절약
 [024] 신축 아파트 입주 | 카테고리: Play | 새 아파트 입주 시 SmartThings 첫 세팅 가이드
-[025] 고령자 낙상 감지 | 카테goRY: Secure | 시니어 활동 이상 감지 및 가족 알림 시스템
+[025] 고령자 낙상 감지 | 카테고리: Secure | 시니어 활동 이상 감지 및 가족 알림 시스템
 [026] 스마트 청소 루틴 | 카테고리: Care | 로봇청소기와 공기청정기 연동 청결 자동화
 [027] 에너지 리포트 | 카테고리: Save | 월간 에너지 사용 분석과 절약 팁 자동 제공`;
 
@@ -1409,17 +1410,6 @@ window.addEventListener('load', () => {
   }
 });
 
-const origSaveKey = saveKey;
-saveKey = function() {
-  const key = document.getElementById('api-key-input').value.trim();
-  if (!key) { showError('API 키를 입력해주세요.'); return; }
-  state.apiKey = key;
-  localStorage.setItem('st_api_config', JSON.stringify({ provider: state.provider, key }));
-  const labels = { openai: 'gpt-4o', anthropic: 'Claude Sonnet', gemini: 'Gemini Flash' };
-  document.getElementById('provider-badge').textContent = labels[state.provider];
-  document.getElementById('modal-overlay').style.display = 'none';
-  loadScenarios();
-};
 </script>
 </body>
 </html>
