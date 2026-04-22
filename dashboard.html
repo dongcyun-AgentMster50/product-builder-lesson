@@ -526,7 +526,6 @@ function openModal(no) {
 
 function storyHTML(st) {
   const notes = (st.usage_notes || []).map(n => `<div class="story-note">ℹ ${n}</div>`).join('');
-  const cta = st.cta_label ? `<div class="story-cta">→ ${st.cta_label}</div>` : '';
   return `
     <div class="story-item">
       <div class="story-item-head">
@@ -535,7 +534,6 @@ function storyHTML(st) {
       </div>
       <p class="story-content">${st.content || ''}</p>
       ${notes}
-      ${cta}
     </div>`;
 }
 

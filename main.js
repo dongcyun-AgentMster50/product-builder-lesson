@@ -14976,7 +14976,6 @@ function renderCurationResults(results, selectedDevices) {
                             <li class="curation-story-item">
                                 <div class="curation-story-title">${escapeHtml(st.title || "")}</div>
                                 <div class="curation-story-content">${escapeHtml((st.content || "").slice(0, 220))}${(st.content || "").length > 220 ? "…" : ""}</div>
-                                ${st.cta_label ? `<span class="curation-story-cta">→ ${escapeHtml(st.cta_label)}</span>` : ""}
                             </li>
                         `).join("")}
                     </ol>

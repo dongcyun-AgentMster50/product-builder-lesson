@@ -476,7 +476,6 @@ function cardHTML(s) {
                 <li class="story-item" data-num="${st.story_no || (i+1)}">
                   <div class="story-title">${st.title || ""}</div>
                   <div class="story-content">${st.content || ""}</div>
-                  ${st.cta_label ? `<span class="story-cta">→ ${st.cta_label}</span>` : ""}
                   ${(st.usage_notes || []).map(n => `<div class="story-note">ℹ ${n}</div>`).join("")}
                 </li>
               `).join("")}
