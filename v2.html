@@ -265,6 +265,86 @@ select.country-select {
 select.country-select:focus { outline: none; border-color: var(--accent-mid); }
 select.country-select option { background: #ffffff; color: var(--text1); }
 
+/* Wizard multi-step layout */
+.wizard-step {
+  padding: 22px 0 26px; border-top: 1px solid var(--border);
+}
+.wizard-step:first-child { border-top: none; padding-top: 0; }
+.wizard-step .step-label {
+  font-size: 14px; color: var(--text1); font-weight: 600; margin-bottom: 4px;
+}
+.wizard-step .step-hint {
+  font-size: 12px; color: var(--text3); margin-bottom: 14px;
+}
+
+/* Horizontal radio pill row (residence type) */
+.pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill-radio {
+  padding: 9px 16px; border-radius: 20px;
+  background: var(--bg3); border: 1.5px solid var(--border);
+  font-size: 12px; font-weight: 500; color: var(--text2);
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+}
+.pill-radio:hover { border-color: var(--border-light); color: var(--text1); }
+.pill-radio.selected {
+  background: rgba(20,40,160,0.06); border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Multi-select pills (family traits, interests) */
+.pill-multi { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill-multi .pill {
+  padding: 9px 14px; border-radius: 20px;
+  background: var(--bg3); border: 1.5px solid var(--border);
+  font-size: 12px; font-weight: 500; color: var(--text2);
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.pill-multi .pill:hover { border-color: var(--border-light); color: var(--text1); }
+.pill-multi .pill.selected {
+  background: rgba(20,40,160,0.06); border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Device multi-check grouped grid */
+.device-groups { display: flex; flex-direction: column; gap: 14px; }
+.device-group-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--text3); text-transform: uppercase;
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.device-group-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.device-check-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.dev-check { position: relative; }
+.dev-check input { position: absolute; opacity: 0; pointer-events: none; }
+.dev-check label {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 13px; border-radius: 18px;
+  background: var(--bg3); border: 1.5px solid var(--border);
+  cursor: pointer; font-size: 12px; color: var(--text2);
+  transition: all 0.15s; font-family: inherit;
+}
+.dev-check label:hover { border-color: var(--border-light); color: var(--text1); }
+.dev-check input:checked + label {
+  background: rgba(20,40,160,0.08); border-color: var(--accent);
+  color: var(--accent); font-weight: 500;
+}
+.device-count-hint {
+  font-size: 11px; color: var(--text3); margin-top: 10px;
+}
+.device-count-hint strong { color: var(--accent); font-weight: 600; }
+
+/* Selection summary strip before Run button */
+.selection-summary {
+  margin-top: 24px; padding: 14px 16px;
+  background: rgba(20,40,160,0.04);
+  border: 1px solid rgba(20,40,160,0.15);
+  border-radius: var(--radius-sm);
+  font-size: 12px; color: var(--text2); line-height: 1.6;
+}
+.selection-summary.hidden { display: none; }
+.selection-summary strong { color: var(--accent); font-weight: 600; }
+
 /* Value tags */
 .value-tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .value-tag {
@@ -457,10 +537,9 @@ select.country-select option { background: #ffffff; color: var(--text1); }
 
 /* Optional panels */
 .optional-panels {
-  display: grid; grid-template-columns: 1fr 1fr;
+  display: grid; grid-template-columns: 1fr;
   gap: 16px; margin-bottom: 24px;
 }
-@media (max-width: 720px) { .optional-panels { grid-template-columns: 1fr; } }
 .opt-panel {
   background: var(--card); border: 1px solid var(--border);
   border-radius: 16px; overflow: hidden;
@@ -635,37 +714,40 @@ select.country-select option { background: #ffffff; color: var(--text1); }
 <!-- MAIN -->
 <main>
   <div class="page-intro fade-in">
-    <h1>3가지 선택으로<br><span>완성되는 마케팅 시나리오</span></h1>
-    <p>역할 · 국가 · 가치 태그 3가지만 고르면 AI가 27개 DB에서 최적의 스토리를 찾고, 현지화부터 채널 확장까지 이어서 만들어줍니다.</p>
+    <h1>어떤 시나리오가 맞을지<br><span>문답으로 찾아드릴게요</span></h1>
+    <p>5단계 질문에 답하면 AI가 27개 시나리오 중 가장 적합한 TOP 3를 선별하고, 현지화·채널 확장까지 자동으로 이어줍니다. 모든 시나리오를 직접 둘러보고 싶다면 <a href="./dashboard.html" style="color:var(--accent); text-decoration:underline;">📋 대시보드</a>에서 확인하세요.</p>
   </div>
 
-  <!-- STEP FORM -->
+  <!-- WIZARD FORM -->
   <div class="step-form fade-in">
-    <div class="step-row">
-      <!-- STEP 1 -->
-      <div class="step-block">
-        <div class="step-num">Step 1</div>
-        <div class="step-label">담당 채널이 뭔가요?</div>
-        <div class="role-btns">
-          <button class="role-btn" data-role="retail" onclick="selectRole(this)">
-            <span class="icon">🏪</span>
-            <div><div class="name">리테일</div><div class="desc">오프라인 매장 · 체험존</div></div>
-          </button>
-          <button class="role-btn" data-role="dotcom" onclick="selectRole(this)">
-            <span class="icon">🛒</span>
-            <div><div class="name">닷컴</div><div class="desc">온라인 스토어 · D2C</div></div>
-          </button>
-          <button class="role-btn" data-role="brand" onclick="selectRole(this)">
-            <span class="icon">📣</span>
-            <div><div class="name">브랜드</div><div class="desc">캠페인 · CRM · SNS</div></div>
-          </button>
-        </div>
-      </div>
 
-      <!-- STEP 2 -->
-      <div class="step-block">
-        <div class="step-num">Step 2</div>
-        <div class="step-label">어느 국가/지역인가요?</div>
+    <!-- STEP 1: 담당 채널 -->
+    <div class="wizard-step">
+      <div class="step-num">Step 1 of 5</div>
+      <div class="step-label">담당 채널이 뭔가요?</div>
+      <div class="step-hint">시나리오 톤과 채널 결과물이 달라집니다.</div>
+      <div class="role-btns" style="flex-direction: row; flex-wrap: wrap;">
+        <button class="role-btn" data-role="retail" onclick="selectRole(this)" style="flex:1; min-width:180px;">
+          <span class="icon">🏪</span>
+          <div><div class="name">리테일</div><div class="desc">오프라인 매장 · 체험존</div></div>
+        </button>
+        <button class="role-btn" data-role="dotcom" onclick="selectRole(this)" style="flex:1; min-width:180px;">
+          <span class="icon">🛒</span>
+          <div><div class="name">닷컴</div><div class="desc">온라인 스토어 · D2C</div></div>
+        </button>
+        <button class="role-btn" data-role="brand" onclick="selectRole(this)" style="flex:1; min-width:180px;">
+          <span class="icon">📣</span>
+          <div><div class="name">브랜드</div><div class="desc">캠페인 · CRM · SNS</div></div>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2: 국가·도시 -->
+    <div class="wizard-step">
+      <div class="step-num">Step 2 of 5</div>
+      <div class="step-label">대상 국가·지역은?</div>
+      <div class="step-hint">현지 문화·기후·주거 문화가 시나리오에 반영됩니다.</div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
         <select class="country-select" id="country-select">
           <option value="">국가 선택...</option>
           <option value="KR">🇰🇷 한국</option>
@@ -681,28 +763,148 @@ select.country-select option { background: #ffffff; color: var(--text1); }
           <option value="SG">🇸🇬 싱가포르</option>
           <option value="SE">🇸🇪 스웨덴</option>
         </select>
-        <br>
-        <div class="step-label" style="margin-top:14px;">세부 도시 (선택)</div>
-        <input type="text" class="input-field" id="city-input" placeholder="예: 서울 강남, New York…" style="font-family:inherit; font-size:13px;">
+        <input type="text" class="input-field" id="city-input" placeholder="세부 도시 (선택) 예: 서울 강남" style="font-family:inherit; font-size:13px;">
+      </div>
+    </div>
+
+    <!-- STEP 3: 고객 프로필 -->
+    <div class="wizard-step">
+      <div class="step-num">Step 3 of 5</div>
+      <div class="step-label">대상 고객은 어떤 분인가요?</div>
+      <div class="step-hint">거주 형태와 가족 구성으로 시나리오의 생활 맥락이 구체화됩니다.</div>
+
+      <div style="margin-bottom: 14px;">
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px; font-weight:500;">거주 형태</div>
+        <div class="pill-row" id="home-pills">
+          <button class="pill-radio" data-val="apartment">🏙 아파트</button>
+          <button class="pill-radio" data-val="house">🏡 단독주택</button>
+          <button class="pill-radio" data-val="villa">🏘 빌라·연립</button>
+          <button class="pill-radio" data-val="studio">🛋 원룸·스튜디오</button>
+          <button class="pill-radio" data-val="officetel">🏢 오피스텔</button>
+        </div>
       </div>
 
-      <!-- STEP 3 -->
-      <div class="step-block">
-        <div class="step-num">Step 3</div>
-        <div class="step-label">어떤 고객 가치에 집중할까요? (최대 2개)</div>
+      <div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px; font-weight:500;">가족 구성 (복수 선택 가능)</div>
+        <div class="pill-multi" id="family-pills">
+          <button class="pill" data-val="single">👤 1인 가구</button>
+          <button class="pill" data-val="couple">💑 커플·부부</button>
+          <button class="pill" data-val="kids">👶 영유아·어린이</button>
+          <button class="pill" data-val="teens">🎒 청소년</button>
+          <button class="pill" data-val="senior">👵 시니어</button>
+          <button class="pill" data-val="pet">🐾 반려동물</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: 보유 기기 -->
+    <div class="wizard-step">
+      <div class="step-num">Step 4 of 5</div>
+      <div class="step-label">보유하거나 주력으로 제안할 기기는? (복수 선택)</div>
+      <div class="step-hint">선택한 기기들을 중심으로 시나리오와 구매 유도가 짜입니다.</div>
+
+      <div class="device-groups" id="device-groups">
+        <div>
+          <div class="device-group-title">🛋 리빙룸·엔터테인먼트</div>
+          <div class="device-check-row">
+            <div class="dev-check"><input type="checkbox" id="dev-tv" value="TV"><label for="dev-tv">TV</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-soundbar" value="사운드바"><label for="dev-soundbar">사운드바</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-speaker" value="스피커"><label for="dev-speaker">스피커</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-projector" value="프로젝터"><label for="dev-projector">프로젝터</label></div>
+          </div>
+        </div>
+        <div>
+          <div class="device-group-title">🍳 주방 가전</div>
+          <div class="device-check-row">
+            <div class="dev-check"><input type="checkbox" id="dev-fridge" value="냉장고"><label for="dev-fridge">냉장고</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-oven" value="오븐·인덕션"><label for="dev-oven">오븐·인덕션</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-dishwasher" value="식기세척기"><label for="dev-dishwasher">식기세척기</label></div>
+          </div>
+        </div>
+        <div>
+          <div class="device-group-title">🧺 세탁·청결</div>
+          <div class="device-check-row">
+            <div class="dev-check"><input type="checkbox" id="dev-washer" value="세탁기"><label for="dev-washer">세탁기</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-dryer" value="건조기"><label for="dev-dryer">건조기</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-vacuum" value="로봇청소기"><label for="dev-vacuum">로봇청소기</label></div>
+          </div>
+        </div>
+        <div>
+          <div class="device-group-title">🌡 공조·공기질</div>
+          <div class="device-check-row">
+            <div class="dev-check"><input type="checkbox" id="dev-ac" value="에어컨"><label for="dev-ac">에어컨</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-purifier" value="공기청정기"><label for="dev-purifier">공기청정기</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-airsensor" value="공기질 센서"><label for="dev-airsensor">공기질 센서</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-heater" value="히터"><label for="dev-heater">히터</label></div>
+          </div>
+        </div>
+        <div>
+          <div class="device-group-title">💡 조명·센서</div>
+          <div class="device-check-row">
+            <div class="dev-check"><input type="checkbox" id="dev-light" value="조명"><label for="dev-light">조명</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-motion" value="모션센서"><label for="dev-motion">모션센서</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-plug" value="스마트 플러그"><label for="dev-plug">스마트 플러그</label></div>
+          </div>
+        </div>
+        <div>
+          <div class="device-group-title">🔒 보안</div>
+          <div class="device-check-row">
+            <div class="dev-check"><input type="checkbox" id="dev-doorlock" value="도어락"><label for="dev-doorlock">도어락</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-camera" value="보안카메라"><label for="dev-camera">보안카메라</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-doorsensor" value="창문·문 센서"><label for="dev-doorsensor">창문·문 센서</label></div>
+          </div>
+        </div>
+        <div>
+          <div class="device-group-title">📱 모바일·웨어러블</div>
+          <div class="device-check-row">
+            <div class="dev-check"><input type="checkbox" id="dev-phone" value="갤럭시 스마트폰"><label for="dev-phone">갤럭시 스마트폰</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-watch" value="갤럭시 워치"><label for="dev-watch">갤럭시 워치</label></div>
+            <div class="dev-check"><input type="checkbox" id="dev-tab" value="갤럭시 탭"><label for="dev-tab">갤럭시 탭</label></div>
+          </div>
+        </div>
+      </div>
+      <div class="device-count-hint"><strong id="device-count">0</strong>개 선택됨 · 3개 이상 선택 시 추천 정확도가 올라갑니다.</div>
+    </div>
+
+    <!-- STEP 5: 가치 태그 + 관심사 -->
+    <div class="wizard-step">
+      <div class="step-num">Step 5 of 5</div>
+      <div class="step-label">집중하려는 가치와 관심사는?</div>
+      <div class="step-hint">가치는 필수(최대 2개), 관심사는 선택적으로 복수 고를 수 있어요.</div>
+
+      <div style="margin-bottom: 14px;">
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px; font-weight:500;">핵심 가치 태그 <span style="color:var(--text3); font-weight:400;">(최대 2개, 필수)</span></div>
         <div class="value-tags">
           <button class="value-tag" data-val="care" onclick="toggleTag(this)">💛 Care</button>
           <button class="value-tag" data-val="play" onclick="toggleTag(this)">🎮 Play</button>
           <button class="value-tag" data-val="save" onclick="toggleTag(this)">💰 Save</button>
           <button class="value-tag" data-val="secure" onclick="toggleTag(this)">🛡 Secure</button>
         </div>
-        <div class="value-hint">최대 2개 선택 · 1개도 가능</div>
+      </div>
+
+      <div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px; font-weight:500;">세부 관심사 <span style="color:var(--text3); font-weight:400;">(선택 · 복수 가능)</span></div>
+        <div class="pill-multi" id="interest-pills">
+          <button class="pill" data-val="energy">⚡ 에너지 절약</button>
+          <button class="pill" data-val="kids_care">👶 육아·자녀 케어</button>
+          <button class="pill" data-val="senior_care">👵 시니어 케어</button>
+          <button class="pill" data-val="pet_care">🐾 반려동물 케어</button>
+          <button class="pill" data-val="health">💪 건강·웰니스</button>
+          <button class="pill" data-val="entertainment">🎬 홈 엔터테인먼트</button>
+          <button class="pill" data-val="security">🛡 홈 보안</button>
+          <button class="pill" data-val="cooking">🍳 요리·주방</button>
+          <button class="pill" data-val="sleep">😴 수면·릴렉스</button>
+          <button class="pill" data-val="cleaning">🧹 청소·위생</button>
+        </div>
       </div>
     </div>
 
+    <!-- Selection summary -->
+    <div class="selection-summary hidden" id="selection-summary"></div>
+
     <!-- RUN BUTTON -->
-    <button class="run-btn" id="run-btn" onclick="runCurator()">
-      <span>시나리오 찾기</span>
+    <button class="run-btn" id="run-btn" onclick="runCurator()" style="margin-top: 26px;">
+      <span>맞춤 시나리오 추천받기</span>
       <span class="arrow">→</span>
     </button>
   </div>
@@ -720,11 +922,6 @@ select.country-select option { background: #ffffff; color: var(--text1); }
           <div class="stage-icon">🌏</div>
           <div class="stage-name">A2 LOCALIZER</div>
           <div class="stage-status">대기</div>
-        </div>
-        <div class="stage" id="stage-a3">
-          <div class="stage-icon">🎯</div>
-          <div class="stage-name">A3 PERSONALIZER</div>
-          <div class="stage-status">선택</div>
         </div>
         <div class="stage" id="stage-a4">
           <div class="stage-icon">📣</div>
@@ -774,57 +971,6 @@ select.country-select option { background: #ffffff; color: var(--text1); }
     <!-- Optional panels -->
     <div class="optional-panels">
 
-      <!-- A3 Personalizer -->
-      <div class="opt-panel" id="panel-a3">
-        <button class="opt-panel-trigger" onclick="togglePanel('a3')">
-          <span class="opt-icon">🎯</span>
-          <div class="opt-info">
-            <div class="opt-name">초개인화</div>
-            <div class="opt-desc">A3 Personalizer · 고객 보유기기 + 거주형태로 개인화</div>
-          </div>
-          <span class="opt-toggle">›</span>
-        </button>
-        <div class="opt-body" id="body-a3">
-          <div class="opt-body-inner">
-            <div class="signal-grid">
-              <select class="signal-select" id="sig-home">
-                <option value="">거주형태</option>
-                <option value="apartment">아파트</option>
-                <option value="house">단독주택</option>
-                <option value="villa">빌라/연립</option>
-                <option value="studio">원룸/스튜디오</option>
-              </select>
-              <select class="signal-select" id="sig-family">
-                <option value="">가족구성</option>
-                <option value="single">1인 가구</option>
-                <option value="couple">2인 (커플)</option>
-                <option value="family_kids">가족 (자녀 있음)</option>
-                <option value="family_senior">가족 (시니어 있음)</option>
-                <option value="pet">반려동물 있음</option>
-              </select>
-              <select class="signal-select" id="sig-device">
-                <option value="">주요 보유기기</option>
-                <option value="tv_soundbar">TV + 사운드바</option>
-                <option value="washer_dryer">세탁기 + 건조기</option>
-                <option value="fridge_ac">냉장고 + 에어컨</option>
-                <option value="robot_vacuum">로봇청소기</option>
-                <option value="air_purifier">공기청정기</option>
-              </select>
-              <select class="signal-select" id="sig-interest">
-                <option value="">주요 관심사</option>
-                <option value="energy">에너지 절약</option>
-                <option value="kids_care">육아/자녀케어</option>
-                <option value="health">건강/웰니스</option>
-                <option value="entertainment">홈 엔터테인먼트</option>
-                <option value="security">홈 보안</option>
-              </select>
-            </div>
-            <button class="mini-btn" id="btn-a3" onclick="runPersonalizer()">개인화 시나리오 생성</button>
-            <div class="output-text hidden" id="output-a3"></div>
-          </div>
-        </div>
-      </div>
-
       <!-- A4 Expander -->
       <div class="opt-panel" id="panel-a4">
         <button class="opt-panel-trigger" onclick="togglePanel('a4')">
@@ -872,7 +1018,11 @@ const state = {
   selectedRole: null,
   selectedCountry: '',
   selectedCity: '',
-  selectedValues: [],
+  selectedHome: '',          // 거주 형태 (single-select radio)
+  selectedFamily: [],        // 가족 구성 (multi)
+  selectedDevices: [],       // 보유 기기 (multi-check)
+  selectedValues: [],        // 가치 태그 (max 2)
+  selectedInterests: [],     // 관심사 (multi)
   scenarios: [],
   topStories: [],
   selectedStory: null,
@@ -912,13 +1062,16 @@ function showModal() {
 
 // ─── SCENARIO LOADING ───
 async function loadScenarios() {
-  const base = 'https://raw.githubusercontent.com/dongcyun-AgentMster50/product-builder-lesson/main/references/';
   const results = [];
   for (let i = 1; i <= 27; i++) {
     const num = String(i).padStart(3, '0');
     try {
-      const res = await fetch(`${base}scenario_${num}.json`);
-      if (res.ok) results.push(await res.json());
+      const res = await fetch(`scenarios/db/scenario_${num}.json`);
+      if (!res.ok) continue;
+      const json = await res.json();
+      // Some files wrap content in { _meta, scenarios: [...] }
+      const s = Array.isArray(json.scenarios) ? json.scenarios[0] : json;
+      if (s) results.push(s);
     } catch(e) { /* skip if unavailable */ }
   }
   state.scenarios = results;
@@ -930,6 +1083,7 @@ function selectRole(btn) {
   document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   state.selectedRole = btn.dataset.role;
+  updateSummary();
 }
 
 function toggleTag(btn) {
@@ -942,7 +1096,90 @@ function toggleTag(btn) {
     btn.classList.add('selected');
     state.selectedValues.push(val);
   }
+  updateSummary();
 }
+
+// 거주 형태 (single-select pill radio)
+function bindPillRadio(containerId, stateKey) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.addEventListener('click', e => {
+    const btn = e.target.closest('.pill-radio');
+    if (!btn) return;
+    el.querySelectorAll('.pill-radio').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    state[stateKey] = btn.dataset.val;
+    updateSummary();
+  });
+}
+
+// 가족 구성·관심사 (multi pill)
+function bindPillMulti(containerId, stateKey) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.addEventListener('click', e => {
+    const btn = e.target.closest('.pill');
+    if (!btn) return;
+    const val = btn.dataset.val;
+    btn.classList.toggle('selected');
+    if (btn.classList.contains('selected')) state[stateKey].push(val);
+    else state[stateKey] = state[stateKey].filter(v => v !== val);
+    updateSummary();
+  });
+}
+
+// 보유 기기 multi-check
+function bindDeviceChecks() {
+  const el = document.getElementById('device-groups');
+  if (!el) return;
+  el.addEventListener('change', e => {
+    if (e.target.type !== 'checkbox') return;
+    const vals = [...el.querySelectorAll('input:checked')].map(i => i.value);
+    state.selectedDevices = vals;
+    document.getElementById('device-count').textContent = vals.length;
+    updateSummary();
+  });
+}
+
+// 선택 요약 표시 (사용자 신뢰감용)
+function updateSummary() {
+  const el = document.getElementById('selection-summary');
+  if (!el) return;
+  const parts = [];
+  const roleNames = { retail: '리테일', dotcom: '닷컴', brand: '브랜드' };
+  if (state.selectedRole) parts.push(`채널 <strong>${roleNames[state.selectedRole]}</strong>`);
+  const country = document.getElementById('country-select')?.value;
+  if (country) {
+    const countryLabel = document.getElementById('country-select').options[document.getElementById('country-select').selectedIndex].text;
+    const city = document.getElementById('city-input')?.value?.trim();
+    parts.push(`국가 <strong>${countryLabel}${city ? ' / ' + city : ''}</strong>`);
+  }
+  if (state.selectedHome) {
+    const homeLabel = { apartment: '아파트', house: '단독주택', villa: '빌라·연립', studio: '원룸·스튜디오', officetel: '오피스텔' };
+    parts.push(`거주 <strong>${homeLabel[state.selectedHome]}</strong>`);
+  }
+  if (state.selectedFamily.length) parts.push(`가족 <strong>${state.selectedFamily.length}개 항목</strong>`);
+  if (state.selectedDevices.length) parts.push(`기기 <strong>${state.selectedDevices.length}개</strong>`);
+  if (state.selectedValues.length) parts.push(`가치 <strong>${state.selectedValues.join(', ')}</strong>`);
+  if (state.selectedInterests.length) parts.push(`관심사 <strong>${state.selectedInterests.length}개</strong>`);
+
+  if (parts.length === 0) {
+    el.classList.add('hidden');
+  } else {
+    el.classList.remove('hidden');
+    el.innerHTML = '📋 현재 선택: ' + parts.join(' · ');
+  }
+}
+
+// Init pill bindings on load
+window.addEventListener('DOMContentLoaded', () => {
+  bindPillRadio('home-pills', 'selectedHome');
+  bindPillMulti('family-pills', 'selectedFamily');
+  bindPillMulti('interest-pills', 'selectedInterests');
+  bindDeviceChecks();
+  document.getElementById('country-select')?.addEventListener('change', updateSummary);
+  document.getElementById('city-input')?.addEventListener('input', updateSummary);
+});
 
 // ─── AI CALL ROUTER ───
 async function callAI(systemPrompt, userPrompt) {
@@ -1012,7 +1249,7 @@ function setStage(id, status) {
 async function runCurator() {
   if (!state.selectedRole) { showError('Step 1: 담당 채널을 선택해주세요.'); return; }
   if (!document.getElementById('country-select').value) { showError('Step 2: 국가를 선택해주세요.'); return; }
-  if (state.selectedValues.length === 0) { showError('Step 3: 가치 태그를 최소 1개 선택해주세요.'); return; }
+  if (state.selectedValues.length === 0) { showError('Step 5: 가치 태그를 최소 1개 선택해주세요.'); return; }
 
   state.selectedCountry = document.getElementById('country-select').value;
   state.selectedCity = document.getElementById('city-input').value.trim();
@@ -1028,11 +1265,19 @@ async function runCurator() {
     KR: '한국', US: '미국', JP: '일본', AU: '호주', IN: '인도',
     DE: '독일', UK: '영국', CN: '중국', BR: '브라질', MX: '멕시코', SG: '싱가포르', SE: '스웨덴'
   };
+  const homeLabel = { apartment: '아파트', house: '단독주택', villa: '빌라·연립', studio: '원룸·스튜디오', officetel: '오피스텔' };
+  const familyLabel = { single: '1인 가구', couple: '커플·부부', kids: '영유아·어린이', teens: '청소년', senior: '시니어', pet: '반려동물' };
+  const interestLabel = { energy: '에너지 절약', kids_care: '육아·자녀 케어', senior_care: '시니어 케어', pet_care: '반려동물 케어', health: '건강·웰니스', entertainment: '홈 엔터테인먼트', security: '홈 보안', cooking: '요리·주방', sleep: '수면·릴렉스', cleaning: '청소·위생' };
 
   const scenarioSummaries = state.scenarios.length > 0
     ? state.scenarios.map((s, i) => {
-        const d0 = s.depth_0 || s;
-        return `[${String(i+1).padStart(3,'0')}] ${d0.title || d0.scenario_title || '제목없음'} | 카테고리: ${d0.category || d0.life_category || '-'} | ${d0.thumbnail_summary || d0.summary || ''}`;
+        const d0 = s.depth_0 || {};
+        const d1 = s.depth_1 || {};
+        const title = d0.card_title || d1.title || '제목없음';
+        const cat = d0.category || '-';
+        const devices = (d1.device_icons || d1.devices_used || []).join('·') || '-';
+        const summary = (d1.description || d0.thumbnail_desc || '').slice(0, 80);
+        return `[${String(i+1).padStart(3,'0')}] ${title} | 카테고리: ${cat} | 기기: ${devices} | ${summary}`;
       }).join('\n')
     : `[001] 에너지 절약 루틴 | 카테고리: Save | 가족이 외출 시 SmartThings가 자동으로 에너지를 절약하는 시나리오
 [002] 아이 안전 케어 | 카테고리: Care | 어린 자녀를 둔 부모를 위한 홈 안전 자동화
@@ -1063,7 +1308,20 @@ async function runCurator() {
 [027] 에너지 리포트 | 카테고리: Save | 월간 에너지 사용 분석과 절약 팁 자동 제공`;
 
   const system = `당신은 SmartThings 마케팅 시나리오 큐레이터입니다.
-마케터의 3가지 입력(채널/국가/가치태그)을 바탕으로 27개 시나리오 DB에서 가장 적합한 TOP 3를 선택합니다.
+마케터가 답한 5단계 문답(채널·국가·고객 프로필·보유 기기·가치/관심사)을 **모두 균형 있게 반영**하여 27개 시나리오 DB에서 가장 적합한 TOP 3를 선택하세요.
+
+[선택 기준 — 가중치]
+1. 가치 태그와의 직접 매칭 (필수)
+2. 보유 기기 중복도: 시나리오에 등장하는 기기와 사용자가 선택한 기기의 교집합 크기
+3. 고객 프로필 적합도: 거주 형태·가족 구성이 시나리오 맥락과 자연스러운가
+4. 관심사 가산점: 선택된 관심사와 시나리오 카테고리 간 연결
+5. 채널·국가 톤 보정: 예) 리테일은 체험 가능한 즉각 효과, 닷컴은 구매 전환, 브랜드는 스토리성
+
+[필수 제약]
+- 사용자가 기기를 여러 개 선택했다면 그 기기가 실제로 등장·연동되는 시나리오 우선
+- 가족 구성에 '영유아·어린이'가 있으면 케어/안전 카테고리, '시니어'는 시니어 케어·낙상 감지 등에 가중치
+- match_score는 숫자로만 (실제 적합도 기반, 무조건 높게 주지 말 것)
+- why는 구체적이어야 하며 "${`사용자가 선택한 항목들`}"을 반드시 인용
 
 반드시 JSON 형식으로만 응답하세요:
 {
@@ -1073,24 +1331,29 @@ async function runCurator() {
       "scenario_id": "XXX",
       "title": "시나리오 제목",
       "thumbnail": "2-3문장 스토리 요약",
-      "match_score": 95,
-      "why": "이 시나리오를 선택한 이유 (채널/국가/가치태그와의 연관성)",
+      "match_score": 87,
+      "why": "이 시나리오를 선택한 이유 — 사용자가 선택한 구체적 기기·프로필·가치와의 연관성을 인용",
+      "matched_devices": ["사용자 선택 기기 중 이 시나리오와 겹치는 것들"],
       "value_tags": ["Care", "Save"],
-      "key_devices": ["에어컨", "공기청정기"]
+      "key_devices": ["시나리오 핵심 기기"]
     }
   ],
-  "curation_note": "큐레이션 전략 한 줄 메모"
+  "curation_note": "TOP 3를 고른 전략 한 줄 메모 (사용자 입력 패턴을 반영)"
 }`;
 
-  const user = `마케터 입력:
+  const user = `마케터·고객 프로필 입력:
 - 담당 채널: ${roleNames[state.selectedRole]}
 - 국가: ${countryNames[state.selectedCountry]}${state.selectedCity ? ' / ' + state.selectedCity : ''}
-- 가치 태그: ${state.selectedValues.join(', ')}
+- 거주 형태: ${state.selectedHome ? homeLabel[state.selectedHome] : '미입력'}
+- 가족 구성: ${state.selectedFamily.length ? state.selectedFamily.map(f => familyLabel[f] || f).join(', ') : '미입력'}
+- 보유·주력 기기 (${state.selectedDevices.length}개): ${state.selectedDevices.length ? state.selectedDevices.join(', ') : '미입력'}
+- 핵심 가치 태그: ${state.selectedValues.join(', ')}
+- 세부 관심사: ${state.selectedInterests.length ? state.selectedInterests.map(i => interestLabel[i] || i).join(', ') : '없음'}
 
 시나리오 DB (27개):
 ${scenarioSummaries}
 
-위 DB에서 이 마케터에게 가장 적합한 TOP 3 시나리오를 선택해주세요.`;
+위 DB에서 이 사용자에게 가장 적합한 TOP 3 시나리오를 [선택 기준 — 가중치] 순서대로 반영하여 선정해주세요.`;
 
   try {
     const raw = await callAI(system, user);
@@ -1172,24 +1435,33 @@ async function runLocalizer(story) {
     KR: '한국', US: '미국', JP: '일본', AU: '호주', IN: '인도',
     DE: '독일', UK: '영국', CN: '중국', BR: '브라질', MX: '멕시코', SG: '싱가포르', SE: '스웨덴'
   };
+  const homeLabel = { apartment: '아파트', house: '단독주택', villa: '빌라·연립', studio: '원룸·스튜디오', officetel: '오피스텔' };
+  const familyLabel = { single: '1인 가구', couple: '커플·부부', kids: '영유아·어린이', teens: '청소년', senior: '시니어', pet: '반려동물' };
 
-  const system = `당신은 SmartThings 시나리오 현지화 전문가(A2 Localizer)입니다.
-원문 시나리오를 받아 해당 국가/도시의 생활문화, 기후, 주거형태, 언어 톤에 맞게 자연스럽게 현지화합니다.
+  const system = `당신은 SmartThings 시나리오 현지화·개인화 에이전트(A2 Localizer)입니다.
+원문 시나리오를 받아 해당 국가/도시의 생활 문화에 맞게 현지화하면서, 위저드에서 수집한 고객 프로필(거주·가족·보유 기기·관심사)도 함께 녹여냅니다.
 
 규칙:
-- 원문의 스마트홈 가치와 SmartThings 제품은 유지
-- 현지 문화 앵커(명절, 기후 특성, 주거 문화)를 반드시 1~2개 포함
+- 원문의 스마트홈 가치와 SmartThings 기능은 유지
+- 현지 문화 앵커(명절·기후·주거 문화 등) 최소 1개 포함
+- 고객이 선택한 기기를 **실제 시나리오 안에 직접 등장**시키기 (예: "퇴근길에 갤럭시 워치에서 조명을 켜고…")
+- 가족 구성(영유아·시니어·반려동물 등)이 있으면 자연스럽게 맥락에 반영
 - ${state.selectedCountry === 'KR' ? '한국어' : 'English'}로 출력
-- 마케팅 시나리오 형식으로, 자연스럽고 설득력 있게
-- 250~350자 분량`;
+- 300~400자 분량, 설득력 있는 마케팅 톤`;
 
-  const user = `시나리오: ${story.title}
+  const user = `원문 시나리오: ${story.title}
 요약: ${story.thumbnail}
+
 대상 국가: ${countryNames[state.selectedCountry]}${state.selectedCity ? ' / ' + state.selectedCity : ''}
 채널: ${state.selectedRole}
 가치 태그: ${state.selectedValues.join(', ')}
 
-이 시나리오를 현지화해주세요.`;
+[고객 프로필 — 시나리오에 반영]
+- 거주 형태: ${state.selectedHome ? homeLabel[state.selectedHome] : '미입력'}
+- 가족 구성: ${state.selectedFamily.length ? state.selectedFamily.map(f => familyLabel[f] || f).join(', ') : '미입력'}
+- 보유 기기: ${state.selectedDevices.length ? state.selectedDevices.join(', ') : '미입력'}
+
+이 시나리오를 위 프로필을 반영해 현지화하고, 선택한 기기를 시나리오 안에 직접 등장시켜 개인화해주세요.`;
 
   try {
     const result = await callAI(system, user);
@@ -1200,52 +1472,6 @@ async function runLocalizer(story) {
     setStage('a2', 'error');
     document.getElementById('localized-content').textContent = '현지화 오류: ' + e.message;
   }
-}
-
-// ─── A3: PERSONALIZER ───
-async function runPersonalizer() {
-  const btn = document.getElementById('btn-a3');
-  btn.disabled = true; btn.textContent = '생성 중...';
-  setStage('a3', 'active');
-
-  const signals = {
-    home: document.getElementById('sig-home').value,
-    family: document.getElementById('sig-family').value,
-    device: document.getElementById('sig-device').value,
-    interest: document.getElementById('sig-interest').value
-  };
-
-  const system = `당신은 SmartThings 개인화 에이전트(A3 Personalizer)입니다.
-현지화된 시나리오와 고객 보유 신호를 결합해 "이 고객만을 위한" 맞춤 시나리오를 생성합니다.
-
-- 보유기기/거주형태/가족구성/관심사를 시나리오에 녹여내야 합니다
-- 고객이 "이건 나 얘기네"라고 느낄 정도로 구체적으로
-- 실제 SmartThings 설정 스텝 2~3개를 포함
-- ${state.selectedCountry === 'KR' ? '한국어' : 'English'}로 출력`;
-
-  const user = `현지화 시나리오:
-${state.localizedStory}
-
-고객 신호:
-- 거주형태: ${signals.home || '미입력'}
-- 가족구성: ${signals.family || '미입력'}
-- 주요 보유기기: ${signals.device || '미입력'}
-- 주요 관심사: ${signals.interest || '미입력'}
-
-이 고객만의 개인화 시나리오를 만들어주세요. SmartThings 실제 설정 스텝도 포함해주세요.`;
-
-  try {
-    const result = await callAI(system, user);
-    const out = document.getElementById('output-a3');
-    out.textContent = result;
-    out.classList.remove('hidden');
-    setStage('a3', 'done');
-    checkActivation();
-  } catch(e) {
-    setStage('a3', 'error');
-    showError('A3 오류: ' + e.message);
-  }
-  btn.disabled = false; btn.textContent = '개인화 시나리오 생성';
 }
 
 // ─── A4: EXPANDER ───
@@ -1301,9 +1527,8 @@ ${requestedChannels}
 
 // ─── A5: ACTIVATOR ───
 function checkActivation() {
-  const hasA3 = !document.getElementById('output-a3').classList.contains('hidden');
   const hasA4 = !document.getElementById('output-a4').classList.contains('hidden');
-  if (hasA3 || hasA4) showActivation();
+  if (hasA4 || state.localizedStory) showActivation();
 }
 
 function showActivation() {
@@ -1312,13 +1537,10 @@ function showActivation() {
   panel.style.display = 'block';
 
   const outputs = [];
-  if (!document.getElementById('output-a3').classList.contains('hidden')) {
-    outputs.push({ icon: '📄', name: 'persona_scenario.txt', desc: '개인화 시나리오', key: 'a3' });
-  }
+  outputs.push({ icon: '📄', name: 'personalized_scenario.txt', desc: '개인화·현지화 시나리오', key: 'local' });
   if (!document.getElementById('output-a4').classList.contains('hidden')) {
     outputs.push({ icon: '📣', name: 'channel_assets.txt', desc: '채널별 마케팅 결과물', key: 'a4' });
   }
-  outputs.push({ icon: '📋', name: 'localized_story.txt', desc: '현지화 확정 시나리오', key: 'local' });
 
   const container = document.getElementById('activation-outputs');
   container.innerHTML = outputs.map(o => `
@@ -1345,7 +1567,6 @@ function showActivation() {
 function downloadOutput(key, filename) {
   let content = '';
   if (key === 'local') content = state.localizedStory;
-  else if (key === 'a3') content = document.getElementById('output-a3').textContent;
   else if (key === 'a4') content = document.getElementById('output-a4').textContent;
 
   const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -1356,9 +1577,7 @@ function downloadOutput(key, filename) {
 
 function copyAll() {
   const parts = [];
-  parts.push('=== 현지화 시나리오 ===\n' + state.localizedStory);
-  const a3 = document.getElementById('output-a3');
-  if (!a3.classList.contains('hidden')) parts.push('\n\n=== 개인화 시나리오 ===\n' + a3.textContent);
+  parts.push('=== 개인화·현지화 시나리오 ===\n' + state.localizedStory);
   const a4 = document.getElementById('output-a4');
   if (!a4.classList.contains('hidden')) parts.push('\n\n=== 채널 결과물 ===\n' + a4.textContent);
 
@@ -1381,14 +1600,13 @@ function restart() {
   document.getElementById('story-workspace').style.display = 'none';
   document.getElementById('curator-results').scrollIntoView({ behavior: 'smooth' });
   document.querySelectorAll('.story-card').forEach(c => c.classList.remove('selected'));
-  ['a3','a4'].forEach(id => {
+  ['a4'].forEach(id => {
     document.getElementById(`panel-${id}`).classList.remove('open');
     document.getElementById(`output-${id}`).classList.add('hidden');
     document.getElementById(`output-${id}`).textContent = '';
   });
   document.getElementById('panel-a5').style.display = 'none';
-  ['a2','a3','a4','a5'].forEach(id => setStage(id, 'idle'));
-  document.querySelector(`#stage-a3 .stage-status`).textContent = '선택';
+  ['a2','a4','a5'].forEach(id => setStage(id, 'idle'));
   document.querySelector(`#stage-a4 .stage-status`).textContent = '선택';
   document.querySelector(`#stage-a5 .stage-status`).textContent = '선택';
 }
