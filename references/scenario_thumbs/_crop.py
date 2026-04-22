@@ -1,6 +1,7 @@
 """
-Crop the first lifestyle thumbnail from each scenario's depth_1 screenshot.
-Maps folder name -> scenario_XXX.jpg.
+Downscale each scenario's depth_1 screenshot to a web-friendly size.
+No cropping — the full original layout (3 story rows with image + script)
+must remain intact and visible.
 """
 import re
 from pathlib import Path
@@ -21,17 +22,8 @@ FOLDER_MAP = {
     "26ai": 26, "27": 27,
 }
 
-# depth_1 layout is a 2184px-wide tablet capture with a roughly fixed-height
-# header (title + meta + desc + device icons ≈ 540-600px).
-# First lifestyle image occupies a fixed pixel band from the top, NOT a ratio.
-# x is ratio-based (story card spans ~5% to ~50% of width).
-CROP_X = (0.065, 0.475)                # ratio of image width (narrower to avoid right-side text)
-CROP_Y_PX_AT_W2184 = (640, 1400)       # pixel band at 2184px-wide reference
-# For images at a different width, scale y pixel band proportionally.
-REF_W = 2184
-
-# Output thumbnail size (2x for retina, aspect ~16:10)
-THUMB_W, THUMB_H = 1200, 750
+MAX_WIDTH = 1080  # Downscale to keep file size reasonable while preserving legibility
+JPEG_QUALITY = 85
 
 
 def first_image(folder: Path) -> Path | None:
@@ -47,32 +39,13 @@ def process(folder_name: str, scenario_no: int) -> str:
         return f"[SKIP] {folder_name}: no image"
     with Image.open(src) as im:
         w, h = im.size
-        # Scale pixel band by image width (2184 reference)
-        scale_y = w / REF_W
-        y0 = int(CROP_Y_PX_AT_W2184[0] * scale_y)
-        y1 = int(CROP_Y_PX_AT_W2184[1] * scale_y)
-        # Clamp to image height
-        y1 = min(y1, h - 1)
-        box = (
-            int(w * CROP_X[0]),
-            y0,
-            int(w * CROP_X[1]),
-            y1,
-        )
-        cropped = im.crop(box)
-        # Fit into THUMB_W x THUMB_H preserving aspect (cover)
-        tw, th = THUMB_W, THUMB_H
-        cw, ch = cropped.size
-        scale = max(tw / cw, th / ch)
-        new_size = (int(cw * scale), int(ch * scale))
-        resized = cropped.resize(new_size, Image.LANCZOS)
-        # Center crop to final size
-        left = (new_size[0] - tw) // 2
-        top = (new_size[1] - th) // 2
-        final = resized.crop((left, top, left + tw, top + th))
+        if w > MAX_WIDTH:
+            new_w = MAX_WIDTH
+            new_h = int(h * MAX_WIDTH / w)
+            im = im.resize((new_w, new_h), Image.LANCZOS)
         out_path = OUT / f"scenario_{scenario_no:03d}.jpg"
-        final.convert("RGB").save(out_path, "JPEG", quality=86, optimize=True)
-        return f"[OK]   {folder_name} -> {out_path.name} (from {src.name}, src {w}x{h})"
+        im.convert("RGB").save(out_path, "JPEG", quality=JPEG_QUALITY, optimize=True)
+        return f"[OK]   {folder_name} -> {out_path.name} (src {w}x{h} -> {im.size[0]}x{im.size[1]})"
 
 
 if __name__ == "__main__":

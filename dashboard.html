@@ -141,17 +141,15 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
   border-color: var(--border-light);
 }
 .scenario-thumb {
-  width: 100%; aspect-ratio: 16 / 10;
+  width: 100%;
   background: #f2f4f8; position: relative; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
+  max-height: 720px; /* 매우 긴 스크린샷은 상단부터 노출해 모든 스토리가 우선 보이게 */
 }
 .scenario-thumb img {
-  max-width: 100%; max-height: 100%;
-  width: auto; height: auto;
-  object-fit: contain; display: block;
-  transition: transform 0.35s ease;
+  width: 100%;
+  height: auto;
+  display: block;
 }
-.scenario-card:hover .scenario-thumb img { transform: scale(1.02); }
 .scenario-thumb .fallback {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
@@ -229,14 +227,15 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
   to { opacity: 1; transform: translateY(0); }
 }
 .modal-hero {
-  width: 100%; aspect-ratio: 16 / 10; background: #f2f4f8;
+  width: 100%; background: #f2f4f8;
   overflow: hidden; position: relative;
-  display: flex; align-items: center; justify-content: center;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 .modal-hero img {
-  max-width: 100%; max-height: 100%;
-  width: auto; height: auto;
-  object-fit: contain; display: block;
+  width: 100%;
+  height: auto;
+  display: block;
 }
 .modal-close {
   position: absolute; top: 14px; right: 14px;
