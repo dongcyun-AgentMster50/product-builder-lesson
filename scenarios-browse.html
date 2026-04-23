@@ -4,12 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>27개 기본 시나리오 사전</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   background: #f7f8fa;
   color: #1a1c20;
-  font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "맑은 고딕", sans-serif;
+  font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
   line-height: 1.55;
   min-height: 100vh;
   padding: 24px 20px 60px;
@@ -328,6 +331,20 @@ body {
   padding: 40px 20px;
   font-size: 13px;
 }
+
+.scenario-card.expanded .card-body { max-height: none; }
+.story-chat-toggle {
+  margin-top: 8px;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 14px;
+  background: rgba(26,58,143,0.08); color: #1a3a8f;
+  border: none; cursor: pointer; font-size: 11px; font-weight: 600;
+  font-family: inherit; transition: all 0.15s;
+}
+.story-chat-toggle:hover { background: rgba(26,58,143,0.15); }
+.story-chat-toggle.active { background: #1a3a8f; color: #fff; }
+.story-chat-mount { display: none; }
+.story-chat-mount.open { display: block; }
 </style>
 </head>
 <body>
@@ -366,6 +383,7 @@ body {
   <div class="loading-note">27개 시나리오를 불러오는 중...</div>
 </div>
 
+<script src="./js/story-chat.js"></script>
 <script>
 const TOTAL = 27;
 const state = {
@@ -430,6 +448,35 @@ function render() {
   grid.querySelectorAll(".card-header").forEach(h => {
     h.addEventListener("click", () => h.closest(".scenario-card").classList.toggle("expanded"));
   });
+  // 스토리 채팅 토글 바인딩
+  grid.querySelectorAll("[data-chat-toggle]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      const id = btn.dataset.chatToggle;
+      const mount = document.getElementById(id);
+      if (!mount) return;
+      const isOpen = mount.classList.toggle("open");
+      btn.classList.toggle("active", isOpen);
+      btn.textContent = isOpen ? "✕ 채팅 닫기" : "💬 이 스토리로 더 파보기";
+      if (isOpen && !mount.dataset.mounted) {
+        const scenarioNo = Number(btn.dataset.scenarioNo);
+        const storyNo = Number(btn.dataset.storyNo);
+        const sc = state.scenarios.find(x => x._no === scenarioNo);
+        const d0 = sc?.depth_0 || {};
+        const d1 = sc?.depth_1 || {};
+        const story = (d1.stories || []).find(x => (x.story_no || 0) === storyNo) || (d1.stories || [])[0];
+        if (story && window.StoryChat) {
+          window.StoryChat.mount({
+            container: mount,
+            scenario: { title: d1.title || d0.card_title, category: d0.category },
+            story,
+            theme: "light",
+          });
+          mount.dataset.mounted = "1";
+        }
+      }
+    });
+  });
 }
 
 function cardHTML(s) {
@@ -472,13 +519,18 @@ function cardHTML(s) {
           ${stories.length ? `
             <div class="section-title">하위 스토리 ${stories.length}개</div>
             <ul class="story-list">
-              ${stories.map((st, i) => `
-                <li class="story-item" data-num="${st.story_no || (i+1)}">
+              ${stories.map((st, i) => {
+                const sNo = st.story_no || (i+1);
+                const chatId = `bchat-${s._no}-${sNo}`;
+                return `
+                <li class="story-item" data-num="${sNo}" data-story-no="${sNo}">
                   <div class="story-title">${st.title || ""}</div>
                   <div class="story-content">${st.content || ""}</div>
                   ${(st.usage_notes || []).map(n => `<div class="story-note">ℹ ${n}</div>`).join("")}
+                  <button type="button" class="story-chat-toggle" data-chat-toggle="${chatId}" data-scenario-no="${s._no}" data-story-no="${sNo}">💬 이 스토리로 더 파보기</button>
+                  <div class="story-chat-mount" id="${chatId}"></div>
                 </li>
-              `).join("")}
+              `;}).join("")}
             </ul>` : ""}
 
           ${products.length ? `

@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartThings 27 시나리오 대시보드</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
 <style>
 :root {
   --bg0: #f5f7fa;
@@ -41,7 +43,8 @@
 body {
   background: var(--bg0);
   color: var(--text1);
-  font-family: 'IBM Plex Sans KR', -apple-system, 'Malgun Gothic', sans-serif;
+  font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
 }
 
@@ -143,11 +146,13 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
 .scenario-thumb {
   width: 100%;
   background: #f2f4f8; position: relative; overflow: hidden;
-  max-height: 720px; /* 매우 긴 스크린샷은 상단부터 노출해 모든 스토리가 우선 보이게 */
+  height: 320px; /* 좌측 일러스트 컬럼 — 첫 1~2개 이미지가 카드에 보이도록 */
 }
 .scenario-thumb img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
   display: block;
 }
 .scenario-thumb .fallback {
@@ -206,7 +211,7 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
   font-weight: 600; font-size: 10px;
 }
 
-/* ─── MODAL ─── */
+/* ─── MODAL — 사이드 바이 사이드 레이아웃 ─── */
 #modal {
   position: fixed; inset: 0; z-index: 1000;
   background: rgba(11,16,39,0.6);
@@ -217,20 +222,30 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
 #modal.show { display: flex; }
 .modal-box {
   background: #fff; border-radius: 20px;
-  max-width: 860px; width: 100%;
+  max-width: 1120px; width: 100%;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
   animation: modalIn 0.3s ease;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  position: relative;
+}
+@media (max-width: 860px) {
+  .modal-box { grid-template-columns: 1fr; }
 }
 @keyframes modalIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .modal-hero {
-  width: 100%; background: #f2f4f8;
-  overflow: hidden; position: relative;
-  max-height: 80vh;
+  background: #f2f4f8;
   overflow-y: auto;
+  max-height: 80vh;
+  position: relative;
+  border-right: 1px solid var(--border);
+}
+@media (max-width: 860px) {
+  .modal-hero { max-height: 360px; border-right: none; border-bottom: 1px solid var(--border); }
 }
 .modal-hero img {
   width: 100%;
@@ -243,10 +258,17 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
   background: rgba(11,16,39,0.7); color: #fff;
   border: none; cursor: pointer; font-size: 20px;
   display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s;
+  transition: all 0.15s; z-index: 10;
 }
 .modal-close:hover { background: rgba(11,16,39,0.9); transform: scale(1.05); }
-.modal-content { padding: 28px 32px 36px; }
+.modal-content {
+  padding: 28px 32px 36px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+@media (max-width: 860px) {
+  .modal-content { max-height: none; }
+}
 .modal-cat {
   display: inline-block;
   font-size: 11px; font-weight: 600;
@@ -308,6 +330,18 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
 .story-content {
   font-size: 13px; line-height: 1.7; color: var(--text2);
 }
+.story-chat-toggle {
+  margin-top: 12px;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 16px;
+  background: rgba(20,40,160,0.08); color: var(--accent);
+  border: none; cursor: pointer; font-size: 11.5px; font-weight: 600;
+  font-family: inherit; transition: all 0.15s;
+}
+.story-chat-toggle:hover { background: rgba(20,40,160,0.15); }
+.story-chat-toggle.active { background: var(--accent); color: #fff; }
+.story-chat-mount { display: none; }
+.story-chat-mount.open { display: block; }
 .story-note {
   font-size: 11px; color: var(--text3);
   margin-top: 10px; padding: 8px 12px;
@@ -380,6 +414,7 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
   <div class="modal-box" id="modal-box"></div>
 </div>
 
+<script src="./js/story-chat.js"></script>
 <script>
 const TOTAL = 27;
 const THUMB_PATH = (n) => `references/scenario_thumbs/scenario_${String(n).padStart(3,'0')}.jpg`;
@@ -510,7 +545,7 @@ function openModal(no) {
       ${stories.length ? `
         <div class="section-label">스토리 ${stories.length}개</div>
         <div class="story-list">
-          ${stories.map(storyHTML).join('')}
+          ${stories.map(st => storyHTML(st, no)).join('')}
         </div>
       ` : ''}
 
@@ -528,18 +563,45 @@ function openModal(no) {
   `;
   document.getElementById('modal').classList.add('show');
   document.body.style.overflow = 'hidden';
+
+  // 스토리 채팅 토글 바인딩
+  document.querySelectorAll('[data-chat-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.chatToggle;
+      const mount = document.getElementById(id);
+      if (!mount) return;
+      const isOpen = mount.classList.toggle('open');
+      btn.classList.toggle('active', isOpen);
+      btn.textContent = isOpen ? '✕ 채팅 닫기' : '💬 이 스토리로 더 파보기';
+      if (isOpen && !mount.dataset.mounted) {
+        const storyItem = btn.closest('.story-item');
+        const storyNo = Number(storyItem.dataset.storyNo);
+        const story = stories.find(x => (x.story_no || 0) === storyNo) || stories[0];
+        window.StoryChat?.mount({
+          container: mount,
+          scenario: { title: d1.title || d0.card_title, category: cat },
+          story,
+          theme: 'light',
+        });
+        mount.dataset.mounted = '1';
+      }
+    });
+  });
 }
 
-function storyHTML(st) {
+function storyHTML(st, scenarioNo) {
   const notes = (st.usage_notes || []).map(n => `<div class="story-note">ℹ ${n}</div>`).join('');
+  const chatId = `chat-${scenarioNo}-${st.story_no || 0}`;
   return `
-    <div class="story-item">
+    <div class="story-item" data-story-no="${st.story_no || 0}">
       <div class="story-item-head">
         <div class="story-num">${st.story_no || '•'}</div>
         <div class="story-title">${st.title || ''}</div>
       </div>
       <p class="story-content">${st.content || ''}</p>
       ${notes}
+      <button type="button" class="story-chat-toggle" data-chat-toggle="${chatId}">💬 이 스토리로 더 파보기</button>
+      <div class="story-chat-mount" id="${chatId}"></div>
     </div>`;
 }
 

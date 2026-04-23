@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scenario Self Generation Agent</title>
-    <link rel="stylesheet" href="style.css?v=20260327-co13">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+    <link rel="stylesheet" href="style.css?v=20260423-pretendard01">
 </head>
 <body>
     <div class="shell">
@@ -26,12 +28,28 @@
                     <span class="hero-chip">4-step guided flow</span>
                     <span class="hero-chip">Ready-to-use output</span>
                 </div>
-                <div class="hero-browse-cta">
-                    <a href="./scenarios-browse.html" class="hero-browse-link">
-                        📖 27개 기본 시나리오 사전 먼저 보기 (하위 스토리 80여 개 포함)
-                        <span class="hero-browse-arrow">→</span>
-                    </a>
-                    <p class="hero-browse-hint">어떤 방향으로 잡을지 감이 안 잡히면 여기서 기본 시나리오부터 훑어보세요.</p>
+                <div class="hero-browse-cta hero-browse-cta-cards">
+                    <p class="hero-browse-eyebrow">⚡ 지금 바로 클릭해서 살펴볼 수 있어요 — 질문 시작 전, 27개 기본 시나리오 둘러보기</p>
+                    <div class="hero-browse-grid">
+                        <a href="./dashboard.html" class="hero-browse-card hero-browse-card-visual">
+                            <div class="hero-browse-card-icon">🖼</div>
+                            <div class="hero-browse-card-body">
+                                <div class="hero-browse-card-tag">이미지 대시보드</div>
+                                <div class="hero-browse-card-title">27개 시나리오 한눈에 보기</div>
+                                <div class="hero-browse-card-desc">SmartThings 앱 일러스트 그리드 + 스토리별 채팅 가능</div>
+                            </div>
+                            <span class="hero-browse-card-arrow">→</span>
+                        </a>
+                        <a href="./scenarios-browse.html" class="hero-browse-card hero-browse-card-text">
+                            <div class="hero-browse-card-icon">📖</div>
+                            <div class="hero-browse-card-body">
+                                <div class="hero-browse-card-tag">시나리오 사전</div>
+                                <div class="hero-browse-card-title">스토리 80여 개 펼쳐 읽기</div>
+                                <div class="hero-browse-card-desc">제목·설명·하위 스토리·기기·제품 텍스트로 빠르게 스캔</div>
+                            </div>
+                            <span class="hero-browse-card-arrow">→</span>
+                        </a>
+                    </div>
                 </div>
                 <!-- FLOW 스텝 바 — hero 내부 하단 -->
                 <div class="hero-flow-bar">

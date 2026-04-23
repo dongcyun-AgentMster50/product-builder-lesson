@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartThings Scenario Agent v2.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
 <style>
 :root {
   --bg0: #f5f7fa;
@@ -45,7 +47,7 @@
 body {
   background: var(--bg0);
   color: var(--text1);
-  font-family: 'IBM Plex Sans KR', sans-serif;
+  font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -382,11 +384,22 @@ select.country-select option { background: #ffffff; color: var(--text1); }
 /* ─── PIPELINE STATUS ─── */
 #pipeline-status {
   margin-bottom: 32px; display: none;
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.96) 100%),
+    url("./assets/bg/scene-livingroom.png") right top / auto 100% no-repeat;
+  border-radius: 18px;
+  padding: 4px;
+  overflow: hidden;
 }
 .pipeline-bar {
-  background: var(--card); border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
   border-radius: 16px; padding: 20px 24px;
   box-shadow: var(--shadow-sm);
+  position: relative; z-index: 1;
 }
 .pipeline-stages {
   display: flex; gap: 0; align-items: center;
@@ -410,7 +423,34 @@ select.country-select option { background: #ffffff; color: var(--text1); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ─── STORY CARDS (A1 result) ─── */
-#curator-results { display: none; margin-bottom: 40px; }
+#curator-results {
+  display: none; margin-bottom: 40px;
+  position: relative;
+}
+#curator-results::before,
+#curator-results::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 200px;
+  background: url("./assets/bg/scene-blueprint.png") top center / contain no-repeat;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+#curator-results::before { left: -220px; transform: scaleX(-1); }
+#curator-results::after { right: -220px; }
+#curator-results > * { position: relative; z-index: 1; }
+@media (max-width: 1380px) {
+  #curator-results::before, #curator-results::after { display: none; }
+  #curator-results {
+    background:
+      linear-gradient(180deg, rgba(245,247,250,0) 0%, rgba(245,247,250,0.95) 200px),
+      url("./assets/bg/scene-blueprint.png") right -40px top / 280px auto no-repeat;
+    border-radius: 18px;
+    padding: 8px;
+  }
+}
 .section-title {
   font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px;
   margin-bottom: 6px;
