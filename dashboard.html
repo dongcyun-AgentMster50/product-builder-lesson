@@ -146,14 +146,13 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
 .scenario-thumb {
   width: 100%;
   background: #f2f4f8; position: relative; overflow: hidden;
-  height: 320px; /* 좌측 일러스트 컬럼 — 첫 1~2개 이미지가 카드에 보이도록 */
+  height: 360px; /* 카드에서는 상단 부분만 노출 (모달에서 전체 이미지 확인) */
 }
 .scenario-thumb img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
+  height: auto;
   display: block;
+  object-position: top;
 }
 .scenario-thumb .fallback {
   position: absolute; inset: 0;
@@ -222,30 +221,20 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
 #modal.show { display: flex; }
 .modal-box {
   background: #fff; border-radius: 20px;
-  max-width: 1120px; width: 100%;
+  max-width: 560px; width: 100%;
   box-shadow: var(--shadow-lg);
-  overflow: hidden;
   animation: modalIn 0.3s ease;
-  display: grid;
-  grid-template-columns: 380px 1fr;
   position: relative;
-}
-@media (max-width: 860px) {
-  .modal-box { grid-template-columns: 1fr; }
+  overflow: hidden;
 }
 @keyframes modalIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+/* 풀 이미지 — 자체 스크롤 없이 자연스러운 흐름 (페이지에서 한 번만 스크롤) */
 .modal-hero {
   background: #f2f4f8;
-  overflow-y: auto;
-  max-height: 80vh;
   position: relative;
-  border-right: 1px solid var(--border);
-}
-@media (max-width: 860px) {
-  .modal-hero { max-height: 360px; border-right: none; border-bottom: 1px solid var(--border); }
 }
 .modal-hero img {
   width: 100%;
@@ -254,20 +243,24 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
 }
 .modal-close {
   position: absolute; top: 14px; right: 14px;
-  width: 38px; height: 38px; border-radius: 50%;
-  background: rgba(11,16,39,0.7); color: #fff;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(11,16,39,0.75); color: #fff;
   border: none; cursor: pointer; font-size: 20px;
   display: flex; align-items: center; justify-content: center;
   transition: all 0.15s; z-index: 10;
+  backdrop-filter: blur(6px);
 }
-.modal-close:hover { background: rgba(11,16,39,0.9); transform: scale(1.05); }
-.modal-content {
-  padding: 28px 32px 36px;
-  max-height: 80vh;
-  overflow-y: auto;
+.modal-close:hover { background: rgba(11,16,39,0.95); transform: scale(1.05); }
+/* 채팅 트리거 영역 — 이미지 아래, 스토리별 칩 한 줄씩 */
+.modal-chat-area {
+  padding: 18px 20px 24px;
+  border-top: 1px solid var(--border);
+  background: #fafbfd;
 }
-@media (max-width: 860px) {
-  .modal-content { max-height: none; }
+.modal-chat-intro {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 12px;
 }
 .modal-cat {
   display: inline-block;
@@ -308,39 +301,41 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
 .section-label::after {
   content: ''; flex: 1; height: 1px; background: var(--border);
 }
-.story-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+.story-list { display: flex; flex-direction: column; gap: 8px; }
 .story-item {
-  padding: 18px 20px;
   background: #fff; border: 1px solid var(--border);
-  border-radius: var(--radius); box-shadow: var(--shadow-sm);
-}
-.story-item-head {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
-}
-.story-num {
-  width: 26px; height: 26px; border-radius: 50%;
-  background: var(--accent); color: #fff;
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px;
-  display: flex; align-items: center; justify-content: center;
-}
-.story-title {
-  font-size: 14px; font-weight: 600; color: var(--text1);
-  flex: 1;
-}
-.story-content {
-  font-size: 13px; line-height: 1.7; color: var(--text2);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 .story-chat-toggle {
-  margin-top: 12px;
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 12px; border-radius: 16px;
-  background: rgba(20,40,160,0.08); color: var(--accent);
-  border: none; cursor: pointer; font-size: 11.5px; font-weight: 600;
+  width: 100%;
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px;
+  background: #fff; color: var(--text1);
+  border: none; cursor: pointer; font-size: 13px; font-weight: 500;
   font-family: inherit; transition: all 0.15s;
+  text-align: left;
 }
-.story-chat-toggle:hover { background: rgba(20,40,160,0.15); }
-.story-chat-toggle.active { background: var(--accent); color: #fff; }
-.story-chat-mount { display: none; }
+.story-chat-toggle:hover { background: #f5f7fb; }
+.story-chat-toggle.active { background: rgba(20,40,160,0.06); color: var(--accent); }
+.story-chat-toggle .story-num-chip {
+  flex-shrink: 0;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-weight: 700; font-size: 11px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.story-chat-toggle .story-title-chip {
+  flex: 1; min-width: 0;
+  font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.story-chat-toggle .story-cta-chip {
+  font-size: 11px; color: var(--accent); font-weight: 600;
+  flex-shrink: 0;
+}
+.story-chat-toggle.active .story-cta-chip { color: var(--accent); }
+.story-chat-mount { display: none; padding: 0 14px 14px; background: #fff; }
 .story-chat-mount.open { display: block; }
 .story-note {
   font-size: 11px; color: var(--text3);
@@ -531,35 +526,14 @@ function openModal(no) {
       <img src="${THUMB_PATH(no)}" alt="${d0.card_title || ''}" onerror="this.style.display='none'">
       <button class="modal-close" onclick="closeModal()" aria-label="닫기">✕</button>
     </div>
-    <div class="modal-content">
-      ${cat ? `<div class="modal-cat">${cat} · #${String(no).padStart(3,'0')}</div>` : ''}
-      <h2 class="modal-title">${d1.title || d0.card_title || ''}</h2>
-      <div class="modal-meta-row">
-        <span>👁 조회 ${stats.views_display || '—'}</span>
-        <span>♥ 좋아요 ${stats.likes || 0}</span>
-        <span>📖 스토리 ${stories.length}개</span>
-      </div>
-      ${d1.description ? `<p class="modal-desc">${d1.description}</p>` : ''}
-      ${devices.length ? `<div class="device-strip">${devices.map(d => `<span class="device-chip">🔹 ${d}</span>`).join('')}</div>` : ''}
-
-      ${stories.length ? `
-        <div class="section-label">스토리 ${stories.length}개</div>
+    ${stories.length ? `
+      <div class="modal-chat-area">
+        <div class="modal-chat-intro">💬 스토리 선택 → 내 BYOK로 더 파보기</div>
         <div class="story-list">
           ${stories.map(st => storyHTML(st, no)).join('')}
         </div>
-      ` : ''}
-
-      ${products.length ? `
-        <div class="section-label">구매 가능한 제품 ${products.length}개</div>
-        <div class="products">
-          ${products.map(p => `
-            <div class="product-chip">
-              <div>${p.product_name || ''}</div>
-              <div class="brand">${p.brand || ''} · ${p.type || ''}</div>
-            </div>`).join('')}
-        </div>
-      ` : ''}
-    </div>
+      </div>
+    ` : ''}
   `;
   document.getElementById('modal').classList.add('show');
   document.body.style.overflow = 'hidden';
@@ -572,7 +546,8 @@ function openModal(no) {
       if (!mount) return;
       const isOpen = mount.classList.toggle('open');
       btn.classList.toggle('active', isOpen);
-      btn.textContent = isOpen ? '✕ 채팅 닫기' : '💬 이 스토리로 더 파보기';
+      const ctaChip = btn.querySelector('.story-cta-chip');
+      if (ctaChip) ctaChip.textContent = isOpen ? '닫기 ✕' : '채팅 →';
       if (isOpen && !mount.dataset.mounted) {
         const storyItem = btn.closest('.story-item');
         const storyNo = Number(storyItem.dataset.storyNo);
@@ -590,17 +565,14 @@ function openModal(no) {
 }
 
 function storyHTML(st, scenarioNo) {
-  const notes = (st.usage_notes || []).map(n => `<div class="story-note">ℹ ${n}</div>`).join('');
   const chatId = `chat-${scenarioNo}-${st.story_no || 0}`;
   return `
     <div class="story-item" data-story-no="${st.story_no || 0}">
-      <div class="story-item-head">
-        <div class="story-num">${st.story_no || '•'}</div>
-        <div class="story-title">${st.title || ''}</div>
-      </div>
-      <p class="story-content">${st.content || ''}</p>
-      ${notes}
-      <button type="button" class="story-chat-toggle" data-chat-toggle="${chatId}">💬 이 스토리로 더 파보기</button>
+      <button type="button" class="story-chat-toggle" data-chat-toggle="${chatId}">
+        <span class="story-num-chip">${st.story_no || '•'}</span>
+        <span class="story-title-chip">${st.title || ''}</span>
+        <span class="story-cta-chip">채팅 →</span>
+      </button>
       <div class="story-chat-mount" id="${chatId}"></div>
     </div>`;
 }

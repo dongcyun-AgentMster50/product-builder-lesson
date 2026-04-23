@@ -1,9 +1,8 @@
 """
-Crop each scenario's depth_1 screenshot to the LEFT illustration column only.
-The right side of the original screenshot contains story scripts/CTA buttons,
-which we now render as HTML text from the JSON DB to avoid duplication.
-
-Output: vertical strip showing the 3 stacked illustration squares.
+Downscale each scenario's depth_1 screenshot to a web-friendly width.
+Keep the FULL original layout (image + script + products) intact —
+the modal/dashboard now displays this image as-is, and only adds
+minimal chat triggers below (no duplicated text).
 """
 import re
 from pathlib import Path
@@ -23,16 +22,7 @@ FOLDER_MAP = {
     "26ai": 26, "27": 27,
 }
 
-# Crop ratio: keep only the LEFT 42% of the original width.
-# Samsung SmartThings app layout: illustration column ~38% + small padding.
-LEFT_CROP_RATIO = 0.42
-
-# Only crop horizontally if source is wider than this — single-column screenshots
-# (already narrow, e.g. scenario_004 at 1092px) keep their full width.
-MIN_WIDTH_FOR_CROP = 1500
-
-# Output width (after downscaling) for the cropped strip.
-TARGET_WIDTH = 480
+TARGET_WIDTH = 1080
 JPEG_QUALITY = 85
 
 
@@ -48,16 +38,12 @@ def process(folder_name: str, scenario_no: int) -> str:
         return f"[SKIP] {folder_name}: no image"
     with Image.open(src) as im:
         w, h = im.size
-        if w >= MIN_WIDTH_FOR_CROP:
-            crop_w = int(w * LEFT_CROP_RATIO)
-            im = im.crop((0, 0, crop_w, h))
-        cw, ch = im.size
-        if cw > TARGET_WIDTH:
-            new_h = int(ch * TARGET_WIDTH / cw)
+        if w > TARGET_WIDTH:
+            new_h = int(h * TARGET_WIDTH / w)
             im = im.resize((TARGET_WIDTH, new_h), Image.LANCZOS)
         out_path = OUT / f"scenario_{scenario_no:03d}.jpg"
         im.convert("RGB").save(out_path, "JPEG", quality=JPEG_QUALITY, optimize=True)
-        return f"[OK]   {folder_name} -> {out_path.name} (src {w}x{h} -> crop {cw}x{ch} -> out {im.size[0]}x{im.size[1]})"
+        return f"[OK]   {folder_name} -> {out_path.name} (src {w}x{h} -> out {im.size[0]}x{im.size[1]})"
 
 
 if __name__ == "__main__":
