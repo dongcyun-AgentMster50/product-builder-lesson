@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI 플랫폼 3사 기능 비교 — ChatGPT vs Gemini vs Claude</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --samsung-blue: #1428A0;
+    --samsung-blue-dark: #0C1A6E;
+    --samsung-blue-light: #E8ECF9;
+    --samsung-blue-accent: #2E4BC7;
+    --brand-chatgpt: #10A37F;
+    --brand-gemini: #4285F4;
+    --brand-claude: #D97757;
+    --gold-bg: #FFF8E1;
+    --gold-border: #F0D58C;
+    --ink-900: #0A0F1F;
+    --ink-700: #2B3145;
+    --ink-500: #5A6079;
+    --ink-400: #8A90A6;
+    --ink-300: #BDC1D1;
+    --ink-200: #E2E5EE;
+    --ink-100: #F2F4F9;
+    --ink-0: #FFFFFF;
+    --gold: #C9A227;
+    --silver: #8A8F9C;
+    --bronze: #B08258;
+    --green-600: #1F8B4C;
+    --amber-600: #C27803;
+    --red-600: #C13B3B;
+    --shadow-sm: 0 1px 2px rgba(10,15,31,0.06);
+    --shadow-md: 0 4px 16px rgba(10,15,31,0.08);
+    --shadow-lg: 0 12px 40px rgba(10,15,31,0.12);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Segoe UI", Roboto, system-ui, sans-serif;
+    background: var(--ink-100);
+    color: var(--ink-900);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "tnum";
+  }
+
+  /* ============ Header ============ */
+  .hero {
+    background: linear-gradient(135deg, var(--samsung-blue-dark) 0%, var(--samsung-blue) 55%, var(--samsung-blue-accent) 100%);
+    color: var(--ink-0);
+    padding: 36px 48px 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+  }
+  .hero-inner { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; }
+  .hero-left { flex: 1; min-width: 0; }
+  .hero-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+  .hero-right .control-label-light {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+    gap: 16px;
+  }
+  .hero .subtitle {
+    display: inline-block;
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    margin-top: 2px;
+    padding: 5px 10px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.14);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  /* Difficulty toggle in hero (segmented) */
+  .seg-toggle {
+    display: inline-flex;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 4px;
+    gap: 2px;
+    backdrop-filter: blur(6px);
+  }
+  .seg-toggle button {
+    border: 0;
+    background: transparent;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.75);
+    cursor: pointer;
+    border-radius: 7px;
+    font-family: inherit;
+    transition: all 0.18s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: -0.01em;
+  }
+  .seg-toggle button:hover { color: #fff; }
+  .seg-toggle button.active {
+    background: #fff;
+    color: var(--samsung-blue-dark);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .seg-toggle button small {
+    font-size: 10.5px;
+    font-weight: 600;
+    opacity: 0.65;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .hero-badge::before {
+    content: "";
+    width: 6px; height: 6px;
+    background: #7AC28C;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(122,194,140,0.25);
+  }
+  .hero h1 {
+    margin: 0 0 10px;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .hero p.sub {
+    margin: 0;
+    font-size: 15px;
+    color: rgba(255,255,255,0.85);
+    max-width: 920px;
+  }
+  .hero-meta {
+    margin-top: 20px;
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    flex-wrap: wrap;
+  }
+  .hero-meta span strong {
+    color: var(--ink-0);
+    margin-right: 4px;
+  }
+
+  /* ============ Control Bar ============ */
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ink-0);
+    border-bottom: 1px solid var(--ink-200);
+    box-shadow: var(--shadow-sm);
+    padding: 16px 48px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .control-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-500);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+
+  /* Difficulty Toggle */
+  .difficulty-toggle {
+    display: inline-flex;
+    background: var(--ink-100);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    gap: 2px;
+  }
+  .difficulty-toggle button {
+    border: 0;
+    background: transparent;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-500);
+    cursor: pointer;
+    border-radius: 7px;
+    font-family: inherit;
+    transition: all 0.18s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .difficulty-toggle button:hover {
+    color: var(--ink-900);
+  }
+  .difficulty-toggle button.active {
+    background: var(--samsung-blue);
+    color: var(--ink-0);
+    box-shadow: var(--shadow-sm);
+  }
+  .difficulty-toggle button .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: currentColor;
+    opacity: 0.5;
+  }
+  .difficulty-toggle button.active .dot { opacity: 1; }
+
+  /* Search */
+  .search-box {
+    position: relative;
+  }
+  .search-box input {
+    padding: 9px 14px 9px 36px;
+    border: 1px solid var(--ink-200);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-family: inherit;
+    width: 260px;
+    background: var(--ink-100);
+    color: var(--ink-900);
+    transition: all 0.15s ease;
+  }
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--samsung-blue);
+    background: var(--ink-0);
+    box-shadow: 0 0 0 3px rgba(20,40,160,0.12);
+  }
+  .search-box svg {
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-400);
+  }
+
+  /* Platform Filter */
+  .platform-filters {
+    display: flex;
+    gap: 8px;
+  }
+  .platform-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border: 1.5px solid var(--ink-200);
+    border-radius: var(--radius-md);
+    background: var(--ink-0);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-500);
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  .platform-chip:hover { border-color: var(--ink-400); }
+  .platform-chip.on {
+    border-color: var(--samsung-blue);
+    color: var(--samsung-blue);
+    background: var(--samsung-blue-light);
+  }
+  .platform-chip .mark {
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--ink-300);
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-0);
+    font-size: 10px;
+    background: var(--ink-0);
+  }
+  .platform-chip.on .mark {
+    background: var(--samsung-blue);
+    border-color: var(--samsung-blue);
+  }
+  .platform-chip.on .mark::after { content: "✓"; }
+  .platform-chip .platform-color {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+
+  /* Actions */
+  .actions { display: flex; gap: 8px; }
+  .btn {
+    border: 1px solid var(--ink-200);
+    background: var(--ink-0);
+    color: var(--ink-700);
+    padding: 9px 14px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+  }
+  .btn:hover { border-color: var(--samsung-blue); color: var(--samsung-blue); }
+  .btn-primary {
+    background: var(--samsung-blue);
+    color: var(--ink-0);
+    border-color: var(--samsung-blue);
+  }
+  .btn-primary:hover { background: var(--samsung-blue-dark); color: var(--ink-0); }
+
+  /* ============ Legend ============ */
+  .legend-bar {
+    padding: 14px 48px;
+    background: var(--ink-0);
+    border-bottom: 1px solid var(--ink-200);
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--ink-500);
+  }
+  .legend-group { display: inline-flex; gap: 14px; align-items: center; }
+  .legend-group strong {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-700);
+  }
+  .legend-item { display: inline-flex; gap: 6px; align-items: center; }
+  .legend-item code {
+    font-family: inherit;
+    font-weight: 700;
+    color: var(--ink-900);
+    min-width: 18px;
+    text-align: center;
+  }
+
+  /* ============ Main Layout ============ */
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 28px 48px 64px;
+  }
+
+  /* Category Section */
+  .category {
+    background: var(--ink-0);
+    border: 1px solid var(--ink-200);
+    border-radius: var(--radius-lg);
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .category:hover { box-shadow: var(--shadow-md); }
+  .category-header {
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    user-select: none;
+    background: linear-gradient(180deg, var(--ink-0) 0%, #FAFBFD 100%);
+    border-bottom: 1px solid transparent;
+    transition: all 0.15s ease;
+  }
+  .category.open .category-header {
+    border-bottom-color: var(--ink-200);
+    background: linear-gradient(180deg, var(--samsung-blue-light) 0%, #F5F7FD 100%);
+  }
+  .category-number {
+    width: 40px; height: 40px;
+    background: var(--samsung-blue);
+    color: var(--ink-0);
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+  .category-title {
+    flex: 1;
+  }
+  .category-title h2 {
+    margin: 0 0 2px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink-900);
+    letter-spacing: -0.01em;
+  }
+  .category-title p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-500);
+  }
+  .category-toggle {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--ink-100);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-500);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+  .category.open .category-toggle { transform: rotate(180deg); }
+
+  .category-body { display: none; padding: 0; }
+  .category.open .category-body { display: block; }
+
+  /* Subcategory */
+  .subcategory {
+    border-top: 1px solid var(--ink-100);
+    padding: 20px 28px 28px;
+  }
+  .subcategory:first-child { border-top: 0; }
+  .subcategory-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .subcategory-title .code {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--samsung-blue);
+    background: var(--samsung-blue-light);
+    padding: 3px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+  .subcategory-title h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink-900);
+  }
+
+  /* Comparison Table */
+  .cmp-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--ink-0);
+    border: 1px solid var(--ink-200);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    font-size: 13px;
+  }
+  .cmp-table thead th {
+    background: #FAFBFD;
+    font-weight: 700;
+    text-align: left;
+    padding: 12px 14px;
+    color: var(--ink-700);
+    border-bottom: 1.5px solid var(--ink-200);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    position: sticky;
+    top: 68px;
+    z-index: 20;
+  }
+  .cmp-table thead th.feat { width: 220px; background: #FAFBFD; }
+  .cmp-table thead th.platform {
+    text-align: center;
+    background: var(--ink-0);
+  }
+  .cmp-table thead th.platform .phead {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    color: var(--ink-900);
+    font-size: 13px;
+  }
+  .cmp-table thead th.platform .plogo {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--ink-0);
+  }
+  .plogo.chatgpt { background: var(--brand-chatgpt); }
+  .plogo.gemini { background: var(--brand-gemini); }
+  .plogo.claude { background: var(--brand-claude); }
+
+  .cmp-table thead th.col-chatgpt { border-top: 3px solid var(--brand-chatgpt); }
+  .cmp-table thead th.col-gemini { border-top: 3px solid var(--brand-gemini); }
+  .cmp-table thead th.col-claude { border-top: 3px solid var(--brand-claude); }
+
+  .cmp-table tbody tr {
+    transition: background 0.12s ease;
+  }
+  .cmp-table tbody tr:hover {
+    background: var(--samsung-blue-light);
+  }
+  .cmp-table tbody tr.highlight {
+    background: #FFF8DC;
+    animation: flashRow 1.2s ease;
+  }
+  @keyframes flashRow {
+    0% { background: #FFE58F; }
+    100% { background: #FFF8DC; }
+  }
+  .cmp-table td {
+    padding: 14px;
+    border-bottom: 1px solid var(--ink-100);
+    vertical-align: top;
+  }
+  .cmp-table tbody tr:last-child td { border-bottom: 0; }
+
+  .feat-name {
+    font-weight: 700;
+    color: var(--ink-900);
+    font-size: 13px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .feat-tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    cursor: help;
+  }
+  .feat-tag.tag-ent {
+    background: var(--samsung-blue-light);
+    color: var(--samsung-blue);
+    border: 1px solid #C6D0EE;
+  }
+  .feat-tag.tag-common {
+    background: #E8F5EB;
+    color: var(--green-600);
+    border: 1px solid #BCE2C5;
+  }
+  .feat-desc {
+    margin-top: 4px;
+    color: var(--ink-500);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  /* 1위 셀 금색 배경 강조 */
+  .cmp-table td.rank-top {
+    background: var(--gold-bg);
+    box-shadow: inset 0 0 0 1px var(--gold-border);
+    position: relative;
+  }
+  .cmp-table td.rank-top::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(180deg, #E5B845, #C9A227);
+  }
+  .cmp-table tbody tr:hover td.rank-top {
+    background: #FFEFB8;
+  }
+
+  .cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .cell-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .support {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    font-weight: 900;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .support.full { background: #DCF5E4; color: var(--green-600); }
+  .support.partial { background: #FFF0D6; color: var(--amber-600); }
+  .support.none { background: #FCE3E3; color: var(--red-600); }
+  .support.check { background: var(--ink-100); color: var(--ink-500); }
+
+  .rank {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .rank-1 { background: #FEF3C7; color: #92400E; border: 1px solid #F5D785; }
+  .rank-2 { background: #E5E7EB; color: #374151; }
+  .rank-3 { background: #FDE4CC; color: #92400E; }
+
+  .ent-badge, .plan-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: help;
+  }
+  .ent-badge {
+    background: var(--samsung-blue-light);
+    color: var(--samsung-blue);
+    border: 1px solid #C6D0EE;
+  }
+  .plan-badge {
+    background: var(--ink-100);
+    color: var(--ink-500);
+    border: 1px solid var(--ink-200);
+  }
+
+  .strength {
+    color: var(--ink-700);
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+  .note {
+    color: var(--ink-400);
+    font-size: 11.5px;
+    font-style: italic;
+    border-top: 1px dashed var(--ink-200);
+    padding-top: 6px;
+    margin-top: 2px;
+  }
+
+  /* Tooltip */
+  [data-tip] { position: relative; cursor: help; }
+  [data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink-900);
+    color: var(--ink-0);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+    pointer-events: none;
+  }
+  [data-tip]:hover::before {
+    content: "";
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--ink-900);
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  /* Summary / Verdict Footer */
+  .verdict {
+    margin-top: 28px;
+    padding: 28px;
+    background: linear-gradient(135deg, #F5F7FD 0%, var(--samsung-blue-light) 100%);
+    border: 1px solid #D4DAEE;
+    border-radius: var(--radius-lg);
+  }
+  .verdict h3 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    color: var(--samsung-blue-dark);
+    font-weight: 800;
+  }
+  .verdict-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .verdict-card {
+    background: var(--ink-0);
+    padding: 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--ink-200);
+  }
+  .verdict-card h4 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .verdict-card ul {
+    margin: 0; padding-left: 18px;
+    font-size: 12.5px;
+    color: var(--ink-700);
+    line-height: 1.7;
+  }
+  .verdict-card .sub-title {
+    color: var(--ink-500);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+
+  /* Difficulty content switching */
+  .diff-beginner, .diff-intermediate, .diff-advanced { display: none; }
+  body[data-diff="beginner"] .diff-beginner { display: block; }
+  body[data-diff="intermediate"] .diff-intermediate { display: block; }
+  body[data-diff="advanced"] .diff-advanced { display: block; }
+
+  /* Emoji badge for beginner */
+  .emoji-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--ink-100);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-700);
+    margin-bottom: 6px;
+  }
+  .emoji-badge .emo { font-size: 14px; }
+
+  /* Hidden platform columns */
+  body.hide-chatgpt .col-chatgpt { display: none; }
+  body.hide-gemini .col-gemini { display: none; }
+  body.hide-claude .col-claude { display: none; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 28px 48px;
+    color: var(--ink-400);
+    font-size: 11.5px;
+    border-top: 1px solid var(--ink-200);
+    background: var(--ink-0);
+  }
+
+  /* Responsive (tablet) */
+  @media (max-width: 1100px) {
+    .hero { padding: 28px 24px 22px; }
+    .hero h1 { font-size: 24px; }
+    .hero-inner { flex-direction: column; gap: 20px; }
+    .hero-right { align-items: flex-start; }
+    .controls { padding: 12px 24px; gap: 12px; }
+    .search-box input { width: 200px; }
+    .legend-bar { padding: 12px 24px; gap: 16px; }
+    .container { padding: 20px 24px 48px; }
+    .verdict-grid { grid-template-columns: 1fr; }
+    .cmp-table thead th.feat { width: auto; }
+    .seg-toggle button { padding: 8px 12px; }
+    .seg-toggle button small { display: none; }
+  }
+
+  /* Print */
+  @media print {
+    @page { size: A3 landscape; margin: 12mm; }
+    body {
+      background: #fff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .controls, .actions, .search-box, .difficulty-toggle, .platform-filters, .footer { display: none !important; }
+    .hero {
+      background: var(--samsung-blue) !important;
+      color: #fff !important;
+      padding: 18px 16px 14px;
+      border-bottom: 0;
+    }
+    .hero h1 { font-size: 20px; color: #fff !important; }
+    .hero .subtitle { background: rgba(255,255,255,0.15) !important; color: #fff !important; }
+    .hero-right { display: none !important; }
+    .hero-meta, .hero-top, .hero-badge { color: rgba(255,255,255,0.85) !important; }
+    .category { break-inside: avoid; box-shadow: none !important; border-color: #999 !important; }
+    .category-body { display: block !important; }
+    .category-toggle { display: none; }
+    .cmp-table { font-size: 10.5px; }
+    .cmp-table thead th { position: static !important; }
+    .cmp-table tbody tr:hover { background: transparent; }
+    .cmp-table td.rank-top { background: var(--gold-bg) !important; }
+    .verdict { break-inside: avoid; }
+    .legend-bar { padding: 8px 0; border-top: 1px solid #999; }
+    /* 초급 콘텐츠만 보이도록 기본 처리 되어있으므로 — 기본값 중급 유지 */
+  }
+</style>
+</head>
+<body data-diff="intermediate">
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-top">
+        <span>Samsung Electronics · Marketing Team · Internal Briefing</span>
+        <span class="hero-badge">2026 Q2 업데이트 기준</span>
+      </div>
+      <h1>AI 플랫폼 3사 기능 비교 — ChatGPT vs Gemini vs Claude</h1>
+      <span class="subtitle">Enterprise 버전 기준 · Samsung Electronics 사내 공유용</span>
+      <div class="hero-meta">
+        <span><strong>비교 축:</strong> 6개 대분류 · 12개 중분류 · 30+ 기능</span>
+        <span><strong>대상:</strong> 상무급 임원 보고 / 팀 내부 공유</span>
+        <span><strong>업데이트:</strong> 2026-04-24</span>
+      </div>
+    </div>
+    <div class="hero-right">
+      <span class="control-label-light">난이도 뷰</span>
+      <div class="seg-toggle" id="diffToggle" role="tablist" aria-label="난이도 선택">
+        <button data-diff="beginner" role="tab">초급<small>임원용</small></button>
+        <button data-diff="intermediate" class="active" role="tab">중급<small>실무자</small></button>
+        <button data-diff="advanced" role="tab">고급<small>IT 담당</small></button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ CONTROL BAR ============ -->
+<div class="controls">
+  <div class="control-group">
+    <span class="control-label">플랫폼</span>
+    <div class="platform-filters" id="platformFilters">
+      <label class="platform-chip on" data-platform="chatgpt"><span class="mark"></span><span class="platform-color" style="background:var(--brand-chatgpt)"></span>ChatGPT</label>
+      <label class="platform-chip on" data-platform="gemini"><span class="mark"></span><span class="platform-color" style="background:var(--brand-gemini)"></span>Gemini</label>
+      <label class="platform-chip on" data-platform="claude"><span class="mark"></span><span class="platform-color" style="background:var(--brand-claude)"></span>Claude</label>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="search-box">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="기능 검색 (예: SSO, 번역, API)" />
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn" id="expandAll">전체 펼치기</button>
+    <button class="btn" id="collapseAll">전체 접기</button>
+    <button class="btn btn-primary" onclick="window.print()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+      인쇄 / PDF 저장
+    </button>
+  </div>
+</div>
+
+<!-- ============ LEGEND ============ -->
+<div class="legend-bar">
+  <div class="legend-group">
+    <strong>지원 여부</strong>
+    <span class="legend-item"><code>●</code> 완전지원</span>
+    <span class="legend-item"><code>◐</code> 부분지원</span>
+    <span class="legend-item"><code>○</code> 미지원</span>
+    <span class="legend-item"><code>−</code> 확인필요</span>
+  </div>
+  <div class="legend-group">
+    <strong>우열세</strong>
+    <span class="legend-item">🥇 상</span>
+    <span class="legend-item">🥈 중</span>
+    <span class="legend-item">🥉 하</span>
+  </div>
+</div>
+
+<!-- ============ MAIN ============ -->
+<main class="container" id="mainContainer">
+  <!-- Categories will be injected by JS -->
+</main>
+
+<!-- ============ VERDICT FOOTER ============ -->
+<section class="container" style="padding-top: 0;">
+  <div class="verdict">
+    <h3>📌 도입 관점 요약 — 상무급 Executive Summary</h3>
+    <div class="verdict-grid">
+      <div class="verdict-card">
+        <h4><span class="plogo chatgpt" style="width:18px;height:18px;font-size:10px;">G</span> ChatGPT Enterprise</h4>
+        <div class="sub-title">선택 시</div>
+        <ul>
+          <li>가장 넓은 생태계·커넥터 표준이 필요할 때</li>
+          <li>GPTs 기반 조직 내 맞춤 에이전트 운영이 핵심일 때</li>
+          <li>이미지·음성·코드를 아우르는 범용성 최우선</li>
+        </ul>
+      </div>
+      <div class="verdict-card">
+        <h4><span class="plogo gemini" style="width:18px;height:18px;font-size:10px;">G</span> Gemini Enterprise</h4>
+        <div class="sub-title">선택 시</div>
+        <ul>
+          <li>Google Workspace(Gmail·Docs·Drive) 기반 조직</li>
+          <li>초장문(2M 토큰) 문서·영상 분석 워크로드</li>
+          <li>네이티브 멀티모달 + BigQuery/Vertex AI 연계</li>
+        </ul>
+      </div>
+      <div class="verdict-card">
+        <h4><span class="plogo claude" style="width:18px;height:18px;font-size:10px;">C</span> Claude for Enterprise</h4>
+        <div class="sub-title">선택 시</div>
+        <ul>
+          <li>고품질 긴 글·분석 리포트·복잡 추론이 핵심일 때</li>
+          <li>데이터 프라이버시·학습 제외·정책 준수 최우선</li>
+          <li>Claude Code 기반 개발팀 코드 에이전트 활용</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  © Samsung Electronics Marketing · AI Platform Benchmark 2026 · 본 자료는 공개된 각 사 Enterprise 문서를 기반으로 내부 공유 목적으로 정리되었으며, 실제 도입 전 각 벤더와 최신 조건을 재확인하시기 바랍니다.
+</footer>
+
+<!-- ============ DATA + LOGIC ============ -->
+<script>
+(function(){
+
+  // =====================================================
+  // DATA MODEL
+  // =====================================================
+  // difficulty: beginner (한 문장 일상어), intermediate (기능명+업무예시), advanced (기술세부)
+  // support: full | partial | none | check
+  // rank: 1 | 2 | 3
+
+  const DATA = [
+    {
+      id: "c1", num: "01",
+      title: "핵심 대화·추론 기능",
+      desc: "텍스트 생성, 요약·번역, 논리·수학·코드 디버깅 등 AI의 기본 지능 영역",
+      subs: [
+        {
+          code: "1-1", title: "텍스트 생성",
+          rows: [
+            {
+              plan: "common",
+              feat: "긴 문서 작성",
+              descB: "리포트·기획서·보도자료를 한 번에 길게 써줘요",
+              descI: "10~30p 규모 기획서/리포트 초안 작성에 활용",
+              descA: "Max output 16~32K 토큰, 구조화된 장문 생성 품질",
+              chatgpt: { s:"full",  r:2, txt:"GPT-4.1 기준 128K 컨텍스트·긴 구조 유지력 우수", note:"Canvas 모드에서 섹션별 편집 가능" },
+              gemini:  { s:"full",  r:3, txt:"Docs 바로 내보내기·협업 편집이 강점", note:"장문 흐름은 다소 평이함" },
+              claude:  { s:"full",  r:1, txt:"200K 컨텍스트·문체 일관성·어조 섬세함 최상급", note:"리포트/백서 등 공식 문서에 특히 강함" }
+            },
+            {
+              plan: "common",
+              feat: "요약",
+              descB: "긴 글을 짧게 줄여줘요",
+              descI: "회의록·논문·내부 문서 빠른 요약",
+              descA: "Multi-doc 요약, 인용 보존, 계층적 추출·추상 요약",
+              chatgpt: { s:"full", r:2, txt:"Summary 템플릿·bullet 구조화 우수", note:"" },
+              gemini:  { s:"full", r:2, txt:"Google Docs에서 내장 요약 기능 제공", note:"Gmail·Meet 자동 요약 연동" },
+              claude:  { s:"full", r:1, txt:"200K 장문 요약에서 누락률 최저 수준", note:"Artifacts로 요약 결과 재편집 편리" }
+            },
+            {
+              plan: "common",
+              feat: "번역",
+              descB: "외국어 문서를 자연스럽게 옮겨줘요",
+              descI: "글로벌 마케팅 카피·계약서 초안 번역",
+              descA: "95+ 언어 지원, 도메인 용어집/TM 연동, 톤/포맷 보존",
+              chatgpt: { s:"full", r:2, txt:"주요 언어 자연스러움·이모지/태그 보존 양호", note:"" },
+              gemini:  { s:"full", r:1, txt:"100+ 언어·Google Translate 엔진 자산 연계", note:"희소 언어에서 우위" },
+              claude:  { s:"full", r:2, txt:"문학적·문체 감각 번역에서 강점", note:"일부 희소 언어 지원 제한" }
+            },
+            {
+              feat: "문체 변환",
+              descB: "말투를 바꿔줘요 — 공식 / 친근 / 광고 카피",
+              descI: "브랜드 톤앤매너 맞춤 리라이팅",
+              descA: "Style transfer, 페르소나/브랜드 가이드 프롬프트 운영",
+              chatgpt: { s:"full", r:2, txt:"Custom Instructions로 팀 톤 고정 가능", note:"" },
+              gemini:  { s:"partial", r:3, txt:"기본적 톤 조정 지원, 브랜드 가이드 연계 약함", note:"" },
+              claude:  { s:"full", r:1, txt:"System Prompt 기반 일관된 브랜드 톤 유지 탁월", note:"" }
+            },
+            {
+              feat: "브레인스토밍",
+              descB: "아이디어를 대신 쏟아내줘요",
+              descI: "캠페인 컨셉·네이밍·슬로건 아이디어 발산",
+              descA: "Divergent thinking, role-play 기반 다관점 생성",
+              chatgpt: { s:"full", r:1, txt:"아이디어 다양성·창의성 평가 우수", note:"" },
+              gemini:  { s:"full", r:2, txt:"실시간 검색 결합 트렌드 반영 아이디어", note:"" },
+              claude:  { s:"full", r:2, txt:"깊이 있고 정제된 아이디어·근거 제시에 강함", note:"" }
+            }
+          ]
+        },
+        {
+          code: "1-2", title: "추론 능력",
+          rows: [
+            {
+              feat: "논리 문제 해결",
+              descB: "복잡한 상황을 논리적으로 풀어줘요",
+              descI: "경쟁 시나리오 분석·의사결정 트리 구성",
+              descA: "Chain-of-thought, self-consistency, reasoning mode",
+              chatgpt: { s:"full", r:2, txt:"o3/o4 reasoning 모델 별도 제공", note:"사용량 크레딧 별도" },
+              gemini:  { s:"full", r:3, txt:"Deep Think 모드 제공 (Ultra 요금)", note:"" },
+              claude:  { s:"full", r:1, txt:"Extended Thinking 모드·복잡 추론 정확도 최상", note:"" }
+            },
+            {
+              feat: "수학·계산",
+              descB: "복잡한 수식·통계를 풀어줘요",
+              descI: "예산 시뮬레이션·ROI 계산 검증",
+              descA: "Code Interpreter 기반 수치 연산, 단계별 검증",
+              chatgpt: { s:"full", r:1, txt:"Code Interpreter 내장·수치 신뢰도 높음", note:"" },
+              gemini:  { s:"full", r:2, txt:"Python 실행 환경 제공", note:"" },
+              claude:  { s:"full", r:2, txt:"Analysis Tool (JS 실행)·단계 추론 정밀", note:"" }
+            },
+            {
+              feat: "코드 디버깅",
+              descB: "잘못된 코드를 찾아 고쳐줘요",
+              descI: "사내 스크립트·매크로 오류 원인 분석",
+              descA: "Multi-file debug, 스택트레이스 해석, 테스트 자동 작성",
+              chatgpt: { s:"full", r:2, txt:"Codex CLI·IDE 연동 성숙", note:"" },
+              gemini:  { s:"full", r:3, txt:"Gemini Code Assist (IDE 플러그인)", note:"" },
+              claude:  { s:"full", r:1, txt:"Claude Code·대규모 리포지토리 이해 최상", note:"" }
+            },
+            {
+              feat: "다단계 업무 분해",
+              descB: "큰 프로젝트를 작은 할 일로 나눠줘요",
+              descI: "캠페인 기획·론칭 마일스톤 자동 분해",
+              descA: "Agentic task decomposition, tool-use, multi-step planning",
+              chatgpt: { s:"full", r:1, txt:"Operator/Agent 모드 에이전트형 실행", note:"베타" },
+              gemini:  { s:"partial", r:2, txt:"Agent Builder 기반 구성 가능", note:"구성 복잡도 있음" },
+              claude:  { s:"full", r:2, txt:"Computer Use·에이전트 도구 호출 고도화", note:"" }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      id: "c2", num: "02",
+      title: "문서·파일 처리",
+      desc: "PDF·Office·이미지 등 업무 파일을 읽고·만들고·편집하는 역량",
+      subs: [
+        {
+          code: "2-1", title: "문서 이해",
+          rows: [
+            {
+              feat: "PDF 업로드 분석",
+              descB: "PDF를 올리면 내용을 읽고 답해줘요",
+              descI: "제안서·계약서 등 PDF 자료 질의응답",
+              descA: "OCR + 벡터 인덱싱, 다중 PDF 동시 처리",
+              chatgpt: { s:"full", r:2, txt:"최대 20개 파일 동시 업로드", note:"" },
+              gemini:  { s:"full", r:1, txt:"2M 토큰 컨텍스트로 초장문 PDF 한 번에 처리", note:"" },
+              claude:  { s:"full", r:2, txt:"Projects 기능으로 문서 세트 지식화", note:"" }
+            },
+            {
+              feat: "Word/PPT 요약",
+              descB: "워드·파워포인트를 열어서 핵심만 정리해줘요",
+              descI: "장표 수십 장 기획안 빠른 브리프",
+              descA: "docx/pptx 파서, 슬라이드별 구조 추출",
+              chatgpt: { s:"full", r:2, txt:"pptx/docx 직접 인식·내용 추출", note:"" },
+              gemini:  { s:"full", r:1, txt:"Google Slides/Docs 네이티브 연동", note:"" },
+              claude:  { s:"full", r:2, txt:"문서 본문 이해 정밀, 시각 요소는 제한적", note:"" }
+            },
+            {
+              feat: "Excel 데이터 해석",
+              descB: "엑셀 표를 보고 의미를 알려줘요",
+              descI: "매출 시트 트렌드·이상치 분석",
+              descA: "xlsx 로드 → pandas 기반 EDA, 피벗/차트 자동 생성",
+              chatgpt: { s:"full", r:1, txt:"Advanced Data Analysis 실행 환경", note:"" },
+              gemini:  { s:"full", r:2, txt:"Google Sheets 직접 분석 가능", note:"" },
+              claude:  { s:"partial", r:3, txt:"Analysis Tool로 JS 기반 분석 (파일 직접 실행은 제한)", note:"" }
+            },
+            {
+              feat: "이미지 속 텍스트 인식(OCR)",
+              descB: "사진·스캔본의 글자를 읽어줘요",
+              descI: "명함·영수증·현장 사진 텍스트 추출",
+              descA: "Vision OCR + 레이아웃 보존, 다국어",
+              chatgpt: { s:"full", r:2, txt:"GPT-4o vision 기반 한국어 OCR 양호", note:"" },
+              gemini:  { s:"full", r:1, txt:"Google Cloud Vision 자산 결합·한글 정확도 우수", note:"" },
+              claude:  { s:"full", r:2, txt:"이미지 추론·표 구조 인식 강점", note:"" }
+            }
+          ]
+        },
+        {
+          code: "2-2", title: "파일 생성·편집",
+          rows: [
+            {
+              feat: "Word/PPT/Excel 직접 생성",
+              descB: "파일 자체를 만들어서 다운로드 받을 수 있어요",
+              descI: "보고서·엑셀 템플릿 자동 산출물 제작",
+              descA: "docx/pptx/xlsx 파일 산출 (Code Interpreter 기반)",
+              chatgpt: { s:"full", r:1, txt:"Code Interpreter로 xlsx/docx/pptx 직접 생성", note:"" },
+              gemini:  { s:"full", r:2, txt:"Google Docs/Sheets로 바로 출력", note:"Office 포맷은 export 필요" },
+              claude:  { s:"partial", r:3, txt:"Artifacts에서 Markdown/HTML 중심", note:"2026 상반기 Office 생성 확장 중" }
+            },
+            {
+              feat: "차트 자동 작성",
+              descB: "데이터로 그래프를 그려줘요",
+              descI: "월별 KPI 대시보드용 차트 생성",
+              descA: "matplotlib/plotly 렌더링, 다이어그램 Mermaid",
+              chatgpt: { s:"full", r:1, txt:"Python 차트·다운로드 지원", note:"" },
+              gemini:  { s:"full", r:2, txt:"Sheets 연동 시각화 탁월", note:"" },
+              claude:  { s:"full", r:2, txt:"Artifacts로 SVG/차트 렌더", note:"" }
+            },
+            {
+              feat: "코드 파일 생성",
+              descB: "프로그램 파일을 만들어줘요",
+              descI: "업무 자동화 스크립트 한 번에 산출",
+              descA: "Multi-file 프로젝트 생성, Artifact/Canvas 내 편집",
+              chatgpt: { s:"full", r:2, txt:"Canvas·Codex 환경에서 다파일 운영", note:"" },
+              gemini:  { s:"full", r:3, txt:"Code Assist 기반 스니펫·저장소 연계", note:"" },
+              claude:  { s:"full", r:1, txt:"Claude Code·Artifacts 다파일 생성 강점", note:"" }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      id: "c3", num: "03",
+      title: "멀티모달",
+      desc: "이미지·음성·영상을 보고 듣고 만들어내는 능력",
+      subs: [
+        {
+          code: "3-1", title: "이미지",
+          rows: [
+            {
+              feat: "이미지 분석·설명",
+              descB: "사진을 설명하거나 물어볼 수 있어요",
+              descI: "제품 사진·매장 진열 이미지 해석",
+              descA: "Vision API, 객체/텍스트/차트 동시 해석",
+              chatgpt: { s:"full", r:2, txt:"GPT-4o vision 고해상도·정밀 묘사", note:"" },
+              gemini:  { s:"full", r:1, txt:"네이티브 멀티모달 학습·정밀도 우수", note:"" },
+              claude:  { s:"full", r:2, txt:"이미지 내 표·다이어그램 추론 강점", note:"" }
+            },
+            {
+              feat: "이미지 생성",
+              descB: "원하는 그림을 그려줘요",
+              descI: "SNS 썸네일·아이데이션 초안 생성",
+              descA: "Diffusion 기반 T2I, 브랜드 스타일 제약 적용",
+              chatgpt: { s:"full", r:1, txt:"DALL·E 3 / Sora 이미지 모델 통합", note:"" },
+              gemini:  { s:"full", r:2, txt:"Imagen 3 고품질·안전필터 강함", note:"" },
+              claude:  { s:"none", r:3, txt:"이미지 생성 미지원 (분석만 지원)", note:"2026년 기준" }
+            },
+            {
+              feat: "차트·표 이미지 해석",
+              descB: "그래프 사진을 보고 숫자를 읽어줘요",
+              descI: "경쟁사 IR 자료 차트 수치 추출",
+              descA: "Chart parsing, 축/범례 구조 인식",
+              chatgpt: { s:"full", r:2, txt:"복잡한 차트 해석 양호", note:"" },
+              gemini:  { s:"full", r:1, txt:"차트 → Sheets 구조화 변환 탁월", note:"" },
+              claude:  { s:"full", r:2, txt:"표 기반 수치 추론 정밀", note:"" }
+            }
+          ]
+        },
+        {
+          code: "3-2", title: "음성·영상",
+          rows: [
+            {
+              feat: "음성 대화",
+              descB: "말로 물어보고 목소리로 대답받을 수 있어요",
+              descI: "통화 중 실시간 브리핑·요약 받기",
+              descA: "Realtime API, low-latency voice",
+              chatgpt: { s:"full", r:1, txt:"Advanced Voice Mode·자연스러움 최상", note:"" },
+              gemini:  { s:"full", r:2, txt:"Gemini Live 실시간 대화", note:"" },
+              claude:  { s:"partial", r:3, txt:"모바일 앱 기본 음성 지원", note:"Realtime 전용 API 없음" }
+            },
+            {
+              feat: "영상 요약",
+              descB: "긴 영상을 보고 내용을 요약해줘요",
+              descI: "고객 인터뷰·회의 녹화 요약",
+              descA: "Video ingestion, frame + audio joint reasoning",
+              chatgpt: { s:"partial", r:3, txt:"Sora 생성 중심·분석은 제한", note:"" },
+              gemini:  { s:"full", r:1, txt:"YouTube/업로드 영상 장시간 분석 탁월", note:"1시간+ 영상 처리" },
+              claude:  { s:"partial", r:2, txt:"스크립트 변환 후 분석 경로", note:"" }
+            },
+            {
+              feat: "STT / TTS",
+              descB: "음성 → 글자, 글자 → 음성 변환",
+              descI: "회의록 자동 작성·사내 방송 음성 제작",
+              descA: "Whisper/Chirp 기반 STT, 다화자 TTS",
+              chatgpt: { s:"full", r:1, txt:"Whisper·TTS API 성숙", note:"" },
+              gemini:  { s:"full", r:2, txt:"Google Cloud STT/TTS 연동", note:"" },
+              claude:  { s:"none", r:3, txt:"자체 STT/TTS 미제공 (써드파티 결합)", note:"" }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      id: "c4", num: "04",
+      title: "업무 연동·자동화",
+      desc: "오피스·사내 시스템·외부 도구와 연결되어 업무 자동화",
+      subs: [
+        {
+          code: "4-1", title: "오피스 통합",
+          rows: [
+            {
+              feat: "Microsoft 365 연동",
+              descB: "아웃룩·팀즈에서 바로 AI를 쓸 수 있어요",
+              descI: "Outlook/Teams·OneDrive 문서 AI 기능 탑재",
+              descA: "Graph API 연계, M365 Copilot 대비 포지셔닝",
+              chatgpt: { s:"full", r:1, txt:"Copilot 파트너십·M365 커넥터 지원", note:"" },
+              gemini:  { s:"partial", r:3, txt:"M365 공식 연동 제한", note:"" },
+              claude:  { s:"partial", r:2, txt:"MCP/커넥터 기반 통합 가능", note:"직접 통합은 설정 필요" }
+            },
+            {
+              feat: "Google Workspace 연동",
+              descB: "G메일·구글 독스에서 AI를 쓸 수 있어요",
+              descI: "Gmail 자동 답장·Docs 작성·Sheets 분석",
+              descA: "Workspace add-on, Smart Canvas 통합",
+              chatgpt: { s:"partial", r:3, txt:"외부 커넥터로 간접 연동", note:"" },
+              gemini:  { s:"full", r:1, txt:"Workspace 네이티브 AI (Gemini for Workspace)", note:"" },
+              claude:  { s:"partial", r:2, txt:"MCP·Drive 커넥터 제공", note:"" }
+            },
+            {
+              feat: "이메일 초안 자동 작성",
+              descB: "메일을 대신 써줘요",
+              descI: "고객 응대·공지 메일 템플릿 자동 생성",
+              descA: "Inbox AI, 톤·컨텍스트 학습 기반 draft",
+              chatgpt: { s:"full", r:2, txt:"메일 톤 맞춤 생성 양호", note:"" },
+              gemini:  { s:"full", r:1, txt:"Gmail 내장 'Help me write' 탁월", note:"" },
+              claude:  { s:"full", r:2, txt:"공식·격식 메일 품질 우수", note:"" }
+            }
+          ]
+        },
+        {
+          code: "4-2", title: "외부 시스템 연동",
+          rows: [
+            {
+              feat: "API / Webhook",
+              descB: "다른 프로그램과 자동으로 연결돼요",
+              descI: "사내 시스템 트리거·알림 자동화",
+              descA: "REST/SSE/WebSocket, tool calling schema",
+              chatgpt: { s:"full", r:1, txt:"표준 API·광범위한 SDK 지원", note:"" },
+              gemini:  { s:"full", r:2, txt:"Vertex AI 기반 API·GCP 네이티브", note:"" },
+              claude:  { s:"full", r:1, txt:"Messages API·MCP 프로토콜 선도", note:"" }
+            },
+            {
+              feat: "커넥터 (Slack/Notion/Salesforce)",
+              descB: "슬랙·노션·세일즈포스와 바로 연결돼요",
+              descI: "CRM 데이터 질의·내부 위키 검색",
+              descA: "Official connectors, OAuth scope, RBAC 연계",
+              chatgpt: { s:"full", r:1, txt:"공식 커넥터 50+·에코시스템 폭 넓음", note:"" },
+              gemini:  { s:"partial", r:3, txt:"주요 GCP/Google 도구 중심", note:"" },
+              claude:  { s:"full", r:2, txt:"MCP 기반 범용 커넥터 확장성 우수", note:"" }
+            },
+            {
+              feat: "사내 DB 검색 (RAG)",
+              descB: "회사 내부 자료를 검색해 답해줘요",
+              descI: "사내 위키·Confluence·SharePoint 지식 검색",
+              descA: "Retrieval Augmented Generation, hybrid search, 권한 기반",
+              chatgpt: { s:"full", r:2, txt:"Enterprise Connectors·Knowledge", note:"" },
+              gemini:  { s:"full", r:1, txt:"Vertex AI Search·BigQuery 네이티브 RAG", note:"" },
+              claude:  { s:"full", r:2, txt:"Projects·MCP 기반 지식 베이스 연결", note:"" }
+            },
+            {
+              feat: "웹 검색",
+              descB: "실시간 인터넷 정보를 찾아줘요",
+              descI: "시장 트렌드·경쟁사 뉴스 실시간 조회",
+              descA: "Grounded search, citation, domain allowlist",
+              chatgpt: { s:"full", r:2, txt:"Search 내장·인용 표기", note:"" },
+              gemini:  { s:"full", r:1, txt:"Google Search 그라운딩·최신성 최상", note:"" },
+              claude:  { s:"full", r:3, txt:"웹검색 기능 2025 도입·지역별 가용성 차이", note:"" }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      id: "c5", num: "05",
+      title: "Enterprise 관리·보안 (Enterprise 핵심)",
+      desc: "조직 도입 시 가장 중요한 관리자·보안·컴플라이언스 영역",
+      subs: [
+        {
+          code: "5-1", title: "관리자 기능",
+          rows: [
+            {
+              plan: "enterprise",
+              feat: "사용자 관리",
+              descB: "누가 쓸 수 있는지 회사가 관리할 수 있어요",
+              descI: "부서별·직급별 계정 프로비저닝",
+              descA: "SCIM 2.0 프로비저닝, 그룹 기반 권한",
+              chatgpt: { s:"full", r:1, txt:"SCIM 지원·대기업 계정 관리 성숙", note:"" },
+              gemini:  { s:"full", r:1, txt:"Google Admin Console 통합", note:"" },
+              claude:  { s:"full", r:2, txt:"SCIM·Admin API 제공", note:"" }
+            },
+            {
+              plan: "enterprise",
+              feat: "사용량 모니터링",
+              descB: "누가 얼마나 썼는지 볼 수 있어요",
+              descI: "부서별 크레딧 소진·비용 추적",
+              descA: "Usage dashboard, per-user/token 레포팅",
+              chatgpt: { s:"full", r:2, txt:"Admin dashboard·API usage 세분화", note:"" },
+              gemini:  { s:"full", r:1, txt:"GCP Billing·Cloud Logging 통합", note:"" },
+              claude:  { s:"full", r:2, txt:"Console 기반 usage 리포트", note:"" }
+            },
+            {
+              plan: "enterprise",
+              feat: "감사 로그",
+              descB: "누가 무엇을 물어봤는지 기록이 남아요",
+              descI: "컴플라이언스·보안 사고 추적",
+              descA: "Audit log export (SIEM 연동), 보존 정책",
+              chatgpt: { s:"full", r:2, txt:"Audit log API·Compliance API", note:"" },
+              gemini:  { s:"full", r:1, txt:"Cloud Audit Logs·SIEM 표준 연계", note:"" },
+              claude:  { s:"full", r:2, txt:"Audit log·SIEM 익스포트 지원", note:"" }
+            },
+            {
+              plan: "enterprise",
+              feat: "프롬프트 템플릿 공유",
+              descB: "잘 만든 질문을 팀에서 공유해요",
+              descI: "마케팅 브리프·보고서 템플릿 표준화",
+              descA: "Prompt library, 버전관리, 권한별 배포",
+              chatgpt: { s:"full", r:1, txt:"GPTs로 조직 공유·배포", note:"" },
+              gemini:  { s:"partial", r:3, txt:"Gems 개인 중심·조직 공유 제한적", note:"" },
+              claude:  { s:"full", r:2, txt:"Projects 내 공유 지식·커스텀 인스트럭션", note:"" }
+            }
+          ]
+        },
+        {
+          code: "5-2", title: "보안·컴플라이언스",
+          rows: [
+            {
+              plan: "enterprise",
+              feat: "SSO / SAML",
+              descB: "회사 계정으로 한 번에 로그인할 수 있어요",
+              descI: "Okta·Azure AD SSO 연동",
+              descA: "SAML 2.0, OIDC, IdP 기반 JIT 프로비저닝",
+              chatgpt: { s:"full", r:1, txt:"SAML·OIDC·주요 IdP 지원", note:"" },
+              gemini:  { s:"full", r:1, txt:"Workspace SSO·Google IdP 통합", note:"" },
+              claude:  { s:"full", r:1, txt:"SAML SSO·OIDC 표준 지원", note:"" }
+            },
+            {
+              plan: "enterprise",
+              feat: "데이터 학습 제외",
+              descB: "우리 회사 자료로 AI가 다시 학습하지 않아요",
+              descI: "대화·첨부 문서 모델 재학습에 미사용",
+              descA: "No-training by default, zero-retention option",
+              chatgpt: { s:"full", r:2, txt:"Enterprise: 입력·출력 미학습 보장", note:"" },
+              gemini:  { s:"full", r:2, txt:"Workspace 데이터 학습 제외 정책", note:"" },
+              claude:  { s:"full", r:1, txt:"Anthropic 기본 정책이 학습 제외·명시적", note:"" }
+            },
+            {
+              feat: "SOC2 / ISO 인증",
+              descB: "국제 보안 기준을 통과했어요",
+              descI: "내부 보안 심사 통과용 인증",
+              descA: "SOC 2 Type II, ISO 27001/27701, HIPAA",
+              chatgpt: { s:"full", r:1, txt:"SOC 2 Type II·ISO 27001·HIPAA", note:"" },
+              gemini:  { s:"full", r:1, txt:"GCP 전체 인증·FedRAMP High", note:"" },
+              claude:  { s:"full", r:1, txt:"SOC 2 Type II·ISO 27001·HIPAA", note:"" }
+            },
+            {
+              plan: "enterprise",
+              feat: "지역별 데이터 저장 (Data Residency)",
+              descB: "데이터를 우리나라 서버에 둘 수 있어요",
+              descI: "개인정보 이슈·국가별 규제 준수",
+              descA: "Region pinning (EU/US/APAC), 한국 리전 지원 여부",
+              chatgpt: { s:"partial", r:2, txt:"EU 데이터 레지던시 지원 (한국 별도 확인)", note:"" },
+              gemini:  { s:"full", r:1, txt:"GCP 다수 리전 (Seoul 포함)", note:"" },
+              claude:  { s:"partial", r:3, txt:"AWS Bedrock 리전 경유 가능", note:"직접 리전은 제한적" }
+            },
+            {
+              plan: "enterprise",
+              feat: "암호화",
+              descB: "데이터가 잠금 상태로 안전하게 저장돼요",
+              descI: "저장/전송 구간 암호화",
+              descA: "AES-256 at rest, TLS 1.2+, 고객관리키(CMEK)",
+              chatgpt: { s:"full", r:1, txt:"AES-256·TLS 1.2+·CMK 일부 지원", note:"" },
+              gemini:  { s:"full", r:1, txt:"CMEK·Confidential Computing 지원", note:"" },
+              claude:  { s:"full", r:1, txt:"AES-256·TLS 1.2+·Bedrock KMS 연동 가능", note:"" }
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      id: "c6", num: "06",
+      title: "커스터마이징·개발",
+      desc: "조직 맞춤형 에이전트 제작과 개발자 도구 생태계",
+      subs: [
+        {
+          code: "6-1", title: "맞춤 에이전트",
+          rows: [
+            {
+              feat: "커스텀 에이전트 (GPTs / Gems / Projects)",
+              descB: "우리 회사 전용 AI 비서를 만들 수 있어요",
+              descI: "팀 전용 마케팅 카피봇·고객 FAQ봇 제작",
+              descA: "Fine-tuned persona + 지식 + tools 번들링",
+              chatgpt: { s:"full", r:1, txt:"GPTs·Agent Builder·생태계 가장 성숙", note:"" },
+              gemini:  { s:"full", r:3, txt:"Gems·Agent Space (개인 중심)", note:"조직 배포 기능 발전 중" },
+              claude:  { s:"full", r:2, txt:"Projects·Agent Skills 기반 공유", note:"" }
+            },
+            {
+              feat: "지식 베이스 업로드",
+              descB: "내부 자료를 올려두면 그걸 기반으로 답해요",
+              descI: "브랜드 가이드·제품 매뉴얼 연결",
+              descA: "Vector store, 파일 수/용량 제한, 재색인 정책",
+              chatgpt: { s:"full", r:2, txt:"파일 20개·자동 인덱싱", note:"" },
+              gemini:  { s:"full", r:2, txt:"Drive 폴더 직접 연결·대용량 강점", note:"" },
+              claude:  { s:"full", r:1, txt:"Projects·200K 컨텍스트 내 문서 묶음 처리", note:"" }
+            },
+            {
+              plan: "enterprise",
+              feat: "조직 내 공유",
+              descB: "만든 비서를 팀원과 함께 쓸 수 있어요",
+              descI: "부서별 프롬프트/에이전트 배포",
+              descA: "Workspace 단위 배포, 권한·버전 관리",
+              chatgpt: { s:"full", r:1, txt:"Workspace GPT Store·조직 배포 성숙", note:"" },
+              gemini:  { s:"partial", r:3, txt:"조직 공유 기능 점진 확장", note:"" },
+              claude:  { s:"full", r:2, txt:"Projects 조직 공유·Role 지정", note:"" }
+            }
+          ]
+        },
+        {
+          code: "6-2", title: "API · 개발자 도구",
+          rows: [
+            {
+              feat: "API 제공",
+              descB: "개발자가 우리 서비스에 AI를 넣을 수 있어요",
+              descI: "사내 시스템에 AI 기능 임베드",
+              descA: "Chat/Completions/Responses API, rate limit, batch",
+              chatgpt: { s:"full", r:1, txt:"가장 넓은 엔드포인트·도구 생태계", note:"" },
+              gemini:  { s:"full", r:1, txt:"Vertex AI·Gemini API·GCP 통합", note:"" },
+              claude:  { s:"full", r:1, txt:"Messages API·Bedrock·Vertex 제공", note:"" }
+            },
+            {
+              feat: "SDK",
+              descB: "여러 프로그래밍 언어로 쉽게 쓸 수 있어요",
+              descI: "Python/Node 기반 내부 툴 개발",
+              descA: "Python·Node·Java·Go SDK·타입 안정성",
+              chatgpt: { s:"full", r:1, txt:"Python/Node/Java/Go 공식 SDK", note:"" },
+              gemini:  { s:"full", r:2, txt:"Python/Node/Go SDK + Vertex SDK", note:"" },
+              claude:  { s:"full", r:1, txt:"Python/TS SDK·Bedrock/Vertex 지원", note:"" }
+            },
+            {
+              feat: "Fine-tuning",
+              descB: "우리 도메인에 맞게 AI를 다시 훈련시켜요",
+              descI: "사내 톤·용어 맞춤 모델 생성",
+              descA: "LoRA/SFT, 데이터 품질/안전 정책 프로세스",
+              chatgpt: { s:"full", r:1, txt:"GPT-4.1/o-mini 파인튜닝 지원", note:"" },
+              gemini:  { s:"full", r:2, txt:"Vertex AI Studio 튜닝", note:"" },
+              claude:  { s:"partial", r:3, txt:"Bedrock 경유 제한적 커스터마이징", note:"" }
+            },
+            {
+              feat: "코딩 에이전트 (Cursor / Codex / Claude Code)",
+              descB: "AI가 코드까지 직접 만들어줘요",
+              descI: "개발팀 생산성 도구 도입",
+              descA: "IDE·CLI agent, repo 전체 이해·멀티파일 리팩터링",
+              chatgpt: { s:"full", r:2, txt:"Codex CLI·Cursor·다수 IDE 연계", note:"" },
+              gemini:  { s:"full", r:3, txt:"Gemini Code Assist·Cloud Code IDE", note:"" },
+              claude:  { s:"full", r:1, txt:"Claude Code CLI·Cursor 선호도 업계 최고 수준", note:"" }
+            }
+          ]
+        }
+      ]
+    }
+  ];
+
+  // =====================================================
+  // RENDERING
+  // =====================================================
+  const SUPPORT_SYMBOL = {
+    full: "●", partial: "◐", none: "○", check: "−"
+  };
+  const SUPPORT_CLASS = {
+    full: "full", partial: "partial", none: "none", check: "check"
+  };
+  const RANK_LABEL = { 1: "🥇 상", 2: "🥈 중", 3: "🥉 하" };
+
+  function renderCell(cellData, platform){
+    if (!cellData) return `<td class="col-${platform}"></td>`;
+    const sym = SUPPORT_SYMBOL[cellData.s] || "−";
+    const cls = SUPPORT_CLASS[cellData.s] || "check";
+    const rankCls = cellData.r ? `rank-${cellData.r}` : "";
+    const rankTxt = RANK_LABEL[cellData.r] || "";
+    const noteHtml = cellData.note ? `<div class="note">${cellData.note}</div>` : "";
+    const entBadge = cellData.ent ? `<span class="ent-badge" data-tip="Enterprise 플랜 전용">Enterprise</span>` : (cellData.plan === 'common' ? `<span class="plan-badge" data-tip="일반 플랜에서도 사용 가능">일반 플랜</span>` : "");
+    const tdCls = `col-${platform}${cellData.r === 1 ? ' rank-top' : ''}`;
+    return `<td class="${tdCls}">
+      <div class="cell">
+        <div class="cell-top">
+          <span class="support ${cls}" data-tip="${cellData.s === 'full' ? '완전지원' : cellData.s === 'partial' ? '부분지원' : cellData.s === 'none' ? '미지원' : '확인필요'}">${sym}</span>
+          ${rankTxt ? `<span class="rank ${rankCls}">${rankTxt}</span>` : ""}
+          ${entBadge}
+        </div>
+        <div class="strength">${cellData.txt}</div>
+        ${noteHtml}
+      </div>
+    </td>`;
+  }
+
+  function renderRow(row){
+    const beginnerEmojiMap = {
+      "긴 문서 작성": "📝", "요약": "✂️", "번역": "🌐", "문체 변환": "🎭", "브레인스토밍": "💡",
+      "논리 문제 해결": "🧩", "수학·계산": "🔢", "코드 디버깅": "🐞", "다단계 업무 분해": "📋",
+      "PDF 업로드 분석": "📄", "Word/PPT 요약": "📊", "Excel 데이터 해석": "📈", "이미지 속 텍스트 인식(OCR)": "🔍",
+      "Word/PPT/Excel 직접 생성": "📁", "차트 자동 작성": "📉", "코드 파일 생성": "💾",
+      "이미지 분석·설명": "🖼️", "이미지 생성": "🎨", "차트·표 이미지 해석": "📊",
+      "음성 대화": "🎤", "영상 요약": "🎬", "STT / TTS": "🔊",
+      "Microsoft 365 연동": "🪟", "Google Workspace 연동": "🟢", "이메일 초안 자동 작성": "✉️",
+      "API / Webhook": "🔌", "커넥터 (Slack/Notion/Salesforce)": "🔗", "사내 DB 검색 (RAG)": "🗄️", "웹 검색": "🌍",
+      "사용자 관리": "👥", "사용량 모니터링": "📊", "감사 로그": "📜", "프롬프트 템플릿 공유": "🗂️",
+      "SSO / SAML": "🔑", "데이터 학습 제외": "🛡️", "SOC2 / ISO 인증": "🏅", "지역별 데이터 저장 (Data Residency)": "🗺️", "암호화": "🔒",
+      "커스텀 에이전트 (GPTs / Gems / Projects)": "🤖", "지식 베이스 업로드": "📚", "조직 내 공유": "🏢",
+      "API 제공": "⚡", "SDK": "🧰", "Fine-tuning": "🎯", "코딩 에이전트 (Cursor / Codex / Claude Code)": "💻"
+    };
+    const emo = beginnerEmojiMap[row.feat] || "✨";
+    const planTag = row.plan === 'enterprise'
+      ? `<span class="feat-tag tag-ent" data-tip="Enterprise 플랜 전용 기능">Enterprise 전용</span>`
+      : row.plan === 'common'
+      ? `<span class="feat-tag tag-common" data-tip="일반/Plus 플랜에서도 사용 가능">일반 플랜 포함</span>`
+      : "";
+    return `
+      <tr data-search="${(row.feat + ' ' + (row.descB||'') + ' ' + (row.descI||'') + ' ' + (row.descA||'')).toLowerCase()}">
+        <td>
+          <div class="feat-name">${row.feat}${planTag}</div>
+          <div class="feat-desc diff-beginner">
+            <span class="emoji-badge"><span class="emo">${emo}</span>쉬운 설명</span><br>
+            ${row.descB||''}
+          </div>
+          <div class="feat-desc diff-intermediate">${row.descI||''}</div>
+          <div class="feat-desc diff-advanced">${row.descA||''}</div>
+        </td>
+        ${renderCell(row.chatgpt, 'chatgpt')}
+        ${renderCell(row.gemini, 'gemini')}
+        ${renderCell(row.claude, 'claude')}
+      </tr>
+    `;
+  }
+
+  function renderSubcategory(sub){
+    const rows = sub.rows.map(renderRow).join("");
+    return `
+      <div class="subcategory">
+        <div class="subcategory-title">
+          <span class="code">${sub.code}</span>
+          <h3>${sub.title}</h3>
+        </div>
+        <table class="cmp-table">
+          <thead>
+            <tr>
+              <th class="feat">기능 / 설명</th>
+              <th class="platform col-chatgpt">
+                <span class="phead"><span class="plogo chatgpt">G</span>ChatGPT Enterprise</span>
+              </th>
+              <th class="platform col-gemini">
+                <span class="phead"><span class="plogo gemini">G</span>Gemini Enterprise</span>
+              </th>
+              <th class="platform col-claude">
+                <span class="phead"><span class="plogo claude">C</span>Claude for Enterprise</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function renderCategory(cat, idx){
+    const subs = cat.subs.map(renderSubcategory).join("");
+    const openClass = idx < 2 ? "open" : "";
+    return `
+      <section class="category ${openClass}" data-id="${cat.id}">
+        <header class="category-header" role="button" tabindex="0">
+          <div class="category-number">${cat.num}</div>
+          <div class="category-title">
+            <h2>${cat.title}</h2>
+            <p>${cat.desc}</p>
+          </div>
+          <div class="category-toggle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </header>
+        <div class="category-body">${subs}</div>
+      </section>
+    `;
+  }
+
+  const main = document.getElementById("mainContainer");
+  main.innerHTML = DATA.map(renderCategory).join("");
+
+  // =====================================================
+  // INTERACTIONS
+  // =====================================================
+
+  // Accordion
+  document.querySelectorAll(".category-header").forEach(h => {
+    h.addEventListener("click", () => h.parentElement.classList.toggle("open"));
+    h.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        h.parentElement.classList.toggle("open");
+      }
+    });
+  });
+
+  document.getElementById("expandAll").onclick = () => {
+    document.querySelectorAll(".category").forEach(c => c.classList.add("open"));
+  };
+  document.getElementById("collapseAll").onclick = () => {
+    document.querySelectorAll(".category").forEach(c => c.classList.remove("open"));
+  };
+
+  // Difficulty toggle
+  document.querySelectorAll("#diffToggle button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#diffToggle button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.body.dataset.diff = btn.dataset.diff;
+    });
+  });
+
+  // Platform filter
+  document.querySelectorAll(".platform-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      chip.classList.toggle("on");
+      const p = chip.dataset.platform;
+      document.body.classList.toggle("hide-" + p, !chip.classList.contains("on"));
+    });
+  });
+
+  // Search
+  const searchInput = document.getElementById("searchInput");
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().toLowerCase();
+    // remove old highlights
+    document.querySelectorAll(".cmp-table tbody tr").forEach(tr => tr.classList.remove("highlight"));
+    if (!q) return;
+
+    let firstMatch = null;
+    document.querySelectorAll(".category").forEach(cat => {
+      let hasMatch = false;
+      cat.querySelectorAll(".cmp-table tbody tr").forEach(tr => {
+        const hay = tr.dataset.search || "";
+        if (hay.includes(q)) {
+          tr.classList.add("highlight");
+          hasMatch = true;
+          if (!firstMatch) firstMatch = tr;
+        }
+      });
+      if (hasMatch) cat.classList.add("open");
+    });
+
+    if (firstMatch) {
+      firstMatch.scrollIntoView({behavior: "smooth", block: "center"});
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>
