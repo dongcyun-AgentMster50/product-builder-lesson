@@ -719,6 +719,16 @@ async function handleGenerate(req, res) {
         ].filter(Boolean).join("\n");
     }
 
+    // v2 mode-aware (cx/copy) 호출은 P5 모델 정책 — V2_DEFAULT_MODELS 단일 소스.
+    // v1 (mode 미전달) 호출은 callAIStream 내부 env fallback 그대로 사용 (회귀 0).
+    const v2ModelOverride = v2Mode
+        ? (provider === "openai"
+            ? (process.env.OPENAI_MODEL || V2_DEFAULT_MODELS.openai)
+            : provider === "claude"
+                ? (process.env.ANTHROPIC_MODEL || V2_DEFAULT_MODELS.anthropic)
+                : (process.env.GEMINI_MODEL || V2_DEFAULT_MODELS.gemini))
+        : undefined;
+
     sendSseHeaders(res);
     res.write(`data: ${JSON.stringify({ type: "start" })}\n\n`);
 
@@ -728,6 +738,7 @@ async function handleGenerate(req, res) {
         apiKey: clientKey,
         provider,
         jsonMode,
+        model: v2ModelOverride,
         messages: [{ role: "user", content: userMessage }],
         res,
         onDone: () => { if (!done) { done = true; res.end(); } },
@@ -3249,6 +3260,14 @@ Build a source-bound localization evidence pack for this city. Use only evidence
 // v2.html runCurator() 가 호출. BYOK 헤더 키만 검증 (v1 access 세션 무관).
 // 시스템 프롬프트 인라인 (P6 에서 prompt.txt 통합 예정).
 
+// DEFAULT_MODELS — functions/api/_provider.js 의 동일 상수 미러링 (ESM/CJS 호환).
+// 변경 시 두 파일 동기화 필수.
+const V2_DEFAULT_MODELS = Object.freeze({
+    openai: "gpt-5",
+    anthropic: "claude-sonnet-4-6",
+    gemini: "gemini-3.1-pro-preview"
+});
+
 const A1_SYSTEM_PROMPT_LOCAL = `당신은 SmartThings 마케팅 시나리오 큐레이터입니다.
 마케터가 답한 5단계 문답(채널·국가·고객 프로필·보유 기기·가치/관심사)을 **모두 균형 있게 반영**하여 27개 시나리오 DB에서 가장 적합한 TOP 3를 선택하세요.
 
@@ -3456,10 +3475,10 @@ async function handleCurate(req, res) {
 
     const userMessage = buildA1UserMessageLocal(body, summaries);
     const model = provider === "openai"
-        ? (process.env.OPENAI_MODEL || "gpt-4o")
+        ? (modelHint || process.env.OPENAI_MODEL || V2_DEFAULT_MODELS.openai)
         : (provider === "anthropic"
-            ? (modelHint || "claude-sonnet-4-6")
-            : (modelHint || process.env.GEMINI_MODEL || "gemini-2.5-flash"));
+            ? (modelHint || process.env.ANTHROPIC_MODEL || V2_DEFAULT_MODELS.anthropic)
+            : (modelHint || process.env.GEMINI_MODEL || V2_DEFAULT_MODELS.gemini));
 
     let raw;
     try {

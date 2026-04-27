@@ -1,7 +1,7 @@
 import { clearSessionCookie, getConfig, json, readSession } from "./access/_shared.js";
 import { enforceMonthlyBudget, estimateUsageCost, recordUsageCost } from "./_shared_ai.js";
 import { streamGeminiAsOpenAI, resolveGeminiKey } from "./_gemini.js";
-import { resolveProviderKey, maskKey } from "./_provider.js";
+import { resolveProviderKey, maskKey, DEFAULT_MODELS } from "./_provider.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
@@ -360,14 +360,22 @@ export async function onRequestPost(context) {
     }
 
     const userMessage = buildGeneratePrompt(body);
-    const model = provider === "openai"
-        ? String(context.env.OPENAI_MODEL || "gpt-4o").trim()
-        : String(modelHint || context.env.GEMINI_MODEL || "gemini-2.5-flash").trim();
+    // v2 mode-aware (cx/copy) 호출은 P5 모델 정책 — DEFAULT_MODELS 단일 소스.
+    // v1 (mode 미전달) 호출은 기존 fallback 'gpt-4o' / 'gemini-2.5-flash' 유지 (v1 회귀 0).
+    const v2Mode = (body?.mode === "copy" || body?.mode === "cx");
+    const model = v2Mode
+        ? (provider === "openai"
+            ? String(modelHint || context.env.OPENAI_MODEL || DEFAULT_MODELS.openai).trim()
+            : provider === "anthropic"
+                ? String(modelHint || context.env.ANTHROPIC_MODEL || DEFAULT_MODELS.anthropic).trim()
+                : String(modelHint || context.env.GEMINI_MODEL || DEFAULT_MODELS.gemini).trim())
+        : (provider === "openai"
+            ? String(context.env.OPENAI_MODEL || "gpt-4o").trim()
+            : String(modelHint || context.env.GEMINI_MODEL || "gemini-2.5-flash").trim());
     const maxTokens = Number(context.env.OPENAI_MAX_TOKENS || 8000);
 
     // Selection Summary 존재 시 JSON 모드 활성화
     // 단, v2 mode-aware (cx/copy) 호출은 5-C 마크다운 출력이므로 JSON 모드 강제 X
-    const v2Mode = (body?.mode === "copy" || body?.mode === "cx");
     const sel = body?.selectionSummary;
     const jsonMode = v2Mode
         ? false

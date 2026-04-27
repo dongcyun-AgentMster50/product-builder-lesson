@@ -9,7 +9,7 @@
 // 시스템 프롬프트는 일단 인라인 (P6 에서 prompt.txt 통합 예정).
 
 import { json } from "./access/_shared.js";
-import { resolveProviderKey, maskKey } from "./_provider.js";
+import { resolveProviderKey, maskKey, DEFAULT_MODELS } from "./_provider.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
@@ -221,11 +221,13 @@ export async function onRequestPost(context) {
     }
 
     const userMessage = buildA1UserMessage(body, scenarioSummaries);
+    // DEFAULT_MODELS 단일 소스. env override 가능 (운영 시 비상 강제 변경용).
+    // BYOK 사용자 요청 헤더 X-User-Model-Hint 가 최우선.
     const model = provider === "openai"
-        ? String(context.env?.OPENAI_MODEL || "gpt-4o").trim()
+        ? String(modelHint || context.env?.OPENAI_MODEL || DEFAULT_MODELS.openai).trim()
         : (provider === "anthropic"
-            ? String(modelHint || "claude-sonnet-4-6").trim()
-            : String(modelHint || context.env?.GEMINI_MODEL || "gemini-2.5-flash").trim());
+            ? String(modelHint || context.env?.ANTHROPIC_MODEL || DEFAULT_MODELS.anthropic).trim()
+            : String(modelHint || context.env?.GEMINI_MODEL || DEFAULT_MODELS.gemini).trim());
 
     console.info(JSON.stringify({
         type: "curate_request",
