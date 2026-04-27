@@ -449,31 +449,6 @@ select.country-select option { background: #ffffff; color: var(--text1); }
 /* ─── STORY CARDS (A1 result) ─── */
 #curator-results {
   display: none; margin-bottom: 40px;
-  position: relative;
-}
-#curator-results::before,
-#curator-results::after {
-  content: "";
-  position: absolute;
-  top: 0; bottom: 0;
-  width: 200px;
-  background: url("./assets/bg/scene-blueprint.png") top center / contain no-repeat;
-  opacity: 0.5;
-  pointer-events: none;
-  z-index: 0;
-}
-#curator-results::before { left: -220px; transform: scaleX(-1); }
-#curator-results::after { right: -220px; }
-#curator-results > * { position: relative; z-index: 1; }
-@media (max-width: 1380px) {
-  #curator-results::before, #curator-results::after { display: none; }
-  #curator-results {
-    background:
-      linear-gradient(180deg, rgba(245,247,250,0) 0%, rgba(245,247,250,0.95) 200px),
-      url("./assets/bg/scene-blueprint.png") right -40px top / 280px auto no-repeat;
-    border-radius: 18px;
-    padding: 8px;
-  }
 }
 .section-title {
   font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px;
