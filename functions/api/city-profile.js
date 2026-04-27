@@ -50,6 +50,19 @@ Your task is to produce a source-bound city evidence pack for consumer experienc
     For each, verify: (a) contains named local anchor, (b) has evidence_ids pointing to source_map, (c) fails the generic-city test.
     If any check fails, rewrite or mark insufficient.
 
+11. CITY-SPECIFIC NUMBERS ONLY — any numeric value (temperature, pollution level, snowfall cm, etc.) MUST be an actual measurement for THIS city.
+    ❌ "2005년 3월 중부 폭설로 49cm 적설량" — this was a national regional event, not a Daejeon-specific measurement.
+    ✅ "대전 관측소 기준 1월 평균 -1.0℃, 8월 평균 26.0℃" — values are direct measurements for this city.
+    If a number is a national/regional record not specifically for this city, OMIT it or mark insufficient.
+
+12. NO CONTRADICTORY OR DUPLICATE CLASSIFICATIONS — each classification system (Köppen climate, housing typology, etc.) must appear at most once per statement with a single consistent label.
+    ❌ "쾨펜 기후 구분 상 습윤 소우 기후(Cwa)와 온대 하우 기후(Cwa) 특성을 모두 보이며..." — Cwa is cited twice with conflicting Korean names.
+    ✅ "쾨펜 기후 구분상 온난 습윤(Cwa) 기후에 해당한다" — single consistent label.
+    Before output, scan for duplicate codes/labels and collapse to one accurate reading.
+
+13. COMPLETE SENTENCES ONLY — never leave a statement, why_localized, or relevance field ending mid-word or mid-phrase.
+    If you approach the token budget, TRUNCATE BY REMOVING LATER CATEGORIES AT A SENTENCE BOUNDARY — never cut mid-word. Prefer fewer complete entries over many partial ones.
+
 ═══ QUALITY EXAMPLES ═══
 
 ❌ REJECTED (climate): "The city experiences four distinct seasons with hot summers."
@@ -736,8 +749,9 @@ ${wikiContext}
 IMPORTANT: Use the reference context above as your PRIMARY source of facts. Extract specific district names, statistics, facility names, event names, and policy names from it. Cite "Wikipedia ${getWikiLang(country).toUpperCase()}" in your source_map. Only mark a category as "Evidence insufficient" if the reference context truly contains NO relevant information for that category.
 ` : ""}
 Build a source-bound localization evidence pack for this city. Use only evidence-backed localized statements. If evidence is weak, mark that category as "Evidence insufficient for localized claim." Return valid JSON only.`;
-    // 10 카테고리 evidence pack 긴 JSON: 절삭 방지 위해 토큰 여유 확대
-    const maxTokens = 14000;
+    // 10 카테고리 evidence_pack(statement+why+ids+confidence+3 relevance+missing) + source_map
+    // 한국어 긴 서술 시 14K도 절삭 사례 확인(대전 기후 쾨펜 문장 중단) → 20K로 추가 상향
+    const maxTokens = 20000;
 
     let result;
     try {

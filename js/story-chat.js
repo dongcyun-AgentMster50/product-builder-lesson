@@ -25,27 +25,64 @@
     gemini: 'Google · Gemini Flash',
   };
 
+  // 다른 곳에서 'claude'로 저장된 값을 정규화
+  function normalizeProvider(p) {
+    const v = String(p || '').toLowerCase().trim();
+    if (v === 'claude' || v === 'anthropic') return 'anthropic';
+    if (v === 'openai' || v === 'gpt' || v === 'chatgpt') return 'openai';
+    if (v === 'gemini' || v === 'google') return 'gemini';
+    return null;
+  }
+
+  // 키 prefix로 provider 추론 (sk-ant- 가 sk- 보다 먼저 와야 함)
+  function detectProviderFromKey(key) {
+    const k = String(key || '').trim();
+    if (!k) return null;
+    if (k.startsWith('AIza')) return 'gemini';
+    if (k.startsWith('sk-ant-')) return 'anthropic';
+    if (k.startsWith('sk-')) return 'openai';
+    return null;
+  }
+
   // ── 키 로드 헬퍼 ───────────────────────────────────────────
   function loadApiConfig() {
-    // v2 형식
+    // v2 형식 (provider + key 함께 저장)
     try {
       const raw = localStorage.getItem('st_api_config');
       if (raw) {
         const cfg = JSON.parse(raw);
-        if (cfg && cfg.provider && cfg.key) return { provider: cfg.provider, key: cfg.key };
+        if (cfg && cfg.key) {
+          const provider = normalizeProvider(cfg.provider) || detectProviderFromKey(cfg.key);
+          if (provider) return { provider, key: cfg.key };
+        }
       }
     } catch (e) { /* fall through */ }
 
-    // v1 형식 (base64 인코딩, OpenAI 가정)
+    // v1 형식 (main.js: base64 인코딩 키 + sessionStorage provider 힌트)
     try {
       const encoded = localStorage.getItem('userApiKey_v2');
       if (encoded) {
         const decoded = decodeURIComponent(escape(atob(encoded)));
-        if (decoded) return { provider: 'openai', key: decoded };
+        if (decoded) {
+          // 1순위: 같은 탭 sessionStorage에 저장된 provider
+          // 2순위: 키 prefix 자동 감지 (다른 탭에서 열어도 동작)
+          const hinted = normalizeProvider(
+            sessionStorage.getItem('userProvider') || sessionStorage.getItem('aiProvider')
+          );
+          const provider = hinted || detectProviderFromKey(decoded);
+          if (provider) return { provider, key: decoded };
+        }
       }
     } catch (e) { /* fall through */ }
 
     return null;
+  }
+
+  // Gemini 모델 선택 — main.js BYOK 화면에서 저장한 값 존중
+  function pickGeminiModel() {
+    const stored = (sessionStorage.getItem('userGeminiModel') || '').trim();
+    if (stored) return stored;
+    return 'gemini-2.0-flash';
   }
 
   // ── LLM 호출 라우터 ────────────────────────────────────────
@@ -92,7 +129,8 @@
         role: m.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: m.content }],
       }));
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+      const model = pickGeminiModel();
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -103,7 +141,11 @@
       });
       if (!res.ok) throw new Error(`Gemini ${res.status}: ${await res.text().catch(() => '')}`);
       const d = await res.json();
-      return d.candidates[0].content.parts.map(p => p.text).join('');
+      const parts = d.candidates?.[0]?.content?.parts;
+      if (!parts || !parts.length) {
+        throw new Error('Gemini 응답이 비어 있습니다 (안전필터 또는 토큰 한계).');
+      }
+      return parts.map(p => p.text || '').join('');
     }
 
     throw new Error(`Unknown provider: ${provider}`);
@@ -252,7 +294,10 @@
       return;
     }
 
-    providerEl.textContent = PROVIDER_LABEL[config.provider] || config.provider;
+    const providerLabel = config.provider === 'gemini'
+      ? `Google · ${pickGeminiModel()}`
+      : (PROVIDER_LABEL[config.provider] || config.provider);
+    providerEl.textContent = providerLabel;
 
     const messages = [];
     const systemPrompt = buildSystemPrompt(scenario, story);
@@ -280,7 +325,8 @@
         messages.push({ role: 'assistant', content: reply });
       } catch (err) {
         thinkingEl.remove();
-        addMsg('assistant', `오류가 발생했습니다: ${err.message}`, 'error');
+        console.error('[StoryChat] LLM 호출 실패', { provider: config.provider, error: err });
+        addMsg('assistant', `오류가 발생했습니다 (${config.provider}): ${err.message}`, 'error');
       } finally {
         sendBtn.disabled = false;
         inputEl.focus();

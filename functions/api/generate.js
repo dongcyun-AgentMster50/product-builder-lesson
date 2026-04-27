@@ -5,7 +5,104 @@ import { resolveProviderKey, maskKey } from "./_provider.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
+// ─── v2 Mode-Aware 6-Section Prompt Builder (Part 5-C) ───────────────────
+// 호출 조건: body.mode === 'cx' | 'copy'
+// 출력: user message 최상단에 `## Output Mode: cx|copy` 헤더 (prompt.txt 트리거).
+// 'copy' 모드는 city/devices/regionInsight/cityProfile 페이로드를 무시하고
+// copyText/tone/categoryHint 만 사용. 'cx' 모드는 기존 페이로드 + citySignalBlock
+// 그대로 (P4 에서 facet 1줄 요약으로 교체 예정).
+function buildV2ModePrompt(body, mode) {
+    const locale = String(body?.locale || "ko").trim();
+
+    if (mode === "copy") {
+        const copyText     = String(body?.copyText || "").trim();
+        const tone         = String(body?.tone || "").trim();
+        const categoryHint = String(body?.categoryHint || "").trim();
+        return [
+            "## Output Mode: copy",
+            "",
+            "## Input (Copy Consult)",
+            `- 카피 원문 (필수): ${copyText || "(미입력)"}`,
+            `- 톤 선호: ${tone || "(미선택 — Bold/Genuine/Playful 중 적합한 것을 추천 가능)"}`,
+            `- 타겟 카테고리 힌트: ${categoryHint || "(미입력)"}`,
+            "",
+            "## Task",
+            "Part 5-C 의 6섹션 A~F 형식으로만 응답하세요.",
+            "Mode2 (Copy Consult) 규칙 준수 — 도시·기기 정보는 입력으로 들어와도 본문에서 절대 언급 금지.",
+            "D 표는 Copy Options (5~7행, 컬럼: # / Headline (EN, ≤8 words) / 톤·포지셔닝 (KR, 1줄)).",
+            "톤 다양성 최소 3가지 (정공법/위트/절제/감성/B2B 중), 원본 카피 핵심 단어 최소 2개 보존.",
+            "11/13 섹션 풀스키마, JSON 코드 블록, ## 마크다운 헤딩 출력 금지.",
+            `응답 언어: ${locale === "ko" ? "한국어 (D 표 Headline 컬럼만 영어)" : `${locale}-primary`}.`
+        ].join("\n");
+    }
+
+    // mode === "cx"
+    const role     = String(body?.role || "").trim();
+    const country  = String(body?.country || "").trim();
+    const city     = String(body?.city || "").trim();
+    const segment  = String(body?.segment || "").trim();
+    const purpose  = String(body?.purpose || "").trim();
+    const devices  = Array.isArray(body?.devices) ? body.devices.join(", ") : String(body?.devices || "");
+    const groups   = Array.isArray(body?.deviceGroups) ? body.deviceGroups.join(", ") : String(body?.deviceGroups || "");
+    const mission  = String(body?.missionBucket || "").trim();
+    const regionCtx = body?.regionInsight ? JSON.stringify(body.regionInsight, null, 2) : null;
+
+    // citySignalBlock 은 v1 buildGeneratePrompt 와 동일 로직 (P4 에서 facet 요약으로 교체 예정)
+    const cityTags = Array.isArray(body?.selectedCityProfileTags) ? body.selectedCityProfileTags : [];
+    const cityContext = body?.selectedCityProfileContext || null;
+    const cityFullProfile = body?.cityProfile || null;
+    let effectiveCityTags = cityTags;
+    let effectiveCityContext = cityContext;
+    if (cityTags.length === 0 && cityFullProfile) {
+        effectiveCityTags = ['climate', 'housing', 'family', 'daily_rhythm', 'safety',
+            'energy', 'health', 'pets', 'mobility', 'events'].filter(k => cityFullProfile[k]);
+        const fallbackCtx = {};
+        for (const key of effectiveCityTags) {
+            fallbackCtx[key] = {
+                statement: cityFullProfile[key] || "",
+                evidence: cityFullProfile.evidence_pack?.[key] || null
+            };
+        }
+        effectiveCityContext = Object.keys(fallbackCtx).length > 0 ? fallbackCtx : null;
+    }
+    const citySignalBlock = effectiveCityTags.length > 0 ? [
+        ``,
+        `## 🔴 도시 가중치 신호 (Q1 사용자 선택 — 1순위 반영 필수)`,
+        `선택된 카테고리: ${effectiveCityTags.join(", ")}`,
+        effectiveCityContext ? `\n### 선택된 프로필 원문\n\`\`\`json\n${JSON.stringify(effectiveCityContext, null, 2)}\n\`\`\`` : "",
+        ``,
+        `**반영 규칙:** 위 카테고리의 로컬 앵커를 B/C 에서 인용. 선택되지 않은 카테고리 언급 금지.`
+    ].filter(Boolean).join("\n") : "";
+
+    return [
+        "## Output Mode: cx",
+        "",
+        "## Input (CX Scenario)",
+        `- Role: ${role || "(not specified)"}`,
+        `- Country: ${country}${city ? ` / City: ${city}` : ""}`,
+        `- Target Segment: ${segment || "(not specified)"}`,
+        `- Purpose: ${purpose || "(not specified)"}`,
+        `- Devices: ${devices || "(none)"}`,
+        `- Device Categories: ${groups || "(none)"}`,
+        `- Mission Bucket: ${mission || "Discover"}`,
+        `- Output Language: ${locale === "ko" ? "Korean-primary" : `${locale}-primary`}`,
+        regionCtx ? `\n## Live Regional Data\n\`\`\`json\n${regionCtx}\n\`\`\`` : "",
+        citySignalBlock,
+        "\n## Task",
+        "Part 5-C 의 6섹션 A~F 형식으로만 응답하세요.",
+        "Mode1 (CX Scenario) 규칙 준수 — 시나리오 2~3개 deep, 4대 가치 태그(Care/Play/Save/Secure) 중 1개 이상 C 에 명시.",
+        "D 표는 Touchpoints (4~6행, 컬럼: # / Trigger / Action / 체감 가치).",
+        "11/13 섹션 풀스키마, JSON 코드 블록, ## 마크다운 헤딩 출력 금지 (라벨은 **A.** 형식)."
+    ].filter(Boolean).join("\n");
+}
+
 function buildGeneratePrompt(body) {
+    // ─── v2 Mode-Aware 분기 (Part 5-C 트리거) ─────────────────────────────
+    // body.mode === 'cx' | 'copy' 일 때만 발동. v1 (mode 미전달) 은 절대 진입 X.
+    const mode = (body?.mode === "copy" || body?.mode === "cx") ? body.mode : null;
+    if (mode) return buildV2ModePrompt(body, mode);
+    // ─── 이하 v1 경로 — 한 줄도 변경 금지 ────────────────────────────────
+
     const role = String(body?.role || "").trim();
     const country = String(body?.country || "").trim();
     const city = String(body?.city || "").trim();
@@ -246,10 +343,14 @@ export async function onRequestPost(context) {
     const maxTokens = Number(context.env.OPENAI_MAX_TOKENS || 8000);
 
     // Selection Summary 존재 시 JSON 모드 활성화
+    // 단, v2 mode-aware (cx/copy) 호출은 5-C 마크다운 출력이므로 JSON 모드 강제 X
+    const v2Mode = (body?.mode === "copy" || body?.mode === "cx");
     const sel = body?.selectionSummary;
-    const jsonMode = body?.campaignSection === true
-        ? true
-        : !!(sel && sel.selectedScenarios && sel.selectedScenarios.length > 0);
+    const jsonMode = v2Mode
+        ? false
+        : (body?.campaignSection === true
+            ? true
+            : !!(sel && sel.selectedScenarios && sel.selectedScenarios.length > 0));
 
     console.info(JSON.stringify({
         type: "generate_request",

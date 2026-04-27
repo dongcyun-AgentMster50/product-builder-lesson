@@ -206,6 +206,30 @@ main { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
   font-size: 14px; color: var(--text2); max-width: 480px; line-height: 1.7;
 }
 
+/* ─── MODE TOGGLE (P3) ─── */
+.mode-toggle {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-bottom: 24px;
+}
+@media (max-width: 720px) {
+  .mode-toggle { grid-template-columns: 1fr; }
+}
+.mode-card {
+  text-align: left; padding: 18px 20px;
+  background: var(--card); border: 2px solid var(--border);
+  border-radius: 14px; cursor: pointer; transition: all 0.15s;
+  font-family: inherit;
+}
+.mode-card:hover { border-color: var(--border-light); background: var(--card-hover); }
+.mode-card.selected {
+  border-color: var(--accent);
+  background: var(--card-hover);
+  box-shadow: 0 0 0 3px rgba(20,40,160,0.08);
+}
+.mode-card .mode-icon { font-size: 22px; line-height: 1; margin-bottom: 8px; }
+.mode-card .mode-name { font-size: 14px; font-weight: 600; color: var(--text1); margin-bottom: 4px; }
+.mode-card .mode-desc { font-size: 12px; color: var(--text3); line-height: 1.5; }
+
 /* ─── 3-STEP FORM ─── */
 .step-form {
   background: var(--card);
@@ -758,11 +782,25 @@ select.country-select option { background: #ffffff; color: var(--text1); }
     <p>5단계 질문에 답하면 AI가 27개 시나리오 중 가장 적합한 TOP 3를 선별하고, 현지화·채널 확장까지 자동으로 이어줍니다. 모든 시나리오를 직접 둘러보고 싶다면 <a href="./dashboard.html" style="color:var(--accent); text-decoration:underline;">📋 대시보드</a>에서 확인하세요.</p>
   </div>
 
+  <!-- MODE TOGGLE -->
+  <div class="mode-toggle fade-in" id="mode-toggle">
+    <button type="button" class="mode-card selected" data-mode="cx" onclick="selectMode('cx')">
+      <div class="mode-icon">🎬</div>
+      <div class="mode-name">CX 시나리오 만들기</div>
+      <div class="mode-desc">기기 기반 자동화 시나리오 2~3개 생성 (5단계 문답)</div>
+    </button>
+    <button type="button" class="mode-card" data-mode="copy" onclick="selectMode('copy')">
+      <div class="mode-icon">✍️</div>
+      <div class="mode-name">카피 자문받기</div>
+      <div class="mode-desc">광고 카피 1개를 분석하고 헤드라인 후보 5~7개 제안 (3단계)</div>
+    </button>
+  </div>
+
   <!-- WIZARD FORM -->
   <div class="step-form fade-in">
 
-    <!-- STEP 1: 담당 채널 -->
-    <div class="wizard-step">
+    <!-- STEP 1: 담당 채널 (CX/Copy 공통) -->
+    <div class="wizard-step" data-step-mode="both" data-step-key="role">
       <div class="step-num">Step 1 of 5</div>
       <div class="step-label">담당 채널이 뭔가요?</div>
       <div class="step-hint">시나리오 톤과 채널 결과물이 달라집니다.</div>
@@ -782,8 +820,8 @@ select.country-select option { background: #ffffff; color: var(--text1); }
       </div>
     </div>
 
-    <!-- STEP 2: 국가·도시 -->
-    <div class="wizard-step">
+    <!-- STEP 2 (CX): 국가·도시 -->
+    <div class="wizard-step" data-step-mode="cx" data-step-key="country">
       <div class="step-num">Step 2 of 5</div>
       <div class="step-label">대상 국가·지역은?</div>
       <div class="step-hint">현지 문화·기후·주거 문화가 시나리오에 반영됩니다.</div>
@@ -807,8 +845,8 @@ select.country-select option { background: #ffffff; color: var(--text1); }
       </div>
     </div>
 
-    <!-- STEP 3: 고객 프로필 -->
-    <div class="wizard-step">
+    <!-- STEP 3 (CX): 고객 프로필 -->
+    <div class="wizard-step" data-step-mode="cx" data-step-key="profile">
       <div class="step-num">Step 3 of 5</div>
       <div class="step-label">대상 고객은 어떤 분인가요?</div>
       <div class="step-hint">거주 형태와 가족 구성으로 시나리오의 생활 맥락이 구체화됩니다.</div>
@@ -837,8 +875,8 @@ select.country-select option { background: #ffffff; color: var(--text1); }
       </div>
     </div>
 
-    <!-- STEP 4: 보유 기기 -->
-    <div class="wizard-step">
+    <!-- STEP 4 (CX): 보유 기기 -->
+    <div class="wizard-step" data-step-mode="cx" data-step-key="devices">
       <div class="step-num">Step 4 of 5</div>
       <div class="step-label">보유하거나 주력으로 제안할 기기는? (복수 선택)</div>
       <div class="step-hint">선택한 기기들을 중심으로 시나리오와 구매 유도가 짜입니다.</div>
@@ -906,8 +944,8 @@ select.country-select option { background: #ffffff; color: var(--text1); }
       <div class="device-count-hint"><strong id="device-count">0</strong>개 선택됨 · 3개 이상 선택 시 추천 정확도가 올라갑니다.</div>
     </div>
 
-    <!-- STEP 5: 가치 태그 + 관심사 -->
-    <div class="wizard-step">
+    <!-- STEP 5 (CX): 가치 태그 + 관심사 -->
+    <div class="wizard-step" data-step-mode="cx" data-step-key="values">
       <div class="step-num">Step 5 of 5</div>
       <div class="step-label">집중하려는 가치와 관심사는?</div>
       <div class="step-hint">가치는 필수(최대 2개), 관심사는 선택적으로 복수 고를 수 있어요.</div>
@@ -939,12 +977,47 @@ select.country-select option { background: #ffffff; color: var(--text1); }
       </div>
     </div>
 
+    <!-- STEP 2 (Copy): 카피 원문 -->
+    <div class="wizard-step" data-step-mode="copy" data-step-key="copyText" style="display:none;">
+      <div class="step-num">Step 2 of 3</div>
+      <div class="step-label">자문받을 카피 원문을 붙여주세요 <span style="color:var(--accent);">(필수)</span></div>
+      <div class="step-hint">메인 헤드라인 / 서브 카피 / 슬로건 — 형식 무관. 한 호흡에 읽히는 1~3문장 권장.</div>
+      <textarea id="copy-text-input" class="input-field" rows="4"
+        placeholder="예: 헤드라인의 더 좋은 변형 시리즈를 알고 싶어요 — 침묵을 무기로, 절제된 한 줄"
+        style="font-family:inherit; font-size:14px; line-height:1.55; min-height:96px; resize:vertical;"
+        oninput="state.copyText = this.value; updateSummary();"></textarea>
+    </div>
+
+    <!-- STEP 3 (Copy): 톤 + 카테고리 힌트 -->
+    <div class="wizard-step" data-step-mode="copy" data-step-key="copyTone" style="display:none;">
+      <div class="step-num">Step 3 of 3</div>
+      <div class="step-label">톤 선호와 타겟 카테고리 힌트 <span style="color:var(--text3); font-weight:400;">(둘 다 선택)</span></div>
+      <div class="step-hint">힌트가 없으면 AI가 카피 원문에서 추론합니다.</div>
+
+      <div style="margin-bottom: 14px;">
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px; font-weight:500;">톤 선호</div>
+        <div class="pill-row" id="tone-pills">
+          <button type="button" class="pill-radio" data-val="Bold"   onclick="selectTone(this)">⚡ Bold</button>
+          <button type="button" class="pill-radio" data-val="Genuine" onclick="selectTone(this)">🤝 Genuine</button>
+          <button type="button" class="pill-radio" data-val="Playful" onclick="selectTone(this)">🎈 Playful</button>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:12px; color:var(--text2); margin-bottom:6px; font-weight:500;">타겟 카테고리 힌트</div>
+        <input type="text" id="copy-category-input" class="input-field"
+          placeholder="예: 프리미엄 가전 / 모바일 / 홈 IoT"
+          style="font-family:inherit; font-size:13px;"
+          oninput="state.copyCategoryHint = this.value; updateSummary();">
+      </div>
+    </div>
+
     <!-- Selection summary -->
     <div class="selection-summary hidden" id="selection-summary"></div>
 
     <!-- RUN BUTTON -->
     <button class="run-btn" id="run-btn" onclick="runCurator()" style="margin-top: 26px;">
-      <span>맞춤 시나리오 추천받기</span>
+      <span id="run-btn-label">맞춤 시나리오 추천받기</span>
       <span class="arrow">→</span>
     </button>
   </div>
@@ -1067,7 +1140,56 @@ const state = {
   topStories: [],
   selectedStory: null,
   localizedStory: '',
+  // P3: v2 Mode-Aware
+  outputMode: 'cx',          // 'cx' | 'copy'
+  copyText: '',              // Copy Mode Step 2
+  copyTone: '',              // Copy Mode Step 3 — Bold | Genuine | Playful
+  copyCategoryHint: '',      // Copy Mode Step 3 — 자유 입력
 };
+
+// ─── P3: MODE TOGGLE + STEP UI ───
+function selectMode(mode) {
+  if (mode !== 'cx' && mode !== 'copy') return;
+  state.outputMode = mode;
+  document.querySelectorAll('.mode-card').forEach(c => {
+    c.classList.toggle('selected', c.dataset.mode === mode);
+  });
+  applyModeUI();
+}
+
+function applyModeUI() {
+  const mode = state.outputMode;
+  const steps = document.querySelectorAll('.wizard-step[data-step-mode]');
+  // 1) show/hide based on data-step-mode
+  let visibleIdx = 0;
+  let totalVisible = 0;
+  steps.forEach(s => {
+    const m = s.dataset.stepMode; // 'cx' | 'copy' | 'both'
+    const visible = (m === 'both') || (m === mode);
+    if (visible) totalVisible++;
+  });
+  steps.forEach(s => {
+    const m = s.dataset.stepMode;
+    const visible = (m === 'both') || (m === mode);
+    s.style.display = visible ? '' : 'none';
+    if (visible) {
+      visibleIdx++;
+      const numEl = s.querySelector('.step-num');
+      if (numEl) numEl.textContent = `Step ${visibleIdx} of ${totalVisible}`;
+    }
+  });
+  // 2) Run button label + summary refresh
+  const label = document.getElementById('run-btn-label');
+  if (label) label.textContent = mode === 'copy' ? '카피 자문 받기' : '맞춤 시나리오 추천받기';
+  if (typeof updateSummary === 'function') updateSummary();
+}
+
+function selectTone(btn) {
+  document.querySelectorAll('#tone-pills .pill-radio').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.copyTone = btn.dataset.val;
+  if (typeof updateSummary === 'function') updateSummary();
+}
 
 // ─── PROVIDER SETUP ───
 function selectProvider(p) {
@@ -1287,6 +1409,9 @@ function setStage(id, status) {
 
 // ─── A1: CURATOR ───
 async function runCurator() {
+  // P3: Mode 분기 — Copy Consult 는 별도 핸들러로
+  if (state.outputMode === 'copy') return runCopyConsult();
+
   if (!state.selectedRole) { showError('Step 1: 담당 채널을 선택해주세요.'); return; }
   if (!document.getElementById('country-select').value) { showError('Step 2: 국가를 선택해주세요.'); return; }
   if (state.selectedValues.length === 0) { showError('Step 5: 가치 태그를 최소 1개 선택해주세요.'); return; }
@@ -1395,6 +1520,19 @@ ${scenarioSummaries}
 
 위 DB에서 이 사용자에게 가장 적합한 TOP 3 시나리오를 [선택 기준 — 가중치] 순서대로 반영하여 선정해주세요.`;
 
+  // P3: CX payload 도 mode 키 포함 (향후 백엔드 라우팅 호환)
+  console.info('[runCurator] payload', {
+    mode: 'cx',
+    role: state.selectedRole,
+    country: state.selectedCountry,
+    city: state.selectedCity,
+    selectedHome: state.selectedHome,
+    selectedFamily: state.selectedFamily,
+    devices: state.selectedDevices,
+    selectedValues: state.selectedValues,
+    selectedInterests: state.selectedInterests
+  });
+
   try {
     const raw = await callAI(system, user);
     const cleaned = raw.replace(/```json|```/g, '').trim();
@@ -1406,6 +1544,91 @@ ${scenarioSummaries}
     showError('A1 Curator 오류: ' + e.message);
     document.getElementById('run-btn').disabled = false;
   }
+}
+
+// ─── P3: COPY CONSULT (Mode 2) ───
+async function runCopyConsult() {
+  if (!state.selectedRole) { showError('Step 1: 담당 채널을 선택해주세요.'); return; }
+  const copyText = (document.getElementById('copy-text-input')?.value || '').trim();
+  if (!copyText) { showError('Step 2: 카피 원문을 입력해주세요.'); return; }
+  state.copyText = copyText;
+  state.copyCategoryHint = (document.getElementById('copy-category-input')?.value || '').trim();
+
+  document.getElementById('run-btn').disabled = true;
+  document.getElementById('pipeline-status').style.display = 'block';
+  document.getElementById('curator-results').style.display = 'none';
+  document.getElementById('story-workspace').style.display = 'none';
+  setStage('a1', 'active');
+
+  // P3: payload 키는 P2 백엔드 spec 과 일치 — mode/copyText/tone/categoryHint
+  // (현재 v2 는 BYOK callAI 직접 호출이라 백엔드 mode 분기는 안 통하므로
+  //  prompt.txt Part 5-C Mode2 규칙을 인라인으로 system 에 주입한다.)
+  const payload = {
+    mode: 'copy',
+    role: state.selectedRole,
+    copyText: state.copyText,
+    tone: state.copyTone,
+    categoryHint: state.copyCategoryHint
+  };
+  console.info('[runCopyConsult] payload', payload);
+
+  const system = `당신은 Samsung 마케팅 카피 자문가입니다. prompt.txt Part 5-C Mode2 (Copy Consult) 규칙을 따릅니다.
+
+[절대 규칙]
+- 6섹션 A~F 형식으로만 응답. 다른 섹션·번호·헤더 금지.
+- 각 섹션은 "**A. One-line Brief & Hook**" 처럼 ** 볼드 라벨로 시작. ## 마크다운 헤딩 금지.
+- 섹션 사이에 --- 수평선 금지.
+- 도시·기기 정보가 입력에 들어와도 본문에서 절대 언급 금지.
+- 11/13 섹션 풀스키마, JSON 코드 블록, [Source]/[Assumption] 인라인 태그 금지.
+
+[섹션 구조]
+A. One-line Brief & Hook → KR 1줄 + Hook 1줄(EN). 형식: "KR: ..." / "Hook: ..."
+B. Target & Insight → 1~2문장 서술 (200~300자, 라벨/불릿 금지)
+C. Direction → (1) 추천 카피 패턴 1줄, (2) 적합 카테고리 3~6개 (적합도 순, 각 1줄 근거), (3) 부적합 카테고리 1~2개 (이유 1줄)
+D. Copy Options → 5~7행 표. 컬럼: | # | Headline (EN, ≤8 words) | 톤·포지셔닝 (KR, 1줄) |
+   - 톤 다양성 필수: 정공법 / 위트 / 절제 / 감성 / B2B 중 최소 3가지
+   - 사용자가 제공한 원본 카피의 핵심 단어 최소 2개 보존
+E. Visual / Scene Cue → 씬 3개. 형식: "Scene A: ..." "Scene B: ..." "Scene C: ..."
+F. Watch-outs → 2~3개 단답 리스트(- 불릿). 카피가 죽는 상황 — 윤리 / 카테고리 미스매치 / 연출 함정
+
+응답 언어: 한국어 (D 표 Headline 컬럼만 영어).`;
+
+  const user = `## Output Mode: copy
+
+## Input (Copy Consult)
+- 담당 채널: ${({retail:'리테일(매장)', dotcom:'닷컴(온라인)', brand:'브랜드(캠페인)'}[state.selectedRole]) || state.selectedRole}
+- 카피 원문 (필수): ${state.copyText}
+- 톤 선호: ${state.copyTone || '(미선택 — Bold/Genuine/Playful 중 적합한 것을 추천 가능)'}
+- 타겟 카테고리 힌트: ${state.copyCategoryHint || '(미입력 — 카피 원문에서 추론)'}
+
+위 입력을 근거로 6섹션 A~F 카피 자문을 제공하세요.`;
+
+  try {
+    const raw = await callAI(system, user);
+    setStage('a1', 'done');
+    renderCopyConsult(raw);
+  } catch(e) {
+    setStage('a1', 'error');
+    showError('Copy Consult 오류: ' + e.message);
+  } finally {
+    document.getElementById('run-btn').disabled = false;
+  }
+}
+
+function renderCopyConsult(markdown) {
+  const grid = document.getElementById('story-grid');
+  const sub  = document.getElementById('curator-sub');
+  if (sub) sub.textContent = 'AI 카피 자문 — 6섹션 A~F (P5에서 전용 렌더러 적용 예정)';
+  if (grid) {
+    // P3 임시 렌더 — P5에서 A~F 전용 컴포넌트로 교체 예정
+    const safe = String(markdown || '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    grid.innerHTML = `<div class="story-card fade-in" style="grid-column: 1 / -1; cursor:default; max-width:none;">
+      <pre style="white-space:pre-wrap; word-break:break-word; font-family:inherit; font-size:13.5px; line-height:1.7; color:var(--text1); margin:0;">${safe}</pre>
+    </div>`;
+  }
+  document.getElementById('curator-results').style.display = 'block';
+  document.getElementById('curator-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function renderStoryCards(stories, note) {
@@ -1666,6 +1889,9 @@ function showToast(msg) {
 
 // ─── INIT ───
 window.addEventListener('load', () => {
+  // P3: 모드 토글 초기화 (디폴트 'cx', 5-step 폼 노출)
+  applyModeUI();
+
   const saved = localStorage.getItem('st_api_config');
   if (saved) {
     try {

@@ -29,7 +29,9 @@ const OUTPUT_SCHEMA_FIELDS = {
     }
 };
 
-// ─── 13개 캠페인 섹션 개별 스키마 (Single Source of Truth) ───
+// ─── 13개 캠페인 섹션 개별 스키마 (v1 LEGACY — 호환 유지용) ───
+// v1 (index.html / main.js / campaign-output.js) 가 이 스키마를 직접 참조한다.
+// v2.html 신규 흐름은 아래 SECTIONS_V2_6 (A~F) 를 사용. 두 스키마는 병행 운영.
 const CAMPAIGN_SECTION_SCHEMAS = {
     "01": {
         name: "Input Summary",
@@ -694,6 +696,91 @@ function buildFallbackOutput(selectionSummary, payload) {
     };
 }
 
+// ─── v2 Mode-Aware 6-Section Schema (A~F) — v2.html 전용, 신규 ───
+// CX Scenario / Copy Consult 두 모드 공통의 6섹션 출력 골격.
+// prompt.txt Part 5-C 와 1:1 대응. 13섹션 CAMPAIGN_SECTION_SCHEMAS 와는 독립.
+const SECTIONS_V2_6 = {
+    A: {
+        id: "A",
+        name: "One-line Brief & Hook",
+        nameKo: "한 줄 요약 + 후크",
+        format: "text",
+        required: ["kr", "hook_en"],
+        modes: ["cx", "copy"]
+    },
+    B: {
+        id: "B",
+        name: "Target & Insight",
+        nameKo: "타겟 & 인사이트",
+        format: "narrative",
+        required: ["text"],
+        textLength: { min: 200, max: 300 },
+        modes: ["cx", "copy"]
+    },
+    C: {
+        id: "C",
+        name: "Direction",
+        nameKo: "방향성",
+        format: "narrative",
+        required: ["text"],
+        optional: ["valueTags", "fitCategories", "misfitCategories"],
+        modes: ["cx", "copy"],
+        cx: {
+            textLength: { min: 200, max: 300 },
+            valueTagsRequired: true,
+            valueTagPool: ["Care", "Play", "Save", "Secure"]
+        },
+        copy: {
+            patternLineRequired: true,
+            fitCategories: { min: 3, max: 6 },
+            misfitCategories: { min: 1, max: 2 }
+        }
+    },
+    D: {
+        id: "D",
+        name: "Table",
+        nameKo: "표",
+        format: "table",
+        modes: ["cx", "copy"],
+        cx: {
+            label: "Touchpoints",
+            columns: ["#", "Trigger", "Action", "체감 가치"],
+            rows: { min: 4, max: 6 }
+        },
+        copy: {
+            label: "Copy Options",
+            columns: ["#", "Headline (EN, ≤8 words)", "톤/포지셔닝 (KR, 1줄)"],
+            rows: { min: 5, max: 7 },
+            constraints: {
+                tonePool: ["정공법", "위트", "절제", "감성", "B2B"],
+                toneDiversityMin: 3,
+                preserveOriginalKeywordsMin: 2
+            }
+        }
+    },
+    E: {
+        id: "E",
+        name: "Visual / Scene Cue",
+        nameKo: "비주얼 / 씬 큐",
+        format: "list",
+        required: ["scenes"],
+        modes: ["cx", "copy"],
+        cx: { sceneCount: { min: 3, max: 4 } },
+        copy: { sceneCount: { min: 3, max: 3 } }
+    },
+    F: {
+        id: "F",
+        name: "Watch-outs",
+        nameKo: "주의/리스크",
+        format: "list",
+        required: ["items"],
+        items: { min: 2, max: 3 },
+        modes: ["cx", "copy"]
+    }
+};
+
+const SECTIONS_V2_6_ORDER = ["A", "B", "C", "D", "E", "F"];
+
 // Export
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
@@ -707,6 +794,8 @@ if (typeof module !== "undefined" && module.exports) {
         getCampaignSectionSchema,
         validateSectionAgainstSchema,
         OUTPUT_SCHEMA_FIELDS,
-        CAMPAIGN_SECTION_SCHEMAS
+        CAMPAIGN_SECTION_SCHEMAS,
+        SECTIONS_V2_6,
+        SECTIONS_V2_6_ORDER
     };
 }

@@ -537,8 +537,80 @@ async function handleGenerate(req, res) {
     let userMessage;
     let jsonMode = false;
 
-    // ─── Mode 1: Campaign Section (13-Section 개별 API 호출) ───
-    if (isCampaignSection && sectionPrompt) {
+    // ─── v2 Mode-Aware 분기 (Part 5-C 트리거) ───────────────────────────
+    // body.mode === 'cx' | 'copy' 일 때만 발동. v1 호출 (mode 미전달) 은 절대 진입 X.
+    const v2Mode = (body?.mode === "copy" || body?.mode === "cx") ? body.mode : null;
+    if (v2Mode === "copy") {
+        const copyText     = String(body?.copyText || "").trim();
+        const tone         = String(body?.tone || "").trim();
+        const categoryHint = String(body?.categoryHint || "").trim();
+        userMessage = [
+            "## Output Mode: copy",
+            "",
+            "## Input (Copy Consult)",
+            `- 카피 원문 (필수): ${copyText || "(미입력)"}`,
+            `- 톤 선호: ${tone || "(미선택 — Bold/Genuine/Playful 중 적합한 것을 추천 가능)"}`,
+            `- 타겟 카테고리 힌트: ${categoryHint || "(미입력)"}`,
+            "",
+            "## Task",
+            "Part 5-C 의 6섹션 A~F 형식으로만 응답하세요.",
+            "Mode2 (Copy Consult) 규칙 준수 — 도시·기기 정보는 입력으로 들어와도 본문에서 절대 언급 금지.",
+            "D 표는 Copy Options (5~7행, 컬럼: # / Headline (EN, ≤8 words) / 톤·포지셔닝 (KR, 1줄)).",
+            "톤 다양성 최소 3가지 (정공법/위트/절제/감성/B2B 중), 원본 카피 핵심 단어 최소 2개 보존.",
+            "11/13 섹션 풀스키마, JSON 코드 블록, ## 마크다운 헤딩 출력 금지.",
+            `응답 언어: ${locale === "ko" ? "한국어 (D 표 Headline 컬럼만 영어)" : `${locale}-primary`}.`
+        ].join("\n");
+    } else if (v2Mode === "cx") {
+        // citySignalBlock 은 P4 에서 facet 1줄 요약으로 교체 예정 — P2 에서는 기존 시그널 그대로
+        const cityTags = Array.isArray(body?.selectedCityProfileTags) ? body.selectedCityProfileTags : [];
+        const cityContext = body?.selectedCityProfileContext || null;
+        const cityFullProfile = body?.cityProfile || null;
+        let effectiveCityTags = cityTags;
+        let effectiveCityContext = cityContext;
+        if (cityTags.length === 0 && cityFullProfile) {
+            effectiveCityTags = ['climate', 'housing', 'family', 'daily_rhythm', 'safety',
+                'energy', 'health', 'pets', 'mobility', 'events'].filter(k => cityFullProfile[k]);
+            const fallbackCtx = {};
+            for (const key of effectiveCityTags) {
+                fallbackCtx[key] = {
+                    statement: cityFullProfile[key] || "",
+                    evidence: cityFullProfile.evidence_pack?.[key] || null
+                };
+            }
+            effectiveCityContext = Object.keys(fallbackCtx).length > 0 ? fallbackCtx : null;
+        }
+        const citySignalBlock = effectiveCityTags.length > 0 ? [
+            ``,
+            `## 🔴 도시 가중치 신호 (Q1 사용자 선택 — 1순위 반영 필수)`,
+            `선택된 카테고리: ${effectiveCityTags.join(", ")}`,
+            effectiveCityContext ? `\n### 선택된 프로필 원문\n\`\`\`json\n${JSON.stringify(effectiveCityContext, null, 2)}\n\`\`\`` : "",
+            ``,
+            `**반영 규칙:** 위 카테고리의 로컬 앵커를 B/C 에서 인용. 선택되지 않은 카테고리 언급 금지.`
+        ].filter(Boolean).join("\n") : "";
+
+        userMessage = [
+            "## Output Mode: cx",
+            "",
+            "## Input (CX Scenario)",
+            `- Role: ${role || "(not specified)"}`,
+            `- Country: ${country}${city ? ` / City: ${city}` : ""}`,
+            `- Target Segment: ${segment || "(not specified)"}`,
+            `- Purpose: ${purpose || "(not specified)"}`,
+            `- Devices: ${devices || "(none)"}`,
+            `- Device Categories: ${groups || "(none)"}`,
+            `- Mission Bucket: ${mission || "Discover"}`,
+            `- Output Language: ${locale === "ko" ? "Korean-primary" : `${locale}-primary`}`,
+            regionCtx ? `\n## Live Regional Data\n\`\`\`json\n${regionCtx}\n\`\`\`` : "",
+            citySignalBlock,
+            "\n## Task",
+            "Part 5-C 의 6섹션 A~F 형식으로만 응답하세요.",
+            "Mode1 (CX Scenario) 규칙 준수 — 시나리오 2~3개 deep, 4대 가치 태그(Care/Play/Save/Secure) 중 1개 이상 C 에 명시.",
+            "D 표는 Touchpoints (4~6행, 컬럼: # / Trigger / Action / 체감 가치).",
+            "11/13 섹션 풀스키마, JSON 코드 블록, ## 마크다운 헤딩 출력 금지 (라벨은 **A.** 형식)."
+        ].filter(Boolean).join("\n");
+    }
+    // ─── 이하 v1 경로 (v2Mode === null) — 한 줄도 변경 금지 ─────────────
+    else if (isCampaignSection && sectionPrompt) {
         const langInstruction = locale === "ko"
             ? "반드시 한국어로 작성하세요 (전문 용어만 영어 병기 가능)."
             : "Write in English.";
@@ -2312,6 +2384,19 @@ Your task is to produce a source-bound city evidence pack for consumer experienc
     For each, verify: (a) contains named local anchor, (b) has evidence_ids pointing to source_map, (c) fails the generic-city test.
     If any check fails, rewrite or mark insufficient.
 
+11. CITY-SPECIFIC NUMBERS ONLY — any numeric value (temperature, pollution level, snowfall cm, etc.) MUST be an actual measurement for THIS city.
+    ❌ "2005년 3월 중부 폭설로 49cm 적설량" — this was a national regional event, not a Daejeon-specific measurement.
+    ✅ "대전 관측소 기준 1월 평균 -1.0℃, 8월 평균 26.0℃" — values are direct measurements for this city.
+    If a number is a national/regional record not specifically for this city, OMIT it or mark insufficient.
+
+12. NO CONTRADICTORY OR DUPLICATE CLASSIFICATIONS — each classification system (Köppen climate, housing typology, etc.) must appear at most once per statement with a single consistent label.
+    ❌ "쾨펜 기후 구분 상 습윤 소우 기후(Cwa)와 온대 하우 기후(Cwa) 특성을 모두 보이며..." — Cwa is cited twice with conflicting Korean names.
+    ✅ "쾨펜 기후 구분상 온난 습윤(Cwa) 기후에 해당한다" — single consistent label.
+    Before output, scan for duplicate codes/labels and collapse to one accurate reading.
+
+13. COMPLETE SENTENCES ONLY — never leave a statement, why_localized, or relevance field ending mid-word or mid-phrase.
+    If you approach the token budget, TRUNCATE BY REMOVING LATER CATEGORIES AT A SENTENCE BOUNDARY — never cut mid-word. Prefer fewer complete entries over many partial ones.
+
 ═══ QUALITY EXAMPLES ═══
 
 ❌ REJECTED (climate): "The city experiences four distinct seasons with hot summers."
@@ -3092,8 +3177,9 @@ async function handleCityProfile(req, res) {
     }
 
     // 기본 도시 프로필 모드 — Wiki RAG context 주입
-    // Wiki context(~4K) + system prompt(~2.5K) + user msg → 10 카테고리 JSON 응답 절삭 방지
-    const maxTokens = 14000;
+    // 10 카테고리 × evidence_pack(statement+why+ids+confidence+3 relevance+missing) + source_map
+    // 한국어 긴 서술 시 14K도 부족하여 절삭 사례 확인(대전 기후 쾨펜 문장 중단) → 20K로 추가 상향
+    const maxTokens = 20000;
     const wikiContext = await fetchWikiContext(country, city);
 
     const userMessage = `Target country: ${country}
