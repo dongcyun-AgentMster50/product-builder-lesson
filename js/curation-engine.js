@@ -897,6 +897,56 @@ function testCurationDiversity(v1Scenarios, v2Scenarios) {
     console.groupEnd();
 }
 
+// ─── P4: 도시 facet 1줄 요약 (LLM 프롬프트 전용) ───────────────────────
+// cityProfile (fetchWikiContext + AI 추출 결과) → "Climate: X / Housing: Y / Daily: Z"
+// 규칙:
+//   - facet 1~3개 (4개 이상 금지)
+//   - "unknown" 같은 placeholder 채택 금지 — 추출 가능한 것만
+//   - 카테고리 풀: Climate / Housing / Daily / Demographics / Culture / Infrastructure / Economy
+//   - UI 도시 카드는 풍부한 데이터 그대로 유지. 이 함수는 "프롬프트로 보낼 때만" 사용.
+const CITY_FACET_MAP = [
+    { label: "Climate",        keys: ["climate"] },
+    { label: "Housing",        keys: ["housing"] },
+    { label: "Daily",          keys: ["daily_rhythm", "daily"] },
+    { label: "Demographics",   keys: ["family", "demographics", "household"] },
+    { label: "Culture",        keys: ["events", "culture"] },
+    { label: "Infrastructure", keys: ["mobility", "safety", "infrastructure"] },
+    { label: "Economy",        keys: ["economy", "energy"] }
+];
+
+function _shortenFacetValue(text, maxLen = 22) {
+    const trimmed = String(text || "").trim();
+    if (!trimmed) return "";
+    // 의미 단위 컷: 마침표 / 쉼표 / 줄바꿈 / 한국어 문장부호 전까지
+    const m = trimmed.match(/^[^,，。.\n;]{1,40}/);
+    let v = (m ? m[0] : trimmed).trim();
+    // placeholder 는 채택 X (Climate: unknown 같은 빈 facet 방지)
+    if (/^(evidence insufficient|insufficient|unknown|n\/a|확인 필요|미확인)/i.test(v)) return "";
+    if (v.length > maxLen) v = v.slice(0, maxLen) + "…";
+    return v;
+}
+
+function summarizeCityFacets(cityProfile) {
+    if (!cityProfile || typeof cityProfile !== "object") return "";
+    const picked = [];
+    for (const facet of CITY_FACET_MAP) {
+        if (picked.length >= 3) break;
+        for (const k of facet.keys) {
+            const raw = cityProfile[k];
+            // raw 가 { statement: "..." } 객체일 수도, 평문 string 일 수도
+            const text = (raw && typeof raw === "object" && typeof raw.statement === "string")
+                ? raw.statement
+                : (typeof raw === "string" ? raw : "");
+            const val = _shortenFacetValue(text);
+            if (val) {
+                picked.push(`${facet.label}: ${val}`);
+                break;
+            }
+        }
+    }
+    return picked.join(" / ");
+}
+
 // Export for use in main.js or Node.js
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
@@ -914,6 +964,7 @@ if (typeof module !== "undefined" && module.exports) {
         buildScenarioSelectionReason,
         PERSONA_TO_EXPLORE_TAGS,
         DEVICE_TO_EXPLORE_TAGS,
-        V1_TO_V2_TAG_MAP
+        V1_TO_V2_TAG_MAP,
+        summarizeCityFacets
     };
 }

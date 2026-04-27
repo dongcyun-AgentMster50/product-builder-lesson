@@ -5,6 +5,44 @@ import { resolveProviderKey, maskKey } from "./_provider.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
+// ─── P4: 서버측 도시 facet 요약 (curation-engine.js 와 동일 로직 인라인) ─
+// curation-engine.js 의 CITY_FACET_MAP / summarizeCityFacets 와 동기 유지.
+// Cloudflare Worker 환경에서 import 부담을 피하려고 인라인.
+const _CITY_FACET_MAP = [
+    { label: "Climate",        keys: ["climate"] },
+    { label: "Housing",        keys: ["housing"] },
+    { label: "Daily",          keys: ["daily_rhythm", "daily"] },
+    { label: "Demographics",   keys: ["family", "demographics", "household"] },
+    { label: "Culture",        keys: ["events", "culture"] },
+    { label: "Infrastructure", keys: ["mobility", "safety", "infrastructure"] },
+    { label: "Economy",        keys: ["economy", "energy"] }
+];
+function _shortenFacet(text, maxLen = 22) {
+    const trimmed = String(text || "").trim();
+    if (!trimmed) return "";
+    const m = trimmed.match(/^[^,，。.\n;]{1,40}/);
+    let v = (m ? m[0] : trimmed).trim();
+    if (/^(evidence insufficient|insufficient|unknown|n\/a|확인 필요|미확인)/i.test(v)) return "";
+    if (v.length > maxLen) v = v.slice(0, maxLen) + "…";
+    return v;
+}
+function summarizeCityFacetsServer(cityProfile) {
+    if (!cityProfile || typeof cityProfile !== "object") return "";
+    const picked = [];
+    for (const facet of _CITY_FACET_MAP) {
+        if (picked.length >= 3) break;
+        for (const k of facet.keys) {
+            const raw = cityProfile[k];
+            const text = (raw && typeof raw === "object" && typeof raw.statement === "string")
+                ? raw.statement
+                : (typeof raw === "string" ? raw : "");
+            const val = _shortenFacet(text);
+            if (val) { picked.push(`${facet.label}: ${val}`); break; }
+        }
+    }
+    return picked.join(" / ");
+}
+
 // ─── v2 Mode-Aware 6-Section Prompt Builder (Part 5-C) ───────────────────
 // 호출 조건: body.mode === 'cx' | 'copy'
 // 출력: user message 최상단에 `## Output Mode: cx|copy` 헤더 (prompt.txt 트리거).
@@ -45,34 +83,17 @@ function buildV2ModePrompt(body, mode) {
     const devices  = Array.isArray(body?.devices) ? body.devices.join(", ") : String(body?.devices || "");
     const groups   = Array.isArray(body?.deviceGroups) ? body.deviceGroups.join(", ") : String(body?.deviceGroups || "");
     const mission  = String(body?.missionBucket || "").trim();
-    const regionCtx = body?.regionInsight ? JSON.stringify(body.regionInsight, null, 2) : null;
 
-    // citySignalBlock 은 v1 buildGeneratePrompt 와 동일 로직 (P4 에서 facet 요약으로 교체 예정)
-    const cityTags = Array.isArray(body?.selectedCityProfileTags) ? body.selectedCityProfileTags : [];
-    const cityContext = body?.selectedCityProfileContext || null;
-    const cityFullProfile = body?.cityProfile || null;
-    let effectiveCityTags = cityTags;
-    let effectiveCityContext = cityContext;
-    if (cityTags.length === 0 && cityFullProfile) {
-        effectiveCityTags = ['climate', 'housing', 'family', 'daily_rhythm', 'safety',
-            'energy', 'health', 'pets', 'mobility', 'events'].filter(k => cityFullProfile[k]);
-        const fallbackCtx = {};
-        for (const key of effectiveCityTags) {
-            fallbackCtx[key] = {
-                statement: cityFullProfile[key] || "",
-                evidence: cityFullProfile.evidence_pack?.[key] || null
-            };
-        }
-        effectiveCityContext = Object.keys(fallbackCtx).length > 0 ? fallbackCtx : null;
+    // P4: 도시 facet 1줄 요약 — 우선순위
+    //   1) body.cityFacetSummary (클라이언트가 미리 만들어 보낸 1줄)
+    //   2) body.cityProfile 가 있으면 서버에서 자체 summarize
+    //   3) 둘 다 없으면 Regional Context 블록 자체 생략
+    // 기존 wiki/cityProfile JSON dump 는 cx 모드에서 절대 주입 안 함.
+    let cityFacetLine = String(body?.cityFacetSummary || "").trim();
+    if (!cityFacetLine && body?.cityProfile) {
+        cityFacetLine = summarizeCityFacetsServer(body.cityProfile);
     }
-    const citySignalBlock = effectiveCityTags.length > 0 ? [
-        ``,
-        `## 🔴 도시 가중치 신호 (Q1 사용자 선택 — 1순위 반영 필수)`,
-        `선택된 카테고리: ${effectiveCityTags.join(", ")}`,
-        effectiveCityContext ? `\n### 선택된 프로필 원문\n\`\`\`json\n${JSON.stringify(effectiveCityContext, null, 2)}\n\`\`\`` : "",
-        ``,
-        `**반영 규칙:** 위 카테고리의 로컬 앵커를 B/C 에서 인용. 선택되지 않은 카테고리 언급 금지.`
-    ].filter(Boolean).join("\n") : "";
+    const regionalBlock = cityFacetLine ? `\n## Regional Context\n${cityFacetLine}` : "";
 
     return [
         "## Output Mode: cx",
@@ -86,11 +107,13 @@ function buildV2ModePrompt(body, mode) {
         `- Device Categories: ${groups || "(none)"}`,
         `- Mission Bucket: ${mission || "Discover"}`,
         `- Output Language: ${locale === "ko" ? "Korean-primary" : `${locale}-primary`}`,
-        regionCtx ? `\n## Live Regional Data\n\`\`\`json\n${regionCtx}\n\`\`\`` : "",
-        citySignalBlock,
+        regionalBlock,
         "\n## Task",
         "Part 5-C 의 6섹션 A~F 형식으로만 응답하세요.",
         "Mode1 (CX Scenario) 규칙 준수 — 시나리오 2~3개 deep, 4대 가치 태그(Care/Play/Save/Secure) 중 1개 이상 C 에 명시.",
+        cityFacetLine
+            ? "Regional Context 의 1줄 facet 요약을 B/C 에서 자연스럽게 인용 (raw dump 가 아니므로 풀어 쓰지 말 것)."
+            : "",
         "D 표는 Touchpoints (4~6행, 컬럼: # / Trigger / Action / 체감 가치).",
         "11/13 섹션 풀스키마, JSON 코드 블록, ## 마크다운 헤딩 출력 금지 (라벨은 **A.** 형식)."
     ].filter(Boolean).join("\n");

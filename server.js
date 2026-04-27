@@ -96,6 +96,11 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        if (pathname === "/api/curate" && req.method === "POST") {
+            await handleCurate(req, res);
+            return;
+        }
+
         if (pathname === "/api/nudge" && req.method === "POST") {
             await handleNudge(req, res);
             return;
@@ -561,32 +566,45 @@ async function handleGenerate(req, res) {
             `응답 언어: ${locale === "ko" ? "한국어 (D 표 Headline 컬럼만 영어)" : `${locale}-primary`}.`
         ].join("\n");
     } else if (v2Mode === "cx") {
-        // citySignalBlock 은 P4 에서 facet 1줄 요약으로 교체 예정 — P2 에서는 기존 시그널 그대로
-        const cityTags = Array.isArray(body?.selectedCityProfileTags) ? body.selectedCityProfileTags : [];
-        const cityContext = body?.selectedCityProfileContext || null;
-        const cityFullProfile = body?.cityProfile || null;
-        let effectiveCityTags = cityTags;
-        let effectiveCityContext = cityContext;
-        if (cityTags.length === 0 && cityFullProfile) {
-            effectiveCityTags = ['climate', 'housing', 'family', 'daily_rhythm', 'safety',
-                'energy', 'health', 'pets', 'mobility', 'events'].filter(k => cityFullProfile[k]);
-            const fallbackCtx = {};
-            for (const key of effectiveCityTags) {
-                fallbackCtx[key] = {
-                    statement: cityFullProfile[key] || "",
-                    evidence: cityFullProfile.evidence_pack?.[key] || null
-                };
+        // P4: 도시 facet 1줄 요약 — 우선순위
+        //   1) body.cityFacetSummary (클라이언트가 미리 만들어 보낸 1줄)
+        //   2) body.cityProfile 있으면 서버 자체 summarize (인라인 헬퍼)
+        //   3) 둘 다 없으면 Regional Context 블록 생략
+        let cityFacetLine = String(body?.cityFacetSummary || "").trim();
+        if (!cityFacetLine && body?.cityProfile) {
+            const FACET_MAP = [
+                { label: "Climate",        keys: ["climate"] },
+                { label: "Housing",        keys: ["housing"] },
+                { label: "Daily",          keys: ["daily_rhythm", "daily"] },
+                { label: "Demographics",   keys: ["family", "demographics", "household"] },
+                { label: "Culture",        keys: ["events", "culture"] },
+                { label: "Infrastructure", keys: ["mobility", "safety", "infrastructure"] },
+                { label: "Economy",        keys: ["economy", "energy"] }
+            ];
+            const shortFacet = (text, maxLen = 22) => {
+                const trimmed = String(text || "").trim();
+                if (!trimmed) return "";
+                const m = trimmed.match(/^[^,，。.\n;]{1,40}/);
+                let v = (m ? m[0] : trimmed).trim();
+                if (/^(evidence insufficient|insufficient|unknown|n\/a|확인 필요|미확인)/i.test(v)) return "";
+                if (v.length > maxLen) v = v.slice(0, maxLen) + "…";
+                return v;
+            };
+            const picked = [];
+            for (const facet of FACET_MAP) {
+                if (picked.length >= 3) break;
+                for (const k of facet.keys) {
+                    const raw = body.cityProfile[k];
+                    const text = (raw && typeof raw === "object" && typeof raw.statement === "string")
+                        ? raw.statement
+                        : (typeof raw === "string" ? raw : "");
+                    const val = shortFacet(text);
+                    if (val) { picked.push(`${facet.label}: ${val}`); break; }
+                }
             }
-            effectiveCityContext = Object.keys(fallbackCtx).length > 0 ? fallbackCtx : null;
+            cityFacetLine = picked.join(" / ");
         }
-        const citySignalBlock = effectiveCityTags.length > 0 ? [
-            ``,
-            `## 🔴 도시 가중치 신호 (Q1 사용자 선택 — 1순위 반영 필수)`,
-            `선택된 카테고리: ${effectiveCityTags.join(", ")}`,
-            effectiveCityContext ? `\n### 선택된 프로필 원문\n\`\`\`json\n${JSON.stringify(effectiveCityContext, null, 2)}\n\`\`\`` : "",
-            ``,
-            `**반영 규칙:** 위 카테고리의 로컬 앵커를 B/C 에서 인용. 선택되지 않은 카테고리 언급 금지.`
-        ].filter(Boolean).join("\n") : "";
+        const regionalBlock = cityFacetLine ? `\n## Regional Context\n${cityFacetLine}` : "";
 
         userMessage = [
             "## Output Mode: cx",
@@ -600,11 +618,13 @@ async function handleGenerate(req, res) {
             `- Device Categories: ${groups || "(none)"}`,
             `- Mission Bucket: ${mission || "Discover"}`,
             `- Output Language: ${locale === "ko" ? "Korean-primary" : `${locale}-primary`}`,
-            regionCtx ? `\n## Live Regional Data\n\`\`\`json\n${regionCtx}\n\`\`\`` : "",
-            citySignalBlock,
+            regionalBlock,
             "\n## Task",
             "Part 5-C 의 6섹션 A~F 형식으로만 응답하세요.",
             "Mode1 (CX Scenario) 규칙 준수 — 시나리오 2~3개 deep, 4대 가치 태그(Care/Play/Save/Secure) 중 1개 이상 C 에 명시.",
+            cityFacetLine
+                ? "Regional Context 의 1줄 facet 요약을 B/C 에서 자연스럽게 인용 (raw dump 가 아니므로 풀어 쓰지 말 것)."
+                : "",
             "D 표는 Touchpoints (4~6행, 컬럼: # / Trigger / Action / 체감 가치).",
             "11/13 섹션 풀스키마, JSON 코드 블록, ## 마크다운 헤딩 출력 금지 (라벨은 **A.** 형식)."
         ].filter(Boolean).join("\n");
@@ -3223,4 +3243,251 @@ Build a source-bound localization evidence pack for this city. Use only evidence
     } catch (err) {
         sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: err.message } });
     }
+}
+
+// ─── /api/curate (P5-A: A1 CURATOR 백엔드 마이그레이션) ─────────────────
+// v2.html runCurator() 가 호출. BYOK 헤더 키만 검증 (v1 access 세션 무관).
+// 시스템 프롬프트 인라인 (P6 에서 prompt.txt 통합 예정).
+
+const A1_SYSTEM_PROMPT_LOCAL = `당신은 SmartThings 마케팅 시나리오 큐레이터입니다.
+마케터가 답한 5단계 문답(채널·국가·고객 프로필·보유 기기·가치/관심사)을 **모두 균형 있게 반영**하여 27개 시나리오 DB에서 가장 적합한 TOP 3를 선택하세요.
+
+[선택 기준 — 가중치]
+1. 가치 태그와의 직접 매칭 (필수)
+2. 보유 기기 중복도: 시나리오에 등장하는 기기와 사용자가 선택한 기기의 교집합 크기
+3. 고객 프로필 적합도: 거주 형태·가족 구성이 시나리오 맥락과 자연스러운가
+4. 관심사 가산점: 선택된 관심사와 시나리오 카테고리 간 연결
+5. 채널·국가 톤 보정: 예) 리테일은 체험 가능한 즉각 효과, 닷컴은 구매 전환, 브랜드는 스토리성
+
+[필수 제약]
+- 사용자가 기기를 여러 개 선택했다면 그 기기가 실제로 등장·연동되는 시나리오 우선
+- 가족 구성에 '영유아·어린이'가 있으면 케어/안전 카테고리, '시니어'는 시니어 케어·낙상 감지 등에 가중치
+- match_score는 숫자로만 (실제 적합도 기반, 무조건 높게 주지 말 것)
+- why는 구체적이어야 하며 사용자가 선택한 항목들을 반드시 인용
+
+반드시 JSON 형식으로만 응답하세요:
+{
+  "top3": [
+    {
+      "rank": 1,
+      "scenario_id": "XXX",
+      "title": "시나리오 제목",
+      "thumbnail": "2-3문장 스토리 요약",
+      "match_score": 87,
+      "why": "이 시나리오를 선택한 이유 — 사용자가 선택한 구체적 기기·프로필·가치와의 연관성을 인용",
+      "matched_devices": ["사용자 선택 기기 중 이 시나리오와 겹치는 것들"],
+      "value_tags": ["Care", "Save"],
+      "key_devices": ["시나리오 핵심 기기"]
+    }
+  ],
+  "curation_note": "TOP 3를 고른 전략 한 줄 메모 (사용자 입력 패턴을 반영)"
+}`;
+
+// 27 DB 모듈 전역 캐시 (서버 시작 시 1회 lazy 로드)
+let _scenarioSummaryCacheLocal = null;
+function loadScenarioSummaryLocal() {
+    if (_scenarioSummaryCacheLocal !== null) return _scenarioSummaryCacheLocal;
+    const dbDir = path.join(ROOT_DIR, "scenarios", "db");
+    const out = [];
+    for (let i = 1; i <= 27; i++) {
+        const num = String(i).padStart(3, "0");
+        const fp = path.join(dbDir, `scenario_${num}.json`);
+        try {
+            const j = JSON.parse(fs.readFileSync(fp, "utf8"));
+            const s = Array.isArray(j.scenarios) ? j.scenarios[0] : j;
+            if (!s) continue;
+            const d0 = s.depth_0 || {};
+            const d1 = s.depth_1 || {};
+            const title = d0.card_title || d1.title || "제목없음";
+            const cat = d0.category || "-";
+            const devs = (d1.device_icons || d1.devices_used || []).join("·") || "-";
+            const summary = (d1.description || d0.thumbnail_desc || "").slice(0, 80);
+            out.push(`[${num}] ${title} | 카테고리: ${cat} | 기기: ${devs} | ${summary}`);
+        } catch { /* skip missing/invalid */ }
+    }
+    _scenarioSummaryCacheLocal = out.join("\n");
+    return _scenarioSummaryCacheLocal;
+}
+
+function buildA1UserMessageLocal(body, scenarioSummaries) {
+    const roleNames = { retail: "리테일(매장)", dotcom: "닷컴(온라인)", brand: "브랜드(캠페인)" };
+    const countryNames = {
+        KR: "한국", US: "미국", JP: "일본", AU: "호주", IN: "인도",
+        DE: "독일", UK: "영국", CN: "중국", BR: "브라질", MX: "멕시코", SG: "싱가포르", SE: "스웨덴"
+    };
+    const homeLabel = { apartment: "아파트", house: "단독주택", villa: "빌라·연립", studio: "원룸·스튜디오", officetel: "오피스텔" };
+    const familyLabel = { single: "1인 가구", couple: "커플·부부", kids: "영유아·어린이", teens: "청소년", senior: "시니어", pet: "반려동물" };
+    const interestLabel = { energy: "에너지 절약", kids_care: "육아·자녀 케어", senior_care: "시니어 케어", pet_care: "반려동물 케어", health: "건강·웰니스", entertainment: "홈 엔터테인먼트", security: "홈 보안", cooking: "요리·주방", sleep: "수면·릴렉스", cleaning: "청소·위생" };
+
+    const role = String(body?.role || "").trim();
+    const country = String(body?.country || "").trim();
+    const city = String(body?.city || "").trim();
+    const home = String(body?.home || "").trim();
+    const family = Array.isArray(body?.family) ? body.family : [];
+    const devices = Array.isArray(body?.devices) ? body.devices : [];
+    const values = Array.isArray(body?.values) ? body.values : [];
+    const interests = Array.isArray(body?.interests) ? body.interests : [];
+
+    return `마케터·고객 프로필 입력:
+- 담당 채널: ${roleNames[role] || role || "(미입력)"}
+- 국가: ${countryNames[country] || country || "(미입력)"}${city ? " / " + city : ""}
+- 거주 형태: ${home ? (homeLabel[home] || home) : "미입력"}
+- 가족 구성: ${family.length ? family.map(f => familyLabel[f] || f).join(", ") : "미입력"}
+- 보유·주력 기기 (${devices.length}개): ${devices.length ? devices.join(", ") : "미입력"}
+- 핵심 가치 태그: ${values.join(", ") || "미입력"}
+- 세부 관심사: ${interests.length ? interests.map(i => interestLabel[i] || i).join(", ") : "없음"}
+
+시나리오 DB (27개):
+${scenarioSummaries}
+
+위 DB에서 이 사용자에게 가장 적합한 TOP 3 시나리오를 [선택 기준 — 가중치] 순서대로 반영하여 선정해주세요.`;
+}
+
+function detectProviderFromKey(k) {
+    const s = String(k || "").trim();
+    if (!s) return null;
+    if (s.startsWith("AIza")) return "gemini";
+    if (s.startsWith("sk-ant-")) return "anthropic";
+    if (s.startsWith("sk-")) return "openai";
+    return null;
+}
+
+async function callOpenAIBlocking({ apiKey, systemPrompt, userMessage, model }) {
+    const requestBody = {
+        model,
+        messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage }
+        ],
+        temperature: 0.7,
+        response_format: { type: "json_object" }
+    };
+    if (/^gpt-5/i.test(String(model || "").trim())) {
+        requestBody.max_completion_tokens = 2000;
+    } else {
+        requestBody.max_tokens = 2000;
+    }
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+        body: JSON.stringify(requestBody)
+    });
+    if (!r.ok) {
+        const txt = await r.text().catch(() => "");
+        let msg = `OpenAI ${r.status}`;
+        try { msg = JSON.parse(txt)?.error?.message || msg; } catch { /* ignore */ }
+        throw new Error(msg);
+    }
+    const d = await r.json();
+    return d.choices?.[0]?.message?.content || "";
+}
+
+async function callAnthropicBlocking({ apiKey, systemPrompt, userMessage, model }) {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey,
+            "anthropic-version": "2023-06-01"
+        },
+        body: JSON.stringify({
+            model,
+            max_tokens: 2000,
+            system: systemPrompt,
+            messages: [{ role: "user", content: userMessage }]
+        })
+    });
+    if (!r.ok) {
+        const txt = await r.text().catch(() => "");
+        throw new Error(`Anthropic ${r.status}: ${txt.slice(0, 200)}`);
+    }
+    const d = await r.json();
+    return d.content?.[0]?.text || "";
+}
+
+async function callGeminiBlocking({ apiKey, systemPrompt, userMessage, model }) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const r = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ role: "user", parts: [{ text: userMessage }] }],
+            generationConfig: {
+                maxOutputTokens: 2000,
+                temperature: 0.7,
+                responseMimeType: "application/json"
+            }
+        })
+    });
+    if (!r.ok) {
+        const txt = await r.text().catch(() => "");
+        throw new Error(`Gemini ${r.status}: ${txt.slice(0, 200)}`);
+    }
+    const d = await r.json();
+    const parts = d.candidates?.[0]?.content?.parts || [];
+    return parts.map(p => p.text || "").join("");
+}
+
+async function handleCurate(req, res) {
+    let body;
+    try {
+        body = await readJsonBody(req);
+    } catch {
+        sendJson(res, 400, { ok: false, error: { code: "BAD_REQUEST", message: "Invalid JSON body." } });
+        return;
+    }
+
+    // BYOK 헤더 키만 검증 (v1 access 세션 무관)
+    const headerKey = String(req.headers["x-user-api-key"] || "").trim();
+    const provider = detectProviderFromKey(headerKey);
+    if (!provider) {
+        sendJson(res, 400, { ok: false, error: { code: "API_NOT_CONFIGURED", message: "API 키가 필요합니다. BYOK 모달에서 키를 입력해주세요." } });
+        return;
+    }
+    const apiKey = headerKey;
+    const modelHint = String(req.headers["x-user-model-hint"] || "").trim();
+
+    const summaries = loadScenarioSummaryLocal();
+    if (!summaries) {
+        sendJson(res, 500, { ok: false, error: { code: "DB_LOAD_FAILED", message: "시나리오 DB 로드 실패." } });
+        return;
+    }
+
+    const userMessage = buildA1UserMessageLocal(body, summaries);
+    const model = provider === "openai"
+        ? (process.env.OPENAI_MODEL || "gpt-4o")
+        : (provider === "anthropic"
+            ? (modelHint || "claude-sonnet-4-6")
+            : (modelHint || process.env.GEMINI_MODEL || "gemini-2.5-flash"));
+
+    let raw;
+    try {
+        if (provider === "openai") {
+            raw = await callOpenAIBlocking({ apiKey, systemPrompt: A1_SYSTEM_PROMPT_LOCAL, userMessage, model });
+        } else if (provider === "anthropic") {
+            raw = await callAnthropicBlocking({ apiKey, systemPrompt: A1_SYSTEM_PROMPT_LOCAL, userMessage, model });
+        } else if (provider === "gemini") {
+            raw = await callGeminiBlocking({ apiKey, systemPrompt: A1_SYSTEM_PROMPT_LOCAL, userMessage, model });
+        } else {
+            sendJson(res, 400, { ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported` } });
+            return;
+        }
+    } catch (e) {
+        sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: e.message } });
+        return;
+    }
+
+    const cleaned = String(raw || "").replace(/```json|```/g, "").trim();
+    let result;
+    try { result = JSON.parse(cleaned); }
+    catch {
+        sendJson(res, 502, { ok: false, error: { code: "INVALID_JSON", message: "LLM 응답을 JSON 으로 파싱하지 못했습니다.", raw: cleaned.slice(0, 500) } });
+        return;
+    }
+    if (!result || !Array.isArray(result.top3)) {
+        sendJson(res, 502, { ok: false, error: { code: "INVALID_SHAPE", message: "응답에 top3 배열이 없습니다." } });
+        return;
+    }
+    sendJson(res, 200, { ok: true, top3: result.top3, curation_note: result.curation_note || "" });
 }

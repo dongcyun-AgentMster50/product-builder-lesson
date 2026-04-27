@@ -1309,21 +1309,36 @@ function updateSummary() {
   if (!el) return;
   const parts = [];
   const roleNames = { retail: '리테일', dotcom: '닷컴', brand: '브랜드' };
-  if (state.selectedRole) parts.push(`채널 <strong>${roleNames[state.selectedRole]}</strong>`);
-  const country = document.getElementById('country-select')?.value;
-  if (country) {
-    const countryLabel = document.getElementById('country-select').options[document.getElementById('country-select').selectedIndex].text;
-    const city = document.getElementById('city-input')?.value?.trim();
-    parts.push(`국가 <strong>${countryLabel}${city ? ' / ' + city : ''}</strong>`);
+
+  // P3: Copy Mode 는 카피 자문에 쓰는 4개 키만 표시 (city/devices/family/values 제외)
+  if (state.outputMode === 'copy') {
+    if (state.selectedRole) parts.push(`채널 <strong>${roleNames[state.selectedRole]}</strong>`);
+    const copyTextNow = (document.getElementById('copy-text-input')?.value || state.copyText || '').trim();
+    if (copyTextNow) {
+      const preview = copyTextNow.length > 40 ? copyTextNow.slice(0, 40) + '…' : copyTextNow;
+      parts.push(`카피 <strong>${preview}</strong>`);
+    }
+    if (state.copyTone) parts.push(`톤 <strong>${state.copyTone}</strong>`);
+    const hintNow = (document.getElementById('copy-category-input')?.value || state.copyCategoryHint || '').trim();
+    if (hintNow) parts.push(`카테고리 <strong>${hintNow}</strong>`);
+  } else {
+    // CX Mode — 기존 표시 그대로
+    if (state.selectedRole) parts.push(`채널 <strong>${roleNames[state.selectedRole]}</strong>`);
+    const country = document.getElementById('country-select')?.value;
+    if (country) {
+      const countryLabel = document.getElementById('country-select').options[document.getElementById('country-select').selectedIndex].text;
+      const city = document.getElementById('city-input')?.value?.trim();
+      parts.push(`국가 <strong>${countryLabel}${city ? ' / ' + city : ''}</strong>`);
+    }
+    if (state.selectedHome) {
+      const homeLabel = { apartment: '아파트', house: '단독주택', villa: '빌라·연립', studio: '원룸·스튜디오', officetel: '오피스텔' };
+      parts.push(`거주 <strong>${homeLabel[state.selectedHome]}</strong>`);
+    }
+    if (state.selectedFamily.length) parts.push(`가족 <strong>${state.selectedFamily.length}개 항목</strong>`);
+    if (state.selectedDevices.length) parts.push(`기기 <strong>${state.selectedDevices.length}개</strong>`);
+    if (state.selectedValues.length) parts.push(`가치 <strong>${state.selectedValues.join(', ')}</strong>`);
+    if (state.selectedInterests.length) parts.push(`관심사 <strong>${state.selectedInterests.length}개</strong>`);
   }
-  if (state.selectedHome) {
-    const homeLabel = { apartment: '아파트', house: '단독주택', villa: '빌라·연립', studio: '원룸·스튜디오', officetel: '오피스텔' };
-    parts.push(`거주 <strong>${homeLabel[state.selectedHome]}</strong>`);
-  }
-  if (state.selectedFamily.length) parts.push(`가족 <strong>${state.selectedFamily.length}개 항목</strong>`);
-  if (state.selectedDevices.length) parts.push(`기기 <strong>${state.selectedDevices.length}개</strong>`);
-  if (state.selectedValues.length) parts.push(`가치 <strong>${state.selectedValues.join(', ')}</strong>`);
-  if (state.selectedInterests.length) parts.push(`관심사 <strong>${state.selectedInterests.length}개</strong>`);
 
   if (parts.length === 0) {
     el.classList.add('hidden');
@@ -1425,120 +1440,37 @@ async function runCurator() {
   document.getElementById('story-workspace').style.display = 'none';
   setStage('a1', 'active');
 
-  const roleNames = { retail: '리테일(매장)', dotcom: '닷컴(온라인)', brand: '브랜드(캠페인)' };
-  const countryNames = {
-    KR: '한국', US: '미국', JP: '일본', AU: '호주', IN: '인도',
-    DE: '독일', UK: '영국', CN: '중국', BR: '브라질', MX: '멕시코', SG: '싱가포르', SE: '스웨덴'
-  };
-  const homeLabel = { apartment: '아파트', house: '단독주택', villa: '빌라·연립', studio: '원룸·스튜디오', officetel: '오피스텔' };
-  const familyLabel = { single: '1인 가구', couple: '커플·부부', kids: '영유아·어린이', teens: '청소년', senior: '시니어', pet: '반려동물' };
-  const interestLabel = { energy: '에너지 절약', kids_care: '육아·자녀 케어', senior_care: '시니어 케어', pet_care: '반려동물 케어', health: '건강·웰니스', entertainment: '홈 엔터테인먼트', security: '홈 보안', cooking: '요리·주방', sleep: '수면·릴렉스', cleaning: '청소·위생' };
-
-  const scenarioSummaries = state.scenarios.length > 0
-    ? state.scenarios.map((s, i) => {
-        const d0 = s.depth_0 || {};
-        const d1 = s.depth_1 || {};
-        const title = d0.card_title || d1.title || '제목없음';
-        const cat = d0.category || '-';
-        const devices = (d1.device_icons || d1.devices_used || []).join('·') || '-';
-        const summary = (d1.description || d0.thumbnail_desc || '').slice(0, 80);
-        return `[${String(i+1).padStart(3,'0')}] ${title} | 카테고리: ${cat} | 기기: ${devices} | ${summary}`;
-      }).join('\n')
-    : `[001] 에너지 절약 루틴 | 카테고리: Save | 가족이 외출 시 SmartThings가 자동으로 에너지를 절약하는 시나리오
-[002] 아이 안전 케어 | 카테고리: Care | 어린 자녀를 둔 부모를 위한 홈 안전 자동화
-[003] 홈 엔터테인먼트 | 카테고리: Play | 거실 기기들이 연동되어 최적의 영상/음향 환경 조성
-[004] 시니어 케어 | 카테고리: Care | 부모님 안전과 건강을 원격으로 케어하는 시나리오
-[005] 반려동물 케어 | 카테고리: Care | 혼자 남은 반려동물의 환경을 자동으로 유지
-[006] 출근 루틴 자동화 | 카테고리: Save | 아침 출근 준비부터 외출까지 원터치 자동화
-[007] 쾌적한 취침 환경 | 카테고리: Care | 취침 시 조명/온도/공기질을 최적화하는 나이트 루틴
-[008] 홈 보안 강화 | 카테고리: Secure | 외출 중 도어락/카메라/센서 연동 보안 시나리오
-[009] 에어컨 절전 자동화 | 카테고리: Save | AI 기반 냉방 최적화로 전기요금 절감
-[010] 요리 어시스턴트 | 카테고리: Play | 주방 기기 연동으로 스마트한 요리 환경 구성
-[011] 홈 오피스 최적화 | 카테고리: Play | 재택근무 생산성을 높이는 스마트 환경 자동화
-[012] 공기질 관리 | 카테고리: Care | 실시간 공기질 모니터링 및 정화기 자동 제어
-[013] 세탁 스마트 루틴 | 카테고리: Save | 적정 부하 시간대 세탁기 자동 예약으로 절약
-[014] 신혼부부 스마트홈 | 카테고리: Play | 커플이 함께 즐기는 스마트홈 첫 설정 스토리
-[015] 리턴홈 웰컴 루틴 | 카테고리: Care | 귀가 감지 시 조명/온도/음악이 맞춤 전환
-[016] 여름 폭염 대응 | 카테고리: Save | 폭염 경보 시 자동 차단/냉방 최적화 루틴
-[017] 겨울 난방 스마트 | 카테고리: Save | 기온 감지 기반 난방 자동 예약 및 절전
-[018] 스마트 플러그 에너지 | 카테고리: Save | 대기전력 자동 차단으로 월 전기요금 절감
-[019] 아이 귀가 알림 | 카테고리: Secure | 아이 귀가를 문 센서로 감지해 부모에게 알림
-[020] 홈 파티 모드 | 카테고리: Play | 손님 방문 시 조명/음악/온도를 파티 분위기로
-[021] 반응형 조명 시스템 | 카테고리: Play | 시간대/활동에 따라 자동 변하는 조명 연출
-[022] 수면 품질 향상 | 카테고리: Care | 수면 데이터 기반 취침/기상 루틴 최적화
-[023] 물 절약 루틴 | 카테고리: Save | 세탁/식기세척기 물 사용 최적화로 절약
-[024] 신축 아파트 입주 | 카테고리: Play | 새 아파트 입주 시 SmartThings 첫 세팅 가이드
-[025] 고령자 낙상 감지 | 카테고리: Secure | 시니어 활동 이상 감지 및 가족 알림 시스템
-[026] 스마트 청소 루틴 | 카테고리: Care | 로봇청소기와 공기청정기 연동 청결 자동화
-[027] 에너지 리포트 | 카테고리: Save | 월간 에너지 사용 분석과 절약 팁 자동 제공`;
-
-  const system = `당신은 SmartThings 마케팅 시나리오 큐레이터입니다.
-마케터가 답한 5단계 문답(채널·국가·고객 프로필·보유 기기·가치/관심사)을 **모두 균형 있게 반영**하여 27개 시나리오 DB에서 가장 적합한 TOP 3를 선택하세요.
-
-[선택 기준 — 가중치]
-1. 가치 태그와의 직접 매칭 (필수)
-2. 보유 기기 중복도: 시나리오에 등장하는 기기와 사용자가 선택한 기기의 교집합 크기
-3. 고객 프로필 적합도: 거주 형태·가족 구성이 시나리오 맥락과 자연스러운가
-4. 관심사 가산점: 선택된 관심사와 시나리오 카테고리 간 연결
-5. 채널·국가 톤 보정: 예) 리테일은 체험 가능한 즉각 효과, 닷컴은 구매 전환, 브랜드는 스토리성
-
-[필수 제약]
-- 사용자가 기기를 여러 개 선택했다면 그 기기가 실제로 등장·연동되는 시나리오 우선
-- 가족 구성에 '영유아·어린이'가 있으면 케어/안전 카테고리, '시니어'는 시니어 케어·낙상 감지 등에 가중치
-- match_score는 숫자로만 (실제 적합도 기반, 무조건 높게 주지 말 것)
-- why는 구체적이어야 하며 "${`사용자가 선택한 항목들`}"을 반드시 인용
-
-반드시 JSON 형식으로만 응답하세요:
-{
-  "top3": [
-    {
-      "rank": 1,
-      "scenario_id": "XXX",
-      "title": "시나리오 제목",
-      "thumbnail": "2-3문장 스토리 요약",
-      "match_score": 87,
-      "why": "이 시나리오를 선택한 이유 — 사용자가 선택한 구체적 기기·프로필·가치와의 연관성을 인용",
-      "matched_devices": ["사용자 선택 기기 중 이 시나리오와 겹치는 것들"],
-      "value_tags": ["Care", "Save"],
-      "key_devices": ["시나리오 핵심 기기"]
-    }
-  ],
-  "curation_note": "TOP 3를 고른 전략 한 줄 메모 (사용자 입력 패턴을 반영)"
-}`;
-
-  const user = `마케터·고객 프로필 입력:
-- 담당 채널: ${roleNames[state.selectedRole]}
-- 국가: ${countryNames[state.selectedCountry]}${state.selectedCity ? ' / ' + state.selectedCity : ''}
-- 거주 형태: ${state.selectedHome ? homeLabel[state.selectedHome] : '미입력'}
-- 가족 구성: ${state.selectedFamily.length ? state.selectedFamily.map(f => familyLabel[f] || f).join(', ') : '미입력'}
-- 보유·주력 기기 (${state.selectedDevices.length}개): ${state.selectedDevices.length ? state.selectedDevices.join(', ') : '미입력'}
-- 핵심 가치 태그: ${state.selectedValues.join(', ')}
-- 세부 관심사: ${state.selectedInterests.length ? state.selectedInterests.map(i => interestLabel[i] || i).join(', ') : '없음'}
-
-시나리오 DB (27개):
-${scenarioSummaries}
-
-위 DB에서 이 사용자에게 가장 적합한 TOP 3 시나리오를 [선택 기준 — 가중치] 순서대로 반영하여 선정해주세요.`;
-
-  // P3: CX payload 도 mode 키 포함 (향후 백엔드 라우팅 호환)
-  console.info('[runCurator] payload', {
-    mode: 'cx',
+  // P5-A: 백엔드 /api/curate 호출. 27 DB summary 와 system prompt 는 서버가 보유.
+  const payload = {
     role: state.selectedRole,
     country: state.selectedCountry,
     city: state.selectedCity,
-    selectedHome: state.selectedHome,
-    selectedFamily: state.selectedFamily,
+    home: state.selectedHome,
+    family: state.selectedFamily,
     devices: state.selectedDevices,
-    selectedValues: state.selectedValues,
-    selectedInterests: state.selectedInterests
-  });
+    values: state.selectedValues,
+    interests: state.selectedInterests,
+    locale: state.selectedCountry === 'KR' ? 'ko' : 'en'
+  };
+  console.info('[runCurator] POST /api/curate', payload);
 
   try {
-    const raw = await callAI(system, user);
-    const cleaned = raw.replace(/```json|```/g, '').trim();
-    const result = JSON.parse(cleaned);
+    const headers = { 'Content-Type': 'application/json' };
+    if (state.apiKey) headers['X-User-Api-Key'] = state.apiKey;
+    if (state.provider === 'gemini') headers['X-User-Model-Hint'] = 'gemini-2.5-flash';
+
+    const res = await fetch('/api/curate', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) {
+      const msg = data?.error?.message || `HTTP ${res.status}`;
+      throw new Error(msg);
+    }
     setStage('a1', 'done');
-    renderStoryCards(result.top3, result.curation_note);
+    renderStoryCards(data.top3, data.curation_note);
   } catch(e) {
     setStage('a1', 'error');
     showError('A1 Curator 오류: ' + e.message);
