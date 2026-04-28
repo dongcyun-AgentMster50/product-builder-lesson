@@ -3278,6 +3278,10 @@ const V2_DEFAULT_MODELS = Object.freeze({
     gemini: "gemini-3.1-pro-preview"
 });
 
+// P6-B-1 (2026-04-28): 인라인 → prompt.txt [AGENT:CURATOR_A1] SSOT 이전.
+// 호출부에서 loadAgentPromptLocal("CURATOR_A1") 사용. 아래 인라인 상수는
+// P6-B-1 검증 통과 후 P6-B-1.5 정리 단계에서 삭제 예정.
+/*
 const A1_SYSTEM_PROMPT_LOCAL = `당신은 SmartThings 마케팅 시나리오 큐레이터입니다.
 마케터가 답한 5단계 문답(채널·국가·고객 프로필·보유 기기·가치/관심사)을 **모두 균형 있게 반영**하여 27개 시나리오 DB에서 가장 적합한 TOP 3를 선택하세요.
 
@@ -3311,6 +3315,7 @@ const A1_SYSTEM_PROMPT_LOCAL = `당신은 SmartThings 마케팅 시나리오 큐
   ],
   "curation_note": "TOP 3를 고른 전략 한 줄 메모 (사용자 입력 패턴을 반영)"
 }`;
+*/
 
 // 27 DB 모듈 전역 캐시 (서버 시작 시 1회 lazy 로드)
 let _scenarioSummaryCacheLocal = null;
@@ -3539,14 +3544,23 @@ async function handleCurate(req, res) {
             ? (modelHint || process.env.ANTHROPIC_MODEL || V2_DEFAULT_MODELS.anthropic)
             : (modelHint || process.env.GEMINI_MODEL || V2_DEFAULT_MODELS.gemini));
 
+    // P6-B-1: prompt.txt SSOT 에서 시스템 프롬프트 로드 (인라인 폴백 의도적 X)
+    let systemPrompt;
+    try {
+        systemPrompt = loadAgentPromptLocal("CURATOR_A1");
+    } catch (e) {
+        sendJson(res, 500, { ok: false, error: { code: "PROMPT_LOAD_FAILED", message: e.message } });
+        return;
+    }
+
     let raw;
     try {
         if (provider === "openai") {
-            raw = await callOpenAIBlocking({ apiKey, systemPrompt: A1_SYSTEM_PROMPT_LOCAL, userMessage, model });
+            raw = await callOpenAIBlocking({ apiKey, systemPrompt, userMessage, model });
         } else if (provider === "anthropic") {
-            raw = await callAnthropicBlocking({ apiKey, systemPrompt: A1_SYSTEM_PROMPT_LOCAL, userMessage, model });
+            raw = await callAnthropicBlocking({ apiKey, systemPrompt, userMessage, model });
         } else if (provider === "gemini") {
-            raw = await callGeminiBlocking({ apiKey, systemPrompt: A1_SYSTEM_PROMPT_LOCAL, userMessage, model });
+            raw = await callGeminiBlocking({ apiKey, systemPrompt, userMessage, model });
         } else {
             sendJson(res, 400, { ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported` } });
             return;

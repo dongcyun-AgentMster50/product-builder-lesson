@@ -10,6 +10,7 @@
 
 import { json } from "./access/_shared.js";
 import { resolveProviderKey, maskKey, DEFAULT_MODELS } from "./_provider.js";
+import { loadAgentPrompt } from "./_prompt_loader.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
@@ -43,7 +44,11 @@ async function loadScenarioSummary(context) {
     return _scenarioSummaryCache;
 }
 
-// ─── A1 CURATOR 시스템 프롬프트 (v2.html 1488-1522 그대로 이식) ──────────
+// ─── A1 CURATOR 시스템 프롬프트 ─────────────────────────────────────────
+// P6-B-1 (2026-04-28): 인라인 → prompt.txt [AGENT:CURATOR_A1] 마커로 SSOT 이전.
+// 호출부에서 `await loadAgentPrompt(context, "CURATOR_A1")` 사용.
+// 아래 인라인 상수는 P6-B-1 검증 통과 후 P6-B-1.5 정리 단계에서 삭제 예정.
+/*
 const A1_SYSTEM_PROMPT = `당신은 SmartThings 마케팅 시나리오 큐레이터입니다.
 마케터가 답한 5단계 문답(채널·국가·고객 프로필·보유 기기·가치/관심사)을 **모두 균형 있게 반영**하여 27개 시나리오 DB에서 가장 적합한 TOP 3를 선택하세요.
 
@@ -77,6 +82,7 @@ const A1_SYSTEM_PROMPT = `당신은 SmartThings 마케팅 시나리오 큐레이
   ],
   "curation_note": "TOP 3를 고른 전략 한 줄 메모 (사용자 입력 패턴을 반영)"
 }`;
+*/
 
 // ─── User 프롬프트 빌더 ──────────────────────────────────────────────────
 function buildA1UserMessage(body, scenarioSummaries) {
@@ -238,14 +244,22 @@ export async function onRequestPost(context) {
         valueCount: Array.isArray(body?.values) ? body.values.length : 0
     }));
 
+    // P6-B-1: prompt.txt SSOT 에서 시스템 프롬프트 로드 (인라인 폴백 의도적 X)
+    let systemPrompt;
+    try {
+        systemPrompt = await loadAgentPrompt(context, "CURATOR_A1");
+    } catch (e) {
+        return json({ ok: false, error: { code: "PROMPT_LOAD_FAILED", message: e.message } }, 500);
+    }
+
     let raw;
     try {
         if (provider === "openai") {
-            raw = await callOpenAI({ apiKey, systemPrompt: A1_SYSTEM_PROMPT, userMessage, model });
+            raw = await callOpenAI({ apiKey, systemPrompt, userMessage, model });
         } else if (provider === "anthropic") {
-            raw = await callAnthropic({ apiKey, systemPrompt: A1_SYSTEM_PROMPT, userMessage, model });
+            raw = await callAnthropic({ apiKey, systemPrompt, userMessage, model });
         } else if (provider === "gemini") {
-            raw = await callGemini({ apiKey, systemPrompt: A1_SYSTEM_PROMPT, userMessage, model });
+            raw = await callGemini({ apiKey, systemPrompt, userMessage, model });
         } else {
             return json({ ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported` } }, 400);
         }
