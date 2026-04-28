@@ -18,7 +18,8 @@ const VALID_AGENTS = Object.freeze([
     "CURATOR_A1",
     "LOCALIZER_A2",
     "EXPANDER_A4",
-    "COPY_CONSULT_M2"
+    "COPY_CONSULT_M2",
+    "STORY_CHAT"
 ]);
 
 let _promptCache = null;

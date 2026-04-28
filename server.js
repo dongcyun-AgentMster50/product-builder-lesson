@@ -111,6 +111,11 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        if (pathname === "/api/story-chat" && req.method === "POST") {
+            await handleStoryChat(req, res);
+            return;
+        }
+
         if (pathname === "/api/nudge" && req.method === "POST") {
             await handleNudge(req, res);
             return;
@@ -3435,7 +3440,8 @@ const _PROMPT_LOADER_VALID_AGENTS = Object.freeze([
     "CURATOR_A1",
     "LOCALIZER_A2",
     "EXPANDER_A4",
-    "COPY_CONSULT_M2"
+    "COPY_CONSULT_M2",
+    "STORY_CHAT"
 ]);
 let _promptCacheLocal = null;
 
@@ -3899,4 +3905,180 @@ async function handleExpand(req, res) {
         return;
     }
     sendJson(res, 200, { ok: true, expandedAssets });
+}
+
+// ─── /api/story-chat 로컬 dev 미러 (functions/api/story-chat.js 와 동일 동작) ───
+// STORY_CHAT 시스템 프롬프트는 prompt.txt [AGENT:STORY_CHAT] 마커가 SSOT.
+// 호출부에서 loadAgentPromptLocal("STORY_CHAT") 으로 동적 로드.
+
+function buildStoryChatContextPrefix(body) {
+    const sc = body?.scenario || {};
+    const st = body?.story || {};
+    return `[시나리오] ${sc.category || "(카테고리 미정)"} - ${sc.title || "(제목 없음)"}\n\n[선택한 스토리] ${st.number ?? "?"}. ${st.title || "(스토리 제목 없음)"}\n${String(st.content || "").trim()}`;
+}
+
+function buildStoryChatMessages(body) {
+    const userMessage = String(body?.userMessage || "").trim();
+    const history = Array.isArray(body?.history) ? body.history : [];
+    const cleanHistory = history
+        .filter(m => m && (m.role === "user" || m.role === "assistant") && String(m.content || "").trim())
+        .map(m => ({ role: m.role, content: String(m.content) }));
+
+    const ctxPrefix = buildStoryChatContextPrefix(body);
+
+    if (cleanHistory.length === 0) {
+        return [{ role: "user", content: `${ctxPrefix}\n\n[사용자 질문]\n${userMessage}` }];
+    }
+    const out = [];
+    let prefixed = false;
+    for (const m of cleanHistory) {
+        if (!prefixed && m.role === "user") {
+            out.push({ role: "user", content: `${ctxPrefix}\n\n[사용자 질문]\n${m.content}` });
+            prefixed = true;
+        } else {
+            out.push(m);
+        }
+    }
+    out.push({ role: "user", content: userMessage });
+    return out;
+}
+
+async function callOpenAIStoryChatBlocking({ apiKey, systemPrompt, messages, model }) {
+    const requestBody = {
+        model,
+        messages: [{ role: "system", content: systemPrompt }, ...messages],
+        temperature: 0.7
+    };
+    if (/^gpt-5/i.test(String(model || "").trim())) {
+        requestBody.max_completion_tokens = 1500;
+    } else {
+        requestBody.max_tokens = 1500;
+    }
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify(requestBody)
+    });
+    if (!r.ok) {
+        const errText = await r.text().catch(() => "");
+        let msg = `OpenAI ${r.status}`;
+        try { msg = JSON.parse(errText)?.error?.message || msg; } catch { /* ignore */ }
+        throw new Error(msg);
+    }
+    const d = await r.json();
+    return d.choices?.[0]?.message?.content || "";
+}
+
+async function callAnthropicStoryChatBlocking({ apiKey, systemPrompt, messages, model }) {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey,
+            "anthropic-version": "2023-06-01"
+        },
+        body: JSON.stringify({ model, max_tokens: 1500, system: systemPrompt, messages })
+    });
+    if (!r.ok) {
+        const errText = await r.text().catch(() => "");
+        throw new Error(`Anthropic ${r.status}: ${errText.slice(0, 200)}`);
+    }
+    const d = await r.json();
+    return d.content?.[0]?.text || "";
+}
+
+async function callGeminiStoryChatBlocking({ apiKey, systemPrompt, messages, model }) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const contents = messages.map(m => ({
+        role: m.role === "assistant" ? "model" : "user",
+        parts: [{ text: m.content }]
+    }));
+    const r = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            contents,
+            generationConfig: { maxOutputTokens: 1500, temperature: 0.7 }
+        })
+    });
+    if (!r.ok) {
+        const errText = await r.text().catch(() => "");
+        throw new Error(`Gemini ${r.status}: ${errText.slice(0, 200)}`);
+    }
+    const d = await r.json();
+    const parts = d.candidates?.[0]?.content?.parts || [];
+    return parts.map(p => p.text || "").join("");
+}
+
+async function handleStoryChat(req, res) {
+    let body;
+    try {
+        body = await readJsonBody(req);
+    } catch {
+        sendJson(res, 400, { ok: false, error: { code: "BAD_REQUEST", message: "Invalid JSON body." } });
+        return;
+    }
+
+    const headerKey = String(req.headers["x-user-api-key"] || "").trim();
+    const provider = detectProviderFromKey(headerKey);
+    if (!provider) {
+        sendJson(res, 400, { ok: false, error: { code: "API_NOT_CONFIGURED", message: "API 키가 필요합니다. BYOK 모달에서 키를 입력해주세요." } });
+        return;
+    }
+    const apiKey = headerKey;
+    const modelHint = String(req.headers["x-user-model-hint"] || "").trim();
+
+    if (!body?.scenario || (!body.scenario.title && !body.scenario.category)) {
+        sendJson(res, 400, { ok: false, error: { code: "MISSING_SCENARIO", message: "scenario.title / scenario.category 가 필요합니다." } });
+        return;
+    }
+    if (!body?.story || (!body.story.title && !body.story.content)) {
+        sendJson(res, 400, { ok: false, error: { code: "MISSING_STORY", message: "story.title / story.content 가 필요합니다." } });
+        return;
+    }
+    const userMessage = String(body?.userMessage || "").trim();
+    if (!userMessage) {
+        sendJson(res, 400, { ok: false, error: { code: "MISSING_MESSAGE", message: "userMessage 가 필요합니다." } });
+        return;
+    }
+
+    const messages = buildStoryChatMessages(body);
+    const model = provider === "openai"
+        ? (modelHint || process.env.OPENAI_MODEL || V2_DEFAULT_MODELS.openai)
+        : (provider === "anthropic"
+            ? (modelHint || process.env.ANTHROPIC_MODEL || V2_DEFAULT_MODELS.anthropic)
+            : (modelHint || process.env.GEMINI_MODEL || V2_DEFAULT_MODELS.gemini));
+
+    let systemPrompt;
+    try {
+        systemPrompt = loadAgentPromptLocal("STORY_CHAT");
+    } catch (e) {
+        sendJson(res, 500, { ok: false, error: { code: "PROMPT_LOAD_FAILED", message: e.message } });
+        return;
+    }
+
+    let raw;
+    try {
+        if (provider === "openai") {
+            raw = await callOpenAIStoryChatBlocking({ apiKey, systemPrompt, messages, model });
+        } else if (provider === "anthropic") {
+            raw = await callAnthropicStoryChatBlocking({ apiKey, systemPrompt, messages, model });
+        } else if (provider === "gemini") {
+            raw = await callGeminiStoryChatBlocking({ apiKey, systemPrompt, messages, model });
+        } else {
+            sendJson(res, 400, { ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported` } });
+            return;
+        }
+    } catch (e) {
+        sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: e.message } });
+        return;
+    }
+
+    const reply = String(raw || "").trim();
+    if (!reply) {
+        sendJson(res, 502, { ok: false, error: { code: "EMPTY_RESPONSE", message: "LLM 응답이 비어 있습니다." } });
+        return;
+    }
+    sendJson(res, 200, { ok: true, reply });
 }
