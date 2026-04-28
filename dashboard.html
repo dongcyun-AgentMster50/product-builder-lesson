@@ -231,36 +231,20 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-/* 풀 이미지 — 자체 스크롤 없이 자연스러운 흐름 (페이지에서 한 번만 스크롤) */
-.modal-hero {
-  background: #f2f4f8;
-  position: relative;
-}
-.modal-hero img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
+/* P7-A-6: modal-hero JPEG 제거 — compact 헤더로 대체. */
 .modal-close {
   position: absolute; top: 14px; right: 14px;
-  width: 40px; height: 40px; border-radius: 50%;
-  background: rgba(11,16,39,0.75); color: #fff;
-  border: none; cursor: pointer; font-size: 20px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(11,16,39,0.85); color: #fff;
+  border: none; cursor: pointer; font-size: 18px;
   display: flex; align-items: center; justify-content: center;
   transition: all 0.15s; z-index: 10;
-  backdrop-filter: blur(6px);
 }
-.modal-close:hover { background: rgba(11,16,39,0.95); transform: scale(1.05); }
-/* 채팅 트리거 영역 — 이미지 아래, 스토리별 칩 한 줄씩 */
-.modal-chat-area {
-  padding: 18px 20px 24px;
-  border-top: 1px solid var(--border);
-  background: #fafbfd;
-}
-.modal-chat-intro {
-  font-size: 11px; font-weight: 700;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--text3); margin-bottom: 12px;
+.modal-close:hover { background: rgba(11,16,39,1); transform: scale(1.05); }
+
+.modal-header {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid var(--border);
 }
 .modal-cat {
   display: inline-block;
@@ -271,93 +255,134 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
 }
 .modal-title {
   font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: 24px; line-height: 1.25; color: var(--text1);
+  font-size: 22px; line-height: 1.3; color: var(--text1);
   margin-bottom: 8px;
 }
 .modal-meta-row {
   display: flex; gap: 14px; font-size: 11px; color: var(--text3);
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 .modal-desc {
-  font-size: 14px; line-height: 1.7; color: var(--text2);
-  padding: 16px 18px; background: var(--bg3);
+  font-size: 13px; line-height: 1.65; color: var(--text2);
+}
+
+/* 스토리 카드 통합 영역 — 스토리당 1 카드 */
+.modal-stories-area {
+  padding: 20px 24px 28px;
+  background: #fafbfd;
+}
+.modal-stories-intro {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 14px;
+}
+
+.story-card-unified {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  margin-bottom: 12px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.story-card-unified:last-child { margin-bottom: 0; }
+.story-card-unified.is-chatting {
+  border-color: var(--accent);
+  box-shadow: 0 4px 14px rgba(20,40,160,0.10);
+}
+
+.story-card-row {
+  display: flex; gap: 14px;
+  padding: 14px 14px 12px;
+}
+.story-card-image {
+  flex-shrink: 0;
+  width: 120px; aspect-ratio: 4 / 3;
   border-radius: var(--radius-sm);
-  margin-bottom: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 38px;
+  user-select: none;
+  background: linear-gradient(135deg, #eef1f6, #c9d0db);
+  color: var(--text2);
 }
-.device-strip {
-  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 26px;
+.story-card-image[data-cat="스마트 라이프"] { background: linear-gradient(135deg, #f5e8ff, #d9b9f5); color: var(--cat-life); }
+.story-card-image[data-cat="안전"]          { background: linear-gradient(135deg, #fae5ec, #f5b5cb); color: var(--cat-safe); }
+.story-card-image[data-cat="케어"]          { background: linear-gradient(135deg, #fdecd0, #f5c896); color: var(--cat-care); }
+.story-card-image[data-cat="절약"]          { background: linear-gradient(135deg, #d8f2ea, #a8dec9); color: var(--cat-save); }
+.story-card-image[data-cat="관리"]          { background: linear-gradient(135deg, #dce3f0, #abbcde); color: var(--cat-mgmt); }
+.story-card-image[data-cat="시작하기"]       { background: linear-gradient(135deg, #e3e7ee, #c0cad9); color: var(--cat-start); }
+.story-card-image[data-cat="내 기기 관련"]    { background: linear-gradient(135deg, #d4f0ec, #a8dcd0); color: var(--cat-device); }
+
+.story-card-body { flex: 1; min-width: 0; }
+.story-card-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 4px;
 }
-.device-chip {
-  font-size: 11px; padding: 5px 10px;
-  background: #fff; border: 1px solid var(--border);
-  border-radius: 16px; color: var(--text2);
+.story-card-title {
+  font-size: 14px; font-weight: 700;
+  color: var(--text1); line-height: 1.4;
+  margin-bottom: 6px;
 }
-.section-label {
-  font-family: 'Syne', sans-serif; font-weight: 700;
-  font-size: 12px; letter-spacing: 0.08em;
-  color: var(--text3); text-transform: uppercase;
-  margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+.story-card-content {
+  font-size: 12.5px; color: var(--text2); line-height: 1.65;
 }
-.section-label::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
-}
-.story-list { display: flex; flex-direction: column; gap: 8px; }
-.story-item {
-  background: #fff; border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-.story-chat-toggle {
-  width: 100%;
-  display: flex; align-items: center; gap: 10px;
-  padding: 11px 14px;
-  background: #fff; color: var(--text1);
-  border: none; cursor: pointer; font-size: 13px; font-weight: 500;
-  font-family: inherit; transition: all 0.15s;
-  text-align: left;
-}
-.story-chat-toggle:hover { background: #f5f7fb; }
-.story-chat-toggle.active { background: rgba(20,40,160,0.06); color: var(--accent); }
-.story-chat-toggle .story-num-chip {
-  flex-shrink: 0;
-  width: 22px; height: 22px; border-radius: 50%;
-  background: var(--accent); color: #fff;
-  font-weight: 700; font-size: 11px;
-  display: inline-flex; align-items: center; justify-content: center;
-}
-.story-chat-toggle .story-title-chip {
-  flex: 1; min-width: 0;
-  font-weight: 500;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.story-chat-toggle .story-cta-chip {
-  font-size: 11px; color: var(--accent); font-weight: 600;
-  flex-shrink: 0;
-}
-.story-chat-toggle.active .story-cta-chip { color: var(--accent); }
-.story-chat-mount { display: none; padding: 0 14px 14px; background: #fff; }
-.story-chat-mount.open { display: block; }
-.story-note {
+.story-card-note {
+  margin-top: 8px; padding: 6px 10px;
+  background: var(--bg3); border-radius: 6px;
   font-size: 11px; color: var(--text3);
-  margin-top: 10px; padding: 8px 12px;
-  background: var(--bg3); border-radius: var(--radius-sm);
   border-left: 2px solid var(--border-light);
 }
-.story-cta {
-  display: inline-block; margin-top: 10px;
-  font-size: 11px; color: var(--accent); font-weight: 600;
-  padding: 4px 10px; background: rgba(20,40,160,0.06);
-  border-radius: 12px;
+
+.story-card-actions {
+  display: flex; gap: 8px;
+  padding: 0 14px 14px;
+  flex-wrap: wrap;
 }
-.products {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 8px;
+.story-cta-btn {
+  flex: 1; min-width: 140px;
+  padding: 9px 14px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff; color: var(--accent);
+  font-weight: 600; font-size: 12.5px;
+  cursor: pointer; font-family: inherit;
+  transition: all 0.15s; text-align: center;
 }
-.product-chip {
-  padding: 10px 12px; background: var(--bg3);
-  border-radius: var(--radius-sm); font-size: 12px;
+.story-cta-btn:hover {
+  background: rgba(20,40,160,0.06);
+  border-color: var(--accent);
 }
-.product-chip .brand { color: var(--text3); font-size: 10px; margin-top: 2px; }
+
+.story-card-unified .story-chat-toggle {
+  flex: 1; min-width: 140px;
+  padding: 9px 14px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff; color: var(--text1);
+  font-weight: 500; font-size: 12.5px;
+  cursor: pointer; font-family: inherit;
+  transition: all 0.15s;
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+}
+.story-card-unified .story-chat-toggle:hover { background: var(--bg3); }
+.story-card-unified .story-chat-toggle.active {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+}
+.story-card-unified .story-chat-toggle.locked {
+  background: var(--bg3); color: var(--text2);
+}
+
+.story-card-unified .story-chat-mount {
+  display: none;
+  padding: 0 14px 14px;
+  background: #fff;
+  border-top: 1px solid var(--border);
+}
+.story-card-unified .story-chat-mount.open { display: block; padding-top: 14px; }
+
+/* sticky bar 가 modal 위로 — modal z-index 1000 보다 높게 */
+body.has-storychat-bar .storychat-bar { z-index: 1100; }
+body.has-storychat-bar #modal { padding-bottom: 140px; }
 
 .empty-state {
   text-align: center; padding: 60px 20px; color: var(--text3);
@@ -369,8 +394,14 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
 @media (max-width: 640px) {
   main { padding: 24px 16px 60px; }
   .scenario-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
-  .modal-content { padding: 20px; }
   .modal-title { font-size: 20px; }
+  .modal-header { padding: 24px 20px 18px; }
+  .modal-stories-area { padding: 18px 20px 24px; }
+  .story-card-row { flex-direction: column; gap: 10px; }
+  .story-card-image { width: 100%; aspect-ratio: 16 / 9; }
+  .story-card-actions { flex-direction: column; }
+  .story-cta-btn,
+  .story-card-unified .story-chat-toggle { min-width: 0; width: 100%; }
 }
 </style>
 </head>
@@ -408,6 +439,9 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
 <div id="modal" role="dialog" aria-modal="true">
   <div class="modal-box" id="modal-box"></div>
 </div>
+
+<!-- P7-A-6: sticky bottom storychat bar (mountInputBar 가 내용 채움). -->
+<div id="global-storychat-bar" aria-label="스토리 채팅 입력 바"></div>
 
 <script src="./js/story-chat.js"></script>
 <script>
@@ -510,6 +544,23 @@ function cardHTML(s) {
     </article>`;
 }
 
+// P7-A-6: 카테고리 placeholder 아이콘 (per-story 크롭 자산은 후속 2단계 작업)
+const CAT_ICON = {
+  '스마트 라이프': '✨',
+  '안전': '🛡',
+  '케어': '💝',
+  '절약': '🌱',
+  '관리': '⚙',
+  '시작하기': '🚀',
+  '내 기기 관련': '📱',
+};
+
+function escapeHTML(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
 function openModal(no) {
   const s = state.scenarios.find(x => x._no === no);
   if (!s) return;
@@ -517,69 +568,138 @@ function openModal(no) {
   const d1 = s.depth_1 || {};
   const stats = d0.stats || {};
   const stories = d1.stories || [];
-  const products = d1.purchasable_products || [];
-  const devices = d1.device_icons || d1.devices_used || [];
   const cat = d0.category || '';
+  const title = d1.title || d0.card_title || '(제목 없음)';
+  const desc = d1.description || '';
 
   document.getElementById('modal-box').innerHTML = `
-    <div class="modal-hero">
-      <img src="${THUMB_PATH(no)}" alt="${d0.card_title || ''}" onerror="this.style.display='none'">
-      <button class="modal-close" onclick="closeModal()" aria-label="닫기">✕</button>
+    <button class="modal-close" onclick="closeModal()" aria-label="닫기">✕</button>
+    <div class="modal-header">
+      ${cat ? `<span class="modal-cat">${escapeHTML(cat)}</span>` : ''}
+      <h2 class="modal-title">${escapeHTML(title)}</h2>
+      <div class="modal-meta-row">
+        ${stats.views_display ? `<span>👁 ${escapeHTML(stats.views_display)}</span>` : ''}
+        ${stats.likes ? `<span>♥ ${stats.likes}</span>` : ''}
+        <span>📖 스토리 ${stories.length}개</span>
+      </div>
+      ${desc ? `<p class="modal-desc">${escapeHTML(desc)}</p>` : ''}
     </div>
     ${stories.length ? `
-      <div class="modal-chat-area">
-        <div class="modal-chat-intro">💬 스토리 선택 → 내 BYOK로 더 파보기</div>
-        <div class="story-list">
-          ${stories.map(st => storyHTML(st, no)).join('')}
-        </div>
+      <div class="modal-stories-area">
+        <div class="modal-stories-intro">💬 스토리별로 살펴보고 BYOK로 더 파보기</div>
+        ${stories.map((st, i) => unifiedCardHTML(st, no, cat, i)).join('')}
       </div>
     ` : ''}
   `;
   document.getElementById('modal').classList.add('show');
   document.body.style.overflow = 'hidden';
 
-  // 스토리 채팅 토글 바인딩
-  document.querySelectorAll('[data-chat-toggle]').forEach(btn => {
+  // CTA 버튼 — depth_2 가이드 진입 (1단계: console + alert. 실제 라우팅은 별도 작업)
+  document.querySelectorAll('.story-cta-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      const ref = btn.dataset.depth2Ref || '';
+      const type = btn.dataset.ctaType || '';
+      const label = btn.dataset.ctaLabel || '';
+      console.log('[CTA]', { label, ref, type });
+      alert(`${label}\n\ndepth_2_ref: ${ref}\ncta_type: ${type}\n\n실제 가이드 라우팅은 후속 작업입니다.`);
+    });
+  });
+
+  // 스토리 채팅 토글 — sticky bar 컨텍스트 전환 + 카드 내부 응답 영역 (P7-A-6: 신 API 마이그레이션)
+  document.querySelectorAll('.story-card-unified [data-chat-toggle]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
       const id = btn.dataset.chatToggle;
       const mount = document.getElementById(id);
-      if (!mount) return;
-      const isOpen = mount.classList.toggle('open');
-      btn.classList.toggle('active', isOpen);
-      const ctaChip = btn.querySelector('.story-cta-chip');
-      if (ctaChip) ctaChip.textContent = isOpen ? '닫기 ✕' : '채팅 →';
-      if (isOpen && !mount.dataset.mounted) {
-        const storyItem = btn.closest('.story-item');
-        const storyNo = Number(storyItem.dataset.storyNo);
-        const story = stories.find(x => (x.story_no || 0) === storyNo) || stories[0];
-        window.StoryChat?.mount({
-          container: mount,
-          scenario: { title: d1.title || d0.card_title, category: cat },
-          story,
-          theme: 'light',
-        });
-        mount.dataset.mounted = '1';
+      const card = btn.closest('.story-card-unified');
+      if (!mount || !card) return;
+      const scenarioNo = Number(btn.dataset.scenarioNo);
+      const storyNo = Number(btn.dataset.storyNo);
+
+      const wasActive = btn.classList.contains('active');
+      // 다른 카드 비활성 (단일 활성 스토리)
+      document.querySelectorAll('.story-card-unified .story-chat-toggle.active').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.story-card-unified .story-chat-mount.open').forEach(m => m.classList.remove('open'));
+      document.querySelectorAll('.story-card-unified.is-chatting').forEach(c => c.classList.remove('is-chatting'));
+
+      if (wasActive) {
+        if (window.StoryChat) {
+          window.StoryChat.deactivate();
+          window.StoryChat.refreshAllToggles();
+        }
+        return;
+      }
+
+      mount.classList.add('open');
+      btn.classList.add('active');
+      card.classList.add('is-chatting');
+
+      const story = stories.find(x => (x.story_no || 0) === storyNo) || stories[0];
+      const scenarioMeta = { id: scenarioNo, title, category: cat };
+
+      if (window.StoryChat) {
+        if (!mount.dataset.mounted) {
+          window.StoryChat.mountResponseArea(mount, scenarioNo, storyNo);
+          mount.dataset.mounted = '1';
+        }
+        window.StoryChat.activate(scenarioNo, storyNo, scenarioMeta, story);
+        window.StoryChat.refreshAllToggles();
       }
     });
   });
+
+  // BYOK 자물쇠 + 배지 갱신
+  if (window.StoryChat?.refreshAllToggles) {
+    window.StoryChat.refreshAllToggles();
+  }
 }
 
-function storyHTML(st, scenarioNo) {
-  const chatId = `chat-${scenarioNo}-${st.story_no || 0}`;
+function unifiedCardHTML(st, scenarioNo, cat, idx) {
+  const sNo = st.story_no || (idx + 1);
+  const chatId = `chat-${scenarioNo}-${sNo}`;
+  const icon = CAT_ICON[cat] || '💡';
+  const ctaLabel = st.cta_label || '사용 방법 확인';
+  const ctaType = st.cta_type || '';
+  const ref = st.depth_2_ref || '';
   return `
-    <div class="story-item" data-story-no="${st.story_no || 0}">
-      <button type="button" class="story-chat-toggle" data-chat-toggle="${chatId}">
-        <span class="story-num-chip">${st.story_no || '•'}</span>
-        <span class="story-title-chip">${st.title || ''}</span>
-        <span class="story-cta-chip">채팅 →</span>
-      </button>
+    <article class="story-card-unified" data-story-no="${sNo}">
+      <div class="story-card-row">
+        <div class="story-card-image" data-cat="${escapeHTML(cat)}">
+          <span class="placeholder-icon" aria-hidden="true">${icon}</span>
+        </div>
+        <div class="story-card-body">
+          <div class="story-card-num">스토리 ${sNo}</div>
+          <h3 class="story-card-title">${escapeHTML(st.title || '')}</h3>
+          <p class="story-card-content">${escapeHTML(st.content || '')}</p>
+          ${(st.usage_notes || []).map(n => `<div class="story-card-note">ℹ ${escapeHTML(n)}</div>`).join('')}
+        </div>
+      </div>
+      <div class="story-card-actions">
+        <button type="button" class="story-cta-btn"
+                data-cta-type="${escapeHTML(ctaType)}"
+                data-depth-2-ref="${escapeHTML(ref)}"
+                data-cta-label="${escapeHTML(ctaLabel)}">
+          ${escapeHTML(ctaLabel)} →
+        </button>
+        <button type="button" class="story-chat-toggle"
+                data-chat-toggle="${chatId}"
+                data-scenario-no="${scenarioNo}"
+                data-story-no="${sNo}">
+          💬 이 스토리로 더 파보기
+        </button>
+      </div>
       <div class="story-chat-mount" id="${chatId}"></div>
-    </div>`;
+    </article>`;
 }
 
 function closeModal() {
   document.getElementById('modal').classList.remove('show');
   document.body.style.overflow = '';
+  // 모달 닫힐 때 sticky bar 컨텍스트 해제
+  if (window.StoryChat?.deactivate) {
+    window.StoryChat.deactivate();
+    window.StoryChat.refreshAllToggles();
+  }
 }
 
 document.getElementById('modal').addEventListener('click', e => {
@@ -592,6 +712,12 @@ document.getElementById('search-input').addEventListener('input', e => {
   state.searchQuery = e.target.value.trim();
   render();
 });
+
+// P7-A-6: 페이지 레벨 sticky bottom storychat-bar 마운트 (페이지 1회)
+const __barEl = document.getElementById('global-storychat-bar');
+if (__barEl && window.StoryChat?.mountInputBar) {
+  window.StoryChat.mountInputBar(__barEl);
+}
 
 loadAll();
 </script>
