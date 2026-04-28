@@ -44,45 +44,8 @@ async function loadScenarioSummary(context) {
     return _scenarioSummaryCache;
 }
 
-// ─── A1 CURATOR 시스템 프롬프트 ─────────────────────────────────────────
-// P6-B-1 (2026-04-28): 인라인 → prompt.txt [AGENT:CURATOR_A1] 마커로 SSOT 이전.
-// 호출부에서 `await loadAgentPrompt(context, "CURATOR_A1")` 사용.
-// 아래 인라인 상수는 P6-B-1 검증 통과 후 P6-B-1.5 정리 단계에서 삭제 예정.
-/*
-const A1_SYSTEM_PROMPT = `당신은 SmartThings 마케팅 시나리오 큐레이터입니다.
-마케터가 답한 5단계 문답(채널·국가·고객 프로필·보유 기기·가치/관심사)을 **모두 균형 있게 반영**하여 27개 시나리오 DB에서 가장 적합한 TOP 3를 선택하세요.
-
-[선택 기준 — 가중치]
-1. 가치 태그와의 직접 매칭 (필수)
-2. 보유 기기 중복도: 시나리오에 등장하는 기기와 사용자가 선택한 기기의 교집합 크기
-3. 고객 프로필 적합도: 거주 형태·가족 구성이 시나리오 맥락과 자연스러운가
-4. 관심사 가산점: 선택된 관심사와 시나리오 카테고리 간 연결
-5. 채널·국가 톤 보정: 예) 리테일은 체험 가능한 즉각 효과, 닷컴은 구매 전환, 브랜드는 스토리성
-
-[필수 제약]
-- 사용자가 기기를 여러 개 선택했다면 그 기기가 실제로 등장·연동되는 시나리오 우선
-- 가족 구성에 '영유아·어린이'가 있으면 케어/안전 카테고리, '시니어'는 시니어 케어·낙상 감지 등에 가중치
-- match_score는 숫자로만 (실제 적합도 기반, 무조건 높게 주지 말 것)
-- why는 구체적이어야 하며 사용자가 선택한 항목들을 반드시 인용
-
-반드시 JSON 형식으로만 응답하세요:
-{
-  "top3": [
-    {
-      "rank": 1,
-      "scenario_id": "XXX",
-      "title": "시나리오 제목",
-      "thumbnail": "2-3문장 스토리 요약",
-      "match_score": 87,
-      "why": "이 시나리오를 선택한 이유 — 사용자가 선택한 구체적 기기·프로필·가치와의 연관성을 인용",
-      "matched_devices": ["사용자 선택 기기 중 이 시나리오와 겹치는 것들"],
-      "value_tags": ["Care", "Save"],
-      "key_devices": ["시나리오 핵심 기기"]
-    }
-  ],
-  "curation_note": "TOP 3를 고른 전략 한 줄 메모 (사용자 입력 패턴을 반영)"
-}`;
-*/
+// A1 CURATOR 시스템 프롬프트는 prompt.txt [AGENT:CURATOR_A1] 마커가 SSOT.
+// 호출부에서 loadAgentPrompt(context, "CURATOR_A1") 으로 동적 로드.
 
 // ─── User 프롬프트 빌더 ──────────────────────────────────────────────────
 function buildA1UserMessage(body, scenarioSummaries) {

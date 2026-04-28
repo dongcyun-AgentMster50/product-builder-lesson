@@ -13,6 +13,7 @@
 
 import { json } from "./access/_shared.js";
 import { resolveProviderKey, maskKey, DEFAULT_MODELS } from "./_provider.js";
+import { loadAgentPrompt } from "./_prompt_loader.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
@@ -27,16 +28,8 @@ const CHANNEL_NAMES = {
     landing: "랜딩페이지 섹션 구조 + 주요 메시지"
 };
 
-// ─── A4 EXPANDER 시스템 프롬프트 (v2.html 1699-1706 그대로 이식) ─────────
-// 사용자 입력 언어 지시는 user message 에서 명시 (system 은 locale 무관).
-const A4_SYSTEM_PROMPT = `당신은 SmartThings 채널 확장 에이전트(A4 Expander)입니다.
-확정된 시나리오를 기반으로 각 마케팅 채널에 맞는 결과물을 생성합니다.
-
-규칙:
-- 채널별로 명확히 구분하여 출력
-- 시나리오의 핵심 메시지와 가치를 유지
-- 실제 사용 가능한 수준으로 구체적으로
-- 사용자 입력 언어 지시(KR/EN 등)에 맞춰 출력`;
+// A4 EXPANDER 시스템 프롬프트는 prompt.txt [AGENT:EXPANDER_A4] 마커가 SSOT.
+// 호출부에서 loadAgentPrompt(context, "EXPANDER_A4") 으로 동적 로드.
 
 // ─── User 프롬프트 빌더 ──────────────────────────────────────────────────
 function buildA4UserMessage(body) {
@@ -180,14 +173,22 @@ export async function onRequestPost(context) {
         storyLen: localizedStory.length
     }));
 
+    // P6-B-3: prompt.txt SSOT 에서 시스템 프롬프트 로드 (인라인 폴백 의도적 X)
+    let systemPrompt;
+    try {
+        systemPrompt = await loadAgentPrompt(context, "EXPANDER_A4");
+    } catch (e) {
+        return json({ ok: false, error: { code: "PROMPT_LOAD_FAILED", message: e.message } }, 500);
+    }
+
     let raw;
     try {
         if (provider === "openai") {
-            raw = await callOpenAI({ apiKey, systemPrompt: A4_SYSTEM_PROMPT, userMessage, model });
+            raw = await callOpenAI({ apiKey, systemPrompt, userMessage, model });
         } else if (provider === "anthropic") {
-            raw = await callAnthropic({ apiKey, systemPrompt: A4_SYSTEM_PROMPT, userMessage, model });
+            raw = await callAnthropic({ apiKey, systemPrompt, userMessage, model });
         } else if (provider === "gemini") {
-            raw = await callGemini({ apiKey, systemPrompt: A4_SYSTEM_PROMPT, userMessage, model });
+            raw = await callGemini({ apiKey, systemPrompt, userMessage, model });
         } else {
             return json({ ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported` } }, 400);
         }

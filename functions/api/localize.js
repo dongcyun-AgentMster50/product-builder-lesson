@@ -12,23 +12,13 @@
 
 import { json } from "./access/_shared.js";
 import { resolveProviderKey, maskKey, DEFAULT_MODELS } from "./_provider.js";
+import { loadAgentPrompt } from "./_prompt_loader.js";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
-// ─── A2 LOCALIZER 시스템 프롬프트 (v2.html 1643-1652 그대로 이식) ────────
-// 주의: locale 변수는 호출 시 inject — 기존 ${state.selectedCountry === 'KR' ? '한국어' : 'English'}
-// 패턴은 user message 에서 명시하므로 system 은 locale 무관하게 작성.
-const A2_SYSTEM_PROMPT = `당신은 SmartThings 시나리오 현지화·개인화 에이전트(A2 Localizer)입니다.
-원문 시나리오를 받아 해당 국가/도시의 생활 문화에 맞게 현지화하면서, 위저드에서 수집한 고객 프로필(거주·가족·보유 기기·관심사)도 함께 녹여냅니다.
-
-규칙:
-- 원문의 스마트홈 가치와 SmartThings 기능은 유지
-- 현지 문화 앵커(명절·기후·주거 문화 등) 최소 1개 포함
-- 고객이 선택한 기기를 **실제 시나리오 안에 직접 등장**시키기 (예: "퇴근길에 갤럭시 워치에서 조명을 켜고…")
-- 가족 구성(영유아·시니어·반려동물 등)이 있으면 자연스럽게 맥락에 반영
-- 사용자 입력 언어 지시(KR/EN 등)에 맞춰 출력
-- 300~400자 분량, 설득력 있는 마케팅 톤`;
+// A2 LOCALIZER 시스템 프롬프트는 prompt.txt [AGENT:LOCALIZER_A2] 마커가 SSOT.
+// 호출부에서 loadAgentPrompt(context, "LOCALIZER_A2") 으로 동적 로드.
 
 // ─── User 프롬프트 빌더 ──────────────────────────────────────────────────
 function buildA2UserMessage(body) {
@@ -180,14 +170,22 @@ export async function onRequestPost(context) {
         deviceCount: Array.isArray(body?.devices) ? body.devices.length : 0
     }));
 
+    // P6-B-2: prompt.txt SSOT 에서 시스템 프롬프트 로드 (인라인 폴백 의도적 X)
+    let systemPrompt;
+    try {
+        systemPrompt = await loadAgentPrompt(context, "LOCALIZER_A2");
+    } catch (e) {
+        return json({ ok: false, error: { code: "PROMPT_LOAD_FAILED", message: e.message } }, 500);
+    }
+
     let raw;
     try {
         if (provider === "openai") {
-            raw = await callOpenAI({ apiKey, systemPrompt: A2_SYSTEM_PROMPT, userMessage, model });
+            raw = await callOpenAI({ apiKey, systemPrompt, userMessage, model });
         } else if (provider === "anthropic") {
-            raw = await callAnthropic({ apiKey, systemPrompt: A2_SYSTEM_PROMPT, userMessage, model });
+            raw = await callAnthropic({ apiKey, systemPrompt, userMessage, model });
         } else if (provider === "gemini") {
-            raw = await callGemini({ apiKey, systemPrompt: A2_SYSTEM_PROMPT, userMessage, model });
+            raw = await callGemini({ apiKey, systemPrompt, userMessage, model });
         } else {
             return json({ ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported` } }, 400);
         }

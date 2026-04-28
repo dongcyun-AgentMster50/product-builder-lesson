@@ -3278,44 +3278,8 @@ const V2_DEFAULT_MODELS = Object.freeze({
     gemini: "gemini-3.1-pro-preview"
 });
 
-// P6-B-1 (2026-04-28): 인라인 → prompt.txt [AGENT:CURATOR_A1] SSOT 이전.
-// 호출부에서 loadAgentPromptLocal("CURATOR_A1") 사용. 아래 인라인 상수는
-// P6-B-1 검증 통과 후 P6-B-1.5 정리 단계에서 삭제 예정.
-/*
-const A1_SYSTEM_PROMPT_LOCAL = `당신은 SmartThings 마케팅 시나리오 큐레이터입니다.
-마케터가 답한 5단계 문답(채널·국가·고객 프로필·보유 기기·가치/관심사)을 **모두 균형 있게 반영**하여 27개 시나리오 DB에서 가장 적합한 TOP 3를 선택하세요.
-
-[선택 기준 — 가중치]
-1. 가치 태그와의 직접 매칭 (필수)
-2. 보유 기기 중복도: 시나리오에 등장하는 기기와 사용자가 선택한 기기의 교집합 크기
-3. 고객 프로필 적합도: 거주 형태·가족 구성이 시나리오 맥락과 자연스러운가
-4. 관심사 가산점: 선택된 관심사와 시나리오 카테고리 간 연결
-5. 채널·국가 톤 보정: 예) 리테일은 체험 가능한 즉각 효과, 닷컴은 구매 전환, 브랜드는 스토리성
-
-[필수 제약]
-- 사용자가 기기를 여러 개 선택했다면 그 기기가 실제로 등장·연동되는 시나리오 우선
-- 가족 구성에 '영유아·어린이'가 있으면 케어/안전 카테고리, '시니어'는 시니어 케어·낙상 감지 등에 가중치
-- match_score는 숫자로만 (실제 적합도 기반, 무조건 높게 주지 말 것)
-- why는 구체적이어야 하며 사용자가 선택한 항목들을 반드시 인용
-
-반드시 JSON 형식으로만 응답하세요:
-{
-  "top3": [
-    {
-      "rank": 1,
-      "scenario_id": "XXX",
-      "title": "시나리오 제목",
-      "thumbnail": "2-3문장 스토리 요약",
-      "match_score": 87,
-      "why": "이 시나리오를 선택한 이유 — 사용자가 선택한 구체적 기기·프로필·가치와의 연관성을 인용",
-      "matched_devices": ["사용자 선택 기기 중 이 시나리오와 겹치는 것들"],
-      "value_tags": ["Care", "Save"],
-      "key_devices": ["시나리오 핵심 기기"]
-    }
-  ],
-  "curation_note": "TOP 3를 고른 전략 한 줄 메모 (사용자 입력 패턴을 반영)"
-}`;
-*/
+// A1 CURATOR 시스템 프롬프트는 prompt.txt [AGENT:CURATOR_A1] 마커가 SSOT.
+// 호출부에서 loadAgentPromptLocal("CURATOR_A1") 으로 동적 로드.
 
 // 27 DB 모듈 전역 캐시 (서버 시작 시 1회 lazy 로드)
 let _scenarioSummaryCacheLocal = null;
@@ -3587,16 +3551,8 @@ async function handleCurate(req, res) {
 // ─── /api/localize (P5-B: A2 LOCALIZER 백엔드 마이그레이션) ─────────────
 // v2.html runLocalizer() 가 호출. P5-A 의 BYOK 검증 / call*Blocking 헬퍼 재사용.
 
-const A2_SYSTEM_PROMPT_LOCAL = `당신은 SmartThings 시나리오 현지화·개인화 에이전트(A2 Localizer)입니다.
-원문 시나리오를 받아 해당 국가/도시의 생활 문화에 맞게 현지화하면서, 위저드에서 수집한 고객 프로필(거주·가족·보유 기기·관심사)도 함께 녹여냅니다.
-
-규칙:
-- 원문의 스마트홈 가치와 SmartThings 기능은 유지
-- 현지 문화 앵커(명절·기후·주거 문화 등) 최소 1개 포함
-- 고객이 선택한 기기를 **실제 시나리오 안에 직접 등장**시키기 (예: "퇴근길에 갤럭시 워치에서 조명을 켜고…")
-- 가족 구성(영유아·시니어·반려동물 등)이 있으면 자연스럽게 맥락에 반영
-- 사용자 입력 언어 지시(KR/EN 등)에 맞춰 출력
-- 300~400자 분량, 설득력 있는 마케팅 톤`;
+// A2 LOCALIZER 시스템 프롬프트는 prompt.txt [AGENT:LOCALIZER_A2] 마커가 SSOT.
+// 호출부에서 loadAgentPromptLocal("LOCALIZER_A2") 으로 동적 로드.
 
 function buildA2UserMessageLocal(body) {
     const countryNames = {
@@ -3737,14 +3693,23 @@ async function handleLocalize(req, res) {
             ? (modelHint || process.env.ANTHROPIC_MODEL || V2_DEFAULT_MODELS.anthropic)
             : (modelHint || process.env.GEMINI_MODEL || V2_DEFAULT_MODELS.gemini));
 
+    // P6-B-2: prompt.txt SSOT 에서 시스템 프롬프트 로드 (인라인 폴백 의도적 X)
+    let systemPrompt;
+    try {
+        systemPrompt = loadAgentPromptLocal("LOCALIZER_A2");
+    } catch (e) {
+        sendJson(res, 500, { ok: false, error: { code: "PROMPT_LOAD_FAILED", message: e.message } });
+        return;
+    }
+
     let raw;
     try {
         if (provider === "openai") {
-            raw = await callOpenAILocalizeBlocking({ apiKey, systemPrompt: A2_SYSTEM_PROMPT_LOCAL, userMessage, model });
+            raw = await callOpenAILocalizeBlocking({ apiKey, systemPrompt, userMessage, model });
         } else if (provider === "anthropic") {
-            raw = await callAnthropicLocalizeBlocking({ apiKey, systemPrompt: A2_SYSTEM_PROMPT_LOCAL, userMessage, model });
+            raw = await callAnthropicLocalizeBlocking({ apiKey, systemPrompt, userMessage, model });
         } else if (provider === "gemini") {
-            raw = await callGeminiLocalizeBlocking({ apiKey, systemPrompt: A2_SYSTEM_PROMPT_LOCAL, userMessage, model });
+            raw = await callGeminiLocalizeBlocking({ apiKey, systemPrompt, userMessage, model });
         } else {
             sendJson(res, 400, { ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported` } });
             return;
@@ -3774,14 +3739,8 @@ const A4_CHANNEL_NAMES_LOCAL = {
     landing: "랜딩페이지 섹션 구조 + 주요 메시지"
 };
 
-const A4_SYSTEM_PROMPT_LOCAL = `당신은 SmartThings 채널 확장 에이전트(A4 Expander)입니다.
-확정된 시나리오를 기반으로 각 마케팅 채널에 맞는 결과물을 생성합니다.
-
-규칙:
-- 채널별로 명확히 구분하여 출력
-- 시나리오의 핵심 메시지와 가치를 유지
-- 실제 사용 가능한 수준으로 구체적으로
-- 사용자 입력 언어 지시(KR/EN 등)에 맞춰 출력`;
+// A4 EXPANDER 시스템 프롬프트는 prompt.txt [AGENT:EXPANDER_A4] 마커가 SSOT.
+// 호출부에서 loadAgentPromptLocal("EXPANDER_A4") 으로 동적 로드.
 
 function buildA4UserMessageLocal(body) {
     const localizedStory = String(body?.localizedStory || "").trim();
@@ -3908,14 +3867,23 @@ async function handleExpand(req, res) {
             ? (modelHint || process.env.ANTHROPIC_MODEL || V2_DEFAULT_MODELS.anthropic)
             : (modelHint || process.env.GEMINI_MODEL || V2_DEFAULT_MODELS.gemini));
 
+    // P6-B-3: prompt.txt SSOT 에서 시스템 프롬프트 로드 (인라인 폴백 의도적 X)
+    let systemPrompt;
+    try {
+        systemPrompt = loadAgentPromptLocal("EXPANDER_A4");
+    } catch (e) {
+        sendJson(res, 500, { ok: false, error: { code: "PROMPT_LOAD_FAILED", message: e.message } });
+        return;
+    }
+
     let raw;
     try {
         if (provider === "openai") {
-            raw = await callOpenAIExpandBlocking({ apiKey, systemPrompt: A4_SYSTEM_PROMPT_LOCAL, userMessage, model });
+            raw = await callOpenAIExpandBlocking({ apiKey, systemPrompt, userMessage, model });
         } else if (provider === "anthropic") {
-            raw = await callAnthropicExpandBlocking({ apiKey, systemPrompt: A4_SYSTEM_PROMPT_LOCAL, userMessage, model });
+            raw = await callAnthropicExpandBlocking({ apiKey, systemPrompt, userMessage, model });
         } else if (provider === "gemini") {
-            raw = await callGeminiExpandBlocking({ apiKey, systemPrompt: A4_SYSTEM_PROMPT_LOCAL, userMessage, model });
+            raw = await callGeminiExpandBlocking({ apiKey, systemPrompt, userMessage, model });
         } else {
             sendJson(res, 400, { ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported` } });
             return;
