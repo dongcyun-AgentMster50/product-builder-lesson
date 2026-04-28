@@ -101,6 +101,16 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        if (pathname === "/api/localize" && req.method === "POST") {
+            await handleLocalize(req, res);
+            return;
+        }
+
+        if (pathname === "/api/expand" && req.method === "POST") {
+            await handleExpand(req, res);
+            return;
+        }
+
         if (pathname === "/api/nudge" && req.method === "POST") {
             await handleNudge(req, res);
             return;
@@ -3261,9 +3271,9 @@ Build a source-bound localization evidence pack for this city. Use only evidence
 // 시스템 프롬프트 인라인 (P6 에서 prompt.txt 통합 예정).
 
 // DEFAULT_MODELS — functions/api/_provider.js 의 동일 상수 미러링 (ESM/CJS 호환).
-// 변경 시 두 파일 동기화 필수.
+// 변경 시 _provider.js / v2.html / 이 파일 3곳 동기화 필수.
 const V2_DEFAULT_MODELS = Object.freeze({
-    openai: "gpt-5",
+    openai: "gpt-5.5",
     anthropic: "claude-sonnet-4-6",
     gemini: "gemini-3.1-pro-preview"
 });
@@ -3509,4 +3519,353 @@ async function handleCurate(req, res) {
         return;
     }
     sendJson(res, 200, { ok: true, top3: result.top3, curation_note: result.curation_note || "" });
+}
+
+// ─── /api/localize (P5-B: A2 LOCALIZER 백엔드 마이그레이션) ─────────────
+// v2.html runLocalizer() 가 호출. P5-A 의 BYOK 검증 / call*Blocking 헬퍼 재사용.
+
+const A2_SYSTEM_PROMPT_LOCAL = `당신은 SmartThings 시나리오 현지화·개인화 에이전트(A2 Localizer)입니다.
+원문 시나리오를 받아 해당 국가/도시의 생활 문화에 맞게 현지화하면서, 위저드에서 수집한 고객 프로필(거주·가족·보유 기기·관심사)도 함께 녹여냅니다.
+
+규칙:
+- 원문의 스마트홈 가치와 SmartThings 기능은 유지
+- 현지 문화 앵커(명절·기후·주거 문화 등) 최소 1개 포함
+- 고객이 선택한 기기를 **실제 시나리오 안에 직접 등장**시키기 (예: "퇴근길에 갤럭시 워치에서 조명을 켜고…")
+- 가족 구성(영유아·시니어·반려동물 등)이 있으면 자연스럽게 맥락에 반영
+- 사용자 입력 언어 지시(KR/EN 등)에 맞춰 출력
+- 300~400자 분량, 설득력 있는 마케팅 톤`;
+
+function buildA2UserMessageLocal(body) {
+    const countryNames = {
+        KR: "한국", US: "미국", JP: "일본", AU: "호주", IN: "인도",
+        DE: "독일", UK: "영국", CN: "중국", BR: "브라질", MX: "멕시코", SG: "싱가포르", SE: "스웨덴"
+    };
+    const homeLabel = { apartment: "아파트", house: "단독주택", villa: "빌라·연립", studio: "원룸·스튜디오", officetel: "오피스텔" };
+    const familyLabel = { single: "1인 가구", couple: "커플·부부", kids: "영유아·어린이", teens: "청소년", senior: "시니어", pet: "반려동물" };
+
+    const story = body?.story || {};
+    const title = String(story.title || "(제목 없음)");
+    const thumbnail = String(story.thumbnail || "");
+    const role = String(body?.role || "").trim();
+    const country = String(body?.country || "").trim();
+    const city = String(body?.city || "").trim();
+    const home = String(body?.home || "").trim();
+    const family = Array.isArray(body?.family) ? body.family : [];
+    const devices = Array.isArray(body?.devices) ? body.devices : [];
+    const values = Array.isArray(body?.values) ? body.values : [];
+    const locale = String(body?.locale || (country === "KR" ? "ko" : "en")).trim();
+
+    return `원문 시나리오: ${title}
+요약: ${thumbnail}
+
+대상 국가: ${countryNames[country] || country || "(미입력)"}${city ? " / " + city : ""}
+채널: ${role || "(미입력)"}
+가치 태그: ${values.join(", ") || "(없음)"}
+
+[고객 프로필 — 시나리오에 반영]
+- 거주 형태: ${home ? (homeLabel[home] || home) : "미입력"}
+- 가족 구성: ${family.length ? family.map(f => familyLabel[f] || f).join(", ") : "미입력"}
+- 보유 기기: ${devices.length ? devices.join(", ") : "미입력"}
+
+출력 언어: ${locale === "ko" ? "한국어" : "English"}.
+이 시나리오를 위 프로필을 반영해 현지화하고, 선택한 기기를 시나리오 안에 직접 등장시켜 개인화해주세요.`;
+}
+
+// LLM blocking 호출 — JSON 모드 X, 평문/마크다운 응답
+async function callOpenAILocalizeBlocking({ apiKey, systemPrompt, userMessage, model }) {
+    const requestBody = {
+        model,
+        messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage }
+        ],
+        temperature: 0.7
+    };
+    if (/^gpt-5/i.test(String(model || "").trim())) {
+        requestBody.max_completion_tokens = 1500;
+    } else {
+        requestBody.max_tokens = 1500;
+    }
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+        body: JSON.stringify(requestBody)
+    });
+    if (!r.ok) {
+        const txt = await r.text().catch(() => "");
+        let msg = `OpenAI ${r.status}`;
+        try { msg = JSON.parse(txt)?.error?.message || msg; } catch { /* ignore */ }
+        throw new Error(msg);
+    }
+    const d = await r.json();
+    return d.choices?.[0]?.message?.content || "";
+}
+
+async function callAnthropicLocalizeBlocking({ apiKey, systemPrompt, userMessage, model }) {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey,
+            "anthropic-version": "2023-06-01"
+        },
+        body: JSON.stringify({
+            model, max_tokens: 1500,
+            system: systemPrompt,
+            messages: [{ role: "user", content: userMessage }]
+        })
+    });
+    if (!r.ok) {
+        const txt = await r.text().catch(() => "");
+        throw new Error(`Anthropic ${r.status}: ${txt.slice(0, 200)}`);
+    }
+    const d = await r.json();
+    return d.content?.[0]?.text || "";
+}
+
+async function callGeminiLocalizeBlocking({ apiKey, systemPrompt, userMessage, model }) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const r = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ role: "user", parts: [{ text: userMessage }] }],
+            generationConfig: { maxOutputTokens: 1500, temperature: 0.7 }
+        })
+    });
+    if (!r.ok) {
+        const txt = await r.text().catch(() => "");
+        throw new Error(`Gemini ${r.status}: ${txt.slice(0, 200)}`);
+    }
+    const d = await r.json();
+    const parts = d.candidates?.[0]?.content?.parts || [];
+    return parts.map(p => p.text || "").join("");
+}
+
+async function handleLocalize(req, res) {
+    let body;
+    try {
+        body = await readJsonBody(req);
+    } catch {
+        sendJson(res, 400, { ok: false, error: { code: "BAD_REQUEST", message: "Invalid JSON body." } });
+        return;
+    }
+
+    if (!body?.story || (!body.story.title && !body.story.thumbnail)) {
+        sendJson(res, 400, { ok: false, error: { code: "MISSING_STORY", message: "story.title / story.thumbnail 가 필요합니다." } });
+        return;
+    }
+
+    // BYOK 헤더 키만 검증 (v1 access 세션 무관)
+    const headerKey = String(req.headers["x-user-api-key"] || "").trim();
+    const provider = detectProviderFromKey(headerKey);
+    if (!provider) {
+        sendJson(res, 400, { ok: false, error: { code: "API_NOT_CONFIGURED", message: "API 키가 필요합니다. BYOK 모달에서 키를 입력해주세요." } });
+        return;
+    }
+    const apiKey = headerKey;
+    const modelHint = String(req.headers["x-user-model-hint"] || "").trim();
+
+    const userMessage = buildA2UserMessageLocal(body);
+    const model = provider === "openai"
+        ? (modelHint || process.env.OPENAI_MODEL || V2_DEFAULT_MODELS.openai)
+        : (provider === "anthropic"
+            ? (modelHint || process.env.ANTHROPIC_MODEL || V2_DEFAULT_MODELS.anthropic)
+            : (modelHint || process.env.GEMINI_MODEL || V2_DEFAULT_MODELS.gemini));
+
+    let raw;
+    try {
+        if (provider === "openai") {
+            raw = await callOpenAILocalizeBlocking({ apiKey, systemPrompt: A2_SYSTEM_PROMPT_LOCAL, userMessage, model });
+        } else if (provider === "anthropic") {
+            raw = await callAnthropicLocalizeBlocking({ apiKey, systemPrompt: A2_SYSTEM_PROMPT_LOCAL, userMessage, model });
+        } else if (provider === "gemini") {
+            raw = await callGeminiLocalizeBlocking({ apiKey, systemPrompt: A2_SYSTEM_PROMPT_LOCAL, userMessage, model });
+        } else {
+            sendJson(res, 400, { ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported` } });
+            return;
+        }
+    } catch (e) {
+        sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: e.message } });
+        return;
+    }
+
+    const localizedStory = String(raw || "").trim();
+    if (!localizedStory) {
+        sendJson(res, 502, { ok: false, error: { code: "EMPTY_RESPONSE", message: "LLM 응답이 비어 있습니다." } });
+        return;
+    }
+    sendJson(res, 200, { ok: true, localizedStory });
+}
+
+// ─── /api/expand (P5-C: A4 EXPANDER 백엔드 마이그레이션) ────────────────
+// v2.html runExpander() 가 호출. P5-A/B 패턴 동일.
+
+const A4_CHANNEL_NAMES_LOCAL = {
+    copy: "카피라이팅 (헤드라인 3개 + 서브카피)",
+    kv: "Key Visual 이미지 생성 프롬프트",
+    email: "이메일 제목 + 본문 구조",
+    store: "매장 판매사원용 세일즈 토크 (2분 분량)",
+    social: "SNS 포스트 (인스타그램 + 트위터용)",
+    landing: "랜딩페이지 섹션 구조 + 주요 메시지"
+};
+
+const A4_SYSTEM_PROMPT_LOCAL = `당신은 SmartThings 채널 확장 에이전트(A4 Expander)입니다.
+확정된 시나리오를 기반으로 각 마케팅 채널에 맞는 결과물을 생성합니다.
+
+규칙:
+- 채널별로 명확히 구분하여 출력
+- 시나리오의 핵심 메시지와 가치를 유지
+- 실제 사용 가능한 수준으로 구체적으로
+- 사용자 입력 언어 지시(KR/EN 등)에 맞춰 출력`;
+
+function buildA4UserMessageLocal(body) {
+    const localizedStory = String(body?.localizedStory || "").trim();
+    const channels = Array.isArray(body?.selectedChannels) ? body.selectedChannels : [];
+    const country = String(body?.country || "").trim();
+    const locale = String(body?.locale || (country === "KR" ? "ko" : "en")).trim();
+    const requestedChannels = channels
+        .map(c => A4_CHANNEL_NAMES_LOCAL[c] || c)
+        .join("\n");
+    return `확정 시나리오:
+${localizedStory}
+
+생성할 채널 결과물:
+${requestedChannels}
+
+출력 언어: ${locale === "ko" ? "한국어" : "English"}.
+각 채널별로 결과물을 생성해주세요.`;
+}
+
+async function callOpenAIExpandBlocking({ apiKey, systemPrompt, userMessage, model }) {
+    const requestBody = {
+        model,
+        messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage }
+        ],
+        temperature: 0.7
+    };
+    if (/^gpt-5/i.test(String(model || "").trim())) {
+        requestBody.max_completion_tokens = 2500;
+    } else {
+        requestBody.max_tokens = 2500;
+    }
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+        body: JSON.stringify(requestBody)
+    });
+    if (!r.ok) {
+        const txt = await r.text().catch(() => "");
+        let msg = `OpenAI ${r.status}`;
+        try { msg = JSON.parse(txt)?.error?.message || msg; } catch { /* ignore */ }
+        throw new Error(msg);
+    }
+    const d = await r.json();
+    return d.choices?.[0]?.message?.content || "";
+}
+
+async function callAnthropicExpandBlocking({ apiKey, systemPrompt, userMessage, model }) {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey,
+            "anthropic-version": "2023-06-01"
+        },
+        body: JSON.stringify({
+            model, max_tokens: 2500,
+            system: systemPrompt,
+            messages: [{ role: "user", content: userMessage }]
+        })
+    });
+    if (!r.ok) {
+        const txt = await r.text().catch(() => "");
+        throw new Error(`Anthropic ${r.status}: ${txt.slice(0, 200)}`);
+    }
+    const d = await r.json();
+    return d.content?.[0]?.text || "";
+}
+
+async function callGeminiExpandBlocking({ apiKey, systemPrompt, userMessage, model }) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const r = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ role: "user", parts: [{ text: userMessage }] }],
+            generationConfig: { maxOutputTokens: 2500, temperature: 0.7 }
+        })
+    });
+    if (!r.ok) {
+        const txt = await r.text().catch(() => "");
+        throw new Error(`Gemini ${r.status}: ${txt.slice(0, 200)}`);
+    }
+    const d = await r.json();
+    const parts = d.candidates?.[0]?.content?.parts || [];
+    return parts.map(p => p.text || "").join("");
+}
+
+async function handleExpand(req, res) {
+    let body;
+    try {
+        body = await readJsonBody(req);
+    } catch {
+        sendJson(res, 400, { ok: false, error: { code: "BAD_REQUEST", message: "Invalid JSON body." } });
+        return;
+    }
+
+    const localizedStory = String(body?.localizedStory || "").trim();
+    if (!localizedStory) {
+        sendJson(res, 400, { ok: false, error: { code: "MISSING_STORY", message: "localizedStory(A2 결과)가 필요합니다." } });
+        return;
+    }
+    const channels = Array.isArray(body?.selectedChannels) ? body.selectedChannels : [];
+    if (channels.length === 0) {
+        sendJson(res, 400, { ok: false, error: { code: "MISSING_CHANNELS", message: "selectedChannels 가 1개 이상 필요합니다." } });
+        return;
+    }
+
+    const headerKey = String(req.headers["x-user-api-key"] || "").trim();
+    const provider = detectProviderFromKey(headerKey);
+    if (!provider) {
+        sendJson(res, 400, { ok: false, error: { code: "API_NOT_CONFIGURED", message: "API 키가 필요합니다. BYOK 모달에서 키를 입력해주세요." } });
+        return;
+    }
+    const apiKey = headerKey;
+    const modelHint = String(req.headers["x-user-model-hint"] || "").trim();
+
+    const userMessage = buildA4UserMessageLocal(body);
+    const model = provider === "openai"
+        ? (modelHint || process.env.OPENAI_MODEL || V2_DEFAULT_MODELS.openai)
+        : (provider === "anthropic"
+            ? (modelHint || process.env.ANTHROPIC_MODEL || V2_DEFAULT_MODELS.anthropic)
+            : (modelHint || process.env.GEMINI_MODEL || V2_DEFAULT_MODELS.gemini));
+
+    let raw;
+    try {
+        if (provider === "openai") {
+            raw = await callOpenAIExpandBlocking({ apiKey, systemPrompt: A4_SYSTEM_PROMPT_LOCAL, userMessage, model });
+        } else if (provider === "anthropic") {
+            raw = await callAnthropicExpandBlocking({ apiKey, systemPrompt: A4_SYSTEM_PROMPT_LOCAL, userMessage, model });
+        } else if (provider === "gemini") {
+            raw = await callGeminiExpandBlocking({ apiKey, systemPrompt: A4_SYSTEM_PROMPT_LOCAL, userMessage, model });
+        } else {
+            sendJson(res, 400, { ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported` } });
+            return;
+        }
+    } catch (e) {
+        sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: e.message } });
+        return;
+    }
+
+    const expandedAssets = String(raw || "").trim();
+    if (!expandedAssets) {
+        sendJson(res, 502, { ok: false, error: { code: "EMPTY_RESPONSE", message: "LLM 응답이 비어 있습니다." } });
+        return;
+    }
+    sendJson(res, 200, { ok: true, expandedAssets });
 }

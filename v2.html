@@ -713,7 +713,7 @@ select.country-select option { background: #ffffff; color: var(--text1); }
     <div class="modal-sub">시나리오 생성에 사용할 AI 제공사를 선택하고 API 키를 입력하세요. 키는 브라우저 localStorage에 평문으로 저장되므로 공용 기기에서는 사용을 피하세요.</div>
     <div class="provider-tabs">
       <button class="provider-tab active" onclick="selectProvider('openai')">
-        OpenAI <span class="cost-badge">GPT-5 · 권장</span>
+        OpenAI <span class="cost-badge">GPT-5.5 · 권장</span>
       </button>
       <button class="provider-tab" onclick="selectProvider('anthropic')">
         Anthropic <span class="cost-badge">Claude Sonnet</span>
@@ -730,7 +730,7 @@ select.country-select option { background: #ffffff; color: var(--text1); }
       </div>
     </div>
     <div class="modal-warning" id="gemini-warn">
-      ⚠️ Gemini 3.1 Pro 는 preview 단계입니다. 안정성 우려 시 GPT-5 또는 Claude Sonnet 4.6 사용을 권장합니다.
+      ⚠️ Gemini 3.1 Pro 는 preview 단계입니다. 안정성 우려 시 GPT-5.5 또는 Claude Sonnet 4.6 사용을 권장합니다.
     </div>
     <button class="btn-primary" onclick="saveKey()">시작하기 →</button>
   </div>
@@ -1185,12 +1185,12 @@ function selectProvider(p) {
 // ─── P5: 모델 정책 (functions/api/_provider.js DEFAULT_MODELS / DEFAULT_MODEL_LABELS 와 동기화) ───
 // 변경 시 _provider.js, server.js V2_DEFAULT_MODELS, 이 파일 3곳 모두 동기화 필수.
 const V2_DEFAULT_MODELS = Object.freeze({
-  openai: 'gpt-5',
+  openai: 'gpt-5.5',
   anthropic: 'claude-sonnet-4-6',
   gemini: 'gemini-3.1-pro-preview'
 });
 const V2_MODEL_LABELS = Object.freeze({
-  openai: 'GPT-5',
+  openai: 'GPT-5.5',
   anthropic: 'Claude Sonnet 4.6',
   gemini: 'Gemini 3.1 Pro'
 });
@@ -1366,6 +1366,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // ─── AI CALL ROUTER ───
 // 모든 모델 ID 는 V2_DEFAULT_MODELS 단일 소스. P5 정책 — 라우터 패턴 X, 단일 모델.
+//
+// P5-C 이후 사용처: runCopyConsult() (Mode2 Copy Consult) 1곳만.
+//   - CX Mode (Mode1) 의 A1/A2/A4 는 모두 백엔드 (/api/curate, /api/localize, /api/expand) 경유.
+//   - Copy Consult 는 P3 단계에서 callAI 직접 호출로 구현됨. 향후 백엔드 분리 시 이 함수 제거 가능.
 async function callAI(systemPrompt, userPrompt) {
   const { provider, apiKey } = state;
 
@@ -1633,42 +1637,42 @@ async function selectStory(story, cardEl) {
 }
 
 async function runLocalizer(story) {
-  const countryNames = {
-    KR: '한국', US: '미국', JP: '일본', AU: '호주', IN: '인도',
-    DE: '독일', UK: '영국', CN: '중국', BR: '브라질', MX: '멕시코', SG: '싱가포르', SE: '스웨덴'
+  // P5-B: 백엔드 /api/localize 호출. 시스템 프롬프트·언어 매핑은 서버가 보유.
+  const payload = {
+    story: {
+      title: story?.title || '',
+      thumbnail: story?.thumbnail || '',
+      scenario_id: story?.scenario_id || '',
+      value_tags: story?.value_tags || [],
+      key_devices: story?.key_devices || []
+    },
+    role: state.selectedRole,
+    country: state.selectedCountry,
+    city: state.selectedCity,
+    home: state.selectedHome,
+    family: state.selectedFamily,
+    devices: state.selectedDevices,
+    values: state.selectedValues,
+    locale: state.selectedCountry === 'KR' ? 'ko' : 'en'
   };
-  const homeLabel = { apartment: '아파트', house: '단독주택', villa: '빌라·연립', studio: '원룸·스튜디오', officetel: '오피스텔' };
-  const familyLabel = { single: '1인 가구', couple: '커플·부부', kids: '영유아·어린이', teens: '청소년', senior: '시니어', pet: '반려동물' };
-
-  const system = `당신은 SmartThings 시나리오 현지화·개인화 에이전트(A2 Localizer)입니다.
-원문 시나리오를 받아 해당 국가/도시의 생활 문화에 맞게 현지화하면서, 위저드에서 수집한 고객 프로필(거주·가족·보유 기기·관심사)도 함께 녹여냅니다.
-
-규칙:
-- 원문의 스마트홈 가치와 SmartThings 기능은 유지
-- 현지 문화 앵커(명절·기후·주거 문화 등) 최소 1개 포함
-- 고객이 선택한 기기를 **실제 시나리오 안에 직접 등장**시키기 (예: "퇴근길에 갤럭시 워치에서 조명을 켜고…")
-- 가족 구성(영유아·시니어·반려동물 등)이 있으면 자연스럽게 맥락에 반영
-- ${state.selectedCountry === 'KR' ? '한국어' : 'English'}로 출력
-- 300~400자 분량, 설득력 있는 마케팅 톤`;
-
-  const user = `원문 시나리오: ${story.title}
-요약: ${story.thumbnail}
-
-대상 국가: ${countryNames[state.selectedCountry]}${state.selectedCity ? ' / ' + state.selectedCity : ''}
-채널: ${state.selectedRole}
-가치 태그: ${state.selectedValues.join(', ')}
-
-[고객 프로필 — 시나리오에 반영]
-- 거주 형태: ${state.selectedHome ? homeLabel[state.selectedHome] : '미입력'}
-- 가족 구성: ${state.selectedFamily.length ? state.selectedFamily.map(f => familyLabel[f] || f).join(', ') : '미입력'}
-- 보유 기기: ${state.selectedDevices.length ? state.selectedDevices.join(', ') : '미입력'}
-
-이 시나리오를 위 프로필을 반영해 현지화하고, 선택한 기기를 시나리오 안에 직접 등장시켜 개인화해주세요.`;
+  console.info('[runLocalizer] POST /api/localize', payload);
 
   try {
-    const result = await callAI(system, user);
-    state.localizedStory = result;
-    document.getElementById('localized-content').textContent = result;
+    const headers = { 'Content-Type': 'application/json' };
+    if (state.apiKey) headers['X-User-Api-Key'] = state.apiKey;
+
+    const res = await fetch('/api/localize', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) {
+      const msg = data?.error?.message || `HTTP ${res.status}`;
+      throw new Error(msg);
+    }
+    state.localizedStory = data.localizedStory;
+    document.getElementById('localized-content').textContent = data.localizedStory;
     setStage('a2', 'done');
   } catch(e) {
     setStage('a2', 'error');
@@ -1685,38 +1689,33 @@ async function runExpander() {
   btn.disabled = true; btn.textContent = '생성 중...';
   setStage('a4', 'active');
 
-  const channelNames = {
-    copy: '카피라이팅 (헤드라인 3개 + 서브카피)',
-    kv: 'Key Visual 이미지 생성 프롬프트',
-    email: '이메일 제목 + 본문 구조',
-    store: '매장 판매사원용 세일즈 토크 (2분 분량)',
-    social: 'SNS 포스트 (인스타그램 + 트위터용)',
-    landing: '랜딩페이지 섹션 구조 + 주요 메시지'
+  // P5-C: 백엔드 /api/expand 호출. 시스템 프롬프트·채널 라벨 매핑은 서버가 보유.
+  const payload = {
+    localizedStory: state.localizedStory || '',
+    selectedChannels: checked,
+    role: state.selectedRole,
+    country: state.selectedCountry,
+    city: state.selectedCity,
+    locale: state.selectedCountry === 'KR' ? 'ko' : 'en'
   };
-
-  const requestedChannels = checked.map(c => channelNames[c]).join('\n');
-
-  const system = `당신은 SmartThings 채널 확장 에이전트(A4 Expander)입니다.
-확정된 시나리오를 기반으로 각 마케팅 채널에 맞는 결과물을 생성합니다.
-
-규칙:
-- 채널별로 명확히 구분하여 출력
-- 시나리오의 핵심 메시지와 가치를 유지
-- 실제 사용 가능한 수준으로 구체적으로
-- ${state.selectedCountry === 'KR' ? '한국어' : 'English'}로 출력`;
-
-  const user = `확정 시나리오:
-${state.localizedStory}
-
-생성할 채널 결과물:
-${requestedChannels}
-
-각 채널별로 결과물을 생성해주세요.`;
+  console.info('[runExpander] POST /api/expand', { ...payload, localizedStory: `<${(payload.localizedStory || '').length} chars>` });
 
   try {
-    const result = await callAI(system, user);
+    const headers = { 'Content-Type': 'application/json' };
+    if (state.apiKey) headers['X-User-Api-Key'] = state.apiKey;
+
+    const res = await fetch('/api/expand', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) {
+      const msg = data?.error?.message || `HTTP ${res.status}`;
+      throw new Error(msg);
+    }
     const out = document.getElementById('output-a4');
-    out.textContent = result;
+    out.textContent = data.expandedAssets;
     out.classList.remove('hidden');
     setStage('a4', 'done');
     checkActivation();
