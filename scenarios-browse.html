@@ -385,6 +385,10 @@ body {
   <div class="loading-note">27개 시나리오를 불러오는 중...</div>
 </div>
 
+<!-- P7-A-5: sticky bottom storychat bar (mountInputBar 가 내용 채움). -->
+<!-- P7-A-5.1: <script> 앞에 위치해야 mountInputBar 호출 시점에 DOM 존재. -->
+<div id="global-storychat-bar" aria-label="스토리 채팅 입력 바"></div>
+
 <script src="./js/story-chat.js"></script>
 <script>
 const TOTAL = 27;
@@ -589,9 +593,6 @@ if (__storychatBarEl && window.StoryChat && window.StoryChat.mountInputBar) {
 
 loadAll();
 </script>
-
-<!-- P7-A-5: sticky bottom storychat bar (mountInputBar 가 내용 채움) -->
-<div id="global-storychat-bar" aria-label="스토리 채팅 입력 바"></div>
 
 </body>
 </html>

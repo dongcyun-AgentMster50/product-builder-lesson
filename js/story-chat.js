@@ -478,7 +478,16 @@
 
   // ── Public API: mountInputBar (페이지 1회) ─────────────────
   function mountInputBar(container, options = {}) {
-    if (!container) return;
+    // P7-A-5.1: 방어적 폴백 — container 가 없거나 invalid 면 자동 생성.
+    // HTML 파싱 순서 / DOMContentLoaded 타이밍 이슈로 호출자가 div 를 못 찾는
+    // 경우라도 sticky bar 가 누락되지 않도록 보장. 조용한 실패 금지 — warn 로그.
+    if (!container || !(container instanceof HTMLElement)) {
+      console.warn('[StoryChat] mountInputBar: container missing or invalid, creating fallback');
+      container = document.createElement('div');
+      container.id = 'global-storychat-bar';
+      container.setAttribute('aria-label', '스토리 채팅 입력 바');
+      document.body.appendChild(container);
+    }
     injectStyles();
     container.classList.add('storychat-bar');
     container.innerHTML = buildBarHTML();
