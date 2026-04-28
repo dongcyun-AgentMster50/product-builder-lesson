@@ -345,6 +345,8 @@ body {
 .story-chat-toggle.active { background: #1a3a8f; color: #fff; }
 .story-chat-mount { display: none; }
 .story-chat-mount.open { display: block; }
+/* P7-A-5: sticky bottom storychat-bar 영역 — js/story-chat.js 가 mountInputBar 시 부착 */
+#global-storychat-bar { /* sticky 본 스타일은 js/story-chat.js .storychat-bar 에 정의 */ }
 </style>
 </head>
 <body>
@@ -448,35 +450,60 @@ function render() {
   grid.querySelectorAll(".card-header").forEach(h => {
     h.addEventListener("click", () => h.closest(".scenario-card").classList.toggle("expanded"));
   });
-  // 스토리 채팅 토글 바인딩
+  // 스토리 채팅 토글 바인딩 (P7-A-5: sticky bar + 컨텍스트 전환 패턴)
   grid.querySelectorAll("[data-chat-toggle]").forEach(btn => {
     btn.addEventListener("click", e => {
       e.stopPropagation();
       const id = btn.dataset.chatToggle;
       const mount = document.getElementById(id);
       if (!mount) return;
-      const isOpen = mount.classList.toggle("open");
-      btn.classList.toggle("active", isOpen);
-      btn.textContent = isOpen ? "✕ 채팅 닫기" : "💬 이 스토리로 더 파보기";
-      if (isOpen && !mount.dataset.mounted) {
-        const scenarioNo = Number(btn.dataset.scenarioNo);
-        const storyNo = Number(btn.dataset.storyNo);
-        const sc = state.scenarios.find(x => x._no === scenarioNo);
-        const d0 = sc?.depth_0 || {};
-        const d1 = sc?.depth_1 || {};
-        const story = (d1.stories || []).find(x => (x.story_no || 0) === storyNo) || (d1.stories || [])[0];
-        if (story && window.StoryChat) {
-          window.StoryChat.mount({
-            container: mount,
-            scenario: { title: d1.title || d0.card_title, category: d0.category },
-            story,
-            theme: "light",
-          });
+      const scenarioNo = Number(btn.dataset.scenarioNo);
+      const storyNo = Number(btn.dataset.storyNo);
+
+      // 토글 — 같은 버튼 다시 누르면 닫기 (deactivate)
+      const wasActive = btn.classList.contains("active");
+      // 다른 토글 active 제거 (단일 활성 스토리)
+      grid.querySelectorAll(".story-chat-toggle.active").forEach(b => b.classList.remove("active"));
+      grid.querySelectorAll(".story-chat-mount.open").forEach(m => m.classList.remove("open"));
+
+      if (wasActive) {
+        if (window.StoryChat) window.StoryChat.deactivate();
+        if (window.StoryChat) window.StoryChat.refreshAllToggles();
+        return;
+      }
+
+      mount.classList.add("open");
+      btn.classList.add("active");
+
+      const sc = state.scenarios.find(x => x._no === scenarioNo);
+      const d0 = sc?.depth_0 || {};
+      const d1 = sc?.depth_1 || {};
+      const story = (d1.stories || []).find(x => (x.story_no || 0) === storyNo) || (d1.stories || [])[0];
+      const scenarioMeta = { id: scenarioNo, title: d1.title || d0.card_title, category: d0.category };
+
+      if (window.StoryChat) {
+        if (!mount.dataset.mounted) {
+          window.StoryChat.mountResponseArea(mount, scenarioNo, storyNo);
           mount.dataset.mounted = "1";
         }
+        window.StoryChat.activate(scenarioNo, storyNo, scenarioMeta, story);
+        window.StoryChat.refreshAllToggles();
       }
     });
   });
+
+  // 토글 라벨 갱신 (BYOK 단서 — 키 미설정이면 🔒 + 배지 표시)
+  if (window.StoryChat && window.StoryChat.refreshAllToggles) {
+    window.StoryChat.refreshAllToggles();
+  }
+
+  // 카테고리 필터로 활성 스토리가 사라졌으면 deactivate
+  if (window.StoryChat) {
+    const stillActive = grid.querySelector(".story-chat-toggle.active");
+    if (!stillActive) {
+      window.StoryChat.deactivate();
+    }
+  }
 }
 
 function cardHTML(s) {
@@ -554,7 +581,17 @@ document.getElementById("btn-collapse-all").addEventListener("click", () => {
   document.querySelectorAll(".scenario-card").forEach(c => c.classList.remove("expanded"));
 });
 
+// P7-A-5: 페이지 레벨 sticky bottom storychat-bar 마운트 (페이지 1회)
+const __storychatBarEl = document.getElementById("global-storychat-bar");
+if (__storychatBarEl && window.StoryChat && window.StoryChat.mountInputBar) {
+  window.StoryChat.mountInputBar(__storychatBarEl);
+}
+
 loadAll();
 </script>
+
+<!-- P7-A-5: sticky bottom storychat bar (mountInputBar 가 내용 채움) -->
+<div id="global-storychat-bar" aria-label="스토리 채팅 입력 바"></div>
+
 </body>
 </html>

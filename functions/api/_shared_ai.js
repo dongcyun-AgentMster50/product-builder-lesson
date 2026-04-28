@@ -1,9 +1,19 @@
 import { json } from "./access/_shared.js";
 
+// 가격표 (USD per 1M tokens). v2 DEFAULT_MODELS + v1 fallback 모두 포함.
+// 변경 시 functions/api/_provider.js DEFAULT_MODELS 와 키 정합성 유지.
+// 누락된 모델은 getModelPricing() 의 'gpt-5' fallback 사용.
 const MODEL_PRICING_USD_PER_1M = {
+    // v2 DEFAULT_MODELS (P5/P6/P7 — gpt-5.5 / claude-sonnet-4-6 / gemini-3.1-pro-preview)
+    "gpt-5.5": { input: 1.25, output: 10.0 },
+    "claude-sonnet-4-6": { input: 3.0, output: 15.0 },
+    "gemini-3.1-pro-preview": { input: 1.25, output: 10.0 },
+    // OpenAI 5 시리즈 (legacy / 라우터 후보)
     "gpt-5.4": { input: 1.25, output: 10.0 },
     "gpt-5": { input: 1.25, output: 10.0 },
     "gpt-5-mini": { input: 0.25, output: 2.0 },
+    "gpt-5.5-mini": { input: 0.25, output: 2.0 },
+    // v1 fallback (의도된 보존 — generate.js mode 미전달 / refine / nudge / Live Trends / city-profile)
     "gpt-4o": { input: 2.5, output: 10.0 },
     "gpt-4o-mini": { input: 0.15, output: 0.6 }
 };

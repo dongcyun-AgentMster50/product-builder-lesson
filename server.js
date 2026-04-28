@@ -3276,7 +3276,13 @@ Build a source-bound localization evidence pack for this city. Use only evidence
 // 시스템 프롬프트 인라인 (P6 에서 prompt.txt 통합 예정).
 
 // DEFAULT_MODELS — functions/api/_provider.js 의 동일 상수 미러링 (ESM/CJS 호환).
-// 변경 시 _provider.js / v2.html / 이 파일 3곳 동기화 필수.
+//
+// V2 모델 정책 미러 (변경 시 다음 5곳 동시 갱신):
+//   1. functions/api/_provider.js DEFAULT_MODELS / DEFAULT_MODEL_LABELS (SSOT)
+//   2. server.js V2_DEFAULT_MODELS (← 본 위치, 라벨 미러는 X — 서버는 UI 안 그림)
+//   3. v2.html V2_DEFAULT_MODELS
+//   4. v2.html V2_MODEL_LABELS
+//   5. js/story-chat.js V2_MODEL_LABELS + PROVIDER_LABEL
 const V2_DEFAULT_MODELS = Object.freeze({
     openai: "gpt-5.5",
     anthropic: "claude-sonnet-4-6",

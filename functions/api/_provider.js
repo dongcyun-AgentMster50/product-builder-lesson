@@ -3,8 +3,15 @@
 
 // ─── DEFAULT MODELS (Single Source of Truth) ─────────────────────────────
 // 정책: BYOK 사용자가 자기 비용을 부담하므로 품질 우선.
-// 3-provider 모두 "표준 플래그십" 등급으로 통일. 모든 v2 Agent(A1/A2/A4) +
+// 3-provider 모두 "표준 플래그십" 등급으로 통일. 모든 v2 Agent(A1/A2/A4 + Story Chat) +
 // Mode(CX/Copy) 단일 모델 사용. 라우터 패턴 도입 X.
+//
+// V2 모델 정책 미러 (변경 시 다음 5곳 동시 갱신 — *이 파일이 SSOT*):
+//   1. functions/api/_provider.js DEFAULT_MODELS / DEFAULT_MODEL_LABELS (← 본 파일, SSOT)
+//   2. server.js V2_DEFAULT_MODELS
+//   3. v2.html V2_DEFAULT_MODELS
+//   4. v2.html V2_MODEL_LABELS
+//   5. js/story-chat.js V2_MODEL_LABELS + PROVIDER_LABEL
 //
 // 모델 ID 검증 결과 (2026-04 기준):
 // - openai: 'gpt-5.5' — 2026-04-23 출시, 현재 표준 플래그십. dotted form 정확.

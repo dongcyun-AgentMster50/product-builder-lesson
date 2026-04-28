@@ -1183,7 +1183,13 @@ function selectProvider(p) {
 }
 
 // ─── P5: 모델 정책 (functions/api/_provider.js DEFAULT_MODELS / DEFAULT_MODEL_LABELS 와 동기화) ───
-// 변경 시 _provider.js, server.js V2_DEFAULT_MODELS, 이 파일 3곳 모두 동기화 필수.
+//
+// V2 모델 정책 미러 (변경 시 다음 5곳 동시 갱신):
+//   1. functions/api/_provider.js DEFAULT_MODELS / DEFAULT_MODEL_LABELS (SSOT)
+//   2. server.js V2_DEFAULT_MODELS
+//   3. v2.html V2_DEFAULT_MODELS (← 본 위치)
+//   4. v2.html V2_MODEL_LABELS (← 본 위치 직후)
+//   5. js/story-chat.js V2_MODEL_LABELS + PROVIDER_LABEL
 const V2_DEFAULT_MODELS = Object.freeze({
   openai: 'gpt-5.5',
   anthropic: 'claude-sonnet-4-6',

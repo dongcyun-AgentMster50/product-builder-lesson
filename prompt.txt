@@ -483,13 +483,17 @@ prompt.txt 내용이 배포 환경변수에 반영되어야 실제 서비스에 
 
 | 용도 | 모델 | max_tokens | temperature | timeout |
 |------|------|-----------|-------------|---------|
-| 시나리오 생성 | GPT-5.4 (env: `OPENAI_MODEL`) | 8,000 | — | 클라이언트 SSE |
-| 시나리오 수정 | GPT-5.4 또는 Claude Sonnet 4 | 4,000 | — | 클라이언트 SSE |
-| 라이브 트렌드 (Q1) | gpt-4o-mini (하드코딩) | 2,000 | 0.6 | 15초 |
-| 넛지 카드 (Q1) | gpt-4o-mini (하드코딩) | 1,000 | default | SSE |
+| v2 CX/Copy + Story Chat (P5/P6/P7) | GPT-5.5 / Claude Sonnet 4.6 / Gemini 3.1 Pro (DEFAULT_MODELS, BYOK) | 1,500~2,500 | 0.7 | 비-streaming |
+| v1 시나리오 생성 (mode 미전달) | gpt-4o (env: `OPENAI_MODEL`) — v1 fallback 보존 | 8,000 | — | 클라이언트 SSE |
+| v1 시나리오 수정 | gpt-4o 또는 Claude Sonnet 4 | 4,000 | — | 클라이언트 SSE |
+| v1 라이브 트렌드 (Q1) | gpt-4o-mini (하드코딩) | 2,000 | 0.6 | 15초 |
+| v1 넛지 카드 (Q1) | gpt-4o-mini (하드코딩) | 1,000 | default | SSE |
+| v1 도시 인사이트 / Refine | gpt-4o (env: `OPENAI_MODEL`) | 4,000 | — | — |
 
-- 시나리오 생성 시 `prompt.txt` 전체를 시스템 프롬프트로 전달
-- provider 선택: 클라이언트에서 `"openai"` 또는 `"claude"` 지정
+- v2 모델 정책 SSOT: `functions/api/_provider.js` `DEFAULT_MODELS` (5곳 미러 — _provider.js / server.js / v2.html × 2 / js/story-chat.js)
+- v2 시나리오 생성 시 `prompt.txt` [AGENT:CURATOR_A1 / LOCALIZER_A2 / EXPANDER_A4 / COPY_CONSULT_M2 / STORY_CHAT] 마커가 SSOT (P6/P7)
+- v1 시나리오 생성 시 `prompt.txt` 전체를 시스템 프롬프트로 전달
+- provider 선택: 클라이언트에서 `"openai"` / `"anthropic"` / `"gemini"` 지정 (또는 BYOK 키 prefix 자동 감지)
 
 ### 9-3. API 엔드포인트 상세
 
