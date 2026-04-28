@@ -3458,6 +3458,55 @@ async function callGeminiBlocking({ apiKey, systemPrompt, userMessage, model }) 
     return parts.map(p => p.text || "").join("");
 }
 
+// ─── P6-A: 프롬프트 로더 헬퍼 (로컬 dev용) ─────────────────────────────────
+// functions/api/_prompt_loader.js 와 *완전히 같은 결과* 를 반환.
+// CJS 환경 + fs.readFileSync 사용. 캐시는 프로세스 전역.
+// P6-A 단계에서는 어떤 핸들러도 이 함수를 호출하지 않는다 (인프라만 깔림).
+const _PROMPT_LOADER_VALID_AGENTS = Object.freeze([
+    "CURATOR_A1",
+    "LOCALIZER_A2",
+    "EXPANDER_A4",
+    "COPY_CONSULT_M2"
+]);
+let _promptCacheLocal = null;
+
+function _extractAgentPromptsLocal(text) {
+    const out = {};
+    for (const name of _PROMPT_LOADER_VALID_AGENTS) {
+        const beginToken = `[AGENT:${name}]`;
+        const endToken = `[AGENT:${name}_END]`;
+        const beginIdx = text.indexOf(beginToken);
+        const endIdx = text.indexOf(endToken);
+        if (beginIdx === -1 || endIdx === -1 || endIdx <= beginIdx) {
+            throw new Error(`[loadAgentPromptLocal] marker not found or malformed for AGENT:${name}`);
+        }
+        const inner = text.slice(beginIdx + beginToken.length, endIdx);
+        out[name] = inner.replace(/^\r?\n/, "").replace(/\r?\n\s*$/, "");
+    }
+    return out;
+}
+
+function loadAgentPromptLocal(agentName) {
+    if (!_PROMPT_LOADER_VALID_AGENTS.includes(agentName)) {
+        throw new Error(`[loadAgentPromptLocal] unknown agentName: ${agentName} (valid: ${_PROMPT_LOADER_VALID_AGENTS.join(", ")})`);
+    }
+    if (!_promptCacheLocal) {
+        const filePath = path.join(ROOT_DIR, "prompt.txt");
+        const text = fs.readFileSync(filePath, "utf8");
+        _promptCacheLocal = _extractAgentPromptsLocal(text);
+    }
+    const prompt = _promptCacheLocal[agentName];
+    if (!prompt) {
+        throw new Error(`[loadAgentPromptLocal] empty prompt for AGENT:${agentName}`);
+    }
+    return prompt;
+}
+
+// 테스트용 캐시 리셋 (운영 코드는 호출 X)
+function _resetPromptCacheLocal() {
+    _promptCacheLocal = null;
+}
+
 async function handleCurate(req, res) {
     let body;
     try {
