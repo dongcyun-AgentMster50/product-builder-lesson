@@ -302,7 +302,17 @@ main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
   user-select: none;
   background: linear-gradient(135deg, #eef1f6, #c9d0db);
   color: var(--text2);
+  overflow: hidden;
+  position: relative;
 }
+.story-card-image img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: left center;
+  display: block;
+}
+.story-card-image.no-image .placeholder-icon { display: flex; }
+.story-card-image:not(.no-image) .placeholder-icon { display: none; }
 .story-card-image[data-cat="스마트 라이프"] { background: linear-gradient(135deg, #f5e8ff, #d9b9f5); color: var(--cat-life); }
 .story-card-image[data-cat="안전"]          { background: linear-gradient(135deg, #fae5ec, #f5b5cb); color: var(--cat-safe); }
 .story-card-image[data-cat="케어"]          { background: linear-gradient(135deg, #fdecd0, #f5c896); color: var(--cat-care); }
@@ -661,10 +671,16 @@ function unifiedCardHTML(st, scenarioNo, cat, idx) {
   const ctaLabel = st.cta_label || '사용 방법 확인';
   const ctaType = st.cta_type || '';
   const ref = st.depth_2_ref || '';
+  const sNoPad = String(scenarioNo).padStart(3, '0');
+  const imgSrc = `references/scenario_thumbs/per_story/scenario_${sNoPad}_story_${sNo}.jpg`;
   return `
     <article class="story-card-unified" data-story-no="${sNo}">
       <div class="story-card-row">
         <div class="story-card-image" data-cat="${escapeHTML(cat)}">
+          <img src="${imgSrc}"
+               alt="${escapeHTML(st.title || '')}"
+               loading="lazy"
+               onerror="this.remove(); this.parentElement.classList.add('no-image');">
           <span class="placeholder-icon" aria-hidden="true">${icon}</span>
         </div>
         <div class="story-card-body">
