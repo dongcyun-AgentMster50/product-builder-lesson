@@ -16,10 +16,10 @@ v1 (Q1~Q4 위저드) + v2 (CX/Copy Mode) + Story Chat (시나리오 사전) 3개
 #### 핵심 파일 지도
 - `prompt.txt` — 모든 Agent의 시스템 프롬프트 SSOT
 - `functions/api/_provider.js` — 모델 정책 (DEFAULT_MODELS) SSOT
-- `functions/api/curate.js` / `localize.js` / `expand.js` / `story-chat.js` — 백엔드 엔드포인트 4개
+- `functions/api/curate.js` / `localize.js` / `expand.js` / `story-chat.js` / `copy-consult.js` — 백엔드 엔드포인트 5개
 - `server.js` — 로컬 dev 미러 (각 백엔드 핸들러 포함)
 - `js/story-chat.js` — Story Chat 프론트엔드 (sticky bar 인프라)
-- `v2.html` — v2 메인 (CX Mode + Copy Mode)
+- `v2.html` — v2 메인 (CX Mode + Copy Mode, callAI 인프라 제거 완료)
 - `scenarios-browse.html` — 27 시나리오 텍스트 카탈로그 + sticky bar
 - `dashboard.html` — 27 시나리오 이미지 그리드 + 모달 + sticky bar
 - `index.html` — v1 위저드 (절대 안 만짐, 의도된 보존)
@@ -45,11 +45,11 @@ v1 (Q1~Q4 위저드) + v2 (CX/Copy Mode) + Story Chat (시나리오 사전) 3개
 → `/api/expand` (A4) → 6섹션 결과
 
 #### v2 Copy Mode 흐름
-`v2.html` 3단계 입력 → `callAI()` 인라인 (P8 대기)
+`v2.html` 3단계 입력 → `/api/copy-consult` (COPY_CONSULT_M2) → 6섹션 마크다운 응답
 
 ---
 
-### 3) SSOT 통합 현황
+### 3) SSOT 통합 현황 — 5/5 달성 ✅
 
 | Agent | 위치 | 상태 |
 | --- | --- | --- |
@@ -57,7 +57,7 @@ v1 (Q1~Q4 위저드) + v2 (CX/Copy Mode) + Story Chat (시나리오 사전) 3개
 | A2 (LOCALIZER) | `prompt.txt [AGENT:LOCALIZER_A2]` | ✅ |
 | A4 (EXPANDER) | `prompt.txt [AGENT:EXPANDER_A4]` | ✅ |
 | Story Chat | `prompt.txt [AGENT:STORY_CHAT]` | ✅ |
-| Mode2 Copy | `v2.html` 인라인 | ⏳ P8 대기 |
+| Mode2 Copy Consult | `prompt.txt [AGENT:COPY_CONSULT_M2]` | ✅ (P8 완료, `be78748`) |
 
 #### 글로벌 룰
 - `prompt.txt ## Part 0-source` — 출처 표기 글로벌 룰 (모든 Agent에 적용)
@@ -96,12 +96,25 @@ v1 (Q1~Q4 위저드) + v2 (CX/Copy Mode) + Story Chat (시나리오 사전) 3개
 
 ### 6) 검증 완료된 패턴 (재사용 가능)
 
-#### 백엔드 엔드포인트 패턴 (P5)
-`curate.js` / `localize.js` / `expand.js` / `story-chat.js` 모두 동일 구조:
+#### 백엔드 엔드포인트 패턴 (P5/P8)
+`curate.js` / `localize.js` / `expand.js` / `story-chat.js` / `copy-consult.js` 모두 동일 구조:
 - `resolveProviderKey` + `DEFAULT_MODELS`
 - `loadAgentPrompt(env, "AGENT_NAME")`
 - `try/catch` `PROMPT_LOAD_FAILED` 500
 - `maskKey` 로깅 + 응답 직후 폐기
+
+#### GPT-5 호환 OpenAI 호출 패턴 (P8 회귀 픽스)
+GPT-5 계열은 `temperature=1` (default) 만 지원. 명시 시 `Unsupported value` 에러.
+모든 `callOpenAI*` 함수 (functions/api 5곳 + server.js 5곳, 총 10곳) 통일:
+```js
+const requestBody = { model, messages, /* json 모드: response_format */ };
+if (/^gpt-5/i.test(String(model || "").trim())) {
+    requestBody.max_completion_tokens = N;
+} else {
+    requestBody.max_tokens = N;
+    requestBody.temperature = 0.7;
+}
+```
 
 #### sticky bar 패턴 (P7-A-5)
 - `<div id="global-storychat-bar">` (script 앞에 위치)
@@ -119,22 +132,22 @@ v1 (Q1~Q4 위저드) + v2 (CX/Copy Mode) + Story Chat (시나리오 사전) 3개
 
 ### 7) 다음 세션 진입점 (첫 메시지 템플릿)
 
-#### Option A — P8 (Mode2 백엔드 마이그레이션)
-```
-SmartThings Scenario Agent 이어가자.
-프로젝트 루트 TODO.md 읽고 P8 진행.
-P5 패턴 재사용해서 /api/copy-consult 신설.
-v2.html runCopyConsult() callAI 제거.
-[AGENT:COPY_CONSULT_M2] 마커는 prompt.txt에 이미 있음.
-사전 분석부터 시작.
-```
-
-#### Option B — P7-B (Copy 품질 보정)
+#### Option A — P7-B (Copy 품질 보정, 권장 후속)
 ```
 SmartThings Scenario Agent 이어가자.
 TODO.md의 P7-B 진행.
 [AGENT:COPY_CONSULT_M2]의 B/D 섹션 출력 품질 보정.
+P8 완료로 백엔드 마이그레이션은 끝났고 이제 프롬프트 튜닝 단계.
 구체적 이슈는 라이브에서 확인하고 정함.
+```
+
+#### Option B — P7-A-6 후속 (per-story 이미지 108장 + depth_2 라우팅)
+```
+SmartThings Scenario Agent 이어가자.
+TODO.md의 P7-A-6 후속 진행.
+references/scenario_thumbs/_crop.py 좌표 매핑 확장 → 108장 자동 생성
++ dashboard.html unifiedCardHTML 의 .story-card-image 에 <img> 부착.
+이어서 cta_type/depth_2_ref 라우팅 (현재 alert → 가이드 페이지).
 ```
 
 #### Option C — P7-A-7 (두 페이지 IA 통합, 큰 작업)
@@ -187,6 +200,16 @@ SmartThings Scenario Agent IA 재설계 시작.
   - 모바일 stack 레이아웃
 - P7-A-6-2: 자동 per-story 크롭 + dashboard 모달 이미지 적용
 
+#### Mode2 백엔드 마이그레이션 (P8) — 2026-05-03 완료, 커밋 `be78748`
+- `functions/api/copy-consult.js` 신설 (P5 패턴, COPY_CONSULT_M2 SSOT 로드)
+- `v2.html` `callAI()` 함수 + AI CALL ROUTER 섹션 전체 제거
+- `runCopyConsult()` 인라인 system/user prompt 제거 → `/api/copy-consult` fetch 전환
+- `server.js` 로컬 dev 미러 (`handleCopyConsult` + 4개 헬퍼) 추가
+- **GPT-5 temperature 호환성 회귀 픽스** (P8 라이브 검증 중 발견):
+  - GPT-5 계열은 `temperature=1` 만 지원, 명시 시 `Unsupported value` 에러
+  - 모든 `callOpenAI*` 10곳 통일 패턴 적용 (functions/api 5 + server.js 5)
+- **결과**: SSOT 5/5 달성
+
 ---
 
 ### 남은 작업
@@ -215,14 +238,6 @@ SmartThings Scenario Agent IA 재설계 시작.
   - 핵심 단어 미보존
 - 작업 위치: `prompt.txt` Part 5-C 또는 `[AGENT:CURATOR_A1]` / `[AGENT:LOCALIZER_A2]` / `[AGENT:EXPANDER_A4]`
 - 예상 시간: 15~30분
-
-#### P8: Mode2 Copy Consult 백엔드 마이그레이션 + SSOT 5/5 완성
-- 현재: `v2.html` `runCopyConsult()`가 `callAI` 직접 호출
-- 목표 1: `/api/copy-consult` 엔드포인트 신설 (P5 패턴)
-- 목표 2: `COPY_CONSULT_M2` prompt를 백엔드 `loadAgentPrompt` 사용
-- 목표 3: `callAI()` 함수 `v2.html`에서 완전 제거
-- 효과: SSOT 5/5 달성 (현재 4/5 — Mode2만 인라인)
-- 예상 시간: 30~45분
 
 #### 후속 정비 후보 (낮은 우선순위)
 - GPT-5.5 안정성 검증 (현재 6일 신모델)
