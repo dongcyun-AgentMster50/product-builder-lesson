@@ -65,12 +65,13 @@ async function callOpenAI({ apiKey, systemPrompt, userMessage, model }) {
             { role: "system", content: systemPrompt },
             { role: "user", content: userMessage }
         ],
-        temperature: 0.7
     };
     if (/^gpt-5/i.test(String(model || "").trim())) {
         requestBody.max_completion_tokens = 1500;
+        // GPT-5 계열은 temperature=1 (default) 만 지원, 명시적 설정 생략
     } else {
         requestBody.max_tokens = 1500;
+        requestBody.temperature = 0.7;
     }
     const res = await fetch(OPENAI_API_URL, {
         method: "POST",

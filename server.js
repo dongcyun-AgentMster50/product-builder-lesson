@@ -116,6 +116,11 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        if (pathname === "/api/copy-consult" && req.method === "POST") {
+            await handleCopyConsult(req, res);
+            return;
+        }
+
         if (pathname === "/api/nudge" && req.method === "POST") {
             await handleNudge(req, res);
             return;
@@ -3368,13 +3373,14 @@ async function callOpenAIBlocking({ apiKey, systemPrompt, userMessage, model }) 
             { role: "system", content: systemPrompt },
             { role: "user", content: userMessage }
         ],
-        temperature: 0.7,
         response_format: { type: "json_object" }
     };
     if (/^gpt-5/i.test(String(model || "").trim())) {
         requestBody.max_completion_tokens = 2000;
+        // GPT-5 계열은 temperature=1 (default) 만 지원, 명시적 설정 생략
     } else {
         requestBody.max_tokens = 2000;
+        requestBody.temperature = 0.7;
     }
     const r = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -3610,12 +3616,13 @@ async function callOpenAILocalizeBlocking({ apiKey, systemPrompt, userMessage, m
             { role: "system", content: systemPrompt },
             { role: "user", content: userMessage }
         ],
-        temperature: 0.7
     };
     if (/^gpt-5/i.test(String(model || "").trim())) {
         requestBody.max_completion_tokens = 1500;
+        // GPT-5 계열은 temperature=1 (default) 만 지원, 명시적 설정 생략
     } else {
         requestBody.max_tokens = 1500;
+        requestBody.temperature = 0.7;
     }
     const r = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -3779,12 +3786,13 @@ async function callOpenAIExpandBlocking({ apiKey, systemPrompt, userMessage, mod
             { role: "system", content: systemPrompt },
             { role: "user", content: userMessage }
         ],
-        temperature: 0.7
     };
     if (/^gpt-5/i.test(String(model || "").trim())) {
         requestBody.max_completion_tokens = 2500;
+        // GPT-5 계열은 temperature=1 (default) 만 지원, 명시적 설정 생략
     } else {
         requestBody.max_tokens = 2500;
+        requestBody.temperature = 0.7;
     }
     const r = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -3953,12 +3961,13 @@ async function callOpenAIStoryChatBlocking({ apiKey, systemPrompt, messages, mod
     const requestBody = {
         model,
         messages: [{ role: "system", content: systemPrompt }, ...messages],
-        temperature: 0.7
     };
     if (/^gpt-5/i.test(String(model || "").trim())) {
         requestBody.max_completion_tokens = 1500;
+        // GPT-5 계열은 temperature=1 (default) 만 지원, 명시적 설정 생략
     } else {
         requestBody.max_tokens = 1500;
+        requestBody.temperature = 0.7;
     }
     const r = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -4087,4 +4096,154 @@ async function handleStoryChat(req, res) {
         return;
     }
     sendJson(res, 200, { ok: true, reply });
+}
+
+// ─── /api/copy-consult 로컬 dev 미러 (functions/api/copy-consult.js 와 동일 동작) ───
+// COPY_CONSULT_M2 시스템 프롬프트는 prompt.txt [AGENT:COPY_CONSULT_M2] 마커가 SSOT.
+// 호출부에서 loadAgentPromptLocal("COPY_CONSULT_M2") 으로 동적 로드.
+
+function buildCopyConsultUserMessage(body) {
+    const roleNames = { retail: "리테일(오프라인)", dotcom: "닷컴(온라인)", brand: "브랜드/마케팅팀" };
+    const role = String(body?.role || "").trim();
+    const copyText = String(body?.copyText || "").trim();
+    const tone = String(body?.tone || "").trim();
+    const categoryHint = String(body?.categoryHint || "").trim();
+
+    return `# Output Mode: copy
+
+## Input (Copy Consult)
+- 역할: ${roleNames[role] || role || "(미입력)"}
+- 카피 원문 (필수): ${copyText}
+- 톤 선호: ${tone || "(미선택 — Bold/Genuine/Playful 중 적합한 것을 추천 가능)"}
+- 참고 카테고리 힌트: ${categoryHint || "(미입력 — 카피 원문에서 추론)"}
+
+위 입력으로 6섹션 A~F 카피 컨설팅 보고서를 작성해주세요.`;
+}
+
+async function callOpenAICopyConsultBlocking({ apiKey, systemPrompt, userMessage, model }) {
+    const requestBody = {
+        model,
+        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userMessage }],
+    };
+    if (/^gpt-5/i.test(String(model || "").trim())) {
+        requestBody.max_completion_tokens = 3000;
+        // GPT-5 계열은 temperature=1 (default) 만 지원, 명시적 설정 생략
+    } else {
+        requestBody.max_tokens = 3000;
+        requestBody.temperature = 0.7;
+    }
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify(requestBody)
+    });
+    if (!r.ok) {
+        const errText = await r.text().catch(() => "");
+        let msg = `OpenAI ${r.status}`;
+        try { msg = JSON.parse(errText)?.error?.message || msg; } catch { /* ignore */ }
+        throw new Error(msg);
+    }
+    const d = await r.json();
+    return d.choices?.[0]?.message?.content || "";
+}
+
+async function callAnthropicCopyConsultBlocking({ apiKey, systemPrompt, userMessage, model }) {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey,
+            "anthropic-version": "2023-06-01"
+        },
+        body: JSON.stringify({
+            model,
+            max_tokens: 3000,
+            system: systemPrompt,
+            messages: [{ role: "user", content: userMessage }]
+        })
+    });
+    if (!r.ok) {
+        const errText = await r.text().catch(() => "");
+        throw new Error(`Anthropic ${r.status}: ${errText.slice(0, 200)}`);
+    }
+    const d = await r.json();
+    return d.content?.[0]?.text || "";
+}
+
+async function callGeminiCopyConsultBlocking({ apiKey, systemPrompt, userMessage, model }) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const r = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ role: "user", parts: [{ text: userMessage }] }],
+            generationConfig: { maxOutputTokens: 3000, temperature: 0.7 }
+        })
+    });
+    if (!r.ok) {
+        const errText = await r.text().catch(() => "");
+        throw new Error(`Gemini ${r.status}: ${errText.slice(0, 200)}`);
+    }
+    const d = await r.json();
+    const parts = d.candidates?.[0]?.content?.parts || [];
+    return parts.map(p => p.text || "").join("");
+}
+
+async function handleCopyConsult(req, res) {
+    let body;
+    try {
+        body = await readJsonBody(req);
+    } catch {
+        sendJson(res, 400, { ok: false, error: { code: "BAD_REQUEST", message: "Invalid JSON body." } });
+        return;
+    }
+
+    const headerKey = String(req.headers["x-user-api-key"] || "").trim();
+    const provider = detectProviderFromKey(headerKey);
+    if (!provider) {
+        sendJson(res, 400, { ok: false, error: { code: "API_NOT_CONFIGURED", message: "API 키가 필요합니다. BYOK 모달에서 키를 입력해주세요." } });
+        return;
+    }
+    const apiKey = headerKey;
+    const modelHint = String(req.headers["x-user-model-hint"] || "").trim();
+
+    if (!String(body?.copyText || "").trim()) {
+        sendJson(res, 400, { ok: false, error: { code: "MISSING_COPY_TEXT", message: "copyText 가 필요합니다." } });
+        return;
+    }
+
+    const model = provider === "openai"
+        ? (modelHint || process.env.OPENAI_MODEL || V2_DEFAULT_MODELS.openai)
+        : (provider === "anthropic"
+            ? (modelHint || process.env.ANTHROPIC_MODEL || V2_DEFAULT_MODELS.anthropic)
+            : (modelHint || process.env.GEMINI_MODEL || V2_DEFAULT_MODELS.gemini));
+
+    let systemPrompt;
+    try {
+        systemPrompt = loadAgentPromptLocal("COPY_CONSULT_M2");
+    } catch (e) {
+        sendJson(res, 500, { ok: false, error: { code: "PROMPT_LOAD_FAILED", message: e.message } });
+        return;
+    }
+
+    const userMessage = buildCopyConsultUserMessage(body);
+    let raw;
+    try {
+        if (provider === "openai") {
+            raw = await callOpenAICopyConsultBlocking({ apiKey, systemPrompt, userMessage, model });
+        } else if (provider === "anthropic") {
+            raw = await callAnthropicCopyConsultBlocking({ apiKey, systemPrompt, userMessage, model });
+        } else if (provider === "gemini") {
+            raw = await callGeminiCopyConsultBlocking({ apiKey, systemPrompt, userMessage, model });
+        } else {
+            sendJson(res, 400, { ok: false, error: { code: "PROVIDER_NOT_SUPPORTED", message: `${provider} not supported` } });
+            return;
+        }
+    } catch (e) {
+        sendJson(res, 502, { ok: false, error: { code: "UPSTREAM_ERROR", message: e.message } });
+        return;
+    }
+
+    sendJson(res, 200, { ok: true, markdown: raw });
 }

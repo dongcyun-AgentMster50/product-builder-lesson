@@ -1,15 +1,12 @@
-// /api/expand — A4 EXPANDER (P5-C 마이그레이션)
-// v2.html 의 runExpander() 가 callAI 직접 호출하던 것을 백엔드 엔드포인트로 분리.
+// /api/copy-consult — COPY_CONSULT_M2 백엔드 엔드포인트 (P8)
+// v2.html runCopyConsult()의 callAI 직접 호출을 백엔드로 분리. SSOT 5/5 달성.
 //
-// 입력 (POST body): {
-//   localizedStory: "<state.localizedStory 마크다운>",
-//   selectedChannels: ["copy", "kv", "email", "store", "social", "landing"],
-//   role: "Retailer", country: "Korea", city: "Seoul", locale: "ko"
-// }
-//   - BYOK 키는 'X-User-Api-Key' 헤더 (resolveProviderKey 재사용)
-// 응답: { ok: true, expandedAssets: "..." }   ← v2.html output-a4.textContent 에 그대로 표시
+// 입력 (POST body): { role, copyText, tone, categoryHint }
+//   - BYOK 키는 'X-User-Api-Key' 헤더 (resolveProviderKey 재사용).
+// 응답: { ok: true, markdown: "..." }
 //
-// 시스템 프롬프트는 인라인 (P6 에서 prompt.txt 통합 예정).
+// 시스템 프롬프트: prompt.txt [AGENT:COPY_CONSULT_M2] (SSOT)
+// 호출부에서 loadAgentPrompt(context, "COPY_CONSULT_M2") 으로 동적 로드.
 
 import { json } from "./access/_shared.js";
 import { resolveProviderKey, maskKey, DEFAULT_MODELS } from "./_provider.js";
@@ -18,41 +15,7 @@ import { loadAgentPrompt } from "./_prompt_loader.js";
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
-// ─── 채널 ID → 한국어 라벨 매핑 (v2.html runExpander channelNames 동일) ──
-const CHANNEL_NAMES = {
-    copy: "카피라이팅 (헤드라인 3개 + 서브카피)",
-    kv: "Key Visual 이미지 생성 프롬프트",
-    email: "이메일 제목 + 본문 구조",
-    store: "매장 판매사원용 세일즈 토크 (2분 분량)",
-    social: "SNS 포스트 (인스타그램 + 트위터용)",
-    landing: "랜딩페이지 섹션 구조 + 주요 메시지"
-};
-
-// A4 EXPANDER 시스템 프롬프트는 prompt.txt [AGENT:EXPANDER_A4] 마커가 SSOT.
-// 호출부에서 loadAgentPrompt(context, "EXPANDER_A4") 으로 동적 로드.
-
-// ─── User 프롬프트 빌더 ──────────────────────────────────────────────────
-function buildA4UserMessage(body) {
-    const localizedStory = String(body?.localizedStory || "").trim();
-    const channels = Array.isArray(body?.selectedChannels) ? body.selectedChannels : [];
-    const country = String(body?.country || "").trim();
-    const locale = String(body?.locale || (country === "KR" ? "ko" : "en")).trim();
-
-    const requestedChannels = channels
-        .map(c => CHANNEL_NAMES[c] || c)
-        .join("\n");
-
-    return `확정 시나리오:
-${localizedStory}
-
-생성할 채널 결과물:
-${requestedChannels}
-
-출력 언어: ${locale === "ko" ? "한국어" : "English"}.
-각 채널별로 결과물을 생성해주세요.`;
-}
-
-// ─── LLM 호출 (비-streaming, 마크다운/평문 출력) ────────────────────────
+// ─── LLM 호출 (마크다운 응답, JSON 아님) ─────────────────────────────────────
 async function callOpenAI({ apiKey, systemPrompt, userMessage, model }) {
     const requestBody = {
         model,
@@ -62,10 +25,10 @@ async function callOpenAI({ apiKey, systemPrompt, userMessage, model }) {
         ],
     };
     if (/^gpt-5/i.test(String(model || "").trim())) {
-        requestBody.max_completion_tokens = 2500;
+        requestBody.max_completion_tokens = 3000;
         // GPT-5 계열은 temperature=1 (default) 만 지원, 명시적 설정 생략
     } else {
-        requestBody.max_tokens = 2500;
+        requestBody.max_tokens = 3000;
         requestBody.temperature = 0.7;
     }
     const res = await fetch(OPENAI_API_URL, {
@@ -93,7 +56,7 @@ async function callAnthropic({ apiKey, systemPrompt, userMessage, model }) {
         },
         body: JSON.stringify({
             model,
-            max_tokens: 2500,
+            max_tokens: 3000,
             system: systemPrompt,
             messages: [{ role: "user", content: userMessage }]
         })
@@ -114,7 +77,7 @@ async function callGemini({ apiKey, systemPrompt, userMessage, model }) {
         body: JSON.stringify({
             systemInstruction: { parts: [{ text: systemPrompt }] },
             contents: [{ role: "user", parts: [{ text: userMessage }] }],
-            generationConfig: { maxOutputTokens: 2500, temperature: 0.7 }
+            generationConfig: { maxOutputTokens: 3000, temperature: 0.7 }
         })
     });
     if (!res.ok) {
@@ -126,13 +89,32 @@ async function callGemini({ apiKey, systemPrompt, userMessage, model }) {
     return parts.map(p => p.text || "").join("");
 }
 
-// ─── 메인 핸들러 ─────────────────────────────────────────────────────────
+// ─── User 메시지 빌더 ─────────────────────────────────────────────────────────
+function buildUserMessage(body) {
+    const roleNames = { retail: "리테일(오프라인)", dotcom: "닷컴(온라인)", brand: "브랜드/마케팅팀" };
+    const role = String(body?.role || "").trim();
+    const copyText = String(body?.copyText || "").trim();
+    const tone = String(body?.tone || "").trim();
+    const categoryHint = String(body?.categoryHint || "").trim();
+
+    return `# Output Mode: copy
+
+## Input (Copy Consult)
+- 역할: ${roleNames[role] || role || "(미입력)"}
+- 카피 원고 (현수): ${copyText}
+- 톤 선호: ${tone || "(미선택 — Bold/Genuine/Playful 중 가장 적합한 것을 선택 판단)"}
+- 참고 카테고리 힌트: ${categoryHint || "(미입력 — 카피 원고에서 유추)"}
+
+위 입력으로 6섹션 A~F 카피 컨설팅 보고서를 작성해주세요.`;
+}
+
+// ─── 메인 핸들러 ─────────────────────────────────────────────────────────────
 export async function onRequestPost(context) {
     const { provider, apiKey, source: keySource, modelHint } = resolveProviderKey(context);
     if (!provider) {
         return json({
             ok: false,
-            error: { code: "API_NOT_CONFIGURED", message: "API 키가 필요합니다. BYOK 모달에서 키를 입력해주세요." }
+            error: { code: "API_NOT_CONFIGURED", message: "API 키가 필요합니다. BYOK 헤더에서 키를 입력해주세요." }
         }, 400);
     }
 
@@ -143,22 +125,10 @@ export async function onRequestPost(context) {
         return json({ ok: false, error: { code: "BAD_REQUEST", message: "Invalid JSON body." } }, 400);
     }
 
-    const localizedStory = String(body?.localizedStory || "").trim();
-    if (!localizedStory) {
-        return json({
-            ok: false,
-            error: { code: "MISSING_STORY", message: "localizedStory(A2 결과)가 필요합니다." }
-        }, 400);
-    }
-    const channels = Array.isArray(body?.selectedChannels) ? body.selectedChannels : [];
-    if (channels.length === 0) {
-        return json({
-            ok: false,
-            error: { code: "MISSING_CHANNELS", message: "selectedChannels 가 1개 이상 필요합니다." }
-        }, 400);
+    if (!String(body?.copyText || "").trim()) {
+        return json({ ok: false, error: { code: "MISSING_COPY_TEXT", message: "copyText가 필요합니다." } }, 400);
     }
 
-    const userMessage = buildA4UserMessage(body);
     const model = provider === "openai"
         ? String(modelHint || context.env?.OPENAI_MODEL || DEFAULT_MODELS.openai).trim()
         : (provider === "anthropic"
@@ -166,22 +136,21 @@ export async function onRequestPost(context) {
             : String(modelHint || context.env?.GEMINI_MODEL || DEFAULT_MODELS.gemini).trim());
 
     console.info(JSON.stringify({
-        type: "expand_request",
+        type: "copy_consult_request",
         ts: new Date().toISOString(),
         provider, source: keySource, keyMask: maskKey(apiKey), model,
-        country: body?.country, locale: body?.locale,
-        channelCount: channels.length,
-        storyLen: localizedStory.length
+        copyTextLen: String(body?.copyText || "").length
     }));
 
-    // P6-B-3: prompt.txt SSOT 에서 시스템 프롬프트 로드 (인라인 폴백 의도적 X)
+    // SSOT: prompt.txt [AGENT:COPY_CONSULT_M2]
     let systemPrompt;
     try {
-        systemPrompt = await loadAgentPrompt(context, "EXPANDER_A4");
+        systemPrompt = await loadAgentPrompt(context, "COPY_CONSULT_M2");
     } catch (e) {
         return json({ ok: false, error: { code: "PROMPT_LOAD_FAILED", message: e.message } }, 500);
     }
 
+    const userMessage = buildUserMessage(body);
     let raw;
     try {
         if (provider === "openai") {
@@ -197,10 +166,5 @@ export async function onRequestPost(context) {
         return json({ ok: false, error: { code: "UPSTREAM_ERROR", message: e.message } }, 502);
     }
 
-    const expandedAssets = String(raw || "").trim();
-    if (!expandedAssets) {
-        return json({ ok: false, error: { code: "EMPTY_RESPONSE", message: "LLM 응답이 비어 있습니다." } }, 502);
-    }
-
-    return json({ ok: true, expandedAssets });
+    return json({ ok: true, markdown: raw });
 }

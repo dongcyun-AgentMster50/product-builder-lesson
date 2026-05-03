@@ -1370,66 +1370,6 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('city-input')?.addEventListener('input', updateSummary);
 });
 
-// ─── AI CALL ROUTER ───
-// 모든 모델 ID 는 V2_DEFAULT_MODELS 단일 소스. P5 정책 — 라우터 패턴 X, 단일 모델.
-//
-// P5-C 이후 사용처: runCopyConsult() (Mode2 Copy Consult) 1곳만.
-//   - CX Mode (Mode1) 의 A1/A2/A4 는 모두 백엔드 (/api/curate, /api/localize, /api/expand) 경유.
-//   - Copy Consult 는 P3 단계에서 callAI 직접 호출로 구현됨. 향후 백엔드 분리 시 이 함수 제거 가능.
-async function callAI(systemPrompt, userPrompt) {
-  const { provider, apiKey } = state;
-
-  if (provider === 'openai') {
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model: V2_DEFAULT_MODELS.openai,
-        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }],
-        temperature: 0.7, max_tokens: 2000
-      })
-    });
-    if (!res.ok) throw new Error(`OpenAI 오류: ${res.status}`);
-    const d = await res.json();
-    return d.choices[0].message.content;
-  }
-
-  if (provider === 'anthropic') {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: V2_DEFAULT_MODELS.anthropic,
-        max_tokens: 2000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }]
-      })
-    });
-    if (!res.ok) throw new Error(`Anthropic 오류: ${res.status}`);
-    const d = await res.json();
-    return d.content[0].text;
-  }
-
-  if (provider === 'gemini') {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${V2_DEFAULT_MODELS.gemini}:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: systemPrompt + '\n\n' + userPrompt }] }],
-        generationConfig: { maxOutputTokens: 2000, temperature: 0.7 }
-      })
-    });
-    if (!res.ok) throw new Error(`Gemini 오류: ${res.status}`);
-    const d = await res.json();
-    return d.candidates[0].content.parts[0].text;
-  }
-}
-
 // ─── PIPELINE STAGE HELPERS ───
 function setStage(id, status) {
   const el = document.getElementById(`stage-${id}`);
@@ -1509,9 +1449,8 @@ async function runCopyConsult() {
   document.getElementById('story-workspace').style.display = 'none';
   setStage('a1', 'active');
 
-  // P3: payload 키는 P2 백엔드 spec 과 일치 — mode/copyText/tone/categoryHint
-  // (현재 v2 는 BYOK callAI 직접 호출이라 백엔드 mode 분기는 안 통하므로
-  //  prompt.txt Part 5-C Mode2 규칙을 인라인으로 system 에 주입한다.)
+  // P8: 백엔드 /api/copy-consult 호출. system prompt 는 prompt.txt [AGENT:COPY_CONSULT_M2] (SSOT).
+  // payload 키 — role / copyText / tone / categoryHint (mode 는 백엔드 무시, 호환 위해 유지)
   const payload = {
     mode: 'copy',
     role: state.selectedRole,
@@ -1519,43 +1458,23 @@ async function runCopyConsult() {
     tone: state.copyTone,
     categoryHint: state.copyCategoryHint
   };
-  console.info('[runCopyConsult] payload', payload);
-
-  const system = `당신은 Samsung 마케팅 카피 자문가입니다. prompt.txt Part 5-C Mode2 (Copy Consult) 규칙을 따릅니다.
-
-[절대 규칙]
-- 6섹션 A~F 형식으로만 응답. 다른 섹션·번호·헤더 금지.
-- 각 섹션은 "**A. One-line Brief & Hook**" 처럼 ** 볼드 라벨로 시작. ## 마크다운 헤딩 금지.
-- 섹션 사이에 --- 수평선 금지.
-- 도시·기기 정보가 입력에 들어와도 본문에서 절대 언급 금지.
-- 11/13 섹션 풀스키마, JSON 코드 블록, [Source]/[Assumption] 인라인 태그 금지.
-
-[섹션 구조]
-A. One-line Brief & Hook → KR 1줄 + Hook 1줄(EN). 형식: "KR: ..." / "Hook: ..."
-B. Target & Insight → 1~2문장 서술 (200~300자, 라벨/불릿 금지)
-C. Direction → (1) 추천 카피 패턴 1줄, (2) 적합 카테고리 3~6개 (적합도 순, 각 1줄 근거), (3) 부적합 카테고리 1~2개 (이유 1줄)
-D. Copy Options → 5~7행 표. 컬럼: | # | Headline (EN, ≤8 words) | 톤·포지셔닝 (KR, 1줄) |
-   - 톤 다양성 필수: 정공법 / 위트 / 절제 / 감성 / B2B 중 최소 3가지
-   - 사용자가 제공한 원본 카피의 핵심 단어 최소 2개 보존
-E. Visual / Scene Cue → 씬 3개. 형식: "Scene A: ..." "Scene B: ..." "Scene C: ..."
-F. Watch-outs → 2~3개 단답 리스트(- 불릿). 카피가 죽는 상황 — 윤리 / 카테고리 미스매치 / 연출 함정
-
-응답 언어: 한국어 (D 표 Headline 컬럼만 영어).`;
-
-  const user = `## Output Mode: copy
-
-## Input (Copy Consult)
-- 담당 채널: ${({retail:'리테일(매장)', dotcom:'닷컴(온라인)', brand:'브랜드(캠페인)'}[state.selectedRole]) || state.selectedRole}
-- 카피 원문 (필수): ${state.copyText}
-- 톤 선호: ${state.copyTone || '(미선택 — Bold/Genuine/Playful 중 적합한 것을 추천 가능)'}
-- 타겟 카테고리 힌트: ${state.copyCategoryHint || '(미입력 — 카피 원문에서 추론)'}
-
-위 입력을 근거로 6섹션 A~F 카피 자문을 제공하세요.`;
+  console.info('[runCopyConsult] POST /api/copy-consult', payload);
 
   try {
-    const raw = await callAI(system, user);
+    const headers = { 'Content-Type': 'application/json' };
+    if (state.apiKey) headers['X-User-Api-Key'] = state.apiKey;
+    const res = await fetch('/api/copy-consult', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) {
+      const msg = data?.error?.message || `HTTP ${res.status}`;
+      throw new Error(msg);
+    }
     setStage('a1', 'done');
-    renderCopyConsult(raw);
+    renderCopyConsult(data.markdown);
   } catch(e) {
     setStage('a1', 'error');
     showError('Copy Consult 오류: ' + e.message);
